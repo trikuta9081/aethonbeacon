@@ -1,0 +1,70 @@
+services:
+  - type: web
+    name: aethon-beacon-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile.web
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: "3000"
+      - key: EXPO_PUBLIC_VERIFICATION_API_BASE_URL
+        value: https://aethon-beacon-verification.onrender.com
+
+  - type: web
+    name: aethon-beacon-verification
+    runtime: docker
+    dockerfilePath: ./Dockerfile.verification
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: "8787"
+      - key: VERIFICATION_HOST
+        value: "0.0.0.0"
+      - key: VERIFICATION_CORS_ORIGIN
+        value: https://aethonbeacon.com
+      - key: VERIFICATION_BRAND_NAME
+        value: Aethon Beacon
+      - key: LOCAL_VERIFICATION_DEBUG
+        value: "0"
+      - key: VERIFICATION_SMS_WEBHOOK_URL
+        sync: false
+      - key: VERIFICATION_EMAIL_WEBHOOK_URL
+        sync: false
+      - key: VERIFICATION_CODE_TTL_MS
+        value: "600000"
+      - key: VERIFICATION_MAX_REQUESTS_PER_WINDOW
+        value: "5"
+      - key: VERIFICATION_REQUEST_WINDOW_MS
+        value: "900000"
+      - key: VERIFICATION_MAX_CONFIRM_ATTEMPTS
+        value: "5"
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM_NUMBER
+        sync: false
+      - key: TWILIO_MESSAGING_SERVICE_SID
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDGRID_FROM_EMAIL
+        sync: false
+      - key: SENDGRID_FROM_NAME
+        value: Aethon Beacon
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: ADMIN_LOGIN_ID
+        sync: false
+      - key: ADMIN_LOGIN_CODE
+        sync: false
+      - key: ADMIN_SESSION_TTL_MS
+        value: "28800000"
+      - key: ADMIN_LOCKOUT_TTL_MS
+        value: "300000"
+      - key: ADMIN_MAX_FAILED_ATTEMPTS
+        value: "5"
