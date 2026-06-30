@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { randomUUID } from "node:crypto";
 
 function parsePositiveInt(value, fallback) {
@@ -20,6 +21,11 @@ function parseWebhookUrl(value) {
 const port = parsePositiveInt(process.env.PORT ?? process.env.VERIFICATION_SERVER_PORT, 8787);
 const host = (process.env.VERIFICATION_HOST ?? "127.0.0.1").trim() || "127.0.0.1";
 const corsOrigin = (process.env.VERIFICATION_CORS_ORIGIN ?? "*").trim() || "*";
+const corsOrigins = corsOrigin
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const requestContext = new AsyncLocalStorage();
 const brandName = (process.env.VERIFICATION_BRAND_NAME ?? "Aethon Beacon").trim() || "Aethon Beacon";
 const debugPreview = process.env.LOCAL_VERIFICATION_DEBUG === "1";
 const smsWebhookUrl = parseWebhookUrl(process.env.VERIFICATION_SMS_WEBHOOK_URL);
@@ -68,10 +74,24 @@ const adminSessions = new Map();
 /** @type {Map<string, { attempts: number; lockedUntilAt: number }>} */
 const adminLoginAttempts = new Map();
 
+function resolveCorsOrigin(req) {
+  if (corsOrigins.length === 0 || corsOrigins.includes("*")) return "*";
+  const requestOrigin = String(req?.headers?.origin ?? "").trim();
+  if (requestOrigin.length > 0 && corsOrigins.includes(requestOrigin)) {
+    return requestOrigin;
+  }
+  return corsOrigins[0];
+}
+
+function currentCorsOrigin() {
+  return requestContext.getStore()?.corsOrigin ?? resolveCorsOrigin();
+}
+
 function json(res, statusCode, payload) {
   res.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin": corsOrigin,
+    "Access-Control-Allow-Origin": currentCorsOrigin(),
+    "Vary": "Origin",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
   });
@@ -641,7 +661,7 @@ async function callGeminiModelWithPrompt(model, prompt) {
   return { source: "gemini", model, text };
 }
 
-const server = createServer(async (req, res) => {
+async function handleRequest(req, res) {
   if (!req.url) {
     json(res, 400, { message: "Missing URL." });
     return;
@@ -649,7 +669,8 @@ const server = createServer(async (req, res) => {
 
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
-      "Access-Control-Allow-Origin": corsOrigin,
+      "Access-Control-Allow-Origin": currentCorsOrigin(),
+      "Vary": "Origin",
       "Access-Control-Allow-Headers": "Content-Type",
       "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
     });
@@ -1010,6 +1031,10 @@ const server = createServer(async (req, res) => {
   }
 
   json(res, 404, { message: "Not found." });
+}
+
+const server = createServer((req, res) => {
+  void requestContext.run({ corsOrigin: resolveCorsOrigin(req) }, () => handleRequest(req, res));
 });
 
 server.listen(port, host, () => {

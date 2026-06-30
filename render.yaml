@@ -23,7 +23,7 @@ services:
       - key: VERIFICATION_HOST
         value: "0.0.0.0"
       - key: VERIFICATION_CORS_ORIGIN
-        value: https://aethonbeacon.com
+        value: https://aethonbeacon.com,https://aethon-beacon-web.onrender.com
       - key: VERIFICATION_BRAND_NAME
         value: Aethon Beacon
       - key: LOCAL_VERIFICATION_DEBUG
