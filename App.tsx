@@ -24,8 +24,11 @@ import {
   View
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+// On web, metro.config.js aliases expo-audio to expo-audio-web-stub.js (no-op).
+// On native, the real expo-audio package is used.
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import type { AudioPlayer } from "expo-audio";
+import type { NotificationResponse } from "expo-notifications";
 import * as Speech from "expo-speech";
 import Notifications, { notificationsAvailable } from "./notifications";
 import { supabaseConfigured, pushToSupabase, pullFromSupabase } from "./supabaseSync";
@@ -1385,14 +1388,16 @@ async function playRelaxingToneCue(tone: RelaxingToneMode) {
   const targetVolume = tone.id === "reset-gamma" ? 0.85 : tone.id.startsWith("binaural") ? 0.78 : 0.72;
   try {
     const sound = await ensureRelaxingToneSoundLoaded();
-    sound.volume = targetVolume;
-    try {
-      await sound.seekTo(0);
-    } catch {
-      // If the bundled tone is still loading, play() can still work once ready.
+    if (sound) {
+      sound.volume = targetVolume;
+      try {
+        await sound.seekTo(0);
+      } catch {
+        // If the bundled tone is still loading, play() can still work once ready.
+      }
+      sound.play();
+      return;
     }
-    sound.play();
-    return;
   } catch {
     // If the packaged sound cannot play, fall through to the generated cue below.
   }
@@ -3421,11 +3426,6 @@ type UiCopy = {
   reportEyebrow: string;
   reportTitle: string;
   reportPrompt: string;
-  guideEyebrow: string;
-  guideTitle: string;
-  guideCopy: string;
-  openPdf: string;
-  openWord: string;
   visionEyebrow: string;
   visionTitle: string;
   visionCopy: string;
@@ -3489,12 +3489,6 @@ const englishUiCopy: UiCopy = {
   reportEyebrow: "Visit report",
   reportTitle: "Saved step and daily summary",
   reportPrompt: "One saved step becomes a private report. Unverified reports stay session-only.",
-  guideEyebrow: "Guide",
-  guideTitle: "How it works",
-  guideCopy:
-    "Open the full vision guide only when you need it. PDF and Word explain the purpose, privacy, reports, and main tabs.",
-  openPdf: "Open PDF",
-  openWord: "Open Word",
   visionEyebrow: "Vision",
   visionTitle: "Who it helps",
   visionCopy:
@@ -3563,11 +3557,6 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     reportEyebrow: "रिपोर्ट",
     reportTitle: "सहेजा गया कदम और दैनिक सार",
     reportPrompt: "एक सहेजा गया कदम निजी रिपोर्ट बनता है। असत्यापित रिपोर्ट सिर्फ़ इसी सत्र में रहती है।",
-    guideEyebrow: "मार्गदर्शिका",
-    guideTitle: "यह कैसे काम करता है",
-    guideCopy: "पूर्ण vision guide केवल ज़रूरत होने पर खोलें। PDF और Word उद्देश्य, privacy, reports, और मुख्य tabs समझाते हैं।",
-    openPdf: "पीडीएफ खोलें",
-    openWord: "वर्ड खोलें",
     visionEyebrow: "Vision",
     visionTitle: "यह किसके लिए है",
     visionCopy:
@@ -3634,12 +3623,6 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     reportEyebrow: "ਰਿਪੋਰਟ",
     reportTitle: "ਸੰਭਾਲਿਆ ਕਦਮ ਅਤੇ ਦਿਨ ਦਾ ਸਾਰ",
     reportPrompt: "ਇੱਕ ਸੰਭਾਲਿਆ ਕਦਮ ਨਿੱਜੀ ਰਿਪੋਰਟ ਬਣ ਜਾਂਦਾ ਹੈ। ਅਣ-ਪਰਖਿਆ ਰਿਪੋਰਟ ਸਿਰਫ਼ ਇਸ ਸੈਸ਼ਨ ਵਿਚ ਰਹਿੰਦੀ ਹੈ।",
-    guideEyebrow: "ਮਾਰਗਦਰਸ਼ਕ",
-    guideTitle: "ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ",
-    guideCopy:
-      "ਪੂਰਾ vision guide ਕੇਵਲ ਲੋੜ ਹੋਵੇ ਤਾਂ ਖੋਲ੍ਹੋ। PDF ਅਤੇ Word ਮਕਸਦ, privacy, reports, ਅਤੇ ਮੁੱਖ tabs ਸਮਝਾਉਂਦੇ ਹਨ।",
-    openPdf: "PDF ਖੋਲ੍ਹੋ",
-    openWord: "Word ਖੋਲ੍ਹੋ",
     visionEyebrow: "Vision",
     visionTitle: "ਇਹ ਕਿਸ ਲਈ ਹੈ",
     visionCopy:
@@ -3707,12 +3690,6 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     reportEyebrow: "रिपोर्ट",
     reportTitle: "जतन केलेले पाऊल आणि दैनंदिन सारांश",
     reportPrompt: "एक जतन केलेले पाऊल खासगी रिपोर्ट बनते. न पडताळलेले रिपोर्ट फक्त या सत्रात राहतात.",
-    guideEyebrow: "मार्गदर्शक",
-    guideTitle: "हे कसे चालते",
-    guideCopy:
-      "पूर्ण vision guide फक्त गरज असेल तेव्हाच उघडा. PDF आणि Word उद्देश, privacy, reports, आणि मुख्य tabs स्पष्ट करतात.",
-    openPdf: "PDF उघडा",
-    openWord: "Word उघडा",
     visionEyebrow: "Vision",
     visionTitle: "हे कोणासाठी आहे",
     visionCopy:
@@ -3780,12 +3757,6 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     reportEyebrow: "రిపోర్ట్",
     reportTitle: "సేవ్ చేసిన అడుగు మరియు రోజువారీ సారాంశం",
     reportPrompt: "ఒక సేవ్ చేసిన అడుగు private report అవుతుంది. నిర్ధారణ లేని report session లోనే ఉంటుంది.",
-    guideEyebrow: "గైడ్",
-    guideTitle: "ఇది ఎలా పనిచేస్తుంది",
-    guideCopy:
-      "పూర్తి vision guide అవసరం ఉన్నప్పుడు మాత్రమే తెరవండి. PDF మరియు Word లక్ష్యం, privacy, reports, మరియు ప్రధాన tabs ను వివరిస్తాయి.",
-    openPdf: "PDF తెరవండి",
-    openWord: "Word తెరవండి",
     visionEyebrow: "Vision",
     visionTitle: "ఇది ఎవరికోసం",
     visionCopy:
@@ -3853,12 +3824,6 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     reportEyebrow: "அறிக்கை",
     reportTitle: "சேமித்த படி மற்றும் தினசரி சுருக்கம்",
     reportPrompt: "ஒரு சேமித்த படி private report ஆக மாறும். சரிபார்க்கப்படாத report session-இல் மட்டும் இருக்கும்.",
-    guideEyebrow: "வழிகாட்டி",
-    guideTitle: "இது எப்படி செயல்படுகிறது",
-    guideCopy:
-      "முழு vision guide தேவைப்படும்போது மட்டும் திறக்கவும். PDF மற்றும் Word நோக்கம், privacy, reports, மற்றும் முக்கிய tabs ஆகியவற்றை விளக்குகின்றன.",
-    openPdf: "PDF திறக்கவும்",
-    openWord: "Word திறக்கவும்",
     visionEyebrow: "Vision",
     visionTitle: "இது யாருக்காக",
     visionCopy:
@@ -3926,12 +3891,6 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     reportEyebrow: "رپورٹ",
     reportTitle: "محفوظ قدم اور روزانہ خلاصہ",
     reportPrompt: "ایک محفوظ قدم نجی رپورٹ بن جاتا ہے۔ غیر تصدیق شدہ رپورٹ صرف سیشن میں رہتی ہے۔",
-    guideEyebrow: "رہنما",
-    guideTitle: "یہ کیسے کام کرتا ہے",
-    guideCopy:
-      "مکمل vision guide صرف ضرورت ہو تو کھولیں۔ PDF اور Word مقصد، privacy، reports، اور اہم tabs کی وضاحت کرتے ہیں۔",
-    openPdf: "PDF کھولیں",
-    openWord: "Word کھولیں",
     visionEyebrow: "Vision",
     visionTitle: "یہ کس کے لیے ہے",
     visionCopy:
@@ -5566,6 +5525,7 @@ let relaxingToneSoundInstance: AudioPlayer | null = null;
 let relaxingToneSoundLoadPromise: Promise<AudioPlayer> | null = null;
 
 async function ensureRelaxingToneSoundLoaded() {
+  if (Platform.OS === "web") return null;
   if (relaxingToneSoundInstance) {
     return relaxingToneSoundInstance;
   }
@@ -6154,6 +6114,35 @@ export default function App() {
     [journeyMilestones]
   );
 
+  useEffect(() => {
+    if (Platform.OS !== "web" || typeof document === "undefined") return;
+
+    const style = document.createElement("style");
+    style.setAttribute("data-aethon-web-cursors", "true");
+    style.textContent = `
+      [role="button"],
+      [role="link"],
+      button,
+      a,
+      summary,
+      select,
+      .cursor-pointer {
+        cursor: pointer;
+      }
+
+      input,
+      textarea,
+      [contenteditable="true"] {
+        cursor: text;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      style.remove();
+    };
+  }, []);
+
   // ── Tab dot badges ──────────────────────────────────────────────────────────
   const vedicTabHasBadge = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -6297,6 +6286,7 @@ export default function App() {
   }, [buildVersion]);
 
   useEffect(() => {
+    if (Platform.OS === "web") return;
     void setAudioModeAsync({
       allowsRecording: false,
       shouldPlayInBackground: false,
@@ -6334,7 +6324,7 @@ export default function App() {
 
   // ── Notification deep-link: route to relevant tab when notification tapped ──
   useEffect(() => {
-    const routeFromNotif = (response: Notifications.NotificationResponse | null) => {
+    const routeFromNotif = (response: NotificationResponse | null) => {
       if (!response) return;
       const data = response.notification.request.content.data as Record<string, unknown>;
       const targetTab = data?.tab as TabId | undefined;
@@ -10381,7 +10371,7 @@ function isTrustedExternalUrl(url: string) {
           accessibilityElementsHidden={showPrivateIntakePanel}
           importantForAccessibility={showPrivateIntakePanel ? "no-hide-descendants" : "auto"}
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={Platform.OS === "web"}
           onContentSizeChange={() => {
             if (!hasLoaded) return;
             if (!hasSettledInitialScrollRef.current) return;
@@ -10928,7 +10918,7 @@ function isTrustedExternalUrl(url: string) {
               )}
 
               {/* ── Feature discovery nudge (after 3+ check-ins) ──────────── */}
-              {!featureNudgeDismissed && entries.length >= 3 && (
+              {!featureNudgeDismissed && (
                 <View style={{
                   marginHorizontal: 16, marginBottom: 10,
                   backgroundColor: "#0A1E2E", borderRadius: 16,
@@ -11081,6 +11071,7 @@ function isTrustedExternalUrl(url: string) {
                 calmPageNonce={calmPageNonce}
               />
             </View>
+            </TabErrorBoundary>
           )}
 
           {activeTab === "tones" && (
@@ -11146,38 +11137,41 @@ function isTrustedExternalUrl(url: string) {
           )}
 
           {activeTab === "play" && (
-            <View onLayout={captureSectionLayout("play")}>
-              {!dismissedHintTabs.includes("play") && (
-                <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#132030", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center" }}>
-                  <Text style={{ fontSize: 18, marginRight: 10 }}>🎯</Text>
-                  <Text style={{ color: "#94A3B8", fontSize: 12, flex: 1, lineHeight: 18 }}>
-                    Each practice is 3 steps. Small, specific, and designed to actually stick. Finish all 3 to complete the challenge — and prove something to yourself.
-                  </Text>
-                  <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "play"])} hitSlop={8}>
-                    <Text style={{ color: "#475569", fontSize: 14, marginLeft: 8 }}>✕</Text>
-                  </Pressable>
+            <TabErrorBoundary tabName="Practice">
+              <>
+                <View onLayout={captureSectionLayout("play")}>
+                  {!dismissedHintTabs.includes("play") && (
+                    <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#132030", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center" }}>
+                      <Text style={{ fontSize: 18, marginRight: 10 }}>🎯</Text>
+                      <Text style={{ color: "#94A3B8", fontSize: 12, flex: 1, lineHeight: 18 }}>
+                        Each practice is 3 steps. Small, specific, and designed to actually stick. Finish all 3 to complete the challenge — and prove something to yourself.
+                      </Text>
+                      <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "play"])} hitSlop={8}>
+                        <Text style={{ color: "#475569", fontSize: 14, marginLeft: 8 }}>✕</Text>
+                      </Pressable>
+                    </View>
+                  )}
+                  <PlaySection
+                    playChallenges={playChallenges}
+                    featuredPlayChallenge={featuredPlayChallenge}
+                    playProgress={playProgress}
+                    playClaimed={playClaimed}
+                    togglePlayStep={togglePlayStep}
+                    resetPlayChallenge={resetPlayChallenge}
+                    claimPlayChallenge={claimPlayChallenge}
+                    playPoints={playPoints}
+                    playWins={playWins}
+                    playStepCount={playStepCount}
+                    selectedIdentity={selectedIdentity}
+                    selectedIssueGuide={selectedIssueGuide}
+                    onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
+                    onOpenTab={handleTabPress}
+                    isWide={isWide}
+                    onFocusFeaturedPlayLayout={captureFocusLayout}
+                    languageId={languageId}
+                  />
                 </View>
-              )}
-              <PlaySection
-                playChallenges={playChallenges}
-                featuredPlayChallenge={featuredPlayChallenge}
-                playProgress={playProgress}
-                playClaimed={playClaimed}
-                togglePlayStep={togglePlayStep}
-                resetPlayChallenge={resetPlayChallenge}
-                claimPlayChallenge={claimPlayChallenge}
-                playPoints={playPoints}
-                playWins={playWins}
-                playStepCount={playStepCount}
-                selectedIdentity={selectedIdentity}
-                selectedIssueGuide={selectedIssueGuide}
-                onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
-                onOpenTab={handleTabPress}
-                isWide={isWide}
-                onFocusFeaturedPlayLayout={captureFocusLayout}
-                languageId={languageId}
-              />
-            </View>
+              </>
             </TabErrorBoundary>
           )}
 
@@ -11511,12 +11505,12 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={styles.profileFeaturesTitle}>Explore the app</Text>
                 <View style={styles.profileFeaturesRow}>
                   {([
+                    { id: "community", label: "Community", icon: "🤝" },
+                    { id: "search", label: "Explore", icon: "🔍" },
+                    { id: "tones", label: "Tones", icon: "🎵" },
                     { id: "meditation", label: "Wellness", icon: "🪷" },
-                    { id: "insights", label: "Patterns", icon: "📊" },
                     { id: "play", label: "Practice", icon: "🎯" },
-                    { id: "focus", label: "Calm", icon: "🌿" },
                     { id: "vedic", label: "Birth Chart", icon: "🪐" },
-                    { id: "language", label: "Language", icon: "🌐" },
                   ] as Array<{ id: TabId; label: string; icon: string }>).map((item) => (
                     <Pressable
                       key={item.id}
@@ -11658,6 +11652,8 @@ function isTrustedExternalUrl(url: string) {
             accessName={accessName}
             profilePhone={profilePhone}
             setProfilePhone={updateProfilePhone}
+            profileDOB={profileDOB}
+            setProfileDOB={setProfileDOB}
             profileEmail={profileEmail}
             setProfileEmail={updateProfileEmail}
             profileLocation={profileLocation}
@@ -11880,18 +11876,12 @@ function TodaySection({
     );
     void playRelaxingToneCue(toneMode);
   };
-  const guideBaseUrl =
-    Platform.OS === "web" && typeof window !== "undefined"
-      ? window.location.origin
-      : "https://aethonbeacon.com";
-  const guidePdfUrl = `${guideBaseUrl}/aethon-beacon-app-vision-guide.pdf`;
-  const guideDocxUrl = `${guideBaseUrl}/aethon-beacon-app-vision-guide.docx`;
   return (
     <View style={styles.grid}>
       <View style={styles.panel}>
         <View style={[styles.homeToneBand, compact && styles.homeToneBandCompact]}>
-          <View style={[styles.sectionHeader, compact && styles.sectionHeaderCompact]}>
-            <View>
+          <View style={[styles.sectionHeader, compact && styles.sectionHeaderCompact, styles.homeToneBandHeader]}>
+            <View style={styles.homeToneBandHeaderCopy}>
               <Text style={styles.eyebrow}>Calm sound</Text>
               <Text
                 style={[styles.sectionTitleSmall, compact && styles.sectionTitleSmallCompact]}
@@ -12132,29 +12122,6 @@ function TodaySection({
               style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
             >
               <Text style={styles.homeOverviewButtonSecondaryLabel}>Back to journal</Text>
-            </Pressable>
-          </View>
-        </View>
-        <View style={styles.homeGuideBand}>
-          <View style={styles.homeGuideBandCopy}>
-            <Text style={styles.homeOverviewEyebrow}>{uiCopy.guideEyebrow}</Text>
-            <Text style={styles.homeOverviewTitle}>{uiCopy.guideTitle}</Text>
-            <Text style={styles.homeOverviewText}>{uiCopy.guideCopy}</Text>
-          </View>
-          <View style={styles.homeGuideActions}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => void onOpenWebsite(guidePdfUrl, "Aethon Beacon vision guide PDF")}
-              style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.homeOverviewButtonLabel}>{uiCopy.openPdf}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => void onOpenWebsite(guideDocxUrl, "Aethon Beacon vision guide Word file")}
-              style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.homeOverviewButtonSecondaryLabel}>{uiCopy.openWord}</Text>
             </Pressable>
           </View>
         </View>
@@ -16617,6 +16584,40 @@ function InsightsSection({
     selectedIdentityId
   );
 
+  if (weekEntries.length === 0) {
+    return (
+      <View style={[styles.grid, isWide && styles.gridWide]}>
+        <View style={styles.panel}>
+          <Text style={styles.eyebrow}>{uiCopy.patternEyebrow}</Text>
+          <Text style={styles.sectionTitle}>{uiCopy.patternTitle}</Text>
+          <View style={{ marginTop: 20, alignItems: "center", paddingVertical: 32, paddingHorizontal: 16 }}>
+            <Text style={{ fontSize: 40, marginBottom: 16 }}>📊</Text>
+            <Text style={{ color: "#E2E8F0", fontSize: 17, fontWeight: "700", textAlign: "center", marginBottom: 10 }}>
+              Your pattern story starts here
+            </Text>
+            <Text style={{ color: "#94A3B8", fontSize: 14, textAlign: "center", lineHeight: 22, marginBottom: 28 }}>
+              Save your first check-in on the Journal tab and Patterns will start tracking your emotional trends, weekly averages, and next best moves.
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => onOpenTab("journal")}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? "#1e4a7a" : "#1A3A5C",
+                paddingVertical: 13,
+                paddingHorizontal: 28,
+                borderRadius: 12,
+              })}
+            >
+              <Text style={{ color: "#63DED0", fontSize: 15, fontWeight: "700" }}>
+                Go to Journal →
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.grid, isWide && styles.gridWide]}>
       <View style={styles.panel}>
@@ -16652,10 +16653,6 @@ function InsightsSection({
             { label: uiCopy.openPath, onPress: () => onOpenTab("guide") }
           ]}
         />
-        <Text style={styles.smallMeta}>
-          Current issue: {selectedIssueGuide.label} / {weekEntries.length} check-ins
-        </Text>
-        <Text style={styles.smallMeta}>Profile lens: {profilePatternFrame.lens}</Text>
         <View style={styles.insightBand}>
           <Text style={styles.insightTitle}>{patternCritique.title}</Text>
           <Text style={styles.insightText}>{patternCritique.summary}</Text>
@@ -16713,28 +16710,18 @@ function InsightsSection({
             {visitReports.slice(0, 3).map((report) => (
               <View key={report.id} style={styles.adminReportCard}>
                 <Text style={styles.adminReportMeta}>
-                  {report.kind} / {report.sourceLabel} / {report.entryCount} step
-                  {report.entryCount === 1 ? "" : "s"}
+                  {report.sourceLabel} · {report.entryCount} step{report.entryCount === 1 ? "" : "s"}
                 </Text>
                 <Text style={styles.adminReportText}>{report.title}</Text>
                 <Text style={styles.adminReportText}>{report.summary}</Text>
-                {report.reportBasis ? <Text style={styles.smallMeta}>{report.reportBasis}</Text> : null}
-                {report.analysisLenses && report.analysisLenses.length > 0 ? (
-                  <Text style={styles.smallMeta}>Lens: {report.analysisLenses.join(" · ")}</Text>
-                ) : null}
-                {report.dataTrail && report.dataTrail.length > 0 ? (
-                  <Text style={styles.smallMeta} numberOfLines={2}>
-                    Trail: {report.dataTrail.join(" · ")}
-                  </Text>
-                ) : null}
-                <Text style={styles.smallMeta}>Next: {report.nextStep}</Text>
+                <Text style={styles.smallMeta}>Suggested next: {report.nextStep}</Text>
               </View>
             ))}
             {visitReports.length === 0 ? (
               <View style={styles.adminReportCard}>
                 <Text style={styles.adminReportMeta}>No reports yet</Text>
                 <Text style={styles.adminReportText}>
-                  Save one journal note or intake step to create the first report.
+                  Save a journal note or complete a check-in to generate your first progress report.
                 </Text>
               </View>
             ) : null}
@@ -18474,6 +18461,8 @@ function AccessOverlay({
   accessName,
   profilePhone,
   setProfilePhone,
+  profileDOB,
+  setProfileDOB,
   profileEmail,
   setProfileEmail,
   profileLocation,
@@ -18501,6 +18490,8 @@ function AccessOverlay({
   accessName: string;
   profilePhone: string;
   setProfilePhone: (value: string) => void;
+  profileDOB: string;
+  setProfileDOB: (value: string) => void;
   profileEmail: string;
   setProfileEmail: (value: string) => void;
   profileLocation: string;
@@ -18629,9 +18620,9 @@ function AccessOverlay({
         </View>
         <View style={styles.onboardingHeader}>
           <Text style={styles.eyebrow}>Profile center</Text>
-          <Text style={styles.onboardingTitle}>Set profile, contact, OTP.</Text>
+          <Text style={styles.onboardingTitle}>Your Account</Text>
           <Text style={styles.onboardingText}>
-            Pick the role, add one contact path, verify one channel, then save. Admin tools stay separate.
+            Set your name, add a contact method, and verify to unlock community features.
           </Text>
         </View>
         <View style={styles.profileBanner}>
@@ -18657,13 +18648,13 @@ function AccessOverlay({
 
         <View style={styles.accessFlowBand}>
           <View style={styles.accessFlowBandHeader}>
-            <Text style={styles.accessFlowBandTitle}>Profile flow</Text>
+            <Text style={styles.accessFlowBandTitle}>Account setup</Text>
             <Text style={styles.accessFlowBandMeta}>
-              {verificationReady ? "Unlocked" : "OTP pending"}
+              {verificationReady ? "Verified" : "Pending verification"}
             </Text>
           </View>
           <Text style={styles.accessFlowBandText}>
-            1 Profile. 2 Contact. Verification stays hidden until chat or private rooms need it.
+            Complete your profile, add a contact method, then verify to unlock community chat and private spaces.
           </Text>
           <View style={styles.accessFlowPills}>
             <View style={styles.accessFlowPill}>
@@ -19493,14 +19484,14 @@ function PrivateIntakeOverlay({
 
 // ── Persistent Bottom Navigation Bar ──────────────────────────────────────────
 // 5 primary tabs always visible. "More" opens the section switcher modal.
-// Primary nav: Today / Journal / Wisdom / Community / Profile
-// Legal/Redress accessible from Profile > More features
+// Primary nav: Today / Journal / Calm / Patterns / Profile
+// Community, Explore, Birth Chart, Practice, Tones accessible via Pages
 const PRIMARY_NAV_TABS: Array<{ id: TabId | "more"; label: string; icon: string }> = [
-  { id: "today",     label: "Today",     icon: "🏠" },
-  { id: "journal",   label: "Journal",   icon: "✍️" },
-  { id: "search",    label: "Explore",   icon: "🔍" },
-  { id: "community", label: "Community", icon: "🤝" },
-  { id: "settings",  label: "Profile",   icon: "👤" },
+  { id: "today",    label: "Today",    icon: "🏠" },
+  { id: "journal",  label: "Journal",  icon: "✍️" },
+  { id: "focus",    label: "Calm",     icon: "🌿" },
+  { id: "insights", label: "Patterns", icon: "📊" },
+  { id: "settings", label: "Profile",  icon: "👤" },
 ];
 
 // Smart input hints — defined outside component to avoid re-creation on every render
@@ -19692,8 +19683,7 @@ function BottomNavBar({
             ? activeTab === "settings" || secondaryTabActive
             : activeTab === item.id;
         const hasBadge =
-          (item.id === "vedic" && vedicBadge && !isActive) ||
-          (item.id === "aihelp" && insightsBadge && !isActive);
+          (item.id === "insights" && insightsBadge && !isActive);
         return (
           <Pressable
             key={item.id}
@@ -21443,10 +21433,18 @@ const styles = StyleSheet.create({
     marginTop: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D7E8E0",
-    backgroundColor: "#F7FCFA",
+    borderColor: "rgba(14,111,105,0.32)",
+    backgroundColor: "#091C1F",
     padding: 10,
     gap: 10
+  },
+  homeToneBandHeader: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: 8
+  },
+  homeToneBandHeaderCopy: {
+    gap: 2
   },
   homeToneBandCompact: {
     marginTop: 8,
@@ -21474,17 +21472,17 @@ const styles = StyleSheet.create({
   },
   homeToneHeaderActions: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
     flexWrap: "wrap",
-    justifyContent: "flex-end"
+    gap: 6,
+    alignItems: "center",
+    justifyContent: "flex-start"
   },
   homeToneBandButtonSecondary: {
     minHeight: 30,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#D9A72C",
-    backgroundColor: "#FFF9E9",
+    backgroundColor: "#102A2D",
     paddingHorizontal: 9,
     paddingVertical: 5,
     alignItems: "center",
@@ -21495,7 +21493,7 @@ const styles = StyleSheet.create({
     borderColor: "#1C5D58"
   },
   homeToneBandButtonSecondaryLabel: {
-    color: "#8A5C00",
+    color: "#F6D46B",
     fontSize: 9,
     lineHeight: 11,
     fontWeight: "900",
@@ -21816,30 +21814,6 @@ const styles = StyleSheet.create({
   },
   tonePresetChipLabelActive: {
     color: "#0ECCB8"
-  },
-  homeGuideBand: {
-    marginTop: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
-    backgroundColor: "#091A1D",
-    padding: 10,
-    gap: 8,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "space-between"
-  },
-  homeGuideBandCopy: {
-    flexGrow: 1,
-    flexBasis: 280,
-    minWidth: 0,
-    gap: 4
-  },
-  homeGuideActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6
   },
   homeSafetyStrip: {
     marginTop: 12,

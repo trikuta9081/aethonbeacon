@@ -15,6 +15,8 @@ const noopModule = {
   getPermissionsAsync: async () => ({ granted: false, canAskAgain: false }) as PermissionResponse,
   requestPermissionsAsync: async () => ({ granted: false, canAskAgain: false }) as PermissionResponse,
   setNotificationChannelAsync: async () => undefined,
+  addNotificationResponseReceivedListener: () => ({ remove: () => undefined }),
+  getLastNotificationResponseAsync: async () => null,
   cancelAllScheduledNotificationsAsync: async () => undefined,
   cancelScheduledNotificationAsync: async () => undefined,
   scheduleNotificationAsync: async () => null

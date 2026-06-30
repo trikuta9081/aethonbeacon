@@ -10,6 +10,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_VERIFICATION_API_BASE_URL": "https://aethon-beacon-verification.onrender.com"
+      },
       "ios": {
         "simulator": true
       }

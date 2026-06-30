@@ -2,22 +2,16 @@
   "expo": {
     "name": "Aethon Beacon",
     "slug": "aethon-beacon",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "aethonbeacon",
     "backgroundColor": "#0A0F1E",
     "primaryColor": "#63DED0",
-
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0A0F1E"
-    },
-
-    "assetBundlePatterns": ["**/*"],
-
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.aethon.beacon",
@@ -37,12 +31,13 @@
         "NSPrivacyAccessedAPITypes": [
           {
             "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
-            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ]
           }
         ]
       }
     },
-
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -59,51 +54,25 @@
       "allowBackup": false,
       "softwareKeyboardLayoutMode": "pan"
     },
-
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/aethon-beacon-icon.png",
       "bundler": "metro"
     },
-
     "plugins": [
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/notification-icon.png",
-          "color": "#63DED0",
-          "defaultChannel": "aethon-reminders",
-          "sounds": []
-        }
-      ],
-      "expo-store-review",
-      [
-        "expo-build-properties",
-        {
-          "ios": { "deploymentTarget": "15.1" },
-          "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            "minSdkVersion": 24
-          }
-        }
-      ]
+      "expo-asset"
     ],
-
     "extra": {
+      "privacyPolicyUrl": "https://trikuta9081.github.io/aethonbeacon/privacy-policy.html",
+      "supportEmail": "trikuta9081@gmail.com",
       "eas": {
-        "projectId": "REPLACE_WITH_YOUR_EAS_PROJECT_ID"
-      },
-      "privacyPolicyUrl": "https://YOUR_USERNAME.github.io/aethon-beacon/privacy-policy.html",
-      "supportEmail": "trikuta9081@gmail.com"
+        "projectId": "c9c6e5ac-336f-49e0-8dfa-f725aeaf8442"
+      }
     },
-
-    "owner": "REPLACE_WITH_YOUR_EXPO_USERNAME",
-
+    "owner": "trikuta",
     "updates": {
       "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/REPLACE_WITH_YOUR_EAS_PROJECT_ID"
+      "url": "https://u.expo.dev/c9c6e5ac-336f-49e0-8dfa-f725aeaf8442"
     },
-
     "runtimeVersion": {
       "policy": "appVersion"
     }

@@ -1,84 +1,70 @@
 #!/bin/bash
-# AethonBeacon — GitHub push script
-# Run by double-clicking in Finder
-
 cd ~/AethonBeacon || { echo "❌ Cannot find AethonBeacon folder"; read -n1; exit 1; }
 
-echo ""
-echo "================================================"
-echo "  AethonBeacon → GitHub Push"
-echo "================================================"
-echo ""
-
-# Clean stale lock
 rm -f .git/index.lock 2>/dev/null
-
-# Init git if needed
-if [ ! -d ".git" ]; then
-  echo "🔧 Initialising git repository..."
-  git init
-  git branch -M main
-fi
-
-# Identity
 git config user.email "trikuta9081@gmail.com"
 git config user.name "Rajeshwar"
 
-# .gitignore
-cat > .gitignore << 'IGNORE'
-node_modules/
-.expo/
-dist/
-ios/Pods/
-android/.gradle/
-android/build/
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-.DS_Store
-._*
-IGNORE
-
-# Stage everything
-git add -A
-echo "📦 Files staged:"
-git status --short | grep -v node_modules | head -30
-echo ""
-
-# Commit
-git commit -m "feat: Gemini AI (brief/journal/insights), Supabase sync, per-tab error boundaries, notifications" 2>/dev/null \
-  || echo "  (nothing new to commit, continuing to push)"
-
-echo ""
-
-# Remote — prompt if not set
-if ! git remote get-url origin &>/dev/null; then
+# Read token from file
+TOKEN_FILE=~/AethonBeacon/github-token.txt
+if [ ! -f "$TOKEN_FILE" ]; then
+  echo ""
   echo "================================================"
-  echo "  ONE-TIME SETUP NEEDED"
+  echo "  STEP 1: Create your GitHub token"
   echo "================================================"
   echo ""
-  echo "  Create a GitHub repo first:"
-  echo "  → https://github.com/new"
-  echo "  → Name it: AethonBeacon"
-  echo "  → Leave it EMPTY (no README)"
+  echo "  → Go to: https://github.com/settings/tokens/new"
+  echo "  → Note: AethonBeacon2"
+  echo "  → Expiration: No expiration"
+  echo "  → Check the TOP 'repo' checkbox"
+  echo "  → Click Generate token"
+  echo "  → Copy the ghp_... token"
   echo ""
-  read -p "  Then enter your GitHub username here: " GH_USER
-  if [ -z "$GH_USER" ]; then
-    echo "❌ No username entered. Run again after creating the repo."
-    read -n1; exit 1
-  fi
-  git remote add origin "https://github.com/$GH_USER/AethonBeacon.git"
+  echo "  STEP 2: Save the token"
+  echo "  → Open TextEdit on your Mac"
+  echo "  → Paste the token (Cmd+V)"
+  echo "  → Save As: github-token.txt"
+  echo "  → Save location: AethonBeacon folder"
+  echo ""
+  echo "  STEP 3: Double-click git-push.command again"
+  echo ""
+  echo "Press any key to close."
+  read -n1
+  exit 0
 fi
 
-# Push
-echo "🚀 Pushing to GitHub..."
-git push -u origin main 2>&1 || git push -u origin master 2>&1
+GH_TOKEN=$(cat "$TOKEN_FILE" | tr -d '[:space:]')
 
-REMOTE_URL=$(git remote get-url origin | sed 's|.git$||')
-echo ""
-echo "✅ Done! View at: $REMOTE_URL"
+if [ -z "$GH_TOKEN" ]; then
+  echo "❌ Token file is empty. Save your ghp_... token in github-token.txt"
+  read -n1; exit 1
+fi
+
+echo "🔑 Token loaded from github-token.txt"
+
+# Set remote with token
+git remote set-url origin "https://trikuta9081:${GH_TOKEN}@github.com/trikuta9081/aethonbeacon.git"
+git config --global credential.helper osxkeychain
+
+echo "🚀 Pushing to github.com/trikuta9081/aethonbeacon ..."
+git push -u origin master 2>&1
+
+STATUS=$?
+
+# Clean token from remote URL
+git remote set-url origin "https://github.com/trikuta9081/aethonbeacon.git"
+
+if [ $STATUS -eq 0 ]; then
+  # Delete the token file for security
+  rm -f "$TOKEN_FILE"
+  echo ""
+  echo "✅ Push successful! Token file deleted for security."
+  echo "   https://github.com/trikuta9081/aethonbeacon"
+else
+  echo ""
+  echo "❌ Push failed. Check token has 'repo' scope."
+fi
+
 echo ""
 echo "Press any key to close."
 read -n1
