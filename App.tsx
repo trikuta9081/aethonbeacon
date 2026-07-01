@@ -403,6 +403,19 @@ type PendingRouteDecision = {
   route: AIHelpRoute;
   redressRouteId: RedressRouteId;
 };
+type RouteFollowUpStatus = "open" | "resolved" | "more-guidance" | "reminder-set";
+type ActiveRouteFollowUp = {
+  id: string;
+  rawText: string;
+  issueId: IssueId;
+  issueLabel: string;
+  identityLabel: string;
+  route: AIHelpRoute;
+  choice: RouteChoiceId;
+  choiceLabel: string;
+  openedAt: string;
+  status: RouteFollowUpStatus;
+};
 type RoutePreview = {
   title: string;
   detail: string;
@@ -5929,6 +5942,7 @@ export default function App() {
   const [pendingPrivateIntakeRoute, setPendingPrivateIntakeRoute] =
     useState<PendingPrivateIntakeRoute | null>(null);
   const [pendingRouteDecision, setPendingRouteDecision] = useState<PendingRouteDecision | null>(null);
+  const [activeRouteFollowUp, setActiveRouteFollowUp] = useState<ActiveRouteFollowUp | null>(null);
   const [communityReports, setCommunityReports] = useState<CommunityReport[]>([]);
   const [hiddenCommunityMessageIds, setHiddenCommunityMessageIds] = useState<string[]>([]);
   const [hiddenCommunityChatIds, setHiddenCommunityChatIds] = useState<string[]>([]);
@@ -7465,11 +7479,15 @@ export default function App() {
     setRetentionReminderIssueId(selectedIssueGuide.id);
   }
 
-  async function scheduleIssueReminder(mode: IssueReminderMode) {
+  async function scheduleIssueReminder(mode: IssueReminderMode, issueOverride?: IssueId) {
     if (!notificationsAvailable) {
       Alert.alert("Path reminder", "Path reminders are not available in this browser.");
       return;
     }
+    const reminderIssue =
+      issueOverride !== undefined
+        ? issueGuides.find((guide) => guide.id === issueOverride) ?? selectedIssueGuide
+        : selectedIssueGuide;
 
     const currentPermissions = await Notifications.getPermissionsAsync().catch(() => null);
     let granted = currentPermissions?.granted ?? false;
@@ -7495,7 +7513,7 @@ export default function App() {
     const identifier = await Notifications.scheduleNotificationAsync({
       content: {
         title: "Aethon Beacon follow-up",
-        body: `${selectedIssueGuide.label}: open Path and continue the next step.`,
+        body: `${reminderIssue.label}: open Path and continue the next step.`,
         data: { tab: "today" },
         ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
       },
@@ -7512,7 +7530,7 @@ export default function App() {
 
     setIssueReminderId(identifier);
     setIssueReminderMode(mode);
-    setIssueReminderIssueId(selectedIssueGuide.id);
+    setIssueReminderIssueId(reminderIssue.id);
     Alert.alert(
       "Path reminder",
       mode === "tomorrow"
@@ -10156,6 +10174,126 @@ async function fetchGeminiAIHelp(
     showRouteNotice("Choose next step", "Pick the route that fits best before the app moves forward.");
   }
 
+  function getRouteChoiceLabel(choice: RouteChoiceId) {
+    if (choice === "sos") return "SOS";
+    if (choice === "help") return "Help";
+    if (choice === "path") return "Path";
+    if (choice === "reset") return "Reset";
+    if (choice === "search") return "Search";
+    return "Journal";
+  }
+
+  function writeRouteFollowUpReport(followUp: ActiveRouteFollowUp, status: RouteFollowUpStatus) {
+    const statusLabel =
+      status === "resolved"
+        ? "Resolved"
+        : status === "more-guidance"
+          ? "Needs more guidance"
+          : status === "reminder-set"
+            ? "Reminder set"
+            : "Open";
+
+    setVisitReports((current) => [
+      {
+        id: `follow-up-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        kind: "step" as VisitReportKind,
+        title: `Follow-up / ${followUp.choiceLabel}`,
+        summary: `${followUp.issueLabel}: the app kept the route open after ${followUp.choiceLabel} instead of ending the flow.`,
+        emotional:
+          status === "resolved"
+            ? "The user marked the route as handled for now."
+            : status === "more-guidance"
+              ? "The user asked for another layer of guidance."
+              : status === "reminder-set"
+                ? "The user chose a delayed follow-up instead of forcing an immediate answer."
+                : "The route is active and waiting for the next user signal.",
+        practical:
+          status === "resolved"
+            ? "Close the loop and keep the report trail."
+            : status === "more-guidance"
+              ? "Open AI Guide with the original issue context."
+              : status === "reminder-set"
+                ? "Return tomorrow and check what changed."
+                : "Ask whether the route worked, needs escalation, or needs a reminder.",
+        social: `Identity: ${followUp.identityLabel}. Original line: ${followUp.rawText}`,
+        safety:
+          followUp.route === "urgent" || followUp.choice === "sos"
+            ? "Urgent route stayed visible during follow-up."
+            : "No new urgent cue was added during this checkpoint.",
+        nextStep:
+          status === "resolved"
+            ? "Keep this route closed unless the issue returns."
+            : status === "more-guidance"
+              ? "Continue in Guide with the original issue."
+              : status === "reminder-set"
+                ? "Follow the reminder and reopen Path or Journal."
+                : "Choose resolved, more guidance, or reminder.",
+        routeLabel: statusLabel,
+        identityLabel: followUp.identityLabel,
+        issueLabel: followUp.issueLabel,
+        entryCount: 0,
+        sourceLabel: "Route follow-up",
+        dataTrail: [
+          `Choice: ${followUp.choiceLabel}`,
+          `Status: ${statusLabel}`,
+          `Opened: ${followUp.openedAt}`
+        ]
+      },
+      ...current
+    ].slice(0, 40));
+  }
+
+  function openRouteFollowUp(decision: PendingRouteDecision, choice: RouteChoiceId) {
+    const followUp: ActiveRouteFollowUp = {
+      id: `route-follow-up-${Date.now()}`,
+      rawText: decision.rawText,
+      issueId: decision.issueId,
+      issueLabel: decision.issueLabel,
+      identityLabel: decision.identityLabel,
+      route: decision.route,
+      choice,
+      choiceLabel: getRouteChoiceLabel(choice),
+      openedAt: new Date().toISOString(),
+      status: "open"
+    };
+    setActiveRouteFollowUp(followUp);
+    writeRouteFollowUpReport(followUp, "open");
+    showRouteNotice(
+      "Follow-up active",
+      `${followUp.choiceLabel} is open. Mark resolved, ask for more guidance, or set a reminder.`
+    );
+  }
+
+  function markRouteFollowUpResolved() {
+    const followUp = activeRouteFollowUp;
+    if (!followUp) return;
+    const nextFollowUp = { ...followUp, status: "resolved" as RouteFollowUpStatus };
+    setActiveRouteFollowUp(nextFollowUp);
+    writeRouteFollowUpReport(nextFollowUp, "resolved");
+    showRouteNotice("Route resolved", "The app closed this loop but kept the report trail.");
+  }
+
+  function askMoreRouteGuidance() {
+    const followUp = activeRouteFollowUp;
+    if (!followUp) return;
+    const nextFollowUp = { ...followUp, status: "more-guidance" as RouteFollowUpStatus };
+    setActiveRouteFollowUp(nextFollowUp);
+    writeRouteFollowUpReport(nextFollowUp, "more-guidance");
+    startAIHelpFlow(`Follow up on this issue: ${followUp.rawText}`, followUp.issueId);
+  }
+
+  function remindRouteFollowUpTomorrow() {
+    const followUp = activeRouteFollowUp;
+    if (!followUp) return;
+    const nextFollowUp = { ...followUp, status: "reminder-set" as RouteFollowUpStatus };
+    setActiveRouteFollowUp(nextFollowUp);
+    setIssueGuideId(followUp.issueId);
+    writeRouteFollowUpReport(nextFollowUp, "reminder-set");
+    void scheduleIssueReminder("tomorrow", followUp.issueId);
+    showRouteNotice("Reminder requested", "The follow-up loop will come back tomorrow if notifications are allowed.");
+  }
+
   function commitRouteDecision(choice: RouteChoiceId) {
     const decision = pendingRouteDecision;
     if (!decision) return;
@@ -10163,6 +10301,7 @@ async function fetchGeminiAIHelp(
     setPendingRouteDecision(null);
     setHomeIssueDraft("");
     setIssueGuideId(decision.issueId);
+    openRouteFollowUp(decision, choice);
 
     if (choice === "sos") {
       void handleEmergencyCall();
@@ -10722,6 +10861,15 @@ function isTrustedExternalUrl(url: string) {
                   {routeNotice.detail}
                 </Text>
               </View>
+            ) : null}
+            {activeRouteFollowUp ? (
+              <RouteFollowUpCheckpoint
+                followUp={activeRouteFollowUp}
+                onResolved={markRouteFollowUpResolved}
+                onMoreGuidance={askMoreRouteGuidance}
+                onReminder={remindRouteFollowUpTomorrow}
+                onDismiss={() => setActiveRouteFollowUp(null)}
+              />
             ) : null}
             {pendingRouteDecision ? (
               <RouteDecisionOverlay
@@ -16768,6 +16916,83 @@ function RouteDecisionOverlay({
   );
 }
 
+function RouteFollowUpCheckpoint({
+  followUp,
+  onResolved,
+  onMoreGuidance,
+  onReminder,
+  onDismiss
+}: {
+  followUp: ActiveRouteFollowUp;
+  onResolved: () => void;
+  onMoreGuidance: () => void;
+  onReminder: () => void;
+  onDismiss: () => void;
+}) {
+  const statusText =
+    followUp.status === "resolved"
+      ? "Resolved for now"
+      : followUp.status === "more-guidance"
+        ? "Guide reopened"
+        : followUp.status === "reminder-set"
+          ? "Reminder requested"
+          : "Waiting for outcome";
+  return (
+    <View style={styles.routeFollowUpCard}>
+      <View style={styles.routeFollowUpHeader}>
+        <View style={styles.routeFollowUpCopy}>
+          <Text style={styles.routeFollowUpEyebrow}>Follow-up checkpoint</Text>
+          <Text style={styles.routeFollowUpTitle} numberOfLines={1}>
+            {followUp.choiceLabel} / {followUp.issueLabel}
+          </Text>
+          <Text style={styles.routeFollowUpText} numberOfLines={2}>
+            Did this route work, or should the app keep guiding the next step?
+          </Text>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onDismiss}
+          style={({ pressed }) => [styles.routeFollowUpDismiss, pressed && styles.pressed]}
+        >
+          <Text style={styles.routeFollowUpDismissText}>×</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.routeFollowUpStatus}>{statusText}</Text>
+      <View style={styles.routeFollowUpActions}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onResolved}
+          style={({ pressed }) => [styles.helpButton, styles.routeFollowUpAction, pressed && styles.pressed]}
+        >
+          <Text style={styles.helpButtonLabel}>Resolved</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onMoreGuidance}
+          style={({ pressed }) => [
+            styles.helpButtonSecondary,
+            styles.routeFollowUpAction,
+            pressed && styles.pressed
+          ]}
+        >
+          <Text style={styles.helpButtonSecondaryLabel}>More guidance</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onReminder}
+          style={({ pressed }) => [
+            styles.helpButtonSecondary,
+            styles.routeFollowUpAction,
+            pressed && styles.pressed
+          ]}
+        >
+          <Text style={styles.helpButtonSecondaryLabel}>Remind me</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 function InsightsSection({
   trend,
   nextMove,
@@ -21428,7 +21653,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "rgba(14, 111, 105, 0.30)",
-    backgroundColor: "#F4FBF8",
+    backgroundColor: "#0D1F22",
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 2
@@ -21457,6 +21682,85 @@ const styles = StyleSheet.create({
   routeNoticeDetailCompact: {
     fontSize: 11,
     lineHeight: 14
+  },
+  routeFollowUpCard: {
+    marginTop: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(14, 204, 184, 0.26)",
+    backgroundColor: "#081A22",
+    padding: 12,
+    gap: 10
+  },
+  routeFollowUpHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 10
+  },
+  routeFollowUpCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 3
+  },
+  routeFollowUpEyebrow: {
+    color: "#0ECCB8",
+    fontSize: 10,
+    lineHeight: 12,
+    fontWeight: "900",
+    letterSpacing: 1.1,
+    textTransform: "uppercase"
+  },
+  routeFollowUpTitle: {
+    color: "#F1F5F9",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900"
+  },
+  routeFollowUpText: {
+    color: "rgba(241,245,249,0.68)",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700"
+  },
+  routeFollowUpStatus: {
+    alignSelf: "flex-start",
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(14, 204, 184, 0.30)",
+    backgroundColor: "#10242D",
+    color: "#9DDDD3",
+    fontSize: 10,
+    lineHeight: 13,
+    fontWeight: "900",
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    textTransform: "uppercase"
+  },
+  routeFollowUpActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8
+  },
+  routeFollowUpAction: {
+    flexGrow: 1,
+    flexBasis: 110
+  },
+  routeFollowUpDismiss: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    backgroundColor: "#10242D"
+  },
+  routeFollowUpDismissText: {
+    color: "#E8F4F0",
+    fontSize: 18,
+    lineHeight: 20,
+    fontWeight: "900"
   },
   routePreviewCard: {
     borderRadius: 12,
