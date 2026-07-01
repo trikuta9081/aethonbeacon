@@ -11,3 +11,4 @@ android/build/
 *.mobileprovision
 .DS_Store
 ._*
+qa/
