@@ -394,6 +394,15 @@ type PrivateSpaceThread = {
   messages: PrivateSpaceMessage[];
 };
 type AIHelpRoute = "general" | "guide" | "redress" | "professional" | "urgent";
+type RouteChoiceId = "path" | "help" | "reset" | "search" | "journal" | "sos";
+type PendingRouteDecision = {
+  rawText: string;
+  issueId: IssueId;
+  issueLabel: string;
+  identityLabel: string;
+  route: AIHelpRoute;
+  redressRouteId: RedressRouteId;
+};
 type RoutePreview = {
   title: string;
   detail: string;
@@ -572,7 +581,7 @@ const routines: Routine[] = [
   },
   {
     id: "nirvana",
-    name: "Nirvana",
+    name: "Reset",
     meta: "Quiet restoration, breath, reduced noise",
     duration: 12,
     accent: "#7E6FD6"
@@ -1340,7 +1349,7 @@ const launchNeeds: Array<{
   {
     id: "calm",
     label: "Calm / reset",
-    meta: "Open Nirvana and settle the body first.",
+    meta: "Open Reset and settle the body first.",
     tab: "focus",
     issueId: "anxiety",
     routineId: "nirvana"
@@ -2063,22 +2072,22 @@ function buildDailyRoutinePlan(
         detail:
           selectedTone.score <= 2
             ? pickLocalizedText(languageId, {
-                english: "Use Nirvana early today so the body can slow down before the next choice.",
-                hindi: "आज Nirvana जल्दी खोलें, ताकि अगले कदम से पहले शरीर धीमा हो सके।",
-                punjabi: "ਅੱਜ Nirvana ਜਲਦੀ ਖੋਲ੍ਹੋ, ਤਾਂ ਜੋ ਅਗਲੇ ਕਦਮ ਤੋਂ ਪਹਿਲਾਂ ਸਰੀਰ ਹੌਲੀ ਹੋ ਸਕੇ।",
-                marathi: "आज Nirvana लवकर उघडा, म्हणजे पुढच्या निर्णयाआधी शरीर शांत होईल.",
-                telugu: "తదుపరి ఎంపికకు ముందు శరీరం నెమ్మదించేందుకు ఈరోజు Nirvana ను తొందరగా తెరవండి.",
-                tamil: "அடுத்த முடிவுக்கு முன் உடல் மெதுவாக அமைவதற்காக இன்று Nirvana-ஐ சீக்கிரம் திறக்கவும்.",
-                urdu: "اگلے انتخاب سے پہلے جسم کو آہستہ ہونے دینے کے لیے آج Nirvana جلد کھولیں۔"
+                english: "Use Reset early today so the body can slow down before the next choice.",
+                hindi: "आज Reset जल्दी खोलें, ताकि अगले कदम से पहले शरीर धीमा हो सके।",
+                punjabi: "ਅੱਜ Reset ਜਲਦੀ ਖੋਲ੍ਹੋ, ਤਾਂ ਜੋ ਅਗਲੇ ਕਦਮ ਤੋਂ ਪਹਿਲਾਂ ਸਰੀਰ ਹੌਲੀ ਹੋ ਸਕੇ।",
+                marathi: "आज Reset लवकर उघडा, म्हणजे पुढच्या निर्णयाआधी शरीर शांत होईल.",
+                telugu: "తదుపరి ఎంపికకు ముందు శరీరం నెమ్మదించేందుకు ఈరోజు Reset ను తొందరగా తెరవండి.",
+                tamil: "அடுத்த முடிவுக்கு முன் உடல் மெதுவாக அமைவதற்காக இன்று Reset-ஐ சீக்கிரம் திறக்கவும்.",
+                urdu: "اگلے انتخاب سے پہلے جسم کو آہستہ ہونے دینے کے لیے آج Reset جلد کھولیں۔"
               })
             : pickLocalizedText(languageId, {
-                english: "Use Nirvana whenever the body or mind feels crowded again.",
-                hindi: "जब भी body या mind भारी लगे, Nirvana खोलें।",
-                punjabi: "ਜਦੋਂ ਵੀ body ਜਾਂ mind ਭਾਰੀ ਲੱਗੇ, Nirvana ਖੋਲ੍ਹੋ।",
-                marathi: "जेव्हा body किंवा mind जड वाटेल, तेव्हा Nirvana उघडा.",
-                telugu: "శరీరం లేదా mind భారంగా అనిపించినప్పుడు Nirvana తెరవండి.",
-                tamil: "உடல் அல்லது மனம் நிரம்பி இருப்பது போல உணர்ந்தால் Nirvana-ஐத் திறக்கவும்.",
-                urdu: "جب بھی جسم یا ذہن بھاری محسوس ہو، Nirvana کھولیں۔"
+                english: "Use Reset whenever the body or mind feels crowded again.",
+                hindi: "जब भी body या mind भारी लगे, Reset खोलें।",
+                punjabi: "ਜਦੋਂ ਵੀ body ਜਾਂ mind ਭਾਰੀ ਲੱਗੇ, Reset ਖੋਲ੍ਹੋ।",
+                marathi: "जेव्हा body किंवा mind जड वाटेल, तेव्हा Reset उघडा.",
+                telugu: "శరీరం లేదా mind భారంగా అనిపించినప్పుడు Reset తెరవండి.",
+                tamil: "உடல் அல்லது மனம் நிரம்பி இருப்பது போல உணர்ந்தால் Reset-ஐத் திறக்கவும்.",
+                urdu: "جب بھی جسم یا ذہن بھاری محسوس ہو، Reset کھولیں۔"
               }),
         actionLabel: uiCopy.startCalm,
         kind: "focus"
@@ -2097,13 +2106,13 @@ function buildDailyRoutinePlan(
         detail:
           selectedTone.score <= 2
             ? pickLocalizedText(languageId, {
-                english: "Use Nirvana whenever the body or mind feels crowded again.",
-                hindi: "जब body या mind फिर से भारी लगे तो Nirvana खोलें।",
-                punjabi: "ਜਦੋਂ body ਜਾਂ mind ਫਿਰ ਭਾਰੀ ਲੱਗੇ ਤਾਂ Nirvana ਖੋਲ੍ਹੋ।",
-                marathi: "body किंवा mind पुन्हा जड वाटल्यास Nirvana उघडा.",
-                telugu: "శరీరం లేదా mind మళ్లీ భారంగా అనిపిస్తే Nirvana తెరవండి.",
-                tamil: "உடல் அல்லது மனம் மீண்டும் பாரமாக உணர்ந்தால் Nirvana-ஐத் திறக்கவும்.",
-                urdu: "جب جسم یا ذہن دوبارہ بھاری لگے تو Nirvana کھولیں۔"
+                english: "Use Reset whenever the body or mind feels crowded again.",
+                hindi: "जब body या mind फिर से भारी लगे तो Reset खोलें।",
+                punjabi: "ਜਦੋਂ body ਜਾਂ mind ਫਿਰ ਭਾਰੀ ਲੱਗੇ ਤਾਂ Reset ਖੋਲ੍ਹੋ।",
+                marathi: "body किंवा mind पुन्हा जड वाटल्यास Reset उघडा.",
+                telugu: "శరీరం లేదా mind మళ్లీ భారంగా అనిపిస్తే Reset తెరవండి.",
+                tamil: "உடல் அல்லது மனம் மீண்டும் பாரமாக உணர்ந்தால் Reset-ஐத் திறக்கவும்.",
+                urdu: "جب جسم یا ذہن دوبارہ بھاری لگے تو Reset کھولیں۔"
               })
             : pickLocalizedText(languageId, {
                 english: "Open Journal and keep the note short enough to reuse tomorrow.",
@@ -3000,7 +3009,7 @@ function buildPrivateIntakeReport(
   const recommendedRoute = hasSafetyCue
     ? "SOS / Help"
     : emotionalHigh
-      ? "Nirvana"
+      ? "Reset"
         : practicalHigh
         ? "Path"
           : supportHigh
@@ -3038,7 +3047,7 @@ function buildPrivateIntakeReport(
     : routeTab === "redress" || blueprint.mode === "redress"
       ? "Open Help first, then keep the complaint route and evidence together."
       : emotionalHigh
-        ? "Open Nirvana first, then move to Path once the body feels steadier."
+        ? "Open Reset first, then move to Path once the body feels steadier."
         : practicalHigh
           ? "Open Path first, then move to Help if you need a complaint or authority route."
           : "Open Guidance for one clean next step, then continue from there.";
@@ -5120,7 +5129,7 @@ const beaconXPillars = [
   },
   {
     id: "nirvana",
-    label: "Nirvana",
+    label: "Reset",
     meta: "Quiet, restoration, breath, and reduced noise.",
     accent: "#7E6FD6"
   }
@@ -5172,9 +5181,9 @@ function getSituationRouteCards(issue: IssueGuide, identityLabel: string): Situa
     focus: {
       id: "focus",
       label: "If the body is flooded",
-      detail: `Use Nirvana to slow ${identityLabel.toLowerCase()} and make the next move smaller before anything else.`,
+      detail: `Use Reset to slow ${identityLabel.toLowerCase()} and make the next move smaller before anything else.`,
       meta: issue.steps[0],
-      actionLabel: "Begin Nirvana",
+      actionLabel: "Begin Reset",
       destination: "focus"
     },
     guide: {
@@ -5919,6 +5928,7 @@ export default function App() {
   const [showPrivacyPolicyPanel, setShowPrivacyPolicyPanel] = useState(false);
   const [pendingPrivateIntakeRoute, setPendingPrivateIntakeRoute] =
     useState<PendingPrivateIntakeRoute | null>(null);
+  const [pendingRouteDecision, setPendingRouteDecision] = useState<PendingRouteDecision | null>(null);
   const [communityReports, setCommunityReports] = useState<CommunityReport[]>([]);
   const [hiddenCommunityMessageIds, setHiddenCommunityMessageIds] = useState<string[]>([]);
   const [hiddenCommunityChatIds, setHiddenCommunityChatIds] = useState<string[]>([]);
@@ -9182,9 +9192,13 @@ export default function App() {
     ].join("\n");
   }
 
-  function buildGeminiAIHelpPrompt(text: string, route: AIHelpRoute, profileAddressLabel: string) {
+  function buildGeminiAIHelpPrompt(
+    text: string,
+    route: AIHelpRoute,
+    profileAddressLabel: string,
+    issueGuide: IssueGuide
+  ) {
     const emergencyLabel = emergencyNumber.trim().length > 0 ? emergencyNumber.trim() : "112";
-    const issue = findAIHelpIssue(text);
     const openTabLabel = getAIHelpOpenTabLabel(route);
   return [
       "You are Beacon Guide, a calm human-style guide.",
@@ -9200,7 +9214,7 @@ export default function App() {
       `User role: ${selectedIdentity.label}.`,
       `User address: ${profileDisplayName}.`,
       `Detected route: ${route}.`,
-      `Current issue guide: ${issue.label}.`,
+      `Current issue guide: ${issueGuide.label}.`,
       `Current speech locale: ${selectedLanguage.speechLang}.`,
       `Emergency fallback number: ${emergencyLabel}.`,
       `User message: ${text}`,
@@ -9213,7 +9227,12 @@ export default function App() {
     ].join("\n");
   }
 
-async function fetchGeminiAIHelp(text: string, route: AIHelpRoute, profileAddressLabel: string) {
+async function fetchGeminiAIHelp(
+    text: string,
+    route: AIHelpRoute,
+    profileAddressLabel: string,
+    issueGuide: IssueGuide
+  ) {
     if (verificationApiBaseUrl.length === 0) {
       return null;
     }
@@ -9233,10 +9252,10 @@ async function fetchGeminiAIHelp(text: string, route: AIHelpRoute, profileAddres
           route,
           identityLabel: selectedIdentity.label,
           profileAddressLabel,
-          issueGuideId: selectedIssueGuide.id,
-          issueGuideLabel: selectedIssueGuide.label,
+          issueGuideId: issueGuide.id,
+          issueGuideLabel: issueGuide.label,
           emergencyNumber: emergencyNumber.trim() || "112",
-          prompt: buildGeminiAIHelpPrompt(text, route, profileAddressLabel)
+          prompt: buildGeminiAIHelpPrompt(text, route, profileAddressLabel, issueGuide)
         })
       });
 
@@ -9585,12 +9604,16 @@ async function fetchGeminiAIHelp(text: string, route: AIHelpRoute, profileAddres
     );
   }
 
-  async function submitAIHelpText(rawText?: string) {
+  async function submitAIHelpText(rawText?: string, issueOverride?: IssueId) {
     const requestedText = (rawText ?? aiHelpDraft).trim();
+    const issueGuide =
+      issueOverride !== undefined
+        ? issueGuides.find((guide) => guide.id === issueOverride) ?? selectedIssueGuide
+        : selectedIssueGuide;
     const text =
       requestedText.length > 0
         ? requestedText
-        : `I am ${profileDisplayName}. Guide me through ${selectedIssueGuide.label} with practical, emotional, psychological, spiritual, and cultural next steps.`;
+        : `I am ${profileDisplayName}. Guide me through ${issueGuide.label} with practical, emotional, psychological, spiritual, and cultural next steps.`;
     const safetyViolation = inspectAIHelpPrompt(text);
     if (safetyViolation) {
       const nextStrikeCount = communitySafetyStrikeCount + 1;
@@ -9635,7 +9658,7 @@ async function fetchGeminiAIHelp(text: string, route: AIHelpRoute, profileAddres
     setAIHelpMessages((current) => [pendingMessage, userMessage, ...current].slice(0, 50));
     setAIHelpDraft("");
     try {
-      const geminiReply = await fetchGeminiAIHelp(text, route, profileDisplayName);
+      const geminiReply = await fetchGeminiAIHelp(text, route, profileDisplayName, issueGuide);
       setAIHelpProvider(geminiReply?.source === "gemini" ? "gemini" : "local");
       const replyMessage: AIHelpMessage = {
         id: pendingAssistantId,
@@ -10115,14 +10138,67 @@ async function fetchGeminiAIHelp(text: string, route: AIHelpRoute, profileAddres
     showRouteNotice("Help opened", `${route.label}: the redress path is ready.`);
   }
 
-  function startAIHelpFlow(prompt?: string) {
+  function openRouteDecision(
+    rawText: string,
+    issue: IssueGuide,
+    route: AIHelpRoute,
+    redressRouteId: RedressRouteId,
+    identityLabel: string
+  ) {
+    setPendingRouteDecision({
+      rawText,
+      issueId: issue.id,
+      issueLabel: issue.label,
+      identityLabel,
+      route,
+      redressRouteId
+    });
+    showRouteNotice("Choose next step", "Pick the route that fits best before the app moves forward.");
+  }
+
+  function commitRouteDecision(choice: RouteChoiceId) {
+    const decision = pendingRouteDecision;
+    if (!decision) return;
+
+    setPendingRouteDecision(null);
+    setHomeIssueDraft("");
+    setIssueGuideId(decision.issueId);
+
+    if (choice === "sos") {
+      void handleEmergencyCall();
+      return;
+    }
+
+    if (choice === "help") {
+      openRedressTab(decision.redressRouteId);
+      return;
+    }
+
+    if (choice === "path") {
+      startAIHelpFlow(decision.rawText, decision.issueId);
+      return;
+    }
+
+    if (choice === "reset") {
+      openCalmRoute(decision.issueId);
+      return;
+    }
+
+    if (choice === "search") {
+      handleTabPress("search");
+      return;
+    }
+
+    handleTabPress("journal");
+  }
+
+  function startAIHelpFlow(prompt?: string, issueOverride?: IssueId) {
     handleTabPress("aihelp");
-    void submitAIHelpText(prompt);
+    void submitAIHelpText(prompt, issueOverride);
   }
 
   function routeHomeIssue() {
     const text = homeIssueDraft.trim();
-    setHomeIssueDraft("");
     const routeText = text.length > 0 ? text : `${profileDisplayName} ${selectedIssueGuide.label}`;
     const inferredIdentity = inferIdentityIdFromText(routeText, selectedIdentity.id);
     const inferredIdentityLabel = getIdentityLabel(inferredIdentity);
@@ -10140,7 +10216,7 @@ async function fetchGeminiAIHelp(text: string, route: AIHelpRoute, profileAddres
         : route === "professional"
           ? "Guidance"
           : calmIssueIds.has(issue.id)
-            ? "Nirvana"
+            ? "Reset"
             : "Path";
     setVisitReports((current) => [
       {
@@ -10148,27 +10224,20 @@ async function fetchGeminiAIHelp(text: string, route: AIHelpRoute, profileAddres
         createdAt: new Date().toISOString(),
         kind: "step" as VisitReportKind,
         title: `Route report / ${inferredIdentityLabel}`,
-        summary: `The first line pointed toward ${routeLabel}, so the app opened that route automatically.`,
+        summary: `The first line pointed toward ${routeLabel}, so the app asked for one more choice before moving on.`,
         emotional:
           route === "urgent"
             ? "Urgent language was detected and the safety path stays visible."
             : route === "redress"
               ? "The issue reads like a complaint or authority path."
               : calmIssueIds.has(issue.id)
-                ? `Calm support is useful for ${issue.label}.`
+                ? `Reset support is useful for ${issue.label}.`
                 : `Guidance can shape the next step for ${issue.label}.`,
         practical: `Identity guess: ${inferredIdentityLabel}.`,
-        social: "The first line is now stored as the starting step of the visit.",
+        social: "The first line is now stored so the user can choose the next route with more clarity.",
         safety: route === "urgent" ? "Urgent cue detected from the first line." : "No urgent cue in the first line.",
-        nextStep:
-          route === "redress" || route === "urgent"
-            ? "Open Help and keep the complaint path visible."
-            : route === "professional"
-              ? "Open Guidance and continue with the private intake if needed."
-              : calmIssueIds.has(issue.id)
-                ? "Open Nirvana and slow the body before the next choice."
-                : "Open Path and keep the next step short.",
-        routeLabel,
+        nextStep: "Choose Help, Path, Reset, Search, or Journal.",
+        routeLabel: "Choice pending",
         identityLabel: inferredIdentityLabel,
         issueLabel: issue.label,
         entryCount: 0,
@@ -10176,19 +10245,7 @@ async function fetchGeminiAIHelp(text: string, route: AIHelpRoute, profileAddres
       },
       ...current
     ].slice(0, 40));
-    if (route === "redress" || route === "urgent") {
-      openRedressTab(findAIHelpRedressRouteFromText(routeText));
-      return;
-    }
-    if (route === "professional") {
-      startAIHelpFlow(routeText);
-      return;
-    }
-    if (calmIssueIds.has(issue.id)) {
-      openCalmRoute(issue.id);
-      return;
-    }
-    openGuideTab(issue.id);
+    openRouteDecision(routeText, issue, route, findAIHelpRedressRouteFromText(routeText), inferredIdentityLabel);
   }
 
   function buildNearbySearchUrl(query: string) {
@@ -10666,6 +10723,15 @@ function isTrustedExternalUrl(url: string) {
                 </Text>
               </View>
             ) : null}
+            {pendingRouteDecision ? (
+              <RouteDecisionOverlay
+                decision={pendingRouteDecision}
+                onChoose={commitRouteDecision}
+                onClose={() => {
+                  setPendingRouteDecision(null);
+                }}
+              />
+            ) : null}
           </View>
 
           {activeTab === "today" && (
@@ -10686,10 +10752,10 @@ function isTrustedExternalUrl(url: string) {
                     </Pressable>
                   </View>
                   <Text style={styles.welcomeExplainerBody}>
-                    {"Tell us what's going on in one line. The app identifies your situation and opens the most useful section — wellness, guidance, resources, or community — automatically. No menus. No searching."}
+                    {"Tell us what's going on in one line. The app analyses the issue, offers the right route, and keeps follow-up visible so the next step is clear."}
                   </Text>
                   <View style={styles.welcomeExplainerPills}>
-                    {["Stress & anxiety", "Conflict at work", "Feeling stuck", "Need guidance"].map((label) => (
+                    {["Receive", "Analyse", "Route", "Follow-up"].map((label) => (
                       <View key={label} style={styles.welcomeExplainerPill}>
                         <Text style={styles.welcomeExplainerPillText}>{label}</Text>
                       </View>
@@ -10705,6 +10771,7 @@ function isTrustedExternalUrl(url: string) {
                 routeHomeIssue={routeHomeIssue}
                 homeRoutePreview={homeRoutePreview}
                 checkInStreak={checkInStreak}
+                onOpenTab={handleTabPress}
               />
 
               {/* ── Daily Snapshot (Gemini-powered when backend is live) ── */}
@@ -11108,6 +11175,7 @@ function isTrustedExternalUrl(url: string) {
                 selectedIssueGuide={selectedIssueGuide}
                 selectedIdentityLabel={profileDisplayName}
                 onOpenTab={handleTabPress}
+                onEmergencyCall={handleEmergencyCall}
                 onOpenWebsite={openWebsite}
                 onReadMeditation={(text) => {
                   void speakGuidance(text);
@@ -11929,7 +11997,7 @@ function TodaySection({
                 onPress={onOpenCalm}
                 style={({ pressed }) => [styles.homeToneBandButton, pressed && styles.pressed]}
               >
-                <Text style={styles.homeToneBandButtonLabel}>Open Nirvana</Text>
+                <Text style={styles.homeToneBandButtonLabel}>Open Reset</Text>
               </Pressable>
             </View>
           </View>
@@ -12627,7 +12695,7 @@ function FocusSection({
   const nirvanaVoiceText = useMemo(
     () =>
       [
-        `Nirvana for ${selectedIdentityLabel} and ${selectedIssueGuide.label}.`,
+        `Reset for ${selectedIdentityLabel} and ${selectedIssueGuide.label}.`,
         `Current lens: ${nirvanaSelectedLens.label}. ${nirvanaSelectedLens.text}`,
         `Use one lens, do the three steps, and leave lighter.`,
         `Step one: ${selectedIssueGuide.steps[0]}`,
@@ -12682,7 +12750,7 @@ function FocusSection({
         <View style={styles.visionGuidanceBox}>
           <Text style={styles.visionGuidanceTitle}>Calm layer</Text>
           <Text style={styles.visionGuidanceText}>
-            Nirvana lowers the noise so the body can settle before you return to Path, Journal, or Help.
+            Reset lowers the noise so the body can settle before you return to Path, Journal, or Help.
           </Text>
           <Text style={styles.smallMeta}>
             One job: breathe first, choose one lens, and leave lighter.
@@ -12715,7 +12783,7 @@ function FocusSection({
             <Text style={styles.smallMeta}>Speak the loop aloud</Text>
           </View>
           <Text style={styles.nirvanaVoiceText}>
-              Let Nirvana read the current lens, the three calm steps, and the clean exit route.
+              Let Reset read the current lens, the three calm steps, and the clean exit route.
             </Text>
             <View style={styles.nirvanaQuickActionRow}>
               <Pressable
@@ -12781,7 +12849,7 @@ function FocusSection({
                   <View style={styles.nirvanaSituationHeaderCopy}>
                     <Text style={styles.nirvanaSituationTitle}>Situation map</Text>
                     <Text style={styles.nirvanaSituationMeta}>
-                      Choose the card that matches the moment. Nirvana routes the user to the right page fast.
+                      Choose the card that matches the moment. Reset routes the user to the right page fast.
                     </Text>
                   </View>
                   <Text style={styles.nirvanaWisdomBadge}>Active</Text>
@@ -12987,10 +13055,10 @@ function FocusSection({
                 Turn calm into choice for {selectedIssueGuide.label}
               </Text>
             </View>
-            <Text style={styles.smallMeta}>Use after Nirvana</Text>
+            <Text style={styles.smallMeta}>Use after Reset</Text>
           </View>
           <Text style={styles.beaconXWisdomLead}>
-            Nirvana settles the body. Beacon X turns that reset into the next route with facts,
+            Reset settles the body. Beacon X turns that reset into the next route with facts,
             values, and a cleaner head.
           </Text>
           <View style={styles.beaconXWisdomRow}>
@@ -13086,12 +13154,12 @@ function FocusSection({
         onLayout={onFocusSelectedRoutineLayout ? onFocusSelectedRoutineLayout(`focus:card:${selectedRoutine.id}`) : undefined}
       >
         <Text style={styles.focusCount}>{selectedRoutine.duration}:00</Text>
-        <Text style={styles.focusLabel}>{isNirvanaMode ? "Nirvana window" : "Calm window"}</Text>
+        <Text style={styles.focusLabel}>{isNirvanaMode ? "Reset window" : "Calm window"}</Text>
         <CommandButton
           label={
             sessionActive
               ? isNirvanaMode
-                ? "Pause Nirvana"
+                ? "Pause Reset"
                 : "Pause focus"
               : isNirvanaMode
                 ? "Begin calm"
@@ -13264,7 +13332,7 @@ function ToneLibrarySection({
           onPress={onOpenCalm}
           style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
         >
-          <Text style={styles.homeOverviewButtonSecondaryLabel}>Open Nirvana</Text>
+          <Text style={styles.homeOverviewButtonSecondaryLabel}>Open Reset</Text>
         </Pressable>
       </View>
       <View style={[styles.routePreviewCard, compact && styles.routePreviewCardCompact]}>
@@ -13308,7 +13376,7 @@ function ToneLibrarySection({
           onPress={onOpenCalm}
           style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
         >
-          <Text style={styles.helpButtonSecondaryLabel}>Open Nirvana</Text>
+          <Text style={styles.helpButtonSecondaryLabel}>Open Reset</Text>
         </Pressable>
       </View>
       <View style={styles.nirvanaQuickActionRow}>
@@ -13463,6 +13531,7 @@ function MeditationSection({
   selectedIssueGuide,
   selectedIdentityLabel,
   onOpenTab,
+  onEmergencyCall,
   onOpenWebsite,
   onReadMeditation,
   onStopVoice,
@@ -13473,6 +13542,7 @@ function MeditationSection({
   selectedIssueGuide: IssueGuide;
   selectedIdentityLabel: string;
   onOpenTab: (tabId: TabId) => void;
+  onEmergencyCall: () => Promise<void>;
   onOpenWebsite: (url: string, title: string) => void;
   onReadMeditation: (text: string) => void;
   onStopVoice: () => void;
@@ -13492,11 +13562,20 @@ function MeditationSection({
   const recommendedChakra =
     meditationChakraTeachings.find((chakra) => chakra.id === recommendedChakraId) ?? meditationChakraTeachings[0];
   const selectedTone = getMeditationTone(selectedChakra.id);
+  const routeCards = getSituationRouteCards(selectedIssueGuide, selectedIdentityLabel);
+  const objectiveRouteCards = [
+    routeCards.find((card) => card.destination === "guide"),
+    routeCards.find((card) => card.destination === "redress"),
+    routeCards.find((card) => card.destination === "journal"),
+    routeCards.find((card) => card.destination === "sos")
+  ].filter((card): card is SituationRouteCard => Boolean(card));
   const selectedVoiceText = [
-    `${selectedChakra.label} for ${selectedIssueGuide.label}.`,
+    `Meditation reset for ${selectedIssueGuide.label}. This is not the final destination.`,
+    `Current practice: ${selectedChakra.label}.`,
     selectedChakra.literature,
     selectedChakra.teaching,
-    selectedChakra.practice
+    selectedChakra.practice,
+    `After this, return to Path, Help, or Journal and take one real next step.`
   ].join(" ");
 
   return (
@@ -13504,15 +13583,15 @@ function MeditationSection({
       <View style={styles.sectionHeader}>
         <View>
           <Text style={styles.eyebrow}>Meditation</Text>
-          <Text style={styles.sectionTitleSmall}>Seven chakra balance</Text>
+          <Text style={styles.sectionTitleSmall}>Settle, decide, return</Text>
         </View>
-        <Text style={styles.smallMeta}>Inside flow only</Text>
+        <Text style={styles.smallMeta}>Issue-specific</Text>
       </View>
 
       <View style={styles.visionGuidanceBox}>
-        <Text style={styles.visionGuidanceTitle}>How it fits the app</Text>
+        <Text style={styles.visionGuidanceTitle}>Real objective</Text>
         <Text style={styles.visionGuidanceText}>
-          This exclusive meditation room stays inside the loop. Open it after Calm, Path, Practice, or Journal so the user can settle, learn, and return with one useful next step.
+          This is a short regulation stop for {selectedIssueGuide.label.toLowerCase()}, not a separate spiritual detour. Use it to lower noise, then return to the right action channel.
         </Text>
       </View>
 
@@ -13523,10 +13602,42 @@ function MeditationSection({
         {selectedChakra.figure} / {selectedChakra.body}
       </Text>
 
+      <View style={styles.beaconXRouteBand}>
+        <View style={styles.beaconXRouteHeader}>
+          <View style={styles.beaconXRouteHeaderCopy}>
+            <Text style={styles.beaconXRouteTitle}>After meditation, choose the real route</Text>
+            <Text style={styles.beaconXRouteMeta}>
+              Do one practice, then move to the channel that actually resolves or records the issue.
+            </Text>
+          </View>
+          <Text style={styles.smallMeta}>No dead end</Text>
+        </View>
+        <View style={styles.beaconXRouteGrid}>
+          {objectiveRouteCards.map((card) => (
+            <Pressable
+              key={`meditation-${card.id}`}
+              accessibilityRole="button"
+              onPress={() => {
+                if (card.destination === "sos") {
+                  void onEmergencyCall();
+                  return;
+                }
+                onOpenTab(card.destination);
+              }}
+              style={({ pressed }) => [styles.beaconXRouteCard, pressed && styles.pressed]}
+            >
+              <Text style={styles.beaconXRouteCardLabel}>{card.label}</Text>
+              <Text style={styles.beaconXRouteCardDetail}>{card.detail}</Text>
+              <Text style={styles.beaconXRouteCardAction}>{card.actionLabel}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
       <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Chakra figure</Text>
+            <Text style={styles.eyebrow}>Meditation method</Text>
             <Text style={styles.sectionTitleSmall}>{selectedChakra.label}</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedChakra.sanskrit}</Text>
@@ -13621,7 +13732,7 @@ function MeditationSection({
               </Pressable>
             </View>
             <Text style={styles.smallMeta} numberOfLines={2}>
-              Audio uses the calm cue library. Video opens a trusted teaching search, and the section stays inside the app loop rather than on the front page.
+              Audio uses the calm cue library. Video is optional learning. The required step is to return to Path, Help, Journal, or Practice.
             </Text>
           </View>
         </View>
@@ -13641,7 +13752,7 @@ function MeditationSection({
                 styles.nirvanaTeachingCard,
                 {
                   borderColor: isSelected ? chakra.color : isRecommended ? "#0E6F69" : "#E5D8C7",
-                  backgroundColor: isSelected ? "#FFFDFC" : "#FFFFFF"
+                  backgroundColor: isSelected ? "#102A2D" : "#0D1F22"
                 },
                 pressed && styles.pressed
               ]}
@@ -13671,7 +13782,7 @@ function MeditationSection({
           </Text>
         </View>
         <Text style={styles.beaconXWisdomLead}>
-          Choose one chakra, hear one teaching, and then return to Path, Journal, or Practice so the meditation becomes part of the real workflow.
+          Choose one method, hear one teaching, and then return to Path, Help, Journal, or Practice so meditation becomes part of the real workflow.
         </Text>
         <View style={styles.nirvanaQuickActionRow}>
           <Pressable
@@ -16536,6 +16647,127 @@ function SectionFlowBand({
   );
 }
 
+function RouteDecisionOverlay({
+  decision,
+  onChoose,
+  onClose
+}: {
+  decision: PendingRouteDecision;
+  onChoose: (choice: RouteChoiceId) => void;
+  onClose: () => void;
+}) {
+  const isUrgent = decision.route === "urgent";
+  const recommendedChoice: RouteChoiceId = isUrgent
+    ? "sos"
+    : decision.route === "redress"
+      ? "help"
+      : decision.route === "professional"
+        ? "path"
+        : calmIssueIds.has(decision.issueId)
+          ? "reset"
+          : "path";
+
+  const choices: Array<{ id: RouteChoiceId; label: string; detail: string }> = isUrgent
+    ? [
+        { id: "sos", label: "SOS", detail: "Call urgent help now." },
+        { id: "help", label: "Help", detail: "Open the complaint route." },
+        { id: "path", label: "Path", detail: "Get AI guidance first." },
+        { id: "reset", label: "Reset", detail: "Slow the body." }
+      ]
+    : decision.route === "redress"
+      ? [
+          { id: "help", label: "Help", detail: "Open the right office path." },
+          { id: "path", label: "Path", detail: "Let AI shape the next step." },
+          { id: "search", label: "Search", detail: "Scan more support options." },
+          { id: "reset", label: "Reset", detail: "Calm down before acting." }
+        ]
+      : [
+          { id: "path", label: "Path", detail: "AI guidance and next-step framing." },
+          { id: "help", label: "Help", detail: "Open office or complaint routes." },
+          { id: "reset", label: "Reset", detail: "Use breath and body calm." },
+          { id: "search", label: "Search", detail: "Find related support quickly." }
+        ];
+
+  return (
+    <Modal transparent animationType="fade" visible onRequestClose={onClose}>
+      <View style={{
+        flex: 1,
+        backgroundColor: "rgba(4, 11, 16, 0.82)",
+        justifyContent: "center",
+        padding: 20
+      }}>
+        <View style={{
+          backgroundColor: "#081A22",
+          borderRadius: 22,
+          borderWidth: 1,
+          borderColor: "rgba(14, 204, 184, 0.22)",
+          padding: 18,
+          gap: 14
+        }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: "#0ECCB8", fontSize: 11, fontWeight: "900", letterSpacing: 1.6, textTransform: "uppercase" }}>
+                Choose next step
+              </Text>
+              <Text style={{ color: "#F1F5F9", fontSize: 20, fontWeight: "900", marginTop: 4 }}>
+                {decision.issueLabel}
+              </Text>
+              <Text style={{ color: "rgba(241,245,249,0.72)", fontSize: 13, lineHeight: 19, marginTop: 6 }}>
+                The app analysed your first line. Pick the route that fits best before it continues.
+              </Text>
+            </View>
+            <Pressable accessibilityRole="button" onPress={onClose} style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}>
+              <Text style={styles.helpButtonSecondaryLabel}>Edit</Text>
+            </Pressable>
+          </View>
+
+          <View style={{
+            backgroundColor: "#10242D",
+            borderRadius: 16,
+            padding: 14,
+            gap: 6,
+            borderWidth: 1,
+            borderColor: "rgba(255,255,255,0.06)"
+          }}>
+            <Text style={{ color: "#9DDDD3", fontSize: 10, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+              Analysis
+            </Text>
+            <Text style={{ color: "#E2E8F0", fontSize: 14, lineHeight: 20 }}>
+              {decision.identityLabel} · {decision.route === "urgent" ? "Urgent" : decision.route === "redress" ? "Help" : decision.route === "professional" ? "Guidance" : calmIssueIds.has(decision.issueId) ? "Reset" : "Path"}
+            </Text>
+            <Text style={{ color: "rgba(226,232,240,0.68)", fontSize: 12, lineHeight: 18 }}>
+              {decision.rawText}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+            {choices.map((choice) => (
+              <Pressable
+                key={choice.id}
+                accessibilityRole="button"
+                accessibilityState={{ selected: choice.id === recommendedChoice }}
+                onPress={() => onChoose(choice.id)}
+                style={({ pressed }) => [
+                  choice.id === recommendedChoice ? styles.helpButton : styles.helpButtonSecondary,
+                  { minWidth: "46%" },
+                  pressed && styles.pressed
+                ]}
+              >
+                <Text style={choice.id === recommendedChoice ? styles.helpButtonLabel : styles.helpButtonSecondaryLabel}>
+                  {choice.label}
+                </Text>
+                <Text style={{ color: choice.id === recommendedChoice ? "#0A1A1E" : "rgba(241,245,249,0.68)", fontSize: 11, lineHeight: 15, marginTop: 4 }}>
+                  {choice.detail}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 function InsightsSection({
   trend,
   nextMove,
@@ -17847,9 +18079,9 @@ function BirthChartSection({
       </View>
 
       <View style={styles.birthChartIntroCard}>
-        <Text style={styles.birthChartIntroTitle}>A separate page for your cosmic reading.</Text>
+        <Text style={styles.birthChartIntroTitle}>A separate page for your astro guidance.</Text>
         <Text style={styles.birthChartIntroText}>
-          This feature stays optional and out of the main Home flow. Use it when you want a reflective reading, or ignore it completely.
+          This page stays fully separate from Reset, complaint handling, or counselling flows. Use it only for Vedic and astro guidance, or ignore it completely.
         </Text>
         <View style={styles.birthChartIntroActions}>
           <Pressable
@@ -17902,7 +18134,7 @@ function BirthChartSection({
           "Rashi and Janma Nakshatra",
           "Daily Tithi and Vara",
           "Lucky colour, number, direction",
-          "Optional, device-only data",
+          "Optional, device-only astro guidance",
         ].map((item) => (
           <View key={item} style={styles.birthChartFactChip}>
             <Text style={styles.birthChartFactChipText}>{item}</Text>
@@ -19513,12 +19745,14 @@ function DynamicHeroCard({
   routeHomeIssue,
   homeRoutePreview,
   checkInStreak,
+  onOpenTab,
 }: {
   homeIssueDraft: string;
   setHomeIssueDraft: (v: string) => void;
   routeHomeIssue: () => void;
   homeRoutePreview: RoutePreview | null;
   checkInStreak: number;
+  onOpenTab: (tab: TabId) => void;
 }) {
   const liveDate = useLiveClock();
   const { greeting, emoji, accent } = useMemo(getTimeGreeting, []);
@@ -19576,42 +19810,20 @@ function DynamicHeroCard({
           accessibilityLabel="Aethon Beacon logo"
         />
         <View style={{ flex: 1 }}>
-          <Text style={styles.heroRouteAppName}>AETHON BEACON</Text>
-          <Text style={styles.heroRouteTagline}>Find your next step. Always.</Text>
+          <Text style={styles.heroRouteAppName}>Aethon Beacon</Text>
+          <Text style={styles.heroRouteTagline}>One issue in. One route out.</Text>
         </View>
-      </View>
-
-      {/* Manifesto tagline */}
-      <View style={{ marginTop: 14, marginBottom: 6, paddingHorizontal: 2 }}>
-        <Text style={{
-          color: "#FCD34D",
-          fontSize: 19,
-          fontWeight: "800",
-          fontStyle: "italic",
-          letterSpacing: 0.3,
-          lineHeight: 26,
-        }}>
-          "It's ok" is always not ok.
-        </Text>
-        <Text style={{
-          color: "rgba(255,255,255,0.45)",
-          fontSize: 12,
-          marginTop: 4,
-          letterSpacing: 0.2,
-        }}>
-          This app exists because you deserve better than "just cope."
-        </Text>
       </View>
 
       {/* Greeting + question */}
       <Text style={[styles.dynamicHeroGreeting, { marginTop: 10 }]}>{greeting}</Text>
-      <Text style={styles.heroRouteQuestion}>What's on your mind?</Text>
+      <Text style={styles.heroRouteQuestion}>What do you need help with?</Text>
 
       {/* Input */}
       <TextInput
         value={homeIssueDraft}
         onChangeText={setHomeIssueDraft}
-        placeholder={homeIssueDraft.length === 0 ? SMART_HINTS[hintIdx] : "Type one line — the app finds your next step"}
+        placeholder={homeIssueDraft.length === 0 ? SMART_HINTS[hintIdx] : "Describe the issue in one sentence"}
         placeholderTextColor="rgba(255,255,255,0.35)"
         style={styles.heroRouteInput}
         returnKeyType="go"
@@ -19626,7 +19838,7 @@ function DynamicHeroCard({
           onPress={() => setHomeIssueDraft(dailyPrompt)}
           style={({ pressed }) => [styles.heroRouteDailyChip, pressed && styles.pressed]}
         >
-          <Text style={styles.heroRouteDailyChipLabel}>💡 Today's prompt — tap to use</Text>
+          <Text style={styles.heroRouteDailyChipLabel}>💡 Today’s prompt — tap to use</Text>
         </Pressable>
       )}
 
@@ -19638,7 +19850,7 @@ function DynamicHeroCard({
           style={({ pressed }) => [styles.dynamicHeroCTA, pressed && styles.pressed]}
         >
           <Text style={styles.dynamicHeroCTALabel}>
-            {isEmpty ? "Find my next step  →" : "Show me the way  →"}
+            {isEmpty ? "Analyse my issue  →" : "Analyse and route  →"}
           </Text>
         </Pressable>
       </Animated.View>
@@ -19650,6 +19862,22 @@ function DynamicHeroCard({
           <Text style={styles.heroRoutePreviewDetail} numberOfLines={2}>{homeRoutePreview.detail}</Text>
         </Animated.View>
       )}
+
+      <SectionFlowBand
+        eyebrow="Index"
+        title="Receive, analyse, route"
+        summary="Write one issue. The app sorts the intent, suggests the right channel, and keeps follow-up visible."
+        cards={[
+          { label: "Receive", value: "One clear line" },
+          { label: "Analyse", value: homeRoutePreview?.title ?? "Smart route preview" },
+          { label: "Route", value: "Path, Help, or Reset" }
+        ]}
+        actions={[
+          { label: "Path", onPress: () => onOpenTab("aihelp"), primary: true },
+          { label: "Help", onPress: () => onOpenTab("redress") },
+          { label: "Reset", onPress: () => onOpenTab("focus") }
+        ]}
+      />
 
       {/* Decorative accent line */}
       <View style={styles.dynamicHeroAccentLine} />
@@ -26014,7 +26242,7 @@ const styles = StyleSheet.create({
   },
   nirvanaTeachingSource: {
     flex: 1,
-    color: "#2E2452",
+    color: "#E8F4F0",
     fontSize: 12,
     fontWeight: "900"
   },
