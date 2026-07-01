@@ -33,6 +33,21 @@ import * as Speech from "expo-speech";
 import Notifications, { notificationsAvailable } from "./notifications";
 import { supabaseConfigured, pushToSupabase, pullFromSupabase } from "./supabaseSync";
 
+const TextWithDefaults = Text as unknown as { defaultProps?: Record<string, unknown> };
+const TextInputWithDefaults = TextInput as unknown as { defaultProps?: Record<string, unknown> };
+
+TextWithDefaults.defaultProps = {
+  ...(TextWithDefaults.defaultProps ?? {}),
+  allowFontScaling: false,
+  maxFontSizeMultiplier: 1.12
+};
+
+TextInputWithDefaults.defaultProps = {
+  ...(TextInputWithDefaults.defaultProps ?? {}),
+  allowFontScaling: false,
+  maxFontSizeMultiplier: 1.12
+};
+
 type Tone = {
   id: string;
   label: string;
@@ -171,6 +186,8 @@ type PersistedAppState = {
   profileLocation: string;
   profileGender: ProfileGenderId;
   profileDOB: string; // ISO date string "YYYY-MM-DD"
+  profileBirthTime: string; // "HH:MM"
+  profileBirthPlace: string;
   languageId: LanguageId;
   profileRoleId: IdentityId;
   accessRole: AccessRole;
@@ -190,6 +207,7 @@ type PersistedAppState = {
   appFirstOpenedAt: string | null;
   appLastOpenedAt: string | null;
   appLastHeartbeatAt: string | null;
+  hasSeenWelcomeCard: boolean;
   dismissedHintTabs: string[]; // tab IDs whose first-visit hint has been dismissed
   lastVedicViewDate: string | null; // ISO date "YYYY-MM-DD" of last Vedic tab open
   journeyCardDismissed: boolean;
@@ -2208,7 +2226,7 @@ function detectAIHelpRouteFromText(text: string): AIHelpRoute {
     return "urgent";
   }
   if (
-    /(complaint|redress|ragging|harass|professor|teacher|hod|principal|senior|junior|authority|police|cyber|women|child|office)/.test(
+    /(complaint|grievance|redress|report|escalat|ragging|harass|professor|teacher|hod|principal|dean|senior|junior|hr|manager|authority|office|department|desk|police|cyber|women|child)/.test(
       normalized
     )
   ) {
@@ -5932,6 +5950,8 @@ export default function App() {
   const [geminiJournalInsight, setGeminiJournalInsight] = useState<string | null>(null);
   const [geminiInsightText, setGeminiInsightText] = useState<string | null>(null);
   const [geminiInsightLoading, setGeminiInsightLoading] = useState(false);
+  const [geminiBirthChartHoroscope, setGeminiBirthChartHoroscope] = useState<string | null>(null);
+  const [geminiBirthChartHoroscopeLoading, setGeminiBirthChartHoroscopeLoading] = useState(false);
   const [privateIntakeDraft, setPrivateIntakeDraft] = useState<PrivateIntakeDraft>(() =>
     createPrivateIntakeDraft()
   );
@@ -5972,8 +5992,11 @@ export default function App() {
   const [profilePhoneOtpInput, setProfilePhoneOtpInput] = useState("");
   const [profileEmailOtpInput, setProfileEmailOtpInput] = useState("");
   const [profileVerificationNotice, setProfileVerificationNotice] = useState<string | null>(null);
+  const [verificationRequestBusy, setVerificationRequestBusy] = useState<"phone" | "email" | null>(null);
   const [profileGender, setProfileGender] = useState<ProfileGenderId>("prefer_not_to_say");
   const [profileDOB, setProfileDOB] = useState(""); // "YYYY-MM-DD"
+  const [profileBirthTime, setProfileBirthTime] = useState("");
+  const [profileBirthPlace, setProfileBirthPlace] = useState("");
   const [languageId, setLanguageId] = useState<LanguageId>("english");
   const [profileRoleId, setProfileRoleId] = useState<IdentityId>("other");
   const [accessRole, setAccessRole] = useState<AccessRole>("guest");
@@ -6010,6 +6033,8 @@ export default function App() {
   const [reviewContact, setReviewContact] = useState("");
   const [showAccessPanel, setShowAccessPanel] = useState(false);
   const [showAccessVerificationSection, setShowAccessVerificationSection] = useState(false);
+  const [startupAccessPromptAutoOpen, setStartupAccessPromptAutoOpen] = useState(false);
+  const [startupAccessPromptDismissEnabled, setStartupAccessPromptDismissEnabled] = useState(false);
   const [showExitReviewPrompt, setShowExitReviewPrompt] = useState(false);
   const [hasSeenExitReviewPrompt, setHasSeenExitReviewPrompt] = useState(false);
   const [showSectionSwitcher, setShowSectionSwitcher] = useState(false);
@@ -6031,6 +6056,8 @@ export default function App() {
   const lastAppliedScrollSignatureRef = React.useRef<string | null>(null);
   const hasAutoPromptedPresentMoodRef = React.useRef(false);
   const routeNoticeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const startupAccessPromptUnlockTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasOpenedStartupAccessPromptRef = React.useRef(false);
   const [presenceSessionId] = useState(() => `presence-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
 
   const selectedRoutine = useMemo(
@@ -6056,6 +6083,22 @@ export default function App() {
     () => visibleTabs.find((tab) => tab.id === activeTab)?.label ?? "Home",
     [activeTab, visibleTabs]
   );
+  const headerNavTabs = useMemo(() => {
+    const orderedIds: TabId[] = [
+      "today",
+      "aihelp",
+      "guide",
+      "redress",
+      "search",
+      "journal",
+      "focus",
+      "vedic",
+      "settings"
+    ];
+    return orderedIds
+      .map((id) => visibleTabs.find((tab) => tab.id === id))
+      .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
+  }, [visibleTabs]);
   const showFullHomeHero = activeTab === "today";
   const isAdmin = accessRole === "admin";
   const communityVerifiedAccess = accessRole === "verified" && (profilePhoneVerified || profileEmailVerified);
@@ -6109,7 +6152,10 @@ export default function App() {
   // ── Journey milestones ──────────────────────────────────────────────────────
   const journeyMilestones = useMemo(() => {
     const hasProfile = !!accessName && accessName.trim().length > 1;
-    const hasBirthChart = !!profileDOB && profileDOB.length > 0;
+    const hasBirthChart =
+      /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
+      /^\d{2}:\d{2}$/.test(profileBirthTime) &&
+      profileBirthPlace.trim().length > 0;
     const hasFirstEntry = entries.length > 0;
     const hasThreeDayStreak = checkInStreak >= 3;
     const hasWeekOfData = entries.length >= 7;
@@ -6119,14 +6165,14 @@ export default function App() {
     return [
       { id: "first_entry", label: "Make your first check-in — every journey starts with one honest moment", done: hasFirstEntry, cta: "Check in now", tab: "today" as TabId, icon: "📓" },
       { id: "profile", label: "Tell us who you are — your identity shapes your guidance", done: hasProfile, cta: "Set up profile", tab: "settings" as TabId, icon: "👤" },
-      { id: "birth_chart", label: "Add your birth date to unlock your personal Birth Chart", done: hasBirthChart, cta: "Open Birth Chart", tab: "vedic" as TabId, icon: "🪐" },
+      { id: "birth_chart", label: "Add your birth details to unlock your personal Birth Chart", done: hasBirthChart, cta: "Open Birth Chart", tab: "vedic" as TabId, icon: "🪐" },
       { id: "practice", label: "Start a guided practice — small daily actions create lasting change", done: hasTriedPractice, cta: "Start Practice", tab: "play" as TabId, icon: "🎯" },
       { id: "streak_3", label: "Check in 3 days in a row — where habits are actually born", done: hasThreeDayStreak, cta: "Check in today", tab: "today" as TabId, icon: "🔥" },
       { id: "week_data", label: "7 check-ins reveals your patterns — insights begin to surface", done: hasWeekOfData, cta: "Keep going", tab: "today" as TabId, icon: "✨" },
       { id: "streak_7", label: "7 consecutive days — most people never get here. You can.", done: hasSevenDayStreak, cta: "Log today", tab: "today" as TabId, icon: "⚡" },
       { id: "month_data", label: "30 days of data — your wellness picture becomes undeniable", done: hasMonthOfData, cta: "Stay the course", tab: "today" as TabId, icon: "🏆" },
     ];
-  }, [entries, checkInStreak, accessName, profileDOB, playClaimed, dismissedHintTabs]);
+  }, [entries, checkInStreak, accessName, profileDOB, profileBirthTime, profileBirthPlace, playClaimed, dismissedHintTabs]);
 
   const journeyProgress = useMemo(() => {
     const done = journeyMilestones.filter((m) => m.done).length;
@@ -6614,6 +6660,81 @@ export default function App() {
     () => vedicRashiInfo ? RASHI_LUCKY[vedicRashiInfo.rashiId] : null,
     [vedicRashiInfo]
   );
+  const hasExactBirthDetails =
+    /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
+    /^\d{2}:\d{2}$/.test(profileBirthTime) &&
+    profileBirthPlace.trim().length > 0;
+
+  useEffect(() => {
+    if (!hasLoaded) return;
+    if (!hasExactBirthDetails) {
+      setGeminiBirthChartHoroscope(null);
+      setGeminiBirthChartHoroscopeLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    async function fetchBirthChartHoroscope() {
+      if (verificationApiBaseUrl.length === 0) {
+        setGeminiBirthChartHoroscope(
+          `Your chart is anchored in ${vedicRashiInfo?.rashi.name ?? "your birth details"} and the day’s ${vedicVara.name} rhythm.`
+        );
+        return;
+      }
+
+      setGeminiBirthChartHoroscopeLoading(true);
+      try {
+        const response = await fetch(`${verificationApiBaseUrl}/ai/birth-chart`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: profileDisplayName || accessName || "there",
+            dob: profileDOB,
+            birthTime: profileBirthTime,
+            birthPlace: profileBirthPlace,
+            rashiName: vedicRashiInfo?.rashi?.name ?? "",
+            nakshatraName: vedicJanmaNakshatra?.name ?? "",
+            tithiName: vedicTithi?.name ?? "",
+            varaName: vedicVara?.name ?? "",
+            predictionLines: vedicPredictionLines ?? []
+          })
+        });
+        if (!response.ok || cancelled) return;
+        const payload = (await response.json().catch(() => null)) as { text?: string } | null;
+        const text = typeof payload?.text === "string" ? payload.text.trim() : "";
+        if (!cancelled && text.length > 0) {
+          setGeminiBirthChartHoroscope(text);
+        }
+      } catch {
+        if (!cancelled) {
+          setGeminiBirthChartHoroscope(
+            `Your chart is anchored in ${vedicRashiInfo?.rashi.name ?? "your birth details"} and the day’s ${vedicVara.name} rhythm.`
+          );
+        }
+      } finally {
+        if (!cancelled) setGeminiBirthChartHoroscopeLoading(false);
+      }
+    }
+
+    void fetchBirthChartHoroscope();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    hasLoaded,
+    hasExactBirthDetails,
+    verificationApiBaseUrl,
+    profileDisplayName,
+    accessName,
+    profileDOB,
+    profileBirthTime,
+    profileBirthPlace,
+    vedicRashiInfo,
+    vedicJanmaNakshatra,
+    vedicTithi,
+    vedicVara,
+    vedicPredictionLines
+  ]);
 
   const selectedRedressRoute = useMemo(
     () => redressRoutes.find((route) => route.id === redressRouteId) ?? redressRoutes[0],
@@ -7786,6 +7907,12 @@ export default function App() {
       if (typeof parsed.profileDOB === "string" && parsed.profileDOB.match(/^\d{4}-\d{2}-\d{2}$/)) {
         setProfileDOB(parsed.profileDOB);
       }
+      if (typeof parsed.profileBirthTime === "string" && parsed.profileBirthTime.match(/^\d{2}:\d{2}$/)) {
+        setProfileBirthTime(parsed.profileBirthTime);
+      }
+      if (typeof parsed.profileBirthPlace === "string") {
+        setProfileBirthPlace(parsed.profileBirthPlace);
+      }
       if (typeof parsed.languageId === "string" && languageOptions.some((option) => option.id === parsed.languageId)) {
         setLanguageId(parsed.languageId as LanguageId);
       }
@@ -7853,6 +7980,9 @@ export default function App() {
       if (typeof parsed.appLastHeartbeatAt === "string" || parsed.appLastHeartbeatAt === null) {
         setAppLastHeartbeatAt(parsed.appLastHeartbeatAt);
       }
+      if (typeof parsed.hasSeenWelcomeCard === "boolean") {
+        setHasSeenWelcomeCard(parsed.hasSeenWelcomeCard);
+      }
       if (Array.isArray(parsed.dismissedHintTabs)) {
         setDismissedHintTabs(parsed.dismissedHintTabs.filter((v) => typeof v === "string"));
       }
@@ -7888,6 +8018,98 @@ export default function App() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!hasLoaded || hasSeenWelcomeCard) return;
+    const timeout = setTimeout(() => {
+      setHasSeenWelcomeCard(true);
+    }, 10000);
+    return () => clearTimeout(timeout);
+  }, [hasLoaded, hasSeenWelcomeCard]);
+
+  useEffect(() => {
+    if (!hasLoaded || hasOpenedStartupAccessPromptRef.current) return;
+    const profileSelection = hasMeaningfulProfileSelection({
+      identityId,
+      profileRoleId,
+      profileName: accessName,
+      profilePhone,
+      profileEmail,
+      profileLocation,
+      profileGender,
+      accessRole,
+      trustedContacts
+    });
+    const hasVerifiedChannel = profilePhoneVerified || profileEmailVerified;
+    const needsStartupPrompt = !onboardingCompleted || !profileSelection || !hasVerifiedChannel;
+    if (!needsStartupPrompt) return;
+
+    hasOpenedStartupAccessPromptRef.current = true;
+    setStartupAccessPromptAutoOpen(true);
+    setStartupAccessPromptDismissEnabled(false);
+    setShowAccessVerificationSection(true);
+    setShowAccessPanel(true);
+    startupAccessPromptUnlockTimerRef.current = setTimeout(() => {
+      setStartupAccessPromptDismissEnabled(true);
+    }, 10000);
+  }, [
+    hasLoaded,
+    onboardingCompleted,
+    identityId,
+    profileRoleId,
+    accessName,
+    profilePhone,
+    profileEmail,
+    profileLocation,
+    profileGender,
+    accessRole,
+    trustedContacts,
+    profilePhoneVerified,
+    profileEmailVerified
+  ]);
+
+  useEffect(() => {
+    return () => {
+      if (startupAccessPromptUnlockTimerRef.current) {
+        clearTimeout(startupAccessPromptUnlockTimerRef.current);
+        startupAccessPromptUnlockTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showAccessPanel || !startupAccessPromptAutoOpen || !startupAccessPromptDismissEnabled) return;
+    const profileSelection = hasMeaningfulProfileSelection({
+      identityId,
+      profileRoleId,
+      profileName: accessName,
+      profilePhone,
+      profileEmail,
+      profileLocation,
+      profileGender,
+      accessRole,
+      trustedContacts
+    });
+    const hasVerifiedChannel = profilePhoneVerified || profileEmailVerified;
+    if (!profileSelection || !hasVerifiedChannel) return;
+    setShowAccessPanel(false);
+    setShowAccessVerificationSection(false);
+  }, [
+    showAccessPanel,
+    startupAccessPromptAutoOpen,
+    startupAccessPromptDismissEnabled,
+    identityId,
+    profileRoleId,
+    accessName,
+    profilePhone,
+    profileEmail,
+    profileLocation,
+    profileGender,
+    accessRole,
+    trustedContacts,
+    profilePhoneVerified,
+    profileEmailVerified
+  ]);
 
   useLayoutEffect(() => {
     if (!hasLoaded) return;
@@ -8032,6 +8254,8 @@ export default function App() {
       profileLocation,
       profileGender,
       profileDOB,
+      profileBirthTime,
+      profileBirthPlace,
       languageId,
       profileRoleId,
       accessRole,
@@ -8051,6 +8275,7 @@ export default function App() {
       appFirstOpenedAt,
       appLastOpenedAt,
       appLastHeartbeatAt,
+      hasSeenWelcomeCard,
       supportLocality,
       trustedContacts,
       dismissedHintTabs,
@@ -8124,6 +8349,7 @@ export default function App() {
     appFirstOpenedAt,
     appLastOpenedAt,
     appLastHeartbeatAt,
+    hasSeenWelcomeCard,
     reminderEnabled,
     reminderMode,
     followUpMode,
@@ -8556,6 +8782,7 @@ export default function App() {
   function completeAccess(role: AccessRole, name: string) {
     const cleanedName = name.trim();
     const verificationReady = profilePhoneVerified || profileEmailVerified;
+    const startupPromptLocked = startupAccessPromptAutoOpen && !startupAccessPromptDismissEnabled;
     const nextRole =
       accessRole === "admin"
         ? "admin"
@@ -8569,8 +8796,10 @@ export default function App() {
     setShowExitReviewPrompt(false);
     setHasSeenExitReviewPrompt(true);
     setShowOnboardingPanel(false);
-    setShowAccessPanel(false);
-    setShowAccessVerificationSection(false);
+    if (!startupPromptLocked) {
+      setShowAccessPanel(false);
+      setShowAccessVerificationSection(false);
+    }
     if (nextRole !== "admin") {
       setIssueGuideId(getDefaultIssueForIdentity(profileRoleId));
     }
@@ -8720,13 +8949,28 @@ export default function App() {
     }
 
     if (verificationApiBaseUrl.length > 0) {
+      if (verificationRequestBusy !== null) {
+        return false;
+      }
+
+      let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
+        setVerificationRequestBusy(channel);
+        setProfileVerificationNotice(`Sending ${channel} verification code...`);
+
         const verificationPhone = normalizeVerificationPhoneNumber(profilePhone);
+        if (channel === "phone" && verificationPhone.length === 0) {
+          throw new Error("Enter a valid phone number with country code or a 10-digit local number.");
+        }
+
+        const controller = new AbortController();
+        timeout = setTimeout(() => controller.abort(), 15_000);
         const response = await fetch(`${verificationApiBaseUrl}/verification/request`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
+          signal: controller.signal,
           body: JSON.stringify({
             channel,
             phone: verificationPhone,
@@ -8736,6 +8980,7 @@ export default function App() {
             profileGender
           })
         });
+        clearTimeout(timeout);
 
         const payload = (await response.json().catch(() => ({}))) as {
           message?: string;
@@ -8760,14 +9005,25 @@ export default function App() {
         );
         return true;
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Could not reach the verification provider.";
+        const isAbortError =
+          typeof error === "object" &&
+          error !== null &&
+          "name" in error &&
+          (error as { name?: string }).name === "AbortError";
+        const message = isAbortError
+          ? "Verification request timed out. Check your phone number and try again."
+          : error instanceof Error
+            ? error.message
+            : "Could not reach the verification provider.";
         setProfileVerificationNotice(message);
         Alert.alert(
           `${channel === "phone" ? "Phone" : "Email"} verification`,
           message
         );
         return false;
+      } finally {
+        if (timeout) clearTimeout(timeout);
+        setVerificationRequestBusy(null);
       }
     }
 
@@ -8801,13 +9057,21 @@ export default function App() {
         return false;
       }
 
+      let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
         const verificationPhone = normalizeVerificationPhoneNumber(profilePhone);
+        if (channel === "phone" && verificationPhone.length === 0) {
+          throw new Error("Enter a valid phone number before verifying.");
+        }
+
+        const controller = new AbortController();
+        timeout = setTimeout(() => controller.abort(), 15_000);
         const response = await fetch(`${verificationApiBaseUrl}/verification/confirm`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
+          signal: controller.signal,
           body: JSON.stringify({
             channel,
             code: enteredCode,
@@ -8865,11 +9129,13 @@ export default function App() {
             ? error.message
             : "Could not confirm the verification code.";
         setProfileVerificationNotice(message);
-        Alert.alert(
-          `${channel === "phone" ? "Phone" : "Email"} verification`,
-          message
-        );
-        return false;
+          Alert.alert(
+            `${channel === "phone" ? "Phone" : "Email"} verification`,
+            message
+          );
+          return false;
+      } finally {
+        if (timeout) clearTimeout(timeout);
       }
     }
 
@@ -9218,17 +9484,20 @@ export default function App() {
   ) {
     const emergencyLabel = emergencyNumber.trim().length > 0 ? emergencyNumber.trim() : "112";
     const openTabLabel = getAIHelpOpenTabLabel(route);
-  return [
+    return [
       "You are Beacon Guide, a calm human-style guide.",
-      "Write as a calm guide, not a chatty assistant.",
+      "Your job is operational triage: classify, route, give one concrete action, and tell the user what to do next inside the app.",
       "Do not mention AI, Gemini, models, prompts, or system details.",
-      "Do not add greetings, filler, or multiple choices.",
+      "Do not add greetings, filler, therapy-style reflection, or a long essay.",
       `Address the user as ${profileAddressLabel}.`,
       `Preferred language: ${selectedLanguage.label}.`,
       "If possible, answer in the preferred language using simple words. If you cannot fully translate, keep the structure and use short bilingual phrasing.",
-      "Keep the answer short, clear, and human. Do not sound clinical or preachy.",
-      "Always protect safety and route the user to SOS, Path, Help, or professional help when needed.",
-      "If the issue is not urgent, explain that the app will open a private intake page next so the user can share the feeling, trigger, body signal, family, relatives, friends, coworker, and behavior context before redressal starts.",
+      "Keep the answer short, clear, and human. Do not sound clinical, preachy, or motivational.",
+      "If the user needs emergency help, tell them to use SOS or call the emergency number first.",
+      "If the user needs an office, complaint, institution, police, school, work, cyber, women/child, or authority route, choose Help instead of meditation or calm.",
+      "If the user mainly needs planning or clarity, choose Path.",
+      "If the user is emotionally flooded but not unsafe, choose Reset first, then Path.",
+      "If symptoms are intense, persistent, medical, sleep-related, panic-related, or self-harm adjacent, mention professional support.",
       `User role: ${selectedIdentity.label}.`,
       `User address: ${profileDisplayName}.`,
       `Detected route: ${route}.`,
@@ -9236,11 +9505,11 @@ export default function App() {
       `Current speech locale: ${selectedLanguage.speechLang}.`,
       `Emergency fallback number: ${emergencyLabel}.`,
       `User message: ${text}`,
-      "Respond with exactly 4 short lines in this order:",
-      "1. What this means:",
-      "2. Safest next step:",
+      "Respond with exactly 4 labelled lines in this order. Each line must be one sentence only:",
+      "1. What this means: classify the problem and name the route.",
+      "2. Safest next step: give one concrete action the user can do now.",
       `3. Open tab: ${openTabLabel}`,
-      `4. Escalate when: ${emergencyLabel} or the relevant office / professional help if safety is getting worse.`,
+      `4. Escalate when: say exactly when to use ${emergencyLabel}, SOS, Help, or professional support.`,
       "Prefer direct language. Do not add extra sections."
     ].join("\n");
   }
@@ -10163,10 +10432,16 @@ async function fetchGeminiAIHelp(
     redressRouteId: RedressRouteId,
     identityLabel: string
   ) {
+    const routeLabel =
+      route === "redress" || route === "urgent"
+        ? "Help route"
+        : route === "professional"
+          ? "Guidance route"
+          : issue.label;
     setPendingRouteDecision({
       rawText,
       issueId: issue.id,
-      issueLabel: issue.label,
+      issueLabel: routeLabel,
       identityLabel,
       route,
       redressRouteId
@@ -10562,7 +10837,13 @@ function isTrustedExternalUrl(url: string) {
           key={scrollBootstrapKey}
           ref={scrollViewRef}
           contentOffset={{ x: 0, y: 0 }}
-          contentContainerStyle={[styles.scrollBody, { paddingVertical: shellMetrics.scrollPaddingVertical, paddingBottom: 86 }]}
+          contentContainerStyle={[
+            styles.scrollBody,
+            {
+              paddingVertical: shellMetrics.scrollPaddingVertical,
+              paddingBottom: isCompact ? 86 : shellMetrics.scrollPaddingVertical
+            }
+          ]}
           pointerEvents={showPrivateIntakePanel ? "none" : "auto"}
           accessibilityElementsHidden={showPrivateIntakePanel}
           importantForAccessibility={showPrivateIntakePanel ? "no-hide-descendants" : "auto"}
@@ -10691,6 +10972,91 @@ function isTrustedExternalUrl(url: string) {
                   {selectedLanguage.label}
                 </Text>
               </Pressable>
+            </View>
+            <View style={styles.topTabRail}>
+              {isCompact ? (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.topTabRailContent}
+                >
+                  {headerNavTabs.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <Pressable
+                        key={tab.id}
+                        accessibilityRole="tab"
+                        accessibilityLabel={tab.label}
+                        accessibilityState={{ selected: isActive }}
+                        onPress={() => handleTabPress(tab.id)}
+                        style={({ pressed }) => [
+                          styles.topTabButton,
+                          isActive && styles.topTabButtonActive,
+                          pressed && styles.pressed
+                        ]}
+                      >
+                        <Text style={[styles.topTabMark, isActive && styles.topTabTextActive]}>
+                          {tab.mark}
+                        </Text>
+                        <Text
+                          style={[styles.topTabLabel, isActive && styles.topTabTextActive]}
+                          numberOfLines={1}
+                        >
+                          {tab.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Open all pages"
+                    onPress={() => setShowSectionSwitcher(true)}
+                    style={({ pressed }) => [styles.topTabButton, styles.topTabButtonMore, pressed && styles.pressed]}
+                  >
+                    <Text style={styles.topTabMark}>+</Text>
+                    <Text style={styles.topTabLabel} numberOfLines={1}>More</Text>
+                  </Pressable>
+                </ScrollView>
+              ) : (
+                <View style={styles.topTabRailWrap}>
+                  {headerNavTabs.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <Pressable
+                        key={tab.id}
+                        accessibilityRole="tab"
+                        accessibilityLabel={tab.label}
+                        accessibilityState={{ selected: isActive }}
+                        onPress={() => handleTabPress(tab.id)}
+                        style={({ pressed }) => [
+                          styles.topTabButton,
+                          isActive && styles.topTabButtonActive,
+                          pressed && styles.pressed
+                        ]}
+                      >
+                        <Text style={[styles.topTabMark, isActive && styles.topTabTextActive]}>
+                          {tab.mark}
+                        </Text>
+                        <Text
+                          style={[styles.topTabLabel, isActive && styles.topTabTextActive]}
+                          numberOfLines={1}
+                        >
+                          {tab.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Open all pages"
+                    onPress={() => setShowSectionSwitcher(true)}
+                    style={({ pressed }) => [styles.topTabButton, styles.topTabButtonMore, pressed && styles.pressed]}
+                  >
+                    <Text style={styles.topTabMark}>+</Text>
+                    <Text style={styles.topTabLabel} numberOfLines={1}>More</Text>
+                  </Pressable>
+                </View>
+              )}
             </View>
             {!showFullHomeHero ? (
               <View style={[styles.topPageModeBanner, isCompact && styles.topPageModeBannerCompact]}>
@@ -11009,21 +11375,28 @@ function isTrustedExternalUrl(url: string) {
 
               {/* ── Birth chart prompt ── */}
               <View
-                style={[styles.routePreviewCard, styles.birthChartPromptCard]}
+                style={[
+                  styles.routePreviewCard,
+                  isCompact && styles.routePreviewCardCompact,
+                  styles.birthChartPromptCard,
+                  styles.birthChartPromptCardCompact
+                ]}
               >
-                <View style={styles.birthChartPromptHeader}>
-                  <Text style={styles.routePreviewTitle}>Birth Chart</Text>
-                  <Text style={styles.birthChartPromptBadge}>
-                    {vedicRashiInfo ? `${vedicRashiInfo.rashi.symbol} ${vedicRashiInfo.rashi.name}` : "Optional"}
-                  </Text>
-                </View>
-                <Text style={styles.routePreviewDetail}>
-                  {vedicRashiInfo
-                    ? "Your personal Vedic reading is ready in its own page."
-                    : "Tap to open the dedicated page or set your birth date in Profile when you want the reading."}
+              <View style={styles.birthChartPromptHeader}>
+                <Text style={styles.routePreviewTitle}>Birth Chart</Text>
+                <Text style={styles.birthChartPromptBadge}>
+                    {profileDOB && profileBirthTime && profileBirthPlace.trim()
+                      ? `${vedicRashiInfo ? `${vedicRashiInfo.rashi.symbol} ${vedicRashiInfo.rashi.name}` : "Exact setup"}`
+                      : "Optional"}
+                </Text>
+              </View>
+                <Text style={styles.routePreviewDetail} numberOfLines={2}>
+                  {profileDOB && profileBirthTime && profileBirthPlace.trim()
+                    ? "Your Vedic reading is ready on its own page."
+                    : "Open the dedicated page or add date, time, and place of birth in Profile for exact analysis."}
                 </Text>
                 <View style={styles.birthChartPromptActions}>
-                  <Text style={styles.birthChartPromptHint}>Small, optional, and separate from the main flow.</Text>
+                  <Text style={styles.birthChartPromptHint} numberOfLines={1}>Optional. Separate from the main flow, but exact reading needs full birth details.</Text>
                   <View style={styles.birthChartPromptButtons}>
                     <Pressable
                       accessibilityRole="button"
@@ -11032,13 +11405,13 @@ function isTrustedExternalUrl(url: string) {
                     >
                       <Text style={styles.birthChartPromptButtonLabel}>Open page</Text>
                     </Pressable>
-                    {!vedicRashiInfo && (
+                    {(!profileDOB || !profileBirthTime || !profileBirthPlace.trim()) && (
                       <Pressable
                         accessibilityRole="button"
                         onPress={() => handleTabPress("settings")}
                         style={({ pressed }) => [styles.birthChartPromptButtonSecondary, pressed && styles.pressed]}
                       >
-                        <Text style={styles.birthChartPromptButtonSecondaryLabel}>Add DOB</Text>
+                        <Text style={styles.birthChartPromptButtonSecondaryLabel}>Add details</Text>
                       </Pressable>
                     )}
                   </View>
@@ -11346,6 +11719,11 @@ function isTrustedExternalUrl(url: string) {
                 tithi={vedicTithi}
                 vara={vedicVara}
                 lucky={vedicLucky}
+                geminiHoroscope={geminiBirthChartHoroscope}
+                geminiHoroscopeLoading={geminiBirthChartHoroscopeLoading}
+                profileDOB={profileDOB}
+                profileBirthTime={profileBirthTime}
+                profileBirthPlace={profileBirthPlace}
                 onOpenProfile={() => handleTabPress("settings")}
                 onOpenHome={() => handleTabPress("today")}
               />
@@ -11826,14 +12204,16 @@ function isTrustedExternalUrl(url: string) {
       </ScrollView>
 
       {/* ── Persistent Bottom Navigation ── */}
-      <BottomNavBar
-        activeTab={activeTab}
-        onTabPress={handleTabPress}
-        onMorePress={() => setShowSectionSwitcher(true)}
-        isCompact={isCompact}
-        vedicBadge={vedicTabHasBadge}
-        insightsBadge={insightsTabHasBadge}
-      />
+      {isCompact ? (
+        <BottomNavBar
+          activeTab={activeTab}
+          onTabPress={handleTabPress}
+          onMorePress={() => setShowSectionSwitcher(true)}
+          isCompact={isCompact}
+          vedicBadge={vedicTabHasBadge}
+          insightsBadge={insightsTabHasBadge}
+        />
+      ) : null}
 
         {showOnboarding && (
       <OnboardingOverlay
@@ -11870,6 +12250,10 @@ function isTrustedExternalUrl(url: string) {
             setProfilePhone={updateProfilePhone}
             profileDOB={profileDOB}
             setProfileDOB={setProfileDOB}
+            profileBirthTime={profileBirthTime}
+            setProfileBirthTime={setProfileBirthTime}
+            profileBirthPlace={profileBirthPlace}
+            setProfileBirthPlace={setProfileBirthPlace}
             profileEmail={profileEmail}
             setProfileEmail={updateProfileEmail}
             profileLocation={profileLocation}
@@ -11886,7 +12270,10 @@ function isTrustedExternalUrl(url: string) {
             setProfileRoleId={setProfileRoleId}
             verificationDeliveryMode={verificationDeliveryMode}
             profileVerificationNotice={profileVerificationNotice}
+            verificationRequestBusy={verificationRequestBusy}
             showVerificationSection={showAccessVerificationSection}
+            canDismiss={!startupAccessPromptAutoOpen || startupAccessPromptDismissEnabled}
+            startupLockActive={startupAccessPromptAutoOpen && !startupAccessPromptDismissEnabled}
             onCompleteAccess={completeAccess}
             onRequestVerificationCode={requestVerificationCode}
             onConfirmVerificationCode={confirmVerificationCode}
@@ -12149,9 +12536,8 @@ function TodaySection({
               </Pressable>
             </View>
           </View>
-          <Text style={[styles.homeToneBandIntro, compact && styles.homeToneBandIntroCompact]} numberOfLines={compact ? 2 : 3}>
-            Curated relaxation patterns for quiet moments. Binaural presets work best with
-            headphones; keep the volume low and treat this as a calm cue, not treatment.
+          <Text style={[styles.homeToneBandIntro, compact && styles.homeToneBandIntroCompact]} numberOfLines={2}>
+            Quick calm cues only. Use low volume and open the full Tones tab for more choices.
           </Text>
           {/* Session timer display */}
           {mindRestLoopEnabled && (
@@ -12188,78 +12574,25 @@ function TodaySection({
               ? `Playing ${selectedRelaxingTone.label}${mindRestPresetMinutes > 0 ? ` · ${mindRestPresetMinutes}m session` : " · ∞"} · tap Stop to end.`
               : "Tap Loop tones to start a continuous calm session."}
           </Text>
-          <View style={[styles.homeToneFeaturedCard, compact && styles.homeToneFeaturedCardCompact]}>
-            <View style={styles.homeToneFeaturedTop}>
-              <View style={[styles.homeToneFeaturedMark, compact && styles.homeToneFeaturedMarkCompact]}>
-                <Text style={styles.homeToneFeaturedMarkText}>{selectedRelaxingTone.mark}</Text>
-              </View>
-              <View style={styles.homeToneFeaturedCopy}>
-                <Text style={[styles.homeToneFeaturedTitle, compact && styles.homeToneFeaturedTitleCompact]} numberOfLines={1}>
-                  {selectedRelaxingTone.label}
-                </Text>
-                <Text style={[styles.homeToneFeaturedMeta, compact && styles.homeToneFeaturedMetaCompact]} numberOfLines={1}>
-                  {selectedRelaxingTone.category} / {selectedRelaxingTone.pattern}
-                </Text>
-              </View>
+          <View style={styles.homeToneQuickStrip}>
+            <View style={styles.homeToneQuickCopy}>
+              <Text style={styles.homeToneQuickTitle} numberOfLines={1}>
+                {selectedRelaxingTone.mark} {selectedRelaxingTone.label}
+              </Text>
+              <Text style={styles.homeToneQuickMeta} numberOfLines={1}>
+                {selectedRelaxingTone.category} / {selectedRelaxingTone.pattern}
+              </Text>
             </View>
-            <Text style={[styles.homeToneFeaturedUse, compact && styles.homeToneFeaturedUseCompact]} numberOfLines={compact ? 2 : 3}>
-              {selectedRelaxingTone.use}
-            </Text>
-            <Text style={[styles.homeToneFeaturedSafety, compact && styles.homeToneFeaturedSafetyCompact]} numberOfLines={2}>
-              {selectedRelaxingTone.safety}
+            <Text style={styles.homeToneQuickNote} numberOfLines={2}>
+              Low volume only. Open Tones for more.
             </Text>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.homeToneChipRow}
-          >
-            {mindRelaxingToneModes.map((toneMode) => {
-              const isActive = toneMode.id === selectedRelaxingTone.id;
-              return (
-                <Pressable
-                  key={toneMode.id}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: isActive }}
-                  onPress={() => {
-                    setSelectedRelaxingToneId(toneMode.id);
-                    mindRestLoopIndexRef.current = Math.max(
-                      0,
-                      mindRestLoopSequence.findIndex((item) => item.id === toneMode.id)
-                    );
-                    void playRelaxingToneCue(toneMode);
-                  }}
-                  style={({ pressed }) => [
-                    styles.homeToneChip,
-                    compact && styles.homeToneChipCompact,
-                    isActive && styles.homeToneChipActive,
-                    pressed && styles.pressed
-                  ]}
-                >
-                  <Text style={[styles.homeToneChipMark, compact && styles.homeToneChipMarkCompact, isActive && styles.homeToneChipMarkActive]}>
-                    {toneMode.mark}
-                  </Text>
-                  <Text
-                    style={[styles.homeToneChipLabel, compact && styles.homeToneChipLabelCompact, isActive && styles.homeToneChipLabelActive]}
-                    numberOfLines={1}
-                  >
-                    {toneMode.label}
-                  </Text>
-                  <Text
-                    style={[styles.homeToneChipMeta, compact && styles.homeToneChipMetaCompact, isActive && styles.homeToneChipMetaActive]}
-                    numberOfLines={compact ? 1 : 2}
-                  >
-                    {toneMode.pattern}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
         </View>
         <SectionFlowBand
           eyebrow={uiCopy.dailyLoopEyebrow}
           title={dailyRoutinePlan.title}
           summary={dailyRoutinePlan.summary}
+          compact
           cards={[
             {
               label: uiCopy.dailyMeaning,
@@ -12282,7 +12615,7 @@ function TodaySection({
             primary: action.kind === "save"
           }))}
         />
-        <View style={styles.homeReportBand}>
+        <View style={[styles.homeReportBand, compact && styles.homeReportBandCompact]}>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.eyebrow}>{uiCopy.reportEyebrow}</Text>
@@ -12292,8 +12625,8 @@ function TodaySection({
           </View>
           <Text style={styles.promptText}>{uiCopy.reportPrompt}</Text>
           <Text style={styles.smallMeta}>{reportPrivacyMessage}</Text>
-          <View style={styles.visitReportGrid}>
-            <View style={styles.visitReportCard}>
+          <View style={[styles.visitReportGrid, compact && styles.visitReportGridCompact]}>
+            <View style={[styles.visitReportCard, compact && styles.visitReportCardCompact]}>
               <Text style={styles.visitReportLabel}>Step report</Text>
               <Text style={styles.visitReportText} numberOfLines={2}>
                 {stepVisitReport
@@ -12309,7 +12642,7 @@ function TodaySection({
                 {stepVisitReport ? stepVisitReport.nextStep : "The next step will appear here after a save."}
               </Text>
             </View>
-            <View style={styles.visitReportCard}>
+            <View style={[styles.visitReportCard, compact && styles.visitReportCardCompact]}>
               <Text style={styles.visitReportLabel}>Daily report</Text>
               <Text style={styles.visitReportText} numberOfLines={2}>
                 {dailyVisitReport.summary}
@@ -12394,12 +12727,14 @@ function TodaySection({
         <View style={styles.homeSafetyStrip}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.eyebrow}>{uiCopy.quickExitEyebrow}</Text>
-              <Text style={styles.sectionTitleSmall}>{uiCopy.quickExitTitle}</Text>
+              <Text style={[styles.eyebrow, { color: "#F37B64" }]}>{uiCopy.quickExitEyebrow}</Text>
+              <Text style={[styles.sectionTitleSmall, { color: "#FDE7E2" }]}>{uiCopy.quickExitTitle}</Text>
             </View>
             <Text style={styles.smallMeta}>Fast route</Text>
           </View>
-          <Text style={styles.promptText}>{uiCopy.quickExitPrompt}</Text>
+          <Text style={[styles.promptText, { color: "rgba(255,235,231,0.9)" }]} numberOfLines={2}>
+            {uiCopy.quickExitPrompt}
+          </Text>
           <View style={styles.homeSafetyActions}>
             <Pressable
               accessibilityRole="button"
@@ -12488,6 +12823,7 @@ function JournalSection({
     latestEntry !== undefined
       ? getJournalInsight(latestEntry, entries.length, weeklyAverage, selectedIssueGuide)
       : null;
+  const compact = true;
   const templateLine = `What happened:\nWhat do I need:\nNext step:`;
   const [showFullJournal, setShowFullJournal] = useState(false);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
@@ -12575,7 +12911,7 @@ function JournalSection({
           {showFullJournal ? "Journal history is open." : "History stays tucked away until you need it."}
         </Text>
       </View>
-      <View style={styles.journalDraftBand}>
+      <View style={[styles.journalDraftBand, compact && styles.journalDraftBandCompact]}>
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.journalInsightTitle}>{uiCopy.oneClearLineTitle}</Text>
@@ -12659,7 +12995,7 @@ function JournalSection({
         </View>
       </View>
       {latestEntry === undefined ? (
-        <View style={styles.journalInsightBand}>
+        <View style={[styles.journalInsightBand, compact && styles.journalInsightBandCompact]}>
           <Text style={styles.journalInsightTitle}>{uiCopy.journalLoopTitle}</Text>
           <Text style={styles.journalInsightText}>{uiCopy.practiceLoopSummary}</Text>
           <View style={styles.communityActions}>
@@ -12688,7 +13024,7 @@ function JournalSection({
         </View>
       ) : null}
       {journalInsight ? (
-        <View style={styles.journalInsightBand}>
+        <View style={[styles.journalInsightBand, compact && styles.journalInsightBandCompact]}>
           <Text style={styles.journalInsightTitle}>{journalInsight.title}</Text>
           <Text style={styles.journalInsightText}>{journalInsight.detail}</Text>
           <View style={styles.communityActions}>
@@ -12740,7 +13076,7 @@ function JournalSection({
           )}
         </View>
       ) : (
-        <View style={styles.journalInsightBand}>
+        <View style={[styles.journalInsightBand, compact && styles.journalInsightBandCompact]}>
           <Text style={styles.journalInsightTitle}>History hidden</Text>
           <Text style={styles.journalInsightText}>
             {entries.length > 0
@@ -14031,7 +14367,10 @@ function AIHelpSection({
   const needsPrivateIntake = latestAIHelpMessage.route !== "urgent" && !privateIntakeSavedAt;
   const routePrimaryLabel = needsPrivateIntake ? "Open intake" : routeIsRedress ? "Open Help" : "Open Path";
   const routePrimaryAction = needsPrivateIntake ? onOpenPrivateIntake : routeIsRedress ? onOpenRedress : onOpenGuide;
-  const latestReplySections = latestAIHelpMessage.text.split("\n").map((line) => line.trim());
+  const latestReplyText = latestAIHelpMessage.text.trim().length > 0
+    ? latestAIHelpMessage.text.trim()
+    : buildAIHelpSeedReply();
+  const latestReplySections = latestReplyText.split("\n").map((line) => line.trim()).filter(Boolean);
   const latestReplySummary =
     latestReplySections
       .find((line) => line.toLowerCase().startsWith("what this means:"))?.replace(/^what this means:\s*/i, "")
@@ -14046,6 +14385,10 @@ function AIHelpSection({
       ?? "Move to Help or SOS if the issue is bigger than one reply.";
   const visibleStarters = buildAIHelpQuickStarters(latestAIHelpMessage.route, selectedIssueGuideLabel, selectedIdentityLabel);
   const starterButtons = compact ? visibleStarters.slice(0, 2) : visibleStarters;
+  const visibleMessagesForRender = visibleMessages.map((message) => ({
+    ...message,
+    text: message.text.trim().length > 0 ? message.text : latestReplyText
+  }));
 
   const inputLocked = aiHelpLoading || isPrivateIntakeOpen;
 
@@ -14167,7 +14510,7 @@ function AIHelpSection({
       </View>
 
       <View style={[styles.communityChatList, compact && styles.aiHelpChatList]}>
-        {visibleMessages.map((message) => {
+        {visibleMessagesForRender.map((message) => {
           const isUser = message.role === "user";
           return (
             <View
@@ -15273,6 +15616,7 @@ function SearchSection({
   isWide: boolean;
 }) {
   const queryActive = searchQuery.trim().length > 0;
+  const [showFullSearchResults, setShowFullSearchResults] = useState(false);
   const recommendedRedressRouteId =
     selectedIdentity.id === "student" ||
     selectedIdentity.id === "child" ||
@@ -15284,12 +15628,24 @@ function SearchSection({
   const suggestionPills = [
     "anxiety",
     "complaint",
-    "student",
-    "women help",
+    "authority",
     "doctor",
-    "cybercrime",
-    "community support"
+    "cybercrime"
   ];
+  const resultLimit = showFullSearchResults ? 12 : 3;
+  const visibleSearchMatches = {
+    guideResults: searchMatches.guideResults.slice(0, resultLimit),
+    redressResults: searchMatches.redressResults.slice(0, resultLimit),
+    officialResults: searchMatches.officialResults.slice(0, resultLimit),
+    professionalResults: searchMatches.professionalResults.slice(0, resultLimit),
+    communityResults: searchMatches.communityResults.slice(0, resultLimit)
+  };
+  const totalResultCount =
+    searchTotals.guides +
+    searchTotals.redress +
+    searchTotals.official +
+    searchTotals.professional +
+    searchTotals.community;
 
   const renderSearchCard = (item: SearchMatch) => (
     <View key={`${item.kind}-${item.id}`} style={styles.searchCard}>
@@ -15477,7 +15833,7 @@ function SearchSection({
             <Text style={styles.sectionTitle}>Support routes</Text>
           </View>
           <Text style={styles.smallMeta}>
-            {searchTotals.guides + searchTotals.redress + searchTotals.official + searchTotals.professional + searchTotals.community} items
+            {totalResultCount} items
           </Text>
         </View>
         {!queryActive ? (
@@ -15501,14 +15857,26 @@ function SearchSection({
               </Text>
             </View>
             <View style={styles.searchStarterCard}>
-              <Text style={styles.searchStarterTitle}>Community and shared notes</Text>
+              <Text style={styles.searchStarterTitle}>Need another route?</Text>
               <Text style={styles.searchStarterText}>
-                Read verified voices, moderated posts, and saved replies in one place.
+                Type one issue above. Search should move you to Path, Help, official support, or professional help.
               </Text>
             </View>
           </View>
         ) : (
           <View style={styles.searchGroupList}>
+            <View style={styles.issueCalloutActions}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected: showFullSearchResults }}
+                onPress={() => setShowFullSearchResults((value) => !value)}
+                style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+              >
+                <Text style={styles.helpButtonSecondaryLabel}>
+                  {showFullSearchResults ? "Show focused results" : "Show more results"}
+                </Text>
+              </Pressable>
+            </View>
             <View style={styles.searchGroupBlock}>
               <View style={styles.sectionHeader}>
                 <View>
@@ -15517,10 +15885,10 @@ function SearchSection({
                 </View>
               </View>
               <View style={styles.searchResultList}>
-                {searchMatches.guideResults.length === 0 ? (
+                {visibleSearchMatches.guideResults.length === 0 ? (
                   <Text style={styles.searchEmptyText}>No guide matches found.</Text>
                 ) : (
-                  searchMatches.guideResults.map(renderSearchCard)
+                  visibleSearchMatches.guideResults.map(renderSearchCard)
                 )}
               </View>
             </View>
@@ -15533,10 +15901,10 @@ function SearchSection({
                 </View>
               </View>
               <View style={styles.searchResultList}>
-                {searchMatches.redressResults.length === 0 ? (
+                {visibleSearchMatches.redressResults.length === 0 ? (
                   <Text style={styles.searchEmptyText}>No redress matches found.</Text>
                 ) : (
-                  searchMatches.redressResults.map(renderSearchCard)
+                  visibleSearchMatches.redressResults.map(renderSearchCard)
                 )}
               </View>
             </View>
@@ -15549,10 +15917,10 @@ function SearchSection({
                 </View>
               </View>
               <View style={styles.searchResultList}>
-                {searchMatches.officialResults.length === 0 ? (
+                {visibleSearchMatches.officialResults.length === 0 ? (
                   <Text style={styles.searchEmptyText}>No official help matches found.</Text>
                 ) : (
-                  searchMatches.officialResults.map(renderSearchCard)
+                  visibleSearchMatches.officialResults.map(renderSearchCard)
                 )}
               </View>
             </View>
@@ -15565,10 +15933,10 @@ function SearchSection({
                 </View>
               </View>
               <View style={styles.searchResultList}>
-                {searchMatches.professionalResults.length === 0 ? (
+                {visibleSearchMatches.professionalResults.length === 0 ? (
                   <Text style={styles.searchEmptyText}>No professional help matches found.</Text>
                 ) : (
-                  searchMatches.professionalResults.map(renderSearchCard)
+                  visibleSearchMatches.professionalResults.map(renderSearchCard)
                 )}
               </View>
             </View>
@@ -15581,10 +15949,10 @@ function SearchSection({
                 </View>
               </View>
               <View style={styles.searchResultList}>
-                {searchMatches.communityResults.length === 0 ? (
+                {visibleSearchMatches.communityResults.length === 0 ? (
                   <Text style={styles.searchEmptyText}>No community matches found.</Text>
                 ) : (
-                  searchMatches.communityResults.map(renderSearchCard)
+                  visibleSearchMatches.communityResults.map(renderSearchCard)
                 )}
               </View>
             </View>
@@ -15946,6 +16314,11 @@ function IssueGuideSection({
 }) {
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
+  const [showFullPathDetails, setShowFullPathDetails] = useState(false);
+
+  useEffect(() => {
+    setShowFullPathDetails(false);
+  }, [selectedIssueGuide.id, selectedIdentity.id, languageId]);
 
   return (
     <View style={[styles.grid, isWide && styles.gridWide]}>
@@ -16069,7 +16442,7 @@ function IssueGuideSection({
           <Text style={styles.smallMeta}>{l("One route / one next step", { hindi: "एक route / एक next step", punjabi: "ਇੱਕ ਰਾਹ / ਇੱਕ ਅਗਲਾ ਕਦਮ", marathi: "एक route / एक पुढचे पाऊल", telugu: "ఒక route / ఒక తదుపరి అడుగు", tamil: "ஒரு route / ஒரு அடுத்த படி", urdu: "ایک راستہ / ایک اگلا قدم" })}</Text>
         </View>
         <Text style={styles.promptText}>{selectedIssueGuide.summary}</Text>
-        <View style={styles.issueLensList}>
+        <View style={[styles.issueLensList, !showFullPathDetails && styles.hiddenSection]}>
           <IssueLensRow label={l("Logical", { hindi: "तार्किक", punjabi: "ਤਰਕਸੰਗਤ", marathi: "तार्किक", telugu: "తార్కిక", tamil: "தர்க்கம்", urdu: "منطقی" })} text={selectedIssueGuide.logicalLens} />
           <IssueLensRow label={l("Theoretical", { hindi: "सैद्धांतिक", punjabi: "ਸਿਧਾਂਤਕ", marathi: "सैद्धांतिक", telugu: "సిద్ధాంతపరమైన", tamil: "கோட்பாட்டு", urdu: "نظریاتی" })} text={selectedIssueGuide.theoreticalLens} />
           <IssueLensRow label={l("Emotional", { hindi: "भावनात्मक", punjabi: "ਭਾਵਨਾਤਮਕ", marathi: "भावनिक", telugu: "భావోద్వేగ", tamil: "உணர்ச்சி", urdu: "جذباتی" })} text={selectedIssueGuide.emotionalLens} />
@@ -16153,7 +16526,28 @@ function IssueGuideSection({
             </Pressable>
           </View>
         </View>
-        <View style={styles.issueSupportGrid}>
+        <View style={styles.issueCalloutActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showFullPathDetails }}
+            onPress={() => setShowFullPathDetails((value) => !value)}
+            style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+          >
+            <Text style={styles.helpButtonSecondaryLabel}>
+              {showFullPathDetails ? "Hide full path details" : "Show full path details"}
+            </Text>
+          </Pressable>
+        </View>
+        {!showFullPathDetails ? (
+          <View style={styles.issueSupportBand}>
+            <Text style={styles.visionGuidanceTitle}>Focused path</Text>
+            <Text style={styles.visionGuidanceText}>
+              Extra theory, nearby support, urgent notes, and reminders are hidden until needed.
+              Stay with the route, the start action, and the three follow-up steps.
+            </Text>
+          </View>
+        ) : null}
+        <View style={[styles.issueSupportGrid, !showFullPathDetails && styles.hiddenSection]}>
           {selectedIssueGuide.supportPath.map((path) => (
             <Pressable
               key={path.label}
@@ -16168,7 +16562,7 @@ function IssueGuideSection({
             </Pressable>
           ))}
         </View>
-        <View style={styles.issueCallout}>
+        <View style={[styles.issueCallout, !showFullPathDetails && styles.hiddenSection]}>
           <Text style={styles.issueCalloutTitle}>{l("When to seek urgent support", { hindi: "तुरंत मदद कब लेनी है", punjabi: "ਤੁਰੰਤ ਮਦਦ ਕਦੋਂ ਲੈਣੀ ਹੈ", marathi: "तत्काळ मदत कधी घ्यावी", telugu: "తక్షణ సహాయం ఎప్పుడు తీసుకోవాలి", tamil: "அவசர உதவி எப்போது தேவை", urdu: "فوری مدد کب لینی ہے" })}</Text>
           <Text style={styles.issueCalloutText}>{selectedIssueGuide.urgentNote}</Text>
           <View style={styles.issueCalloutActions}>
@@ -16198,7 +16592,7 @@ function IssueGuideSection({
             </Pressable>
           </View>
         </View>
-        <View style={styles.issueSupportBand}>
+        <View style={[styles.issueSupportBand, !showFullPathDetails && styles.hiddenSection]}>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.eyebrow}>{l("Next route", { hindi: "अगला मार्ग", punjabi: "ਅਗਲਾ ਰਾਹ", marathi: "पुढचा मार्ग", telugu: "తదుపరి మార్గం", tamil: "அடுத்த பாதை", urdu: "اگلا راستہ" })}</Text>
@@ -16220,7 +16614,7 @@ function IssueGuideSection({
             ))}
           </View>
         </View>
-        <View style={styles.issueReminderBand}>
+        <View style={[styles.issueReminderBand, !showFullPathDetails && styles.hiddenSection]}>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.eyebrow}>{l("Reminder", { hindi: "रिमाइंडर", punjabi: "ਰਿਮਾਈਂਡਰ", marathi: "रिमाइंडर", telugu: "రిమైండర్", tamil: "நினைவூட்டல்", urdu: "یاد دہانی" })}</Text>
@@ -16742,34 +17136,43 @@ function SectionFlowBand({
   title,
   summary,
   cards,
-  actions
+  actions,
+  compact = false
 }: {
   eyebrow: string;
   title: string;
   summary: string;
   cards: SectionFlowCard[];
   actions: SectionFlowAction[];
+  compact?: boolean;
 }) {
   return (
-    <View style={styles.issueRouteSnapshotBand}>
+    <View style={[styles.issueRouteSnapshotBand, compact && styles.issueRouteSnapshotBandCompact]}>
       <View style={styles.sectionHeader}>
         <View>
           <Text style={styles.eyebrow}>{eyebrow}</Text>
-          <Text style={styles.sectionTitleSmall}>{title}</Text>
+          <Text style={[styles.sectionTitleSmall, compact && styles.sectionTitleSmallCompact]}>{title}</Text>
         </View>
         <Text style={styles.smallMeta}>One route only</Text>
       </View>
-      <Text style={styles.promptText}>{summary}</Text>
-      <View style={styles.profileSummaryGrid}>
+      <Text style={[styles.promptText, compact && styles.sectionFlowSummaryCompact]} numberOfLines={compact ? 2 : undefined}>
+        {summary}
+      </Text>
+      <View style={[styles.profileSummaryGrid, compact && styles.profileSummaryGridCompact]}>
         {cards.map((card) => (
-          <View key={card.label} style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>{card.label}</Text>
-            <Text style={styles.profileSummaryValue}>{card.value}</Text>
+          <View key={card.label} style={[styles.profileSummaryCard, compact && styles.profileSummaryCardCompact]}>
+            <Text style={[styles.profileSummaryLabel, compact && styles.profileSummaryLabelCompact]}>{card.label}</Text>
+            <Text
+              style={[styles.profileSummaryValue, compact && styles.profileSummaryValueCompact]}
+              numberOfLines={compact ? 2 : 3}
+            >
+              {card.value}
+            </Text>
           </View>
         ))}
       </View>
       {actions.length > 0 ? (
-        <View style={styles.issueCalloutActions}>
+        <View style={[styles.issueCalloutActions, compact && styles.issueCalloutActionsCompact]}>
           {actions.map((action) => (
             <Pressable
               key={action.label}
@@ -18278,6 +18681,11 @@ function BirthChartSection({
   tithi,
   vara,
   lucky,
+  geminiHoroscope,
+  geminiHoroscopeLoading,
+  profileDOB,
+  profileBirthTime,
+  profileBirthPlace,
   onOpenProfile,
   onOpenHome,
 }: {
@@ -18288,10 +18696,19 @@ function BirthChartSection({
   tithi: ReturnType<typeof getTodayTithi>;
   vara: typeof VARA_INFO[0];
   lucky: typeof RASHI_LUCKY[0] | null;
+  geminiHoroscope: string | null;
+  geminiHoroscopeLoading: boolean;
+  profileDOB: string;
+  profileBirthTime: string;
+  profileBirthPlace: string;
   onOpenProfile: () => void;
   onOpenHome: () => void;
 }) {
   const hasReading = !!rashiInfo && !!predictionLines;
+  const hasExactBirthDetails =
+    /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
+    /^\d{2}:\d{2}$/.test(profileBirthTime) &&
+    profileBirthPlace.trim().length > 0;
 
   return (
     <View style={styles.birthChartPage}>
@@ -18299,22 +18716,29 @@ function BirthChartSection({
         <Text style={styles.tabBannerEmoji}>🪐</Text>
         <View style={styles.tabBannerText}>
           <Text style={styles.tabBannerTitle}>Birth Chart</Text>
-          <Text style={styles.tabBannerSub}>Optional Vedic Jyotish reading based on your date of birth</Text>
+          <Text style={styles.tabBannerSub}>Optional Vedic Jyotish reading based on your exact birth details</Text>
         </View>
       </View>
 
       <View style={styles.birthChartIntroCard}>
         <Text style={styles.birthChartIntroTitle}>A separate page for your astro guidance.</Text>
         <Text style={styles.birthChartIntroText}>
-          This page stays fully separate from Reset, complaint handling, or counselling flows. Use it only for Vedic and astro guidance, or ignore it completely.
+          This page stays fully separate from Reset, complaint handling, or counselling flows. For an exact reading, keep your date, time, and place of birth on file in Profile.
         </Text>
+        <View style={styles.birthChartIntroMetaRow}>
+          <View style={[styles.birthChartIntroMetaChip, hasExactBirthDetails && styles.birthChartIntroMetaChipActive]}>
+            <Text style={[styles.birthChartIntroMetaChipLabel, hasExactBirthDetails && styles.birthChartIntroMetaChipLabelActive]}>
+              {hasExactBirthDetails ? "Exact birth details saved" : "Exact birth details needed"}
+            </Text>
+          </View>
+        </View>
         <View style={styles.birthChartIntroActions}>
           <Pressable
             accessibilityRole="button"
             onPress={onOpenProfile}
             style={({ pressed }) => [styles.birthChartIntroButton, pressed && styles.pressed]}
           >
-            <Text style={styles.birthChartIntroButtonLabel}>Set birth date</Text>
+            <Text style={styles.birthChartIntroButtonLabel}>Complete profile</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -18324,6 +18748,41 @@ function BirthChartSection({
             <Text style={styles.birthChartIntroButtonSecondaryLabel}>Back to Home</Text>
           </Pressable>
         </View>
+      </View>
+
+      <View style={styles.birthChartExactCard}>
+        <View style={styles.birthChartExactHeader}>
+          <Text style={styles.birthChartExactTitle}>Horoscope data</Text>
+          <Text style={styles.birthChartExactBadge}>{hasExactBirthDetails ? "Exact" : "Incomplete"}</Text>
+        </View>
+        <View style={styles.birthChartExactGrid}>
+          {[
+            { label: "Date", value: profileDOB || "Add date" },
+            { label: "Time", value: profileBirthTime || "Add time" },
+            { label: "Place", value: profileBirthPlace || "Add place" },
+            { label: "Rashi", value: rashiInfo?.rashi.name ?? "Pending" },
+            { label: "Nakshatra", value: janmaNakshatra?.name ?? "Pending" }
+          ].map((item) => (
+            <View key={item.label} style={styles.birthChartExactChip}>
+              <Text style={styles.birthChartExactChipLabel}>{item.label}</Text>
+              <Text style={styles.birthChartExactChipValue} numberOfLines={2}>
+                {item.value}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.birthChartGeminiCard}>
+        <View style={styles.birthChartGeminiHeader}>
+          <Text style={styles.birthChartGeminiTitle}>Gemini horoscope</Text>
+          <Text style={styles.birthChartGeminiBadge}>{geminiHoroscopeLoading ? "Reading" : "Ready"}</Text>
+        </View>
+        <Text style={styles.birthChartGeminiText}>
+          {geminiHoroscopeLoading
+            ? "Reading your exact birth details through Gemini..."
+            : geminiHoroscope ?? "Complete your birth details to unlock the Gemini horoscope."}
+        </Text>
       </View>
 
       {hasReading ? (
@@ -18341,13 +18800,13 @@ function BirthChartSection({
           style={styles.vedicSetupPrompt}
           onPress={onOpenProfile}
           accessibilityRole="button"
-          accessibilityLabel="Open profile to add birth date"
+          accessibilityLabel="Open profile to add birth details"
         >
           <Text style={styles.vedicSetupEmoji}>🪐</Text>
           <View style={styles.vedicSetupText}>
             <Text style={styles.vedicSetupTitle}>Unlock your reading</Text>
             <Text style={styles.vedicSetupSub}>
-              Add your date of birth in Profile to see your Rashi, Nakshatra, Tithi, and today’s guidance.
+              Add your date, time, and place of birth in Profile to see your Rashi, Nakshatra, Tithi, and today’s guidance.
             </Text>
           </View>
           <Text style={styles.vedicSetupArrow}>›</Text>
@@ -18356,9 +18815,9 @@ function BirthChartSection({
 
       <View style={styles.birthChartFactGrid}>
         {[
+          "Date, time, and place of birth",
           "Rashi and Janma Nakshatra",
-          "Daily Tithi and Vara",
-          "Lucky colour, number, direction",
+          "Gemini horoscope reading",
           "Optional, device-only astro guidance",
         ].map((item) => (
           <View key={item} style={styles.birthChartFactChip}>
@@ -18920,6 +19379,10 @@ function AccessOverlay({
   setProfilePhone,
   profileDOB,
   setProfileDOB,
+  profileBirthTime,
+  setProfileBirthTime,
+  profileBirthPlace,
+  setProfileBirthPlace,
   profileEmail,
   setProfileEmail,
   profileLocation,
@@ -18936,7 +19399,10 @@ function AccessOverlay({
   setProfileRoleId,
   verificationDeliveryMode,
   profileVerificationNotice,
+  verificationRequestBusy,
   showVerificationSection,
+  canDismiss,
+  startupLockActive,
   onCompleteAccess,
   onRequestVerificationCode,
   onConfirmVerificationCode,
@@ -18949,6 +19415,10 @@ function AccessOverlay({
   setProfilePhone: (value: string) => void;
   profileDOB: string;
   setProfileDOB: (value: string) => void;
+  profileBirthTime: string;
+  setProfileBirthTime: (value: string) => void;
+  profileBirthPlace: string;
+  setProfileBirthPlace: (value: string) => void;
   profileEmail: string;
   setProfileEmail: (value: string) => void;
   profileLocation: string;
@@ -18965,7 +19435,10 @@ function AccessOverlay({
   setProfileRoleId: (value: IdentityId) => void;
   verificationDeliveryMode: "remote" | "local";
   profileVerificationNotice: string | null;
+  verificationRequestBusy: "phone" | "email" | null;
   showVerificationSection: boolean;
+  canDismiss: boolean;
+  startupLockActive: boolean;
   onCompleteAccess: (role: Exclude<AccessRole, "admin">, name: string) => boolean;
   onRequestVerificationCode: (channel: "phone" | "email") => Promise<boolean> | boolean;
   onConfirmVerificationCode: (channel: "phone" | "email") => Promise<boolean> | boolean;
@@ -18980,6 +19453,8 @@ function AccessOverlay({
     profilePhoneVerified ? "phone" : profileEmailVerified ? "email" : "phone"
   );
   const verificationReady = profilePhoneVerified || profileEmailVerified;
+  const compactStartup = startupLockActive;
+  const [startupLockCountdown, setStartupLockCountdown] = useState(startupLockActive ? 10 : 0);
   const verificationModeNote =
     verificationDeliveryMode === "remote"
       ? "A connected provider now sends the verification codes."
@@ -19033,6 +19508,22 @@ function AccessOverlay({
   }, [showVerificationSection]);
 
   useEffect(() => {
+    if (!startupLockActive) {
+      setStartupLockCountdown(0);
+      return;
+    }
+    setStartupLockCountdown(10);
+  }, [startupLockActive]);
+
+  useEffect(() => {
+    if (!startupLockActive || startupLockCountdown <= 0) return;
+    const timer = setTimeout(() => {
+      setStartupLockCountdown((current) => Math.max(0, current - 1));
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [startupLockActive, startupLockCountdown]);
+
+  useEffect(() => {
     if (verificationReady || !verificationExpanded) return;
     if (didAutoJumpToVerificationRef.current) return;
     if (verificationSectionY <= 0) return;
@@ -19044,23 +19535,35 @@ function AccessOverlay({
     <View style={styles.profileBackdrop}>
       <ScrollView
         ref={profileScrollRef}
-        style={styles.profileSheet}
-        contentContainerStyle={styles.profileSheetContent}
+        style={[styles.profileSheet, compactStartup && styles.profileSheetCompact]}
+        contentContainerStyle={[styles.profileSheetContent, compactStartup && styles.profileSheetContentCompact]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.profileSheetTopRow}>
+        <View style={[styles.profileSheetTopRow, compactStartup && styles.profileSheetTopRowCompact]}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Exit profile details"
-            onPress={onClose}
-            style={({ pressed }) => [styles.profileSheetExitButton, pressed && styles.pressed]}
+            hitSlop={12}
+            onPress={() => {
+              if (!canDismiss) return;
+              onClose();
+            }}
+            accessibilityState={{ disabled: !canDismiss }}
+            style={({ pressed }) => [
+              styles.profileSheetExitButton,
+              { opacity: canDismiss ? 1 : 0.45 },
+              pressed && canDismiss && styles.pressed
+            ]}
           >
-            <Text style={styles.profileSheetExitButtonLabel}>Exit</Text>
+            <Text style={styles.profileSheetExitButtonLabel}>
+              {canDismiss ? "Exit" : `Exit ${startupLockCountdown > 0 ? `${startupLockCountdown}s` : "locked"}`}
+            </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Open verification section"
+            hitSlop={12}
             onPress={jumpToVerification}
             style={({ pressed }) => [styles.profileSheetJumpButton, pressed && styles.pressed]}
           >
@@ -19069,33 +19572,53 @@ function AccessOverlay({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Close verification page"
-            onPress={onClose}
-            style={({ pressed }) => [styles.sheetCloseIconButton, pressed && styles.pressed]}
+            hitSlop={12}
+            onPress={() => {
+              if (!canDismiss) return;
+              onClose();
+            }}
+            accessibilityState={{ disabled: !canDismiss }}
+            style={({ pressed }) => [
+              styles.sheetCloseIconButton,
+              styles.profileSheetCloseButtonFloating,
+              { opacity: canDismiss ? 1 : 0.45 },
+              pressed && canDismiss && styles.pressed
+            ]}
           >
-            <Text style={styles.sheetCloseIconButtonLabel}>✕</Text>
+          <Text style={[styles.sheetCloseIconButtonLabel, compactStartup && styles.sheetCloseIconButtonLabelCompact]}>✕</Text>
           </Pressable>
         </View>
-        <View style={styles.onboardingHeader}>
+        <View style={[styles.onboardingHeader, compactStartup && styles.onboardingHeaderCompact]}>
           <Text style={styles.eyebrow}>Profile center</Text>
-          <Text style={styles.onboardingTitle}>Your Account</Text>
-          <Text style={styles.onboardingText}>
+          <Text style={[styles.onboardingTitle, compactStartup && styles.onboardingTitleCompact]}>Your Account</Text>
+          <Text style={[styles.onboardingText, compactStartup && styles.onboardingTextCompact]}>
             Set your name, add a contact method, and verify to unlock community features.
           </Text>
         </View>
-        <View style={styles.profileBanner}>
+        {startupLockActive ? (
+          <View style={[styles.alertBanner, styles.alertBannerCompact]}>
+            <Text style={styles.alertBannerTitle}>
+              {startupLockCountdown > 0 ? `Startup prompt · ${startupLockCountdown}s left` : "Startup prompt"}
+            </Text>
+            <Text style={styles.alertBannerText}>
+              This panel stays open for 10 seconds so you can pick a profile and verify before closing it.
+            </Text>
+          </View>
+        ) : null}
+        <View style={[styles.profileBanner, compactStartup && styles.profileBannerCompact]}>
           <View style={styles.profileBannerCopy}>
-            <Text style={styles.profileBannerTitle}>{profileDisplayName}</Text>
-            <Text style={styles.profileBannerMeta}>
+            <Text style={[styles.profileBannerTitle, compactStartup && styles.profileBannerTitleCompact]}>{profileDisplayName}</Text>
+            <Text style={[styles.profileBannerMeta, compactStartup && styles.profileBannerMetaCompact]}>
               {accessRole === "admin" ? "Admin locked out of profile edits" : `${role.charAt(0).toUpperCase() + role.slice(1)} access`}
             </Text>
-            <View style={styles.profileStatusRow}>
+            <View style={[styles.profileStatusRow, compactStartup && styles.profileStatusRowCompact]}>
               <View style={[styles.verificationStatusChip, profilePhoneVerified && styles.verificationStatusChipActive]}>
-                <Text style={[styles.verificationStatusChipLabel, profilePhoneVerified && styles.verificationStatusChipLabelActive]}>
+                <Text style={[styles.verificationStatusChipLabel, compactStartup && styles.verificationStatusChipLabelCompact, profilePhoneVerified && styles.verificationStatusChipLabelActive]}>
                   {profilePhoneVerified ? "Phone verified" : "Phone pending"}
                 </Text>
               </View>
               <View style={[styles.verificationStatusChip, profileEmailVerified && styles.verificationStatusChipActive]}>
-                <Text style={[styles.verificationStatusChipLabel, profileEmailVerified && styles.verificationStatusChipLabelActive]}>
+                <Text style={[styles.verificationStatusChipLabel, compactStartup && styles.verificationStatusChipLabelCompact, profileEmailVerified && styles.verificationStatusChipLabelActive]}>
                   {profileEmailVerified ? "Email verified" : "Email pending"}
                 </Text>
               </View>
@@ -19103,38 +19626,38 @@ function AccessOverlay({
           </View>
         </View>
 
-        <View style={styles.accessFlowBand}>
+        <View style={[styles.accessFlowBand, compactStartup && styles.accessFlowBandCompact]}>
           <View style={styles.accessFlowBandHeader}>
-            <Text style={styles.accessFlowBandTitle}>Account setup</Text>
+            <Text style={[styles.accessFlowBandTitle, compactStartup && styles.accessFlowBandTitleCompact]}>Account setup</Text>
             <Text style={styles.accessFlowBandMeta}>
               {verificationReady ? "Verified" : "Pending verification"}
             </Text>
           </View>
-          <Text style={styles.accessFlowBandText}>
+          <Text style={[styles.accessFlowBandText, compactStartup && styles.accessFlowBandTextCompact]}>
             Complete your profile, add a contact method, then verify to unlock community chat and private spaces.
           </Text>
-          <View style={styles.accessFlowPills}>
+          <View style={[styles.accessFlowPills, compactStartup && styles.accessFlowPillsCompact]}>
             <View style={styles.accessFlowPill}>
-              <Text style={styles.accessFlowPillLabel}>Profile</Text>
-              <Text style={styles.accessFlowPillMeta}>Role and name</Text>
+              <Text style={[styles.accessFlowPillLabel, compactStartup && styles.accessFlowPillLabelCompact]}>Profile</Text>
+              <Text style={[styles.accessFlowPillMeta, compactStartup && styles.accessFlowPillMetaCompact]}>Role and name</Text>
             </View>
             <View style={styles.accessFlowPill}>
-              <Text style={styles.accessFlowPillLabel}>Contact</Text>
-              <Text style={styles.accessFlowPillMeta}>Phone or email</Text>
+              <Text style={[styles.accessFlowPillLabel, compactStartup && styles.accessFlowPillLabelCompact]}>Contact</Text>
+              <Text style={[styles.accessFlowPillMeta, compactStartup && styles.accessFlowPillMetaCompact]}>Phone or email</Text>
             </View>
             <View style={styles.accessFlowPill}>
-              <Text style={styles.accessFlowPillLabel}>Chat</Text>
-              <Text style={styles.accessFlowPillMeta}>Needs one OTP when opened</Text>
+              <Text style={[styles.accessFlowPillLabel, compactStartup && styles.accessFlowPillLabelCompact]}>Chat</Text>
+              <Text style={[styles.accessFlowPillMeta, compactStartup && styles.accessFlowPillMetaCompact]}>Needs one OTP when opened</Text>
             </View>
           </View>
         </View>
 
-        <View style={styles.onboardingBlock}>
-          <Text style={styles.settingsTitle}>Profile type</Text>
-          <Text style={styles.promptText}>
+        <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Profile type</Text>
+          <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
             Tap one row. The selected profile stays highlighted so you can continue without guesswork.
           </Text>
-          <View style={styles.identityStack}>
+          <View style={[styles.identityStack, compactStartup && styles.identityStackCompact]}>
             {[
               { id: "guest", label: "Guest", meta: "Browse without saving a role", mark: "G" },
               { id: "member", label: "Member", meta: "Standard local profile", mark: "M" },
@@ -19162,15 +19685,16 @@ function AccessOverlay({
                   }}
                   style={[
                     styles.identityChoiceRow,
+                    compactStartup && styles.identityChoiceRowCompact,
                     isSelected && styles.identityCardActive,
                     isLocked && styles.identityCardDisabled
                   ]}
                 >
                   <View style={styles.identityChoiceCopy}>
-                    <Text style={[styles.identityLabel, isSelected && styles.identityLabelActive]}>
+                    <Text style={[styles.identityLabel, compactStartup && styles.identityLabelCompact, isSelected && styles.identityLabelActive]}>
                       {item.label}
                     </Text>
-                    <Text style={[styles.identityMeta, isSelected && styles.identityMetaActive]}>
+                    <Text style={[styles.identityMeta, compactStartup && styles.identityMetaCompact, isSelected && styles.identityMetaActive]}>
                       {item.meta}
                     </Text>
                   </View>
@@ -19185,19 +19709,19 @@ function AccessOverlay({
           </View>
         </View>
 
-        <View style={styles.onboardingBlock}>
-          <Text style={styles.settingsTitle}>Display name</Text>
+        <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Display name</Text>
           <TextInput
             value={name}
             onChangeText={setName}
             placeholder="Your name or handle"
             placeholderTextColor="#9A8F82"
-            style={styles.settingsInput}
+            style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
         </View>
 
-        <View style={styles.onboardingBlock}>
-          <Text style={styles.settingsTitle}>Contact details</Text>
+        <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Contact details</Text>
           <TextInput
             value={profilePhone}
             onChangeText={setProfilePhone}
@@ -19206,7 +19730,7 @@ function AccessOverlay({
             keyboardType="phone-pad"
             autoComplete="tel"
             textContentType="telephoneNumber"
-            style={styles.settingsInput}
+            style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
           <TextInput
             value={profileEmail}
@@ -19216,7 +19740,7 @@ function AccessOverlay({
             keyboardType="email-address"
             autoComplete="email"
             textContentType="emailAddress"
-            style={styles.settingsInput}
+            style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
           <TextInput
             value={profileLocation}
@@ -19224,13 +19748,15 @@ function AccessOverlay({
             placeholder="City, district, or pincode"
             placeholderTextColor="#9A8F82"
             autoComplete="postal-code"
-            style={styles.settingsInput}
+            style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
         </View>
 
-        <View style={styles.onboardingBlock}>
-          <Text style={styles.settingsTitle}>Date of Birth</Text>
-          <Text style={styles.promptText}>Used for your daily Vedic Jyotish prediction and birth chart. Stored only on your device.</Text>
+        <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Birth details</Text>
+          <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
+            Add date, time, and place of birth for the most exact Jyotish reading. Stored only on your device.
+          </Text>
           <TextInput
             value={profileDOB}
             onChangeText={(t) => {
@@ -19242,7 +19768,26 @@ function AccessOverlay({
             placeholderTextColor="#9A8F82"
             keyboardType="numbers-and-punctuation"
             maxLength={10}
-            style={styles.settingsInput}
+            style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
+          />
+          <TextInput
+            value={profileBirthTime}
+            onChangeText={(t) => {
+              const cleaned = t.replace(/[^0-9:]/g, "").slice(0, 5);
+              setProfileBirthTime(cleaned);
+            }}
+            placeholder="HH:MM  (e.g. 14:35)"
+            placeholderTextColor="#9A8F82"
+            keyboardType="numbers-and-punctuation"
+            maxLength={5}
+            style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
+          />
+          <TextInput
+            value={profileBirthPlace}
+            onChangeText={setProfileBirthPlace}
+            placeholder="City, district, or hospital"
+            placeholderTextColor="#9A8F82"
+            style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
           {profileDOB.match(/^\d{4}-\d{2}-\d{2}$/) && (() => {
             const ri = getVedicRashiFromDOB(profileDOB);
@@ -19266,8 +19811,8 @@ function AccessOverlay({
           })()}
         </View>
 
-        <View style={styles.onboardingBlock}>
-          <Text style={styles.settingsTitle}>Gender</Text>
+        <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Gender</Text>
           <View style={styles.segmentRow}>
             {genderOptions.map((option) => {
               const isSelected = profileGender === option.id;
@@ -19288,12 +19833,12 @@ function AccessOverlay({
           </View>
         </View>
 
-        <View style={styles.onboardingBlock}>
-          <Text style={styles.settingsTitle}>Who needs the guidance?</Text>
-          <Text style={styles.promptText}>
+        <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Who needs the guidance?</Text>
+          <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
             Pick the role that best fits the user. It keeps guidance closer to the person’s day.
           </Text>
-          <View style={styles.identityStack}>
+          <View style={[styles.identityStack, compactStartup && styles.identityStackCompact]}>
             {identityProfiles.map((profile) => {
               const isSelected = profileRoleId === profile.id;
               return (
@@ -19302,7 +19847,7 @@ function AccessOverlay({
                   accessibilityRole="button"
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => setProfileRoleId(profile.id)}
-                  style={[styles.identityChoiceRow, isSelected && styles.identityCardActive]}
+                  style={[styles.identityChoiceRow, compactStartup && styles.identityChoiceRowCompact, isSelected && styles.identityCardActive]}
                 >
                   <View style={styles.identityChoiceCopy}>
                     <Text style={[styles.identityLabel, isSelected && styles.identityLabelActive]}>
@@ -19326,15 +19871,15 @@ function AccessOverlay({
         </View>
 
         <View
-          style={styles.onboardingBlock}
+          style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}
           onLayout={(event) => {
             setVerificationSectionY(event.nativeEvent.layout.y);
           }}
         >
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.settingsTitle}>Verification</Text>
-              <Text style={styles.promptText}>
+              <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Verification</Text>
+              <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
                 Verification stays out of the way unless chat or private rooms need it. {verificationModeNote}
               </Text>
             </View>
@@ -19355,7 +19900,7 @@ function AccessOverlay({
             </View>
           ) : null}
           {verificationExpanded ? (
-            <View style={styles.verificationBlock}>
+            <View style={[styles.verificationBlock, compactStartup && styles.verificationBlockCompact]}>
               <View style={styles.segmentRow}>
                 {[
                   { id: "phone", label: "Phone" },
@@ -19377,35 +19922,45 @@ function AccessOverlay({
                   );
                 })}
               </View>
-              <Text style={styles.settingsTitle}>
+              <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>
                 {verificationChannel === "phone" ? "Phone OTP" : "Email OTP"}
               </Text>
-              <Text style={styles.promptText}>
+              <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
                 {verificationChannel === "phone"
                   ? "Send the code to the phone number you entered, then paste it here."
                   : "Send the code to the email address you entered, then paste it here."}
               </Text>
               <View style={styles.verificationActionsRow}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={async () => {
-                    const sent = await onRequestVerificationCode(verificationChannel);
-                    if (sent) {
+              <Pressable
+                accessibilityRole="button"
+                hitSlop={10}
+                onPress={async () => {
+                  const sent = await onRequestVerificationCode(verificationChannel);
+                  if (sent) {
                       InteractionManager.runAfterInteractions(() => {
                         verificationInputRef.current?.focus();
                       });
                     }
                   }}
-                  style={styles.onboardingButtonSecondary}
+                  accessibilityState={{ busy: verificationRequestBusy === verificationChannel }}
+                  disabled={verificationRequestBusy === verificationChannel}
+                  style={[
+                    styles.onboardingButtonSecondary,
+                    compactStartup && styles.onboardingButtonSecondaryCompact,
+                    verificationRequestBusy === verificationChannel && { opacity: 0.6 }
+                  ]}
                 >
-                  <Text style={styles.onboardingButtonSecondaryLabel}>Send OTP</Text>
+                  <Text style={styles.onboardingButtonSecondaryLabel}>
+                    {verificationRequestBusy === verificationChannel ? "Sending..." : "Send OTP"}
+                  </Text>
                 </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => {
-                    void confirmVerificationAndAdvance();
-                  }}
-                  style={styles.onboardingButtonSecondary}
+              <Pressable
+                accessibilityRole="button"
+                hitSlop={10}
+                onPress={() => {
+                  void confirmVerificationAndAdvance();
+                }}
+                  style={[styles.onboardingButtonSecondary, compactStartup && styles.onboardingButtonSecondaryCompact]}
                 >
                   <Text style={styles.onboardingButtonSecondaryLabel}>Verify code</Text>
                 </Pressable>
@@ -19419,33 +19974,51 @@ function AccessOverlay({
                 placeholder={`Enter ${verificationChannel} code here`}
                 placeholderTextColor="#9A8F82"
                 keyboardType="number-pad"
-                style={styles.settingsInput}
+                style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
               />
             </View>
           ) : null}
         </View>
 
         <View
-          style={styles.onboardingActions}
+          style={[styles.onboardingActions, compactStartup && styles.onboardingActionsCompact]}
           onLayout={(event) => {
             setActionsSectionY(event.nativeEvent.layout.y);
           }}
         >
           <Pressable
             accessibilityRole="button"
+            hitSlop={14}
             onPress={() => {
-              onCompleteAccess(role, name);
+              const saved = onCompleteAccess(role, name);
+              if (saved && canDismiss) {
+                onClose();
+              }
             }}
-            style={styles.onboardingButton}
+            style={[styles.onboardingButton, compactStartup && styles.onboardingButtonCompact]}
           >
             <Text style={styles.onboardingButtonLabel}>Save profile</Text>
           </Pressable>
           {accessRole === "admin" ? (
-            <Pressable accessibilityRole="button" onPress={onOpenAdminCenter} style={styles.onboardingButtonSecondary}>
+            <Pressable accessibilityRole="button" onPress={onOpenAdminCenter} style={[styles.onboardingButtonSecondary, compactStartup && styles.onboardingButtonSecondaryCompact]}>
               <Text style={styles.onboardingButtonSecondaryLabel}>Open admin control center</Text>
             </Pressable>
           ) : null}
-          <Pressable accessibilityRole="button" onPress={onClose} style={styles.onboardingButtonSecondary}>
+          <Pressable
+            accessibilityRole="button"
+            hitSlop={12}
+            onPress={() => {
+              if (!canDismiss) return;
+              onClose();
+            }}
+            accessibilityState={{ disabled: !canDismiss }}
+            style={({ pressed }) => [
+              styles.onboardingButtonSecondary,
+              compactStartup && styles.onboardingButtonSecondaryCompact,
+              { opacity: canDismiss ? 1 : 0.45 },
+              pressed && canDismiss && styles.pressed
+            ]}
+          >
             <Text style={styles.onboardingButtonSecondaryLabel}>Close</Text>
           </Pressable>
         </View>
@@ -20036,7 +20609,7 @@ function DynamicHeroCard({
         />
         <View style={{ flex: 1 }}>
           <Text style={styles.heroRouteAppName}>Aethon Beacon</Text>
-          <Text style={styles.heroRouteTagline}>One issue in. One route out.</Text>
+          <Text style={styles.heroRouteTagline}>IT'S OK IS ALWAYS NOT OK</Text>
         </View>
       </View>
 
@@ -20952,7 +21525,8 @@ function normalizeVerificationPhoneNumber(value: string) {
   if (digits.length === 10) return `+91${digits}`;
   if (digits.length === 11 && digits.startsWith("0")) return `+91${digits.slice(1)}`;
   if (digits.length === 12 && digits.startsWith("91")) return `+${digits}`;
-  return cleaned;
+  if (digits.length >= 8 && digits.length <= 15) return `+${digits}`;
+  return "";
 }
 
 function normalizeTrustedContact(value: unknown): TrustedContact | null {
@@ -21519,6 +22093,64 @@ const styles = StyleSheet.create({
     flexBasis: 0,
     minWidth: 0
   },
+  topTabRail: {
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(246,212,107,0.18)",
+    backgroundColor: "#071A1E",
+    paddingHorizontal: 8,
+    paddingVertical: 8
+  },
+  topTabRailWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    alignItems: "stretch"
+  },
+  topTabRailContent: {
+    gap: 8,
+    alignItems: "center",
+    paddingRight: 4
+  },
+  topTabButton: {
+    minHeight: 36,
+    minWidth: 0,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 92,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+    backgroundColor: "#0D1F22",
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4
+  },
+  topTabButtonActive: {
+    borderColor: "#F6D46B",
+    backgroundColor: "#102A2D"
+  },
+  topTabButtonMore: {
+    borderColor: "rgba(14,204,184,0.28)"
+  },
+  topTabMark: {
+    color: "rgba(255,255,255,0.62)",
+    fontSize: 11,
+    lineHeight: 13,
+    fontWeight: "900"
+  },
+  topTabLabel: {
+    color: "rgba(255,255,255,0.72)",
+    fontSize: 10,
+    lineHeight: 13,
+    fontWeight: "900"
+  },
+  topTabTextActive: {
+    color: "#F6D46B"
+  },
   topStatusChip: {
     flexGrow: 0,
     flexShrink: 1,
@@ -21527,8 +22159,8 @@ const styles = StyleSheet.create({
     minHeight: 48,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#C8DFDA",
-    backgroundColor: "#F2FAF8",
+    borderColor: "rgba(14,204,184,0.24)",
+    backgroundColor: "#0D1F22",
     paddingHorizontal: 12,
     paddingVertical: 8,
     flexDirection: "row",
@@ -21778,9 +22410,9 @@ const styles = StyleSheet.create({
     elevation: 3
   },
   routePreviewCardCompact: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginTop: 8
+    paddingHorizontal: 7,
+    paddingVertical: 5,
+    marginTop: 5
   },
   routePreviewCardSecondary: {
     backgroundColor: "#091A1D"
@@ -21807,52 +22439,66 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   homeReportBand: {
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.28)",
     backgroundColor: "#091A1D",
-    padding: 10,
-    gap: 8,
-    marginTop: 10
+    padding: 8,
+    gap: 6,
+    marginTop: 8
+  },
+  homeReportBandCompact: {
+    padding: 5,
+    gap: 3,
+    marginTop: 5
   },
   visitReportGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8
+    gap: 6
+  },
+  visitReportGridCompact: {
+    gap: 4
   },
   visitReportCard: {
     flexGrow: 1,
-    flexBasis: 180,
-    minHeight: 96,
-    borderRadius: 10,
+    flexBasis: 170,
+    minHeight: 84,
+    borderRadius: 9,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.25)",
     backgroundColor: "#0D1F22",
-    padding: 10,
-    gap: 4,
+    padding: 8,
+    gap: 3,
     shadowColor: "#0E6F69",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.18,
     shadowRadius: 6,
     elevation: 3
   },
+  visitReportCardCompact: {
+    flexBasis: 150,
+    minHeight: 68,
+    padding: 6,
+    gap: 2
+  },
   visitReportLabel: {
     color: "#0E9F95",
-    fontSize: 10,
-    lineHeight: 12,
+    fontSize: 9,
+    lineHeight: 11,
     fontWeight: "900",
     textTransform: "uppercase"
   },
   visitReportText: {
     color: "#E8F4F0",
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: 11,
+    lineHeight: 15,
     fontWeight: "800"
   },
   visitReportMeta: {
     color: "rgba(255,255,255,0.55)",
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 10,
+    lineHeight: 13,
     fontWeight: "700"
   },
   homeOverviewGrid: {
@@ -21882,8 +22528,8 @@ const styles = StyleSheet.create({
     elevation: 4
   },
   homeOverviewCardCompact: {
-    padding: 9,
-    gap: 5
+    padding: 8,
+    gap: 4
   },
   homeOverviewCardCommunity: {
     backgroundColor: "#0D1A2E",
@@ -21962,42 +22608,42 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   homeToneBand: {
-    marginTop: 12,
+    marginTop: 10,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.32)",
     backgroundColor: "#091C1F",
-    padding: 10,
-    gap: 10
+    padding: 8,
+    gap: 8
   },
   homeToneBandHeader: {
     flexDirection: "column",
     alignItems: "stretch",
-    gap: 8
+    gap: 4
   },
   homeToneBandHeaderCopy: {
-    gap: 2
+    gap: 1
   },
   homeToneBandCompact: {
-    marginTop: 8,
+    marginTop: 4,
     padding: 5,
-    gap: 5
+    gap: 4
   },
   homeToneBandButton: {
-    minHeight: 30,
+    minHeight: 24,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#0E6F69",
     backgroundColor: "#0D1F22",
-    paddingHorizontal: 9,
-    paddingVertical: 5,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
     alignItems: "center",
     justifyContent: "center"
   },
   homeToneBandButtonLabel: {
     color: "#0E6F69",
-    fontSize: 9,
-    lineHeight: 11,
+    fontSize: 7,
+    lineHeight: 9,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
@@ -22005,18 +22651,18 @@ const styles = StyleSheet.create({
   homeToneHeaderActions: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
+    gap: 4,
     alignItems: "center",
     justifyContent: "flex-start"
   },
   homeToneBandButtonSecondary: {
-    minHeight: 30,
+    minHeight: 24,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#D9A72C",
     backgroundColor: "#102A2D",
-    paddingHorizontal: 9,
-    paddingVertical: 5,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
     alignItems: "center",
     justifyContent: "center"
   },
@@ -22026,8 +22672,8 @@ const styles = StyleSheet.create({
   },
   homeToneBandButtonSecondaryLabel: {
     color: "#F6D46B",
-    fontSize: 9,
-    lineHeight: 11,
+    fontSize: 7,
+    lineHeight: 9,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
@@ -22037,25 +22683,62 @@ const styles = StyleSheet.create({
   },
   homeToneLoopStatus: {
     color: "rgba(255,255,255,0.5)",
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 9,
+    lineHeight: 12,
     fontWeight: "800",
-    marginTop: 6
+    marginTop: 4
   },
   homeToneLoopStatusCompact: {
-    fontSize: 10,
-    lineHeight: 13,
-    marginTop: 4
+    fontSize: 8,
+    lineHeight: 10,
+    marginTop: 2
   },
   homeToneBandIntro: {
     color: "rgba(255,255,255,0.55)",
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: 10,
+    lineHeight: 13,
     fontWeight: "700"
   },
   homeToneBandIntroCompact: {
+    fontSize: 7,
+    lineHeight: 9
+  },
+  homeToneQuickStrip: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 4,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.3)",
+    backgroundColor: "#071618",
+    paddingHorizontal: 6,
+    paddingVertical: 4
+  },
+  homeToneQuickCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 1
+  },
+  homeToneQuickTitle: {
+    color: "#E8F4F0",
+    fontSize: 11,
+    lineHeight: 13,
+    fontWeight: "900"
+  },
+  homeToneQuickMeta: {
+    color: "rgba(14,180,160,0.9)",
     fontSize: 9,
-    lineHeight: 11
+    lineHeight: 11,
+    fontWeight: "700"
+  },
+  homeToneQuickNote: {
+    flex: 1,
+    minWidth: 0,
+    color: "rgba(255,255,255,0.68)",
+    fontSize: 9,
+    lineHeight: 11,
+    fontWeight: "700",
+    textAlign: "right"
   },
   homeToneFeaturedCard: {
     borderRadius: 14,
@@ -22299,15 +22982,15 @@ const styles = StyleSheet.create({
   toneSessionRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginBottom: 2
+    gap: 8,
+    marginBottom: 0
   },
   toneSessionClock: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: "900",
     color: "#0ECCB8",
     fontVariant: ["tabular-nums"],
-    letterSpacing: 1
+    letterSpacing: 0.6
   },
   toneProgressTrack: {
     flex: 1,
@@ -22324,13 +23007,13 @@ const styles = StyleSheet.create({
   // ── Tone preset chips ────────────────────────────────────────────────────
   tonePresetRow: {
     flexDirection: "row",
-    gap: 6,
+    gap: 4,
     flexWrap: "nowrap"
   },
   tonePresetChip: {
     borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
     backgroundColor: "rgba(14,111,105,0.1)",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)"
@@ -22340,7 +23023,7 @@ const styles = StyleSheet.create({
     borderColor: "#0E6F69"
   },
   tonePresetChipLabel: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: "700",
     color: "rgba(255,255,255,0.55)"
   },
@@ -22349,10 +23032,10 @@ const styles = StyleSheet.create({
   },
   homeSafetyStrip: {
     marginTop: 12,
-    borderRadius: 8,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#E5D1B5",
-    backgroundColor: "#FFF9F1",
+    borderColor: "#E8B5A7",
+    backgroundColor: "#1B0F12",
     padding: 10,
     gap: 8
   },
@@ -22876,16 +23559,16 @@ const styles = StyleSheet.create({
     paddingVertical: 5
   },
   footerQuickActionUrgent: {
-    borderColor: "#E8B5A7",
-    backgroundColor: "#FFF3EF"
+    borderColor: "#C73F33",
+    backgroundColor: "#C73F33"
   },
   footerQuickActionComplaint: {
-    borderColor: "#E5C28F",
-    backgroundColor: "#FFF8EE"
+    borderColor: "#8B2F2A",
+    backgroundColor: "#231013"
   },
   footerQuickActionSecondary: {
-    borderColor: "#CFE3D9",
-    backgroundColor: "#F6FBF8"
+    borderColor: "#5C2A2E",
+    backgroundColor: "#140B0D"
   },
   footerQuickActionLabel: {
     color: "#E8F4F0",
@@ -22900,7 +23583,7 @@ const styles = StyleSheet.create({
     lineHeight: 12
   },
   footerQuickActionMeta: {
-    color: "#6F7785",
+    color: "rgba(255,255,255,0.72)",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "700"
@@ -23176,7 +23859,7 @@ const styles = StyleSheet.create({
   },
   issueStepButtonActive: {
     borderColor: "#0E6F69",
-    backgroundColor: "#F2F8F6"
+    backgroundColor: "#102A2D"
   },
   issueStepCheck: {
     width: 24,
@@ -23211,7 +23894,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   issueStepTextActive: {
-    color: "#0E6F69"
+    color: "#E8F4F0"
   },
   issueResetRow: {
     flexDirection: "row",
@@ -23228,8 +23911,8 @@ const styles = StyleSheet.create({
     minHeight: 64,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E8E1",
-    backgroundColor: "#F7FCFA",
+    borderColor: "rgba(14,111,105,0.38)",
+    backgroundColor: "#0D1F22",
     paddingHorizontal: 12,
     paddingVertical: 10,
     justifyContent: "center",
@@ -23249,19 +23932,19 @@ const styles = StyleSheet.create({
   issueCallout: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#F3B8AE",
-    backgroundColor: "#FDE9E5",
+    borderColor: "rgba(243,123,100,0.42)",
+    backgroundColor: "#1D1110",
     padding: 14,
     gap: 8
   },
   issueCalloutTitle: {
-    color: "#9D3224",
+    color: "#F37B64",
     fontSize: 14,
     fontWeight: "900",
     textTransform: "uppercase"
   },
   issueCalloutText: {
-    color: "#7E342B",
+    color: "rgba(255,255,255,0.72)",
     fontSize: 14,
     lineHeight: 21
   },
@@ -23273,24 +23956,35 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 8
   },
+  issueRouteSnapshotBandCompact: {
+    padding: 5,
+    gap: 3
+  },
+  sectionFlowSummaryCompact: {
+    fontSize: 9,
+    lineHeight: 11
+  },
   issueCalloutActions: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
   },
+  issueCalloutActionsCompact: {
+    gap: 4
+  },
   issueSupportBand: {
     borderRadius: 8,
-    backgroundColor: "#F2F8F6",
+    backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#D6E8E1",
+    borderColor: "rgba(14,111,105,0.28)",
     padding: 14,
     gap: 10
   },
   issueReminderBand: {
     borderRadius: 8,
-    backgroundColor: "#F7F9FD",
+    backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#D9E1F0",
+    borderColor: "rgba(46,125,154,0.28)",
     padding: 14,
     gap: 12
   },
@@ -23485,8 +24179,8 @@ const styles = StyleSheet.create({
   communitySafetyBand: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
-    backgroundColor: "#F8FBFF",
+    borderColor: "rgba(46,125,154,0.28)",
+    backgroundColor: "#0D1F22",
     padding: 12,
     gap: 10
   },
@@ -23526,12 +24220,12 @@ const styles = StyleSheet.create({
     gap: 6
   },
   communityChatBubbleVerified: {
-    borderColor: "#D6E8E1",
-    backgroundColor: "#F7FCFA"
+    borderColor: "rgba(14,111,105,0.28)",
+    backgroundColor: "#0D1F22"
   },
   communityChatBubbleUser: {
-    borderColor: "#D9E1F0",
-    backgroundColor: "#F7F9FD"
+    borderColor: "rgba(46,125,154,0.32)",
+    backgroundColor: "#102A2D"
   },
   aiHelpBubble: {
     borderColor: "#C7D8F4",
@@ -23545,7 +24239,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69"
   },
   communityChatAuthorUser: {
-    color: "#2E5C8A"
+    color: "#8FD5FF"
   },
   communityChatText: {
     fontSize: 14,
@@ -23555,7 +24249,7 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.82)"
   },
   communityChatTextUser: {
-    color: "#1E2F4D"
+    color: "#E8F4F0"
   },
   communityChatMeta: {
     fontSize: 11,
@@ -23565,7 +24259,7 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.55)"
   },
   communityChatMetaUser: {
-    color: "#5B6884"
+    color: "rgba(255,255,255,0.55)"
   },
   communityChatActions: {
     flexDirection: "row",
@@ -23914,8 +24608,8 @@ const styles = StyleSheet.create({
     flexBasis: 220,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D7E8E0",
-    backgroundColor: "#F7FCFA",
+    borderColor: "rgba(14,111,105,0.28)",
+    backgroundColor: "#0D1F22",
     padding: 14,
     gap: 6
   },
@@ -23957,8 +24651,8 @@ const styles = StyleSheet.create({
     minHeight: 68,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#CFE4DC",
-    backgroundColor: "#F7FCFA",
+    borderColor: "rgba(14,111,105,0.28)",
+    backgroundColor: "#091A1D",
     padding: 10,
     gap: 4,
     justifyContent: "center"
@@ -24097,6 +24791,10 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 4
   },
+  alertBannerCompact: {
+    padding: 10,
+    gap: 3
+  },
   alertBannerTitle: {
     color: "#9D3D2B",
     fontSize: 13,
@@ -24112,8 +24810,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.55)",
-    backgroundColor: "#F2EEE7",
+    borderColor: "rgba(246,212,107,0.28)",
+    backgroundColor: "#0D1F22",
     padding: 12,
     gap: 10,
     ...shadow
@@ -24161,8 +24859,8 @@ const styles = StyleSheet.create({
     minHeight: 70,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#DCE7E1",
-    backgroundColor: "#F8FCFA",
+    borderColor: "rgba(14,111,105,0.28)",
+    backgroundColor: "#091A1D",
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
@@ -24389,9 +25087,9 @@ const styles = StyleSheet.create({
   },
   visionBand: {
     borderRadius: 8,
-    backgroundColor: "#FFF8F3",
+    backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#EFDCCD",
+    borderColor: "rgba(246,212,107,0.22)",
     paddingHorizontal: 14,
     paddingVertical: 12,
     gap: 10
@@ -24403,18 +25101,18 @@ const styles = StyleSheet.create({
   },
   beaconXBand: {
     borderRadius: 8,
-    backgroundColor: "#F9F7FF",
+    backgroundColor: "#101827",
     borderWidth: 1,
-    borderColor: "#DCD5FF",
+    borderColor: "rgba(126,111,214,0.28)",
     paddingHorizontal: 14,
     paddingVertical: 12,
     gap: 12
   },
   guidanceBand: {
     borderRadius: 8,
-    backgroundColor: "#F4F8FF",
+    backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#D8E4FF",
+    borderColor: "rgba(46,125,154,0.28)",
     paddingHorizontal: 14,
     paddingVertical: 12,
     gap: 12
@@ -24571,9 +25269,9 @@ const styles = StyleSheet.create({
   },
   communityPreviewBand: {
     borderRadius: 8,
-    backgroundColor: "#F5F7FF",
+    backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#D9DEFF",
+    borderColor: "rgba(46,125,154,0.28)",
     padding: 18,
     gap: 14
   },
@@ -24666,8 +25364,8 @@ const styles = StyleSheet.create({
   aiHelpOutcomeBand: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
-    backgroundColor: "#F8FBFF",
+    borderColor: "rgba(46,125,154,0.28)",
+    backgroundColor: "#0D1F22",
     padding: 10,
     gap: 6
   },
@@ -24678,8 +25376,8 @@ const styles = StyleSheet.create({
   aiHelpSummaryBand: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
-    backgroundColor: "#F8FBFF",
+    borderColor: "rgba(46,125,154,0.28)",
+    backgroundColor: "#0D1F22",
     padding: 10,
     gap: 8
   },
@@ -24691,14 +25389,14 @@ const styles = StyleSheet.create({
     gap: 3
   },
   aiHelpSummaryLabel: {
-    color: "#1E2F4D",
+    color: "#F6D46B",
     fontSize: 11,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
   },
   aiHelpSummaryValue: {
-    color: "#27406A",
+    color: "rgba(255,255,255,0.78)",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -24708,7 +25406,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   aiHelpOutcomeTitle: {
-    color: "#1E2F4D",
+    color: "#F6D46B",
     fontSize: 11,
     fontWeight: "900",
     textTransform: "uppercase",
@@ -24822,8 +25520,8 @@ const styles = StyleSheet.create({
     minHeight: 32,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
-    backgroundColor: "#F9FBFF",
+    borderColor: "rgba(46,125,154,0.28)",
+    backgroundColor: "#0D1F22",
     paddingHorizontal: 10,
     paddingVertical: 7,
     alignItems: "center",
@@ -24838,7 +25536,7 @@ const styles = StyleSheet.create({
     opacity: 0.48
   },
   aiStarterChipText: {
-    color: "#1E2F4D",
+    color: "#E8F4F0",
     fontSize: 10,
     fontWeight: "900",
     textTransform: "uppercase",
@@ -25140,6 +25838,9 @@ const styles = StyleSheet.create({
     borderColor: "#D9CDBD",
     ...shadow
   },
+  profileSheetCompact: {
+    maxHeight: "66%"
+  },
   onboardingSheetContent: {
     paddingHorizontal: 10,
     paddingVertical: 10,
@@ -25150,11 +25851,28 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     gap: 8
   },
+  profileSheetContentCompact: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    gap: 6
+  },
   profileSheetTopRow: {
+    position: "relative",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 8
+    gap: 8,
+    paddingRight: 42
+  },
+  profileSheetTopRowCompact: {
+    gap: 6,
+    paddingRight: 38
+  },
+  profileSheetCloseButtonFloating: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 2
   },
   profileSheetExitButton: {
     flex: 1,
@@ -25197,6 +25915,9 @@ const styles = StyleSheet.create({
   onboardingHeader: {
     gap: 3
   },
+  onboardingHeaderCompact: {
+    gap: 2
+  },
   onboardingHeaderRow: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -25229,6 +25950,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: "900",
     textAlign: "center"
+  },
+  sheetCloseIconButtonLabelCompact: {
+    fontSize: 16,
+    lineHeight: 18
   },
   onboardingCloseButton: {
     minWidth: 64,
@@ -25293,16 +26018,28 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: 0
   },
+  onboardingTitleCompact: {
+    fontSize: 12,
+    lineHeight: 14
+  },
   onboardingText: {
     color: "rgba(255,255,255,0.55)",
     fontSize: 9,
     lineHeight: 13
+  },
+  onboardingTextCompact: {
+    fontSize: 8,
+    lineHeight: 11
   },
   onboardingBlock: {
     gap: 6,
     paddingTop: 6,
     borderTopWidth: 1,
     borderTopColor: "rgba(14,111,105,0.2)"
+  },
+  onboardingBlockCompact: {
+    gap: 4,
+    paddingTop: 4
   },
   onboardingVision: {
     gap: 8,
@@ -25314,6 +26051,10 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     gap: 6
   },
+  onboardingActionsCompact: {
+    gap: 4,
+    paddingTop: 0
+  },
   onboardingButton: {
     minHeight: 42,
     borderRadius: 8,
@@ -25321,6 +26062,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: "center",
     justifyContent: "center"
+  },
+  onboardingButtonCompact: {
+    minHeight: 38,
+    paddingHorizontal: 14
   },
   onboardingButtonLabel: {
     color: "#FFFDFC",
@@ -25336,6 +26081,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: "center",
     justifyContent: "center"
+  },
+  onboardingButtonSecondaryCompact: {
+    minHeight: 34,
+    paddingHorizontal: 12,
+    paddingVertical: 6
+  },
+  settingsTitleCompact: {
+    fontSize: 12,
+    lineHeight: 14
+  },
+  promptTextCompact: {
+    fontSize: 10,
+    lineHeight: 14
   },
   onboardingButtonSecondaryLabel: {
     color: "#0E6F69",
@@ -25593,9 +26351,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    backgroundColor: "#FAFAF8",
+    backgroundColor: "#081A22",
     borderTopWidth: 1,
-    borderColor: "#D7E8E0",
+    borderColor: "rgba(14,204,184,0.22)",
     padding: 20,
     paddingBottom: 32,
     gap: 16,
@@ -25622,9 +26380,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 3,
-    backgroundColor: "#F7F4EF",
+    backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#E8E2D8"
+    borderColor: "rgba(255,255,255,0.12)"
   },
   tabButtonCompact: {
     flexBasis: "48%",
@@ -26064,8 +26822,8 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   sectionTitleSmallCompact: {
-    fontSize: 15,
-    lineHeight: 21,
+    fontSize: 14,
+    lineHeight: 19,
     width: "100%",
     flexShrink: 1
   },
@@ -26186,6 +26944,10 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 8
   },
+  journalInsightBandCompact: {
+    padding: 10,
+    gap: 6
+  },
   journalDraftBand: {
     borderRadius: 8,
     borderWidth: 1,
@@ -26194,17 +26956,21 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 10
   },
+  journalDraftBandCompact: {
+    padding: 10,
+    gap: 8
+  },
   journalInsightTitle: {
     color: "#F0F9FF",
-    fontSize: 14,
-    lineHeight: 19,
+    fontSize: 13,
+    lineHeight: 17,
     fontWeight: "900",
     letterSpacing: 0.2
   },
   journalInsightText: {
     color: "rgba(240,249,255,0.65)",
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 12,
+    lineHeight: 17,
     fontWeight: "600"
   },
   journalDraftActions: {
@@ -27076,6 +27842,9 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 4
   },
+  profileSummaryGridCompact: {
+    gap: 3
+  },
   profileBanner: {
     borderRadius: 12,
     borderWidth: 1.5,
@@ -27085,6 +27854,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12
+  },
+  profileBannerCompact: {
+    padding: 10,
+    gap: 8
   },
   profileBannerMark: {
     width: 38,
@@ -27110,17 +27883,29 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: 0.1
   },
+  profileBannerTitleCompact: {
+    fontSize: 13,
+    lineHeight: 16
+  },
   profileBannerMeta: {
     color: "rgba(240,249,255,0.6)",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
   },
+  profileBannerMetaCompact: {
+    fontSize: 11,
+    lineHeight: 14
+  },
   profileStatusRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
     marginTop: 4
+  },
+  profileStatusRowCompact: {
+    gap: 6,
+    marginTop: 2
   },
   profileSummaryCard: {
     flexBasis: "48%",
@@ -27134,6 +27919,13 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     gap: 5
   },
+  profileSummaryCardCompact: {
+    minWidth: 0,
+    flexBasis: "30%",
+    paddingHorizontal: 7,
+    paddingVertical: 6,
+    gap: 2
+  },
   profileSummaryLabel: {
     color: "rgba(34,211,238,0.7)",
     fontSize: 10,
@@ -27141,11 +27933,19 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 1.2
   },
+  profileSummaryLabelCompact: {
+    fontSize: 7,
+    letterSpacing: 0.7
+  },
   profileSummaryValue: {
     color: "#F0F9FF",
     fontSize: 16,
     lineHeight: 20,
     fontWeight: "800"
+  },
+  profileSummaryValueCompact: {
+    fontSize: 10,
+    lineHeight: 12
   },
   accessFlowBand: {
     borderRadius: 12,
@@ -27154,6 +27954,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#071C1F",
     padding: 12,
     gap: 8
+  },
+  accessFlowBandCompact: {
+    padding: 10,
+    gap: 6
   },
   accessFlowBandHeader: {
     flexDirection: "row",
@@ -27168,6 +27972,10 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     fontWeight: "900"
   },
+  accessFlowBandTitleCompact: {
+    fontSize: 12,
+    lineHeight: 15
+  },
   accessFlowBandMeta: {
     color: "#0E6F69",
     fontSize: 10,
@@ -27179,6 +27987,10 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700"
+  },
+  accessFlowBandTextCompact: {
+    fontSize: 10,
+    lineHeight: 14
   },
   privateIntakeFlowList: {
     gap: 8
@@ -27227,6 +28039,9 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 8
   },
+  accessFlowPillsCompact: {
+    gap: 6
+  },
   accessFlowPill: {
     flexGrow: 1,
     flexBasis: 96,
@@ -27237,6 +28052,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     gap: 2
+  },
+  accessFlowPillLabelCompact: {
+    fontSize: 11,
+    lineHeight: 13
   },
   accessFlowPillLabel: {
     color: "#E8F4F0",
@@ -27249,6 +28068,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
+  },
+  accessFlowPillMetaCompact: {
+    fontSize: 9,
+    lineHeight: 12
   },
   govHelpList: {
     gap: 12
@@ -27392,6 +28215,9 @@ const styles = StyleSheet.create({
   identityStack: {
     gap: 8
   },
+  identityStackCompact: {
+    gap: 6
+  },
   identityCard: {
     flexGrow: 1,
     flexBasis: 118,
@@ -27426,6 +28252,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 10
   },
+  identityChoiceRowCompact: {
+    minHeight: 58,
+    paddingHorizontal: 10,
+    paddingVertical: 8
+  },
   identityChoiceCopy: {
     flex: 1,
     gap: 3
@@ -27454,6 +28285,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "900"
   },
+  identityLabelCompact: {
+    fontSize: 12
+  },
   identityLabelActive: {
     color: "#E8F4F0"
   },
@@ -27461,6 +28295,10 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.42)",
     fontSize: 10,
     lineHeight: 14
+  },
+  identityMetaCompact: {
+    fontSize: 9,
+    lineHeight: 12
   },
   identityMetaActive: {
     color: "rgba(255,255,255,0.55)"
@@ -27487,11 +28325,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "800"
   },
+  verificationStatusChipLabelCompact: {
+    fontSize: 11,
+    lineHeight: 13
+  },
   verificationStatusChipLabelActive: {
     color: "#E8F4F0"
   },
   verificationBlock: {
     gap: 8
+  },
+  verificationBlockCompact: {
+    gap: 6
   },
   verificationActionsRow: {
     flexDirection: "row",
@@ -27555,6 +28400,11 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     color: "#E8F4F0",
     fontSize: 14
+  },
+  settingsInputCompact: {
+    minHeight: 38,
+    paddingVertical: 7,
+    fontSize: 13
   },
   segmentRow: {
     flexDirection: "row",
@@ -27821,9 +28671,12 @@ const styles = StyleSheet.create({
     letterSpacing: 2.8,
   },
   heroRouteTagline: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.55)",
-    letterSpacing: 0.3,
+    fontSize: 11,
+    color: "#F6D46B",
+    letterSpacing: 1.1,
+    fontWeight: "900",
+    textTransform: "uppercase",
+    lineHeight: 14,
   },
   heroRouteQuestion: {
     fontSize: 22,
@@ -27969,12 +28822,12 @@ const styles = StyleSheet.create({
   },
   // ── First-run welcome card ──
   welcomeExplainerCard: {
-    backgroundColor: "#EAF4FB",
+    backgroundColor: "#0D1F22",
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#BEE0F2",
+    borderColor: "rgba(14,204,184,0.24)",
   },
   welcomeExplainerRow: {
     flexDirection: "row",
@@ -27985,18 +28838,18 @@ const styles = StyleSheet.create({
   welcomeExplainerTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#0D2B2E",
+    color: "#E8F4F0",
   },
   welcomeExplainerClose: {
     padding: 4,
   },
   welcomeExplainerCloseText: {
     fontSize: 16,
-    color: "#6B7280",
+    color: "rgba(255,255,255,0.55)",
   },
   welcomeExplainerBody: {
     fontSize: 13,
-    color: "#374151",
+    color: "rgba(255,255,255,0.68)",
     lineHeight: 19,
     marginBottom: 12,
   },
@@ -28006,14 +28859,16 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   welcomeExplainerPill: {
-    backgroundColor: "#DBEAFE",
+    backgroundColor: "rgba(46,125,154,0.18)",
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: "rgba(46,125,154,0.28)",
   },
   welcomeExplainerPillText: {
     fontSize: 12,
-    color: "#1D4ED8",
+    color: "#8FD5FF",
     fontWeight: "500",
   },
   // ── Tab banner cards (Journal / Wellness / Wisdom / Community) ───────────
@@ -28435,11 +29290,15 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   birthChartPromptCard: {
-    marginTop: 8,
-    marginBottom: 8,
-    gap: 8,
+    marginTop: 6,
+    marginBottom: 6,
+    gap: 6,
     backgroundColor: "#0F1326",
     borderColor: "rgba(168,85,247,0.32)"
+  },
+  birthChartPromptCardCompact: {
+    paddingHorizontal: 8,
+    paddingVertical: 7
   },
   birthChartPromptHeader: {
     flexDirection: "row",
@@ -28461,37 +29320,37 @@ const styles = StyleSheet.create({
     gap: 8
   },
   birthChartPromptHint: {
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 10,
+    lineHeight: 13,
     color: "rgba(255,255,255,0.55)",
     fontWeight: "600"
   },
   birthChartPromptButtons: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8
+    gap: 6
   },
   birthChartPromptButton: {
     backgroundColor: "#A78BFA",
     borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8
+    paddingHorizontal: 10,
+    paddingVertical: 7
   },
   birthChartPromptButtonLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "800",
     color: "#0A0D1A"
   },
   birthChartPromptButtonSecondary: {
     backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)"
   },
   birthChartPromptButtonSecondaryLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "800",
     color: "#E2D9F3"
   },
@@ -28515,6 +29374,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     color: "rgba(255,255,255,0.72)"
+  },
+  birthChartIntroMetaRow: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  birthChartIntroMetaChip: {
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)"
+  },
+  birthChartIntroMetaChipActive: {
+    backgroundColor: "rgba(16,185,129,0.16)",
+    borderColor: "rgba(16,185,129,0.42)"
+  },
+  birthChartIntroMetaChipLabel: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#E2E8F0"
+  },
+  birthChartIntroMetaChipLabelActive: {
+    color: "#B7F7D5"
   },
   birthChartIntroActions: {
     flexDirection: "row",
@@ -28544,6 +29427,103 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "800",
     color: "#E2D9F3"
+  },
+  birthChartExactCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.28)",
+    backgroundColor: "#071C1F",
+    padding: 12,
+    gap: 10
+  },
+  birthChartExactHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10
+  },
+  birthChartExactTitle: {
+    fontSize: 13,
+    fontWeight: "900",
+    color: "#E8F4F0"
+  },
+  birthChartExactBadge: {
+    fontSize: 10,
+    fontWeight: "900",
+    color: "#0E6F69",
+    backgroundColor: "rgba(14,111,105,0.16)",
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.25)",
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    overflow: "hidden"
+  },
+  birthChartExactGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8
+  },
+  birthChartExactChip: {
+    flexGrow: 1,
+    flexBasis: 140,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "#091A1D",
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    gap: 2
+  },
+  birthChartExactChipLabel: {
+    color: "#0ECCB8",
+    fontSize: 9,
+    fontWeight: "900",
+    textTransform: "uppercase",
+    letterSpacing: 0.8
+  },
+  birthChartExactChipValue: {
+    color: "#F0F9FF",
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: "800"
+  },
+  birthChartGeminiCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(246,212,107,0.24)",
+    backgroundColor: "#101827",
+    padding: 12,
+    gap: 8
+  },
+  birthChartGeminiHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10
+  },
+  birthChartGeminiTitle: {
+    fontSize: 13,
+    fontWeight: "900",
+    color: "#F6D46B"
+  },
+  birthChartGeminiBadge: {
+    fontSize: 10,
+    fontWeight: "900",
+    color: "#F6D46B",
+    backgroundColor: "rgba(246,212,107,0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(246,212,107,0.22)",
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    overflow: "hidden"
+  },
+  birthChartGeminiText: {
+    color: "rgba(255,255,255,0.82)",
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "700"
   },
   birthChartFactGrid: {
     flexDirection: "row",

@@ -364,22 +364,35 @@ function buildGeminiPrompt(body) {
   const issueGuideLabel = typeof body?.issueGuideLabel === "string" ? body.issueGuideLabel : "Current issue";
   const emergencyNumber = typeof body?.emergencyNumber === "string" ? body.emergencyNumber : "112";
   const text = typeof body?.text === "string" ? body.text.trim() : "";
+  const appPrompt = typeof body?.prompt === "string" ? body.prompt.trim() : "";
+
+  if (appPrompt.length > 0) {
+    return [
+      appPrompt,
+      "",
+      "Hard requirement: return exactly 4 labelled lines and no extra paragraph.",
+      "Hard requirement: the second line must contain one concrete next action, not general reassurance."
+    ].join("\n");
+  }
 
   return [
     "You are Beacon Guide.",
-    "Reply with calm, practical, objective-oriented guidance.",
-    "Keep the answer short and easy to scan.",
-    "Do not be verbose or generic.",
+    "Reply with operational triage, not generic counselling.",
+    "Classify the issue, choose the route, give one concrete next action, and say when to escalate.",
+    "Keep the answer short and easy to scan. Do not be verbose or generic.",
     "If the user needs urgent help, say to use SOS or call the emergency number immediately.",
+    "If the issue needs a complaint, office, police, school, workplace, cyber, women/child, or authority route, choose Help.",
+    "If the issue mainly needs planning, choose Path. If emotionally flooded but not unsafe, choose Reset first, then Path.",
     `User role: ${identityLabel}.`,
     `Detected route: ${route}.`,
     `Current issue guide: ${issueGuideLabel}.`,
     `Emergency number: ${emergencyNumber}.`,
     `User message: ${text}`,
-    "Return plain text only. Use 3 short parts:",
-    "1. What is happening.",
-    "2. What to do next.",
-    `3. If there is danger, call ${emergencyNumber} or use SOS now.`
+    "Return plain text only. Use exactly 4 labelled lines:",
+    "1. What this means:",
+    "2. Safest next step:",
+    "3. Open tab:",
+    `4. Escalate when:`
   ].join("\n");
 }
 
@@ -524,6 +537,71 @@ async function generateGeminiBrief(body) {
   }
   console.warn("[brief]", errors.join(" | "));
   return { source: "fallback", text: buildBriefFallback(body) };
+}
+
+// ── /ai/birth-chart — Gemini horoscope based on exact birth details ─────────
+
+function buildBirthChartPrompt(body) {
+  const name = typeof body?.name === "string" ? body.name.trim() : "the user";
+  const dob = typeof body?.dob === "string" ? body.dob.trim() : "";
+  const birthTime = typeof body?.birthTime === "string" ? body.birthTime.trim() : "";
+  const birthPlace = typeof body?.birthPlace === "string" ? body.birthPlace.trim() : "";
+  const rashiName = typeof body?.rashiName === "string" ? body.rashiName.trim() : "";
+  const nakshatraName = typeof body?.nakshatraName === "string" ? body.nakshatraName.trim() : "";
+  const tithiName = typeof body?.tithiName === "string" ? body.tithiName.trim() : "";
+  const varaName = typeof body?.varaName === "string" ? body.varaName.trim() : "";
+  const predictionLines = Array.isArray(body?.predictionLines)
+    ? body.predictionLines.slice(0, 4).map((line) => String(line).trim()).filter(Boolean).join(" | ")
+    : "";
+
+  return [
+    "You are Beacon Guide writing a compact Gemini horoscope for a wellness app birth chart page.",
+    "Use Vedic-style language, but stay calm, practical, and respectful.",
+    "Write 3 short sentences. Sentence 1: summarize the cosmic reading. Sentence 2: give one likely emotional/behavioral theme. Sentence 3: give one grounded action or caution for today.",
+    "Do not mention AI, Gemini, or that this is generated.",
+    "Do not make medical, financial, or certainty-heavy claims.",
+    `User name: ${name}.`,
+    `Date of birth: ${dob}.`,
+    `Time of birth: ${birthTime}.`,
+    `Place of birth: ${birthPlace}.`,
+    rashiName.length > 0 ? `Rashi: ${rashiName}.` : "",
+    nakshatraName.length > 0 ? `Nakshatra: ${nakshatraName}.` : "",
+    tithiName.length > 0 ? `Tithi: ${tithiName}.` : "",
+    varaName.length > 0 ? `Vara: ${varaName}.` : "",
+    predictionLines.length > 0 ? `Local chart hints: ${predictionLines}.` : "",
+    "Keep the tone steady, useful, and precise."
+  ].filter(Boolean).join("\n");
+}
+
+function buildBirthChartFallback(body) {
+  const rashiName = typeof body?.rashiName === "string" ? body.rashiName.trim() : "";
+  const nakshatraName = typeof body?.nakshatraName === "string" ? body.nakshatraName.trim() : "";
+  const place = typeof body?.birthPlace === "string" ? body.birthPlace.trim() : "";
+  const base = rashiName.length > 0 ? `Your chart leans through ${rashiName}.` : "Your chart is ready for a steady reading.";
+  const second = nakshatraName.length > 0
+    ? `Your ${nakshatraName} detail suggests a pattern worth noticing in how you respond to stress and choice.`
+    : "Use the reading as a guide, not a fixed label.";
+  const third = place.length > 0
+    ? `Because your birth place is on file, the app can anchor the horoscope to the right context.`
+    : "Open Profile and keep your birth details complete for a stronger reading.";
+  return `${base} ${second} ${third}`;
+}
+
+async function generateGeminiBirthChart(body) {
+  if (!geminiConfigured) {
+    return { source: "fallback", text: buildBirthChartFallback(body) };
+  }
+  const errors = [];
+  for (const model of geminiModelCandidates) {
+    try {
+      const result = await callGeminiModelWithPrompt(model, buildBirthChartPrompt(body));
+      return { source: "gemini", model: result.model, text: result.text };
+    } catch (error) {
+      errors.push(error instanceof Error ? error.message : `model ${model} failed`);
+    }
+  }
+  console.warn("[birth-chart]", errors.join(" | "));
+  return { source: "fallback", text: buildBirthChartFallback(body) };
 }
 
 // ── /ai/journal — journal entry emotion analysis ───────────────────────────
@@ -875,6 +953,22 @@ async function handleRequest(req, res) {
         model: "fallback",
         text: buildBriefFallback({}),
         message: error instanceof Error ? error.message : "Could not generate brief."
+      });
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/ai/birth-chart") {
+    try {
+      const body = await readBody(req);
+      const result = await generateGeminiBirthChart(body);
+      json(res, 200, { source: result.source, model: result.model ?? "fallback", text: result.text });
+    } catch (error) {
+      json(res, 503, {
+        source: "fallback",
+        model: "fallback",
+        text: buildBirthChartFallback({}),
+        message: error instanceof Error ? error.message : "Could not generate birth chart horoscope."
       });
     }
     return;
