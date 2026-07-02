@@ -9989,16 +9989,9 @@ async function fetchGeminiAIHelp(
         return;
       }
       if (!privateIntakeSavedAt) {
-        setPendingPrivateIntakeRoute({
-          routeTab: pendingRouteTab,
-          issueId: issueFocus.id,
-          redressRouteId: redressFocus
-        });
-        setShowPrivateIntakePanel(true);
-        scrollTabSurfaceToTop();
         showRouteNotice(
-          "Private intake opened",
-          "Share the feeling, trigger, body signal, family, relatives, friends, coworkers, and behavior so the next step can be calmer."
+          "Next step ready",
+          "The guidance stays here. Open intake only if you want the fuller questionnaire."
         );
         return;
       }
@@ -20344,6 +20337,8 @@ function PrivateIntakeOverlay({
   onCompletePrivateIntake: () => void;
   onClose: () => void;
 }) {
+  const { width } = useWindowDimensions();
+  const compact = width < 620;
   const updateField = <K extends keyof PrivateIntakeDraft>(field: K, value: string) => {
     setPrivateIntakeDraft((current) => ({ ...current, [field]: value }));
   };
@@ -20363,59 +20358,66 @@ function PrivateIntakeOverlay({
       <View style={styles.onboardingBackdrop}>
         <ScrollView
           style={styles.privateIntakeSheet}
-          contentContainerStyle={[styles.privateIntakeSheetContent, { flexGrow: 1 }]}
+          contentContainerStyle={[
+            styles.privateIntakeSheetContent,
+            compact && styles.privateIntakeSheetContentCompact,
+            { flexGrow: 1 }
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.onboardingHeaderRow}>
+          <View style={[styles.onboardingHeaderRow, compact && styles.onboardingHeaderRowCompact]}>
             <View style={styles.onboardingHeader}>
               <Text style={styles.eyebrow}>Private intake</Text>
-              <Text style={styles.onboardingTitle}>{intakeBlueprint.modeLabel}</Text>
-              <Text style={styles.onboardingText}>
+              <Text style={[styles.onboardingTitle, compact && styles.onboardingTitleCompact]}>{intakeBlueprint.modeLabel}</Text>
+              <Text style={[styles.onboardingText, compact && styles.onboardingTextCompact]}>
                 {intakeBlueprint.modeSummary} The intake changes with the situation you chose, so the report does not stay generic.
               </Text>
             </View>
-            <View style={styles.onboardingHeaderActions}>
+            <View style={[styles.onboardingHeaderActions, compact && styles.onboardingHeaderActionsCompact]}>
               <Pressable
                 accessibilityRole="button"
                 onPress={onClose}
-                style={({ pressed }) => [styles.onboardingCloseButton, pressed && styles.pressed]}
+                style={({ pressed }) => [styles.onboardingCloseButton, compact && styles.onboardingCloseButtonCompact, pressed && styles.pressed]}
               >
-                <Text style={styles.onboardingCloseButtonLabel}>Exit</Text>
+                <Text style={[styles.onboardingCloseButtonLabel, compact && styles.onboardingCloseButtonLabelCompact]}>Exit</Text>
               </Pressable>
             </View>
           </View>
 
-          <View style={styles.accessFlowBand}>
+          <View style={[styles.accessFlowBand, compact && styles.accessFlowBandCompact]}>
             <View style={styles.accessFlowBandHeader}>
-              <Text style={styles.accessFlowBandTitle}>Information flow</Text>
+              <Text style={[styles.accessFlowBandTitle, compact && styles.accessFlowBandTitleCompact]}>Information flow</Text>
               <Text style={styles.accessFlowBandMeta}>{selectedIssueGuide.label}</Text>
             </View>
-            <Text style={styles.accessFlowBandText}>
+            <Text style={[styles.accessFlowBandText, compact && styles.accessFlowBandTextCompact]}>
               This questionnaire is tuned for the route you chose, then it turns the answers into a report that matches the situation.
             </Text>
             <View style={styles.privateIntakeFlowList}>
               {intakeBlueprint.flowSteps.map((step, index) => (
-                <View key={step.id} style={styles.privateIntakeFlowCard}>
-                  <Text style={styles.privateIntakeFlowIndex}>{index + 1}</Text>
+                <View
+                  key={step.id}
+                  style={[styles.privateIntakeFlowCard, compact && styles.privateIntakeFlowCardCompact]}
+                >
+                  <Text style={[styles.privateIntakeFlowIndex, compact && styles.privateIntakeFlowIndexCompact]}>{index + 1}</Text>
                   <View style={styles.privateIntakeFlowCopy}>
-                    <Text style={styles.privateIntakeFlowTitle}>{step.title}</Text>
-                    <Text style={styles.privateIntakeFlowMeta}>{step.meta}</Text>
+                    <Text style={[styles.privateIntakeFlowTitle, compact && styles.privateIntakeFlowTitleCompact]}>{step.title}</Text>
+                    <Text style={[styles.privateIntakeFlowMeta, compact && styles.privateIntakeFlowMetaCompact]}>{step.meta}</Text>
                   </View>
                 </View>
               ))}
             </View>
-            <Text style={styles.accessFlowBandText}>
+            <Text style={[styles.accessFlowBandText, compact && styles.accessFlowBandTextCompact]}>
               The flow shifts by issue. Complaint routes ask for evidence and outcomes, distress routes ask more about feelings and support, and practical routes ask more about load and recovery.
             </Text>
-            <View style={styles.accessFlowPills}>
-              <View style={styles.accessFlowPill}>
-                <Text style={styles.accessFlowPillLabel}>Safety</Text>
-                <Text style={styles.accessFlowPillMeta}>Anything urgent to avoid</Text>
+            <View style={[styles.accessFlowPills, compact && styles.accessFlowPillsCompact]}>
+              <View style={[styles.accessFlowPill, compact && styles.accessFlowPillCompact]}>
+                <Text style={[styles.accessFlowPillLabel, compact && styles.accessFlowPillLabelCompact]}>Safety</Text>
+                <Text style={[styles.accessFlowPillMeta, compact && styles.accessFlowPillMetaCompact]}>Anything urgent to avoid</Text>
               </View>
-              <View style={styles.accessFlowPill}>
-                <Text style={styles.accessFlowPillLabel}>Privacy</Text>
-                <Text style={styles.accessFlowPillMeta}>Sensitive or private notes</Text>
+              <View style={[styles.accessFlowPill, compact && styles.accessFlowPillCompact]}>
+                <Text style={[styles.accessFlowPillLabel, compact && styles.accessFlowPillLabelCompact]}>Privacy</Text>
+                <Text style={[styles.accessFlowPillMeta, compact && styles.accessFlowPillMetaCompact]}>Sensitive or private notes</Text>
               </View>
             </View>
           </View>
@@ -25844,6 +25846,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingBottom: 28
   },
+  privateIntakeSheetContentCompact: {
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    gap: 6,
+    paddingBottom: 22
+  },
   profileSheet: {
     width: "86%",
     maxWidth: 390,
@@ -25941,10 +25949,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 10
   },
+  onboardingHeaderRowCompact: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: 8
+  },
   onboardingHeaderActions: {
     flexDirection: "row",
     gap: 8,
     alignItems: "flex-start"
+  },
+  onboardingHeaderActionsCompact: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "stretch"
   },
   onboardingTopRow: {
     flexDirection: "row",
@@ -25984,12 +26002,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
+  onboardingCloseButtonCompact: {
+    minWidth: 56,
+    minHeight: 32,
+    paddingHorizontal: 10,
+    paddingVertical: 5
+  },
   onboardingCloseButtonLabel: {
     color: "#0E6F69",
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "900",
     textTransform: "uppercase"
+  },
+  onboardingCloseButtonLabelCompact: {
+    fontSize: 11,
+    lineHeight: 13
   },
   onboardingScrollHint: {
     borderRadius: 8,
@@ -28023,6 +28051,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8
   },
+  privateIntakeFlowCardCompact: {
+    gap: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 7
+  },
   privateIntakeFlowIndex: {
     width: 24,
     height: 24,
@@ -28035,6 +28068,13 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: "900"
   },
+  privateIntakeFlowIndexCompact: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    fontSize: 11,
+    lineHeight: 14
+  },
   privateIntakeFlowCopy: {
     flex: 1,
     gap: 2
@@ -28045,11 +28085,19 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     fontWeight: "900"
   },
+  privateIntakeFlowTitleCompact: {
+    fontSize: 11,
+    lineHeight: 14
+  },
   privateIntakeFlowMeta: {
     color: "rgba(255,255,255,0.55)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
+  },
+  privateIntakeFlowMetaCompact: {
+    fontSize: 9,
+    lineHeight: 12
   },
   accessFlowPills: {
     flexDirection: "row",
@@ -28069,6 +28117,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     gap: 2
+  },
+  accessFlowPillCompact: {
+    flexBasis: 88,
+    paddingHorizontal: 8,
+    paddingVertical: 7
   },
   accessFlowPillLabelCompact: {
     fontSize: 11,
