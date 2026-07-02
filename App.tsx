@@ -2168,7 +2168,7 @@ function buildRoutePreview(
 ): RoutePreview {
   const routeText = text.trim().length > 0 ? text : `${selectedIdentityLabel} ${selectedIssueGuide.label}`;
   const route = detectAIHelpRouteFromText(routeText);
-  const issueId = findAIHelpIssueIdFromText(routeText);
+  const issueId = findAIHelpIssueIdFromText(routeText) ?? selectedIssueGuide.id;
   const issueLabel = aiHelpIssueLabelMap[issueId] ?? selectedIssueGuide.label;
   if (route === "redress" || route === "urgent") {
     const routeId = findAIHelpRedressRouteFromText(routeText);
@@ -2226,9 +2226,11 @@ function detectAIHelpRouteFromText(text: string): AIHelpRoute {
     return "urgent";
   }
   if (
-    /(complaint|grievance|redress|report|escalat|ragging|harass|professor|teacher|hod|principal|dean|senior|junior|hr|manager|authority|office|department|desk|police|cyber|women|child)/.test(
+    /(complaint|grievance|redress|report|escalat|ragging|harass|bully|bullied|bullying|professor|teacher|hod|principal|dean|senior|junior|hr|manager|authority|office|department|desk|police|cyber|women|child)/.test(
       normalized
     )
+    || (/(school|college|university|classroom|classmate|peer|hostel|warden)/.test(normalized) &&
+      /(complaint|grievance|report|escalat|ragging|harass|bully|bullied|bullying|teacher|principal|dean|authority|office)/.test(normalized))
   ) {
     return "redress";
   }
@@ -2245,7 +2247,7 @@ function detectAIHelpRouteFromText(text: string): AIHelpRoute {
   return "general";
 }
 
-function findAIHelpIssueIdFromText(text: string): IssueId {
+function findAIHelpIssueIdFromText(text: string): IssueId | null {
   const normalized = text.toLowerCase();
   if (/(anger|angry|irritat|frustrat)/.test(normalized)) return "anger";
   if (/(fear|fearful|coward|scared|afraid)/.test(normalized)) return "fear";
@@ -2254,7 +2256,7 @@ function findAIHelpIssueIdFromText(text: string): IssueId {
   if (/(anxiety|anxious|panic|worry|worried|stress|stressed)/.test(normalized)) return "anxiety";
   if (/(burnout|burned out|exhaust|tired|collapse|overwhelmed)/.test(normalized)) return "burnout";
   if (/(lonely|loneliness|alone)/.test(normalized)) return "loneliness";
-  return "anxiety";
+  return null;
 }
 
 function findAIHelpRedressRouteFromText(text: string): RedressRouteId {
@@ -9340,6 +9342,9 @@ export default function App() {
 
   function findAIHelpIssue(text: string) {
     const issueId = findAIHelpIssueIdFromText(text);
+    if (!issueId) {
+      return selectedIssueGuide;
+    }
     const fallback = issueGuides.find((guide) => guide.id === issueId);
     if (fallback) return fallback;
     return selectedIssueGuide;
@@ -10438,10 +10443,11 @@ async function fetchGeminiAIHelp(
         : route === "professional"
           ? "Guidance route"
           : issue.label;
+    const issueDisplayLabel = issue.id === "anxiety" ? "Calm route" : issue.label;
     setPendingRouteDecision({
       rawText,
       issueId: issue.id,
-      issueLabel: routeLabel,
+      issueLabel: issueDisplayLabel,
       identityLabel,
       route,
       redressRouteId
@@ -10624,6 +10630,7 @@ async function fetchGeminiAIHelp(
     }
     const route = detectAIHelpRouteFromText(routeText);
     const issue = findAIHelpIssue(routeText);
+    const issueDisplayLabel = issue.id === "anxiety" ? "Calm route" : issue.label;
     const routeLabel =
       route === "redress" || route === "urgent"
         ? "Help"
@@ -10645,15 +10652,15 @@ async function fetchGeminiAIHelp(
             : route === "redress"
               ? "The issue reads like a complaint or authority path."
               : calmIssueIds.has(issue.id)
-                ? `Reset support is useful for ${issue.label}.`
-                : `Guidance can shape the next step for ${issue.label}.`,
+                ? `Reset support is useful for ${issueDisplayLabel}.`
+                : `Guidance can shape the next step for ${issueDisplayLabel}.`,
         practical: `Identity guess: ${inferredIdentityLabel}.`,
         social: "The first line is now stored so the user can choose the next route with more clarity.",
         safety: route === "urgent" ? "Urgent cue detected from the first line." : "No urgent cue in the first line.",
         nextStep: "Choose Help, Path, Reset, Search, or Journal.",
         routeLabel: "Choice pending",
         identityLabel: inferredIdentityLabel,
-        issueLabel: issue.label,
+        issueLabel: issueDisplayLabel,
         entryCount: 0,
         sourceLabel: "Home intake"
       },
@@ -16315,6 +16322,7 @@ function IssueGuideSection({
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const [showFullPathDetails, setShowFullPathDetails] = useState(false);
+  const issueDisplayLabel = selectedIssueGuide.id === "anxiety" ? "Calm route" : selectedIssueGuide.label;
 
   useEffect(() => {
     setShowFullPathDetails(false);
@@ -16437,7 +16445,7 @@ function IssueGuideSection({
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.eyebrow}>{l("Current path", { hindi: "वर्तमान पथ", punjabi: "ਮੌਜੂਦਾ ਰਾਹ", marathi: "सध्याचा मार्ग", telugu: "ప్రస్తుత మార్గం", tamil: "தற்போதைய பாதை", urdu: "موجودہ راستہ" })}</Text>
-            <Text style={styles.sectionTitle}>{selectedIssueGuide.label}</Text>
+            <Text style={styles.sectionTitle}>{issueDisplayLabel}</Text>
           </View>
           <Text style={styles.smallMeta}>{l("One route / one next step", { hindi: "एक route / एक next step", punjabi: "ਇੱਕ ਰਾਹ / ਇੱਕ ਅਗਲਾ ਕਦਮ", marathi: "एक route / एक पुढचे पाऊल", telugu: "ఒక route / ఒక తదుపరి అడుగు", tamil: "ஒரு route / ஒரு அடுத்த படி", urdu: "ایک راستہ / ایک اگلا قدم" })}</Text>
         </View>
