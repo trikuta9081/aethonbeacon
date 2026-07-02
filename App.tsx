@@ -9984,7 +9984,11 @@ async function fetchGeminiAIHelp(
       );
     } finally {
       setAIHelpLoading(false);
-      if (route !== "urgent" && !privateIntakeSavedAt) {
+      if (route === "redress" || route === "urgent") {
+        openRedressTab(redressFocus);
+        return;
+      }
+      if (!privateIntakeSavedAt) {
         setPendingPrivateIntakeRoute({
           routeTab: pendingRouteTab,
           issueId: issueFocus.id,
@@ -9996,10 +10000,6 @@ async function fetchGeminiAIHelp(
           "Private intake opened",
           "Share the feeling, trigger, body signal, family, relatives, friends, coworkers, and behavior so the next step can be calmer."
         );
-        return;
-      }
-      if (route === "redress" || route === "urgent") {
-        openRedressTab(redressFocus);
         return;
       }
       openGuideTab(issueFocus.id);
