@@ -279,7 +279,7 @@ type LanguageId =
   | "manipuri"
   | "santali"
   | "dogri";
-type IssueId = "anger" | "anxiety" | "fear" | "overconfidence" | "stigma" | "burnout" | "loneliness";
+type IssueId = "general" | "anger" | "anxiety" | "fear" | "overconfidence" | "stigma" | "burnout" | "loneliness";
 type IssueReminderMode = "tomorrow" | "week";
 type RedressRouteId = "academic" | "harassment" | "ragging" | "public" | "private" | "crime";
 type InstitutionSectorId =
@@ -1382,7 +1382,7 @@ const launchNeeds: Array<{
     label: "Calm / reset",
     meta: "Open Reset and settle the body first.",
     tab: "focus",
-    issueId: "anxiety",
+    issueId: "general",
     routineId: "calm"
   },
   {
@@ -2168,7 +2168,7 @@ function buildRoutePreview(
 ): RoutePreview {
   const routeText = text.trim().length > 0 ? text : `${selectedIdentityLabel} ${selectedIssueGuide.label}`;
   const route = detectAIHelpRouteFromText(routeText);
-  const issueId = findAIHelpIssueIdFromText(routeText) ?? selectedIssueGuide.id;
+  const issueId = findAIHelpIssueIdFromText(routeText) ?? "general";
   const issueLabel = aiHelpIssueLabelMap[issueId] ?? selectedIssueGuide.label;
   if (route === "redress" || route === "urgent") {
     const routeId = findAIHelpRedressRouteFromText(routeText);
@@ -2197,6 +2197,7 @@ function buildRoutePreview(
 }
 
 const aiHelpIssueLabelMap: Record<IssueId, string> = {
+  general: "General guidance",
   anger: "Anger",
   anxiety: "Anxiety",
   fear: "Fear",
@@ -2207,6 +2208,7 @@ const aiHelpIssueLabelMap: Record<IssueId, string> = {
 };
 
 const calmIssueIds = new Set<IssueId>([
+  "general",
   "anger",
   "anxiety",
   "fear",
@@ -4140,6 +4142,38 @@ const careLenses: Array<{
 
 const issueGuides: IssueGuide[] = [
   {
+    id: "general",
+    label: "General guidance",
+    subtitle: "When the issue needs a first pass",
+    summary:
+      "Start neutral, sort the situation by urgency and intent, and only narrow into a specific issue when the text clearly points there.",
+    logicalLens:
+      "Separate facts, feelings, urgency, and next steps before the app names the problem for you.",
+    theoreticalLens:
+      "A neutral triage path keeps the route from over-labeling ordinary problems as one emotional state.",
+    emotionalLens:
+      "Name what is happening without forcing it into a bigger story than the user gave.",
+    spiritualLens:
+      "Stay open, patient, and clear. Not every problem needs the same label or the same pace.",
+    culturalLens:
+      "Respect privacy, context, and local norms while keeping the guidance direct and practical.",
+    action:
+      "Choose the closest route, write one concrete next step, and only escalate if the wording or risk actually demands it.",
+    steps: [
+      "Sort the input into facts, urgency, and intent.",
+      "Choose one route that fits the problem instead of assuming a mood label.",
+      "Move to the next step and keep the follow-up visible."
+    ],
+    followUp:
+      "Return after the first step and check whether the route still fits or needs a more specific handoff.",
+    supportPath: [
+      { label: "Guide", query: "general guidance" },
+      { label: "Counselor", query: "counselor support" },
+      { label: "Doctor", query: "doctor help" }
+    ],
+    urgentNote: "If the situation becomes unsafe, use SOS or emergency help immediately."
+  },
+  {
     id: "anger",
     label: "Anger",
     subtitle: "When heat rises fast",
@@ -4923,6 +4957,17 @@ function getPracticeRoleFrame(identityId: IdentityId): PracticeRoleFrame {
 }
 
 function getIssuePracticeTone(issueId: IssueId) {
+  if (issueId === "general") {
+    return {
+      issueLabel: "general guidance",
+      reset: "Start neutral and slow the flow before naming the issue too soon.",
+      focus: "Choose one route, one step, and one follow-up.",
+      move: "Small movement can keep the page from overcommitting to the wrong label.",
+      connect: "A steady second opinion helps when the problem is still being sorted.",
+      reflect: "Write the facts first, then name the issue only if it stays clear."
+    };
+  }
+
   if (issueId === "anxiety") {
     return {
       issueLabel: "anxiety",
@@ -5262,6 +5307,7 @@ function getSituationRouteCards(issue: IssueGuide, identityLabel: string): Situa
   };
 
   const orderByIssue: Record<IssueId, SituationRouteDestination[]> = {
+    general: ["guide", "journal", "search", "community", "redress", "focus", "sos"],
     anger: ["focus", "guide", "redress", "journal", "search", "community", "sos"],
     anxiety: ["focus", "journal", "search", "guide", "community", "redress", "sos"],
     fear: ["focus", "guide", "search", "journal", "community", "redress", "sos"],
@@ -5625,6 +5671,7 @@ function isCommunityTopicFilterId(value: string): value is CommunityTopicFilterI
 }
 
 function getMeditationStartChakra(issueId: IssueId): ChakraId {
+  if (issueId === "general") return "thirdEye";
   if (issueId === "anxiety" || issueId === "fear" || issueId === "burnout") return "root";
   if (issueId === "anger" || issueId === "overconfidence") return "solar";
   if (issueId === "loneliness") return "heart";
@@ -5916,7 +5963,7 @@ export default function App() {
   const [reminderAccess, setReminderAccess] = useState<ReminderAccess>("loading");
   const [emergencyNumber, setEmergencyNumber] = useState(defaultEmergencyNumber);
   const [identityId, setIdentityId] = useState<IdentityId>("other");
-  const [issueGuideId, setIssueGuideId] = useState<IssueId>("anxiety");
+  const [issueGuideId, setIssueGuideId] = useState<IssueId>("general");
   const [issueProgress, setIssueProgress] = useState<Partial<Record<IssueId, [boolean, boolean, boolean]>>>({});
   const [issueReminderMode, setIssueReminderMode] = useState<IssueReminderMode | null>(null);
   const [issueReminderIssueId, setIssueReminderIssueId] = useState<IssueId | null>(null);
@@ -9343,11 +9390,11 @@ export default function App() {
   function findAIHelpIssue(text: string) {
     const issueId = findAIHelpIssueIdFromText(text);
     if (!issueId) {
-      return selectedIssueGuide;
+      return issueGuides.find((guide) => guide.id === "general") ?? issueGuides[0];
     }
     const fallback = issueGuides.find((guide) => guide.id === issueId);
     if (fallback) return fallback;
-    return selectedIssueGuide;
+    return issueGuides.find((guide) => guide.id === "general") ?? issueGuides[0];
   }
 
   function findAIHelpRedressRoute(text: string): RedressRouteId {
@@ -10726,6 +10773,7 @@ async function fetchGeminiAIHelp(
 
 function isIssueId(value: string): value is IssueId {
     return (
+      value === "general" ||
       value === "anger" ||
       value === "anxiety" ||
       value === "fear" ||
@@ -21057,37 +21105,41 @@ function getPatternCritique(
 ) {
   const role = getPatternRoleFrame(identityId);
   const issueLabel =
-    issueId === "anxiety"
-      ? "anxiety"
-      : issueId === "burnout"
-        ? "burnout"
-        : issueId === "loneliness"
-          ? "loneliness"
-          : issueId === "anger"
-            ? "anger"
-            : issueId === "overconfidence"
-              ? "overconfidence"
-              : issueId === "stigma"
-                ? "stigma"
-                : issueId === "fear"
-                  ? "fear"
-                  : "this issue";
+    issueId === "general"
+      ? "general guidance"
+      : issueId === "anxiety"
+        ? "anxiety"
+        : issueId === "burnout"
+          ? "burnout"
+          : issueId === "loneliness"
+            ? "loneliness"
+            : issueId === "anger"
+              ? "anger"
+              : issueId === "overconfidence"
+                ? "overconfidence"
+                : issueId === "stigma"
+                  ? "stigma"
+                  : issueId === "fear"
+                    ? "fear"
+                    : "this issue";
   const issueNext =
-    issueId === "anxiety"
-      ? "Test sleep, caffeine, and one breathing reset for seven days."
-      : issueId === "burnout"
-        ? "Test one lighter day, one boundary, and one real rest block."
-        : issueId === "loneliness"
-          ? "Test one human contact and one recovery habit each day."
-          : issueId === "anger"
-            ? "Test a pause before reply, a write-it-down step, and one cool-down routine."
-            : issueId === "overconfidence"
-              ? "Test one decision check, one feedback loop, and one slower response."
-              : issueId === "stigma"
-                ? "Test one reality check, one kind self-statement, and one support contact."
-      : issueId === "fear"
-                  ? "Test one small exposure, one breath reset, and one trusted check-in."
-                  : "Test one smaller plan, one note, and one calmer return tomorrow.";
+    issueId === "general"
+      ? "Test one clear route, one follow-up note, and one handoff before adding more detail."
+      : issueId === "anxiety"
+        ? "Test sleep, caffeine, and one breathing reset for seven days."
+        : issueId === "burnout"
+          ? "Test one lighter day, one boundary, and one real rest block."
+          : issueId === "loneliness"
+            ? "Test one human contact and one recovery habit each day."
+            : issueId === "anger"
+              ? "Test a pause before reply, a write-it-down step, and one cool-down routine."
+              : issueId === "overconfidence"
+                ? "Test one decision check, one feedback loop, and one slower response."
+                : issueId === "stigma"
+                  ? "Test one reality check, one kind self-statement, and one support contact."
+                  : issueId === "fear"
+                    ? "Test one small exposure, one breath reset, and one trusted check-in."
+                    : "Test one smaller plan, one note, and one calmer return tomorrow.";
   if (weekCount === 0) {
     return {
       title: "No evidence yet",
@@ -21139,25 +21191,29 @@ function getPracticeCritique(
   identityId: IdentityId
 ) {
   const issueLabel =
-    issueId === "anxiety"
-      ? "anxiety"
-      : issueId === "burnout"
-        ? "burnout"
-        : issueId === "loneliness"
-          ? "loneliness"
-          : issueId === "anger"
-            ? "anger"
-            : issueId === "overconfidence"
-              ? "overconfidence"
-              : issueId === "stigma"
-                ? "stigma"
-                : issueId === "fear"
-                  ? "fear"
-                  : issueId;
+    issueId === "general"
+      ? "general guidance"
+      : issueId === "anxiety"
+        ? "anxiety"
+        : issueId === "burnout"
+          ? "burnout"
+          : issueId === "loneliness"
+            ? "loneliness"
+            : issueId === "anger"
+              ? "anger"
+              : issueId === "overconfidence"
+                ? "overconfidence"
+                : issueId === "stigma"
+                  ? "stigma"
+                  : issueId === "fear"
+                    ? "fear"
+                    : issueId;
   const identityLabel = identityId;
 
   const priorityIds: PlayChallengeId[] =
-    issueId === "anxiety" || issueId === "burnout"
+    issueId === "general"
+      ? ["focus", "reflect", "reset", "move", "connect"]
+      : issueId === "anxiety" || issueId === "burnout"
       ? ["reset", "focus", "reflect", "move", "connect"]
       : issueId === "loneliness"
         ? ["connect", "reset", "reflect", "move", "focus"]
@@ -21227,12 +21283,7 @@ function getPracticeCritique(
 }
 
 function getDefaultIssueForIdentity(identityId: IdentityId): IssueId {
-  if (identityId === "student" || identityId === "child") return "anxiety";
-  if (identityId === "teacher" || identityId === "doctor" || identityId === "nurse") return "burnout";
-  if (identityId === "officer" || identityId === "official" || identityId === "lawyer") return "anger";
-  if (identityId === "parent" || identityId === "caregiver" || identityId === "retired") return "loneliness";
-  if (identityId === "banker" || identityId === "engineer" || identityId === "professional") return "burnout";
-  return "fear";
+  return "general";
 }
 
 function getDefaultRedressRouteForIdentity(identityId: IdentityId): RedressRouteId {
@@ -21496,6 +21547,7 @@ function getReminderBody(mode: ReminderMode, guide: IssueGuide, profileAddressLa
         ? "Evening check-in"
         : "Morning check-in";
   const issueLeadMap: Record<IssueId, string> = {
+    general: "One clear route, one concrete step, one follow-up check.",
     anger: "One boundary, one pause, one calmer reply.",
     anxiety: "One breath, one fact, one small next step.",
     fear: "One tiny action, one reality check, one steady contact.",
