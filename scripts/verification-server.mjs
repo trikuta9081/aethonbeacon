@@ -396,22 +396,79 @@ function buildGeminiPrompt(body) {
   ].join("\n");
 }
 
+function getAIHelpTabLabel(route) {
+  if (route === "urgent" || route === "redress") return "Help";
+  return "Path";
+}
+
 function buildFallbackAIReply(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
   const text = typeof body?.text === "string" ? body.text.toLowerCase() : "";
+  const emergencyNumber = typeof body?.emergencyNumber === "string" && body.emergencyNumber.trim().length > 0
+    ? body.emergencyNumber.trim()
+    : "112";
+  const openTab = getAIHelpTabLabel(route);
   if (route === "urgent" || /(danger|suicide|self[-\s]?harm|assault|violence|threat)/.test(text)) {
-    return `Fast path: if there is immediate danger, use SOS or call 112 now. Then contact nearby trusted help and open Redress.`;
+    return [
+      "What this means: This may be an urgent safety issue and protection should come before any longer guidance.",
+      `Safest next step: Use SOS or call ${emergencyNumber} now, then alert a nearby trusted person and keep your location ready.`,
+      `Open tab: ${openTab}`,
+      `Escalate when: Call ${emergencyNumber} or use SOS immediately if there is assault, violence, self-harm risk, or you do not feel safe.`
+    ].join("\n");
   }
-  if (route === "redress" || /(complaint|redress|ragging|harass|police|authority)/.test(text)) {
-    return "Fast path: write the facts, save evidence, and use the correct complaint office first. Keep the acknowledgement number safe.";
+  if (route === "redress" || /(complaint|redress|ragging|harass|police|authority|work|office|school|college)/.test(text)) {
+    return [
+      "What this means: This is a complaint or authority issue that should move through Help with a clear paper trail.",
+      "Safest next step: Write the facts, dates, names, evidence, and the exact result you want before approaching the first office.",
+      `Open tab: ${openTab}`,
+      "Escalate when: Move to a higher office or formal complaint route if the first office ignores you, delays without reason, or the situation worsens."
+    ].join("\n");
   }
   if (route === "professional" || /(doctor|psychologist|counsel|sleep|panic|depression)/.test(text)) {
-    return "Fast path: note symptoms, duration, and body signs. Seek a verified professional and keep the next step small.";
+    return [
+      "What this means: This looks like a stress or health issue that may need verified professional support.",
+      "Safest next step: Note the main symptom, how long it has been happening, and one body sign before opening Path for the next referral step.",
+      `Open tab: ${openTab}`,
+      "Escalate when: Seek professional or urgent help if panic, sleep loss, hopelessness, or body symptoms are becoming severe or unsafe."
+    ].join("\n");
   }
   if (route === "guide" || /(anger|anxiety|fear|stigma|burnout|lonely|stress|coward)/.test(text)) {
-    return "Fast path: name the feeling, slow the body, and choose one next step. Use Guide for the structured three-step path.";
+    return [
+      "What this means: This is a guidance issue that should be slowed down and turned into one practical next step.",
+      "Safest next step: Name the feeling plainly, slow the body once, and then open Path for the most useful next action.",
+      `Open tab: ${openTab}`,
+      "Escalate when: Move to Help or professional support if the feeling stays intense, keeps repeating, or starts affecting safety, sleep, or function."
+    ].join("\n");
   }
-  return "Fast path: write one fact, one feeling, and one next action. Use Guide, Journal, Redress, or SOS depending on what the moment needs.";
+  return [
+    "What this means: This is a general guidance moment that needs one clear route instead of a vague spiral.",
+    "Safest next step: Write one fact, one feeling, and one next action, then open Path and keep the next move small.",
+    `Open tab: ${openTab}`,
+    "Escalate when: Move to Help, SOS, or professional support if the issue becomes unsafe, official, or too heavy for one step."
+  ].join("\n");
+}
+
+function trimAIHelpLabel(text) {
+  return String(text ?? "")
+    .replace(/^\s*(?:\d+\.\s*)?(what this means|safest next step|open tab|escalate when)\s*:\s*/i, "")
+    .trim();
+}
+
+function isStructuredAIHelpReply(text) {
+  const lines = String(text ?? "")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (lines.length < 4) return false;
+
+  const patterns = [
+    /^\s*(?:\d+\.\s*)?what this means\s*:/i,
+    /^\s*(?:\d+\.\s*)?safest next step\s*:/i,
+    /^\s*(?:\d+\.\s*)?open tab\s*:/i,
+    /^\s*(?:\d+\.\s*)?escalate when\s*:/i
+  ];
+
+  return patterns.every((pattern, index) => pattern.test(lines[index] ?? "") && trimAIHelpLabel(lines[index]).length >= 12);
 }
 
 async function callGeminiModel(model, body) {
@@ -470,7 +527,11 @@ async function generateGeminiAIHelp(body) {
   const errors = [];
   for (const model of geminiModelCandidates) {
     try {
-      return await callGeminiModel(model, body);
+      const result = await callGeminiModel(model, body);
+      if (isStructuredAIHelpReply(result.text)) {
+        return result;
+      }
+      return { source: "fallback", model: "fallback", text: buildFallbackAIReply(body) };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `Gemini model ${model} failed.`);
     }

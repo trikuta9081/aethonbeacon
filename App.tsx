@@ -7069,14 +7069,6 @@ export default function App() {
       badge: "Path ready"
     };
   }, [needsPresentMoodCheck, onboardingCompleted]);
-  const inferredHomeIdentityId = useMemo(
-    () => inferIdentityIdFromText(homeIssueDraft, selectedIdentity.id),
-    [homeIssueDraft, selectedIdentity.id]
-  );
-  const inferredHomeIdentity = useMemo(
-    () => identityProfiles.find((profile) => profile.id === inferredHomeIdentityId) ?? selectedIdentity,
-    [inferredHomeIdentityId, selectedIdentity]
-  );
   const homeRoutePreview = useMemo(
     () =>
       homeIssueDraft.trim().length === 0
@@ -7084,8 +7076,8 @@ export default function App() {
             title: "Route waiting",
             detail: "Type one line and the app will choose the next page automatically."
           }
-        : buildRoutePreview(homeIssueDraft, selectedIssueGuide, inferredHomeIdentity.label),
-    [homeIssueDraft, inferredHomeIdentity.label, selectedIssueGuide]
+        : buildRoutePreview(homeIssueDraft, selectedIssueGuide, selectedIdentity.label),
+    [homeIssueDraft, selectedIdentity.label, selectedIssueGuide]
   );
   const journalRoutePreview = useMemo(
     () => buildRoutePreview(journal, selectedIssueGuide, selectedIdentity.label),
@@ -9442,8 +9434,17 @@ export default function App() {
 
   function trimAIHelpPrefix(text: string) {
     return text
-      .replace(/^\s*(what this means|safest next step|open tab|escalate when)\s*:\s*/i, "")
+      .replace(/^\s*(?:\d+\.\s*)?(what this means|safest next step|open tab|escalate when)\s*:\s*/i, "")
       .trim();
+  }
+
+  function isUsableAIHelpSection(text: string) {
+    const cleaned = text.trim();
+    if (cleaned.length < 12) return false;
+    if (/^(?:\d+\.\s*)?(what this means|safest next step|open tab|escalate when)\b/i.test(cleaned)) {
+      return false;
+    }
+    return /[a-z]/i.test(cleaned);
   }
 
   function formatAIHelpReply(
@@ -9457,6 +9458,9 @@ export default function App() {
     if (reply.length === 0) {
       return fallbackLines.join("\n");
     }
+    const fallbackMeaning = trimAIHelpPrefix(fallbackLines[0] ?? "");
+    const fallbackStep = trimAIHelpPrefix(fallbackLines[1] ?? "");
+    const fallbackEscalate = trimAIHelpPrefix(fallbackLines[3] ?? "");
 
     const replyLines = reply
       .split(/\n+/)
@@ -9470,15 +9474,15 @@ export default function App() {
     };
 
     for (const line of replyLines) {
-      if (/^what this means\s*:/i.test(line) && sections.meaning.length === 0) {
+      if (/^\s*(?:\d+\.\s*)?what this means\s*:/i.test(line) && sections.meaning.length === 0) {
         sections.meaning = trimAIHelpPrefix(line);
         continue;
       }
-      if (/^safest next step\s*:/i.test(line) && sections.step.length === 0) {
+      if (/^\s*(?:\d+\.\s*)?safest next step\s*:/i.test(line) && sections.step.length === 0) {
         sections.step = trimAIHelpPrefix(line);
         continue;
       }
-      if (/^escalate when\s*:/i.test(line) && sections.escalate.length === 0) {
+      if (/^\s*(?:\d+\.\s*)?escalate when\s*:/i.test(line) && sections.escalate.length === 0) {
         sections.escalate = trimAIHelpPrefix(line);
         continue;
       }
@@ -9490,10 +9494,14 @@ export default function App() {
       const secondLine = replyParagraphs[1] ?? "";
       const thirdLine = replyParagraphs[2] ?? "";
 
-      sections.meaning = sections.meaning.length > 0 ? sections.meaning : firstLine || trimAIHelpPrefix(fallbackLines[0]);
-      sections.step = sections.step.length > 0 ? sections.step : secondLine || trimAIHelpPrefix(fallbackLines[1]);
-      sections.escalate = sections.escalate.length > 0 ? sections.escalate : thirdLine || trimAIHelpPrefix(fallbackLines[3]);
+      sections.meaning = sections.meaning.length > 0 ? sections.meaning : firstLine || fallbackMeaning;
+      sections.step = sections.step.length > 0 ? sections.step : secondLine || fallbackStep;
+      sections.escalate = sections.escalate.length > 0 ? sections.escalate : thirdLine || fallbackEscalate;
     }
+
+    sections.meaning = isUsableAIHelpSection(sections.meaning) ? sections.meaning : fallbackMeaning;
+    sections.step = isUsableAIHelpSection(sections.step) ? sections.step : fallbackStep;
+    sections.escalate = isUsableAIHelpSection(sections.escalate) ? sections.escalate : fallbackEscalate;
 
     return [
       `What this means: ${sections.meaning}`,
