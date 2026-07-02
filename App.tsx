@@ -5840,22 +5840,6 @@ function getVedicDailyPrediction(rashiId: number): string[] {
   return predictions[dayIdx] ?? predictions[0];
 }
 
-// Lucky elements by Rashi
-const RASHI_LUCKY: Record<number, { color: string; number: number; direction: string; gem: string; mantra: string }> = {
-  0:  { color: "Red",    number: 9, direction: "East",       gem: "Red Coral",   mantra: "Om Angarakaya Namah" },
-  1:  { color: "White",  number: 6, direction: "South",      gem: "Diamond",     mantra: "Om Shukraya Namah" },
-  2:  { color: "Green",  number: 5, direction: "North",      gem: "Emerald",     mantra: "Om Budhaya Namah" },
-  3:  { color: "Silver", number: 2, direction: "North-West", gem: "Pearl",       mantra: "Om Chandraya Namah" },
-  4:  { color: "Gold",   number: 1, direction: "East",       gem: "Ruby",        mantra: "Om Suryaya Namah" },
-  5:  { color: "Green",  number: 5, direction: "North",      gem: "Emerald",     mantra: "Om Budhaya Namah" },
-  6:  { color: "Blue",   number: 6, direction: "West",       gem: "Diamond",     mantra: "Om Shukraya Namah" },
-  7:  { color: "Red",    number: 9, direction: "North",      gem: "Red Coral",   mantra: "Om Mangalaya Namah" },
-  8:  { color: "Yellow", number: 3, direction: "North-East", gem: "Yellow Sapphire", mantra: "Om Brihaspataye Namah" },
-  9:  { color: "Blue",   number: 8, direction: "West",       gem: "Blue Sapphire",   mantra: "Om Shanaye Namah" },
-  10: { color: "Blue",   number: 8, direction: "West",       gem: "Blue Sapphire",   mantra: "Om Shanaye Namah" },
-  11: { color: "Yellow", number: 3, direction: "North-East", gem: "Yellow Sapphire", mantra: "Om Brihaspataye Namah" },
-};
-
 // ── Error Boundary ─────────────────────────────────────────────────────────
 class AppErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -6703,10 +6687,6 @@ export default function App() {
   const vedicVara = useMemo(() => VARA_INFO[new Date().getDay()], []);
   const vedicPredictionLines = useMemo(
     () => vedicRashiInfo ? getVedicDailyPrediction(vedicRashiInfo.rashiId) : null,
-    [vedicRashiInfo]
-  );
-  const vedicLucky = useMemo(
-    () => vedicRashiInfo ? RASHI_LUCKY[vedicRashiInfo.rashiId] : null,
     [vedicRashiInfo]
   );
   const hasExactBirthDetails =
@@ -11430,51 +11410,6 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               )}
 
-              {/* ── Birth chart prompt ── */}
-              <View
-                style={[
-                  styles.routePreviewCard,
-                  isCompact && styles.routePreviewCardCompact,
-                  styles.birthChartPromptCard,
-                  styles.birthChartPromptCardCompact
-                ]}
-              >
-              <View style={styles.birthChartPromptHeader}>
-                <Text style={styles.routePreviewTitle}>Birth Chart</Text>
-                <Text style={styles.birthChartPromptBadge}>
-                    {profileDOB && profileBirthTime && profileBirthPlace.trim()
-                      ? `${vedicRashiInfo ? `${vedicRashiInfo.rashi.symbol} ${vedicRashiInfo.rashi.name}` : "Exact setup"}`
-                      : "Optional"}
-                </Text>
-              </View>
-                <Text style={styles.routePreviewDetail} numberOfLines={2}>
-                  {profileDOB && profileBirthTime && profileBirthPlace.trim()
-                    ? "Your Vedic reading is ready on its own page."
-                    : "Open the dedicated page or add date, time, and place of birth in Profile for exact analysis."}
-                </Text>
-                <View style={styles.birthChartPromptActions}>
-                  <Text style={styles.birthChartPromptHint} numberOfLines={1}>Optional. Separate from the main flow, but exact reading needs full birth details.</Text>
-                  <View style={styles.birthChartPromptButtons}>
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => handleTabPress("vedic")}
-                      style={({ pressed }) => [styles.birthChartPromptButton, pressed && styles.pressed]}
-                    >
-                      <Text style={styles.birthChartPromptButtonLabel}>Open page</Text>
-                    </Pressable>
-                    {(!profileDOB || !profileBirthTime || !profileBirthPlace.trim()) && (
-                      <Pressable
-                        accessibilityRole="button"
-                        onPress={() => handleTabPress("settings")}
-                        style={({ pressed }) => [styles.birthChartPromptButtonSecondary, pressed && styles.pressed]}
-                      >
-                        <Text style={styles.birthChartPromptButtonSecondaryLabel}>Add details</Text>
-                      </Pressable>
-                    )}
-                  </View>
-                </View>
-              </View>
-
               {/* ── Post check-in practice suggestion ──────────────────────── */}
               {postCheckInSuggest && (
                 <View style={{
@@ -11775,7 +11710,6 @@ function isTrustedExternalUrl(url: string) {
                 todayNakshatra={vedicTodayNakshatra}
                 tithi={vedicTithi}
                 vara={vedicVara}
-                lucky={vedicLucky}
                 geminiHoroscope={geminiBirthChartHoroscope}
                 geminiHoroscopeLoading={geminiBirthChartHoroscopeLoading}
                 profileDOB={profileDOB}
@@ -18612,7 +18546,6 @@ function VedicDailyCard({
   tithi,
   vara,
   predictionLines,
-  lucky,
 }: {
   rashi: typeof VEDIC_RASHIS[0];
   janmaNakshatra: ReturnType<typeof getJanmaNakshatra>;
@@ -18620,9 +18553,7 @@ function VedicDailyCard({
   tithi: ReturnType<typeof getTodayTithi>;
   vara: typeof VARA_INFO[0];
   predictionLines: string[];
-  lucky: typeof RASHI_LUCKY[0] | null;
 }) {
-  const [expanded, setExpanded] = React.useState(false);
   const today = new Date();
   const dateLabel = today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
 
@@ -18631,7 +18562,7 @@ function VedicDailyCard({
       {/* Header */}
       <View style={styles.vedicCardHeader}>
         <View style={styles.vedicCardHeaderLeft}>
-          <Text style={styles.vedicCardEyebrow}>🪐 DAILY JYOTISH READING</Text>
+          <Text style={styles.vedicCardEyebrow}>🪐 DAILY HOROSCOPE ANALYSIS</Text>
           <Text style={styles.vedicCardDate}>{dateLabel}</Text>
         </View>
         <View style={styles.vedicRashiBadge}>
@@ -18692,40 +18623,8 @@ function VedicDailyCard({
         <Text style={styles.vedicRashiMetaItem}>🔄 {rashi.nature}</Text>
       </View>
 
-      {/* Lucky panel */}
-      {lucky && (
-        <Pressable
-          onPress={() => setExpanded(!expanded)}
-          style={styles.vedicLuckyToggle}
-          accessibilityLabel="Toggle lucky elements"
-        >
-          <Text style={styles.vedicLuckyToggleLabel}>✨ Lucky Elements & Mantra  {expanded ? "▲" : "▼"}</Text>
-        </Pressable>
-      )}
-      {lucky && expanded && (
-        <View style={styles.vedicLuckyGrid}>
-          {[
-            { label: "Lucky Colour", value: lucky.color, icon: "🎨" },
-            { label: "Lucky Number", value: String(lucky.number), icon: "🔢" },
-            { label: "Lucky Direction", value: lucky.direction, icon: "🧭" },
-            { label: "Gemstone", value: lucky.gem, icon: "💎" },
-          ].map((item) => (
-            <View key={item.label} style={styles.vedicLuckyItem}>
-              <Text style={styles.vedicLuckyIcon}>{item.icon}</Text>
-              <Text style={styles.vedicLuckyValue}>{item.value}</Text>
-              <Text style={styles.vedicLuckyLabel}>{item.label}</Text>
-            </View>
-          ))}
-          <View style={styles.vedicMantraBox}>
-            <Text style={styles.vedicMantraLabel}>Today's Mantra</Text>
-            <Text style={styles.vedicMantraText}>{lucky.mantra}</Text>
-            <Text style={styles.vedicMantraHint}>Chant 108 times for best results</Text>
-          </View>
-        </View>
-      )}
-
       <Text style={styles.vedicDisclaimer}>
-        Predictions are based on Vedic Jyotish approximations. For precise readings consult a certified Jyotishi.
+        Horoscope analysis is based on Vedic Jyotish approximations. For precise readings consult a certified Jyotishi.
       </Text>
     </View>
   );
@@ -18738,7 +18637,6 @@ function BirthChartSection({
   todayNakshatra,
   tithi,
   vara,
-  lucky,
   geminiHoroscope,
   geminiHoroscopeLoading,
   profileDOB,
@@ -18753,7 +18651,6 @@ function BirthChartSection({
   todayNakshatra: ReturnType<typeof getTodayNakshatra>;
   tithi: ReturnType<typeof getTodayTithi>;
   vara: typeof VARA_INFO[0];
-  lucky: typeof RASHI_LUCKY[0] | null;
   geminiHoroscope: string | null;
   geminiHoroscopeLoading: boolean;
   profileDOB: string;
@@ -18779,9 +18676,9 @@ function BirthChartSection({
       </View>
 
       <View style={styles.birthChartIntroCard}>
-        <Text style={styles.birthChartIntroTitle}>A separate page for your astro guidance.</Text>
+        <Text style={styles.birthChartIntroTitle}>A separate page for horoscope analysis.</Text>
         <Text style={styles.birthChartIntroText}>
-          This page stays fully separate from Reset, complaint handling, or counselling flows. For an exact reading, keep your date, time, and place of birth on file in Profile.
+          This page stays fully separate from Reset, complaint handling, or counselling flows. It focuses only on horoscope data, chart markers, and astro analysis. For an exact reading, keep your date, time, and place of birth on file in Profile.
         </Text>
         <View style={styles.birthChartIntroMetaRow}>
           <View style={[styles.birthChartIntroMetaChip, hasExactBirthDetails && styles.birthChartIntroMetaChipActive]}>
@@ -18810,7 +18707,7 @@ function BirthChartSection({
 
       <View style={styles.birthChartExactCard}>
         <View style={styles.birthChartExactHeader}>
-          <Text style={styles.birthChartExactTitle}>Horoscope data</Text>
+          <Text style={styles.birthChartExactTitle}>Horoscope data analyzer</Text>
           <Text style={styles.birthChartExactBadge}>{hasExactBirthDetails ? "Exact" : "Incomplete"}</Text>
         </View>
         <View style={styles.birthChartExactGrid}>
@@ -18833,13 +18730,13 @@ function BirthChartSection({
 
       <View style={styles.birthChartGeminiCard}>
         <View style={styles.birthChartGeminiHeader}>
-          <Text style={styles.birthChartGeminiTitle}>Gemini horoscope</Text>
+          <Text style={styles.birthChartGeminiTitle}>Gemini horoscope analysis</Text>
           <Text style={styles.birthChartGeminiBadge}>{geminiHoroscopeLoading ? "Reading" : "Ready"}</Text>
         </View>
         <Text style={styles.birthChartGeminiText}>
           {geminiHoroscopeLoading
             ? "Reading your exact birth details through Gemini..."
-            : geminiHoroscope ?? "Complete your birth details to unlock the Gemini horoscope."}
+            : geminiHoroscope ?? "Complete your birth details to unlock the Gemini horoscope analysis."}
         </Text>
       </View>
 
@@ -18851,7 +18748,6 @@ function BirthChartSection({
           tithi={tithi}
           vara={vara}
           predictionLines={predictionLines}
-          lucky={lucky}
         />
       ) : (
         <Pressable
@@ -18875,8 +18771,8 @@ function BirthChartSection({
         {[
           "Date, time, and place of birth",
           "Rashi and Janma Nakshatra",
-          "Gemini horoscope reading",
-          "Optional, device-only astro guidance",
+          "Gemini horoscope analysis",
+          "Optional, device-only astro analysis",
         ].map((item) => (
           <View key={item} style={styles.birthChartFactChip}>
             <Text style={styles.birthChartFactChipText}>{item}</Text>
@@ -20727,22 +20623,6 @@ function DynamicHeroCard({
           <Text style={styles.heroRoutePreviewDetail} numberOfLines={2}>{homeRoutePreview.detail}</Text>
         </Animated.View>
       )}
-
-      <SectionFlowBand
-        eyebrow="Index"
-        title="Receive, analyse, route"
-        summary="Write one issue. The app sorts the intent, suggests the right channel, and keeps follow-up visible."
-        cards={[
-          { label: "Receive", value: "One clear line" },
-          { label: "Analyse", value: homeRoutePreview?.title ?? "Smart route preview" },
-          { label: "Route", value: "Path, Help, or Reset" }
-        ]}
-        actions={[
-          { label: "Path", onPress: () => onOpenTab("aihelp"), primary: true },
-          { label: "Help", onPress: () => onOpenTab("redress") },
-          { label: "Reset", onPress: () => onOpenTab("focus") }
-        ]}
-      />
 
       {/* Decorative accent line */}
       <View style={styles.dynamicHeroAccentLine} />
