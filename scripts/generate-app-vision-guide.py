@@ -53,7 +53,7 @@ CONTENT = {
             "bullets": [
                 "One clear intake question appears first: What is happening?",
                 "The app uses that first line to infer the likely profile, issue type, and urgency.",
-                "The app then opens one next destination only: Path, Calm / Nirvana, Help / Redress, Explore, or AI Guide.",
+                "The app then opens one next destination only: Path, Calm, Help / Redress, Explore, or AI Guide.",
                 "The user does not need to hunt across tabs to figure out where to go."
             ],
         },
@@ -62,7 +62,7 @@ CONTENT = {
             "table": [
                 ["Home", "The first intake page. The user writes or speaks one problem line, then the app routes the next step automatically."],
                 ["Path", "Practical guidance for the issue at hand. This tab is where the app explains what the problem means and what to do next."],
-                ["Calm / Nirvana", "A quieter layer for slowing the body, reducing pressure, and helping the user settle before making another choice."],
+                ["Calm", "A quieter layer for slowing the body, reducing pressure, and helping the user settle before making another choice."],
                 ["Practice", "Small repeatable exercises that turn a useful idea into one completed action."],
                 ["Pattern", "A review of the user's trend data and check-ins so the app can show what is repeating and what needs adjustment."],
                 ["Journal", "A place to write, save, and route. The entry becomes a guided note instead of a dead end."],

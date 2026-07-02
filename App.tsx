@@ -310,7 +310,7 @@ type IssueGuide = {
   urgentNote: string;
 };
 
-type NirvanaTeaching = {
+type CalmTeaching = {
   id: string;
   source: string;
   reference: string;
@@ -611,7 +611,7 @@ const routines: Routine[] = [
     accent: "#0E6F69"
   },
   {
-    id: "nirvana",
+    id: "calm",
     name: "Reset",
     meta: "Quiet restoration, breath, reduced noise",
     duration: 12,
@@ -1090,7 +1090,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
   }
 ];
 
-const nirvanaTeachings: NirvanaTeaching[] = [
+const calmTeachings: CalmTeaching[] = [
   {
     id: "gita-action",
     source: "Bhagavad Gita",
@@ -1383,7 +1383,7 @@ const launchNeeds: Array<{
     meta: "Open Reset and settle the body first.",
     tab: "focus",
     issueId: "anxiety",
-    routineId: "nirvana"
+    routineId: "calm"
   },
   {
     id: "guide",
@@ -5161,7 +5161,7 @@ const beaconXPillars = [
     accent: "#F37B64"
   },
   {
-    id: "nirvana",
+    id: "calm",
     label: "Reset",
     meta: "Quiet, restoration, breath, and reduced noise.",
     accent: "#7E6FD6"
@@ -8694,9 +8694,9 @@ export default function App() {
     }
     setCalmPageNonce((value) => value + 1);
     setLaunchNeedId("calm");
-    setRoutineId("nirvana");
+    setRoutineId("calm");
     setSessionActive(true);
-    setPendingTabFocusAnchor({ tab: "focus", key: "focus:routine:nirvana" });
+    setPendingTabFocusAnchor({ tab: "focus", key: "focus:routine:calm" });
     handleTabPress("focus");
     scrollTabSurfaceToTop();
   }
@@ -8756,7 +8756,7 @@ export default function App() {
     if (launchNeed.routineId) {
       setRoutineId(launchNeed.routineId);
     } else if (nextNeedId === "calm") {
-      setRoutineId("nirvana");
+      setRoutineId("calm");
     }
     setSessionActive(nextNeedId === "calm");
     handleTabPress(launchNeed.tab);
@@ -11658,7 +11658,7 @@ function isTrustedExternalUrl(url: string) {
                 onEmergencyCall={handleEmergencyCall}
                 voiceAssistEnabled={voiceAssistEnabled}
                 voiceAssistStatus={voiceAssistStatus}
-                onReadNirvana={(text) => {
+                onReadCalm={(text) => {
                   void speakGuidance(text);
                 }}
                 onStopVoice={stopVoiceGuidance}
@@ -13110,7 +13110,7 @@ function FocusSection({
   onEmergencyCall,
   voiceAssistEnabled,
   voiceAssistStatus,
-  onReadNirvana,
+  onReadCalm,
   onStopVoice,
   onFocusSelectedRoutineLayout,
   calmPageNonce
@@ -13127,23 +13127,23 @@ function FocusSection({
   onEmergencyCall: () => Promise<void>;
   voiceAssistEnabled: boolean;
   voiceAssistStatus: string;
-  onReadNirvana: (text: string) => void;
+  onReadCalm: (text: string) => void;
   onStopVoice: () => void;
   onFocusSelectedRoutineLayout?: (key: string) => (event: { nativeEvent: { layout: { y: number } } }) => void;
   calmPageNonce?: number;
 }) {
-  const isNirvanaMode = selectedRoutine.id === "nirvana";
+  const isCalmMode = selectedRoutine.id === "calm";
   const adaptiveBeaconModes = getAdaptiveBeaconXModes(selectedIssueGuide.id);
-  const nirvanaLensCards = [
+  const calmLensCards = [
     { id: "practical", label: "Practical", text: selectedIssueGuide.logicalLens, hint: "facts" },
     { id: "emotional", label: "Emotional", text: selectedIssueGuide.emotionalLens, hint: "feelings" },
     { id: "psychological", label: "Psychological", text: selectedIssueGuide.theoreticalLens, hint: "patterns" },
     { id: "spiritual", label: "Spiritual", text: selectedIssueGuide.spiritualLens, hint: "values" },
     { id: "cultural", label: "Cultural", text: selectedIssueGuide.culturalLens, hint: "context" }
   ] as const;
-  const nirvanaSituationCards = getSituationRouteCards(selectedIssueGuide, selectedIdentityLabel);
-  const beaconXRouteCards = nirvanaSituationCards.slice(0, 5);
-  const defaultNirvanaLensId =
+  const calmSituationCards = getSituationRouteCards(selectedIssueGuide, selectedIdentityLabel);
+  const beaconXRouteCards = calmSituationCards.slice(0, 5);
+  const defaultCalmLensId =
     selectedIssueGuide.id === "anger"
       ? "emotional"
       : selectedIssueGuide.id === "anxiety"
@@ -13159,47 +13159,47 @@ function FocusSection({
                 : selectedIssueGuide.id === "loneliness"
                   ? "emotional"
                   : "practical";
-  const [nirvanaLensId, setNirvanaLensId] = useState<(typeof nirvanaLensCards)[number]["id"]>(
-    defaultNirvanaLensId
+  const [calmLensId, setCalmLensId] = useState<(typeof calmLensCards)[number]["id"]>(
+    defaultCalmLensId
   );
-  const [nirvanaStepStates, setNirvanaStepStates] = useState<[boolean, boolean, boolean]>([
+  const [calmStepStates, setCalmStepStates] = useState<[boolean, boolean, boolean]>([
     false,
     false,
     false
   ]);
-  const [showNirvanaDetails, setShowNirvanaDetails] = useState(false);
+  const [showCalmDetails, setShowCalmDetails] = useState(false);
 
   useEffect(() => {
-    setNirvanaLensId(defaultNirvanaLensId);
-    setNirvanaStepStates([false, false, false]);
-    setShowNirvanaDetails(false);
-  }, [defaultNirvanaLensId, selectedRoutine.id, selectedIdentityLabel]);
+    setCalmLensId(defaultCalmLensId);
+    setCalmStepStates([false, false, false]);
+    setShowCalmDetails(false);
+  }, [defaultCalmLensId, selectedRoutine.id, selectedIdentityLabel]);
 
   useEffect(() => {
-    if (!isNirvanaMode) return;
-    setShowNirvanaDetails(false);
-  }, [calmPageNonce, isNirvanaMode]);
+    if (!isCalmMode) return;
+    setShowCalmDetails(false);
+  }, [calmPageNonce, isCalmMode]);
 
-  const nirvanaSelectedLens =
-    nirvanaLensCards.find((lens) => lens.id === nirvanaLensId) ?? nirvanaLensCards[0];
-  const nirvanaDoneCount = nirvanaStepStates.filter(Boolean).length;
-  const nirvanaVoiceText = useMemo(
+  const calmSelectedLens =
+    calmLensCards.find((lens) => lens.id === calmLensId) ?? calmLensCards[0];
+  const calmDoneCount = calmStepStates.filter(Boolean).length;
+  const calmVoiceText = useMemo(
     () =>
       [
         `Reset for ${selectedIdentityLabel} and ${selectedIssueGuide.label}.`,
-        `Current lens: ${nirvanaSelectedLens.label}. ${nirvanaSelectedLens.text}`,
+        `Current lens: ${calmSelectedLens.label}. ${calmSelectedLens.text}`,
         `Use one lens, do the three steps, and leave lighter.`,
         `Step one: ${selectedIssueGuide.steps[0]}`,
         `Step two: ${selectedIssueGuide.steps[1]}`,
         `Step three: ${selectedIssueGuide.steps[2]}`,
-        nirvanaDoneCount === 3
+        calmDoneCount === 3
           ? `Calm loop complete. ${selectedIssueGuide.followUp}`
           : `Return to Path, Journal, or Help when the body feels steadier.`
       ].join(" "),
     [
-      nirvanaDoneCount,
-      nirvanaSelectedLens.label,
-      nirvanaSelectedLens.text,
+      calmDoneCount,
+      calmSelectedLens.label,
+      calmSelectedLens.text,
       selectedIdentityLabel,
       selectedIssueGuide.followUp,
       selectedIssueGuide.label,
@@ -13217,7 +13217,7 @@ function FocusSection({
     }
     onOpenTab(card.destination);
   }
-  const focusSteps = isNirvanaMode
+  const focusSteps = isCalmMode
     ? selectedIssueGuide.steps
     : [
         `Body: ${selectedRoutine.meta}. For ${selectedIdentityLabel}, drop shoulders and slow the first breath.`,
@@ -13237,7 +13237,7 @@ function FocusSection({
       <Text style={styles.promptText}>
         {selectedRoutine.meta}. Current calm step is {sessionActive ? "active" : "ready"}.
       </Text>
-      {isNirvanaMode ? (
+      {isCalmMode ? (
         <View style={styles.visionGuidanceBox}>
           <Text style={styles.visionGuidanceTitle}>Calm layer</Text>
           <Text style={styles.visionGuidanceText}>
@@ -13248,132 +13248,132 @@ function FocusSection({
           </Text>
         </View>
       ) : null}
-      {isNirvanaMode ? (
-        <View style={styles.nirvanaWisdomBand}>
-          <View style={styles.nirvanaWisdomHeader}>
-            <View style={styles.nirvanaWisdomHeaderCopy}>
+      {isCalmMode ? (
+        <View style={styles.calmWisdomBand}>
+          <View style={styles.calmWisdomHeader}>
+            <View style={styles.calmWisdomHeaderCopy}>
               <Text style={styles.eyebrow}>Wisdom layer</Text>
-              <Text style={styles.nirvanaWisdomTitle} numberOfLines={2}>
+              <Text style={styles.calmWisdomTitle} numberOfLines={2}>
                 HOLY BOOKS TEACHINGS
               </Text>
             </View>
-            <Text style={styles.nirvanaWisdomBadge}>Paraphrased</Text>
+            <Text style={styles.calmWisdomBadge}>Paraphrased</Text>
           </View>
-          <Text style={styles.nirvanaWisdomIntro}>
+          <Text style={styles.calmWisdomIntro}>
             These teachings are compact and paraphrased. They support breath, restraint, witness
             mind, courage, and dignity for {selectedIdentityLabel}.
           </Text>
-          <View style={styles.nirvanaVoiceBand}>
-            <View style={styles.nirvanaVoiceHeader}>
-            <View style={styles.nirvanaVoiceHeaderCopy}>
-              <Text style={styles.nirvanaVoiceTitle}>Voice calm</Text>
-              <Text style={styles.nirvanaVoiceMeta}>
+          <View style={styles.calmVoiceBand}>
+            <View style={styles.calmVoiceHeader}>
+            <View style={styles.calmVoiceHeaderCopy}>
+              <Text style={styles.calmVoiceTitle}>Voice calm</Text>
+              <Text style={styles.calmVoiceMeta}>
                 {voiceAssistEnabled ? `Ready / ${voiceAssistStatus}` : "Voice is off"}
               </Text>
             </View>
             <Text style={styles.smallMeta}>Speak the loop aloud</Text>
           </View>
-          <Text style={styles.nirvanaVoiceText}>
+          <Text style={styles.calmVoiceText}>
               Let Reset read the current lens, the three calm steps, and the clean exit route.
             </Text>
-            <View style={styles.nirvanaQuickActionRow}>
+            <View style={styles.calmQuickActionRow}>
               <Pressable
                 accessibilityRole="button"
-                onPress={() => onReadNirvana(nirvanaVoiceText)}
-                style={styles.nirvanaQuickActionButton}
+                onPress={() => onReadCalm(calmVoiceText)}
+                style={styles.calmQuickActionButton}
               >
-                <Text style={styles.nirvanaQuickActionLabel}>Read calm steps</Text>
+                <Text style={styles.calmQuickActionLabel}>Read calm steps</Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
                 onPress={onStopVoice}
-                style={styles.nirvanaQuickActionButton}
+                style={styles.calmQuickActionButton}
               >
-                <Text style={styles.nirvanaQuickActionLabel}>Stop voice</Text>
+                <Text style={styles.calmQuickActionLabel}>Stop voice</Text>
               </Pressable>
             </View>
           </View>
-          <View style={styles.nirvanaQuickActionRow}>
+          <View style={styles.calmQuickActionRow}>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("journal")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Open Journal</Text>
+              <Text style={styles.calmQuickActionLabel}>Open Journal</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("guide")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Open Path</Text>
+              <Text style={styles.calmQuickActionLabel}>Open Path</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("meditation")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Open Meditation</Text>
+              <Text style={styles.calmQuickActionLabel}>Open Meditation</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("aihelp")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Open Guide</Text>
+              <Text style={styles.calmQuickActionLabel}>Open Guide</Text>
             </Pressable>
           </View>
           <Pressable
             accessibilityRole="button"
-            accessibilityState={{ selected: showNirvanaDetails }}
-            onPress={() => setShowNirvanaDetails((value) => !value)}
+            accessibilityState={{ selected: showCalmDetails }}
+            onPress={() => setShowCalmDetails((value) => !value)}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
             <Text style={styles.helpButtonSecondaryLabel}>
-              {showNirvanaDetails ? "Hide full calm guide" : "Show full calm guide"}
+              {showCalmDetails ? "Hide full calm guide" : "Show full calm guide"}
             </Text>
           </Pressable>
-          {showNirvanaDetails ? (
+          {showCalmDetails ? (
             <>
-              <View style={styles.nirvanaSituationBand}>
-                <View style={styles.nirvanaSituationHeader}>
-                  <View style={styles.nirvanaSituationHeaderCopy}>
-                    <Text style={styles.nirvanaSituationTitle}>Situation map</Text>
-                    <Text style={styles.nirvanaSituationMeta}>
+              <View style={styles.calmSituationBand}>
+                <View style={styles.calmSituationHeader}>
+                  <View style={styles.calmSituationHeaderCopy}>
+                    <Text style={styles.calmSituationTitle}>Situation map</Text>
+                    <Text style={styles.calmSituationMeta}>
                       Choose the card that matches the moment. Reset routes the user to the right page fast.
                     </Text>
                   </View>
-                  <Text style={styles.nirvanaWisdomBadge}>Active</Text>
+                  <Text style={styles.calmWisdomBadge}>Active</Text>
                 </View>
-                <View style={styles.nirvanaSituationGrid}>
-                  {nirvanaSituationCards.map((card) => (
+                <View style={styles.calmSituationGrid}>
+                  {calmSituationCards.map((card) => (
                     <Pressable
                       key={card.id}
                       accessibilityRole="button"
                       onPress={() => openSituationRoute(card)}
-                      style={({ pressed }) => [styles.nirvanaSituationCard, pressed && styles.pressed]}
+                      style={({ pressed }) => [styles.calmSituationCard, pressed && styles.pressed]}
                     >
-                      <View style={styles.nirvanaSituationCardTop}>
-                        <Text style={styles.nirvanaSituationCardLabel}>{card.label}</Text>
-                        <Text style={styles.nirvanaSituationCardAction}>{card.actionLabel}</Text>
+                      <View style={styles.calmSituationCardTop}>
+                        <Text style={styles.calmSituationCardLabel}>{card.label}</Text>
+                        <Text style={styles.calmSituationCardAction}>{card.actionLabel}</Text>
                       </View>
-                      <Text style={styles.nirvanaSituationCardDetail}>{card.detail}</Text>
-                      <Text style={styles.nirvanaSituationCardMeta}>{card.meta}</Text>
+                      <Text style={styles.calmSituationCardDetail}>{card.detail}</Text>
+                      <Text style={styles.calmSituationCardMeta}>{card.meta}</Text>
                     </Pressable>
                   ))}
                 </View>
               </View>
-              <View style={styles.nirvanaTeachingGrid}>
-                {nirvanaTeachings.map((item) => (
-                  <View key={item.id} style={styles.nirvanaTeachingCard}>
-                    <View style={styles.nirvanaTeachingTop}>
-                      <Text style={styles.nirvanaTeachingSource}>{item.source}</Text>
-                      <Text style={styles.nirvanaTeachingTheme}>{item.theme}</Text>
+              <View style={styles.calmTeachingGrid}>
+                {calmTeachings.map((item) => (
+                  <View key={item.id} style={styles.calmTeachingCard}>
+                    <View style={styles.calmTeachingTop}>
+                      <Text style={styles.calmTeachingSource}>{item.source}</Text>
+                      <Text style={styles.calmTeachingTheme}>{item.theme}</Text>
                     </View>
-                    <Text style={styles.nirvanaTeachingText}>{item.teaching}</Text>
-                    <Text style={styles.nirvanaTeachingPractice}>{item.practice}</Text>
+                    <Text style={styles.calmTeachingText}>{item.teaching}</Text>
+                    <Text style={styles.calmTeachingPractice}>{item.practice}</Text>
                     <View style={styles.wisdomShareRow}>
-                      <Text style={styles.nirvanaTeachingRef}>{item.reference}</Text>
+                      <Text style={styles.calmTeachingRef}>{item.reference}</Text>
                       <Pressable
                         accessibilityRole="button"
                         accessibilityLabel={`Share wisdom from ${item.source}`}
@@ -13399,43 +13399,43 @@ function FocusSection({
           )}
         </View>
       ) : null}
-      {isNirvanaMode && showNirvanaDetails ? (
-        <View style={styles.nirvanaLensBand}>
+      {isCalmMode && showCalmDetails ? (
+        <View style={styles.calmLensBand}>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.eyebrow}>Choose a lens</Text>
               <Text style={styles.sectionTitleSmall}>Change the calm angle</Text>
             </View>
-            <Text style={styles.smallMeta}>{nirvanaDoneCount}/3 steps done</Text>
+            <Text style={styles.smallMeta}>{calmDoneCount}/3 steps done</Text>
           </View>
-          <View style={styles.nirvanaLensRow}>
-            {nirvanaLensCards.map((lens) => {
-              const isActive = nirvanaLensId === lens.id;
+          <View style={styles.calmLensRow}>
+            {calmLensCards.map((lens) => {
+              const isActive = calmLensId === lens.id;
               return (
                 <Pressable
                   key={lens.id}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isActive }}
-                  onPress={() => setNirvanaLensId(lens.id)}
-                  style={[styles.nirvanaLensChip, isActive && styles.nirvanaLensChipActive]}
+                  onPress={() => setCalmLensId(lens.id)}
+                  style={[styles.calmLensChip, isActive && styles.calmLensChipActive]}
                 >
-                  <Text style={[styles.nirvanaLensChipLabel, isActive && styles.nirvanaLensChipLabelActive]}>
+                  <Text style={[styles.calmLensChipLabel, isActive && styles.calmLensChipLabelActive]}>
                     {lens.label}
                   </Text>
-                  <Text style={[styles.nirvanaLensChipMeta, isActive && styles.nirvanaLensChipMetaActive]}>
+                  <Text style={[styles.calmLensChipMeta, isActive && styles.calmLensChipMetaActive]}>
                     {lens.hint}
                   </Text>
                 </Pressable>
               );
             })}
           </View>
-          <View style={styles.nirvanaLensDetail}>
-            <Text style={styles.nirvanaLensDetailTitle}>{nirvanaSelectedLens.label}</Text>
-          <Text style={styles.nirvanaLensDetailText}>{nirvanaSelectedLens.text}</Text>
+          <View style={styles.calmLensDetail}>
+            <Text style={styles.calmLensDetailTitle}>{calmSelectedLens.label}</Text>
+          <Text style={styles.calmLensDetailText}>{calmSelectedLens.text}</Text>
         </View>
       </View>
       ) : null}
-      {isNirvanaMode && showNirvanaDetails ? (
+      {isCalmMode && showCalmDetails ? (
         <View style={styles.beaconXRouteBand}>
           <View style={styles.beaconXRouteHeader}>
             <View style={styles.beaconXRouteHeaderCopy}>
@@ -13462,8 +13462,8 @@ function FocusSection({
           </View>
         </View>
       ) : null}
-      {isNirvanaMode && showNirvanaDetails ? (
-        <View style={styles.nirvanaPracticeBand}>
+      {isCalmMode && showCalmDetails ? (
+        <View style={styles.calmPracticeBand}>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.eyebrow}>Do now</Text>
@@ -13471,16 +13471,16 @@ function FocusSection({
             </View>
             <Text style={styles.smallMeta}>Tap each step as you do it</Text>
           </View>
-          <View style={styles.nirvanaPracticeList}>
+          <View style={styles.calmPracticeList}>
             {selectedIssueGuide.steps.map((step, index) => {
-              const isDone = nirvanaStepStates[index];
+              const isDone = calmStepStates[index];
               return (
                 <Pressable
                   key={step}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isDone }}
                   onPress={() => {
-                    setNirvanaStepStates((current) => {
+                    setCalmStepStates((current) => {
                       const next: [boolean, boolean, boolean] = [...current] as [
                         boolean,
                         boolean,
@@ -13490,16 +13490,16 @@ function FocusSection({
                       return next;
                     });
                   }}
-                  style={[styles.nirvanaPracticeRow, isDone && styles.nirvanaPracticeRowDone]}
+                  style={[styles.calmPracticeRow, isDone && styles.calmPracticeRowDone]}
                 >
-                  <Text style={[styles.nirvanaPracticeIndex, isDone && styles.nirvanaPracticeIndexDone]}>
+                  <Text style={[styles.calmPracticeIndex, isDone && styles.calmPracticeIndexDone]}>
                     {isDone ? "✓" : index + 1}
                   </Text>
-                  <View style={styles.nirvanaPracticeCopy}>
-                    <Text style={[styles.nirvanaPracticeText, isDone && styles.nirvanaPracticeTextDone]}>
+                  <View style={styles.calmPracticeCopy}>
+                    <Text style={[styles.calmPracticeText, isDone && styles.calmPracticeTextDone]}>
                       {step}
                     </Text>
-                    <Text style={styles.nirvanaPracticeMeta}>
+                    <Text style={styles.calmPracticeMeta}>
                       {isDone ? "Completed" : index === 0 ? "Start here" : "Next calm move"}
                     </Text>
                   </View>
@@ -13507,37 +13507,37 @@ function FocusSection({
               );
             })}
           </View>
-          <Text style={styles.nirvanaPracticeSummary}>
-            {nirvanaDoneCount === 3
+          <Text style={styles.calmPracticeSummary}>
+            {calmDoneCount === 3
               ? "You have done the calm loop. Leave the section lighter and choose the next helpful tab."
               : selectedIssueGuide.followUp}
           </Text>
-          <View style={styles.nirvanaQuickActionRow}>
+          <View style={styles.calmQuickActionRow}>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("guide")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Return to Path</Text>
+              <Text style={styles.calmQuickActionLabel}>Return to Path</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("journal")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Write note</Text>
+              <Text style={styles.calmQuickActionLabel}>Write note</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("aihelp")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Open Guide</Text>
+              <Text style={styles.calmQuickActionLabel}>Open Guide</Text>
             </Pressable>
           </View>
         </View>
       ) : null}
-      {isNirvanaMode && showNirvanaDetails ? (
+      {isCalmMode && showCalmDetails ? (
         <View style={styles.beaconXWisdomPanel}>
           <View style={styles.sectionHeader}>
             <View style={styles.beaconXWisdomHeaderCopy}>
@@ -13558,13 +13558,13 @@ function FocusSection({
                 key={mode.label}
                 style={[
                   styles.beaconXWisdomChip,
-                  mode.label === "Action" && styles.beaconXWisdomChipNirvana
+                  mode.label === "Action" && styles.beaconXWisdomChipCalm
                 ]}
               >
                 <Text
                   style={[
                     styles.beaconXWisdomLabel,
-                    mode.label === "Action" && styles.beaconXWisdomLabelNirvana
+                    mode.label === "Action" && styles.beaconXWisdomLabelCalm
                   ]}
                   numberOfLines={2}
                 >
@@ -13576,32 +13576,32 @@ function FocusSection({
               </View>
             ))}
           </View>
-          <View style={styles.nirvanaQuickActionRow}>
+          <View style={styles.calmQuickActionRow}>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("guide")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Open Path</Text>
+              <Text style={styles.calmQuickActionLabel}>Open Path</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("journal")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Write note</Text>
+              <Text style={styles.calmQuickActionLabel}>Write note</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("redress")}
-              style={styles.nirvanaQuickActionButton}
+              style={styles.calmQuickActionButton}
             >
-              <Text style={styles.nirvanaQuickActionLabel}>Open Help</Text>
+              <Text style={styles.calmQuickActionLabel}>Open Help</Text>
             </Pressable>
           </View>
         </View>
       ) : null}
-      {isNirvanaMode && showNirvanaDetails ? (
+      {isCalmMode && showCalmDetails ? (
         <>
           <View style={styles.careLensGrid}>
             {careLenses.map((lens) => (
@@ -13645,14 +13645,14 @@ function FocusSection({
         onLayout={onFocusSelectedRoutineLayout ? onFocusSelectedRoutineLayout(`focus:card:${selectedRoutine.id}`) : undefined}
       >
         <Text style={styles.focusCount}>{selectedRoutine.duration}:00</Text>
-        <Text style={styles.focusLabel}>{isNirvanaMode ? "Reset window" : "Calm window"}</Text>
+        <Text style={styles.focusLabel}>{isCalmMode ? "Reset window" : "Calm window"}</Text>
         <CommandButton
           label={
             sessionActive
-              ? isNirvanaMode
+              ? isCalmMode
                 ? "Pause Reset"
                 : "Pause focus"
-              : isNirvanaMode
+              : isCalmMode
                 ? "Begin calm"
                 : "Start focus"
           }
@@ -13672,7 +13672,7 @@ function FocusSection({
             </View>
           ))}
         </View>
-        {isNirvanaMode ? (
+        {isCalmMode ? (
           <Text style={styles.smallMeta}>
             After the reset, journal one line and return to the Path tab for the next clean step.
           </Text>
@@ -13870,27 +13870,27 @@ function ToneLibrarySection({
           <Text style={styles.helpButtonSecondaryLabel}>Open Reset</Text>
         </Pressable>
       </View>
-      <View style={styles.nirvanaQuickActionRow}>
+      <View style={styles.calmQuickActionRow}>
         <Pressable
           accessibilityRole="button"
           onPress={() => onOpenTab("meditation")}
-          style={({ pressed }) => [styles.nirvanaQuickActionButton, pressed && styles.pressed]}
+          style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
         >
-          <Text style={styles.nirvanaQuickActionLabel}>Open Meditation</Text>
+          <Text style={styles.calmQuickActionLabel}>Open Meditation</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
           onPress={() => onOpenTab("guide")}
-          style={({ pressed }) => [styles.nirvanaQuickActionButton, pressed && styles.pressed]}
+          style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
         >
-          <Text style={styles.nirvanaQuickActionLabel}>Open Path</Text>
+          <Text style={styles.calmQuickActionLabel}>Open Path</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
           onPress={() => onOpenTab("journal")}
-          style={({ pressed }) => [styles.nirvanaQuickActionButton, pressed && styles.pressed]}
+          style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
         >
-          <Text style={styles.nirvanaQuickActionLabel}>Open Journal</Text>
+          <Text style={styles.calmQuickActionLabel}>Open Journal</Text>
         </Pressable>
       </View>
       <Text style={styles.homeToneLoopStatus}>
@@ -13939,16 +13939,16 @@ function ToneLibrarySection({
               <Text style={styles.smallMeta} numberOfLines={2}>
                 {toneMode.safety}
               </Text>
-              <View style={styles.nirvanaQuickActionRow}>
+              <View style={styles.calmQuickActionRow}>
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => {
                     setSelectedToneId(toneMode.id);
                     void playRelaxingToneCue(toneMode);
                   }}
-                  style={({ pressed }) => [styles.nirvanaQuickActionButton, pressed && styles.pressed]}
+                  style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
                 >
-                  <Text style={styles.nirvanaQuickActionLabel}>Play</Text>
+                  <Text style={styles.calmQuickActionLabel}>Play</Text>
                 </Pressable>
               </View>
             </Pressable>
@@ -13997,16 +13997,16 @@ function ToneLibrarySection({
                 <Text style={styles.smallMeta} numberOfLines={2}>
                   {toneMode.safety}
                 </Text>
-                <View style={styles.nirvanaQuickActionRow}>
+                <View style={styles.calmQuickActionRow}>
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => {
                       setSelectedToneId(toneMode.id);
                       void playRelaxingToneCue(toneMode);
                     }}
-                    style={({ pressed }) => [styles.nirvanaQuickActionButton, pressed && styles.pressed]}
+                    style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.nirvanaQuickActionLabel}>Play</Text>
+                    <Text style={styles.calmQuickActionLabel}>Play</Text>
                   </Pressable>
                 </View>
               </Pressable>
@@ -14190,36 +14190,36 @@ function MeditationSection({
             })}
           </View>
           <View style={{ flex: 1, gap: 10 }}>
-            <Text style={styles.nirvanaTeachingText}>
+            <Text style={styles.calmTeachingText}>
               {selectedChakra.teaching}
             </Text>
-            <Text style={styles.nirvanaTeachingPractice}>
+            <Text style={styles.calmTeachingPractice}>
               Practice: {selectedChakra.practice}
             </Text>
-            <Text style={styles.nirvanaTeachingRef}>
+            <Text style={styles.calmTeachingRef}>
               Literature: {selectedChakra.literature}
             </Text>
-            <View style={styles.nirvanaQuickActionRow}>
+            <View style={styles.calmQuickActionRow}>
               <Pressable
                 accessibilityRole="button"
                 onPress={() => onReadMeditation(selectedVoiceText)}
-                style={styles.nirvanaQuickActionButton}
+                style={styles.calmQuickActionButton}
               >
-                <Text style={styles.nirvanaQuickActionLabel}>Read teaching</Text>
+                <Text style={styles.calmQuickActionLabel}>Read teaching</Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
                 onPress={() => void playRelaxingToneCue(selectedTone)}
-                style={styles.nirvanaQuickActionButton}
+                style={styles.calmQuickActionButton}
               >
-                <Text style={styles.nirvanaQuickActionLabel}>Play audio</Text>
+                <Text style={styles.calmQuickActionLabel}>Play audio</Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
                 onPress={() => onOpenWebsite(buildMeditationVideoUrl(selectedChakra), `${selectedChakra.label} video lesson`)}
-                style={styles.nirvanaQuickActionButton}
+                style={styles.calmQuickActionButton}
               >
-                <Text style={styles.nirvanaQuickActionLabel}>Open video</Text>
+                <Text style={styles.calmQuickActionLabel}>Open video</Text>
               </Pressable>
             </View>
             <Text style={styles.smallMeta} numberOfLines={2}>
@@ -14229,7 +14229,7 @@ function MeditationSection({
         </View>
       </View>
 
-      <View style={styles.nirvanaTeachingGrid}>
+      <View style={styles.calmTeachingGrid}>
         {meditationChakraTeachings.map((chakra) => {
           const isSelected = chakra.id === selectedChakraId;
           const isRecommended = chakra.id === recommendedChakraId;
@@ -14240,7 +14240,7 @@ function MeditationSection({
               accessibilityState={{ selected: isSelected }}
               onPress={() => setSelectedChakraId(chakra.id)}
               style={({ pressed }) => [
-                styles.nirvanaTeachingCard,
+                styles.calmTeachingCard,
                 {
                   borderColor: isSelected ? chakra.color : isRecommended ? "#0E6F69" : "#E5D8C7",
                   backgroundColor: isSelected ? "#102A2D" : "#0D1F22"
@@ -14248,13 +14248,13 @@ function MeditationSection({
                 pressed && styles.pressed
               ]}
             >
-              <View style={styles.nirvanaTeachingTop}>
-                <Text style={styles.nirvanaTeachingSource}>{chakra.sanskrit}</Text>
-                <Text style={styles.nirvanaTeachingTheme}>{chakra.body}</Text>
+              <View style={styles.calmTeachingTop}>
+                <Text style={styles.calmTeachingSource}>{chakra.sanskrit}</Text>
+                <Text style={styles.calmTeachingTheme}>{chakra.body}</Text>
               </View>
-              <Text style={styles.nirvanaTeachingText}>{chakra.teaching}</Text>
-              <Text style={styles.nirvanaTeachingPractice}>{chakra.practice}</Text>
-              <Text style={styles.nirvanaTeachingRef}>{chakra.figure}</Text>
+              <Text style={styles.calmTeachingText}>{chakra.teaching}</Text>
+              <Text style={styles.calmTeachingPractice}>{chakra.practice}</Text>
+              <Text style={styles.calmTeachingRef}>{chakra.figure}</Text>
             </Pressable>
           );
         })}
@@ -14275,50 +14275,50 @@ function MeditationSection({
         <Text style={styles.beaconXWisdomLead}>
           Choose one method, hear one teaching, and then return to Path, Help, Journal, or Practice so meditation becomes part of the real workflow.
         </Text>
-        <View style={styles.nirvanaQuickActionRow}>
+        <View style={styles.calmQuickActionRow}>
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpenTab("focus")}
-            style={styles.nirvanaQuickActionButton}
+            style={styles.calmQuickActionButton}
           >
-            <Text style={styles.nirvanaQuickActionLabel}>Open Calm</Text>
+            <Text style={styles.calmQuickActionLabel}>Open Calm</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpenTab("guide")}
-            style={styles.nirvanaQuickActionButton}
+            style={styles.calmQuickActionButton}
           >
-            <Text style={styles.nirvanaQuickActionLabel}>Open Path</Text>
+            <Text style={styles.calmQuickActionLabel}>Open Path</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpenTab("journal")}
-            style={styles.nirvanaQuickActionButton}
+            style={styles.calmQuickActionButton}
           >
-            <Text style={styles.nirvanaQuickActionLabel}>Open Journal</Text>
+            <Text style={styles.calmQuickActionLabel}>Open Journal</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpenTab("play")}
-            style={styles.nirvanaQuickActionButton}
+            style={styles.calmQuickActionButton}
           >
-            <Text style={styles.nirvanaQuickActionLabel}>Open Practice</Text>
+            <Text style={styles.calmQuickActionLabel}>Open Practice</Text>
           </Pressable>
         </View>
-        <View style={styles.nirvanaQuickActionRow}>
+        <View style={styles.calmQuickActionRow}>
           <Pressable
             accessibilityRole="button"
             onPress={onStopVoice}
-            style={styles.nirvanaQuickActionButton}
+            style={styles.calmQuickActionButton}
           >
-            <Text style={styles.nirvanaQuickActionLabel}>Stop voice</Text>
+            <Text style={styles.calmQuickActionLabel}>Stop voice</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onReadMeditation(selectedVoiceText)}
-            style={styles.nirvanaQuickActionButton}
+            style={styles.calmQuickActionButton}
           >
-            <Text style={styles.nirvanaQuickActionLabel}>Replay teaching</Text>
+            <Text style={styles.calmQuickActionLabel}>Replay teaching</Text>
           </Pressable>
         </View>
       </View>
@@ -23144,7 +23144,7 @@ const styles = StyleSheet.create({
     maxWidth: "48%",
     justifyContent: "flex-start"
   },
-  heroModeChipNirvana: {
+  heroModeChipCalm: {
     borderColor: "#F6D46B",
     backgroundColor: "rgba(246, 212, 107, 0.16)"
   },
@@ -25675,7 +25675,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0
   },
-  beaconXWisdomChipNirvana: {
+  beaconXWisdomChipCalm: {
     borderColor: "#F6D46B",
     backgroundColor: "#FFF9E8",
     ...Platform.select({
@@ -25694,7 +25694,7 @@ const styles = StyleSheet.create({
       default: {}
     })
   },
-  beaconXWisdomLabelNirvana: {
+  beaconXWisdomLabelCalm: {
     color: "#8A5A00"
   },
   beaconXWisdomMeta: {
@@ -27128,7 +27128,7 @@ const styles = StyleSheet.create({
   routineList: {
     gap: 10
   },
-  nirvanaWisdomBand: {
+  calmWisdomBand: {
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#D8C9FF",
@@ -27136,18 +27136,18 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 10
   },
-  nirvanaWisdomHeader: {
+  calmWisdomHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: 10
   },
-  nirvanaWisdomHeaderCopy: {
+  calmWisdomHeaderCopy: {
     flex: 1,
     minWidth: 0,
     gap: 2
   },
-  nirvanaWisdomTitle: {
+  calmWisdomTitle: {
     color: "#241B3F",
     fontSize: 14,
     lineHeight: 18,
@@ -27155,7 +27155,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0
   },
-  nirvanaWisdomBadge: {
+  calmWisdomBadge: {
     color: "#4D3C85",
     borderRadius: 999,
     overflow: "hidden",
@@ -27169,7 +27169,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textTransform: "uppercase"
   },
-  nirvanaWisdomIntro: {
+  calmWisdomIntro: {
     color: "#4A4261",
     fontSize: 11,
     lineHeight: 16,
@@ -27177,7 +27177,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0
   },
-  nirvanaSituationBand: {
+  calmSituationBand: {
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#D8E3DB",
@@ -27185,18 +27185,18 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 10
   },
-  nirvanaSituationHeader: {
+  calmSituationHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: 10
   },
-  nirvanaSituationHeaderCopy: {
+  calmSituationHeaderCopy: {
     flex: 1,
     minWidth: 0,
     gap: 2
   },
-  nirvanaSituationTitle: {
+  calmSituationTitle: {
     color: "#E8F4F0",
     fontSize: 14,
     lineHeight: 18,
@@ -27204,18 +27204,18 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0
   },
-  nirvanaSituationMeta: {
+  calmSituationMeta: {
     color: "rgba(255,255,255,0.55)",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700"
   },
-  nirvanaSituationGrid: {
+  calmSituationGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
   },
-  nirvanaSituationCard: {
+  calmSituationCard: {
     flexGrow: 1,
     flexBasis: 220,
     minHeight: 92,
@@ -27227,27 +27227,27 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     gap: 4
   },
-  nirvanaSituationCardTop: {
+  calmSituationCardTop: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: 8
   },
-  nirvanaSituationCardLabel: {
+  calmSituationCardLabel: {
     flex: 1,
     color: "#E8F4F0",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "900"
   },
-  nirvanaSituationCardAction: {
+  calmSituationCardAction: {
     color: "#0E6F69",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "900",
     textTransform: "uppercase"
   },
-  nirvanaSituationCardDetail: {
+  calmSituationCardDetail: {
     color: "rgba(255,255,255,0.55)",
     fontSize: 11,
     lineHeight: 16,
@@ -27255,13 +27255,13 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0
   },
-  nirvanaSituationCardMeta: {
+  calmSituationCardMeta: {
     color: "rgba(255,255,255,0.42)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "800"
   },
-  nirvanaVoiceBand: {
+  calmVoiceBand: {
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#D8E3DB",
@@ -27269,40 +27269,40 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 8
   },
-  nirvanaVoiceHeader: {
+  calmVoiceHeader: {
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
     gap: 10
   },
-  nirvanaVoiceHeaderCopy: {
+  calmVoiceHeaderCopy: {
     flex: 1,
     gap: 2
   },
-  nirvanaVoiceTitle: {
+  calmVoiceTitle: {
     color: "#E8F4F0",
     fontSize: 14,
     lineHeight: 18,
     fontWeight: "900"
   },
-  nirvanaVoiceMeta: {
+  calmVoiceMeta: {
     color: "#0E6F69",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "800"
   },
-  nirvanaVoiceText: {
+  calmVoiceText: {
     color: "rgba(255,255,255,0.55)",
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700"
   },
-  nirvanaTeachingGrid: {
+  calmTeachingGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
   },
-  nirvanaTeachingCard: {
+  calmTeachingCard: {
     flexGrow: 1,
     flexBasis: 210,
     borderRadius: 8,
@@ -27312,25 +27312,25 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 7
   },
-  nirvanaTeachingTop: {
+  calmTeachingTop: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 8
   },
-  nirvanaTeachingSource: {
+  calmTeachingSource: {
     flex: 1,
     color: "#E8F4F0",
     fontSize: 12,
     fontWeight: "900"
   },
-  nirvanaTeachingTheme: {
+  calmTeachingTheme: {
     color: "#0E6F69",
     fontSize: 9,
     fontWeight: "900",
     textTransform: "uppercase"
   },
-  nirvanaTeachingText: {
+  calmTeachingText: {
     color: "#E8F4F0",
     fontSize: 11,
     lineHeight: 16,
@@ -27338,7 +27338,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0
   },
-  nirvanaTeachingPractice: {
+  calmTeachingPractice: {
     color: "rgba(255,255,255,0.55)",
     fontSize: 10,
     lineHeight: 14,
@@ -27346,7 +27346,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0
   },
-  nirvanaTeachingRef: {
+  calmTeachingRef: {
     color: "rgba(255,255,255,0.42)",
     fontSize: 9,
     lineHeight: 12,
@@ -27372,7 +27372,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#C4A35A"
   },
-  nirvanaLensBand: {
+  calmLensBand: {
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.25)",
@@ -27380,12 +27380,12 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 10
   },
-  nirvanaLensRow: {
+  calmLensRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
   },
-  nirvanaLensChip: {
+  calmLensChip: {
     flexGrow: 1,
     flexBasis: 96,
     minHeight: 58,
@@ -27397,29 +27397,29 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     gap: 2
   },
-  nirvanaLensChipActive: {
+  calmLensChipActive: {
     borderColor: "#22D3EE",
     backgroundColor: "rgba(34,211,238,0.12)"
   },
-  nirvanaLensChipLabel: {
+  calmLensChipLabel: {
     color: "#E8F4F0",
     fontSize: 12,
     lineHeight: 15,
     fontWeight: "900"
   },
-  nirvanaLensChipLabelActive: {
+  calmLensChipLabelActive: {
     color: "#22D3EE"
   },
-  nirvanaLensChipMeta: {
+  calmLensChipMeta: {
     color: "rgba(255,255,255,0.45)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
   },
-  nirvanaLensChipMetaActive: {
+  calmLensChipMetaActive: {
     color: "rgba(34,211,238,0.7)"
   },
-  nirvanaLensDetail: {
+  calmLensDetail: {
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.25)",
@@ -27427,20 +27427,20 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 6
   },
-  nirvanaLensDetailTitle: {
+  calmLensDetailTitle: {
     color: "#F0F9FF",
     fontSize: 14,
     lineHeight: 19,
     fontWeight: "900",
     letterSpacing: 0.1
   },
-  nirvanaLensDetailText: {
+  calmLensDetailText: {
     color: "rgba(240,249,255,0.65)",
     fontSize: 13,
     lineHeight: 20,
     fontWeight: "600"
   },
-  nirvanaPracticeBand: {
+  calmPracticeBand: {
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: "rgba(139,92,246,0.25)",
@@ -27448,10 +27448,10 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 10
   },
-  nirvanaPracticeList: {
+  calmPracticeList: {
     gap: 8
   },
-  nirvanaPracticeRow: {
+  calmPracticeRow: {
     minHeight: 62,
     borderRadius: 10,
     borderWidth: 1,
@@ -27463,11 +27463,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: 8
   },
-  nirvanaPracticeRowDone: {
+  calmPracticeRowDone: {
     borderColor: "#0E6F69",
     backgroundColor: "#F3FBF8"
   },
-  nirvanaPracticeIndex: {
+  calmPracticeIndex: {
     width: 22,
     height: 22,
     borderRadius: 11,
@@ -27480,41 +27480,41 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     fontWeight: "900"
   },
-  nirvanaPracticeIndexDone: {
+  calmPracticeIndexDone: {
     backgroundColor: "#0E6F69",
     color: "#FFFDFC"
   },
-  nirvanaPracticeCopy: {
+  calmPracticeCopy: {
     flex: 1,
     gap: 3
   },
-  nirvanaPracticeText: {
+  calmPracticeText: {
     color: "#E8F4F0",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "800"
   },
-  nirvanaPracticeTextDone: {
+  calmPracticeTextDone: {
     color: "#274341"
   },
-  nirvanaPracticeMeta: {
+  calmPracticeMeta: {
     color: "rgba(255,255,255,0.42)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
   },
-  nirvanaPracticeSummary: {
+  calmPracticeSummary: {
     color: "#4A4261",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
   },
-  nirvanaQuickActionRow: {
+  calmQuickActionRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
   },
-  nirvanaQuickActionButton: {
+  calmQuickActionButton: {
     minHeight: 36,
     borderRadius: 10,
     paddingHorizontal: 12,
@@ -27525,7 +27525,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  nirvanaQuickActionLabel: {
+  calmQuickActionLabel: {
     color: "#0ECCB8",
     fontSize: 12,
     fontWeight: "900"
