@@ -15683,11 +15683,11 @@ function SearchSection({
         ? "public"
         : "private";
   const suggestionPills = [
-    "anxiety",
+    "general guidance",
     "complaint",
     "authority",
     "doctor",
-    "cybercrime"
+    "community"
   ];
   const resultLimit = showFullSearchResults ? 12 : 3;
   const visibleSearchMatches = {
@@ -15855,7 +15855,7 @@ function SearchSection({
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Search anxiety, complaint, doctor, women help, community..."
+          placeholder="Search guidance, complaint, doctor, support, community..."
           placeholderTextColor="#9A8F82"
           style={styles.searchInput}
           returnKeyType="search"
