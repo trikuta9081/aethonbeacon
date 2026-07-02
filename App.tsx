@@ -10526,6 +10526,15 @@ async function fetchGeminiAIHelp(
   }
 
   function openRouteFollowUp(decision: PendingRouteDecision, choice: RouteChoiceId) {
+    if (
+      activeRouteFollowUp &&
+      activeRouteFollowUp.status === "open" &&
+      activeRouteFollowUp.rawText === decision.rawText &&
+      activeRouteFollowUp.choice === choice &&
+      activeRouteFollowUp.issueId === decision.issueId
+    ) {
+      return;
+    }
     const followUp: ActiveRouteFollowUp = {
       id: `route-follow-up-${Date.now()}`,
       rawText: decision.rawText,
@@ -23759,8 +23768,8 @@ const styles = StyleSheet.create({
   issueCompassBand: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#DCE7E1",
-    backgroundColor: "#F8FBF9",
+    borderColor: "rgba(14,111,105,0.28)",
+    backgroundColor: "#0D1F22",
     padding: 12,
     gap: 10
   },
