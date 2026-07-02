@@ -15896,9 +15896,9 @@ function SearchSection({
         {!queryActive ? (
           <View style={styles.searchStarterGrid}>
             <View style={styles.searchStarterCard}>
-              <Text style={styles.searchStarterTitle}>Anxiety and overwhelm</Text>
+              <Text style={styles.searchStarterTitle}>General guidance</Text>
               <Text style={styles.searchStarterText}>
-                Open Path for coping steps, nearby help, and reminder follow-up.
+                Open Path for a clean first step, clear follow-up, and the right route.
               </Text>
             </View>
             <View style={styles.searchStarterCard}>
