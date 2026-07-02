@@ -6185,10 +6185,6 @@ export default function App() {
   // ── Journey milestones ──────────────────────────────────────────────────────
   const journeyMilestones = useMemo(() => {
     const hasProfile = !!accessName && accessName.trim().length > 1;
-    const hasBirthChart =
-      /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
-      /^\d{2}:\d{2}$/.test(profileBirthTime) &&
-      profileBirthPlace.trim().length > 0;
     const hasFirstEntry = entries.length > 0;
     const hasThreeDayStreak = checkInStreak >= 3;
     const hasWeekOfData = entries.length >= 7;
@@ -6198,7 +6194,6 @@ export default function App() {
     return [
       { id: "first_entry", label: "Make your first check-in — every journey starts with one honest moment", done: hasFirstEntry, cta: "Check in now", tab: "today" as TabId, icon: "📓" },
       { id: "profile", label: "Tell us who you are — your identity shapes your guidance", done: hasProfile, cta: "Set up profile", tab: "settings" as TabId, icon: "👤" },
-      { id: "birth_chart", label: "Add your birth details to unlock your personal Birth Chart", done: hasBirthChart, cta: "Open Birth Chart", tab: "vedic" as TabId, icon: "🪐" },
       { id: "practice", label: "Start a guided practice — small daily actions create lasting change", done: hasTriedPractice, cta: "Start Practice", tab: "play" as TabId, icon: "🎯" },
       { id: "streak_3", label: "Check in 3 days in a row — where habits are actually born", done: hasThreeDayStreak, cta: "Check in today", tab: "today" as TabId, icon: "🔥" },
       { id: "week_data", label: "7 check-ins reveals your patterns — insights begin to surface", done: hasWeekOfData, cta: "Keep going", tab: "today" as TabId, icon: "✨" },
@@ -12095,7 +12090,6 @@ function isTrustedExternalUrl(url: string) {
                     { id: "tones", label: "Tones", icon: "🎵" },
                     { id: "meditation", label: "Wellness", icon: "🪷" },
                     { id: "play", label: "Practice", icon: "🎯" },
-                    { id: "vedic", label: "Birth Chart", icon: "🪐" },
                   ] as Array<{ id: TabId; label: string; icon: string }>).map((item) => (
                     <Pressable
                       key={item.id}
