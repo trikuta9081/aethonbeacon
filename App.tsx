@@ -15826,7 +15826,7 @@ function SearchSection({
         </Text>
         <SectionFlowBand
           eyebrow="Explore loop"
-          title="Search, choose, then open"
+          title="Sort, choose, then open"
           summary={
             queryActive
               ? "Use the search results to pick one route, then stop wandering and open that page."
@@ -15937,7 +15937,7 @@ function SearchSection({
             <View style={styles.searchGroupBlock}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.searchGroupLabel}>Path guides</Text>
+                  <Text style={styles.searchGroupLabel}>Route guides</Text>
                   <Text style={styles.searchGroupMeta}>Practical, emotional, and reflective help</Text>
                 </View>
               </View>
