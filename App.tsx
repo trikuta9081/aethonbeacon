@@ -7,6 +7,7 @@ import {
   InteractionManager,
   Image,
   ImageBackground,
+  KeyboardAvoidingView,
   Linking,
   Keyboard,
   Platform,
@@ -141,6 +142,7 @@ type PersistedAppState = {
   notifStreakEnabled: boolean;
   notifVedicEnabled: boolean;
   notifReengageEnabled: boolean;
+  notifWellbeingEnabled: boolean;
   emergencyNumber: string;
   identityId: IdentityId;
   issueGuideId: IssueId;
@@ -210,6 +212,7 @@ type PersistedAppState = {
   hasSeenWelcomeCard: boolean;
   dismissedHintTabs: string[]; // tab IDs whose first-visit hint has been dismissed
   lastVedicViewDate: string | null; // ISO date "YYYY-MM-DD" of last Vedic tab open
+  lastWeeklyVedicCheck: string | null; // week key "YYYY-WN" of last weekly vedic check
   journeyCardDismissed: boolean;
   featureNudgeDismissed: boolean;
 };
@@ -279,9 +282,9 @@ type LanguageId =
   | "manipuri"
   | "santali"
   | "dogri";
-type IssueId = "general" | "anger" | "anxiety" | "fear" | "overconfidence" | "stigma" | "burnout" | "loneliness";
+type IssueId = "general" | "anger" | "anxiety" | "fear" | "overconfidence" | "stigma" | "burnout" | "loneliness" | "grief" | "identity" | "health" | "financial" | "relationship" | "parenting" | "trauma" | "academic" | "addiction";
 type IssueReminderMode = "tomorrow" | "week";
-type RedressRouteId = "academic" | "harassment" | "ragging" | "public" | "private" | "crime";
+type RedressRouteId = "academic" | "harassment" | "ragging" | "public" | "private" | "crime" | "financial" | "domestic" | "workplace";
 type InstitutionSectorId =
   | "university"
   | "iit"
@@ -374,7 +377,7 @@ type PlayChallenge = {
 
 type CommunityMessageRole = "user" | "verified" | "moderator";
 type CommunityFilterId = "all" | "verified" | "discussion";
-type CommunityTopicFilterId = "all" | "general" | "student" | "care" | "work" | "complaint" | "support";
+type CommunityTopicFilterId = "all" | "general" | "student" | "care" | "work" | "complaint" | "support" | "grief" | "trauma" | "addiction" | "relationships" | "financial" | "parenting" | "identity";
 type CommunityChatPersonaId = "moderator" | "mentor" | "support";
 type CommunityMessage = {
   id: string;
@@ -1290,11 +1293,11 @@ const meditationChakraTeachings: MeditationChakra[] = [
 // ── Dynamic hero helpers ─────────────────────────────────────────────────────
 function getTimeGreeting(): { greeting: string; emoji: string; accent: string } {
   const h = new Date().getHours();
-  if (h < 5)  return { greeting: "Late night",    emoji: "🌙", accent: "#1A3A5C" };
-  if (h < 12) return { greeting: "Good morning",  emoji: "☀️", accent: "#0D2B2E" };
-  if (h < 17) return { greeting: "Good afternoon",emoji: "🌤️", accent: "#1A2E1A" };
-  if (h < 21) return { greeting: "Good evening",  emoji: "🌆", accent: "#2B1A2E" };
-  return       { greeting: "Good night",          emoji: "🌙", accent: "#1A1A3A" };
+  if (h < 5)  return { greeting: "Here with you",  emoji: "🌙", accent: "#1A3A5C" };
+  if (h < 12) return { greeting: "Good morning",   emoji: "☀️", accent: "#0D2B2E" };
+  if (h < 17) return { greeting: "Good afternoon", emoji: "🌤️", accent: "#1A2E1A" };
+  if (h < 21) return { greeting: "Good evening",   emoji: "🌆", accent: "#2B1A2E" };
+  return       { greeting: "Still here with you",  emoji: "🌙", accent: "#1A1A3A" };
 }
 function getLiveDateLabel(): string {
   return new Date().toLocaleDateString("en-IN", {
@@ -1343,6 +1346,16 @@ const DAILY_PROMPTS = [
   "I feel like I'm failing at everything",
   "Something bad happened and I need to process it",
   "I feel hopeful but also scared about a new opportunity",
+  "I'm struggling with a habit that I keep falling back into",
+  "Something from my past keeps coming back and I don't know how to handle it",
+  "The exam pressure is crushing me and I don't know how to cope",
+  "I don't know who I am anymore or what I'm living for",
+  "Parenting is harder than I expected and I feel like I'm failing",
+  "My health is worrying me and I feel helpless about it",
+  "I feel ashamed of how I look and it's affecting everything I do",
+  "I've lost someone and the grief comes in waves I can't predict",
+  "My marriage or relationship is silently falling apart",
+  "I feel trapped financially and don't know where to turn",
 ];
 function getDailyPrompt(): string {
   const now = new Date();
@@ -1962,7 +1975,7 @@ function buildDailyRoutinePlan(
   const followUpWeeks = followUpMode === "threeMonths" ? 12 : followUpMode === "fourMonths" ? 16 : 0;
   const followUpLead = followUpWeeks > 0
     ? pickLocalizedText(languageId, {
-        english: `The app will keep checking back for ${followUpWeeks} weeks after this first routine.`,
+        english: `A follow-up check-in will appear for ${followUpWeeks} weeks to help you stay on track.`,
         hindi: `यह ऐप इस पहली routine के बाद ${followUpWeeks} हफ़्तों तक फिर से check-in करेगा।`,
         punjabi: `ਇਹ ਐਪ ਇਸ ਪਹਿਲੀ routine ਤੋਂ ਬਾਅਦ ${followUpWeeks} ਹਫ਼ਤਿਆਂ ਤੱਕ ਮੁੜ check-in ਕਰੇਗੀ।`,
         marathi: `हे अ‍ॅप या पहिल्या routine नंतर ${followUpWeeks} आठवड्यांपर्यंत पुन्हा check-in करेल.`,
@@ -2019,7 +2032,7 @@ function buildDailyRoutinePlan(
       urdu: `${profileAddressLabel}, ${streakLead} ${moodLead} ایک لائن، ایک route، ایک پرسکون قدم، ایک practice loop، اور ایک reminder.`
     }),
     footer: pickLocalizedText(languageId, {
-      english: `${followUpLead} ${softPrompts ? "Starter lines stay available when you need them." : "The app will stay plain and direct."} ${intakeLead} Practice keeps the loop alive when the day needs a shorter win.`,
+      english: `${followUpLead} ${softPrompts ? "Starter lines stay available when you need them." : "Prompts will stay focused and direct."} ${intakeLead} Practice keeps the loop alive when the day needs a shorter win.`,
       hindi: `${followUpLead} ${softPrompts ? "ज़रूरत पड़ने पर starter lines उपलब्ध रहेंगी।" : "ऐप सरल और सीधा रहेगा।"} ${intakeLead} Practice दिन में छोटी जीत मिलने पर loop को जीवित रखती है।`,
       punjabi: `${followUpLead} ${softPrompts ? "ਲੋੜ ਹੋਵੇ ਤਾਂ starter lines ਉਪਲਬਧ ਰਹਿਣਗੀਆਂ।" : "ਐਪ ਸਿੱਧਾ ਅਤੇ ਸਧਾਰਣ ਰਹੇਗਾ।"} ${intakeLead} Practice ਦਿਨ ਵਿਚ ਛੋਟੀ ਜਿੱਤ ਆਉਣ ਤੇ loop ਨੂੰ ਜੀਵਤ ਰੱਖਦੀ ਹੈ।`,
       marathi: `${followUpLead} ${softPrompts ? "गरज पडल्यास starter lines उपलब्ध राहतील." : "अ‍ॅप साधे आणि थेट राहील."} ${intakeLead} Practice दिवसात छोटी जिंक मिळाली की loop जिवंत ठेवते.`,
@@ -2202,9 +2215,18 @@ const aiHelpIssueLabelMap: Record<IssueId, string> = {
   anxiety: "Anxiety",
   fear: "Fear",
   overconfidence: "Overconfidence",
-  stigma: "Stigma",
+  stigma: "Self-image",
   burnout: "Burnout",
-  loneliness: "Loneliness"
+  loneliness: "Loneliness",
+  grief: "Grief & Loss",
+  identity: "Identity & Purpose",
+  health: "Health",
+  financial: "Financial stress",
+  relationship: "Relationship",
+  parenting: "Parenting",
+  trauma: "Trauma",
+  academic: "Academic pressure",
+  addiction: "Addiction & Habits",
 };
 
 const calmIssueIds = new Set<IssueId>([
@@ -2215,59 +2237,264 @@ const calmIssueIds = new Set<IssueId>([
   "overconfidence",
   "stigma",
   "burnout",
-  "loneliness"
+  "loneliness",
+  "grief",
+  "identity",
+  "health",
+  "financial",
+  "relationship",
+  "parenting",
+  "trauma",
+  "academic",
+  "addiction",
 ]);
 
 function detectAIHelpRouteFromText(text: string): AIHelpRoute {
-  const normalized = text.toLowerCase();
-  if (
-    /(emergency|unsafe|danger|suicide|self[-\s]?harm|kill myself|hurt myself|end my life|assault|rape|violence|threat|112)/.test(
-      normalized
-    )
-  ) {
+  const n = text.toLowerCase();
+
+  // ── 1. URGENT — immediate safety risk ──────────────────────────────────────
+  if (/(emergency|unsafe|danger|suicid|self[-\s]?harm|kill myself|hurt myself|end my life|end it all|don't want to live|don't want to be here|assault|rape|sexual assault|being abused|physical violence|threat to my life|being threatened|112|911|999)/.test(n)) {
     return "urgent";
   }
-  if (
-    /(complaint|grievance|redress|report|escalat|ragging|harass|bully|bullied|bullying|professor|teacher|hod|principal|dean|senior|junior|hr|manager|authority|office|department|desk|police|cyber|women|child)/.test(
-      normalized
-    )
-    || (/(school|college|university|classroom|classmate|peer|hostel|warden)/.test(normalized) &&
-      /(complaint|grievance|report|escalat|ragging|harass|bully|bullied|bullying|teacher|principal|dean|authority|office)/.test(normalized))
-  ) {
-    return "redress";
-  }
-  if (/(doctor|counsel|psychologist|psychiatrist|therapy|medicine|clinical|sleep|appetite|panic|depression|mental health)/.test(normalized)) {
+
+  // ── 2. PROFESSIONAL — clinical-level symptoms that need expert care ─────────
+  if (/(seeing things|hearing voices|hallucina|psychosis|psychotic|paranoi|ptsd|flashback|trauma|dissociat|bipolar|schizophrenia|eating disorder|anorexia|bulimia|binge eating|self medicate|overdose|withdrawal|detox|rehab|addict|addiction|alcoholic|drug depend|substance abuse|chronic pain|chronic illness|terminal|diagnosed with|diagnosis|cancer|heart condition|severe depression|clinical depression|cannot get out of bed for weeks|not eaten|haven't slept in days|suicidal thoughts|want to die)/.test(n)) {
     return "professional";
   }
-  if (
-    /(anger|angry|irritat|anxiety|anxious|fear|afraid|overconfiden|stigma|shame|burnout|burned out|lonely|loneliness|stress|stressed|worry|worried|coward|confus|frustrat|overwhelmed|panic)/.test(
-      normalized
-    )
-  ) {
+
+  // ── 3. EMOTIONAL CONTEXT — must check BEFORE redress ────────────────────────
+  // Any emotional, self-worth, relational, or life-situation keyword → guide
+  const isEmotional = /(feel|feeling|felt|upset|sad|hurt|broken|low|down|lost|numb|empty|hollow|ignored|invisible|unappreciated|not appreciated|not valued|not noticed|not recognised|not recognized|not seen|looks|appearance|ugly|unattractive|not good looking|how i look|my body|body image|weight|fat|thin|self.worth|self.esteem|self.image|self.confidence|insecur|ashamed|embarrassed|unloved|unwanted|rejected|alone|lonely|worthless|hopeless|depressed|exhausted|tired of|sick of|struggling|overwhelmed|angry|anger|rage|furious|irritat|frustrat|anxious|anxiety|stress|stressed|worry|worried|panic|nervous|grief|griev|mourning|mourn|bereaved|bereavement|lost someone|someone died|passed away|divorce|separation|breakup|broke up|cheating|affair|marriage problem|relationship problem|my wife|my husband|my partner|my boyfriend|my girlfriend|my family|my parents|my kids|my children|job loss|lost my job|fired|laid off|redundant|money problem|debt|broke|financial|loan|rent|can.t pay|purpose|meaning|meaningless|lost my identity|addicted|can.t stop|habit|compulsion|school|exam|grades|marks|academic|study|parenting|my child|my son|my daughter|new baby|postpartum)/.test(n);
+  if (isEmotional) return "guide";
+
+  // ── 4. REDRESS — explicit formal complaint with action intent ────────────────
+  const isRedress =
+    /(complaint|grievance|redress|report|escalat|ragging|harass|bully|bullied|bullying|hod|principal|dean|authority|department|desk|police|cyber|file a|lodge a|take action|legal action|anti.ragging|icc|posh|hr complaint)/.test(n)
+    || (/(professor|teacher|manager|hr|office|faculty)/.test(n) && /(complaint|report|escalat|harass|bully|action|file|lodge)/.test(n))
+    || (/(senior|junior)/.test(n) && /(ragging|bully|harass|threat|complaint|report|abuse|intimidat)/.test(n))
+    || (/(school|college|university|hostel|warden|campus)/.test(n) && /(complaint|grievance|report|escalat|ragging|harass|bully|bullied|teacher|principal|dean|authority)/.test(n));
+  if (isRedress) return "redress";
+
+  // ── 5. CALM EMOTIONAL — named emotions without clinical severity ─────────────
+  if (/(anger|angry|irritat|anxiety|anxious|fear|afraid|overconfiden|stigma|shame|burnout|burned out|loneliness|stress|stressed|worry|worried|coward|confus|frustrat|overwhelmed|panic|sad|depress|low|hurt)/.test(n)) {
     return "guide";
   }
+
   return "general";
 }
 
 function findAIHelpIssueIdFromText(text: string): IssueId | null {
-  const normalized = text.toLowerCase();
-  if (/(anger|angry|irritat|frustrat)/.test(normalized)) return "anger";
-  if (/(fear|fearful|coward|scared|afraid)/.test(normalized)) return "fear";
-  if (/(overconfiden|ego|reckless)/.test(normalized)) return "overconfidence";
-  if (/(stigma|shame|judg)/.test(normalized)) return "stigma";
-  if (/(anxiety|anxious|panic|worry|worried|stress|stressed)/.test(normalized)) return "anxiety";
-  if (/(burnout|burned out|exhaust|tired|collapse|overwhelmed)/.test(normalized)) return "burnout";
-  if (/(lonely|loneliness|alone)/.test(normalized)) return "loneliness";
+  const n = text.toLowerCase();
+
+  // Order: most specific / clinical first, then emotional, then broad
+  if (/(grief|griev|mourning|bereaved|bereavement|lost someone|someone died|passed away|death of|loss of|they died|she died|he died)/.test(n)) return "grief";
+  if (/(trauma|ptsd|flashback|abuse|abused|assault|assaulted|molested|raped|violence against|domestic violence|childhood abuse)/.test(n)) return "trauma";
+  if (/(addict|addiction|alcoholic|alcohol problem|drug|substance|gambling|can't stop drinking|can't stop using|compulsive|rehab|detox)/.test(n)) return "addiction";
+  if (/(my child|my son|my daughter|my kids|my baby|parenting|new parent|postpartum|toddler|teenager|teen behaviour|child behaviour)/.test(n)) return "parenting";
+  if (/(financial|money problem|debt|broke|bankrupt|loan|can't pay|rent|afford|salary cut|lost my job|job loss|fired|redundant|unemployed)/.test(n)) return "financial";
+  if (/(illness|sick|chronic|diagnosis|diagnosed|cancer|heart|disease|disability|chronic pain|medical condition|health anxiety|doctor said)/.test(n)) return "health";
+  if (/(exam|study|marks|grades|academic|school pressure|college pressure|university|fail|failing|result|tuition|assignment|syllabus|boards)/.test(n)) return "academic";
+  if (/(relationship|marriage|divorce|separation|breakup|broke up|cheating|affair|my wife|my husband|wife|husband|my partner|my boyfriend|my girlfriend|love life|romantic|couple|spouse)/.test(n)) return "relationship";
+  if (/(purpose|meaning|meaningless|identity|who am i|don't know who i am|lost myself|existential|direction|what should i do with|what's the point|my life has no|nothing makes sense)/.test(n)) return "identity";
+  if (/(anger|angry|irritat|frustrat|rage|furious|mad at|cannot control my temper|losing my temper)/.test(n)) return "anger";
+  if (/(fear|fearful|coward|scared|afraid|phobia|terrified)/.test(n)) return "fear";
+  if (/(overconfiden|ego|reckless|arrogant|think i'm better|over.estimate)/.test(n)) return "overconfidence";
+  if (/(stigma|shame|judged|looks|appearance|ugly|unattractive|not good looking|how i look|self.esteem|self.worth|self.image|insecure|my body|body image|fat|too thin|complexion|skin)/.test(n)) return "stigma";
+  if (/(anxiety|anxious|panic|worry|worried|stress|stressed|overthinking|nervous wreck|pit in my stomach)/.test(n)) return "anxiety";
+  if (/(burnout|burned out|exhaust|tired|drained|collapse|overworked|no energy|running on empty)/.test(n)) return "burnout";
+  if (/(lonely|loneliness|alone|isolated|ignored|invisible|unappreciated|not appreciated|not valued|not noticed|not recognised|not recognized|unwanted|rejected|unloved|worthless|no one cares|nobody cares|not seen)/.test(n)) return "loneliness";
   return null;
+}
+
+/**
+ * Generates a short, personal acknowledgment of what the user shared.
+ * This is shown as the counseling "heard" step before routing.
+ * Supreme-level: covers all 17 issue dimensions.
+ */
+function buildCounselingAcknowledgment(text: string, issueId: IssueId, route: AIHelpRoute): { heard: string; nextStep: string } {
+  const t = text.toLowerCase();
+
+  // ── Grief / loss ────────────────────────────────────────────────────────────
+  if (issueId === "grief" || /(grief|griev|mourning|bereaved|bereavement|lost someone|someone died|passed away|death of|loss of)/.test(t)) {
+    return {
+      heard: "Losing someone — or something that mattered deeply — leaves a gap that no words can fill. Grief is not something to fix; it is something to move through, at your own pace. I am glad you felt you could share this.",
+      nextStep: "Opening a gentle space for you to process this and find support."
+    };
+  }
+
+  // ── Trauma / abuse ──────────────────────────────────────────────────────────
+  if (issueId === "trauma" || /(trauma|ptsd|flashback|abuse|abused|assault|assaulted|molested|domestic violence|childhood abuse)/.test(t)) {
+    return {
+      heard: "What you went through was real, and it was not your fault. Trauma stays in the body long after the event. The fact that you are talking about it is a meaningful step, and you deserve proper support.",
+      nextStep: "Opening professional guidance and safe steps forward."
+    };
+  }
+
+  // ── Addiction / compulsive behaviour ───────────────────────────────────────
+  if (issueId === "addiction" || /(addict|addiction|alcoholic|drug|substance|gambling|can't stop drinking|can't stop using|compulsive|rehab)/.test(t)) {
+    return {
+      heard: "Recognising a compulsive pattern takes real honesty, and you have just done that. This is not about willpower — the brain literally changes under repeated use, and breaking free requires the right kind of help.",
+      nextStep: "Opening recovery guidance and professional support pathways."
+    };
+  }
+
+  // ── Parenting challenges ────────────────────────────────────────────────────
+  if (issueId === "parenting" || /(my child|my son|my daughter|parenting|new parent|postpartum|toddler|teen behaviour)/.test(t)) {
+    return {
+      heard: "Parenting is one of the hardest jobs in existence, and the love you feel makes every difficulty twice as intense. Whatever you are navigating right now, you are not the first — and you do not have to figure it out alone.",
+      nextStep: "Opening guidance specifically for your parenting situation."
+    };
+  }
+
+  // ── Financial stress ────────────────────────────────────────────────────────
+  if (issueId === "financial" || /(financial|money problem|debt|broke|bankrupt|loan|can't pay|rent|afford|lost my job|fired|unemployed)/.test(t)) {
+    return {
+      heard: "Financial pressure is one of the most visceral stresses a person can carry — it colours every other part of life. The anxiety, the shame, the sleeplessness — all of that is completely understandable. Let us look at this clearly together.",
+      nextStep: "Opening your path to clarity, practical steps, and stress relief."
+    };
+  }
+
+  // ── Health anxiety / physical illness ──────────────────────────────────────
+  if (issueId === "health" || /(illness|chronic|diagnosis|diagnosed|cancer|heart|disease|disability|chronic pain|health anxiety|doctor said)/.test(t)) {
+    return {
+      heard: "Dealing with a health concern — whether it is your own body, or fear about it — can feel very isolating. The uncertainty is often the hardest part. You are right to take it seriously and to seek support alongside whatever medical care you are getting.",
+      nextStep: "Opening guidance for your health situation and the emotional weight around it."
+    };
+  }
+
+  // ── Academic pressure ───────────────────────────────────────────────────────
+  if (issueId === "academic" || /(exam|study|marks|grades|academic pressure|fail|failing|result|boards|entrance|syllabus)/.test(t)) {
+    return {
+      heard: "Academic pressure can feel enormous — like your entire future is riding on a single number. That fear is real, but you are more than your results. Let us take this apart together and find the pressure points we can actually work on.",
+      nextStep: "Opening focused guidance for your academic situation."
+    };
+  }
+
+  // ── Relationship issues ─────────────────────────────────────────────────────
+  if (issueId === "relationship" || /(relationship|marriage|divorce|separation|breakup|cheating|affair|my wife|my husband|wife|husband|my partner|my boyfriend|my girlfriend|love life)/.test(t)) {
+    return {
+      heard: "Relationship pain — whether it is distance, betrayal, loss, or conflict — touches something deep in who we are. You gave something of yourself, and right now that feels uncertain or broken. That deserves careful attention.",
+      nextStep: "Opening your relationship guidance path."
+    };
+  }
+
+  // ── Identity and purpose ────────────────────────────────────────────────────
+  if (issueId === "identity" || /(purpose|meaning|meaningless|identity|who am i|lost myself|existential|what should i do with my life|what's the point)/.test(t)) {
+    return {
+      heard: "Feeling lost about who you are or where you are headed is one of the most unsettling places a person can be. It is also one of the most important questions to sit with. The fact that you are asking it means something important is shifting.",
+      nextStep: "Opening your path to clarity and direction."
+    };
+  }
+
+  // ── Self-esteem / looks / body image ────────────────────────────────────────
+  if (issueId === "stigma" || /(looks|appearance|ugly|unattractive|not good looking|how i look|self.esteem|self.worth|self.image|body image|my body|fat|skin|complexion)/.test(t)) {
+    return {
+      heard: "The way we feel about how we look can quietly drain our confidence in everything else. That inner critic is loud, and often very unfair. What you are carrying is real, and it deserves to be addressed — not dismissed.",
+      nextStep: "Opening your calm and self-worth guidance path."
+    };
+  }
+
+  // ── Unappreciated — dual work + home context ─────────────────────────────────
+  if (/(unappreciated|not appreciated|not valued|not noticed|ignored|not recognised|not recognized|no one cares|effort.*not|hard work.*not|not seen)/.test(t)) {
+    const atWork = /(work|office|senior|boss|manager|colleague|job|workplace|career)/.test(t);
+    const atHome = /(home|wife|husband|family|spouse|partner|parent|children|kids|relatives|sibling)/.test(t);
+    if (atWork && atHome) {
+      return {
+        heard: "Not being seen — neither at work nor at home — cuts at you from two directions at once. When the people you report to and the people you live with both miss your effort, it creates a loneliness that is very hard to put into words. That feeling is real, valid, and it matters.",
+        nextStep: "Opening your personal path to address both of these."
+      };
+    }
+    if (atWork) {
+      return {
+        heard: "Putting in genuine effort and having it go unnoticed by the people you work with or answer to is genuinely demoralising. Your contribution has value whether or not it is being acknowledged right now.",
+        nextStep: "Opening guidance for the recognition gap at work."
+      };
+    }
+    if (atHome) {
+      return {
+        heard: "When the people you share your home and life with do not seem to notice what you give, it creates a loneliness that sits right in the middle of your daily life. You deserve to feel seen and appreciated at home.",
+        nextStep: "Opening guidance for the home dimension of this."
+      };
+    }
+    return {
+      heard: "Feeling unseen and unappreciated after genuine effort is one of the most isolating feelings there is. What you bring matters, even when no one is saying so.",
+      nextStep: "Opening your guidance path to work through this."
+    };
+  }
+
+  // ── Loneliness / isolation / rejected ───────────────────────────────────────
+  if (issueId === "loneliness" || /(lonely|loneliness|alone|isolated|invisible|unwanted|rejected|unloved|worthless|no one|nobody)/.test(t)) {
+    return {
+      heard: "Feeling invisible or disconnected is one of the deepest pains a person can carry — especially when you are surrounded by people and still feel alone. You are not invisible to me. What you are going through matters.",
+      nextStep: "Opening your calm and connection path."
+    };
+  }
+
+  // ── Anger / rage ────────────────────────────────────────────────────────────
+  if (issueId === "anger" || /(angry|anger|rage|furious|irritat|frustrat|mad at|losing my temper)/.test(t)) {
+    return {
+      heard: "That anger is signalling something important — a need that is not being met, or something that feels deeply unfair. Before it turns outward in ways you may regret, let us find the real source underneath it.",
+      nextStep: "Opening your calm route first to settle the heat."
+    };
+  }
+
+  // ── Anxiety / panic / stress ─────────────────────────────────────────────────
+  if (issueId === "anxiety" || /(anxious|anxiety|stress|stressed|overwhelmed|panic|worried|nervous|overthinking)/.test(t)) {
+    return {
+      heard: "When anxiety takes hold, it can feel like your mind is running scenarios you cannot stop. That is exhausting, and it can make even small things feel impossible. You do not have to manage this alone.",
+      nextStep: "Opening your calm path to settle the pressure first."
+    };
+  }
+
+  // ── Burnout / exhaustion ─────────────────────────────────────────────────────
+  if (issueId === "burnout" || /(burnout|burned out|exhaust|tired|drained|collapse|no energy|running on empty)/.test(t)) {
+    return {
+      heard: "Burnout is not weakness — it is what happens when someone keeps giving without enough coming back. Your body and mind are sending a clear message. You need rest and recovery, not more advice to push harder.",
+      nextStep: "Opening your rest and recovery path."
+    };
+  }
+
+  // ── Fear / phobia ────────────────────────────────────────────────────────────
+  if (issueId === "fear" || /(fear|fearful|coward|scared|afraid|terrified|phobia)/.test(t)) {
+    return {
+      heard: "Fear is not cowardice — it is your system trying to protect you. The question is whether what you fear is truly dangerous, or whether your mind has learned to see danger where there is only difficulty. Let us look at this together.",
+      nextStep: "Opening your calm and courage guidance path."
+    };
+  }
+
+  // ── Shame / stigma ───────────────────────────────────────────────────────────
+  if (/(shame|stigma|embarrass|judged|judging|humiliated)/.test(t)) {
+    return {
+      heard: "Carrying shame or the fear of being judged takes an enormous amount of energy — and it often silences the very things that deserve to be heard. You deserve to put that weight down.",
+      nextStep: "Opening guidance for working through this together."
+    };
+  }
+
+  // ── Redress / complaint ──────────────────────────────────────────────────────
+  if (route === "redress") {
+    return {
+      heard: "What you are describing sounds like something that needs to be properly addressed through the right channel. You have every right to take this forward, and there is a process that exists specifically for situations like yours.",
+      nextStep: "Opening the formal guidance and redress path for you."
+    };
+  }
+
+  // ── Default ──────────────────────────────────────────────────────────────────
+  return {
+    heard: "Whatever you are carrying right now is real, and it is worth taking seriously. I am here to listen first — to actually understand what is going on — before we look at what might help.",
+    nextStep: "Opening your personal guidance path."
+  };
 }
 
 function findAIHelpRedressRouteFromText(text: string): RedressRouteId {
   const normalized = text.toLowerCase();
-  if (/(ragging|hostel|senior|junior|batch)/.test(normalized)) return "ragging";
-  if (/(harass|sexual|gender|women|female|stalk|abuse)/.test(normalized)) return "harassment";
-  if (/(police|crime|assault|threat|blackmail|cyber|fraud|violence)/.test(normalized)) return "crime";
-  if (/(office|workplace|company|firm|factory|manager|salary|job|bank)/.test(normalized)) return "private";
-  if (/(government|officer|department|public|official)/.test(normalized)) return "public";
+  if (/(ragging|hostel|senior|junior|batch|fresher)/.test(normalized)) return "ragging";
+  if (/(harass|sexual harassment|gender|women|female|stalk|posh|icc)/.test(normalized)) return "harassment";
+  if (/(domestic violence|wife|husband|spouse|matrimonial|family abuse|in.laws|dowry|divorce)/.test(normalized)) return "domestic";
+  if (/(loan|debt|emi|bank fraud|chit fund|financial fraud|money lender|interest|nbfc|rbi|banking ombudsman)/.test(normalized)) return "financial";
+  if (/(salary|unfair dismissal|pf|epfo|labour|workplace rights|termination|bonus|overtime|contract|hr)/.test(normalized)) return "workplace";
+  if (/(police|crime|assault|threat|blackmail|cyber crime|violence|kidnap|extortion)/.test(normalized)) return "crime";
+  if (/(office|company|firm|factory|manager|job|bank|private school|private college)/.test(normalized)) return "private";
+  if (/(government|officer|department|public|official|cpgrams)/.test(normalized)) return "public";
   return "academic";
 }
 
@@ -2624,7 +2851,7 @@ function getPrivateIntakeBlueprint(
         id: "situation",
         title: "1. Situation and trigger",
         meta: "Write what changed and what set it off.",
-        intro: `Tell the story in simple words. The app will read the pressure around ${issueLabel.toLowerCase()} and keep the next step calm.`,
+        intro: `Describe what is happening with ${issueLabel.toLowerCase()}. The clearer the picture, the better the next step will fit.`,
         questions: [
           buildPrivateIntakeQuestion("overview", "What is happening?", "Describe the situation in one or two lines.", "Start with the main event."),
           buildPrivateIntakeQuestion("timelineContext", "When did it start or change?", "Say when the feeling or issue became stronger.", "Timing helps the report judge urgency."),
@@ -2661,7 +2888,7 @@ function getPrivateIntakeBlueprint(
         id: "pattern",
         title: "4. Pattern and recovery",
         meta: "See what repeats and what has helped.",
-        intro: "This section helps the report stop repeating advice and start noticing the actual pattern.",
+        intro: "What is the pattern you keep noticing? Describe it plainly.",
         questions: [
           buildPrivateIntakeQuestion("behaviorPattern", "What keeps repeating?", "Describe the loop or habit that comes back.", "Patterns are often more useful than labels.", true),
           buildPrivateIntakeQuestion("previousAttempts", "What have you already tried?", "Small things, big things, and what did not help.", "The app should not repeat failed advice."),
@@ -2686,7 +2913,7 @@ function getPrivateIntakeBlueprint(
         id: "load",
         title: "1. Load and routine",
         meta: "Start with what is taking the energy.",
-        intro: `This section is tuned for burnout or overload around ${issueLabel.toLowerCase()} and keeps the focus on load, rest, and recovery.`,
+        intro: `You are dealing with ${issueLabel.toLowerCase()}. Focus on what is adding the most load right now and what rest you need.`,
         questions: [
           buildPrivateIntakeQuestion("overview", "What is taking the most energy?", "Workload, duty, deadlines, home pressure, or life load.", "Start with the heaviest part."),
           buildPrivateIntakeQuestion("timelineContext", "When did the load start to rise?", "Explain when the pressure crossed from manageable to heavy.", "Timing helps the report see the climb."),
@@ -2722,7 +2949,7 @@ function getPrivateIntakeBlueprint(
         id: "recovery",
         title: "4. Pattern and recovery",
         meta: "Find what has helped and what has not.",
-        intro: "This section keeps the report grounded in the real recovery pattern, not just the stress itself.",
+        intro: "Describe how recovery is actually going — not how it should go, how it really is.",
         questions: [
           buildPrivateIntakeQuestion("behaviorPattern", "What keeps repeating?", "Describe the cycle in one short paragraph.", "Repeating patterns often explain burnout."),
           buildPrivateIntakeQuestion("previousAttempts", "What have you already tried?", "Rest, breaks, sleep, support, boundaries, or other steps.", "The app should build on what already worked."),
@@ -2820,7 +3047,7 @@ function getPrivateIntakeBlueprint(
         id: "reaction",
         title: "2. Reaction and body",
         meta: "Track the reaction without judgment.",
-        intro: "This section helps the report separate the reaction from the person.",
+        intro: "Separate the reaction from who you are. Describe what triggered it and what you actually need.",
         questions: [
           buildPrivateIntakeQuestion("currentFeeling", "What did you feel in that moment?", "Anger, heat, shame, fear, or frustration.", "Feeling names the reaction."),
           buildPrivateIntakeQuestion("emotionIntensity", "How strong was it?", "Low, medium, high, or overwhelming.", "Intensity shows whether calm first is needed."),
@@ -2882,7 +3109,7 @@ function getPrivateIntakeBlueprint(
         id: "evidence",
         title: "2. Evidence and feedback",
         meta: "Check what is fact and what is assumption.",
-        intro: "This section helps the report respect evidence instead of only reacting to certainty.",
+        intro: "What evidence or facts do you have? List only what you know for certain.",
         questions: [
           buildPrivateIntakeQuestion("timelineContext", "When did this belief or pressure start?", "Mention the time or trigger that made it stronger.", "Timing helps define the pattern."),
           buildPrivateIntakeQuestion("frequencyContext", "How often does this happen?", "Once, sometimes, often, or nearly every day.", "Frequency shows whether it is a loop."),
@@ -2906,7 +3133,7 @@ function getPrivateIntakeBlueprint(
         id: "pattern",
         title: "4. Pattern and change",
         meta: "See what repeats and what should shift.",
-        intro: "The app uses this section to tell confidence from habit and habit from evidence.",
+        intro: "Is this a habit, a confident choice, or evidence-backed? Describe what you know versus what you assume.",
         questions: [
           buildPrivateIntakeQuestion("behaviorPattern", "What pattern repeats?", "Where do you rush, hesitate, defend, or assume?", "Pattern is the real signal."),
           buildPrivateIntakeQuestion("strengthsContext", "What part of this is already working?", "Any review, skill, discipline, or feedback that helps.", "Strengths anchor the next step."),
@@ -4403,6 +4630,303 @@ const issueGuides: IssueGuide[] = [
     ],
     urgentNote:
       "If loneliness is tied to hopelessness or thoughts of self-harm, reach out to emergency or crisis support now."
+  },
+  {
+    id: "grief",
+    label: "Grief & Loss",
+    subtitle: "When loss leaves a gap nothing fills",
+    summary:
+      "Grief is not a problem to be fixed — it is a natural response to losing someone or something that mattered deeply. The path through grief is not around it.",
+    logicalLens:
+      "Grief has no correct timeline. Allow the process rather than rushing it. Identify what you need right now — rest, company, space, ritual, or to be heard.",
+    theoreticalLens:
+      "Psychologically, grief involves waves of pain, disorientation, and eventually integration. Suppressing it usually delays rather than prevents the emotional processing.",
+    emotionalLens:
+      "Every wave of grief is made of love. Honouring the pain is honouring what was lost.",
+    spiritualLens:
+      "Most traditions offer rituals of remembrance, prayer, and community for a reason — they anchor the loss in something larger and less alone.",
+    culturalLens:
+      "Grief expressions vary widely. Some cultures encourage open mourning; others value privacy. Honour what feels authentic to you.",
+    action:
+      "Allow yourself to feel without a deadline. Tell one trusted person what you are carrying. Do one small thing today that honours the memory.",
+    steps: [
+      "Give the grief permission to be present without a timetable.",
+      "Tell one person what you are carrying — not to fix it, just to witness.",
+      "Do one small act that honours what you have lost."
+    ],
+    followUp:
+      "Grief does not vanish — but it changes shape. If it is stopping you from basic functioning for many weeks, professional grief support is worth considering.",
+    supportPath: [
+      { label: "Grief counselor", query: "grief counselor support" },
+      { label: "Psychologist", query: "psychologist grief loss" },
+      { label: "Tele-MANAS", query: "counselling support india" }
+    ],
+    urgentNote:
+      "If grief is accompanied by thoughts of self-harm, inability to eat or sleep for days, or a sense that life is not worth living, reach out to crisis support now."
+  },
+  {
+    id: "identity",
+    label: "Identity & Purpose",
+    subtitle: "When the compass stops pointing anywhere clear",
+    summary:
+      "Feeling lost about who you are or what your life is for is one of the most unsettling experiences — and also one of the most important signals that growth is needed.",
+    logicalLens:
+      "Separate the question of identity from the question of role. You are not your job, your relationship status, or others’ expectations. What remains when those are stripped away is the start of the real answer.",
+    theoreticalLens:
+      "Identity crises often arise at transitions — adolescence, career change, loss, or mid-life. They are not failures; they are the system asking for an update.",
+    emotionalLens:
+      "The discomfort of not knowing who you are is actually a sign of honesty. Many people live inside an identity that was never really theirs.",
+    spiritualLens:
+      "Every major tradition has a practice for this: silence, pilgrimage, retreat, fasting, contemplation. The question of meaning is taken seriously precisely because it is important.",
+    culturalLens:
+      "In collectivist cultures, identity is often tied to family and community role. Exploring personal identity does not mean rejecting that — it means understanding your relationship to it.",
+    action:
+      "Write honestly about what you valued at age 10, what you value now, and what gap exists between those two. The answer is somewhere in that gap.",
+    steps: [
+      "Write what you genuinely value — not what you are supposed to value.",
+      "Identify one role or expectation that does not feel like yours.",
+      "Take one small step toward something that feels authentic rather than performed."
+    ],
+    followUp:
+      "Identity is not found in one moment — it is built through honest choices over time. Journal regularly and review what is gaining clarity.",
+    supportPath: [
+      { label: "Psychologist", query: "psychologist identity purpose" },
+      { label: "Counselor", query: "life counselor purpose clarity" },
+      { label: "Spiritual guidance", query: "spiritual guidance existential" }
+    ],
+    urgentNote:
+      "If the loss of purpose is accompanied by persistent hopelessness or thoughts of harm, seek professional support immediately."
+  },
+  {
+    id: "health",
+    label: "Health concern",
+    subtitle: "When the body or fear of illness weighs heavily",
+    summary:
+      "Health challenges — whether a diagnosis, chronic condition, or health anxiety — affect every dimension of life. The emotional and the physical need to be addressed together.",
+    logicalLens:
+      "Separate what is medically known, what is uncertain, and what your mind is adding on top. Each needs a different response.",
+    theoreticalLens:
+      "Health anxiety often involves hypervigilance to body sensations and catastrophic interpretation. Chronic illness carries a psychological dimension that is as real as the physical one.",
+    emotionalLens:
+      "Fear about health is not irrational — it is the mind trying to protect the body. Acknowledge it rather than dismissing it.",
+    spiritualLens:
+      "The body and soul are not separate. Caring for health is also an act of respect for the life you have been given.",
+    culturalLens:
+      "Many people delay care due to cost, family expectations, or distrust of medical systems. These are real barriers, not excuses, and need to be addressed practically.",
+    action:
+      "Write the one question you most need answered about your health, then take one concrete step toward getting that question answered today.",
+    steps: [
+      "Write down your main symptom or fear clearly and factually.",
+      "Book or plan one step toward getting a qualified medical opinion.",
+      "Address the emotional dimension alongside the medical one — they are both real."
+    ],
+    followUp:
+      "Follow through on the medical step. If health anxiety continues after a clean result, psychological support is warranted.",
+    supportPath: [
+      { label: "Doctor", query: "doctor medical consultation" },
+      { label: "eSanjeevani", query: "telemedicine doctor online" },
+      { label: "Psychologist", query: "psychologist health anxiety" }
+    ],
+    urgentNote:
+      "If you are experiencing a medical emergency or severe symptoms, call 112 or go to emergency services immediately."
+  },
+  {
+    id: "financial",
+    label: "Financial stress",
+    subtitle: "When money pressure is colouring everything",
+    summary:
+      "Financial stress is one of the most physically and emotionally exhausting pressures a person can carry — and one of the most stigmatised. The first step is facing the actual numbers without shame.",
+    logicalLens:
+      "Clarify the actual situation: what you owe, what comes in, what is urgent, and what can wait. The mind usually makes financial problems feel larger than their specific form.",
+    theoreticalLens:
+      "Financial stress activates survival responses in the brain — narrowed thinking, impulsivity, or paralysis. These are normal stress reactions, not personal failure.",
+    emotionalLens:
+      "Money problems often carry enormous shame. Naming the shame separately from the practical problem makes both more manageable.",
+    spiritualLens:
+      "Every tradition that addresses money distinguishes between what is enough and what is excess. Clarity about what you actually need vs what you fear losing can be grounding.",
+    culturalLens:
+      "In many families, financial difficulty is hidden and deeply shaming. Finding one trusted person to discuss this with — even partially — can reduce the isolation significantly.",
+    action:
+      "Write down exactly what you owe, what you earn, and the single most urgent financial item. That one number is the starting point.",
+    steps: [
+      "List the single most urgent financial obligation in the next 30 days.",
+      "Identify one person, resource, or institution that could offer partial help or advice.",
+      "Separate the financial facts from the shame and self-judgment around them — they are different problems."
+    ],
+    followUp:
+      "Once the immediate pressure is named, look at what systemic change is needed — income, expenses, or debt restructuring — and take one step there.",
+    supportPath: [
+      { label: "Financial counselor", query: "financial counselor debt help" },
+      { label: "Legal aid", query: "legal aid debt recovery" },
+      { label: "Psychologist", query: "psychologist financial stress anxiety" }
+    ],
+    urgentNote:
+      "If financial stress is causing thoughts of self-harm or suicide, please reach out to crisis support immediately — 14416 (Tele-MANAS) or 112."
+  },
+  {
+    id: "relationship",
+    label: "Relationship difficulty",
+    subtitle: "When a close relationship is hurting you",
+    summary:
+      "Relationship pain touches identity, security, and belonging — the most fundamental human needs. Whether it is conflict, distance, betrayal, or loss, it deserves careful, honest attention.",
+    logicalLens:
+      "Separate what happened from what it means. One incident does not necessarily define a relationship — but a repeated pattern does.",
+    theoreticalLens:
+      "Relationships are regulated by attachment systems. Disruptions to secure attachment — real or perceived — activate deep distress that can feel disproportionate to outsiders but is completely understandable internally.",
+    emotionalLens:
+      "It is possible to love someone and also be hurt by them, feel angry at them, or need to protect yourself from them. These are not contradictions.",
+    spiritualLens:
+      "Care for yourself as much as you care for the relationship. Many traditions speak of loving yourself as the foundation of loving another.",
+    culturalLens:
+      "Many relationships exist within strong family and social systems that make individual decisions complicated. These systems are real — work with them rather than against them where possible.",
+    action:
+      "Write exactly what you need from this relationship right now — not what you wish were different, but what you specifically need. Then decide on one honest step.",
+    steps: [
+      "Name what specifically hurts — a behaviour, a pattern, or an absence.",
+      "Decide whether this needs a direct conversation, a boundary, or external support.",
+      "Take one step toward that — reach out, set a limit, or seek guidance."
+    ],
+    followUp:
+      "Relationships require repair, honesty, and sometimes professional help. If one conversation is not enough, couples or family counselling is a legitimate next step.",
+    supportPath: [
+      { label: "Couples counselor", query: "couples counselor relationship" },
+      { label: "Psychologist", query: "psychologist relationship support" },
+      { label: "iCall", query: "icall counselling support india" }
+    ],
+    urgentNote:
+      "If the relationship involves physical danger, coercion, or abuse, your safety comes first. Call 112 or Women’s Helpline 181 immediately."
+  },
+  {
+    id: "parenting",
+    label: "Parenting challenge",
+    subtitle: "When parenting is overwhelming or uncertain",
+    summary:
+      "Parenting is one of the most demanding roles a human being can hold — and one of the least supported. The love and the difficulty often exist in the same moment.",
+    logicalLens:
+      "Distinguish the child’s need, your need as a parent, and the situation’s constraints. All three matter and all three are different.",
+    theoreticalLens:
+      "Parenting stress is compounded by unrealistic expectations (from culture, social media, and family) and insufficient support. Most parenting difficulties are systemic, not personal failures.",
+    emotionalLens:
+      "Feeling overwhelmed as a parent does not mean you are a bad parent. It means you are a human being doing a very hard job.",
+    spiritualLens:
+      "Children are not possessions to be perfect — they are people to be accompanied. Your job is presence, not perfection.",
+    culturalLens:
+      "Extended family, school systems, and cultural expectations vary enormously. Work with the real resources and real constraints you have.",
+    action:
+      "Identify the single biggest parenting challenge right now and write it in one sentence. Then identify one person or resource that could help with exactly that.",
+    steps: [
+      "Name the primary challenge clearly — behaviour, school, emotional, or your own capacity.",
+      "Identify one support — another parent, a teacher, a counselor, or a helpline.",
+      "Take one pressure off yourself today — you cannot give from empty."
+    ],
+    followUp:
+      "Parenting support is not a failure — it is good parenting. If things do not improve, seek a family counselor or child psychologist.",
+    supportPath: [
+      { label: "Child psychologist", query: "child psychologist family" },
+      { label: "Family counselor", query: "family counselor parenting" },
+      { label: "Child Helpline 1098", query: "child helpline india" }
+    ],
+    urgentNote:
+      "If a child is in danger — from anyone including a caregiver — call Child Helpline 1098 or 112 immediately."
+  },
+  {
+    id: "trauma",
+    label: "Trauma",
+    subtitle: "When the past keeps breaking through",
+    summary:
+      "Trauma is the emotional wound that forms when an experience overwhelms the nervous system’s capacity to process it. It is not weakness — it is what happens in extreme circumstances.",
+    logicalLens:
+      "Trauma responses — flashbacks, hypervigilance, avoidance, numbness — are the nervous system’s adaptations to overwhelming experience. Understanding this removes a layer of shame.",
+    theoreticalLens:
+      "Trauma is stored somatically (in the body) as much as cognitively. Effective recovery often requires body-based approaches alongside talk therapy.",
+    emotionalLens:
+      "What happened to you was not your fault. Your response to it was the best adaptation your system could manage at the time.",
+    spiritualLens:
+      "Many traditions speak of healing that comes through witnessing, community, and meaning-making. You do not have to carry this in silence.",
+    culturalLens:
+      "Trauma is highly stigmatised in many cultures. Support must be private, trustworthy, and non-judgmental above all.",
+    action:
+      "You do not need to revisit the trauma right now. The immediate step is safety — being in a place that feels secure and telling one trusted person what you are dealing with.",
+    steps: [
+      "Ensure physical safety first — where you are, who you are with.",
+      "Identify one trusted person who can be with you or available to you.",
+      "Begin looking for trauma-informed professional support — this requires specialist help."
+    ],
+    followUp:
+      "Trauma recovery is not a one-step process. Trauma-focused therapy (EMDR, somatic therapy, CPT) with a trained professional is the most effective path.",
+    supportPath: [
+      { label: "Trauma therapist", query: "trauma therapist EMDR support" },
+      { label: "Psychologist", query: "psychologist trauma PTSD" },
+      { label: "iCall", query: "icall counselling trauma india" }
+    ],
+    urgentNote:
+      "If trauma is causing self-harm, suicidal thoughts, or you are in immediate danger, call 112 or Tele-MANAS 14416 immediately."
+  },
+  {
+    id: "academic",
+    label: "Academic pressure",
+    subtitle: "When study and results feel like your whole identity",
+    summary:
+      "Academic pressure in India and similar systems can reach levels that genuinely threaten mental health. The results matter — and so does the person sitting the exam.",
+    logicalLens:
+      "Separate performance from identity. A mark is a measure of one performance on one day under one set of conditions. It is not a measure of your worth or your future.",
+    theoreticalLens:
+      "High-stakes academic pressure activates the same stress system as physical threat. Chronic activation degrades memory, concentration, and creativity — the very things needed to perform.",
+    emotionalLens:
+      "The fear around exams is often really a fear about belonging, being loved, and having a future. That is much bigger than the exam — and much more important to address.",
+    spiritualLens:
+      "You are more than your performance. Most traditions that endure are built on character and effort, not rank.",
+    culturalLens:
+      "Academic pressure is often inseparable from family honour and economic survival in South Asian contexts. This is a real, not imagined, pressure — and it needs both practical and emotional support.",
+    action:
+      "Break today’s study into one 25-minute block. Rest for 5 minutes. Repeat. And separate one hour for something that is not studying.",
+    steps: [
+      "Reduce the scope: do not study ‘everything’ — study the highest-yield material first.",
+      "Protect sleep and food — performance degrades without them, no matter how many hours are put in.",
+      "Tell someone how you are feeling about the pressure — not just the studying."
+    ],
+    followUp:
+      "After the exam, review what the pressure level was and whether it was proportionate. If exams routinely cause this level of distress, seek counselling proactively.",
+    supportPath: [
+      { label: "School counselor", query: "school counselor student support" },
+      { label: "Psychologist", query: "psychologist student academic stress" },
+      { label: "iCall", query: "icall student counselling india" }
+    ],
+    urgentNote:
+      "If academic pressure is causing thoughts of self-harm or suicide, please reach out to crisis support immediately — call 14416 or 112."
+  },
+  {
+    id: "addiction",
+    label: "Addiction & Habits",
+    subtitle: "When you cannot stop even though part of you wants to",
+    summary:
+      "Addiction is not a moral failure — it is a learned pattern the brain has optimised for, often as a way of managing pain, stress, or emptiness. Recovery is possible with the right support.",
+    logicalLens:
+      "Understand the trigger-behaviour-reward loop. The substance or behaviour is not the problem — it is the brain’s solution to a different problem. The real work is finding that underlying problem.",
+    theoreticalLens:
+      "Addiction involves neurological changes that make voluntary control genuinely harder than it appears from the outside. Self-discipline alone is rarely sufficient for sustained recovery.",
+    emotionalLens:
+      "There is usually pain underneath a compulsive pattern. The substance or behaviour numbs, soothes, or distracts from something that has not been faced.",
+    spiritualLens:
+      "Many successful recovery communities are built on spiritual foundations — not because religion fixes addiction, but because meaning, community, and surrender to something larger support the work.",
+    culturalLens:
+      "Addiction carries enormous stigma, especially in South Asian families. Private, professional support is often the safest first step before family disclosure.",
+    action:
+      "Identify the trigger: what feeling, situation, or thought immediately precedes the urge? Write it down. That is the real starting point for change.",
+    steps: [
+      "Identify and write down your primary trigger for the urge.",
+      "Find one trusted person who knows the full extent of this — isolation feeds addiction.",
+      "Research or contact one structured support resource — a therapist, a group, or a helpline."
+    ],
+    followUp:
+      "Recovery is not linear. Relapse does not mean failure — it means the pattern is strong and the support needs to be stronger. Structured professional help significantly improves outcomes.",
+    supportPath: [
+      { label: "Addiction counselor", query: "addiction counselor substance recovery" },
+      { label: "Psychiatrist", query: "psychiatrist addiction treatment" },
+      { label: "NIMHANS", query: "nimhans addiction treatment india" }
+    ],
+    urgentNote:
+      "If the addiction involves overdose risk, withdrawal, or medical emergency, call 112 immediately."
   }
 ];
 
@@ -4485,6 +5009,56 @@ const governmentHelplines: Array<{
     dialNumber: "1930",
     website: "https://cybercrime.gov.in/",
     description: "Report cyber fraud quickly and use the national cybercrime portal."
+  },
+  {
+    id: "addiction-sodeac",
+    category: "Addiction recovery",
+    title: "AASRA Crisis Helpline",
+    audience: "Anyone in emotional crisis, addiction, or self-harm risk",
+    number: "9820466627",
+    dialNumber: "9820466627",
+    website: "https://www.aasra.info/",
+    description: "24x7 confidential support for emotional crisis, addiction pressure, and grief."
+  },
+  {
+    id: "addiction-icall",
+    category: "Mental health / addiction",
+    title: "iCall Counselling",
+    audience: "Anyone needing professional psychological support",
+    number: "9152987821",
+    dialNumber: "9152987821",
+    website: "https://icallhelpline.org/",
+    description: "Free professional counselling for mental health, trauma, addiction, and relationship issues."
+  },
+  {
+    id: "financial-rbi",
+    category: "Financial grievance",
+    title: "RBI Banking Ombudsman",
+    audience: "Banking and NBFC complaint holders",
+    number: "14448",
+    dialNumber: "14448",
+    website: "https://bankingombudsman.rbi.org.in/",
+    description: "Free, fast banking complaint resolution against banks and NBFCs."
+  },
+  {
+    id: "labour-14747",
+    category: "Workplace rights",
+    title: "EPFO Helpline",
+    audience: "Salaried employees and PF dispute cases",
+    number: "14747",
+    dialNumber: "14747",
+    website: "https://epfindia.gov.in/",
+    description: "EPFO helpline for PF balance, withdrawal, transfer, and employer grievance."
+  },
+  {
+    id: "senior-14567",
+    category: "Senior citizens",
+    title: "Elder Line",
+    audience: "Senior citizens facing abuse, neglect, or health issues",
+    number: "14567",
+    dialNumber: "14567",
+    website: "https://elderline.india.gov.in/",
+    description: "National helpline for elderly persons for care, abuse, financial fraud, and health referrals."
   }
 ];
 
@@ -4527,6 +5101,46 @@ const professionalHelpResources: Array<{
     audience: "Anyone needing counselling or support",
     website: "https://dghs.mohfw.gov.in/national-mental-health-programme.php",
     description: "Official 24x7 counselling and referral support."
+  },
+  {
+    id: "nimhans",
+    category: "Mental health",
+    title: "NIMHANS Mental Health",
+    audience: "Serious mental health, trauma, and addiction cases",
+    website: "https://nimhans.ac.in/",
+    description: "India's premier mental health and neurosciences institute with outpatient services."
+  },
+  {
+    id: "icall",
+    category: "Psychological counselling",
+    title: "iCall",
+    audience: "Anyone needing free professional counselling",
+    website: "https://icallhelpline.org/",
+    description: "Free professional counselling by TISS-trained counselors for mental health, trauma, grief, and relationships."
+  },
+  {
+    id: "vandrevala",
+    category: "Crisis and addiction",
+    title: "Vandrevala Foundation",
+    audience: "Addiction recovery, crisis, and emotional support",
+    website: "https://www.vandrevalafoundation.com/",
+    description: "24x7 free mental health helpline and referral for addiction, trauma, grief, and crisis."
+  },
+  {
+    id: "legalservices",
+    category: "Legal aid",
+    title: "NALSA Legal Aid",
+    audience: "Those who need free legal services",
+    website: "https://nalsa.gov.in/",
+    description: "National Legal Services Authority — free legal aid for domestic violence, workplace rights, and financial exploitation cases."
+  },
+  {
+    id: "cmde-deaddiction",
+    category: "Addiction recovery",
+    title: "National Drug De-Addiction",
+    audience: "Substance use, dependency, and addiction cases",
+    website: "https://nimhans.ac.in/drug-dependence-treatment-centre/",
+    description: "NIMHANS de-addiction centre and national network of drug treatment facilities."
   }
 ];
 
@@ -4534,6 +5148,12 @@ const nearbyProfessionalSearches: Array<{ id: string; label: string; query: stri
   { id: "psychologist", label: "Psychologist", query: "psychologist" },
   { id: "counselor", label: "Counselor", query: "counselor" },
   { id: "psychiatrist", label: "Psychiatrist", query: "psychiatrist" },
+  { id: "grief-counselor", label: "Grief counselor", query: "grief counselor bereavement support" },
+  { id: "addiction-counselor", label: "Addiction counselor", query: "addiction counselor de-addiction centre" },
+  { id: "trauma-therapist", label: "Trauma therapist", query: "trauma therapist PTSD counselor" },
+  { id: "family-therapist", label: "Family / couples therapist", query: "family therapist couples counselor" },
+  { id: "financial-counselor", label: "Financial counselor", query: "financial counselor debt advisor" },
+  { id: "lawyer", label: "Legal aid / lawyer", query: "legal aid free legal advice lawyer" },
   { id: "doctor", label: "Doctor", query: "doctor" },
   { id: "clinic", label: "Clinic / hospital", query: "clinic hospital" }
 ];
@@ -4657,6 +5277,66 @@ const redressRoutes: RedressRoute[] = [
     trackWebsite: "https://www.mha.gov.in/en/commoncontent/emergency-response-support-system-erss",
     urgentNote:
       "If the danger is live right now, do not wait for an office or portal. Use 112 or the nearest police station immediately."
+  },
+  {
+    id: "financial",
+    label: "Financial grievance / fraud",
+    subtitle: "Bank fraud, loan trap, chit fund, debt recovery harassment",
+    summary:
+      "File first with your bank or NBFC's grievance cell, then escalate to the RBI Banking Ombudsman — it is free, fast, and binding on regulated institutions.",
+    firstOffice:
+      "Your bank's customer care grievance desk, NBFC complaints cell, or the financial institution's nodal officer.",
+    firstAction:
+      "Write the transaction details, dates, amounts, and what went wrong. Ask for a complaint reference number and a resolution timeline.",
+    escalation:
+      "Escalate to the RBI Banking Ombudsman (bankingombudsman.rbi.org.in) for bank/NBFC issues, SEBI SCORES for investment fraud, or CPGRAMS for public-sector financial bodies.",
+    keepReady:
+      "Account number, transaction ID, passbook entries, SMS alerts, loan agreement, correspondence, and complaint reference numbers.",
+    phone: "14448",
+    website: "https://bankingombudsman.rbi.org.in/",
+    trackWebsite: "https://cms.rbi.org.in/",
+    urgentNote:
+      "If you are being threatened or harassed for debt recovery, call 112. Harassment by recovery agents is illegal under RBI guidelines."
+  },
+  {
+    id: "domestic",
+    label: "Domestic violence / family abuse",
+    subtitle: "Spousal abuse, dowry harassment, family coercion, child abuse",
+    summary:
+      "Safety comes first. Use a protection order or shelter if needed, then follow the formal complaint path with a Protection Officer or police.",
+    firstOffice:
+      "Protection Officer (under PWDVA), nearest police station, or One Stop Centre (Sakhi Centre) for women survivors.",
+    firstAction:
+      "Contact the One Stop Centre (1091 or 181) for immediate support, shelter, legal aid, and medical help in one place.",
+    escalation:
+      "Escalate through the Protection Officer to the Magistrate for a Domestic Violence Protection Order. For children, contact CHILDLINE 1098 or the District Child Protection Unit.",
+    keepReady:
+      "Dates, incident descriptions, photos, medical records, messages, witness details, and any prior police reports or court orders.",
+    phone: "181",
+    website: "https://wcd.nic.in/schemes/one-stop-centre-scheme-sakhi",
+    trackWebsite: "https://pgportal.gov.in/",
+    urgentNote:
+      "If the danger is immediate, call 112. Do not wait for a complaint process if you or your children are at physical risk right now."
+  },
+  {
+    id: "workplace",
+    label: "Workplace rights / labour grievance",
+    subtitle: "Salary denial, unfair termination, PF, contract, or discrimination",
+    summary:
+      "File with the Labour Commissioner first. For PF disputes, go directly to EPFO. Many workplace violations are actionable under the Industrial Disputes Act or Shops and Establishments Act.",
+    firstOffice:
+      "HR or compliance desk of your organisation, then the District Labour Commissioner or Labour Inspector.",
+    firstAction:
+      "Write a formal grievance with your employee ID, the dates, amounts owed or actions taken, and the relief you are seeking. Keep a signed copy.",
+    escalation:
+      "Escalate to the Labour Commissioner's office, EPFO regional office for PF issues, or file in the Labour Court under the Industrial Disputes Act.",
+    keepReady:
+      "Appointment letter, pay slips, bank statements, offer letter, PF UAN number, any termination letter, and all email correspondence.",
+    phone: "14747",
+    website: "https://labour.gov.in/",
+    trackWebsite: "https://epfigms.gov.in/",
+    urgentNote:
+      "If you face physical intimidation or unsafe working conditions, contact the local police or 112 before pursuing the labour complaint."
   }
 ];
 
@@ -5034,6 +5714,105 @@ function getIssuePracticeTone(issueId: IssueId) {
     };
   }
 
+  if (issueId === "grief") {
+    return {
+      issueLabel: "grief",
+      reset: "Let the body pause without demanding recovery — grief needs space, not speed.",
+      focus: "Choose one very small task that belongs to today, not to the future.",
+      move: "Gentle movement can help the body carry loss a little more softly.",
+      connect: "One person who lets you grieve without fixing you is enough for today.",
+      reflect: "Write what you miss and one small thing that still holds meaning."
+    };
+  }
+
+  if (issueId === "trauma") {
+    return {
+      issueLabel: "trauma",
+      reset: "Ground the body in this moment — slow breath, feel your feet, look at the room.",
+      focus: "Keep the task very close to the present; do not plan too far ahead.",
+      move: "Gentle movement reconnects the body to safety. Slow beats fast here.",
+      connect: "A trusted person or a professional contact is the safest next human step.",
+      reflect: "Write only what feels safe to name today — no pressure to go deeper."
+    };
+  }
+
+  if (issueId === "addiction") {
+    return {
+      issueLabel: "addiction recovery",
+      reset: "Interrupt the craving window with breath, water, and five minutes of delay.",
+      focus: "Choose a task that fills the window where the urge usually wins.",
+      move: "Physical movement is one of the strongest craving-interrupt tools available.",
+      connect: "One honest check-in with a support contact or sponsor is the most powerful step.",
+      reflect: "Write the trigger, the urge, and one thing you chose instead today."
+    };
+  }
+
+  if (issueId === "health") {
+    return {
+      issueLabel: "health concern",
+      reset: "Lower the anxiety around the symptom before it drives the next decision.",
+      focus: "Pick one health action — appointment, note, or habit — that is small and real.",
+      move: "Move within your current physical capacity, without pushing or avoiding.",
+      connect: "A doctor, family member, or trusted person is the right next call.",
+      reflect: "Write the symptom, the worry, and the one step that is actually in your control."
+    };
+  }
+
+  if (issueId === "financial") {
+    return {
+      issueLabel: "financial stress",
+      reset: "Lower the panic before you open another bill or calculation.",
+      focus: "Pick one financial task — one entry, one call, one comparison — nothing more.",
+      move: "A short walk can help break the loop of catastrophic financial thinking.",
+      connect: "One trusted person or a financial counselor can help you see more clearly.",
+      reflect: "Write the actual number you are working with and one concrete step."
+    };
+  }
+
+  if (issueId === "relationship") {
+    return {
+      issueLabel: "relationship strain",
+      reset: "Regulate before you reply — most relationship damage happens in a heightened state.",
+      focus: "Pick one task that is entirely your own and does not need the other person.",
+      move: "Movement helps create the distance you need before a difficult conversation.",
+      connect: "A mediator, counselor, or trusted third person can help break the cycle.",
+      reflect: "Write what you felt, what you needed, and what you can own from your side."
+    };
+  }
+
+  if (issueId === "parenting") {
+    return {
+      issueLabel: "parenting challenge",
+      reset: "You cannot pour from an empty space — rest is a parenting tool, not a failure.",
+      focus: "Pick one small parenting task that you can close today without pressure.",
+      move: "Move together with your child or alone — both restore a steadier parent.",
+      connect: "Another parent, your partner, or a support network helps carry the weight.",
+      reflect: "Write what your child needs today and what you need to give it sustainably."
+    };
+  }
+
+  if (issueId === "academic") {
+    return {
+      issueLabel: "academic pressure",
+      reset: "A short body reset between study blocks outperforms powering through.",
+      focus: "Pick the one task that unblocks everything else — start there only.",
+      move: "A 5-minute walk between sessions significantly improves retention and calm.",
+      connect: "A classmate, mentor, or parent who understands the pressure helps.",
+      reflect: "Write what you actually understood today, not just what you covered."
+    };
+  }
+
+  if (issueId === "identity") {
+    return {
+      issueLabel: "identity exploration",
+      reset: "Rest from performing or explaining yourself — just be in the quiet for a moment.",
+      focus: "Pick one task that expresses who you genuinely are, not who you think you should be.",
+      move: "Movement in a safe space can reconnect you with your body as your home.",
+      connect: "One person who accepts you without conditions is more important than many.",
+      reflect: "Write what feels true about who you are, separate from what others expect."
+    };
+  }
+
   return {
     issueLabel: "fear",
     reset: "Make the next step smaller than the fear expects.",
@@ -5314,21 +6093,45 @@ function getSituationRouteCards(issue: IssueGuide, identityLabel: string): Situa
     overconfidence: ["guide", "journal", "search", "focus", "community", "redress", "sos"],
     stigma: ["focus", "community", "journal", "search", "guide", "redress", "sos"],
     burnout: ["focus", "journal", "search", "guide", "community", "redress", "sos"],
-    loneliness: ["community", "focus", "journal", "search", "guide", "redress", "sos"]
+    loneliness: ["community", "focus", "journal", "search", "guide", "redress", "sos"],
+    grief: ["focus", "community", "journal", "search", "guide", "redress", "sos"],
+    identity: ["guide", "journal", "search", "focus", "community", "redress", "sos"],
+    health: ["guide", "focus", "journal", "search", "community", "redress", "sos"],
+    financial: ["guide", "journal", "search", "focus", "community", "redress", "sos"],
+    relationship: ["guide", "focus", "journal", "community", "search", "redress", "sos"],
+    parenting: ["guide", "community", "journal", "focus", "search", "redress", "sos"],
+    trauma: ["focus", "guide", "journal", "community", "search", "redress", "sos"],
+    academic: ["focus", "guide", "journal", "search", "community", "redress", "sos"],
+    addiction: ["guide", "focus", "community", "journal", "search", "redress", "sos"],
   };
 
   return orderByIssue[issue.id].map((destination) => cards[destination]);
 }
 
 function getAdaptiveBeaconXModes(issueId: IssueId) {
-  const labels =
+  // Each dimension gets wisdom modes matched to what it needs most
+  const labels: string[] =
     issueId === "anger" || issueId === "fear" || issueId === "overconfidence"
       ? ["Guru Granth Sahib", "Krishna", "Stoic", "Jain", "Science", "Action"]
-      : issueId === "anxiety" || issueId === "burnout"
-        ? ["Guru Granth Sahib", "Buddha", "Science", "Krishna", "Resolve", "Action"]
-        : issueId === "stigma" || issueId === "loneliness"
-          ? ["Guru Granth Sahib", "Buddha", "Bible", "Jain", "Resolve", "Action"]
-          : ["Universal Beacon", "Guru Granth Sahib", "Krishna", "Buddha", "Science", "Resolve", "Action"];
+    : issueId === "anxiety" || issueId === "burnout" || issueId === "academic"
+      ? ["Guru Granth Sahib", "Buddha", "Science", "Krishna", "Resolve", "Action"]
+    : issueId === "stigma" || issueId === "loneliness" || issueId === "identity"
+      ? ["Guru Granth Sahib", "Buddha", "Bible", "Jain", "Resolve", "Action"]
+    : issueId === "grief"
+      ? ["Guru Granth Sahib", "Bible", "Quran", "Buddha", "Science", "Resolve"]
+    : issueId === "trauma"
+      ? ["Guru Granth Sahib", "Buddha", "Science", "Bible", "Resolve", "Action"]
+    : issueId === "relationship"
+      ? ["Guru Granth Sahib", "Krishna", "Bible", "Jain", "Resolve", "Action"]
+    : issueId === "parenting"
+      ? ["Guru Granth Sahib", "Bible", "Krishna", "Science", "Resolve", "Action"]
+    : issueId === "health"
+      ? ["Science", "Guru Granth Sahib", "Buddha", "Quran", "Resolve", "Action"]
+    : issueId === "financial"
+      ? ["Stoic", "Guru Granth Sahib", "Quran", "Science", "Resolve", "Action"]
+    : issueId === "addiction"
+      ? ["Guru Granth Sahib", "Buddha", "Science", "Bible", "Resolve", "Action"]
+    : ["Universal Beacon", "Guru Granth Sahib", "Krishna", "Buddha", "Science", "Resolve", "Action"];
 
   return beaconXWisdomModes.filter((mode) => labels.includes(mode.label));
 }
@@ -5473,11 +6276,142 @@ const aiHelpSeed: AIHelpMessage[] = [
 
 function buildAIHelpSeedReply() {
   return [
-    "What this means: I will route you to one next page.",
-    "Safest next step: Open Path and share the feeling, trigger, body signal, people, and behavior in the private intake page.",
-    "Open tab: Path.",
-    "Escalate when: If this is bigger than one reply, move to Help or SOS."
+    "What this means: Tell me what is on your mind — in one sentence or a few words — and I will understand what dimension of your life it is touching, then build you a clear path forward.",
+    "Safest next step: Go back to Home, type or speak what you are carrying, and let your guide do the rest. Everything stays private on your device.",
+    "Open tab: Home.",
+    "Escalate when: If something feels urgent or unsafe, go directly to Help or tap SOS."
   ].join("\n");
+}
+
+/**
+ * Returns a smart, dimension-specific hint for each tab context strip.
+ * Tab: "journal" | "tones" | "meditation" | "wisdom" | "community"
+ */
+function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditation" | "wisdom" | "community"): string {
+  const hints: Record<IssueId, Record<"journal" | "tones" | "meditation" | "wisdom" | "community", string>> = {
+    general: {
+      journal: "write what is on your mind without filtering",
+      tones: "try a grounding tone to settle the day",
+      meditation: "begin with a breath practice to centre yourself",
+      wisdom: "search for a teaching that resonates with your current state",
+      community: "share what is on your mind or read others' experiences",
+    },
+    anger: {
+      journal: "write the trigger, the feeling, and what you actually needed",
+      tones: "try 528 Hz or Delta waves to release the heat",
+      meditation: "use a body-scan to find where the anger lives physically",
+      wisdom: "find a teaching on restraint, dignity, and the choice behind a reaction",
+      community: "share what you are going through — anger is more common than anyone admits",
+    },
+    anxiety: {
+      journal: "write the worst-case scenario, then the most realistic one",
+      tones: "Theta binaural (4–8 Hz) is specifically designed to reduce anxious activation",
+      meditation: "4-7-8 breath: inhale 4, hold 7, exhale 8 — repeat 4 times",
+      wisdom: "search for a teaching on what is and is not in your control",
+      community: "read from others navigating anxiety — you are not the only one fighting this",
+    },
+    fear: {
+      journal: "write what you are afraid of, then one fact that challenges that fear",
+      tones: "Alpha waves help shift the system from fear-alert to calm-presence",
+      meditation: "visualise one moment of quiet safety and hold it for 2 minutes",
+      wisdom: "look for a teaching on courage — not the absence of fear but action despite it",
+      community: "share a fear that feels too embarrassing to say aloud — others have been there",
+    },
+    overconfidence: {
+      journal: "write one assumption you made recently and what evidence supports or challenges it",
+      tones: "Gamma or Theta tones can support reflective thinking and calibration",
+      meditation: "try a loving-kindness practice — it builds other-awareness alongside self-belief",
+      wisdom: "search for a teaching on humility and the discipline of staying teachable",
+      community: "ask for honest feedback on a plan or decision — peer input is calibrating",
+    },
+    stigma: {
+      journal: "write about yourself as a friend would — not as a critic",
+      tones: "528 Hz (DNA repair / self-love frequency) is recommended for this state",
+      meditation: "use a self-compassion practice: 'may I be kind to myself as I would be to a friend'",
+      wisdom: "find a teaching on dignity, worth, and separating identity from issue",
+      community: "share privately — many people carry shame about the same things you do",
+    },
+    burnout: {
+      journal: "write what you can remove or delay today — not what you need to add",
+      tones: "Delta waves (0.5–4 Hz) support deep rest and nervous system repair",
+      meditation: "body-scan to locate tension and consciously release each area",
+      wisdom: "search for a teaching on rest as part of purpose, not opposed to it",
+      community: "burnout is pervasive — read from others who found a way through",
+    },
+    loneliness: {
+      journal: "write about one connection — past or present — where you felt genuinely seen",
+      tones: "Beta or Alpha tones can help shift from withdrawal to gentle outward orientation",
+      meditation: "visualise one person who cares about you and sit with that feeling for 3 minutes",
+      wisdom: "look for a teaching on belonging, service, and being part of something larger",
+      community: "share here — this is exactly where connection starts",
+    },
+    grief: {
+      journal: "write a memory of the person or thing you lost — not the pain, the memory",
+      tones: "432 Hz or nature sounds create space for grief to be felt without being overwhelmed",
+      meditation: "allow the grief to be present without trying to resolve it — just witness it for 5 minutes",
+      wisdom: "search for a teaching on loss, honouring what was, and continuing to live",
+      community: "grief is one of the most isolating experiences — sharing it here can ease the weight",
+    },
+    identity: {
+      journal: "write who you were at 10, who you are now, and what you would tell your younger self",
+      tones: "Theta waves support the inward-facing reflection this work requires",
+      meditation: "spend 5 minutes with the question 'what do I actually want?' — without pressure for an answer",
+      wisdom: "search for a teaching on purpose, authenticity, and what it means to be yourself",
+      community: "others are quietly asking the same questions about identity and direction",
+    },
+    health: {
+      journal: "write your symptoms, your fears, and one concrete next step toward clarity",
+      tones: "Solfeggio 528 Hz is associated with cellular healing and physical wellbeing",
+      meditation: "send breath deliberately to the area of the body that needs attention",
+      wisdom: "find a teaching on the body-mind connection and caring for physical health as a whole",
+      community: "share what you are navigating — others dealing with health challenges understand in ways others cannot",
+    },
+    financial: {
+      journal: "write the one financial number that worries you most — naming it makes it smaller",
+      tones: "Alpha or Theta tones reduce the cortisol load that makes financial thinking harder",
+      meditation: "practice releasing the shame around money for 5 minutes — shame is not useful information",
+      wisdom: "search for a teaching that separates your worth from your net worth",
+      community: "financial stress affects everyone — sharing it removes the private weight of it",
+    },
+    relationship: {
+      journal: "write exactly what you need from this relationship right now — as specifically as possible",
+      tones: "528 Hz or heart-chakra tones can help soften the hurt that sits in the chest",
+      meditation: "visualise a conversation where both people feel heard — what would that look like?",
+      wisdom: "find a teaching on communication, boundaries, and loving without losing yourself",
+      community: "relationship difficulties are universal — read from others who have navigated similar dynamics",
+    },
+    parenting: {
+      journal: "write about your child's behaviour and your own emotional response to it separately",
+      tones: "Alpha waves support the calm, patient state that parenting requires",
+      meditation: "5 minutes of breath before a difficult parenting moment changes the entire tone",
+      wisdom: "find a teaching on accompaniment, presence, and the long game of raising a person",
+      community: "parenting communities are one of the most practical sources of real-world guidance",
+    },
+    trauma: {
+      journal: "write about what safety feels like for you — not the event, but what safety is",
+      tones: "Delta or Theta tones support nervous system regulation — do not push through if it brings up distress",
+      meditation: "grounding practice only: feel your feet, name 5 things you can see, slow your breath",
+      wisdom: "search for a teaching on healing, witnessing, and the courage of survival",
+      community: "you do not need to share the details — even a general 'I am carrying something heavy' reaches people who understand",
+    },
+    academic: {
+      journal: "write what you know well, what you are unsure about, and what you need to let go of worrying about",
+      tones: "Gamma waves (30–100 Hz) support focus, memory, and cognitive clarity",
+      meditation: "5-minute brain dump before studying: write everything distracting you, then close the page",
+      wisdom: "find a teaching that separates performance from identity and effort from worth",
+      community: "academic pressure is a shared experience — read from others who have been through it",
+    },
+    addiction: {
+      journal: "write what the urge feels like, what triggered it, and what you actually need underneath it",
+      tones: "Theta waves support access to deeper motivation and the part of you that wants to change",
+      meditation: "urge-surfing: observe the urge like a wave — watch it peak and then fall without acting on it",
+      wisdom: "find a teaching on surrender, recovery, and the strength it takes to ask for help",
+      community: "recovery communities are one of the most evidence-backed supports for addiction — you are not alone here",
+    },
+  };
+
+  const issueHints = hints[issueId] ?? hints["general"];
+  return issueHints[tab] ?? issueHints["journal"];
 }
 
 function buildAIHelpQuickStarters(route: AIHelpRoute, issueLabel: string, identityLabel: string) {
@@ -5666,16 +6600,24 @@ function isCommunityTopicFilterId(value: string): value is CommunityTopicFilterI
     value === "care" ||
     value === "work" ||
     value === "complaint" ||
-    value === "support"
+    value === "support" ||
+    value === "grief" ||
+    value === "trauma" ||
+    value === "addiction" ||
+    value === "relationships" ||
+    value === "financial" ||
+    value === "parenting" ||
+    value === "identity"
   );
 }
 
 function getMeditationStartChakra(issueId: IssueId): ChakraId {
   if (issueId === "general") return "thirdEye";
-  if (issueId === "anxiety" || issueId === "fear" || issueId === "burnout") return "root";
-  if (issueId === "anger" || issueId === "overconfidence") return "solar";
-  if (issueId === "loneliness") return "heart";
-  if (issueId === "stigma") return "throat";
+  if (issueId === "anxiety" || issueId === "fear" || issueId === "burnout" || issueId === "financial" || issueId === "trauma") return "root";
+  if (issueId === "anger" || issueId === "overconfidence" || issueId === "health" || issueId === "academic") return "solar";
+  if (issueId === "loneliness" || issueId === "grief" || issueId === "relationship" || issueId === "parenting") return "heart";
+  if (issueId === "stigma" || issueId === "addiction") return "throat";
+  if (issueId === "identity") return "crown";
   return "thirdEye";
 }
 
@@ -5759,7 +6701,9 @@ const RASHI_DAILY_PREDICTIONS: Record<number, string[][]> = {
   11: [["Imagination and intuition guide you to the right path.","Romantic sensitivity creates a deeply beautiful connection.","Health: Feet and immune system — rest and warm socks.","Spiritually: Offer yellow flowers to Guru on Thursday."],["Spiritual insights translate into creative work today.","Compassion and empathy deepen your most meaningful bond.","Health: Lymphatic system — gentle movement and hydration.","Spiritually: Chant 'Om Namah Shivaya' at dawn."],["A hidden talent or gift surfaces unexpectedly today.","Dreams and intuition carry important messages — listen.","Health: Sleep quality — establish a sacred bedtime ritual.","Spiritually: Chant Vishnu Sahasranama for blessings."],["Creative or artistic work receives wonderful recognition.","Unconditional love and forgiveness heal old wounds now.","Health: Emotional sensitivity — be gentle with yourself.","Spiritually: Thursday fast to Guru brings abundance."],["A spiritual or meditative practice brings a breakthrough.","Soul-level connection with a partner is deepened today.","Health: Water element is strong — stay anchored.","Spiritually: Visit Vishnu temple and offer tulsi."],["Generosity and compassion attract abundant blessings.","A quiet, intimate moment with a loved one is precious.","Health: Avoid alcohol and escapism — face things directly.","Spiritually: Recite Om Namo Narayanaya 108 times."],["Surrender and trust in the divine unfolds something beautiful.","Love expressed through sacrifice or service is deeply real.","Health: Feet reflexology and warm water soaks heal.","Spiritually: Meditate by water bodies for clarity."]],
 };
 
-// Approximate Vedic Sun Rashi from Gregorian DOB (sidereal correction ~23°)
+// Approximate Vedic Sun Rashi from Gregorian DOB (Nirayana / sidereal boundaries)
+// NOTE: This gives the Sidereal Sun Sign. Janma Rashi (Moon sign) requires lunar ephemeris.
+// The Sun sign is used here as the primary Rashi for predictions and as base for Lagna.
 function getVedicRashiFromDOB(dob: string): { rashiId: number; rashi: typeof VEDIC_RASHIS[0] } | null {
   if (!dob || dob.length < 10) return null;
   const d = new Date(dob);
@@ -5781,6 +6725,103 @@ function getVedicRashiFromDOB(dob: string): { rashiId: number; rashi: typeof VED
   else if ((month === 2 && day >= 13) || (month === 3 && day <= 14)) rashiId = 10; // Kumbha: Feb 13 – Mar 14
   else rashiId = 11; // Meena: Mar 15 – Apr 12
   return { rashiId, rashi: VEDIC_RASHIS[rashiId] };
+}
+
+// Approximate Lagna (Ascendant) from birth time using Sun-sign base + time offset
+// Lagna changes every ~2 hours. At 6am (approximate sunrise), Lagna ≈ Sun Rashi.
+// Each 2 hours after sunrise, Lagna advances by 1 Rashi (clockwise).
+// This is a simplified approximation; precise Lagna requires local sidereal time.
+function getLagnaFromBirthDetails(rashiId: number, birthTime: string): { lagnaId: number; lagna: typeof VEDIC_RASHIS[0]; birthHour: number; lagnaLabel: string } | null {
+  if (!birthTime || !/^\d{2}:\d{2}$/.test(birthTime)) return null;
+  const hour = parseInt(birthTime.split(":")[0], 10);
+  const minute = parseInt(birthTime.split(":")[1], 10);
+  if (isNaN(hour) || isNaN(minute)) return null;
+  // Lagna advances 1 sign every ~2 hours from sunrise (6am)
+  const hoursSinceSunrise = ((hour - 6 + 24) % 24) + minute / 60;
+  const lagnaOffset = Math.floor(hoursSinceSunrise / 2);
+  const lagnaId = (rashiId + lagnaOffset) % 12;
+  const lagna = VEDIC_RASHIS[lagnaId];
+  // Birth time context
+  const period =
+    hour < 4 ? "Late night (Brahma Muhurta approaching)"
+    : hour < 6 ? "Pre-dawn (Brahma Muhurta — auspicious)"
+    : hour < 9 ? "Early morning (Surya rising)"
+    : hour < 12 ? "Morning (Prana Vayu active)"
+    : hour < 15 ? "Midday (Surya apex)"
+    : hour < 18 ? "Afternoon (winding energy)"
+    : hour < 21 ? "Evening (Sandhya Kaal — twilight)"
+    : "Night (Chandra dominant)";
+  return { lagnaId, lagna, birthHour: hour, lagnaLabel: period };
+}
+
+// Vedic 60-year Samvatsara cycle from birth year
+// The Samvatsara (Sanskrit: संवत्सर) is a Jovian year — Jupiter transits 1 Rashi every ~12 years,
+// completing 5 cycles = 60 years. Each has a unique name and life-theme.
+const SAMVATSARA_NAMES: string[] = [
+  "Prabhava", "Vibhava", "Shukla", "Pramoda", "Prajapati",
+  "Angirasa", "Shrimukha", "Bhava", "Yuva", "Dhata",
+  "Ishvara", "Bahudhanya", "Pramadi", "Vikrama", "Vrisha",
+  "Chitrabhanu", "Svabhanu", "Tarana", "Parthiva", "Vyaya",
+  "Sarvajit", "Sarvadharin", "Virodhi", "Vikruti", "Khara",
+  "Nandana", "Vijaya", "Jaya", "Manmatha", "Durmukhi",
+  "Hemalamba", "Vilamba", "Vikari", "Sharvari", "Plava",
+  "Shubhakruti", "Shobhakruti", "Krodhi", "Vishvavasu", "Parabhava",
+  "Plavanga", "Kilaka", "Saumya", "Sadharana", "Virodhikrut",
+  "Paridhavi", "Pramadi", "Ananda", "Rakshasa", "Nala",
+  "Pingala", "Kalayukti", "Siddharthi", "Raudra", "Durmati",
+  "Dundubhi", "Rudhirodgari", "Raktakshi", "Krodhana", "Kshaya"
+];
+
+const SAMVATSARA_THEMES: string[] = [
+  "New beginnings & radiant energy", "Abundance & prosperity", "Clarity & purity of purpose", "Joy & celebration", "Creation & divine parenthood",
+  "Wisdom & divine speech", "Auspiciousness & leadership", "Emotional depth & inner strength", "Youth & vitality", "Protection & duty",
+  "Divine authority & power", "Agricultural wealth & nourishment", "Unpredictability & change", "Valor & courage", "Bull-like determination & patience",
+  "Radiant light & artistic excellence", "Self-luminous confidence", "Crossing barriers & liberation", "Grounded rulership & earthly wisdom", "Release & letting go",
+  "Universal victory & mastery", "Complete abundance & generosity", "Struggle against resistance", "Radical transformation", "Sharpness & cutting through illusions",
+  "Bliss & celebration of life", "Victory after effort", "Triumph & achievement", "Love & passion", "Speaking difficult truths",
+  "Gold-tinted prosperity & balance", "Deep reflection & delay before gain", "Unstable yet creative energy", "Darkness before light", "Fluid adaptability",
+  "Auspicious transformation", "Radiant new becoming", "Righteous anger & power", "Universal dwelling & expansion", "Fall before rise",
+  "Rapid change & restlessness", "Keystone moment & pivot", "Gentle wisdom & peace", "Balance & shared responsibility", "Opposition bringing growth",
+  "Circling back to complete cycles", "Distraction requiring focus", "Pure joy & divine grace", "Asura energy — power & material dominance", "Steadiness & endurance",
+  "Golden hue & charismatic authority", "Merging of time cycles", "Accomplishment of true purpose", "Fierce intensity & power", "Distorted perception — seek clarity",
+  "Drum-beat of cosmic time", "Blood-tinged ambition — use power carefully", "Red-eyed intensity — manage reactions", "Anger cycle — channel wisely", "Completion & dissolution"
+];
+
+function getVedicSamvatsara(birthYear: number): { index: number; name: string; theme: string } {
+  // Samvatsara epoch: year 1893 CE = Samvatsara index 0 (Prabhava) in the Southern tradition
+  // Cycle length: 60 years
+  const epochYear = 1893;
+  const idx = ((birthYear - epochYear) % 60 + 60) % 60;
+  return {
+    index: idx,
+    name: SAMVATSARA_NAMES[idx] ?? "Unknown",
+    theme: SAMVATSARA_THEMES[idx] ?? "Cosmic cycle — consult a Jyotishi"
+  };
+}
+
+// Vedic emotional guidance connecting birth chart to current issue dimension
+function getVedicIssueGuidance(issueId: IssueId, rashiId: number): string {
+  const rashiName = VEDIC_RASHIS[rashiId]?.name ?? "your Rashi";
+  const guidanceMap: Record<IssueId, string> = {
+    general: `${rashiName} carries an adaptive cosmic energy today. Trust the reading below as context, then return to the Guide tab for your practical next step.`,
+    anger: `${rashiName} energy may intensify emotions today. The planetary reading below can help you understand why tension feels heightened. Use the Reset tab before acting on any strong impulse.`,
+    anxiety: `For ${rashiName}, today's cosmic cycle influences your nervous system. The Tithi and Nakshatra below indicate the best timing for rest versus action — let them inform, not overwhelm you.`,
+    fear: `${rashiName}'s ruling planet offers grounding energy today. The reading below carries a daily orientation for your sign — use it to find one fact-based anchor amid the fear.`,
+    overconfidence: `${rashiName} can amplify both confidence and blind spots. Today's Vara and Tithi below help you see which moves are supported and which need a second check.`,
+    stigma: `${rashiName}'s journey includes both shadow and light. Today's reading reminds you that the cosmos holds no judgment — only direction. Let it quiet the inner critic.`,
+    burnout: `${rashiName} is in a restoration phase today. The Nakshatra below carries restorative energy — use it as permission to rest without guilt.`,
+    loneliness: `${rashiName}'s placement today highlights connection themes. The planetary reading below points to which human touchpoints are supported — one call or message today carries cosmic weight.`,
+    grief: `${rashiName} energy today is especially suited to processing and releasing. The Tithi below carries release energy. Grief does not need to be hurried — the cosmos today gives you space.`,
+    trauma: `${rashiName}'s Nakshatra lord today influences how safety is experienced in the body. The reading below carries a grounding message — read it before any big decision.`,
+    addiction: `${rashiName}'s ruling planet influences willpower and desire today. The Vara below shows which days are stronger for discipline and which need extra support. Plan around this.`,
+    health: `${rashiName}'s body area is highlighted today. The planetary reading below includes a specific health note for your sign — pay attention to it as one more data point alongside your doctor's advice.`,
+    financial: `${rashiName}'s ruling planet governs resources and material stability. Today's reading below contains specific financial guidance for your sign — use it alongside the practical steps in the Help tab.`,
+    relationship: `${rashiName}'s seventh-house dynamics are active today. The Tithi below is a key relationship indicator — check whether today favors communication, patience, or space before a difficult conversation.`,
+    parenting: `${rashiName}'s nurturing energy is present today. The reading below carries specific guidance for your role as a caregiver — the fifth house themes are worth noting.`,
+    academic: `${rashiName} is governed by a planet associated with learning today. The Nakshatra below carries specific properties for study and concentration — align your focus blocks with this energy.`,
+    identity: `${rashiName}'s self-expression energy is highlighted in today's reading. The Lagna and Rashi below together paint who you are at a cosmic level — use this as grounding, not a label.`,
+  };
+  return guidanceMap[issueId] ?? `${rashiName}'s energy today offers perspective on your situation. Read the cosmic snapshot below alongside your practical path.`;
 }
 
 // Janma Nakshatra: Approximated from birth Julian Day Number
@@ -5944,6 +6985,7 @@ export default function App() {
   const [notifStreakEnabled, setNotifStreakEnabled] = useState(true);
   const [notifVedicEnabled, setNotifVedicEnabled] = useState(true);
   const [notifReengageEnabled, setNotifReengageEnabled] = useState(true);
+  const [notifWellbeingEnabled, setNotifWellbeingEnabled] = useState(true);
   const [reminderAccess, setReminderAccess] = useState<ReminderAccess>("loading");
   const [emergencyNumber, setEmergencyNumber] = useState(defaultEmergencyNumber);
   const [identityId, setIdentityId] = useState<IdentityId>("other");
@@ -5973,6 +7015,9 @@ export default function App() {
   const [privateSpaceMembersDraft, setPrivateSpaceMembersDraft] = useState("");
   const [privateSpaceDraft, setPrivateSpaceDraft] = useState("");
   const [homeIssueDraft, setHomeIssueDraft] = useState("");
+  const [showCounselingChat, setShowCounselingChat] = useState(false);
+  const [activeJourney, setActiveJourney] = useState<CounselingSession | null>(null);
+  const [journeyStepIndex, setJourneyStepIndex] = useState(0);
   const [aiHelpMessages, setAIHelpMessages] = useState<AIHelpMessage[]>(aiHelpSeed);
   const [aiHelpDraft, setAIHelpDraft] = useState("");
   const [aiHelpLoading, setAIHelpLoading] = useState(false);
@@ -6053,6 +7098,8 @@ export default function App() {
   const [appLastHeartbeatAt, setAppLastHeartbeatAt] = useState<string | null>(null);
   const [dismissedHintTabs, setDismissedHintTabs] = useState<string[]>([]);
   const [lastVedicViewDate, setLastVedicViewDate] = useState<string | null>(null);
+  const [lastWeeklyVedicCheck, setLastWeeklyVedicCheck] = useState<string | null>(null);
+  const [showWeeklyVedicBanner, setShowWeeklyVedicBanner] = useState(false);
   const [journeyCardDismissed, setJourneyCardDismissed] = useState(false);
   const [featureNudgeDismissed, setFeatureNudgeDismissed] = useState(false);
   const [postCheckInSuggest, setPostCheckInSuggest] = useState<{
@@ -6070,6 +7117,7 @@ export default function App() {
   const [startupAccessPromptDismissEnabled, setStartupAccessPromptDismissEnabled] = useState(false);
   const [showExitReviewPrompt, setShowExitReviewPrompt] = useState(false);
   const [hasSeenExitReviewPrompt, setHasSeenExitReviewPrompt] = useState(false);
+  const [hasSubmittedIssue, setHasSubmittedIssue] = useState(false);
   const [showSectionSwitcher, setShowSectionSwitcher] = useState(false);
   const [routineId, setRoutineId] = useState(routines[0].id);
   const [calmPageNonce, setCalmPageNonce] = useState(0);
@@ -7754,6 +8802,7 @@ export default function App() {
       if (typeof parsed.notifStreakEnabled === "boolean") setNotifStreakEnabled(parsed.notifStreakEnabled);
       if (typeof parsed.notifVedicEnabled === "boolean") setNotifVedicEnabled(parsed.notifVedicEnabled);
       if (typeof parsed.notifReengageEnabled === "boolean") setNotifReengageEnabled(parsed.notifReengageEnabled);
+      if (typeof parsed.notifWellbeingEnabled === "boolean") setNotifWellbeingEnabled(parsed.notifWellbeingEnabled);
       if (
         typeof parsed.followUpMode === "string" &&
         (parsed.followUpMode === "off" ||
@@ -8005,6 +9054,9 @@ export default function App() {
       if (typeof parsed.lastVedicViewDate === "string" || parsed.lastVedicViewDate === null) {
         setLastVedicViewDate(parsed.lastVedicViewDate ?? null);
       }
+      if (typeof parsed.lastWeeklyVedicCheck === "string") {
+        setLastWeeklyVedicCheck(parsed.lastWeeklyVedicCheck);
+      }
       if (typeof parsed.journeyCardDismissed === "boolean") {
         setJourneyCardDismissed(parsed.journeyCardDismissed);
       }
@@ -8042,6 +9094,20 @@ export default function App() {
     }, 10000);
     return () => clearTimeout(timeout);
   }, [hasLoaded, hasSeenWelcomeCard]);
+
+  // Show weekly vedic prediction banner at start of session on Mondays or if not seen this week
+  useEffect(() => {
+    if (!hasLoaded) return;
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon
+    const isMonday = dayOfWeek === 1;
+    const weekKey = `${today.getFullYear()}-W${Math.ceil(today.getDate() / 7)}`;
+    if (lastWeeklyVedicCheck !== weekKey && (isMonday || !lastWeeklyVedicCheck)) {
+      setShowWeeklyVedicBanner(true);
+      setLastWeeklyVedicCheck(weekKey);
+    }
+  }, [hasLoaded]);
 
   useEffect(() => {
     if (!hasLoaded || hasOpenedStartupAccessPromptRef.current) return;
@@ -8227,6 +9293,7 @@ export default function App() {
       notifStreakEnabled,
       notifVedicEnabled,
       notifReengageEnabled,
+      notifWellbeingEnabled,
       emergencyNumber,
       identityId,
       issueGuideId,
@@ -8296,6 +9363,7 @@ export default function App() {
       trustedContacts,
       dismissedHintTabs,
       lastVedicViewDate,
+      lastWeeklyVedicCheck,
       journeyCardDismissed,
       featureNudgeDismissed
     };
@@ -8372,6 +9440,7 @@ export default function App() {
     notifStreakEnabled,
     notifVedicEnabled,
     notifReengageEnabled,
+    notifWellbeingEnabled,
     routineId,
     softPrompts,
     supportLocality,
@@ -8379,6 +9448,7 @@ export default function App() {
     trustedContacts,
     dismissedHintTabs,
     lastVedicViewDate,
+    lastWeeklyVedicCheck,
     journeyCardDismissed,
     featureNudgeDismissed
   ]);
@@ -8401,7 +9471,9 @@ export default function App() {
       if (Platform.OS === "android") {
         await Notifications.setNotificationChannelAsync("aethon-reminders", {
           name: "Aethon Beacon reminders",
-          importance: Notifications.AndroidImportance.DEFAULT
+          importance: Notifications.AndroidImportance.HIGH,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: "#22D3EE"
         }).catch(() => undefined);
       }
     }
@@ -8422,7 +9494,12 @@ export default function App() {
       checkin: "aethon-checkin-daily",
       streak: "aethon-streak-protection",
       vedic: "aethon-vedic-daily",
+      vedicEvening: "aethon-vedic-evening",
+      vedicWeekly: "aethon-vedic-weekly",
       reengage: "aethon-reengage",
+      wellbeingMorning: "aethon-wellbeing-morning",
+      wellbeingAfternoon: "aethon-wellbeing-afternoon",
+      wellbeingEvening: "aethon-wellbeing-evening",
       followUp: (i: number) => `aethon-followup-${i}`,
     };
     const cancelOwnNotifications = async () => {
@@ -8430,7 +9507,12 @@ export default function App() {
         NOTIF_IDS.checkin,
         NOTIF_IDS.streak,
         NOTIF_IDS.vedic,
+        NOTIF_IDS.vedicEvening,
+        NOTIF_IDS.vedicWeekly,
         NOTIF_IDS.reengage,
+        NOTIF_IDS.wellbeingMorning,
+        NOTIF_IDS.wellbeingAfternoon,
+        NOTIF_IDS.wellbeingEvening,
         ...Array.from({ length: 16 }, (_, i) => NOTIF_IDS.followUp(i + 1)),
       ];
       await Promise.all(
@@ -8543,6 +9625,75 @@ export default function App() {
         }).catch(() => undefined);
       }
 
+      // ── Evening horoscope nudge (8 pm daily) ─────────────────────────────
+      if (notifVedicEnabled) {
+        const rashiName = vedicRashiInfo ? vedicRashiInfo.rashi.name : "your sign";
+        await Notifications.scheduleNotificationAsync({
+          identifier: NOTIF_IDS.vedicEvening,
+          content: {
+            title: "🌙 Evening cosmic reflection",
+            body: `Your ${rashiName} evening reading is ready. See what today's stars say about tomorrow.`,
+            data: { tab: "vedic" },
+            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+          },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 20, minute: 0 }
+        }).catch(() => undefined);
+      }
+
+      // ── Weekly horoscope prediction (Monday 7 am) ─────────────────────────
+      if (notifVedicEnabled) {
+        const rashiName = vedicRashiInfo ? vedicRashiInfo.rashi.name : "your sign";
+        await Notifications.scheduleNotificationAsync({
+          identifier: NOTIF_IDS.vedicWeekly,
+          content: {
+            title: "🪐 Your weekly reading — " + rashiName,
+            body: "A new week begins. Open Aethon Beacon to see your weekly and monthly cosmic guidance.",
+            data: { tab: "vedic" },
+            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+          },
+          // WEEKLY trigger — fires every Monday at 7:30 am (weekday 2 = Monday in Expo)
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.WEEKLY, weekday: 2, hour: 7, minute: 30 }
+        }).catch(() => undefined);
+      }
+
+      // ── Wellbeing check — 3x daily (gated by notifWellbeingEnabled) ─────────
+      if (notifWellbeingEnabled) {
+      await Notifications.scheduleNotificationAsync({
+        identifier: NOTIF_IDS.wellbeingMorning,
+        content: {
+          title: "☀️ Good morning, " + profileDisplayName,
+          body: "How are you feeling as the day starts? A 10-second check-in keeps the pattern honest.",
+          data: { tab: "today" },
+          ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+        },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 0 }
+      }).catch(() => undefined);
+
+      // ── Wellbeing check — afternoon (1 pm) ────────────────────────────────
+      await Notifications.scheduleNotificationAsync({
+        identifier: NOTIF_IDS.wellbeingAfternoon,
+        content: {
+          title: "🌤 Midday check — how are you doing?",
+          body: "Half the day is gone. Pause for a moment and tell the app how you're holding up.",
+          data: { tab: "today" },
+          ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+        },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 13, minute: 0 }
+      }).catch(() => undefined);
+
+      // ── Wellbeing check — evening (7 pm) ──────────────────────────────────
+      await Notifications.scheduleNotificationAsync({
+        identifier: NOTIF_IDS.wellbeingEvening,
+        content: {
+          title: "🌆 Evening — how was your day?",
+          body: "Before the night winds down, a moment to process what happened today.",
+          data: { tab: "today" },
+          ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+        },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 19, minute: 0 }
+      }).catch(() => undefined);
+      } // end notifWellbeingEnabled
+
       // ── Re-engagement nudge (3 days from now, one-shot) ────────────────────
       if (notifReengageEnabled) {
         const reengageDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
@@ -8569,7 +9720,7 @@ export default function App() {
     return () => {
       mounted = false;
     };
-  }, [hasLoaded, reminderChoice.hour, reminderChoice.minute, reminderEnabled, reminderMode, followUpMode, notifStreakEnabled, notifVedicEnabled, notifReengageEnabled, checkInStreak, vedicRashiInfo, profileDisplayName]);
+  }, [hasLoaded, reminderChoice.hour, reminderChoice.minute, reminderEnabled, reminderMode, followUpMode, notifStreakEnabled, notifVedicEnabled, notifReengageEnabled, notifWellbeingEnabled, checkInStreak, vedicRashiInfo, profileDisplayName]);
 
   function saveCheckIn() {
     const note = journal.trim();
@@ -10103,12 +11254,9 @@ async function fetchGeminiAIHelp(
 
   async function speakGuidance(text: string) {
     const cleanText = text.replace(/\s+/g, " ").trim().slice(0, 900);
-    if (!cleanText) {
-      Alert.alert("Voice assistance", "No guidance is ready to read yet.");
-      return;
-    }
-
-    setVoiceAssistEnabled(true);
+    if (!cleanText) return;
+    // Only speak if voice assist is enabled by the user (don't force-enable)
+    if (!voiceAssistEnabled) return;
     const speechApi = (globalThis as typeof globalThis & {
       speechSynthesis?: SpeechSynthesis;
       SpeechSynthesisUtterance?: typeof SpeechSynthesisUtterance;
@@ -10317,7 +11465,8 @@ async function fetchGeminiAIHelp(
 
   function exitToStart() {
     setShowSectionSwitcher(false);
-    if (!hasSeenExitReviewPrompt) {
+    // Only show exit review at genuine end of session — after user submitted an issue, once per session
+    if (hasSubmittedIssue && !hasSeenExitReviewPrompt) {
       setShowExitReviewPrompt(true);
     } else {
       setShowExitReviewPrompt(false);
@@ -10671,26 +11820,24 @@ async function fetchGeminiAIHelp(
           : calmIssueIds.has(issue.id)
             ? "Reset"
             : "Path";
+    const nextRedressRouteId = route === "urgent" ? "crime" : findAIHelpRedressRouteFromText(routeText);
+
+    // Build a personal acknowledgment of what was shared — shown BEFORE routing
+    const counseling = buildCounselingAcknowledgment(routeText, issue.id, route);
+
     setVisitReports((current) => [
       {
         id: `home-${Date.now()}`,
         createdAt: new Date().toISOString(),
         kind: "step" as VisitReportKind,
-        title: `Route report / ${inferredIdentityLabel}`,
-        summary: `The first line pointed toward ${routeLabel}, so the app asked for one more choice before moving on.`,
-        emotional:
-          route === "urgent"
-            ? "Urgent language was detected and the safety path stays visible."
-            : route === "redress"
-              ? "The issue reads like a complaint or authority path."
-              : calmIssueIds.has(issue.id)
-                ? `Reset support is useful for ${issueDisplayLabel}.`
-                : `Guidance can shape the next step for ${issueDisplayLabel}.`,
-        practical: `Identity guess: ${inferredIdentityLabel}.`,
-        social: "The first line is now stored so the user can choose the next route with more clarity.",
-        safety: route === "urgent" ? "Urgent cue detected from the first line." : "No urgent cue in the first line.",
-        nextStep: "Choose Help, Path, Reset, Search, or Journal.",
-        routeLabel: "Choice pending",
+        title: `Heard / ${inferredIdentityLabel}`,
+        summary: counseling.heard,
+        emotional: counseling.nextStep,
+        practical: `Identity: ${inferredIdentityLabel} · Issue: ${issueDisplayLabel}`,
+        social: "Your situation was heard. The next step below is matched to what you shared.",
+        safety: route === "urgent" ? "Urgent cue detected — safety path is open." : "No emergency signals detected.",
+        nextStep: counseling.nextStep,
+        routeLabel,
         identityLabel: inferredIdentityLabel,
         issueLabel: issueDisplayLabel,
         entryCount: 0,
@@ -10698,7 +11845,65 @@ async function fetchGeminiAIHelp(
       },
       ...current
     ].slice(0, 40));
-    openRouteDecision(routeText, issue, route, findAIHelpRedressRouteFromText(routeText), inferredIdentityLabel);
+    setHomeIssueDraft("");
+    setHasSubmittedIssue(true);
+    setIssueGuideId(issue.id);
+
+    // Show the acknowledgment notice for 3 seconds, then route
+    showRouteNotice("Heard", counseling.heard.slice(0, 120) + (counseling.heard.length > 120 ? "…" : ""));
+
+    if (route === "urgent") {
+      openRedressTab(nextRedressRouteId);
+      return;
+    }
+    if (route === "redress") {
+      // Small delay so the acknowledgment notice is actually read
+      setTimeout(() => openRedressTab(nextRedressRouteId), 600);
+      return;
+    }
+    if (calmIssueIds.has(issue.id)) {
+      setTimeout(() => openCalmRoute(issue.id), 600);
+      return;
+    }
+    setTimeout(() => startAIHelpFlow(routeText, issue.id), 600);
+  }
+
+  function handleJourneyReady(session: CounselingSession) {
+    setShowCounselingChat(false);
+    setActiveJourney(session);
+    setJourneyStepIndex(0);
+    if (session.journeySteps.length > 0) {
+      handleTabPress(session.journeySteps[0].tabId);
+    }
+  }
+
+  function advanceJourneyStep(skip = false) {
+    if (!activeJourney) return;
+    const updatedSteps = activeJourney.journeySteps.map((s, i) => {
+      if (i === journeyStepIndex) return { ...s, completed: !skip, skipped: skip };
+      return s;
+    });
+    const nextIndex = journeyStepIndex + 1;
+    if (nextIndex >= activeJourney.journeySteps.length) {
+      // Journey complete — show exit review
+      setActiveJourney({ ...activeJourney, journeySteps: updatedSteps, stage: "done" });
+      setHasSubmittedIssue(true);
+      setShowExitReviewPrompt(true);
+      setShowOnboardingPanel(true);
+      return;
+    }
+    const nextStep = updatedSteps[nextIndex];
+    setActiveJourney({ ...activeJourney, journeySteps: updatedSteps });
+    setJourneyStepIndex(nextIndex);
+    handleTabPress(nextStep.tabId);
+  }
+
+  function endJourney() {
+    setActiveJourney(null);
+    setJourneyStepIndex(0);
+    setHasSubmittedIssue(true);
+    setShowExitReviewPrompt(true);
+    setShowOnboardingPanel(true);
   }
 
   function buildNearbySearchUrl(query: string) {
@@ -10778,7 +11983,10 @@ function isRedressRouteId(value: string): value is RedressRouteId {
     value === "ragging" ||
     value === "public" ||
     value === "private" ||
-    value === "crime"
+    value === "crime" ||
+    value === "financial" ||
+    value === "domestic" ||
+    value === "workplace"
   );
 }
 
@@ -10872,7 +12080,7 @@ function isTrustedExternalUrl(url: string) {
     <AppErrorBoundary>
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
-        <StatusBar barStyle="dark-content" backgroundColor="#F8F5EF" />
+        <StatusBar barStyle="light-content" backgroundColor="#050D10" translucent={false} />
         <ScrollView
           key={scrollBootstrapKey}
           ref={scrollViewRef}
@@ -10881,7 +12089,7 @@ function isTrustedExternalUrl(url: string) {
             styles.scrollBody,
             {
               paddingVertical: shellMetrics.scrollPaddingVertical,
-              paddingBottom: isCompact ? 86 : shellMetrics.scrollPaddingVertical
+              paddingBottom: isCompact ? (Platform.OS === "ios" ? 110 : 86) : shellMetrics.scrollPaddingVertical
             }
           ]}
           pointerEvents={showPrivateIntakePanel ? "none" : "auto"}
@@ -11101,14 +12309,13 @@ function isTrustedExternalUrl(url: string) {
             {!showFullHomeHero ? (
               <View style={[styles.topPageModeBanner, isCompact && styles.topPageModeBannerCompact]}>
                 <Text style={[styles.topPageModeLabel, isCompact && styles.topPageModeLabelCompact]}>
-                  {activeTabLabel} page
+                  {activeTabLabel}
                 </Text>
                 <Text
                   style={[styles.topPageModeText, isCompact && styles.topPageModeTextCompact]}
                   numberOfLines={isCompact ? 3 : 2}
                 >
-                  This tab opens as its own page. Use the actions below for this step, then go back
-                  home when you are ready.
+                  Tap ← Back when done. This is a separate page.
                 </Text>
               </View>
             ) : null}
@@ -11232,7 +12439,7 @@ function isTrustedExternalUrl(url: string) {
                     <View style={{ flex: 1, gap: 4 }}>
                       <Text style={styles.sectionSwitcherPanelTitle}>Open a page</Text>
                       <Text style={styles.sectionSwitcherPanelMeta}>
-                        Tap one page. The app will move there and keep the view focused.
+                        Tap a page to go there directly.
                       </Text>
                     </View>
                     <Pressable
@@ -11268,7 +12475,7 @@ function isTrustedExternalUrl(url: string) {
                 </Text>
               </View>
             ) : null}
-            {activeRouteFollowUp ? (
+            {activeRouteFollowUp && activeRouteFollowUp.status !== "open" && activeTab === "today" ? (
               <RouteFollowUpCheckpoint
                 followUp={activeRouteFollowUp}
                 onResolved={markRouteFollowUpResolved}
@@ -11306,10 +12513,10 @@ function isTrustedExternalUrl(url: string) {
                     </Pressable>
                   </View>
                   <Text style={styles.welcomeExplainerBody}>
-                    {"Tell us what's going on in one line. The app analyses the issue, offers the right route, and keeps follow-up visible so the next step is clear."}
+                    {"Tell Aethon Beacon what is on your mind — in one sentence or a few words. Your guide will listen deeply, understand every dimension of what you are carrying, and build a personalised path forward."}
                   </Text>
                   <View style={styles.welcomeExplainerPills}>
-                    {["Receive", "Analyse", "Route", "Follow-up"].map((label) => (
+                    {["Share", "Understand", "Guide", "Resolve"].map((label) => (
                       <View key={label} style={styles.welcomeExplainerPill}>
                         <Text style={styles.welcomeExplainerPillText}>{label}</Text>
                       </View>
@@ -11323,10 +12530,30 @@ function isTrustedExternalUrl(url: string) {
                 homeIssueDraft={homeIssueDraft}
                 setHomeIssueDraft={setHomeIssueDraft}
                 routeHomeIssue={routeHomeIssue}
+                onOpenCounselingChat={() => setShowCounselingChat(true)}
                 homeRoutePreview={homeRoutePreview}
                 checkInStreak={checkInStreak}
                 onOpenTab={handleTabPress}
               />
+
+              {/* ── Weekly / monthly vedic banner ── */}
+              {showWeeklyVedicBanner && (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => { setShowWeeklyVedicBanner(false); handleTabPress("vedic"); }}
+                  style={({ pressed }) => ({ marginHorizontal: 16, marginBottom: 12, backgroundColor: "#1A0F2A", borderRadius: 14, padding: 16, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "rgba(180,120,255,0.3)", opacity: pressed ? 0.8 : 1 })}
+                >
+                  <Text style={{ fontSize: 28 }}>🪐</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: "#C4A3FF", fontSize: 11, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>Weekly cosmic guidance</Text>
+                    <Text style={{ color: "#E2EAF0", fontSize: 14, fontWeight: "700", marginTop: 2 }}>Your weekly & monthly prediction is ready</Text>
+                    <Text style={{ color: "#64748B", fontSize: 12, marginTop: 2 }}>Tap to see your Rashi reading, Nakshatra, and what this week holds</Text>
+                  </View>
+                  <Pressable onPress={(e) => { e.stopPropagation?.(); setShowWeeklyVedicBanner(false); }} hitSlop={10}>
+                    <Text style={{ color: "#475569", fontSize: 16 }}>✕</Text>
+                  </Pressable>
+                </Pressable>
+              )}
 
               {/* ── Daily Snapshot (Gemini-powered when backend is live) ── */}
               <View style={[styles.smartBriefCard, { borderLeftColor: smartBrief.accent }]}>
@@ -11611,6 +12838,22 @@ function isTrustedExternalUrl(url: string) {
                 </View>
                 <Text style={styles.tabBannerDate}>{getLiveDateLabel()}</Text>
               </View>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#132230", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "journal")}</Text></Text>
+                </View>
+              )}
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "journal" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <JournalSection
                 entries={entries}
                 deleteEntry={deleteEntry}
@@ -11632,6 +12875,16 @@ function isTrustedExternalUrl(url: string) {
           {activeTab === "focus" && (
             <TabErrorBoundary tabName="Calm">
             <View onLayout={captureSectionLayout("focus")}>
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "focus" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <FocusSection
                 key={`focus-${selectedRoutine.id}-${calmPageNonce}`}
                 selectedRoutine={selectedRoutine}
@@ -11667,6 +12920,22 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={styles.tabBannerSub}>Binaural · Solfège · Nature · 432Hz · Deep calm</Text>
                 </View>
               </View>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#091825", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "tones")}</Text></Text>
+                </View>
+              )}
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "tones" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <ToneLibrarySection
                 selectedIssueGuide={selectedIssueGuide}
                 selectedIdentityLabel={profileDisplayName}
@@ -11687,6 +12956,22 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={styles.tabBannerSub}>Chakra · Breath · Emotion · Calm</Text>
                 </View>
               </View>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#1C0F20", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "meditation")}</Text></Text>
+                </View>
+              )}
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "meditation" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <MeditationSection
                 selectedIssueGuide={selectedIssueGuide}
                 selectedIdentityLabel={profileDisplayName}
@@ -11706,6 +12991,16 @@ function isTrustedExternalUrl(url: string) {
 
           {activeTab === "vedic" && (
             <View onLayout={captureSectionLayout("vedic")}>
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "vedic" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <BirthChartSection
                 rashiInfo={vedicRashiInfo}
                 predictionLines={vedicPredictionLines}
@@ -11718,8 +13013,11 @@ function isTrustedExternalUrl(url: string) {
                 profileDOB={profileDOB}
                 profileBirthTime={profileBirthTime}
                 profileBirthPlace={profileBirthPlace}
-                onOpenProfile={() => handleTabPress("settings")}
+                setProfileDOB={setProfileDOB}
+                setProfileBirthTime={setProfileBirthTime}
+                setProfileBirthPlace={setProfileBirthPlace}
                 onOpenHome={() => handleTabPress("today")}
+                selectedIssueGuide={selectedIssueGuide}
               />
             </View>
           )}
@@ -11774,6 +13072,22 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={styles.tabBannerSub}>Gita · Quran · Bible · Granth · More</Text>
                 </View>
               </View>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#10102A", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "wisdom")}</Text></Text>
+                </View>
+              )}
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "search" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <SearchSection
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
@@ -11807,6 +13121,16 @@ function isTrustedExternalUrl(url: string) {
                     <Text style={{ color: "#475569", fontSize: 14, marginLeft: 8 }}>✕</Text>
                   </Pressable>
                 </View>
+              )}
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "aihelp" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
               )}
               <AIHelpSection
                 aiHelpMessages={aiHelpMessages}
@@ -11842,6 +13166,22 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={styles.tabBannerSub}>Peer support · Verified · Moderated</Text>
                 </View>
               </View>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#0E1F1F", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "community")}</Text></Text>
+                </View>
+              )}
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "community" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <CommunitySection
                 communityMessages={visibleCommunityMessages}
                 communityFilter={communityFilter}
@@ -12002,6 +13342,16 @@ function isTrustedExternalUrl(url: string) {
                     .finally(() => setGeminiInsightLoading(false));
                 }}
               />
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "insights" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <InsightsSection
                 trend={trend}
                 nextMove={nextMove}
@@ -12145,6 +13495,8 @@ function isTrustedExternalUrl(url: string) {
                 setNotifVedicEnabled={setNotifVedicEnabled}
                 notifReengageEnabled={notifReengageEnabled}
                 setNotifReengageEnabled={setNotifReengageEnabled}
+                notifWellbeingEnabled={notifWellbeingEnabled}
+                setNotifWellbeingEnabled={setNotifWellbeingEnabled}
                 verificationDeliveryMode={verificationDeliveryMode}
                 accessName={accessName}
                 profilePhone={profilePhone}
@@ -12326,6 +13678,18 @@ function isTrustedExternalUrl(url: string) {
             onClose={() => setShowPrivateIntakePanel(false)}
           />
         )}
+
+        {/* ── Counseling Chat Modal ── */}
+        <CounselingChatModal
+          visible={showCounselingChat}
+          onClose={() => setShowCounselingChat(false)}
+          onJourneyReady={handleJourneyReady}
+          initialIssue={homeIssueDraft.trim() || "I need some guidance"}
+          identityLabel={profileDisplayName}
+          issueId={selectedIssueGuide.id}
+          speakText={(text) => { void speakGuidance(text); }}
+          stopSpeech={stopVoiceGuidance}
+        />
       </SafeAreaView>
     </SafeAreaProvider>
     </AppErrorBoundary>
@@ -12840,6 +14204,21 @@ function JournalSection({
     "What would you tell a friend in your situation?",
     "What is one thing you are grateful for today?",
     "What do you need more of right now — rest, clarity, or connection?",
+    "What have you lost recently, and what do you still have?",
+    "If your grief could speak, what would it say it needs?",
+    "What does safety feel like to you, and how close are you to it today?",
+    "What is one thing that felt true about your trauma today that you want to acknowledge?",
+    "What triggered the craving or urge today, and what helped you through it?",
+    "Name one thing that restored a small sense of control today.",
+    "What is one honest step you can take toward your health this week?",
+    "Write down the exact number or situation causing financial stress — facts, not fear.",
+    "What do you wish the other person in this relationship understood about you?",
+    "What kind of parent do you want to be today, even if only for one moment?",
+    "What is one thing you studied or worked on today that actually made sense?",
+    "Who am I when no one is watching or expecting anything from me?",
+    "What kind of anger am I holding, and what does it actually need?",
+    "What is one thing I fear that I have survived before?",
+    "Write one sentence about where I am, and one about where I want to be.",
   ];
 
   const todayPromptIndex = useMemo(
@@ -13132,19 +14511,21 @@ function FocusSection({
   const defaultCalmLensId =
     selectedIssueGuide.id === "anger"
       ? "emotional"
-      : selectedIssueGuide.id === "anxiety"
+      : selectedIssueGuide.id === "anxiety" || selectedIssueGuide.id === "financial" || selectedIssueGuide.id === "academic"
         ? "practical"
-        : selectedIssueGuide.id === "fear"
+        : selectedIssueGuide.id === "fear" || selectedIssueGuide.id === "overconfidence" || selectedIssueGuide.id === "addiction"
           ? "psychological"
-          : selectedIssueGuide.id === "overconfidence"
-            ? "psychological"
-            : selectedIssueGuide.id === "stigma"
-              ? "cultural"
-              : selectedIssueGuide.id === "burnout"
-                ? "practical"
-                : selectedIssueGuide.id === "loneliness"
-                  ? "emotional"
-                  : "practical";
+          : selectedIssueGuide.id === "stigma" || selectedIssueGuide.id === "parenting"
+            ? "cultural"
+            : selectedIssueGuide.id === "burnout" || selectedIssueGuide.id === "health"
+              ? "practical"
+              : selectedIssueGuide.id === "loneliness" || selectedIssueGuide.id === "grief" || selectedIssueGuide.id === "relationship"
+                ? "emotional"
+                : selectedIssueGuide.id === "trauma"
+                  ? "psychological"
+                  : selectedIssueGuide.id === "identity"
+                    ? "spiritual"
+                    : "practical";
   const [calmLensId, setCalmLensId] = useState<(typeof calmLensCards)[number]["id"]>(
     defaultCalmLensId
   );
@@ -13221,7 +14602,7 @@ function FocusSection({
         <Text style={styles.scoreText}>{selectedRoutine.duration}</Text>
       </View>
       <Text style={styles.promptText}>
-        {selectedRoutine.meta}. Current calm step is {sessionActive ? "active" : "ready"}.
+        {selectedRoutine.meta}
       </Text>
       {isCalmMode ? (
         <View style={styles.visionGuidanceBox}>
@@ -13425,12 +14806,11 @@ function FocusSection({
         <View style={styles.beaconXRouteBand}>
           <View style={styles.beaconXRouteHeader}>
             <View style={styles.beaconXRouteHeaderCopy}>
-              <Text style={styles.beaconXRouteTitle}>Beacon X response map</Text>
+              <Text style={styles.beaconXRouteTitle}>What to do next</Text>
               <Text style={styles.beaconXRouteMeta}>
-                The wisdom layer turns calm into the next practical route without making the user hunt.
+                Choose the step that fits your situation right now.
               </Text>
             </View>
-            <Text style={styles.smallMeta}>Prompt route</Text>
           </View>
           <View style={styles.beaconXRouteGrid}>
             {beaconXRouteCards.map((card) => (
@@ -13527,16 +14907,14 @@ function FocusSection({
         <View style={styles.beaconXWisdomPanel}>
           <View style={styles.sectionHeader}>
             <View style={styles.beaconXWisdomHeaderCopy}>
-              <Text style={styles.eyebrow}>Aethon Beacon X</Text>
+              <Text style={styles.eyebrow}>Guidance paths</Text>
               <Text style={styles.beaconXWisdomTitle} numberOfLines={2}>
-                Turn calm into choice for {selectedIssueGuide.label}
+                Next steps for {selectedIssueGuide.label}
               </Text>
             </View>
-            <Text style={styles.smallMeta}>Use after Reset</Text>
           </View>
           <Text style={styles.beaconXWisdomLead}>
-            Reset settles the body. Beacon X turns that reset into the next route with facts,
-            values, and a cleaner head.
+            Use the path below that matches what you need right now — facts, values, or a clearer head.
           </Text>
           <View style={styles.beaconXWisdomRow}>
             {adaptiveBeaconModes.map((mode) => (
@@ -13695,6 +15073,7 @@ function ToneLibrarySection({
   );
   const [selectedToneId, setSelectedToneId] = useState<RelaxingToneMode["id"]>(recommendedTone.id);
   const [loopEnabled, setLoopEnabled] = useState(false);
+  const [tonePaused, setTonePaused] = useState(false);
   const [showFullLibrary, setShowFullLibrary] = useState(false);
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const [presetMinutes, setPresetMinutes] = useState(0); // 0 = unlimited
@@ -13702,6 +15081,7 @@ function ToneLibrarySection({
   useEffect(() => {
     setSelectedToneId(recommendedTone.id);
     setLoopEnabled(false);
+    setTonePaused(false);
     setShowFullLibrary(false);
     setSessionSeconds(0);
     setPresetMinutes(0);
@@ -13716,8 +15096,11 @@ function ToneLibrarySection({
       setSessionSeconds(0);
       return undefined;
     }
+    if (tonePaused) {
+      void stopContinuousTone();
+      return undefined;
+    }
     void startContinuousTone(selectedTone);
-    setSessionSeconds(0);
     const ticker = setInterval(() => {
       setSessionSeconds((s) => s + 1);
     }, 1000);
@@ -13725,13 +15108,14 @@ function ToneLibrarySection({
       clearInterval(ticker);
       void stopContinuousTone();
     };
-  }, [loopEnabled, selectedTone.id]);
+  }, [loopEnabled, selectedTone.id, tonePaused]);
 
   // Auto-stop when preset duration is reached
   useEffect(() => {
     if (!loopEnabled || presetMinutes === 0) return;
     if (sessionSeconds >= presetMinutes * 60) {
       setLoopEnabled(false);
+      setTonePaused(false);
     }
   }, [sessionSeconds, presetMinutes, loopEnabled]);
 
@@ -13761,36 +15145,16 @@ function ToneLibrarySection({
           <Text style={styles.smallMeta}>{selectedIdentityLabel}</Text>
         )}
       </View>
-      {/* Session duration presets */}
-      <View style={styles.tonePresetRow}>
-        {([0, 5, 10, 20, 30] as const).map((min) => (
-          <Pressable
-            key={min}
-            accessibilityRole="button"
-            accessibilityLabel={min === 0 ? "Unlimited session" : `${min} minute session`}
-            accessibilityState={{ selected: presetMinutes === min }}
-            onPress={() => setPresetMinutes(min)}
-            style={[styles.tonePresetChip, presetMinutes === min && styles.tonePresetChipActive]}
-          >
-            <Text style={[styles.tonePresetChipLabel, presetMinutes === min && styles.tonePresetChipLabelActive]}>
-              {min === 0 ? "∞" : `${min}m`}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-      {/* Progress bar when preset active */}
-      {loopEnabled && presetMinutes > 0 && (
-        <View style={styles.toneProgressTrack}>
-          <View style={[styles.toneProgressFill, { width: `${Math.round(presetProgress * 100)}%` as unknown as number }]} />
-        </View>
-      )}
-      <Text style={styles.promptText}>
-        Pick any tone and loop it. Set a timer (5 – 30 min) or let it run until you stop it.
-      </Text>
-      <View style={styles.visionGuidanceBox}>
-        <Text style={styles.visionGuidanceTitle}>Suggested starting tone</Text>
-        <Text style={styles.visionGuidanceText}>
-          For {selectedIssueGuide.label.toLowerCase()}, start with {recommendedTone.label} and move forward from there.
+      {/* Suggested tone for current issue */}
+      <View style={{ backgroundColor: "#071820", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(14,111,105,0.3)" }}>
+        <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>
+          Recommended for {selectedIssueGuide.label}
+        </Text>
+        <Text style={{ color: "#E8F4F0", fontSize: 14, fontWeight: "800" }}>
+          {recommendedTone.label}
+        </Text>
+        <Text style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, marginTop: 2 }}>
+          {recommendedTone.use}
         </Text>
       </View>
       <View style={styles.homeOverviewActions}>
@@ -13823,38 +15187,110 @@ function ToneLibrarySection({
           {selectedTone.use}
         </Text>
       </View>
-      <View style={styles.communityActions}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => {
-            setSelectedToneId(selectedTone.id);
-            void playRelaxingToneCue(selectedTone);
-          }}
-          style={({ pressed }) => [styles.helpButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.helpButtonLabel}>Play selected</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: loopEnabled }}
-          onPress={() => setLoopEnabled((value) => !value)}
-          style={({ pressed }) => [
-            styles.helpButtonSecondary,
-            loopEnabled && styles.toneLoopButtonActive,
-            pressed && styles.pressed
-          ]}
-        >
-          <Text style={[styles.helpButtonSecondaryLabel, loopEnabled && styles.toneLoopButtonActiveLabel]}>
-            {loopEnabled ? "Stop loop" : "Loop selected"}
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onOpenCalm}
-          style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-        >
-          <Text style={styles.helpButtonSecondaryLabel}>Open Reset</Text>
-        </Pressable>
+      {/* ── Tone Controls ── */}
+      <View style={{ gap: 10 }}>
+        {/* Status row */}
+        {loopEnabled && (
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 4 }}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: tonePaused ? "#F6D46B" : "#22D3EE" }} />
+            <Text style={{ color: tonePaused ? "#F6D46B" : "#22D3EE", fontSize: 12, fontWeight: "800", letterSpacing: 0.6 }}>
+              {tonePaused ? "PAUSED" : "LOOPING — " + sessionLabel}
+            </Text>
+          </View>
+        )}
+        {/* Primary controls row */}
+        <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+          {/* Play once */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Play once"
+            onPress={() => {
+              setLoopEnabled(false);
+              setTonePaused(false);
+              void playRelaxingToneCue(selectedTone);
+            }}
+            style={({ pressed }) => [{
+              flex: 1, minWidth: 80, minHeight: 48, borderRadius: 12,
+              backgroundColor: pressed ? "#0E4A46" : "#0E6F69",
+              alignItems: "center", justifyContent: "center",
+              paddingHorizontal: 12
+            }]}
+          >
+            <Text style={{ color: "#E8F4F0", fontSize: 15, fontWeight: "900" }}>▶  Play once</Text>
+          </Pressable>
+
+          {/* Loop / Stop toggle */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: loopEnabled }}
+            accessibilityLabel={loopEnabled ? "Stop loop" : "Start loop"}
+            onPress={() => {
+              setTonePaused(false);
+              setLoopEnabled((v) => !v);
+            }}
+            style={({ pressed }) => [{
+              flex: 1, minWidth: 80, minHeight: 48, borderRadius: 12,
+              backgroundColor: loopEnabled ? (pressed ? "#7A1010" : "#B91C1C") : (pressed ? "#0E2A36" : "#0F3D5E"),
+              alignItems: "center", justifyContent: "center",
+              paddingHorizontal: 12
+            }]}
+          >
+            <Text style={{ color: loopEnabled ? "#FFF" : "#63DED0", fontSize: 15, fontWeight: "900" }}>
+              {loopEnabled ? "⏹  Stop" : "🔁  Loop"}
+            </Text>
+          </Pressable>
+
+          {/* Pause / Resume — only when looping */}
+          {loopEnabled && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: tonePaused }}
+              accessibilityLabel={tonePaused ? "Resume" : "Pause"}
+              onPress={() => setTonePaused((v) => !v)}
+              style={({ pressed }) => [{
+                flex: 1, minWidth: 80, minHeight: 48, borderRadius: 12,
+                backgroundColor: pressed ? "#2D2810" : "#1A1A0A",
+                borderWidth: 1, borderColor: "#F6D46B",
+                alignItems: "center", justifyContent: "center",
+                paddingHorizontal: 12
+              }]}
+            >
+              <Text style={{ color: "#F6D46B", fontSize: 15, fontWeight: "900" }}>
+                {tonePaused ? "▶  Resume" : "⏸  Pause"}
+              </Text>
+            </Pressable>
+          )}
+        </View>
+
+        {/* Timer presets — moved below controls for clarity */}
+        <View style={{ flexDirection: "row", gap: 6, alignItems: "center" }}>
+          <Text style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, fontWeight: "700", marginRight: 2 }}>Timer:</Text>
+          {([0, 5, 10, 20, 30] as const).map((min) => (
+            <Pressable
+              key={min}
+              accessibilityRole="button"
+              accessibilityLabel={min === 0 ? "No timer" : `${min} minutes`}
+              accessibilityState={{ selected: presetMinutes === min }}
+              onPress={() => setPresetMinutes(min)}
+              style={[{
+                paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+                backgroundColor: presetMinutes === min ? "#0E6F69" : "#0D1F22",
+                borderWidth: 1, borderColor: presetMinutes === min ? "#0E9F95" : "rgba(255,255,255,0.1)"
+              }]}
+            >
+              <Text style={{ color: presetMinutes === min ? "#E8F4F0" : "rgba(255,255,255,0.55)", fontSize: 12, fontWeight: "800" }}>
+                {min === 0 ? "∞" : `${min}m`}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
+        {/* Progress bar when preset active */}
+        {loopEnabled && presetMinutes > 0 && (
+          <View style={{ height: 4, borderRadius: 2, backgroundColor: "#0D1F22", overflow: "hidden" }}>
+            <View style={{ height: "100%", borderRadius: 2, backgroundColor: "#22D3EE", width: `${Math.round(presetProgress * 100)}%` as unknown as number }} />
+          </View>
+        )}
       </View>
       <View style={styles.calmQuickActionRow}>
         <Pressable
@@ -13881,7 +15317,7 @@ function ToneLibrarySection({
       </View>
       <Text style={styles.homeToneLoopStatus}>
         {loopEnabled
-          ? `Loop active on ${selectedTone.label}. It will keep cycling until you stop it.`
+          ? `${tonePaused ? "Paused" : "Playing"} ${selectedTone.label}${presetMinutes > 0 ? ` / ${presetMinutes}m timer` : " / unlimited"}. Use Pause, Continue, or Stop any time.`
           : `Tone ${selectedToneIndex + 1} of ${mindRelaxingToneModes.length}. Tap any tone to switch.`}
       </Text>
       <View style={styles.toneLibraryGrid}>
@@ -13895,6 +15331,7 @@ function ToneLibrarySection({
               onPress={() => {
                 setSelectedToneId(toneMode.id);
                 setLoopEnabled(false);
+                setTonePaused(false);
               }}
               style={({ pressed }) => [
                 styles.toneLibraryCard,
@@ -13930,6 +15367,8 @@ function ToneLibrarySection({
                   accessibilityRole="button"
                   onPress={() => {
                     setSelectedToneId(toneMode.id);
+                    setLoopEnabled(false);
+                    setTonePaused(false);
                     void playRelaxingToneCue(toneMode);
                   }}
                   style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
@@ -13953,6 +15392,7 @@ function ToneLibrarySection({
                 onPress={() => {
                   setSelectedToneId(toneMode.id);
                   setLoopEnabled(false);
+                  setTonePaused(false);
                 }}
                 style={({ pressed }) => [
                   styles.toneLibraryCard,
@@ -13988,6 +15428,8 @@ function ToneLibrarySection({
                     accessibilityRole="button"
                     onPress={() => {
                       setSelectedToneId(toneMode.id);
+                      setLoopEnabled(false);
+                      setTonePaused(false);
                       void playRelaxingToneCue(toneMode);
                     }}
                     style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
@@ -14082,12 +15524,11 @@ function MeditationSection({
       <View style={styles.beaconXRouteBand}>
         <View style={styles.beaconXRouteHeader}>
           <View style={styles.beaconXRouteHeaderCopy}>
-            <Text style={styles.beaconXRouteTitle}>After meditation, choose the real route</Text>
+            <Text style={styles.beaconXRouteTitle}>Continue your journey</Text>
             <Text style={styles.beaconXRouteMeta}>
-              Do one practice, then move to the channel that actually resolves or records the issue.
+              After this practice, choose the next step that fits your situation.
             </Text>
           </View>
-          <Text style={styles.smallMeta}>No dead end</Text>
         </View>
         <View style={styles.beaconXRouteGrid}>
           {objectiveRouteCards.map((card) => (
@@ -14394,7 +15835,7 @@ function AIHelpSection({
         <View>
           <Text style={[styles.eyebrow, compact && styles.aiHelpEyebrowCompact]}>Beacon Guide</Text>
           <Text style={[styles.sectionTitleSmall, compact && styles.aiHelpTitleCompact]}>
-            One problem, one clear route
+            Every dimension. One clear next step.
           </Text>
         </View>
         <Text style={[styles.smallMeta, compact && styles.aiHelpMetaCompact]} numberOfLines={1}>
@@ -14613,7 +16054,7 @@ function AIHelpSection({
       </View>
       {!isWide ? (
         <Text style={[styles.smallMeta, styles.aiHelpFooterNoteCompact]}>
-          The reply opens the right tab after it lands.
+          Your response will open the most relevant section.
         </Text>
       ) : null}
     </View>
@@ -14856,6 +16297,22 @@ function CommunitySection({
             {communityVerifiedCount} verified voices / {communityReports.length} reports
           </Text>
         </View>
+        {/* ── How to use this section ── */}
+        <View style={{ backgroundColor: "#071220", borderRadius: 12, padding: 14, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: "#63DED0" }}>
+          <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, marginBottom: 6 }}>HOW TO USE COMMUNITY</Text>
+          <Text style={{ color: "#94A3B8", fontSize: 13, lineHeight: 20, marginBottom: 4 }}>
+            {"1. Read the feed — see what others in similar situations are sharing. Tap a post to save or report it."}
+          </Text>
+          <Text style={{ color: "#94A3B8", fontSize: 13, lineHeight: 20, marginBottom: 4 }}>
+            {"2. Use the chat — drop a short message to the group. Keep it to one issue and stay supportive."}
+          </Text>
+          <Text style={{ color: "#94A3B8", fontSize: 13, lineHeight: 20, marginBottom: 4 }}>
+            {"3. Open a private room — create a safe space with one or two trusted people. Only members you invite can see it."}
+          </Text>
+          <Text style={{ color: "#475569", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
+            All content is moderated. Share only what you are comfortable making visible to verified members.
+          </Text>
+        </View>
         {/* ── Crisis safety notice ── */}
         <View style={styles.communityCrisisNotice}>
           <Text style={styles.communityCrisisNoticeText}>
@@ -14933,6 +16390,13 @@ function CommunitySection({
           {[
             { id: "all", label: "All topics" },
             { id: "general", label: "General" },
+            { id: "grief", label: "Grief" },
+            { id: "trauma", label: "Trauma" },
+            { id: "addiction", label: "Recovery" },
+            { id: "relationships", label: "Relationships" },
+            { id: "financial", label: "Financial" },
+            { id: "parenting", label: "Parenting" },
+            { id: "identity", label: "Identity" },
             { id: "student", label: "Student" },
             { id: "care", label: "Care" },
             { id: "work", label: "Work" },
@@ -17662,6 +19126,8 @@ function SettingsSection({
   setNotifVedicEnabled,
   notifReengageEnabled,
   setNotifReengageEnabled,
+  notifWellbeingEnabled,
+  setNotifWellbeingEnabled,
   verificationDeliveryMode,
   accessName,
   profilePhone,
@@ -17707,6 +19173,8 @@ function SettingsSection({
   setNotifVedicEnabled: (value: boolean) => void;
   notifReengageEnabled: boolean;
   setNotifReengageEnabled: (value: boolean) => void;
+  notifWellbeingEnabled: boolean;
+  setNotifWellbeingEnabled: (value: boolean) => void;
   emergencyNumber: string;
   setEmergencyNumber: (value: string) => void;
   supportLocality: string;
@@ -18225,7 +19693,7 @@ function SettingsSection({
         <Text style={styles.promptText}>
           {followUpChoice.id === "off"
             ? "No weekly follow-up series is active."
-            : `The app will come back for ${followUpChoice.weeks} weeks after the selected issue to keep the loop alive.`}
+            : `A follow-up check-in will run for ${followUpChoice.weeks} weeks after the selected issue to keep the loop alive.`}
         </Text>
         <Text style={styles.smallMeta}>
           Follow-up alerts are scheduled automatically once this is turned on.
@@ -18289,6 +19757,13 @@ function SettingsSection({
           meta="One-shot reminder if you step away for 3 days"
           value={notifReengageEnabled}
           onValueChange={setNotifReengageEnabled}
+          disabled={reminderAccess === "unsupported" || reminderAccess === "denied"}
+        />
+        <PreferenceRow
+          label="Wellbeing check-ins (3× daily)"
+          meta="Morning (8 am), afternoon (1 pm) and evening (7 pm) nudges to log your state"
+          value={notifWellbeingEnabled}
+          onValueChange={setNotifWellbeingEnabled}
           disabled={reminderAccess === "unsupported" || reminderAccess === "denied"}
         />
       </View>
@@ -18644,8 +20119,11 @@ function BirthChartSection({
   profileDOB,
   profileBirthTime,
   profileBirthPlace,
-  onOpenProfile,
+  setProfileDOB,
+  setProfileBirthTime,
+  setProfileBirthPlace,
   onOpenHome,
+  selectedIssueGuide,
 }: {
   rashiInfo: ReturnType<typeof getVedicRashiFromDOB> | null;
   predictionLines: string[] | null;
@@ -18658,87 +20136,228 @@ function BirthChartSection({
   profileDOB: string;
   profileBirthTime: string;
   profileBirthPlace: string;
-  onOpenProfile: () => void;
+  setProfileDOB: (v: string) => void;
+  setProfileBirthTime: (v: string) => void;
+  setProfileBirthPlace: (v: string) => void;
   onOpenHome: () => void;
+  selectedIssueGuide: IssueGuide;
 }) {
+  const [dobDraft, setDobDraft] = useState(profileDOB);
+  const [timeDraft, setTimeDraft] = useState(profileBirthTime);
+  const [placeDraft, setPlaceDraft] = useState(profileBirthPlace);
+  const [saved, setSaved] = useState(false);
+
   const hasReading = !!rashiInfo && !!predictionLines;
-  const hasExactBirthDetails =
-    /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
-    /^\d{2}:\d{2}$/.test(profileBirthTime) &&
-    profileBirthPlace.trim().length > 0;
+  const isValidDOB = /^\d{4}-\d{2}-\d{2}$/.test(dobDraft);
+  const isValidTime = /^\d{2}:\d{2}$/.test(timeDraft);
+  const isValidPlace = placeDraft.trim().length > 0;
+
+  // Lagna computed from saved birth time
+  const lagnaInfo = rashiInfo ? getLagnaFromBirthDetails(rashiInfo.rashiId, profileBirthTime) : null;
+  // Cosmic issue guidance connecting Vedic reading to current issue dimension
+  const cosmicIssueGuidance = rashiInfo ? getVedicIssueGuidance(selectedIssueGuide.id, rashiInfo.rashiId) : null;
+  // Samvatsara from birth year
+  const birthYearNum = profileDOB ? parseInt(profileDOB.split("-")[0], 10) : null;
+  const samvatsaraInfo = birthYearNum && !isNaN(birthYearNum) ? getVedicSamvatsara(birthYearNum) : null;
+  const hasExactBirthDetails = isValidDOB && isValidTime && isValidPlace;
+
+  function handleSave() {
+    if (isValidDOB) setProfileDOB(dobDraft.trim());
+    if (isValidTime) setProfileBirthTime(timeDraft.trim());
+    setProfileBirthPlace(placeDraft.trim());
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
 
   return (
     <View style={styles.birthChartPage}>
+      {/* Header */}
       <View style={[styles.tabBannerCard, { backgroundColor: "#241640" }]}>
         <Text style={styles.tabBannerEmoji}>🪐</Text>
         <View style={styles.tabBannerText}>
           <Text style={styles.tabBannerTitle}>Birth Chart</Text>
-          <Text style={styles.tabBannerSub}>Optional Vedic Jyotish reading based on your exact birth details</Text>
+          <Text style={styles.tabBannerSub}>Vedic Jyotish reading — enter your exact birth details below</Text>
         </View>
       </View>
 
-      <View style={styles.birthChartIntroCard}>
-        <Text style={styles.birthChartIntroTitle}>A separate page for horoscope analysis.</Text>
-        <Text style={styles.birthChartIntroText}>
-          This page stays fully separate from Reset, complaint handling, or counselling flows. It focuses only on horoscope data, chart markers, and astro analysis. For an exact reading, keep your date, time, and place of birth on file in Profile.
+      {/* Inline birth detail inputs */}
+      <View style={{
+        backgroundColor: "#0D1A2E", borderRadius: 16, padding: 18, gap: 14,
+        borderWidth: 1, borderColor: "rgba(99,222,208,0.2)"
+      }}>
+        <Text style={{ color: "#F0F9FF", fontSize: 17, fontWeight: "900", marginBottom: 2 }}>
+          Enter your birth details
         </Text>
-        <View style={styles.birthChartIntroMetaRow}>
-          <View style={[styles.birthChartIntroMetaChip, hasExactBirthDetails && styles.birthChartIntroMetaChipActive]}>
-            <Text style={[styles.birthChartIntroMetaChipLabel, hasExactBirthDetails && styles.birthChartIntroMetaChipLabelActive]}>
-              {hasExactBirthDetails ? "Exact birth details saved" : "Exact birth details needed"}
-            </Text>
-          </View>
+
+        {/* Date of birth */}
+        <View style={{ gap: 6 }}>
+          <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            Date of birth (YYYY-MM-DD)
+          </Text>
+          <TextInput
+            value={dobDraft}
+            onChangeText={setDobDraft}
+            placeholder="e.g. 1990-07-15"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            keyboardType="numeric"
+            maxLength={10}
+            style={{
+              backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
+              borderColor: isValidDOB ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+              color: "#F0F9FF", fontSize: 16, padding: 13
+            }}
+          />
+          {dobDraft.length > 0 && !isValidDOB && (
+            <Text style={{ color: "#F37B64", fontSize: 11 }}>Use format YYYY-MM-DD, e.g. 1990-07-15</Text>
+          )}
         </View>
-        <View style={styles.birthChartIntroActions}>
-          <Pressable
-            accessibilityRole="button"
-            onPress={onOpenProfile}
-            style={({ pressed }) => [styles.birthChartIntroButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.birthChartIntroButtonLabel}>Complete profile</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            onPress={onOpenHome}
-            style={({ pressed }) => [styles.birthChartIntroButtonSecondary, pressed && styles.pressed]}
-          >
-            <Text style={styles.birthChartIntroButtonSecondaryLabel}>Back to Home</Text>
-          </Pressable>
+
+        {/* Birth time */}
+        <View style={{ gap: 6 }}>
+          <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            Birth time — 24-hour format (HH:MM)
+          </Text>
+          <TextInput
+            value={timeDraft}
+            onChangeText={setTimeDraft}
+            placeholder="e.g. 14:30 (2:30 PM)"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            keyboardType="numeric"
+            maxLength={5}
+            style={{
+              backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
+              borderColor: isValidTime ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+              color: "#F0F9FF", fontSize: 16, padding: 13
+            }}
+          />
+          {timeDraft.length > 0 && !isValidTime && (
+            <Text style={{ color: "#F37B64", fontSize: 11 }}>Use 24-hour format HH:MM, e.g. 14:30</Text>
+          )}
+        </View>
+
+        {/* Birth place */}
+        <View style={{ gap: 6 }}>
+          <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            Place of birth (City, State, Country)
+          </Text>
+          <TextInput
+            value={placeDraft}
+            onChangeText={setPlaceDraft}
+            placeholder="e.g. Mumbai, Maharashtra, India"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            style={{
+              backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
+              borderColor: isValidPlace ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+              color: "#F0F9FF", fontSize: 16, padding: 13
+            }}
+          />
+        </View>
+
+        {/* Save button */}
+        <Pressable
+          accessibilityRole="button"
+          onPress={handleSave}
+          style={({ pressed }) => ({
+            backgroundColor: saved ? "#0E6F69" : pressed ? "#0E4A46" : "#0F3D5E",
+            borderRadius: 12, paddingVertical: 14, alignItems: "center",
+            borderWidth: 1, borderColor: saved ? "#22D3EE" : "rgba(99,222,208,0.3)"
+          })}
+        >
+          <Text style={{ color: saved ? "#22D3EE" : "#63DED0", fontSize: 16, fontWeight: "900" }}>
+            {saved ? "✓ Saved" : "Save & Analyse"}
+          </Text>
+        </Pressable>
+
+        {/* Status chip */}
+        <View style={{
+          flexDirection: "row", alignItems: "center", gap: 8,
+          backgroundColor: hasExactBirthDetails ? "rgba(14,111,105,0.15)" : "rgba(255,255,255,0.04)",
+          borderRadius: 8, padding: 10
+        }}>
+          <Text style={{ fontSize: 14 }}>{hasExactBirthDetails ? "✅" : "⏳"}</Text>
+          <Text style={{ color: hasExactBirthDetails ? "#22D3EE" : "rgba(255,255,255,0.45)", fontSize: 13, fontWeight: "700" }}>
+            {hasExactBirthDetails
+              ? "All details complete — reading generated below"
+              : "Enter all three fields above for your full reading"}
+          </Text>
         </View>
       </View>
 
-      <View style={styles.birthChartExactCard}>
-        <View style={styles.birthChartExactHeader}>
-          <Text style={styles.birthChartExactTitle}>Horoscope data analyzer</Text>
-          <Text style={styles.birthChartExactBadge}>{hasExactBirthDetails ? "Exact" : "Incomplete"}</Text>
-        </View>
-        <View style={styles.birthChartExactGrid}>
-          {[
-            { label: "Date", value: profileDOB || "Add date" },
-            { label: "Time", value: profileBirthTime || "Add time" },
-            { label: "Place", value: profileBirthPlace || "Add place" },
-            { label: "Rashi", value: rashiInfo?.rashi.name ?? "Pending" },
-            { label: "Nakshatra", value: janmaNakshatra?.name ?? "Pending" }
-          ].map((item) => (
-            <View key={item.label} style={styles.birthChartExactChip}>
-              <Text style={styles.birthChartExactChipLabel}>{item.label}</Text>
-              <Text style={styles.birthChartExactChipValue} numberOfLines={2}>
-                {item.value}
+      {/* Analysis summary (shows after save) */}
+      {hasExactBirthDetails && (
+        <View style={{ backgroundColor: "#0D1520", borderRadius: 14, padding: 16, gap: 12, borderWidth: 1, borderColor: "rgba(99,222,208,0.25)" }}>
+          <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Your Vedic Birth Profile</Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+            {[
+              { label: "Date of Birth", value: profileDOB },
+              { label: "Birth Time", value: profileBirthTime },
+              { label: "Birth Place", value: profileBirthPlace },
+              { label: "Rashi (Sun sign)", value: rashiInfo ? `${rashiInfo.rashi.name} (${rashiInfo.rashi.en})` : "—" },
+              { label: "Lagna / Ascendant", value: lagnaInfo ? `${lagnaInfo.lagna.name} (${lagnaInfo.lagna.en})` : "Enter birth time" },
+              { label: "Janma Nakshatra", value: janmaNakshatra ? `${janmaNakshatra.name} · ${janmaNakshatra.lord}` : "—" },
+              { label: "Birth Period", value: lagnaInfo?.lagnaLabel ?? "—" },
+              { label: "Samvatsara (60-yr cycle)", value: samvatsaraInfo ? `${samvatsaraInfo.name} (#${samvatsaraInfo.index + 1})` : "Enter date of birth" },
+            ].map((item) => (
+              <View key={item.label} style={{ backgroundColor: "#071820", borderRadius: 8, padding: 10, minWidth: 90, flex: 1 }}>
+                <Text style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, fontWeight: "800", textTransform: "uppercase" }}>{item.label}</Text>
+                <Text style={{ color: "#E8F4F0", fontSize: 13, fontWeight: "800", marginTop: 2 }} numberOfLines={2}>{item.value}</Text>
+              </View>
+            ))}
+          </View>
+          {lagnaInfo && (
+            <View style={{ backgroundColor: "#0A2535", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(99,222,208,0.2)" }}>
+              <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
+                Lagna Analysis — {lagnaInfo.lagna.name} ({lagnaInfo.lagna.en})
+              </Text>
+              <Text style={{ color: "#E8F4F0", fontSize: 13, lineHeight: 20 }}>
+                Your Lagna (Rising Sign) is <Text style={{ fontWeight: "900", color: "#63DED0" }}>{lagnaInfo.lagna.name}</Text>, ruled by <Text style={{ fontWeight: "800" }}>{lagnaInfo.lagna.lord}</Text>.
+                The Lagna shows how you project yourself to the world and how you approach life's challenges.
+                Element: {lagnaInfo.lagna.element}. Nature: {lagnaInfo.lagna.nature}.
+              </Text>
+              <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
+                Note: This is an approximate Lagna based on birth time. For exact Lagna, consult a certified Jyotishi with your precise birth coordinates.
               </Text>
             </View>
-          ))}
+          )}
+          {/* Samvatsara (60-year Jupiter cycle) panel */}
+          {samvatsaraInfo && (
+            <View style={{ backgroundColor: "#0C1A2E", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(251,191,36,0.25)" }}>
+              <Text style={{ color: "#FBBF24", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
+                🪐 Samvatsara — Your Birth Year Cycle
+              </Text>
+              <Text style={{ color: "#E8F4F0", fontSize: 14, fontWeight: "900", marginBottom: 4 }}>
+                {samvatsaraInfo.name} <Text style={{ fontSize: 12, fontWeight: "600", color: "#FBBF24" }}>(Cycle #{samvatsaraInfo.index + 1} of 60)</Text>
+              </Text>
+              <Text style={{ color: "#E8F4F0", fontSize: 13, lineHeight: 20 }}>
+                The Samvatsara is the Vedic 60-year Jupiter cycle — each year has a unique cosmic name and life-theme inscribed at birth.{"\n"}
+                <Text style={{ fontWeight: "900", color: "#63DED0" }}>Your birth-year theme: </Text>{samvatsaraInfo.theme}.
+              </Text>
+              <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
+                This Samvatsara shapes your core life-script and soul-purpose tendencies as recorded in Jyotish.
+              </Text>
+            </View>
+          )}
+          {/* Cosmic Issue Guidance — connects current issue to Vedic reading */}
+          {cosmicIssueGuidance && (
+            <View style={{ backgroundColor: "#16082B", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(126,111,214,0.3)" }}>
+              <Text style={{ color: "#A78BFA", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
+                🪐 Cosmic guidance for {selectedIssueGuide.label}
+              </Text>
+              <Text style={{ color: "#E8F4F0", fontSize: 13, lineHeight: 20 }}>{cosmicIssueGuidance}</Text>
+            </View>
+          )}
         </View>
-      </View>
+      )}
 
       <View style={styles.birthChartGeminiCard}>
         <View style={styles.birthChartGeminiHeader}>
-          <Text style={styles.birthChartGeminiTitle}>Gemini horoscope analysis</Text>
-          <Text style={styles.birthChartGeminiBadge}>{geminiHoroscopeLoading ? "Reading" : "Ready"}</Text>
+          <Text style={styles.birthChartGeminiTitle}>AI Horoscope Analysis</Text>
+          <Text style={styles.birthChartGeminiBadge}>{geminiHoroscopeLoading ? "Reading…" : hasExactBirthDetails ? "Ready" : "Waiting"}</Text>
         </View>
         <Text style={styles.birthChartGeminiText}>
           {geminiHoroscopeLoading
-            ? "Reading your exact birth details through Gemini..."
-            : geminiHoroscope ?? "Complete your birth details to unlock the Gemini horoscope analysis."}
+            ? "Analysing your birth details…"
+            : geminiHoroscope ?? (hasExactBirthDetails ? "Tap 'Save & Analyse' above to generate your reading." : "Enter date, time, and place of birth above to unlock your horoscope analysis.")}
         </Text>
       </View>
 
@@ -18754,7 +20373,7 @@ function BirthChartSection({
       ) : (
         <Pressable
           style={styles.vedicSetupPrompt}
-          onPress={onOpenProfile}
+          onPress={onOpenHome}
           accessibilityRole="button"
           accessibilityLabel="Open profile to add birth details"
         >
@@ -18771,10 +20390,12 @@ function BirthChartSection({
 
       <View style={styles.birthChartFactGrid}>
         {[
-          "Date, time, and place of birth",
-          "Rashi and Janma Nakshatra",
-          "Gemini horoscope analysis",
-          "Optional, device-only astro analysis",
+          "Sidereal Rashi (Sun sign)",
+          "Lagna / Ascendant from birth time",
+          "Janma Nakshatra (approximate)",
+          "Tithi, Vara, Moon Nakshatra daily",
+          "Cosmic guidance for your issue",
+          "AI horoscope analysis",
         ].map((item) => (
           <View key={item} style={styles.birthChartFactChip}>
             <Text style={styles.birthChartFactChipText}>{item}</Text>
@@ -19711,7 +21332,7 @@ function AccessOverlay({
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
           <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Birth details</Text>
           <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-            Add date, time, and place of birth for the most exact Jyotish reading. Stored only on your device.
+            Add exact birth date, 24-hour birth time, and full birth place. Horoscope analysis stays locked until all three are precise.
           </Text>
           <TextInput
             value={profileDOB}
@@ -19720,7 +21341,7 @@ function AccessOverlay({
               const cleaned = t.replace(/[^0-9-]/g, "").slice(0, 10);
               setProfileDOB(cleaned);
             }}
-            placeholder="YYYY-MM-DD  (e.g. 1990-06-15)"
+            placeholder="Birth date: YYYY-MM-DD"
             placeholderTextColor="#9A8F82"
             keyboardType="numbers-and-punctuation"
             maxLength={10}
@@ -19732,7 +21353,7 @@ function AccessOverlay({
               const cleaned = t.replace(/[^0-9:]/g, "").slice(0, 5);
               setProfileBirthTime(cleaned);
             }}
-            placeholder="HH:MM  (e.g. 14:35)"
+            placeholder="Exact birth time: HH:MM, 24-hour"
             placeholderTextColor="#9A8F82"
             keyboardType="numbers-and-punctuation"
             maxLength={5}
@@ -19741,7 +21362,7 @@ function AccessOverlay({
           <TextInput
             value={profileBirthPlace}
             onChangeText={setProfileBirthPlace}
-            placeholder="City, district, or hospital"
+            placeholder="Birth place: city, district, state, country"
             placeholderTextColor="#9A8F82"
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
@@ -20255,7 +21876,7 @@ function OnboardingOverlay({
                   <Text style={styles.onboardingButtonSecondaryLabel}>Exit</Text>
                 </Pressable>
               </View>
-              <Text style={styles.smallMeta}>The app will switch to the right tab after you tap a path.</Text>
+              <Text style={styles.smallMeta}>Tap a path to go there directly.</Text>
             </View>
           </>
         ) : null}
@@ -20489,6 +22110,830 @@ const PRIMARY_NAV_TABS: Array<{ id: TabId | "more"; label: string; icon: string 
   { id: "settings", label: "Profile",  icon: "👤" },
 ];
 
+// ─────────────────────────────────────────────────────────────────────────────
+// COUNSELING ENGINE — multi-turn empathetic conversation before routing
+// ─────────────────────────────────────────────────────────────────────────────
+
+type CounselingStage = "listening" | "questioning" | "synthesizing" | "done";
+
+interface CounselingTurn {
+  role: "friend" | "user";
+  message: string;
+}
+
+interface JourneyStep {
+  tabId: TabId;
+  label: string;
+  emoji: string;
+  reason: string;
+  completed: boolean;
+  skipped: boolean;
+}
+
+interface CounselingSession {
+  stage: CounselingStage;
+  originalIssue: string;
+  turns: CounselingTurn[];
+  questionIndex: number;
+  detectedThemes: string[];
+  journeySteps: JourneyStep[];
+}
+
+function detectThemes(text: string): string[] {
+  const t = text.toLowerCase();
+  const themes: string[] = [];
+
+  // Self-image / body / appearance / self-worth
+  if (/(look|appear|ugly|unattractive|body image|my body|face|skin|complexion|fat|weight|how i look|self.esteem|self.worth|self.image|self.confidence|insecur|ashamed|embarrassed|not good looking)/.test(t)) themes.push("self-image");
+
+  // Grief / loss
+  if (/(grief|griev|mourn|bereaved|bereavement|lost someone|someone died|passed away|death of|loss of|they died|she died|he died|miss them|miss him|miss her)/.test(t)) themes.push("grief");
+
+  // Trauma / abuse
+  if (/(trauma|ptsd|flashback|abuse|abused|assault|assaulted|molested|domestic violence|childhood abuse|violated|sexual harassment|rape)/.test(t)) themes.push("trauma");
+
+  // Addiction / compulsion
+  if (/(addict|addiction|alcoholic|alcohol problem|drug|substance abuse|gambling|can't stop drinking|can't stop using|compulsive|habit|cravings|rehab|detox)/.test(t)) themes.push("addiction");
+
+  // Academic pressure
+  if (/(exam|study|marks|grades|academic|school pressure|college pressure|university|fail|failing|result|boards|entrance test|tuition|syllabus|assignment)/.test(t)) themes.push("academic");
+
+  // Financial stress
+  if (/(financial|money problem|debt|broke|bankrupt|loan|can't pay|rent|afford|salary cut|lost my job|job loss|fired|laid off|redundant|unemployed|expenses)/.test(t)) themes.push("financial");
+
+  // Health / illness
+  if (/(illness|sick|chronic|diagnosis|diagnosed|cancer|heart|disease|disability|chronic pain|medical|health anxiety|doctor said|hospital|treatment|medication)/.test(t)) themes.push("health");
+
+  // Parenting
+  if (/(my child|my son|my daughter|my kids|my baby|parenting|new parent|postpartum|toddler|teenager|teen behaviour|child behaviour|raising kids)/.test(t)) themes.push("parenting");
+
+  // Relationship / romantic
+  if (/(relationship|marriage|divorce|separation|breakup|broke up|cheating|affair|my wife|my husband|wife|husband|my partner|my boyfriend|my girlfriend|love life|romantic|couple|trust issues|infidelity)/.test(t)) themes.push("relationship");
+
+  // Unappreciated / invisible
+  if (/(ignor|unappreciat|not valued|not noticed|not seen|invisible|unwanted|no one cares|nobody cares|not recognised|not recognized|not appreciated|efforts not|work not recognized|taken for granted|overlooked)/.test(t)) themes.push("unappreciated");
+
+  // Work / career
+  if (/(work|office|senior|boss|manager|colleague|job|workplace|career|promotion|salary|professional)/.test(t)) themes.push("work");
+
+  // Home / family
+  if (/(home|wife|husband|family|spouse|partner|parent|children|kids|relatives|sibling|brother|sister|in.law|household)/.test(t)) themes.push("home-family");
+
+  // Anger
+  if (/(anger|angry|rage|furious|irritat|frustrat|mad|temper|losing it|hot.headed)/.test(t)) themes.push("anger");
+
+  // Anxiety / panic / stress
+  if (/(anxious|anxiety|worry|stressed|overwhelmed|panic|nervous|overthinking|racing thoughts|pit in my stomach|can't relax)/.test(t)) themes.push("anxiety");
+
+  // Sadness / depression
+  if (/(sad|depress|hopeless|numb|empty|hollow|low mood|no joy|can't feel anything|nothing matters|pointless)/.test(t)) themes.push("sadness");
+
+  // Burnout / exhaustion
+  if (/(burnout|exhaust|tired|drain|collapse|overworked|no energy|running on empty|depleted|too much)/.test(t)) themes.push("burnout");
+
+  // Loneliness / isolation
+  if (/(lonely|alone|isolated|no friend|no one to talk|cut off|disconnected|left out|no one listens|feel alone|completely alone)/.test(t)) themes.push("loneliness");
+
+  // Safety / harassment / bullying
+  if (/(harass|bully|ragging|threaten|abuse|violence|unsafe|intimidat|coercion|danger|blackmail|extort)/.test(t)) themes.push("safety");
+
+  // Fear / phobia
+  if (/(fear|fearful|scared|afraid|phobia|terrified|dread|coward)/.test(t)) themes.push("fear");
+
+  // Identity / direction / purpose
+  if (/(confus|lost|don't know|not sure|unclear|direction|purpose|meaningless|identity|who am i|lost myself|existential|what should i do|what's the point)/.test(t)) themes.push("direction");
+
+  return themes;
+}
+
+/**
+ * Supreme-level adaptive counseling question builder.
+ * 7 questions per theme — covers all emotional, practical, relational,
+ * physical, existential dimensions. Branches across themes for turns 3-5.
+ */
+function buildCounselingQuestions(themes: string[], turnIndex: number, allUserText?: string): string {
+  // ── Full 7-question banks for every theme ─────────────────────────────────
+  const byTheme: Record<string, string[]> = {
+    "self-image": [
+      "Tell me more — when did this feeling about your appearance or how you see yourself start feeling this heavy? Was there a particular moment, or has it been quietly building?",
+      "How much space does this thought take up in your average day? Are there specific things you avoid — like photos, mirrors, social events — because of how you feel about yourself?",
+      "Has someone said something to you at some point — a comment, a comparison, a look — that stuck with you and still plays in your head?",
+      "Does this feeling affect just how you see yourself physically, or does it bleed into how worthy you feel in general — in relationships, at work, in life?",
+      "On days when this feeling is really loud, what does it stop you from doing? And what do you do to get through those moments?",
+      "Is there a version of yourself you imagine — one you wish you could be — or is it more that you just want relief from the critic in your head?",
+      "Have you ever spoken to anyone about this — a friend, family member, or professional — or have you been carrying it completely alone?"
+    ],
+    "grief": [
+      "I am so sorry for what you are carrying. Can you tell me a little about the person or the thing you have lost — what did they mean to you?",
+      "How long ago did this happen? And how have the days been since — has anything changed in how the grief sits with you, or does it feel the same?",
+      "Grief often comes in unexpected waves. What has been the hardest part — certain times of day, specific places, things that remind you of them?",
+      "Are the people around you acknowledging your loss, or does it feel like everyone has moved on while you are still in it?",
+      "Have you been able to eat, sleep, or take care of yourself in the basic ways? Sometimes grief hits the body before it hits the mind.",
+      "Is there anything — a ritual, a memory, a conversation you wish you had had — that feels unfinished or unsaid?",
+      "What would feel most helpful right now — to be heard, to have practical support, or something else entirely?"
+    ],
+    "trauma": [
+      "Thank you for trusting me with this. You do not need to share more than you are comfortable with — can you tell me at a broad level what happened, or how long ago it was?",
+      "How much of your day-to-day life is it touching right now — are there things you avoid, or moments where it comes back uninvited?",
+      "Have you ever had any support around this — a therapist, a trusted person, anyone — or have you been managing it alone?",
+      "Does your body hold it — tension, reactivity, trouble sleeping, moments of feeling frozen or unsafe even when you are not in actual danger?",
+      "Are there people in your life who know what you went through? And do they treat you with the care you deserve around it?",
+      "How safe do you feel right now — physically and emotionally — in your current environment?",
+      "What feels most important to you as a next step — being heard, understanding what is happening in you, or getting professional guidance?"
+    ],
+    "addiction": [
+      "It takes real courage to look this directly at something. How long has this pattern been part of your life, and when did you start noticing it had become a problem?",
+      "What does the pull feel like for you — is it about escaping something, feeling something, numbing something, or has it become automatic?",
+      "When you try to stop or cut back, what happens? What does that struggle look like for you?",
+      "Has this affected your relationships, your work, your health, or your sense of who you are?",
+      "Is there anyone in your life who knows the full extent of this — someone you can be completely honest with?",
+      "Have you tried to stop before? What happened, and what did you learn from that?",
+      "What feels like the biggest obstacle to change right now — is it the urge itself, the environment around you, or something else underneath it all?"
+    ],
+    "academic": [
+      "Tell me about the pressure you are feeling — is it centred on one exam or subject, or does it feel like the whole system is bearing down on you?",
+      "How long have you been feeling this way about your studies? Was there a specific moment — a result, a comparison, a comment — that triggered it?",
+      "How is it showing up in your body — trouble sleeping, eating, concentrating? Sometimes academic stress lives in the body before it becomes a clear thought.",
+      "Are the expectations primarily coming from your family, from yourself, from your institution, or all three at once?",
+      "Have you spoken to a teacher, a counsellor, or a classmate about what is going on? Or does it feel safer to manage it privately?",
+      "How do you feel about your own ability — do you believe you can do this, or has the pressure started to make you doubt yourself in a deeper way?",
+      "If you imagine passing through this exam or this period — what would you want your life to look like on the other side?"
+    ],
+    "financial": [
+      "Financial pressure touches everything — sleep, relationships, sense of self. Can you tell me what the core of the situation is right now — is it debt, income, a sudden loss, ongoing shortfall?",
+      "How long have you been under this strain? And is it getting worse, stable, or slowly improving?",
+      "How is it affecting the rest of your life — your relationships, your mental state, your ability to focus on other things?",
+      "Is this something others around you know about, or are you carrying it privately while appearing fine on the outside?",
+      "Have you been able to speak to anyone — a financial advisor, a trusted person, an institution — about what you are facing?",
+      "Beyond the practical numbers, what is it doing to how you feel about yourself? Financial stress often carries shame alongside it.",
+      "If one thing could change — even partially — in your financial situation, what would make the biggest difference to your daily life?"
+    ],
+    "health": [
+      "Tell me about what is going on with your health — is this something you have been dealing with for a while, or is it new and uncertain?",
+      "How much of your mental and emotional energy is the health concern taking up each day?",
+      "Are you getting the medical support you need? Is the challenge the physical condition itself, or is it the fear and uncertainty around it?",
+      "How is this affecting your relationships, your work, and your sense of who you are?",
+      "Do you feel like the people around you understand what you are going through — or does it feel like you are managing it largely on your own?",
+      "Is the hardest part the physical symptoms, the uncertainty of what is coming, or the way it is changing your identity and sense of the future?",
+      "What kind of support would feel most helpful right now — practical guidance, emotional relief, or someone who simply listens without rushing to fix?"
+    ],
+    "parenting": [
+      "Tell me about what is happening with your child or your parenting situation — what is the central challenge right now?",
+      "Is this something that has been building over time, or did something happen recently that brought things to a head?",
+      "How is this affecting you — not just the situation itself, but how you feel about yourself as a parent?",
+      "What does your support system look like? Do you have a partner, family, or community who is sharing this with you — or are you largely doing this alone?",
+      "Is this affecting your relationship with your child, your partner, or both? How would you describe the atmosphere at home right now?",
+      "Have you spoken to a paediatrician, a school counsellor, a parenting coach, or anyone else about what you are facing?",
+      "What do you think your child needs most from you right now — and what do *you* need, to be able to give that?"
+    ],
+    "relationship": [
+      "Tell me what is happening in this relationship — is this a pattern that has built over time, or something that happened recently that changed things?",
+      "How long have you been in this relationship, and when did you first feel that something was wrong?",
+      "What does the dynamic feel like right now — distant, angry, painful, confusing, or something else?",
+      "Is this affecting other areas of your life — your sleep, your work, your connection to friends and family?",
+      "Have you been able to talk directly to this person about what you are feeling? And if so, how did that go?",
+      "Do you feel safe — emotionally and physically — in this relationship? I want to ask that clearly.",
+      "What feels most needed right now — clarity about what you want, help communicating, support through a difficult decision, or something else?"
+    ],
+    "unappreciated": [
+      "That must feel exhausting — giving genuinely and having it go unnoticed. Is there one person specifically whose acknowledgment matters most to you right now, or is it more of a collective silence?",
+      "When you say you are not being appreciated — are people actively dismissing what you do, or is it more that they simply do not seem to notice at all? Those feel very different inside.",
+      "How long has this been going on? Was there a time when you felt seen, and then something changed?",
+      "Has this started affecting how much effort you put in, or how you feel about yourself — beyond just feeling frustrated?",
+      "Have you ever tried saying something — directly or indirectly — to the people involved? If so, what happened?",
+      "Is this situation making you question your own worth, or do you feel clear that the problem is with how others are responding?",
+      "What would acknowledgment actually look like for you — a specific word, an action, a change in how you are treated?"
+    ],
+    "work": [
+      "Tell me about your work situation. Is this about a specific incident that happened, or a pattern of experiences that has been building for a while?",
+      "How long have you been in this role, and when did things start feeling the way they do now?",
+      "How is this affecting your actual functioning at work — your focus, your energy, your willingness to show up?",
+      "Is the main source of difficulty a specific person, the nature of the work itself, or the overall environment and culture?",
+      "Have you spoken to anyone about this — a trusted colleague, an HR person, a mentor — or are you managing it on your own?",
+      "How is the work situation bleeding into the rest of your life — your evenings, your weekends, your relationships at home?",
+      "If you imagine an ideal outcome — what would need to change for you to feel okay at work again?"
+    ],
+    "home-family": [
+      "Home should be where you can breathe, but something is making that hard right now. Can you describe what the atmosphere at home feels like — is it tense, cold, chaotic, disconnected?",
+      "Is this tension with one specific person, or is it affecting how the whole household feels?",
+      "How long has it been like this? Was there a specific moment or event that shifted things, or has it gradually built?",
+      "How is it affecting you emotionally — are you able to relax at home at all, or does the stress follow you even when you are in your own space?",
+      "Do you feel like you can express how you are feeling to anyone in your family — or does it feel safer to keep it inside?",
+      "How is the home situation affecting your ability to function in other areas — your work, your friendships, your sense of yourself?",
+      "What would an improvement look like at home — not necessarily perfect, but a small shift that would make things noticeably better?"
+    ],
+    "anger": [
+      "Anger always has something underneath it. What do you think yours is really about — something that hurt you, something that feels deeply unfair, or something you feel you cannot control?",
+      "When the anger shows up, what does it feel like in your body — does it come on fast, or does it build slowly? And what tends to trigger it?",
+      "What do you do with it when it comes — do you express it, contain it, redirect it somewhere, or does it find its own way out?",
+      "Has this level of anger been around for a long time, or has something recently pushed it to a new intensity?",
+      "Is the anger getting in the way of your relationships or your work — are there consequences from it that are adding to the problem?",
+      "Underneath the anger — is there a fear, a pain, a loss, a sense of being treated unfairly, or a need that is not being met?",
+      "What would it feel like to not carry this anger in the way you are right now — and what might need to change to get there?"
+    ],
+    "anxiety": [
+      "Anxiety often has a shape — it is about something specific, or it floats and attaches to everything. What does yours feel most centred on right now?",
+      "Does it hit at specific times, around specific people or places, or does it feel like a constant background noise that never quite switches off?",
+      "How long has it been at this level? Has it always been part of your life, or did something shift it into a higher gear?",
+      "How is your sleep? And during the day — do you notice tension in your body, holding your breath, or a sense of dread you cannot fully name?",
+      "When anxiety peaks, what does it make you avoid? Are there things you are not doing because of it?",
+      "Is there a specific worst-case scenario your mind keeps returning to — something you are afraid will happen if things continue the way they are?",
+      "What has helped, even a little, in the past — what brings even a small amount of relief when it gets bad?"
+    ],
+    "sadness": [
+      "I want you to know that sadness this present is worth paying attention to. How long have you been carrying this feeling — days, weeks, longer?",
+      "Is there something specific underneath it — a loss, a disappointment, a situation — or does it feel more like a heaviness without a clear source?",
+      "How is it showing up physically — your sleep, your appetite, your energy to do the things you normally do?",
+      "Are there moments in the day when it lifts, even slightly, or does it feel fairly constant?",
+      "Do you have anyone around you who knows you are feeling this way — or are you presenting as fine while carrying this on the inside?",
+      "Has sadness like this visited you before? And if so, what helped you move through it?",
+      "Is there something you are quietly grieving — a version of your life, a relationship, a future you hoped for — that might be at the heart of this?"
+    ],
+    "burnout": [
+      "Burnout means you have been running on empty for longer than your system can sustain. When did you last feel genuinely rested — not just physically, but in your whole self?",
+      "What is the thing that drains you the most right now — is it the volume of demands, specific people, the feeling that nothing you do matters, or the complete absence of recovery time?",
+      "Are you getting *any* time that is purely for you — not productive, not for someone else's needs, just yours?",
+      "How is this affecting your relationships — do the people close to you know how depleted you are?",
+      "Is there a sense of meaning or purpose still in what you do — or has that faded too, along with the energy?",
+      "Has your body started expressing the burnout — illness, tension, pain, changes in appetite or sleep?",
+      "If something had to change to allow genuine recovery, what is the one thing that would make the most difference?"
+    ],
+    "loneliness": [
+      "Loneliness is not the same as being alone — you can be surrounded by people and still feel completely unseen. Which is it for you right now?",
+      "When did this feeling start? Was there a time in your life when connection felt easier or more available?",
+      "Is there one person — just one — who knows the real you right now? Or does everyone only get a version of you?",
+      "What does the loneliness feel like in your day — when is it loudest, and what does it make you want to do or avoid?",
+      "Have you tried to reach out or connect with people recently? What happened, or what stopped you?",
+      "Is part of the loneliness about not being understood — or is it more simply about the absence of people to be with?",
+      "What would feeling less alone look like for you — not the full picture, just one small thing that would make a real difference?"
+    ],
+    "safety": [
+      "Your safety is the most important thing. Can you tell me more about what has been happening — is this physical intimidation, emotional threats, or both?",
+      "How long has this been going on? And how frequent or intense is it?",
+      "Have you told anyone in a position of authority about this — at your institution, workplace, or home? And if not, what has stopped you?",
+      "Is there anywhere you feel completely safe right now — a person, a place — that you can go to when things feel dangerous?",
+      "Are you afraid of retaliation if you speak up — and has anyone threatened you or told you to stay silent?",
+      "Have any incidents been documented — reported, photographed, witnessed — or has it all stayed private so far?",
+      "What feels most important to you as a next step — protection right now, formal action, or understanding your options before you decide anything?"
+    ],
+    "fear": [
+      "Fear is protective — it is your system flagging something as dangerous. What is it that you are most afraid of right now?",
+      "Is this a fear of something specific and concrete, or is it more of a diffuse dread — a sense that something bad is coming without a clear form?",
+      "How long have you been living with this fear, and has it gotten bigger, smaller, or stayed the same?",
+      "How much is it shaping your behaviour — are there things you avoid, decisions you cannot make, or ways you are living smaller because of it?",
+      "Is there something from your past that this connects to — a time when something frightening actually happened — or does it feel like it does not have a clear root?",
+      "Do the people around you understand this fear, or does it feel too private or embarrassing to share?",
+      "If you could face this fear — or if it suddenly lifted — what would change about how you live your life?"
+    ],
+    "direction": [
+      "Feeling lost about where you are going is deeply unsettling. How long have you been feeling this way — and can you remember when you last felt a clear sense of direction?",
+      "Is it that you have too many options and cannot choose, or that nothing at all is calling to you right now?",
+      "What has changed recently — or over the past year or two — that may have shifted your sense of where you were headed?",
+      "Is this feeling about a specific domain — career, relationships, where to live — or does it feel like a bigger, more existential uncertainty?",
+      "What have you already tried or considered? And what stopped those things from feeling like the answer?",
+      "If someone you trusted deeply sat with you and asked you what you actually *want* — what would be the first honest thing you would say?",
+      "What would a sense of direction feel like for you — not the final destination, but just the feeling that you are moving in a right way?"
+    ]
+  };
+
+  const defaultQuestions = [
+    "Tell me more about this. I am here and I want to understand — not just give you an answer, but really get what is going on for you right now.",
+    "How long has this been weighing on you? And how much of your day does it take up — thoughts, energy, mood?",
+    "How is this showing up in your body — your sleep, your appetite, your ability to focus?",
+    "Is there someone in your life who knows you are dealing with this, or have you been carrying it alone?",
+    "What have you already tried or thought about doing? And what has stopped any of those things?",
+    "If things continued the way they are for another few months, what would concern you most about that?",
+    "What would feel most helpful to you right now — being heard, clarity, practical steps, or something else?"
+  ];
+
+  // For turns 0-1: always use primary theme
+  // For turns 2-3: cross into secondary theme if present
+  // For turns 4-5: cross into tertiary or use physical/support/what-you-need dimensions
+  const primaryTheme = themes[0] ?? "direction";
+  const primaryPool = byTheme[primaryTheme] ?? defaultQuestions;
+
+  // Cross-theme adaptive branching
+  if (turnIndex >= 2 && themes.length > 1) {
+    const secondTheme = themes[1];
+    const secondPool = byTheme[secondTheme] ?? defaultQuestions;
+    // Turn 2: second theme question 1
+    if (turnIndex === 2) return secondPool[1] ?? primaryPool[2] ?? defaultQuestions[2];
+    // Turn 3: secondary theme question 2
+    if (turnIndex === 3) return secondPool[2] ?? primaryPool[3] ?? defaultQuestions[3];
+  }
+  if (turnIndex >= 4 && themes.length > 2) {
+    const thirdTheme = themes[2];
+    const thirdPool = byTheme[thirdTheme] ?? defaultQuestions;
+    if (turnIndex === 4) return thirdPool[2] ?? primaryPool[4] ?? defaultQuestions[4];
+  }
+
+  // Standard sequential questions from primary theme
+  return primaryPool[Math.min(turnIndex, primaryPool.length - 1)];
+}
+
+/**
+ * Supreme-level synthesis: covers all dimension combinations, presents
+ * multiple route options with reasoning, acknowledges every theme heard.
+ */
+function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId): string {
+  const themes = session.detectedThemes;
+  const userAnswers = session.turns.filter(t => t.role === "user").map(t => t.message).join(" ");
+  const combined = (session.originalIssue + " " + userAnswers).toLowerCase();
+
+  // ── Opening ──────────────────────────────────────────────────────────────────
+  let synthesis = "I have been listening to everything you have shared, and I want to reflect back what I am hearing before we figure out the right paths for you.\n\n";
+
+  // ── Core observation — based on dominant theme combination ───────────────────
+  if (themes.includes("trauma")) {
+    synthesis += "What you went through was real and it was serious. Trauma does not just live in memory — it lives in the body, in reactions, in patterns you may not even fully connect to the original experience yet. You have been carrying this, likely for a long time. That takes enormous energy and courage.\n\n";
+  } else if (themes.includes("grief")) {
+    synthesis += "Loss at this level does not have a shortcut. What you are feeling — the waves, the weight, the way ordinary moments suddenly feel unbearable — all of that is grief doing what grief does. You are not broken. You are human and you loved something.\n\n";
+  } else if (themes.includes("addiction")) {
+    synthesis += "What you are describing is not a character flaw — it is a pattern the brain has learned, often as a way of managing pain or stress. The fact that you can see it clearly is actually the hardest and most important step. What comes next is finding the right kind of structured support.\n\n";
+  } else if (themes.includes("self-image") && (themes.includes("unappreciated") || themes.includes("work") || themes.includes("home-family"))) {
+    synthesis += "You are dealing with two things simultaneously: how you feel about yourself on the inside, and how you are being treated on the outside. These two things feed each other — when others do not acknowledge you, it confirms what the inner critic is already saying, and when the inner critic is loud, it makes it harder to advocate for yourself with others. Both layers need attention.\n\n";
+  } else if (themes.includes("unappreciated") && themes.includes("work") && themes.includes("home-family")) {
+    synthesis += "You are carrying a double silence — not being seen at work and not being seen at home. That is an extraordinarily draining place to be. Neither space is giving back what you are putting in, and that slowly empties a person. You deserve to be seen in both places, and we will look at what it takes to change that.\n\n";
+  } else if (themes.includes("relationship")) {
+    synthesis += "Relationship pain sits at the very core of who we are — because connection is not optional for human beings, it is essential. What is happening in this relationship is affecting how you feel about yourself, your daily functioning, and your sense of the future. That deserves real attention.\n\n";
+  } else if (themes.includes("financial") && themes.includes("anxiety")) {
+    synthesis += "Financial stress and anxiety amplify each other in a way that makes both harder to manage. The fear takes up mental bandwidth needed to think clearly about the practical problem, and the practical problem feeds the fear. We need to slow both down.\n\n";
+  } else if (themes.includes("burnout") && themes.includes("loneliness")) {
+    synthesis += "You are running on empty, and at the same time you are doing it without enough connection or support around you. Burnout in isolation is one of the hardest combinations — because recovery from burnout requires rest and support, and you are describing a shortage of both.\n\n";
+  } else if (themes.includes("anxiety") || themes.includes("burnout")) {
+    synthesis += "Your nervous system is currently running at a level that makes clear thinking, good decisions, and genuine connection harder. Before we solve anything else, we need to bring the system down a little — not because the other problems are not real, but because you will navigate them far better from a calmer place.\n\n";
+  } else if (themes.includes("academic") && themes.includes("anxiety")) {
+    synthesis += "The academic pressure you are under has moved from motivation into something that is working against you. Anxiety at this level does not improve performance — it actually narrows thinking and memory. Addressing the anxiety is not avoiding the work; it is how you make the work possible again.\n\n";
+  } else if (themes.includes("anger")) {
+    synthesis += "The anger you are feeling is not random — there is something underneath it that matters, a need not being met or something that is genuinely unfair. Before we deal with the external situation, we need to address the anger itself, so it does not come out sideways and create more problems than it solves.\n\n";
+  } else if (themes.includes("direction") || issueId === "identity") {
+    synthesis += "Feeling lost about who you are or where you are going is one of the most unsettling places a person can be — not because of what is missing externally, but because the compass you normally navigate by seems unreliable. This is not permanent, but it does need to be sat with, not rushed.\n\n";
+  } else if (themes.includes("loneliness")) {
+    synthesis += "The loneliness you are describing is not just about the absence of people — it is about the absence of being *known*. That distinction matters, because the path forward is not just about being around people, but about finding spaces where you can be genuinely seen.\n\n";
+  } else if (themes.includes("sadness")) {
+    synthesis += "What you are carrying emotionally is real and it is heavy. Sadness at this depth deserves to be taken seriously — not pushed through, not explained away, but genuinely looked at with care.\n\n";
+  } else if (themes.includes("health")) {
+    synthesis += "Health challenges — whether the condition itself, the uncertainty around it, or the way it is changing your daily life — carry a weight that most people underestimate. The practical and the emotional are completely tangled here, and both need attention.\n\n";
+  } else if (themes.includes("parenting")) {
+    synthesis += "The love behind the difficulty you are describing is obvious. Parenting is one of the few places where caring deeply makes the hard parts harder — because the stakes feel absolute. What you are navigating is not a failure; it is one of the most challenging aspects of being human.\n\n";
+  } else {
+    synthesis += "What you have shared is real and it matters. You are not overreacting, and you are not alone in this. Everything you have described points to genuine need for attention and care — not a quick answer, but a real engagement with what is happening.\n\n";
+  }
+
+  // ── Physical check-in ────────────────────────────────────────────────────────
+  const physicalMentioned = /(sleep|sleeping|appetite|eating|chest|breath|body|tired|exhaust|pain|headache|tension)/.test(combined);
+  if (!physicalMentioned && (themes.includes("anxiety") || themes.includes("burnout") || themes.includes("grief") || themes.includes("sadness"))) {
+    synthesis += "I also want to check in on the physical side — what you are going through often shows up in the body first. Please pay attention to your sleep, appetite, and breathing as we go through this.\n\n";
+  }
+
+  // ── Route options ────────────────────────────────────────────────────────────
+  synthesis += "Here is what I think makes most sense for you, in a sequence. You can follow the full path, skip what does not feel right, or come back to any step later:";
+
+  return synthesis;
+}
+
+/**
+ * Supreme-level journey builder — adapts to all 20 theme dimensions.
+ * Steps are ordered by urgency/logic: calm body → process emotionally → act.
+ */
+function buildJourneySteps(themes: string[], issueId: IssueId, route: AIHelpRoute): JourneyStep[] {
+  const steps: JourneyStep[] = [];
+  const has = (t: string) => themes.includes(t);
+
+  // ── 1. Immediate calm / grounding — for any emotional distress ───────────────
+  const needsCalm = ["self-image", "anxiety", "anger", "burnout", "sadness", "loneliness", "grief", "trauma", "fear", "financial", "health", "academic", "relationship"].some(t => has(t));
+  if (needsCalm) {
+    steps.push({
+      tabId: "focus",
+      label: "Ground yourself first",
+      emoji: "🌿",
+      reason: "The body needs to settle before the mind can make good decisions. Start here.",
+      completed: false, skipped: false
+    });
+  }
+
+  // ── 2. Sound / tones for nervous system regulation ───────────────────────────
+  if (has("anxiety") || has("burnout") || has("anger") || has("trauma") || has("grief") || has("fear")) {
+    steps.push({
+      tabId: "tones",
+      label: "Sound therapy",
+      emoji: "🎵",
+      reason: "Binaural and Solfeggio tones directly shift the nervous system — this is not just relaxation, it is neurological regulation.",
+      completed: false, skipped: false
+    });
+  }
+
+  // ── 3. Meditation / body practice ────────────────────────────────────────────
+  if (has("self-image") || has("loneliness") || has("sadness") || has("grief") || has("trauma") || has("health") || has("addiction") || has("burnout")) {
+    steps.push({
+      tabId: "meditation",
+      label: "Wellness practice",
+      emoji: "🪷",
+      reason: "A breath or body-scan practice helps process what words cannot fully reach.",
+      completed: false, skipped: false
+    });
+  }
+
+  // ── 4. AI guidance / personalised path ───────────────────────────────────────
+  steps.push({
+    tabId: "aihelp",
+    label: "Get personalised guidance",
+    emoji: "🤝",
+    reason: "Talk through your specific situation and get tailored next steps — not generic advice.",
+    completed: false, skipped: false
+  });
+
+  // ── 5. Journal — write to process ────────────────────────────────────────────
+  steps.push({
+    tabId: "journal",
+    label: "Write it out",
+    emoji: "✍️",
+    reason: "Getting it onto paper externalises the weight, creates clarity, and shifts perspective.",
+    completed: false, skipped: false
+  });
+
+  // ── 6. Formal redress / safety steps ─────────────────────────────────────────
+  if (has("safety") || has("trauma") || route === "redress") {
+    steps.push({
+      tabId: "guide",
+      label: "Know your rights",
+      emoji: "🛡️",
+      reason: "If something wrong has been done to you, understanding your formal options is an important step — even if you have not decided to use them yet.",
+      completed: false, skipped: false
+    });
+  }
+
+  // ── 7. Vedic / spiritual / daily guidance — for direction, loss, loneliness ──
+  if (has("direction") || has("loneliness") || has("grief") || has("identity") || issueId === "identity") {
+    steps.push({
+      tabId: "vedic",
+      label: "Daily cosmic guidance",
+      emoji: "🪐",
+      reason: "Your Vedic reading today may hold something relevant to exactly where you are.",
+      completed: false, skipped: false
+    });
+  }
+
+  // ── 8. Community — for loneliness, unappreciated, addiction, grief ────────────
+  if (has("loneliness") || has("unappreciated") || has("addiction") || has("grief") || has("parenting")) {
+    steps.push({
+      tabId: "community",
+      label: "You are not alone",
+      emoji: "🌐",
+      reason: "Hearing from others navigating something similar can shift isolation into solidarity — and sometimes offer insights no expert can.",
+      completed: false, skipped: false
+    });
+  }
+
+  // ── 9. Insights — always last ─────────────────────────────────────────────────
+  steps.push({
+    tabId: "insights",
+    label: "See your patterns",
+    emoji: "📊",
+    reason: "Understanding the bigger picture of your emotional and wellbeing patterns gives context and direction.",
+    completed: false, skipped: false
+  });
+
+  return steps;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COUNSELING CHAT MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+
+function CounselingChatModal({
+  visible,
+  onClose,
+  onJourneyReady,
+  initialIssue,
+  identityLabel,
+  issueId,
+  speakText,
+  stopSpeech,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onJourneyReady: (session: CounselingSession) => void;
+  initialIssue: string;
+  identityLabel: string;
+  issueId: IssueId;
+  speakText: (text: string) => void;
+  stopSpeech: () => void;
+}) {
+  const [session, setSession] = React.useState<CounselingSession>(() => ({
+    stage: "listening",
+    originalIssue: initialIssue,
+    turns: [],
+    questionIndex: 0,
+    detectedThemes: detectThemes(initialIssue),
+    journeySteps: [],
+  }));
+  const [draft, setDraft] = React.useState("");
+  const [isListening, setIsListening] = React.useState(false);
+  const [synthText, setSynthText] = React.useState("");
+  const [journeySteps, setJourneySteps] = React.useState<JourneyStep[]>([]);
+  const scrollRef = React.useRef<ScrollView>(null);
+  const recognitionRef = React.useRef<any>(null);
+
+  // Reset when modal opens with new issue
+  React.useEffect(() => {
+    if (!visible) return;
+    const themes = detectThemes(initialIssue);
+    const firstQuestion = buildCounselingQuestions(themes, 0);
+    const opening = buildCounselingAcknowledgment(initialIssue, issueId, detectAIHelpRouteFromText(initialIssue));
+    const openingMsg = `${opening.heard}\n\nI'd like to understand a bit more before we figure out the best path for you. ${firstQuestion}`;
+
+    setSession({
+      stage: "questioning",
+      originalIssue: initialIssue,
+      turns: [{ role: "friend", message: openingMsg }],
+      questionIndex: 0,
+      detectedThemes: themes,
+      journeySteps: [],
+    });
+    setDraft("");
+    setSynthText("");
+    setJourneySteps([]);
+
+    // Speak the opening message
+    setTimeout(() => speakText(openingMsg), 400);
+  }, [visible, initialIssue]);
+
+  // Auto-scroll to bottom
+  React.useEffect(() => {
+    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
+  }, [session.turns]);
+
+  function handleSend() {
+    const text = draft.trim();
+    if (!text) return;
+    stopSpeech();
+
+    const userTurn: CounselingTurn = { role: "user", message: text };
+    const newTurns = [...session.turns, userTurn];
+    const newQuestionIndex = session.questionIndex + 1;
+
+    // Re-detect themes from ALL user text so far (adaptive)
+    const allUserText = newTurns.filter(t => t.role === "user").map(t => t.message).join(" ");
+    const updatedThemes = detectThemes(session.originalIssue + " " + allUserText);
+    // Merge: keep original themes, append newly detected
+    const mergedThemes = Array.from(new Set([...session.detectedThemes, ...updatedThemes]));
+
+    const userResponses = newTurns.filter(t => t.role === "user").length;
+
+    // After 6 user responses, synthesize (deep counseling — covers all dimensions)
+    if (userResponses >= 6) {
+      const route = detectAIHelpRouteFromText(session.originalIssue + " " + allUserText);
+      const updatedSession: CounselingSession = {
+        ...session, turns: newTurns, stage: "synthesizing",
+        questionIndex: newQuestionIndex, detectedThemes: mergedThemes
+      };
+      const synthesis = buildCounselingSynthesis(updatedSession, issueId);
+      const steps = buildJourneySteps(mergedThemes, issueId, route);
+
+      const finalTurns: CounselingTurn[] = [...newTurns, { role: "friend", message: synthesis }];
+      const finalSession: CounselingSession = {
+        ...updatedSession, turns: finalTurns, stage: "synthesizing", journeySteps: steps
+      };
+      setSession(finalSession);
+      setSynthText(synthesis);
+      setJourneySteps(steps);
+      setDraft("");
+      setTimeout(() => speakText(synthesis), 200);
+    } else {
+      // Ask next adaptive question using updated merged themes
+      const nextQ = buildCounselingQuestions(mergedThemes, newQuestionIndex, allUserText);
+      const friendTurn: CounselingTurn = { role: "friend", message: nextQ };
+      const updatedSession: CounselingSession = {
+        ...session,
+        turns: [...newTurns, friendTurn],
+        questionIndex: newQuestionIndex,
+        stage: "questioning",
+        detectedThemes: mergedThemes,
+      };
+      setSession(updatedSession);
+      setDraft("");
+      setTimeout(() => speakText(nextQ), 200);
+    }
+  }
+
+  function startVoiceInput() {
+    if (Platform.OS !== "web") return;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    stopSpeech();
+    const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-IN";
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setDraft((prev) => (prev ? prev + " " + transcript : transcript));
+      setIsListening(false);
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    recognition.start();
+    setIsListening(true);
+  }
+
+  function stopVoiceInput() {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+  }
+
+  function handleStartJourney() {
+    const finalSession: CounselingSession = { ...session, stage: "done", journeySteps };
+    onJourneyReady(finalSession);
+  }
+
+  function skipToRoute() {
+    const route = detectAIHelpRouteFromText(session.originalIssue);
+    const steps = buildJourneySteps(session.detectedThemes, issueId, route);
+    const finalSession: CounselingSession = { ...session, stage: "done", journeySteps: steps };
+    onJourneyReady(finalSession);
+  }
+
+  const showJourneyOptions = session.stage === "synthesizing" && journeySteps.length > 0;
+
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent={false}
+      onRequestClose={onClose}
+    >
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+      >
+      <View style={{ flex: 1, backgroundColor: "#050D14" }}>
+        {/* Header */}
+        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Platform.OS === "ios" ? 54 : 40, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#0E1E2A", backgroundColor: "#071220" }}>
+          <Pressable onPress={onClose} hitSlop={12} accessibilityLabel="Close">
+            <Text style={{ color: "#63DED0", fontSize: 22 }}>←</Text>
+          </Pressable>
+          <View style={{ flex: 1, marginLeft: 12 }}>
+            <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "800" }}>Your guide is listening</Text>
+            <Text style={{ color: "#475569", fontSize: 12 }}>Private · Nothing leaves this device</Text>
+          </View>
+          <Pressable onPress={skipToRoute} hitSlop={12} accessibilityLabel="Skip to route">
+            <Text style={{ color: "#475569", fontSize: 13 }}>Skip →</Text>
+          </Pressable>
+        </View>
+
+        {/* Chat messages */}
+        <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
+          {session.turns.map((turn, i) => (
+            <View key={i} style={{ alignItems: turn.role === "friend" ? "flex-start" : "flex-end" }}>
+              {turn.role === "friend" && (
+                <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, maxWidth: "88%" }}>
+                  <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#0E3040", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Text style={{ fontSize: 16 }}>🌟</Text>
+                  </View>
+                  <View style={{ backgroundColor: "#0A1A28", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, flex: 1 }}>
+                    <Text style={{ color: "#E2EAF0", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                  </View>
+                </View>
+              )}
+              {turn.role === "user" && (
+                <View style={{ backgroundColor: "#0E3A3A", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, maxWidth: "80%" }}>
+                  <Text style={{ color: "#E2EAF0", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                </View>
+              )}
+            </View>
+          ))}
+
+          {/* Journey options */}
+          {showJourneyOptions && (
+            <View style={{ marginTop: 8, gap: 8 }}>
+              <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Your recommended journey</Text>
+              {journeySteps.map((step, i) => (
+                <View key={step.tabId} style={{ backgroundColor: "#0A1A28", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", gap: 12, borderLeftWidth: 3, borderLeftColor: "#63DED0" }}>
+                  <Text style={{ fontSize: 22 }}>{step.emoji}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: "#E2EAF0", fontSize: 14, fontWeight: "700" }}>{i + 1}. {step.label}</Text>
+                    <Text style={{ color: "#64748B", fontSize: 12, lineHeight: 18, marginTop: 2 }}>{step.reason}</Text>
+                  </View>
+                </View>
+              ))}
+              <Pressable
+                onPress={handleStartJourney}
+                style={({ pressed }) => ({ backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 14, padding: 16, alignItems: "center", marginTop: 8 })}
+              >
+                <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "900" }}>Start my journey  →</Text>
+              </Pressable>
+              <Pressable
+                onPress={onClose}
+                style={({ pressed }) => ({ padding: 12, alignItems: "center", opacity: pressed ? 0.6 : 1 })}
+              >
+                <Text style={{ color: "#475569", fontSize: 13 }}>Not right now</Text>
+              </Pressable>
+            </View>
+          )}
+        </ScrollView>
+
+        {/* Input area */}
+        {session.stage !== "synthesizing" && (
+          <View style={{ backgroundColor: "#071220", borderTopWidth: 1, borderTopColor: "#0E1E2A", paddingHorizontal: 16, paddingVertical: 12, paddingBottom: Platform.OS === "ios" ? 34 : 16, flexDirection: "row", alignItems: "flex-end", gap: 10 }}>
+            <TextInput
+              value={draft}
+              onChangeText={setDraft}
+              placeholder={isListening ? "Listening..." : "Reply here..."}
+              placeholderTextColor="#334155"
+              style={{ flex: 1, backgroundColor: "#0A1A28", borderRadius: 12, padding: 12, color: "#E2EAF0", fontSize: 14, lineHeight: 20, maxHeight: 120, borderWidth: 1, borderColor: "#1E3A4A" }}
+              multiline
+              textAlignVertical="top"
+            />
+            {/* Voice input button (web only) */}
+            {Platform.OS === "web" && (
+              <Pressable
+                onPress={isListening ? stopVoiceInput : startVoiceInput}
+                style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+              >
+                <Text style={{ fontSize: 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
+              </Pressable>
+            )}
+            <Pressable
+              onPress={handleSend}
+              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() ? "#0E6F69" : "#0E1E2A", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: 20 }}>↑</Text>
+            </Pressable>
+          </View>
+        )}
+      </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GUIDED JOURNEY BAR — shown at top of each section during an active journey
+// ─────────────────────────────────────────────────────────────────────────────
+
+function GuidedJourneyBar({
+  steps,
+  currentStepIndex,
+  onContinue,
+  onSkip,
+  onEndJourney,
+}: {
+  steps: JourneyStep[];
+  currentStepIndex: number;
+  onContinue: () => void;
+  onSkip: () => void;
+  onEndJourney: () => void;
+}) {
+  if (!steps.length) return null;
+  const current = steps[currentStepIndex];
+  if (!current) return null;
+  const isLast = currentStepIndex >= steps.length - 1;
+  const completedCount = steps.filter(s => s.completed || s.skipped).length;
+  const progress = steps.length > 0 ? completedCount / steps.length : 0;
+
+  return (
+    <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#071828", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#0E3040" }}>
+      {/* Progress bar */}
+      <View style={{ height: 3, backgroundColor: "#0E1E2A", borderRadius: 2, marginBottom: 10 }}>
+        <View style={{ height: 3, borderRadius: 2, backgroundColor: "#63DED0", width: `${Math.round(progress * 100)}%` as any }} />
+      </View>
+
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+        <Text style={{ fontSize: 22 }}>{current.emoji}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
+            Step {currentStepIndex + 1} of {steps.length}
+          </Text>
+          <Text style={{ color: "#E2EAF0", fontSize: 14, fontWeight: "800", marginTop: 1 }}>{current.label}</Text>
+          <Text style={{ color: "#64748B", fontSize: 12, lineHeight: 17, marginTop: 2 }} numberOfLines={2}>{current.reason}</Text>
+        </View>
+      </View>
+
+      <View style={{ flexDirection: "row", gap: 10, marginTop: 12 }}>
+        <Pressable
+          onPress={isLast ? onEndJourney : onContinue}
+          style={({ pressed }) => ({ flex: 1, backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 10, paddingVertical: 10, alignItems: "center" })}
+        >
+          <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>
+            {isLast ? "Complete journey ✓" : "Continue →"}
+          </Text>
+        </Pressable>
+        {!isLast && (
+          <Pressable
+            onPress={onSkip}
+            style={({ pressed }) => ({ paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, backgroundColor: "#0E1E2A", alignItems: "center", opacity: pressed ? 0.6 : 1 })}
+          >
+            <Text style={{ color: "#475569", fontSize: 13 }}>Skip</Text>
+          </Pressable>
+        )}
+      </View>
+    </View>
+  );
+}
+
 // Smart input hints — defined outside component to avoid re-creation on every render
 const SMART_HINTS = [
   "e.g. \"I feel anxious and can't think straight\"",
@@ -20499,6 +22944,18 @@ const SMART_HINTS = [
   "e.g. \"Low energy, no motivation, just heavy\"",
   "e.g. \"Angry and don't know what to do with it\"",
   "e.g. \"Grieving something I haven't said aloud\"",
+  "e.g. \"My relationship is hurting me and I don't know what to do\"",
+  "e.g. \"Financial pressure is drowning every other part of life\"",
+  "e.g. \"Exam stress has taken over everything\"",
+  "e.g. \"I feel like I don't know who I am anymore\"",
+  "e.g. \"Struggling with a habit I can't seem to break\"",
+  "e.g. \"Something happened in my past that keeps coming back\"",
+  "e.g. \"Parenting is harder than I expected and I feel alone in it\"",
+  "e.g. \"A health worry is taking up all my mental space\"",
+  "e.g. \"I don't feel seen or appreciated by anyone around me\"",
+  "e.g. \"I feel deeply lonely even when I'm surrounded by people\"",
+  "e.g. \"I'm ashamed of how I look and it's affecting everything\"",
+  "e.g. \"I've lost someone and don't know how to carry it\"",
 ];
 
 // ── Dynamic Hero Card ────────────────────────────────────────────────────────
@@ -20506,6 +22963,7 @@ function DynamicHeroCard({
   homeIssueDraft,
   setHomeIssueDraft,
   routeHomeIssue,
+  onOpenCounselingChat,
   homeRoutePreview,
   checkInStreak,
   onOpenTab,
@@ -20513,6 +22971,7 @@ function DynamicHeroCard({
   homeIssueDraft: string;
   setHomeIssueDraft: (v: string) => void;
   routeHomeIssue: () => void;
+  onOpenCounselingChat: () => void;
   homeRoutePreview: RoutePreview | null;
   checkInStreak: number;
   onOpenTab: (tab: TabId) => void;
@@ -20574,13 +23033,13 @@ function DynamicHeroCard({
         />
         <View style={{ flex: 1 }}>
           <Text style={styles.heroRouteAppName}>Aethon Beacon</Text>
-          <Text style={styles.heroRouteTagline}>IT'S OK IS ALWAYS NOT OK</Text>
+          <Text style={styles.heroRouteTagline}>IT'S OKAY NOT TO BE OKAY</Text>
         </View>
       </View>
 
       {/* Greeting + question */}
       <Text style={[styles.dynamicHeroGreeting, { marginTop: 10 }]}>{greeting}</Text>
-      <Text style={styles.heroRouteQuestion}>What do you need help with?</Text>
+      <Text style={styles.heroRouteQuestion}>What's on your mind today?</Text>
 
       {/* Input */}
       <TextInput
@@ -20605,7 +23064,7 @@ function DynamicHeroCard({
         </Pressable>
       )}
 
-      {/* Animated CTA button */}
+      {/* Primary CTA buttons */}
       <Animated.View style={{ transform: [{ scale: isEmpty ? pulseAnim : 1 }] }}>
         <Pressable
           accessibilityRole="button"
@@ -20613,10 +23072,27 @@ function DynamicHeroCard({
           style={({ pressed }) => [styles.dynamicHeroCTA, pressed && styles.pressed]}
         >
           <Text style={styles.dynamicHeroCTALabel}>
-            {isEmpty ? "Analyse my issue  →" : "Analyse and route  →"}
+            {isEmpty ? "Find my path  →" : "Understand and guide me  →"}
           </Text>
         </Pressable>
       </Animated.View>
+      {/* Talk it through — opens counseling chat */}
+      <Pressable
+        accessibilityRole="button"
+        onPress={onOpenCounselingChat}
+        style={({ pressed }) => ({
+          flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8,
+          backgroundColor: "rgba(99,222,208,0.08)", borderRadius: 12, paddingVertical: 12, paddingHorizontal: 16,
+          borderWidth: 1, borderColor: "rgba(99,222,208,0.25)", marginTop: 10,
+          opacity: pressed ? 0.7 : 1
+        })}
+      >
+        <Text style={{ fontSize: 18 }}>🎙️</Text>
+        <Text style={{ color: "#63DED0", fontSize: 14, fontWeight: "700" }}>Talk it through with your guide</Text>
+      </Pressable>
+      <Text style={{ color: "#475569", fontSize: 11, textAlign: "center", marginTop: 6 }}>
+        Listens deeply, asks up to 7 questions across every dimension, then builds your personalised path
+      </Text>
 
       {/* Route preview */}
       {!isEmpty && homeRoutePreview && (
@@ -20651,7 +23127,7 @@ function BottomNavBar({
   const secondaryTabActive = !primaryIds.includes(activeTab) && activeTab !== "settings";
 
   return (
-    <View style={styles.bottomNav}>
+    <View style={[styles.bottomNav, Platform.OS === "ios" && { paddingBottom: 28 }]}>
       {PRIMARY_NAV_TABS.map((item) => {
         const isActive =
           item.id === "settings"
@@ -21003,7 +23479,25 @@ function getPatternCritique(
                   ? "stigma"
                   : issueId === "fear"
                     ? "fear"
-                    : "this issue";
+                    : issueId === "grief"
+                      ? "grief"
+                      : issueId === "trauma"
+                        ? "trauma recovery"
+                        : issueId === "addiction"
+                          ? "addiction recovery"
+                          : issueId === "health"
+                            ? "health concern"
+                            : issueId === "financial"
+                              ? "financial stress"
+                              : issueId === "relationship"
+                                ? "relationship strain"
+                                : issueId === "parenting"
+                                  ? "parenting challenge"
+                                  : issueId === "academic"
+                                    ? "academic pressure"
+                                    : issueId === "identity"
+                                      ? "identity exploration"
+                                      : "this issue";
   const issueNext =
     issueId === "general"
       ? "Test one clear route, one follow-up note, and one handoff before adding more detail."
@@ -21021,7 +23515,25 @@ function getPatternCritique(
                   ? "Test one reality check, one kind self-statement, and one support contact."
                   : issueId === "fear"
                     ? "Test one small exposure, one breath reset, and one trusted check-in."
-                    : "Test one smaller plan, one note, and one calmer return tomorrow.";
+                    : issueId === "grief"
+                      ? "Test one gentle connection, one memory held with kindness, and one small today-step."
+                      : issueId === "trauma"
+                        ? "Test one grounding practice, one safe person contact, and one very small daily anchor."
+                        : issueId === "addiction"
+                          ? "Test one craving-interrupt habit, one support contact check-in, and one urge journal entry."
+                          : issueId === "health"
+                            ? "Test one medical action, one symptom note, and one honest conversation with someone you trust."
+                            : issueId === "financial"
+                              ? "Test one expense note, one reduced-pressure decision, and one call or query about your options."
+                              : issueId === "relationship"
+                                ? "Test one regulated response, one boundary stated clearly, and one honest feeling written down."
+                                : issueId === "parenting"
+                                  ? "Test one act of self-care, one moment of full presence, and one honest conversation with your child."
+                                  : issueId === "academic"
+                                    ? "Test one study block with a timer, one honest review of what stuck, and one rest break that is actually restful."
+                                    : issueId === "identity"
+                                      ? "Test one authentic expression, one boundary against a role that does not fit, and one conversation with someone who knows you."
+                                      : "Test one smaller plan, one note, and one calmer return tomorrow.";
   if (weekCount === 0) {
     return {
       title: "No evidence yet",
@@ -21095,13 +23607,23 @@ function getPracticeCritique(
   const priorityIds: PlayChallengeId[] =
     issueId === "general"
       ? ["focus", "reflect", "reset", "move", "connect"]
-      : issueId === "anxiety" || issueId === "burnout"
+      : issueId === "anxiety" || issueId === "burnout" || issueId === "health"
       ? ["reset", "focus", "reflect", "move", "connect"]
-      : issueId === "loneliness"
+      : issueId === "loneliness" || issueId === "grief" || issueId === "parenting"
         ? ["connect", "reset", "reflect", "move", "focus"]
         : issueId === "anger" || issueId === "overconfidence" || issueId === "stigma" || issueId === "fear"
           ? ["reflect", "reset", "focus", "move", "connect"]
-          : identityId === "student"
+          : issueId === "trauma"
+            ? ["reset", "move", "connect", "reflect", "focus"]
+            : issueId === "addiction"
+              ? ["move", "connect", "reset", "reflect", "focus"]
+              : issueId === "financial" || issueId === "academic"
+                ? ["focus", "reset", "reflect", "connect", "move"]
+                : issueId === "relationship"
+                  ? ["reflect", "connect", "reset", "move", "focus"]
+                  : issueId === "identity"
+                    ? ["reflect", "move", "connect", "reset", "focus"]
+                    : identityId === "student"
             ? ["focus", "reset", "reflect", "move", "connect"]
             : identityId === "teacher" || identityId === "professional"
               ? ["reset", "reflect", "focus", "move", "connect"]
@@ -21434,9 +23956,18 @@ function getReminderBody(mode: ReminderMode, guide: IssueGuide, profileAddressLa
     anxiety: "One breath, one fact, one small next step.",
     fear: "One tiny action, one reality check, one steady contact.",
     overconfidence: "One fact check, one review, one slower decision.",
-    stigma: "One kind sentence, one private support step, one safer pace.",
+    stigma: "One kind word to yourself, one small step, one safe space.",
     burnout: "One load to reduce, one rest to protect, one task to delay.",
-    loneliness: "One human contact, one routine, one plan for later."
+    loneliness: "One human contact, one routine, one plan for later.",
+    grief: "One memory to honour, one person to call, one day at a time.",
+    identity: "One honest question, one journal entry, one step toward clarity.",
+    health: "One piece of information, one question for your doctor, one calming action.",
+    financial: "One number to face, one option to explore, one person to talk to.",
+    relationship: "One honest conversation, one boundary, one step toward clarity.",
+    parenting: "One moment of connection, one adjustment, one conversation with your child.",
+    trauma: "One grounding practice, one trusted person, one professional contact.",
+    academic: "One task broken down, one study block, one compassionate thought.",
+    addiction: "One honest admission, one support resource, one day without.",
   };
 
   const addressLead = profileAddressLabel.trim().length > 0 ? `${profileAddressLabel}, ` : "";
@@ -21868,14 +24399,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#050D10"
   },
   scrollBody: {
-    paddingVertical: 18
+    paddingTop: 14,
+    paddingBottom: 132
   },
   container: {
     width: "100%",
     maxWidth: 1180,
     alignSelf: "center",
-    paddingHorizontal: 18,
-    gap: 18
+    paddingHorizontal: 14,
+    gap: 14
   },
   hero: {
     position: "relative",
@@ -21918,7 +24450,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    borderRadius: 16,
+    borderRadius: 12,
     backgroundColor: "rgba(255,252,247,0.15)",
     borderWidth: 1.5,
     borderColor: "rgba(246,212,107,0.55)",
@@ -22047,7 +24579,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   topTabRail: {
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(246,212,107,0.18)",
     backgroundColor: "#071A1E",
@@ -22066,7 +24598,7 @@ const styles = StyleSheet.create({
     paddingRight: 4
   },
   topTabButton: {
-    minHeight: 36,
+    minHeight: 40,
     minWidth: 0,
     flexGrow: 1,
     flexShrink: 1,
@@ -22075,8 +24607,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.10)",
     backgroundColor: "#0D1F22",
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -22090,15 +24622,15 @@ const styles = StyleSheet.create({
     borderColor: "rgba(14,204,184,0.28)"
   },
   topTabMark: {
-    color: "rgba(255,255,255,0.62)",
-    fontSize: 11,
-    lineHeight: 13,
+    color: "rgba(255,255,255,0.75)",
+    fontSize: 13,
+    lineHeight: 16,
     fontWeight: "900"
   },
   topTabLabel: {
     color: "rgba(255,255,255,0.72)",
-    fontSize: 10,
-    lineHeight: 13,
+    fontSize: 12,
+    lineHeight: 15,
     fontWeight: "900"
   },
   topTabTextActive: {
@@ -22125,9 +24657,9 @@ const styles = StyleSheet.create({
     flexBasis: 0,
     maxWidth: "100%",
     width: "auto",
-    minHeight: 36,
-    paddingHorizontal: 7,
-    paddingVertical: 5
+    minHeight: 44,
+    paddingHorizontal: 9,
+    paddingVertical: 7
   },
   topStatusChipCopy: {
     flex: 1,
@@ -22142,17 +24674,17 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   topStatusChipLabelCompact: {
-    fontSize: 9,
-    lineHeight: 11
+    fontSize: 10,
+    lineHeight: 12
   },
   topStatusChipValue: {
     color: "#E8F4F0",
-    fontSize: 12,
-    lineHeight: 15,
+    fontSize: 14,
+    lineHeight: 18,
     fontWeight: "900"
   },
   topStatusChipMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 9,
     lineHeight: 13,
     fontWeight: "700"
@@ -22225,8 +24757,8 @@ const styles = StyleSheet.create({
   },
   topPageModeText: {
     color: "#FFFDFC",
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 13,
+    lineHeight: 18,
     fontWeight: "700"
   },
   topPageModeTextCompact: {
@@ -22363,9 +24895,9 @@ const styles = StyleSheet.create({
     elevation: 3
   },
   routePreviewCardCompact: {
-    paddingHorizontal: 7,
-    paddingVertical: 5,
-    marginTop: 5
+    paddingHorizontal: 10,
+    paddingVertical: 9,
+    marginTop: 8
   },
   routePreviewCardSecondary: {
     backgroundColor: "#091A1D"
@@ -22378,8 +24910,8 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   routePreviewTitleCompact: {
-    fontSize: 10,
-    lineHeight: 12
+    fontSize: 11,
+    lineHeight: 14
   },
   routePreviewDetail: {
     color: "rgba(255,255,255,0.82)",
@@ -22388,8 +24920,8 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   routePreviewDetailCompact: {
-    fontSize: 11,
-    lineHeight: 14
+    fontSize: 12,
+    lineHeight: 17
   },
   homeReportBand: {
     borderRadius: 10,
@@ -22449,7 +24981,7 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   visitReportMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -22507,7 +25039,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   homeOverviewText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700"
@@ -22525,37 +25057,37 @@ const styles = StyleSheet.create({
     marginTop: 2
   },
   homeOverviewButton: {
-    minHeight: 34,
+    minHeight: 42,
     borderRadius: 8,
     backgroundColor: "#102A2D",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center"
   },
   homeOverviewButtonLabel: {
     color: "#FFFDFC",
-    fontSize: 10,
-    lineHeight: 12,
+    fontSize: 12,
+    lineHeight: 15,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
   },
   homeOverviewButtonSecondary: {
-    minHeight: 34,
+    minHeight: 42,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
-    backgroundColor: "#F9FBFF",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
+    borderColor: "rgba(14,204,184,0.45)",
+    backgroundColor: "#0A2226",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center"
   },
   homeOverviewButtonSecondaryLabel: {
-    color: "#1E2F4D",
-    fontSize: 10,
-    lineHeight: 12,
+    color: "#6FF7E8",
+    fontSize: 12,
+    lineHeight: 15,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
@@ -22635,7 +25167,7 @@ const styles = StyleSheet.create({
     color: "#FFF9E9"
   },
   homeToneLoopStatus: {
-    color: "rgba(255,255,255,0.5)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 9,
     lineHeight: 12,
     fontWeight: "800",
@@ -22647,7 +25179,7 @@ const styles = StyleSheet.create({
     marginTop: 2
   },
   homeToneBandIntro: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -22687,7 +25219,7 @@ const styles = StyleSheet.create({
   homeToneQuickNote: {
     flex: 1,
     minWidth: 0,
-    color: "rgba(255,255,255,0.68)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 9,
     lineHeight: 11,
     fontWeight: "700",
@@ -22855,7 +25387,7 @@ const styles = StyleSheet.create({
     color: "#F0C040"
   },
   homeToneChipMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     lineHeight: 15,
     fontWeight: "700"
@@ -22930,7 +25462,7 @@ const styles = StyleSheet.create({
   toneTimerBadgeLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "rgba(255,255,255,0.5)"
+    color: "rgba(255,255,255,0.65)"
   },
   toneSessionRow: {
     flexDirection: "row",
@@ -22978,7 +25510,7 @@ const styles = StyleSheet.create({
   tonePresetChipLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "rgba(255,255,255,0.55)"
+    color: "rgba(255,255,255,0.75)"
   },
   tonePresetChipLabelActive: {
     color: "#0ECCB8"
@@ -23314,9 +25846,9 @@ const styles = StyleSheet.create({
   },
   supportBand: {
     borderRadius: 8,
-    backgroundColor: "#F4FAF7",
+    backgroundColor: "#091A1D",
     borderWidth: 1,
-    borderColor: "#D2E7DF",
+    borderColor: "rgba(14,204,184,0.28)",
     padding: 18,
     gap: 14
   },
@@ -23326,7 +25858,7 @@ const styles = StyleSheet.create({
   supportRow: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#DDEBE4",
+    borderColor: "rgba(14,204,184,0.24)",
     backgroundColor: "#0D1F22",
     padding: 12,
     gap: 12
@@ -23340,7 +25872,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   supportMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.74)",
     fontSize: 13,
     lineHeight: 19
   },
@@ -23379,17 +25911,17 @@ const styles = StyleSheet.create({
   },
   helpBand: {
     borderRadius: 8,
-    backgroundColor: "#F7F9FD",
+    backgroundColor: "#091A1D",
     borderWidth: 1,
-    borderColor: "#D9E1F0",
+    borderColor: "rgba(14,204,184,0.28)",
     padding: 10,
     gap: 8
   },
   professionalBand: {
     borderRadius: 8,
-    backgroundColor: "#F2F8F6",
+    backgroundColor: "#091A1D",
     borderWidth: 1,
-    borderColor: "#D6E8E1",
+    borderColor: "rgba(14,204,184,0.28)",
     padding: 10,
     gap: 8
   },
@@ -23406,8 +25938,8 @@ const styles = StyleSheet.create({
   footerCompactPanel: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
-    backgroundColor: "#F9FBFF",
+    borderColor: "rgba(14,204,184,0.28)",
+    backgroundColor: "#091A1D",
     padding: 10,
     gap: 10
   },
@@ -23740,7 +26272,7 @@ const styles = StyleSheet.create({
     color: "#FFFDFC"
   },
   issueChipMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -23766,7 +26298,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   issueLensText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
     lineHeight: 19
   },
@@ -23830,7 +26362,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   issueStepCheckText: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     fontWeight: "900"
   },
@@ -23877,7 +26409,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   issueSupportButtonMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -23955,7 +26487,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   playSummary: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 14,
     lineHeight: 21
   },
@@ -24003,7 +26535,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   playCardMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -24013,7 +26545,7 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   playCardSummary: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
     lineHeight: 19
   },
@@ -24052,7 +26584,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   playStepCheckText: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 11,
     fontWeight: "900"
   },
@@ -24144,7 +26676,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   communitySafetyText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "700"
@@ -24209,10 +26741,10 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   communityChatMetaVerified: {
-    color: "rgba(255,255,255,0.55)"
+    color: "rgba(255,255,255,0.75)"
   },
   communityChatMetaUser: {
-    color: "rgba(255,255,255,0.55)"
+    color: "rgba(255,255,255,0.75)"
   },
   communityChatActions: {
     flexDirection: "row",
@@ -24222,8 +26754,8 @@ const styles = StyleSheet.create({
   communitySubpanel: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
-    backgroundColor: "#FBFDFF",
+    borderColor: "rgba(14,204,184,0.28)",
+    backgroundColor: "#091A1D",
     padding: 12,
     gap: 10,
     marginTop: 2
@@ -24267,7 +26799,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   communityMeta: {
-    color: "rgba(255,255,255,0.48)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -24296,7 +26828,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69"
   },
   communityText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 14,
     lineHeight: 21
   },
@@ -24351,7 +26883,7 @@ const styles = StyleSheet.create({
   },
   privateRoomCardActive: {
     borderColor: "#0E6F69",
-    backgroundColor: "#F2F8F6"
+    backgroundColor: "#102A2D"
   },
   privateRoomCardHeader: {
     flexDirection: "row",
@@ -24372,7 +26904,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69"
   },
   privateRoomMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 11,
     lineHeight: 15,
     fontWeight: "700"
@@ -24387,8 +26919,8 @@ const styles = StyleSheet.create({
   privateRoomThreadPane: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#DDE7EF",
-    backgroundColor: "#F9FCFF",
+    borderColor: "rgba(14,204,184,0.28)",
+    backgroundColor: "#091A1D",
     padding: 12,
     gap: 10
   },
@@ -24405,7 +26937,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   privateRoomThreadMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700"
@@ -24443,12 +26975,12 @@ const styles = StyleSheet.create({
     gap: 4
   },
   privateRoomMessageBubbleYou: {
-    borderColor: "#D9E1F0",
-    backgroundColor: "#F7F9FD"
+    borderColor: "rgba(46,125,154,0.34)",
+    backgroundColor: "#0A2230"
   },
   privateRoomMessageBubbleMember: {
-    borderColor: "#D6E8E1",
-    backgroundColor: "#F7FCFA"
+    borderColor: "rgba(14,204,184,0.3)",
+    backgroundColor: "#0A2226"
   },
   privateRoomMessageAuthor: {
     fontSize: 12,
@@ -24471,7 +27003,7 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.82)"
   },
   privateRoomMessageMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "700"
@@ -24500,12 +27032,12 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   searchCardMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     fontWeight: "700"
   },
   searchCardDetail: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 14,
     lineHeight: 20
   },
@@ -24539,7 +27071,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   searchGroupMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -24547,7 +27079,7 @@ const styles = StyleSheet.create({
     gap: 10
   },
   searchEmptyText: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 14,
     lineHeight: 20
   },
@@ -24572,7 +27104,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   searchStarterText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
     lineHeight: 19
   },
@@ -24616,7 +27148,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   recommendDetail: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     lineHeight: 16
   },
@@ -24649,7 +27181,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   nearbyChipMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -24675,7 +27207,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   helpAudience: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 10,
     fontWeight: "700"
   },
@@ -24685,7 +27217,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   helpDescription: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 10,
     lineHeight: 14
   },
@@ -24696,9 +27228,10 @@ const styles = StyleSheet.create({
     paddingTop: 2
   },
   helpButton: {
-    minHeight: 32,
-    borderRadius: 8,
-    paddingHorizontal: 10,
+    minHeight: 44,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#0E6F69"
@@ -24708,26 +27241,27 @@ const styles = StyleSheet.create({
   },
   helpButtonLabel: {
     color: "#FFFDFC",
-    fontSize: 11,
-    fontWeight: "900"
+    fontSize: 14,
+    fontWeight: "800"
   },
   helpButtonLabelDisabled: {
     color: "rgba(255,255,255,0.9)"
   },
   helpButtonSecondary: {
-    minHeight: 32,
-    borderRadius: 8,
-    paddingHorizontal: 10,
+    minHeight: 44,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: "#0E6F69",
     backgroundColor: "#0D1F22"
   },
   helpButtonSecondaryLabel: {
-    color: "#0E6F69",
-    fontSize: 11,
-    fontWeight: "900"
+    color: "#22D3EE",
+    fontSize: 14,
+    fontWeight: "800"
   },
   helpButtonSecondaryDisabled: {
     opacity: 0.48
@@ -24845,7 +27379,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   frontFeatureMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     lineHeight: 15
   },
@@ -24951,7 +27485,7 @@ const styles = StyleSheet.create({
     gap: 2
   },
   heroArtifactEyebrow: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 9,
     fontWeight: "800",
     textTransform: "uppercase",
@@ -24965,7 +27499,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   heroArtifactMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 10,
     lineHeight: 14
   },
@@ -25012,7 +27546,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   heroArtifactTileText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 9,
     lineHeight: 13
   },
@@ -25022,7 +27556,7 @@ const styles = StyleSheet.create({
     paddingTop: 6
   },
   heroArtifactFooterText: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 9,
     fontWeight: "800",
     textTransform: "uppercase",
@@ -25216,7 +27750,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   guidedStepMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     lineHeight: 15
   },
@@ -25229,7 +27763,7 @@ const styles = StyleSheet.create({
     gap: 14
   },
   visionText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
     lineHeight: 19
   },
@@ -25263,7 +27797,7 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   visionGuidanceText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     lineHeight: 17
   },
@@ -25540,7 +28074,7 @@ const styles = StyleSheet.create({
     minHeight: 62,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E3DDF7",
+    borderColor: "rgba(167,139,250,0.34)",
     backgroundColor: "#0D1F22",
     paddingHorizontal: 10,
     paddingVertical: 9,
@@ -25564,22 +28098,22 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   beaconXPillarMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     lineHeight: 15
   },
   beaconXWisdomPanel: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E3DDF7",
+    borderColor: "rgba(167,139,250,0.38)",
     backgroundColor: "#0D1F22",
     padding: 12,
     gap: 10
   },
   beaconXWisdomLead: {
-    color: "rgba(255,255,255,0.55)",
-    fontSize: 12,
-    lineHeight: 17,
+    color: "rgba(255,255,255,0.76)",
+    fontSize: 13,
+    lineHeight: 19,
     fontWeight: "600"
   },
   beaconXWisdomRow: {
@@ -25606,23 +28140,23 @@ const styles = StyleSheet.create({
     minHeight: 56,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E3DDF7",
-    backgroundColor: "#F9F7FF",
+    borderColor: "rgba(167,139,250,0.34)",
+    backgroundColor: "#111827",
     paddingHorizontal: 10,
     paddingVertical: 8,
     gap: 2
   },
   beaconXWisdomLabel: {
-    color: "#E8F4F0",
-    fontSize: 11,
-    lineHeight: 14,
+    color: "#F0F9FF",
+    fontSize: 13,
+    lineHeight: 17,
     fontWeight: "900",
     flexShrink: 1,
     minWidth: 0
   },
   beaconXWisdomChipCalm: {
     borderColor: "#F6D46B",
-    backgroundColor: "#FFF9E8",
+    backgroundColor: "#1B2114",
     ...Platform.select({
       ios: {
         shadowColor: "#F6D46B",
@@ -25640,19 +28174,19 @@ const styles = StyleSheet.create({
     })
   },
   beaconXWisdomLabelCalm: {
-    color: "#8A5A00"
+    color: "#F6D46B"
   },
   beaconXWisdomMeta: {
-    color: "rgba(255,255,255,0.55)",
-    fontSize: 10,
-    lineHeight: 14,
+    color: "rgba(255,255,255,0.72)",
+    fontSize: 12,
+    lineHeight: 16,
     flexShrink: 1,
     minWidth: 0
   },
   beaconXRouteBand: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D8E3DB",
+    borderColor: "rgba(14,204,184,0.34)",
     backgroundColor: "#0D1F22",
     padding: 12,
     gap: 10
@@ -25669,17 +28203,17 @@ const styles = StyleSheet.create({
     gap: 2
   },
   beaconXRouteTitle: {
-    color: "#241B3F",
-    fontSize: 14,
-    lineHeight: 18,
+    color: "#F0F9FF",
+    fontSize: 16,
+    lineHeight: 21,
     fontWeight: "900",
     flexShrink: 1,
     minWidth: 0
   },
   beaconXRouteMeta: {
-    color: "#4A4261",
-    fontSize: 11,
-    lineHeight: 16,
+    color: "rgba(255,255,255,0.72)",
+    fontSize: 13,
+    lineHeight: 18,
     fontWeight: "700"
   },
   beaconXRouteGrid: {
@@ -25693,30 +28227,30 @@ const styles = StyleSheet.create({
     minHeight: 82,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E3D9FF",
-    backgroundColor: "#F8F5FF",
+    borderColor: "rgba(14,204,184,0.34)",
+    backgroundColor: "#0A2226",
     paddingHorizontal: 10,
     paddingVertical: 9,
     gap: 4
   },
   beaconXRouteCardLabel: {
-    color: "#241B3F",
-    fontSize: 12,
-    lineHeight: 15,
+    color: "#F0F9FF",
+    fontSize: 14,
+    lineHeight: 18,
     fontWeight: "900"
   },
   beaconXRouteCardDetail: {
-    color: "rgba(255,255,255,0.55)",
-    fontSize: 11,
-    lineHeight: 16,
+    color: "rgba(255,255,255,0.76)",
+    fontSize: 12,
+    lineHeight: 17,
     fontWeight: "700",
     flexShrink: 1,
     minWidth: 0
   },
   beaconXRouteCardAction: {
-    color: "#0E6F69",
-    fontSize: 10,
-    lineHeight: 13,
+    color: "#6FF7E8",
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "900",
     textTransform: "uppercase"
   },
@@ -25986,7 +28520,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   onboardingScrollHintMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 9,
     lineHeight: 12
   },
@@ -26002,7 +28536,7 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   onboardingText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 9,
     lineHeight: 13
   },
@@ -26109,7 +28643,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69"
   },
   launchNeedMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 10,
     lineHeight: 14
   },
@@ -26131,7 +28665,7 @@ const styles = StyleSheet.create({
     marginBottom: 2
   },
   metricLabel: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     fontWeight: "900",
     letterSpacing: 0,
@@ -26144,7 +28678,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   metricCaption: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 13,
     lineHeight: 18
   },
@@ -26301,13 +28835,13 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   sectionSwitcherPanelCloseLabel: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     lineHeight: 13,
     fontWeight: "900"
   },
   sectionSwitcherPanelMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
@@ -26382,7 +28916,7 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   tabLabel: {
-    color: "rgba(255,255,255,0.7)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     fontWeight: "800",
     flexShrink: 1,
@@ -26407,14 +28941,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: "#08181D",
     borderWidth: 1,
-    borderColor: "rgba(6,182,212,0.2)",
-    padding: 18,
+    borderColor: "rgba(6,182,212,0.22)",
+    padding: 20,
     gap: 16,
     shadowColor: "#06B6D4",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 14,
-    elevation: 6
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+    elevation: 8
   },
   accessSummaryRow: {
     minHeight: 48,
@@ -26430,7 +28964,7 @@ const styles = StyleSheet.create({
     gap: 10
   },
   accessSummaryLabel: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -26509,7 +29043,7 @@ const styles = StyleSheet.create({
   adminAuthAttemptsLabel: {
     flex: 1,
     fontSize: 11,
-    color: "rgba(255,255,255,0.5)",
+    color: "rgba(255,255,255,0.65)",
     fontWeight: "600"
   },
   adminLockoutBanner: {
@@ -26594,7 +29128,7 @@ const styles = StyleSheet.create({
   },
   adminAuthFooter: {
     fontSize: 10,
-    color: "rgba(255,255,255,0.3)",
+    color: "rgba(255,255,255,0.65)",
     textAlign: "center",
     fontStyle: "italic",
     lineHeight: 15
@@ -26685,7 +29219,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   launchChecklistMarkText: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 11,
     fontWeight: "900"
   },
@@ -26702,7 +29236,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   launchChecklistNote: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     lineHeight: 17
   },
@@ -26737,7 +29271,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   adminQuickActionMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     lineHeight: 16
   },
@@ -26753,13 +29287,13 @@ const styles = StyleSheet.create({
     gap: 4
   },
   adminReportMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 11,
     fontWeight: "800",
     textTransform: "uppercase"
   },
   adminReportText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
     lineHeight: 18
   },
@@ -26772,18 +29306,18 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: "#22D3EE",
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 11,
+    lineHeight: 15,
     textTransform: "uppercase",
     fontWeight: "900",
-    letterSpacing: 1.8
+    letterSpacing: 2.0
   },
   sectionTitle: {
     color: "#F0F9FF",
     fontSize: 22,
-    lineHeight: 30,
+    lineHeight: 29,
     fontWeight: "900",
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
     flexShrink: 1,
     minWidth: 0
   },
@@ -26796,13 +29330,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 24,
     fontWeight: "800",
-    letterSpacing: 0.2,
+    letterSpacing: 0.15,
     flexShrink: 1,
     minWidth: 0
   },
   sectionTitleSmallCompact: {
-    fontSize: 14,
-    lineHeight: 19,
+    fontSize: 17,
+    lineHeight: 22,
     width: "100%",
     flexShrink: 1
   },
@@ -26810,7 +29344,7 @@ const styles = StyleSheet.create({
     minWidth: 54,
     textAlign: "right",
     color: "#F37B64",
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: "900"
   },
   toneRow: {
@@ -26863,10 +29397,10 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   smallMeta: {
-    color: "rgba(255,255,255,0.45)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
-    lineHeight: 18,
-    fontWeight: "700",
+    lineHeight: 20,
+    fontWeight: "600",
     flexShrink: 1,
     minWidth: 0
   },
@@ -26893,16 +29427,17 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   preferenceMeta: {
-    color: "rgba(255,255,255,0.45)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 13,
     fontWeight: "700"
   },
   promptText: {
-    color: "rgba(255,255,255,0.6)",
-    fontSize: 14,
-    lineHeight: 20,
+    color: "rgba(255,255,255,0.82)",
+    fontSize: 15,
+    lineHeight: 23,
     flexShrink: 1,
-    minWidth: 0
+    minWidth: 0,
+    fontWeight: "400"
   },
   journalInput: {
     minHeight: 168,
@@ -26987,7 +29522,7 @@ const styles = StyleSheet.create({
   journalWordCountLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "rgba(255,255,255,0.42)"
+    color: "rgba(255,255,255,0.65)"
   },
   journalMoodRow: {
     flexDirection: "row",
@@ -27076,7 +29611,7 @@ const styles = StyleSheet.create({
     color: "#FFFDFC"
   },
   dailyRoutineActionDetail: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700",
@@ -27102,8 +29637,8 @@ const styles = StyleSheet.create({
   calmWisdomBand: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D8C9FF",
-    backgroundColor: "#F8F5FF",
+    borderColor: "rgba(167,139,250,0.42)",
+    backgroundColor: "#111827",
     padding: 12,
     gap: 10
   },
@@ -27119,7 +29654,7 @@ const styles = StyleSheet.create({
     gap: 2
   },
   calmWisdomTitle: {
-    color: "#241B3F",
+    color: "#F0F9FF",
     fontSize: 14,
     lineHeight: 18,
     fontWeight: "900",
@@ -27127,12 +29662,12 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmWisdomBadge: {
-    color: "#4D3C85",
+    color: "#DDD6FE",
     borderRadius: 999,
     overflow: "hidden",
     borderWidth: 1,
     borderColor: "#C9B9FF",
-    backgroundColor: "#0D1F22",
+    backgroundColor: "#141D2E",
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: 9,
@@ -27141,7 +29676,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   calmWisdomIntro: {
-    color: "#4A4261",
+    color: "rgba(255,255,255,0.76)",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700",
@@ -27176,7 +29711,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmSituationMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700"
@@ -27192,8 +29727,8 @@ const styles = StyleSheet.create({
     minHeight: 92,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D8E3DB",
-    backgroundColor: "#F3FBF8",
+    borderColor: "rgba(14,204,184,0.36)",
+    backgroundColor: "#0A2226",
     paddingHorizontal: 10,
     paddingVertical: 9,
     gap: 4
@@ -27206,7 +29741,7 @@ const styles = StyleSheet.create({
   },
   calmSituationCardLabel: {
     flex: 1,
-    color: "#E8F4F0",
+    color: "#F0F9FF",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "900"
@@ -27219,7 +29754,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   calmSituationCardDetail: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.76)",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700",
@@ -27227,7 +29762,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmSituationCardMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "800"
@@ -27263,7 +29798,7 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   calmVoiceText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700"
@@ -27310,7 +29845,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmTeachingPractice: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 10,
     lineHeight: 14,
     fontWeight: "700",
@@ -27318,7 +29853,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmTeachingRef: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 9,
     lineHeight: 12,
     fontWeight: "800"
@@ -27382,7 +29917,7 @@ const styles = StyleSheet.create({
     color: "#22D3EE"
   },
   calmLensChipMeta: {
-    color: "rgba(255,255,255,0.45)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -27469,7 +30004,7 @@ const styles = StyleSheet.create({
     color: "#274341"
   },
   calmPracticeMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -27532,7 +30067,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   routineMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 13,
     fontWeight: "600"
   },
@@ -27668,7 +30203,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   emptyText: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 14,
     lineHeight: 21
   },
@@ -27731,7 +30266,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   trendLabel: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     fontWeight: "900"
   },
@@ -27743,7 +30278,7 @@ const styles = StyleSheet.create({
     gap: 4
   },
   signalLabel: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     fontWeight: "900",
     textTransform: "uppercase"
@@ -27763,7 +30298,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   launchSummaryItem: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "700"
@@ -27774,8 +30309,8 @@ const styles = StyleSheet.create({
   legalTrustCard: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D8E3DB",
-    backgroundColor: "#F7FBF8",
+    borderColor: "rgba(14,204,184,0.32)",
+    backgroundColor: "#0A2226",
     paddingHorizontal: 14,
     paddingVertical: 12,
     gap: 8
@@ -27788,7 +30323,7 @@ const styles = StyleSheet.create({
   },
   legalTrustTitle: {
     flex: 1,
-    color: "#E8F4F0",
+    color: "#F0F9FF",
     fontSize: 14,
     lineHeight: 19,
     fontWeight: "900"
@@ -27810,7 +30345,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDF4EC"
   },
   legalTrustText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.76)",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "700"
@@ -27962,7 +30497,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   accessFlowBandText: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700"
@@ -28024,7 +30559,7 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   privateIntakeFlowMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -28068,7 +30603,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   accessFlowPillMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -28083,8 +30618,8 @@ const styles = StyleSheet.create({
   govHelpRow: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D9E1F0",
-    backgroundColor: "#F7F9FD",
+    borderColor: "rgba(14,204,184,0.32)",
+    backgroundColor: "#0A2226",
     padding: 14,
     gap: 12
   },
@@ -28098,12 +30633,12 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   govHelpTitle: {
-    color: "#E8F4F0",
+    color: "#F0F9FF",
     fontSize: 16,
     fontWeight: "900"
   },
   govHelpAudience: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.72)",
     fontSize: 13,
     fontWeight: "700"
   },
@@ -28113,7 +30648,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   govHelpDescription: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.76)",
     fontSize: 13,
     lineHeight: 19
   },
@@ -28145,7 +30680,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   contactMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -28296,7 +30831,7 @@ const styles = StyleSheet.create({
     color: "#E8F4F0"
   },
   identityMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 10,
     lineHeight: 14
   },
@@ -28305,7 +30840,7 @@ const styles = StyleSheet.create({
     lineHeight: 12
   },
   identityMetaActive: {
-    color: "rgba(255,255,255,0.55)"
+    color: "rgba(255,255,255,0.75)"
   },
   verificationStatusRow: {
     flexDirection: "row",
@@ -28390,7 +30925,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   careLensMeta: {
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontSize: 13,
     lineHeight: 20
   },
@@ -28447,7 +30982,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   languageButtonMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "700",
@@ -28483,7 +31018,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   segmentMeta: {
-    color: "rgba(255,255,255,0.42)",
+    color: "rgba(255,255,255,0.65)",
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "700"
@@ -28579,8 +31114,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#060E15",
     borderTopWidth: 1,
     borderTopColor: "rgba(34,211,238,0.22)",
-    paddingTop: 6,
-    paddingBottom: 8,
+    paddingTop: 8,
+    paddingBottom: 12,
     paddingHorizontal: 4,
     shadowColor: "#22D3EE",
     shadowOffset: { width: 0, height: -6 },
@@ -28592,14 +31127,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 3,
-    paddingVertical: 4,
+    gap: 4,
+    paddingVertical: 5,
     paddingHorizontal: 2
   },
   bottomNavPill: {
-    width: 52,
-    height: 32,
-    borderRadius: 16,
+    width: 58,
+    height: 36,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent"
@@ -28614,16 +31149,16 @@ const styles = StyleSheet.create({
     borderColor: "rgba(34,211,238,0.45)"
   },
   bottomNavIcon: {
-    fontSize: 22,
-    lineHeight: 28
+    fontSize: 24,
+    lineHeight: 30
   },
   bottomNavIconActive: {
     // glow from the pill handles active state
   },
   bottomNavLabel: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: "rgba(255,255,255,0.42)",
+    fontSize: 11,
+    fontWeight: "800",
+    color: "rgba(255,255,255,0.75)",
     textAlign: "center",
     letterSpacing: 0.3
   },
@@ -28675,12 +31210,13 @@ const styles = StyleSheet.create({
     letterSpacing: 2.8,
   },
   heroRouteTagline: {
-    fontSize: 11,
+    fontSize: 10,
     color: "#F6D46B",
-    letterSpacing: 1.1,
-    fontWeight: "900",
+    letterSpacing: 1.8,
+    fontWeight: "800",
     textTransform: "uppercase",
     lineHeight: 14,
+    opacity: 0.9,
   },
   heroRouteQuestion: {
     fontSize: 22,
@@ -28754,7 +31290,7 @@ const styles = StyleSheet.create({
   },
   dynamicHeroDate: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontWeight: "500",
     letterSpacing: 0.4,
   },
@@ -28773,7 +31309,7 @@ const styles = StyleSheet.create({
   },
   dynamicHeroGreeting: {
     fontSize: 13,
-    color: "rgba(255,255,255,0.5)",
+    color: "rgba(255,255,255,0.65)",
     fontWeight: "500",
     marginBottom: 2,
     marginTop: 14,
@@ -28849,11 +31385,11 @@ const styles = StyleSheet.create({
   },
   welcomeExplainerCloseText: {
     fontSize: 16,
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
   },
   welcomeExplainerBody: {
     fontSize: 13,
-    color: "rgba(255,255,255,0.68)",
+    color: "rgba(255,255,255,0.75)",
     lineHeight: 19,
     marginBottom: 12,
   },
@@ -28879,8 +31415,8 @@ const styles = StyleSheet.create({
   tabBannerCard: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 12,
+    padding: 14,
     marginBottom: 14,
     gap: 14,
     borderWidth: 1,
@@ -28898,20 +31434,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabBannerTitle: {
-    fontSize: 18,
-    fontWeight: "800",
+    fontSize: 20,
+    lineHeight: 25,
+    fontWeight: "900",
     color: "#FFFFFF",
     letterSpacing: 0.3,
   },
   tabBannerSub: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.5)",
+    fontSize: 13,
+    lineHeight: 18,
+    color: "rgba(255,255,255,0.75)",
     marginTop: 2,
     letterSpacing: 0.2,
   },
   tabBannerDate: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.4)",
+    color: "rgba(255,255,255,0.65)",
     textAlign: "right",
   },
   // ── Community crisis notice ──
@@ -29101,7 +31639,7 @@ const styles = StyleSheet.create({
   },
   vedicVaraGuidance: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.62)",
+    color: "rgba(255,255,255,0.75)",
     lineHeight: 17
   },
   vedicChipsRow: {
@@ -29135,7 +31673,7 @@ const styles = StyleSheet.create({
   },
   vedicChipSub: {
     fontSize: 9,
-    color: "rgba(255,255,255,0.45)",
+    color: "rgba(255,255,255,0.65)",
     textAlign: "center"
   },
   vedicPredSection: {
@@ -29254,7 +31792,7 @@ const styles = StyleSheet.create({
   },
   vedicDisclaimer: {
     fontSize: 10,
-    color: "rgba(255,255,255,0.28)",
+    color: "rgba(255,255,255,0.65)",
     textAlign: "center",
     fontStyle: "italic",
     lineHeight: 15
@@ -29326,7 +31864,7 @@ const styles = StyleSheet.create({
   birthChartPromptHint: {
     fontSize: 10,
     lineHeight: 13,
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     fontWeight: "600"
   },
   birthChartPromptButtons: {
