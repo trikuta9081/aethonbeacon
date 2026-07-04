@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.aethon.beacon",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "requireFullScreen": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Aethon Beacon does not use your camera.",
@@ -44,7 +44,7 @@
         "backgroundColor": "#0A0F1E"
       },
       "package": "com.aethon.beacon",
-      "versionCode": 1,
+      "versionCode": 17,
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
