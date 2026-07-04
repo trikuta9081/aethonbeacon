@@ -23,7 +23,7 @@
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = AethonBeacon/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		BF77CB4BEA2562761C8B1A86 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-AethonBeacon/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		D3C594BE231538D4D884AE7F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = AethonBeacon/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D3C594BE231538D4D884AE7F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = AethonBeacon/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		E58A3262843058841A9897B3 /* Pods-AethonBeacon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AethonBeacon.release.xcconfig"; path = "Target Support Files/Pods-AethonBeacon/Pods-AethonBeacon.release.xcconfig"; sourceTree = "<group>"; };
 		E5AB4AD00B631DD5E6D33EA7 /* Pods-AethonBeacon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AethonBeacon.debug.xcconfig"; path = "Target Support Files/Pods-AethonBeacon/Pods-AethonBeacon.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -73,7 +73,6 @@
 				E5AB4AD00B631DD5E6D33EA7 /* Pods-AethonBeacon.debug.xcconfig */,
 				E58A3262843058841A9897B3 /* Pods-AethonBeacon.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -365,7 +364,7 @@
 				CODE_SIGN_ENTITLEMENTS = AethonBeacon/AethonBeacon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 846YFF8Z98;
+				DEVELOPMENT_TEAM = DD3GZBF2N9;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -385,7 +384,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.aethonbeacon.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rajeshwar.aethonbeacon.dev;
 				PRODUCT_NAME = AethonBeacon;
 				SWIFT_OBJC_BRIDGING_HEADER = "AethonBeacon/AethonBeacon-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -404,7 +403,7 @@
 				CODE_SIGN_ENTITLEMENTS = AethonBeacon/AethonBeacon.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 846YFF8Z98;
+				DEVELOPMENT_TEAM = DD3GZBF2N9;
 				INFOPLIST_FILE = AethonBeacon/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -419,7 +418,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.aethonbeacon.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rajeshwar.aethonbeacon.dev;
 				PRODUCT_NAME = AethonBeacon;
 				SWIFT_OBJC_BRIDGING_HEADER = "AethonBeacon/AethonBeacon-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
