@@ -2220,6 +2220,14 @@ function buildRoutePreview(
       detail: `${issueLabel}: the app will open this next.`
     };
   }
+  // Emotional issues that get counseling chat first, not generic calm
+  const counselingPreviewIds = new Set<IssueId>(["loneliness", "burnout", "identity", "anger", "stigma"]);
+  if (counselingPreviewIds.has(issueId)) {
+    return {
+      title: "Counseling chat",
+      detail: `${issueLabel}: an empathetic conversation will open first.`
+    };
+  }
   if (calmIssueIds.has(issueId)) {
     return {
       title: "Calm route",
@@ -19315,15 +19323,18 @@ function RouteDecisionOverlay({
   onClose: () => void;
 }) {
   const isUrgent = decision.route === "urgent";
+  const counselingOverlayIds = new Set(["loneliness", "burnout", "identity", "anger", "stigma"]);
   const recommendedChoice: RouteChoiceId = isUrgent
     ? "sos"
     : decision.route === "redress"
       ? "help"
       : decision.route === "professional"
         ? "path"
-        : calmIssueIds.has(decision.issueId)
-          ? "reset"
-          : "path";
+        : counselingOverlayIds.has(decision.issueId)
+          ? "path"   // "Path" = AI help which includes counseling
+          : calmIssueIds.has(decision.issueId)
+            ? "reset"
+            : "path";
 
   const choices: Array<{ id: RouteChoiceId; label: string; detail: string }> = isUrgent
     ? [
@@ -19391,7 +19402,7 @@ function RouteDecisionOverlay({
               Analysis
             </Text>
             <Text style={{ color: "#E2E8F0", fontSize: 14, lineHeight: 20 }}>
-              {decision.identityLabel} · {decision.route === "urgent" ? "Urgent" : decision.route === "redress" ? "Help" : decision.route === "professional" ? "Guidance" : calmIssueIds.has(decision.issueId) ? "Reset" : "Path"}
+              {decision.identityLabel} · {decision.route === "urgent" ? "Urgent" : decision.route === "redress" ? "Help" : decision.route === "professional" ? "Guidance" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "Talk" : calmIssueIds.has(decision.issueId) ? "Reset" : "Path"}
             </Text>
             <Text style={{ color: "rgba(226,232,240,0.68)", fontSize: 12, lineHeight: 18 }}>
               {decision.rawText}
