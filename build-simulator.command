@@ -14,9 +14,15 @@ if [ -z "$UDID" ]; then
   echo ""
   echo "No simulator is currently booted."
   echo "Booting iPhone 17 Pro simulator..."
-  xcrun simctl boot "5D0753C5-B41A-47B0-A793-E31D7936C76E" 2>/dev/null || true
+  xcrun simctl boot "iPhone 17 Pro" 2>/dev/null || open -a Simulator
   sleep 3
   UDID=$(xcrun simctl list devices booted | grep "Booted" | grep -oE "[0-9A-F-]{36}" | head -1)
+fi
+
+if [ -z "$UDID" ]; then
+  echo "ERROR: No booted simulator is available."
+  read -p "Press Enter to close..."
+  exit 1
 fi
 
 echo "Target simulator: $UDID"

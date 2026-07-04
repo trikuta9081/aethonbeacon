@@ -176,7 +176,7 @@ npx eas build --platform ios
 
 ## Recommended next decisions
 
-- Bundle IDs are now aligned to `com.aethonbeacon.app` for both iOS and Android; replace it only if the legal entity or store strategy changes.
+- Bundle IDs are aligned to `com.aethon.beacon` for both iOS and Android; replace it only if the legal entity or store strategy changes.
 - Replace the local access center with real backend authentication before a public release.
 - Decide whether journal entries stay local-first, sync to a backend, or use encrypted cloud storage.
 - Add a separate watch companion phase for Apple Watch and Wear OS; the current Expo app does not yet include watch-specific targets or watch UI.
