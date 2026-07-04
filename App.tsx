@@ -13049,15 +13049,7 @@ function isTrustedExternalUrl(url: string) {
                 </Text>
               </View>
             ) : null}
-            {activeRouteFollowUp && activeRouteFollowUp.status !== "open" && activeTab === "today" ? (
-              <RouteFollowUpCheckpoint
-                followUp={activeRouteFollowUp}
-                onResolved={markRouteFollowUpResolved}
-                onMoreGuidance={askMoreRouteGuidance}
-                onReminder={remindRouteFollowUpTomorrow}
-                onDismiss={() => setActiveRouteFollowUp(null)}
-              />
-            ) : null}
+{/* Follow-up checkpoint removed (disabled) */}
             {pendingRouteDecision ? (
               <RouteDecisionOverlay
                 decision={pendingRouteDecision}
@@ -14596,33 +14588,7 @@ function TodaySection({
             </Text>
           </View>
         </View>
-        <SectionFlowBand
-          eyebrow={uiCopy.dailyLoopEyebrow}
-          title={dailyRoutinePlan.title}
-          summary={dailyRoutinePlan.summary}
-          compact
-          cards={[
-            {
-              label: uiCopy.dailyMeaning,
-              value: routePreview.title
-            },
-            {
-              label: uiCopy.dailyNextStep,
-              value: routePreview.detail
-            },
-            {
-              label: uiCopy.dailyOpenNext,
-              value:
-                dailyRoutinePlan.actions.find((action) => action.kind === "play")?.label ??
-                "Practice loop"
-            }
-          ]}
-          actions={dailyRoutinePlan.actions.map((action) => ({
-            label: action.actionLabel,
-            onPress: () => onRunDailyRoutineAction(action),
-            primary: action.kind === "save"
-          }))}
-        />
+{/* Daily Loop section removed */}
         <View style={[styles.homeReportBand, compact && styles.homeReportBandCompact]}>
           <View style={styles.sectionHeader}>
             <View>
@@ -14682,29 +14648,8 @@ function TodaySection({
             </Pressable>
           </View>
         </View>
+        {/* Beacon Guide / Vision card removed */}
         <View style={[styles.homeOverviewGrid, compact && styles.homeOverviewGridCompact]}>
-          <View style={[styles.homeOverviewCard, compact && styles.homeOverviewCardCompact]}>
-            <Text style={styles.homeOverviewEyebrow}>{uiCopy.visionEyebrow}</Text>
-            <Text style={styles.homeOverviewTitle}>{uiCopy.visionTitle}</Text>
-            <Text style={styles.homeOverviewText}>{uiCopy.visionCopy}</Text>
-            <Text style={styles.homeOverviewMeta}>{dailyRoutinePlan.summary}</Text>
-            <View style={styles.homeOverviewActions}>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => onOpenTab("aihelp")}
-                style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
-              >
-                <Text style={styles.homeOverviewButtonLabel}>{uiCopy.openGuide}</Text>
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => onOpenTab("guide")}
-                style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
-              >
-                <Text style={styles.homeOverviewButtonSecondaryLabel}>{uiCopy.openPath}</Text>
-              </Pressable>
-            </View>
-          </View>
           <View style={[styles.homeOverviewCard, styles.homeOverviewCardCommunity, compact && styles.homeOverviewCardCompact]}>
             <Text style={styles.homeOverviewEyebrow}>{uiCopy.communityEyebrow}</Text>
             <Text style={styles.homeOverviewTitle}>{uiCopy.communityTitle}</Text>
@@ -14895,30 +14840,7 @@ function JournalSection({
           <Text style={styles.textButtonLabel}>{uiCopy.clearHistory}</Text>
         </Pressable>
       </View>
-      <SectionFlowBand
-        eyebrow={uiCopy.journalLoopEyebrow}
-        title={uiCopy.journalLoopTitle}
-        summary={uiCopy.journalLoopSummary}
-        cards={[
-          {
-            label: uiCopy.dailyMeaning,
-            value: journalInsight?.title ?? "No saved note yet"
-          },
-          {
-            label: uiCopy.dailyNextStep,
-            value: journalInsight?.detail ?? "Write one line, then save and route."
-          },
-          {
-            label: uiCopy.dailyOpenNext,
-            value: routePreview.title
-          }
-        ]}
-        actions={[
-          { label: uiCopy.openPathFromJournal, onPress: () => onOpenTab("guide") },
-          { label: uiCopy.practiceButton, onPress: () => onOpenTab("play") },
-          { label: uiCopy.startCalm, onPress: onOpenCalm }
-        ]}
-      />
+{/* Journal Loop section removed */}
       <View style={styles.homeOverviewActions}>
         <Pressable
           accessibilityRole="button"
@@ -16256,7 +16178,7 @@ function MeditationSection({
                         lineHeight: 12,
                         marginTop: 4,
                         textAlign: "center",
-                        color: isSelected ? "#0E6F69" : "#6B6156"
+                        color: isSelected ? "#22D3EE" : "#8B9BAD"
                       }
                     ]}
                     numberOfLines={1}
@@ -25541,7 +25463,7 @@ const styles = StyleSheet.create({
     gap: 1
   },
   topStatusChipLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 10,
     lineHeight: 12,
     fontWeight: "900",
@@ -25654,7 +25576,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8
   },
   routeNoticeTitle: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "900",
@@ -25842,7 +25764,7 @@ const styles = StyleSheet.create({
     gap: 2
   },
   visitReportLabel: {
-    color: "#0E9F95",
+    color: "#22D3EE",
     fontSize: 9,
     lineHeight: 11,
     fontWeight: "900",
@@ -25899,7 +25821,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(14,111,105,0.35)"
   },
   homeOverviewEyebrow: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 10,
     lineHeight: 12,
     fontWeight: "900",
@@ -26000,7 +25922,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   homeToneBandButtonLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 7,
     lineHeight: 9,
     fontWeight: "900",
@@ -26228,7 +26150,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingVertical: 3,
     backgroundColor: "#E4F4EF",
-    color: "#0E6F69",
+    color: "#0A4A44",
     fontSize: 10,
     lineHeight: 14,
     fontWeight: "900",
@@ -26508,7 +26430,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     backgroundColor: "#F6D46B",
-    color: "#E8F4F0",
+    color: "#1A2A10",
     fontSize: 11,
     lineHeight: 24,
     textAlign: "center",
@@ -27166,7 +27088,7 @@ const styles = StyleSheet.create({
     gap: 4
   },
   issueLensLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 12,
     fontWeight: "900",
     textTransform: "uppercase"
@@ -27354,9 +27276,9 @@ const styles = StyleSheet.create({
   },
   playFeaturedCard: {
     borderRadius: 8,
-    backgroundColor: "#F7FCFA",
+    backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#D6E8E1",
+    borderColor: "rgba(14,199,189,0.28)",
     padding: 14,
     gap: 8
   },
@@ -27414,7 +27336,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   playCardSubtitle: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 13,
     fontWeight: "800"
   },
@@ -27525,7 +27447,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   searchSuggestionLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 12,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -27699,7 +27621,7 @@ const styles = StyleSheet.create({
     color: "#FFFDFC"
   },
   communityBadgeTextUser: {
-    color: "#0E6F69"
+    color: "#0A5C58"
   },
   communityText: {
     color: "rgba(255,255,255,0.75)",
@@ -28086,7 +28008,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   helpNumber: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 13,
     fontWeight: "900"
   },
@@ -28854,8 +28776,8 @@ const styles = StyleSheet.create({
     minHeight: 42,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
-    backgroundColor: "#F9FBFF",
+    borderColor: "rgba(14,199,189,0.35)",
+    backgroundColor: "#071C1F",
     paddingHorizontal: 12,
     paddingVertical: 10,
     color: "#E8F4F0",
@@ -29273,7 +29195,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   profileSheetJumpButtonLabel: {
-    color: "#0E6F69",
+    color: "#0A5C58",
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "900",
@@ -29322,7 +29244,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   sheetCloseIconButtonLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 18,
     lineHeight: 20,
     fontWeight: "900",
@@ -29351,7 +29273,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5
   },
   onboardingCloseButtonLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "900",
@@ -29483,7 +29405,7 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   onboardingButtonSecondaryLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 13,
     fontWeight: "900"
   },
@@ -29653,7 +29575,7 @@ const styles = StyleSheet.create({
     borderColor: "#BFD7D1"
   },
   flowRailButtonLabel: {
-    color: "#0E6F69",
+    color: "#0A5C58",
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "900"
@@ -30496,7 +30418,7 @@ const styles = StyleSheet.create({
     color: "#DCE4DD"
   },
   dailyRoutineActionButton: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 12,
     lineHeight: 15,
     fontWeight: "900",
@@ -30621,7 +30543,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   calmSituationCardAction: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "900",
@@ -30666,7 +30588,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   calmVoiceMeta: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "800"
@@ -30705,7 +30627,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   calmTeachingTheme: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 9,
     fontWeight: "900",
     textTransform: "uppercase"
@@ -30946,7 +30868,7 @@ const styles = StyleSheet.create({
     fontWeight: "600"
   },
   routineArrow: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 20,
     fontWeight: "900"
   },
@@ -31091,7 +31013,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   textButtonLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontWeight: "900"
   },
   deleteButton: {
@@ -31215,7 +31137,7 @@ const styles = StyleSheet.create({
     overflow: "hidden"
   },
   legalTrustStatusIncluded: {
-    color: "#0E6F69",
+    color: "#0A5C58",
     backgroundColor: "#DDF4EC"
   },
   legalTrustText: {
@@ -31365,7 +31287,7 @@ const styles = StyleSheet.create({
     lineHeight: 15
   },
   accessFlowBandMeta: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 10,
     fontWeight: "900",
     textTransform: "uppercase"
@@ -31517,7 +31439,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   govHelpNumber: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 15,
     fontWeight: "900"
   },
@@ -31588,7 +31510,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0D1F22"
   },
   contactButtonSecondaryLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontSize: 13,
     fontWeight: "900"
   },
@@ -31686,7 +31608,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#102A2D"
   },
   identityMarkText: {
-    color: "#E8F4F0",
+    color: "#0A3A35",
     fontSize: 12,
     fontWeight: "900"
   },
@@ -31938,7 +31860,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14
   },
   secondaryDangerButtonLabel: {
-    color: "#0E6F69",
+    color: "#22D3EE",
     fontWeight: "900"
   },
   commandButton: {
@@ -32866,7 +32788,7 @@ const styles = StyleSheet.create({
   birthChartExactBadge: {
     fontSize: 10,
     fontWeight: "900",
-    color: "#0E6F69",
+    color: "#22D3EE",
     backgroundColor: "rgba(14,111,105,0.16)",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.25)",
