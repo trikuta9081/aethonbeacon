@@ -486,7 +486,7 @@ function sentenceFragments(text) {
   return String(text ?? "")
     .replace(/\s+/g, " ")
     .split(/(?<=[.!?])\s+/)
-    .map((line) => line.trim())
+    .map((line) => trimAIHelpLabel(line.trim()))
     .filter((line) => line.length >= 20)
     .slice(0, 4);
 }
@@ -626,7 +626,7 @@ async function generateGeminiBrief(body) {
   for (const model of geminiModelCandidates) {
     try {
       const promptBody = { ...body, _promptOverride: buildBriefPrompt(body) };
-      const result = await callGeminiModelWithPrompt(model, buildBriefPrompt(body));
+      const result = await callGeminiModelWithPrompt(model, buildBriefPrompt(body), 60);
       return { source: "gemini", model: result.model, text: result.text };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `model ${model} failed`);
@@ -695,7 +695,7 @@ async function generateGeminiBirthChart(body) {
   const errors = [];
   for (const model of geminiModelCandidates) {
     try {
-      const result = await callGeminiModelWithPrompt(model, buildBirthChartPrompt(body));
+      const result = await callGeminiModelWithPrompt(model, buildBirthChartPrompt(body), 120);
       return { source: "gemini", model: result.model, text: result.text };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `model ${model} failed`);
@@ -744,7 +744,7 @@ async function generateGeminiJournalInsight(body) {
   const errors = [];
   for (const model of geminiModelCandidates) {
     try {
-      const result = await callGeminiModelWithPrompt(model, buildJournalPrompt(body));
+      const result = await callGeminiModelWithPrompt(model, buildJournalPrompt(body), 100);
       return { source: "gemini", model: result.model, text: result.text };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `model ${model} failed`);
@@ -801,7 +801,7 @@ async function generateGeminiInsights(body) {
   const errors = [];
   for (const model of geminiModelCandidates) {
     try {
-      const result = await callGeminiModelWithPrompt(model, buildInsightsPrompt(body));
+      const result = await callGeminiModelWithPrompt(model, buildInsightsPrompt(body), 150);
       return { source: "gemini", model: result.model, text: result.text };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `model ${model} failed`);
@@ -813,7 +813,7 @@ async function generateGeminiInsights(body) {
 
 // ── Shared low-level Gemini caller with explicit prompt ────────────────────
 
-async function callGeminiModelWithPrompt(model, prompt) {
+async function callGeminiModelWithPrompt(model, prompt, minChars = 40) {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
     {
@@ -837,7 +837,7 @@ async function callGeminiModelWithPrompt(model, prompt) {
   const text = Array.isArray(data?.candidates)
     ? data.candidates.flatMap((c) => c?.content?.parts ?? []).map((p) => p?.text ?? "").join("\n").trim()
     : "";
-  if (text.length === 0) throw new Error(`Gemini ${model} returned empty response`);
+  if (text.length < minChars) throw new Error(`Gemini ${model} returned a too-short response`);
   return { source: "gemini", model, text };
 }
 
