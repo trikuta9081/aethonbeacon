@@ -379,7 +379,7 @@ type PlayChallenge = {
 
 type CommunityMessageRole = "user" | "verified" | "moderator";
 type CommunityFilterId = "all" | "verified" | "discussion";
-type CommunityTopicFilterId = "all" | "general" | "student" | "care" | "work" | "complaint" | "support" | "grief" | "trauma" | "addiction" | "relationships" | "financial" | "parenting" | "identity";
+type CommunityTopicFilterId = "all" | "general" | "student" | "care" | "work" | "complaint" | "support" | "grief" | "trauma" | "addiction" | "relationships" | "financial" | "parenting" | "identity" | "anger" | "anxiety" | "burnout" | "loneliness" | "health" | "academic";
 type CommunityChatPersonaId = "moderator" | "mentor" | "support";
 type CommunityMessage = {
   id: string;
@@ -2634,11 +2634,16 @@ function buildPrivateIntakeQuestion(
 
 function getPrivateIntakeMode(issueId: IssueId, routeTab: "guide" | "redress"): PrivateIntakeMode {
   if (routeTab === "redress") return "redress";
-  if (issueId === "anger") return "conflict";
-  if (issueId === "anxiety" || issueId === "fear" || issueId === "stigma") return "distress";
-  if (issueId === "burnout") return "workload";
-  if (issueId === "loneliness") return "connection";
-  if (issueId === "overconfidence") return "selfview";
+  // Conflict: interpersonal tension and repair
+  if (issueId === "anger" || issueId === "relationship") return "conflict";
+  // Distress: emotional overwhelm, fear, health anxiety, trauma, addiction triggers
+  if (issueId === "anxiety" || issueId === "fear" || issueId === "stigma" || issueId === "trauma" || issueId === "addiction" || issueId === "health") return "distress";
+  // Workload: practical pressure overload
+  if (issueId === "burnout" || issueId === "financial" || issueId === "parenting" || issueId === "academic") return "workload";
+  // Connection: loss, isolation, needing witness/support
+  if (issueId === "loneliness" || issueId === "grief") return "connection";
+  // Self-view: self-perception, identity examination
+  if (issueId === "overconfidence" || issueId === "identity") return "selfview";
   return "general";
 }
 
@@ -6199,6 +6204,66 @@ const communityMessagesSeed: CommunityMessage[] = [
     text:
       "If you are carrying other people all day, your own pause matters too. A short reset can keep the rest of the day humane.",
     topic: "care"
+  },
+  {
+    id: "community-verified-4",
+    createdAt: new Date("2026-06-03T08:15:00.000Z").toISOString(),
+    author: "Verified Contributor",
+    role: "verified",
+    tag: "Anxiety",
+    text:
+      "Anxiety rarely lies about there being a problem — it just exaggerates the size of it. Name the actual thing you are worried about, then check how big it really is.",
+    topic: "anxiety"
+  },
+  {
+    id: "community-verified-5",
+    createdAt: new Date("2026-06-03T08:20:00.000Z").toISOString(),
+    author: "Verified Contributor",
+    role: "verified",
+    tag: "Anger",
+    text:
+      "Anger is almost always a signal — something important was crossed or unmet. Write down what you actually needed before you decide how to respond.",
+    topic: "anger"
+  },
+  {
+    id: "community-verified-6",
+    createdAt: new Date("2026-06-03T08:25:00.000Z").toISOString(),
+    author: "Verified Contributor",
+    role: "verified",
+    tag: "Burnout",
+    text:
+      "Burnout is not a character flaw — it is what happens when output consistently exceeds what comes back in. Rest is not a luxury here; it is a medical requirement.",
+    topic: "burnout"
+  },
+  {
+    id: "community-verified-7",
+    createdAt: new Date("2026-06-03T08:30:00.000Z").toISOString(),
+    author: "Verified Contributor",
+    role: "verified",
+    tag: "Loneliness",
+    text:
+      "Loneliness is not about the number of people around you — it is about whether you feel truly seen by any of them. One genuine connection matters more than a full social calendar.",
+    topic: "loneliness"
+  },
+  {
+    id: "community-verified-8",
+    createdAt: new Date("2026-06-03T08:35:00.000Z").toISOString(),
+    author: "Verified Contributor",
+    role: "verified",
+    tag: "Health",
+    text:
+      "The anxiety around a health concern can sometimes feel worse than the concern itself. Write down what you know for certain, what is still uncertain, and the one next step that is in your control.",
+    topic: "health"
+  },
+  {
+    id: "community-verified-9",
+    createdAt: new Date("2026-06-03T08:40:00.000Z").toISOString(),
+    author: "Verified Contributor",
+    role: "verified",
+    tag: "Academic",
+    text:
+      "Academic pressure is real — but your worth is not contained in a mark. Separate 'I did not perform well' from 'I am not good enough'. Only one of those is a problem to solve.",
+    topic: "academic"
   }
 ];
 
@@ -6609,7 +6674,13 @@ function isCommunityTopicFilterId(value: string): value is CommunityTopicFilterI
     value === "relationships" ||
     value === "financial" ||
     value === "parenting" ||
-    value === "identity"
+    value === "identity" ||
+    value === "anger" ||
+    value === "anxiety" ||
+    value === "burnout" ||
+    value === "loneliness" ||
+    value === "health" ||
+    value === "academic"
   );
 }
 
@@ -7062,9 +7133,11 @@ function generateDailyVisitReport(
   if (checkInsLogged > 0) strengths.push("Self-awareness check-in completed");
   if (journalWritten) strengths.push("Reflective journaling practiced");
   if (counselingTurns > 0) strengths.push("Engaged in guided counseling");
-  if (tabsVisited.includes("Meditate") || tabsVisited.includes("Mind Rest")) strengths.push("Meditation session started");
+  if (tabsVisited.includes("Meditation")) strengths.push("Meditation session started");
   if (tabsVisited.includes("Community")) strengths.push("Community connection explored");
-  if (tabsVisited.includes("Wisdom")) strengths.push("Wisdom resources accessed");
+  if (tabsVisited.includes("Guidance")) strengths.push("Guidance path explored");
+  if (tabsVisited.includes("Tones")) strengths.push("Sound healing tones practiced");
+  if (tabsVisited.includes("Vedic / Horoscope")) strengths.push("Vedic insight checked");
   if (strengths.length === 0) strengths.push("Showed up for your mental health today");
 
   // Focus areas
@@ -16912,7 +16985,13 @@ function CommunitySection({
             { id: "care", label: "Care" },
             { id: "work", label: "Work" },
             { id: "complaint", label: "Complaint" },
-            { id: "support", label: "Support" }
+            { id: "support", label: "Support" },
+            { id: "anxiety", label: "Anxiety" },
+            { id: "anger", label: "Anger" },
+            { id: "burnout", label: "Burnout" },
+            { id: "loneliness", label: "Loneliness" },
+            { id: "health", label: "Health" },
+            { id: "academic", label: "Academic" }
           ].map((item) => {
             const isSelected = communityTopicFilter === item.id;
             return (
