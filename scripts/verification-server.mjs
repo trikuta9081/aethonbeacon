@@ -18,6 +18,12 @@ function parseWebhookUrl(value) {
   }
 }
 
+function timeoutSignal(ms) {
+  return typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function"
+    ? AbortSignal.timeout(ms)
+    : undefined;
+}
+
 const port = parsePositiveInt(process.env.PORT ?? process.env.VERIFICATION_SERVER_PORT, 8787);
 const host = (process.env.VERIFICATION_HOST ?? "127.0.0.1").trim() || "127.0.0.1";
 const corsOrigin = (process.env.VERIFICATION_CORS_ORIGIN ?? "*").trim() || "*";
@@ -38,10 +44,10 @@ const sendgridApiKey = (process.env.SENDGRID_API_KEY ?? "").trim();
 const sendgridFromEmail = (process.env.SENDGRID_FROM_EMAIL ?? "").trim();
 const sendgridFromName = (process.env.SENDGRID_FROM_NAME ?? brandName).trim() || brandName;
 const geminiApiKey = (process.env.GEMINI_API_KEY ?? "").trim();
-const geminiModel = (process.env.GEMINI_MODEL ?? "gemini-2.5-flash").trim() || "gemini-2.5-flash";
+const geminiModel = (process.env.GEMINI_MODEL ?? "gemini-3.5-flash").trim() || "gemini-3.5-flash";
 const adminLoginIdentity = (process.env.ADMIN_LOGIN_ID ?? "").trim().toLowerCase();
 const adminLoginCode = (process.env.ADMIN_LOGIN_CODE ?? "").trim();
-const geminiFallbackModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
+const geminiFallbackModels = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
 const geminiModelCandidates = [
   geminiModel,
   ...geminiFallbackModels.filter((model) => model !== geminiModel)
@@ -50,6 +56,8 @@ const codeTtlMs = parsePositiveInt(process.env.VERIFICATION_CODE_TTL_MS, 10 * 60
 const requestWindowMs = parsePositiveInt(process.env.VERIFICATION_REQUEST_WINDOW_MS, 15 * 60 * 1000);
 const maxRequestsPerWindow = parsePositiveInt(process.env.VERIFICATION_MAX_REQUESTS_PER_WINDOW, 5);
 const maxConfirmAttempts = parsePositiveInt(process.env.VERIFICATION_MAX_CONFIRM_ATTEMPTS, 5);
+const providerTimeoutMs = parsePositiveInt(process.env.VERIFICATION_PROVIDER_TIMEOUT_MS, 12_000);
+const geminiTimeoutMs = parsePositiveInt(process.env.GEMINI_REQUEST_TIMEOUT_MS, 18_000);
 const smsDeliveryConfigured =
   smsWebhookUrl.length > 0 ||
   (twilioAccountSid.length > 0 &&
@@ -92,7 +100,7 @@ function json(res, statusCode, payload) {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": currentCorsOrigin(),
     "Vary": "Origin",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
   });
   res.end(JSON.stringify(payload));
@@ -239,7 +247,8 @@ async function sendWebhook(url, payload) {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    signal: timeoutSignal(providerTimeoutMs)
   });
   if (!response.ok) {
     const body = await response.text().catch(() => "");
@@ -284,7 +293,8 @@ async function sendTwilioSms({ destination, code }) {
         Authorization: `Basic ${Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString("base64")}`,
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body
+      body,
+      signal: timeoutSignal(providerTimeoutMs)
     }
   );
 
@@ -320,7 +330,8 @@ async function sendSendGridEmail({ destination, code }) {
           value: `${otpMessage(code)}\n\nIf you did not request this code, you can ignore this message.`
         }
       ]
-    })
+    }),
+    signal: timeoutSignal(providerTimeoutMs)
   });
 
   if (!response.ok) {
@@ -471,6 +482,33 @@ function isStructuredAIHelpReply(text) {
   return patterns.every((pattern, index) => pattern.test(lines[index] ?? "") && trimAIHelpLabel(lines[index]).length >= 12);
 }
 
+function sentenceFragments(text) {
+  return String(text ?? "")
+    .replace(/\s+/g, " ")
+    .split(/(?<=[.!?])\s+/)
+    .map((line) => line.trim())
+    .filter((line) => line.length >= 20)
+    .slice(0, 4);
+}
+
+function normalizeAIHelpReply(text, body) {
+  const raw = String(text ?? "").trim();
+  if (isStructuredAIHelpReply(raw)) return raw;
+
+  const fallbackLines = buildFallbackAIReply(body).split("\n").map(trimAIHelpLabel);
+  const fragments = sentenceFragments(raw);
+  if (fragments.length === 0) {
+    return buildFallbackAIReply(body);
+  }
+
+  return [
+    `What this means: ${fragments[0] ?? fallbackLines[0]}`,
+    `Safest next step: ${fragments[1] ?? fallbackLines[1]}`,
+    `Open tab: ${getAIHelpTabLabel(typeof body?.route === "string" ? body.route : "general")}`,
+    `Escalate when: ${fragments[2] ?? fallbackLines[3]}`
+  ].join("\n");
+}
+
 async function callGeminiModel(model, body) {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
@@ -494,7 +532,8 @@ async function callGeminiModel(model, body) {
           maxOutputTokens: 700,
           temperature: 0.3
         }
-      })
+      }),
+      signal: timeoutSignal(geminiTimeoutMs)
     }
   );
 
@@ -528,10 +567,7 @@ async function generateGeminiAIHelp(body) {
   for (const model of geminiModelCandidates) {
     try {
       const result = await callGeminiModel(model, body);
-      if (isStructuredAIHelpReply(result.text)) {
-        return result;
-      }
-      return { source: "fallback", model: "fallback", text: buildFallbackAIReply(body) };
+      return { ...result, text: normalizeAIHelpReply(result.text, body) };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `Gemini model ${model} failed.`);
     }
@@ -789,7 +825,8 @@ async function callGeminiModelWithPrompt(model, prompt) {
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { maxOutputTokens: 500, temperature: 0.4 }
-      })
+      }),
+      signal: timeoutSignal(geminiTimeoutMs)
     }
   );
   if (!response.ok) {
@@ -814,7 +851,7 @@ async function handleRequest(req, res) {
     res.writeHead(204, {
       "Access-Control-Allow-Origin": currentCorsOrigin(),
       "Vary": "Origin",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
       "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
     });
     res.end();
@@ -823,8 +860,8 @@ async function handleRequest(req, res) {
 
   const url = new URL(req.url, `http://${req.headers.host ?? "localhost"}`);
 
-  if (req.method === "GET" && url.pathname === "/health") {
-    json(res, 200, {
+  if ((req.method === "GET" || req.method === "HEAD") && url.pathname === "/health") {
+    const healthPayload = {
       ok: true,
       mode: debugPreview ? "local-debug" : "provider",
       port,
@@ -847,11 +884,27 @@ async function handleRequest(req, res) {
         codeTtlMs,
         requestWindowMs,
         maxRequestsPerWindow,
-        maxConfirmAttempts
+        maxConfirmAttempts,
+        providerTimeoutMs,
+        geminiTimeoutMs
       },
       pending: pendingVerifications.size,
       debugPreview
-    });
+    };
+
+    if (req.method === "HEAD") {
+      res.writeHead(200, {
+        "Content-Type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": currentCorsOrigin(),
+        "Vary": "Origin",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
+      });
+      res.end();
+      return;
+    }
+
+    json(res, 200, healthPayload);
     return;
   }
 

@@ -33,8 +33,8 @@ const env = {
   PATH: `${nodeBinDir}:${process.env.PATH ?? ""}`,
   EXPO_PUBLIC_BUILD_ID: resolveBuildId(),
   EXPO_PUBLIC_VERIFICATION_API_BASE_URL:
-    process.env.EXPO_PUBLIC_VERIFICATION_API_BASE_URL ?? "http://127.0.0.1:8788",
-  LOCAL_VERIFICATION_DEBUG: process.env.LOCAL_VERIFICATION_DEBUG ?? "1"
+    process.env.EXPO_PUBLIC_VERIFICATION_API_BASE_URL ?? "https://aethon-beacon-verification.onrender.com",
+  LOCAL_VERIFICATION_DEBUG: process.env.LOCAL_VERIFICATION_DEBUG ?? "0"
 };
 
 const child = spawn(command, args, {
