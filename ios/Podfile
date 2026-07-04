@@ -60,5 +60,13 @@ target 'AethonBeacon' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+    # Suppress third-party Pod warnings (nullability, RCTBridgeModule, duplicate libs)
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['WARNING_CFLAGS'] ||= ['$(inherited)']
+        config.build_settings['WARNING_CFLAGS'] << '-Wno-nullability-completeness'
+        config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
+      end
+    end
   end
 end

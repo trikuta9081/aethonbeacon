@@ -417,6 +417,27 @@ type PrivateSpaceThread = {
   messages: PrivateSpaceMessage[];
 };
 type AIHelpRoute = "general" | "guide" | "redress" | "professional" | "urgent";
+type SupportDimensionId =
+  | "self-image"
+  | "grief"
+  | "trauma"
+  | "addiction"
+  | "academic"
+  | "financial"
+  | "health"
+  | "parenting"
+  | "relationship"
+  | "unappreciated"
+  | "work"
+  | "home-family"
+  | "anger"
+  | "anxiety"
+  | "sadness"
+  | "burnout"
+  | "loneliness"
+  | "safety"
+  | "fear"
+  | "direction";
 type RouteChoiceId = "path" | "help" | "reset" | "search" | "journal" | "sos";
 type PendingRouteDecision = {
   rawText: string;
@@ -2304,6 +2325,8 @@ function findAIHelpIssueIdFromText(text: string): IssueId | null {
   if (/(stigma|shame|judged|looks|appearance|ugly|unattractive|not good looking|how i look|self.esteem|self.worth|self.image|insecure|my body|body image|fat|too thin|complexion|skin)/.test(n)) return "stigma";
   if (/(anxiety|anxious|panic|worry|worried|stress|stressed|overthinking|nervous wreck|pit in my stomach)/.test(n)) return "anxiety";
   if (/(burnout|burned out|exhaust|tired|drained|collapse|overworked|no energy|running on empty)/.test(n)) return "burnout";
+  // Recognition / credit deficit — feeling unseen, uncredited at work or home
+  if (/(due credit|not given credit|not get credit|credit for my|not credited|not given recognition|not given.*credit|credit.*not given|not given.*due|hardwork.*not|hard work.*not|hardworking.*not|efforts.*not appreciated|not appreciated.*effort|not appreciated by|not appreciated.*senior|not appreciated.*family|not appreciated.*office|not appreciated.*home|senior.*not appreci|family.*not appreci|not acknowledged|not recognized by|not recognised by|underappreciated|undervalued|overlook.*effort|my efforts.*not|my work.*not|my contribution.*not|not seen.*senior|not seen.*family|not seen.*office|no credit|no recognition|recognition.*not|not getting credit)/.test(n)) return "loneliness";
   if (/(lonely|loneliness|alone|isolated|ignored|invisible|unappreciated|not appreciated|not valued|not noticed|not recognised|not recognized|unwanted|rejected|unloved|worthless|no one cares|nobody cares|not seen)/.test(n)) return "loneliness";
   return null;
 }
@@ -2396,8 +2419,8 @@ function buildCounselingAcknowledgment(text: string, issueId: IssueId, route: AI
     };
   }
 
-  // ── Unappreciated — dual work + home context ─────────────────────────────────
-  if (/(unappreciated|not appreciated|not valued|not noticed|ignored|not recognised|not recognized|no one cares|effort.*not|hard work.*not|not seen)/.test(t)) {
+  // ── Unappreciated / recognition deficit — dual work + home context ───────────
+  if (/(unappreciated|not appreciated|not valued|not noticed|ignored|not recognised|not recognized|no one cares|effort.*not|hard work.*not|hardwork.*not|not seen|due credit|not given credit|not given.*credit|not credited|not acknowledged|not given recognition|credit.*not given|underappreciated|undervalued|not appreciated by|not recognized by|not recognised by|my contribution|my efforts.*not|my work.*not|overlook.*effort|no credit|no recognition)/.test(t)) {
     const atWork = /(work|office|senior|boss|manager|colleague|job|workplace|career)/.test(t);
     const atHome = /(home|wife|husband|family|spouse|partner|parent|children|kids|relatives|sibling)/.test(t);
     if (atWork && atHome) {
@@ -7467,6 +7490,7 @@ export default function App() {
   const [privateSpaceDraft, setPrivateSpaceDraft] = useState("");
   const [homeIssueDraft, setHomeIssueDraft] = useState("");
   const [showCounselingChat, setShowCounselingChat] = useState(false);
+  const [counselingInitialText, setCounselingInitialText] = useState("");
   const [activeJourney, setActiveJourney] = useState<CounselingSession | null>(null);
   const [journeyStepIndex, setJourneyStepIndex] = useState(0);
   const [aiHelpMessages, setAIHelpMessages] = useState<AIHelpMessage[]>(aiHelpSeed);
@@ -8239,7 +8263,7 @@ export default function App() {
   const hasExactBirthDetails =
     /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
     /^\d{2}:\d{2}$/.test(profileBirthTime) &&
-    profileBirthPlace.trim().length > 0;
+    profileBirthPlace.trim().length >= 3;
 
   useEffect(() => {
     if (!hasLoaded) return;
@@ -11049,37 +11073,40 @@ export default function App() {
 
   function buildAIHelpReply(text: string, route: AIHelpRoute) {
     const issue = findAIHelpIssue(text);
+    const dimensionPlan = getSupportDimensionPlan(text, issue.id);
+    const primaryDimension = dimensionPlan[0] ?? supportDimensionGuides.direction;
+    const dimensionLabels = formatSupportDimensionLabels(dimensionPlan);
     const emergencyLabel = emergencyNumber.trim().length > 0 ? emergencyNumber.trim() : "112";
     const openTabLabel = getAIHelpOpenTabLabel(route);
     const whatThisMeans =
       route === "urgent"
-        ? `You may be in immediate danger or need urgent support.`
+        ? `This has an immediate safety signal. The app should move you to emergency help before any normal guidance.`
         : route === "redress"
-          ? `This sounds like a complaint or authority issue that needs a paper trail.`
+          ? `This is a formal help or complaint issue, mainly around ${dimensionLabels}, and it needs facts, evidence, and the right first office.`
           : route === "professional"
-            ? `This looks like a stress or health issue that may need nearby professional support.`
+            ? `This is mainly ${dimensionLabels} and it may need a real professional or verified support route, not only self-guidance.`
             : route === "guide"
-              ? `This is a guidance issue for ${issue.label.toLowerCase()}, not a problem with you.`
-              : `This is a general guidance moment that should be turned into one next step.`;
+              ? `This is mainly ${dimensionLabels}. It deserves direct guidance, not blame, delay, or generic theory.`
+              : `This is a general guidance moment. The next move is to turn it into one clear step.`;
     const safestNextStep =
       route === "urgent"
         ? `Use SOS or call ${emergencyLabel} now, then alert someone nearby and keep your location ready.`
         : route === "redress"
-          ? `Write the facts, dates, names, evidence, and the exact outcome you want. Then use the private intake page so the complaint route starts with the right context.`
+          ? `Write facts, dates, names, evidence, and the exact outcome you want; then open Help so the complaint route starts in the right place.`
           : route === "professional"
-            ? `Open Path, then review nearby psychologist, counselor, or doctor support after the private intake page captures the emotional and life context.`
+            ? primaryDimension.firstAction
             : route === "guide"
-              ? `${issue.steps[0]} After that, use the private intake page so the full context can be captured before the next route.`
-              : `Open Path and choose the smallest useful next step. I’ll then ask for the emotional and life context.`;
+              ? primaryDimension.firstAction
+              : `Open Path and choose the smallest useful next step.`;
     const escalateWhen =
       route === "urgent"
         ? `Escalate at once if there is assault, self-harm risk, violence, or you feel unsafe.`
         : route === "redress"
           ? `Escalate if the first office ignores you, delays without reason, or the situation gets worse.`
           : route === "professional"
-            ? `Escalate if sleep, panic, appetite, or body symptoms are getting worse or unsafe.`
+            ? primaryDimension.escalation
             : route === "guide"
-              ? issue.urgentNote
+              ? primaryDimension.escalation || issue.urgentNote
               : `Escalate if this is bigger than one reply, then move to Help or SOS.`;
 
     return [
@@ -11177,6 +11204,9 @@ export default function App() {
   ) {
     const emergencyLabel = emergencyNumber.trim().length > 0 ? emergencyNumber.trim() : "112";
     const openTabLabel = getAIHelpOpenTabLabel(route);
+    const dimensionPlan = getSupportDimensionPlan(text, issueGuide.id);
+    const primaryDimension = dimensionPlan[0] ?? supportDimensionGuides.direction;
+    const dimensionLabels = formatSupportDimensionLabels(dimensionPlan);
     return [
       "You are Beacon Guide, a calm human-style guide.",
       "Your job is operational triage: classify, route, give one concrete action, and tell the user what to do next inside the app.",
@@ -11195,12 +11225,15 @@ export default function App() {
       `User address: ${profileDisplayName}.`,
       `Detected route: ${route}.`,
       `Current issue guide: ${issueGuide.label}.`,
+      `Detected support dimensions: ${dimensionLabels}.`,
+      `Primary dimension action: ${primaryDimension.firstAction}`,
+      `Primary escalation rule: ${primaryDimension.escalation}`,
       `Current speech locale: ${selectedLanguage.speechLang}.`,
       `Emergency fallback number: ${emergencyLabel}.`,
       `User message: ${text}`,
       "Respond with exactly 4 labelled lines in this order. Each line must be one sentence only:",
-      "1. What this means: classify the problem and name the route.",
-      "2. Safest next step: give one concrete action the user can do now.",
+      "1. What this means: classify the problem using the detected support dimensions and name the route.",
+      "2. Safest next step: give one concrete action the user can do now, using the primary dimension action if it fits.",
       `3. Open tab: ${openTabLabel}`,
       `4. Escalate when: say exactly when to use ${emergencyLabel}, SOS, Help, or professional support.`,
       "Prefer direct language. Do not add extra sections."
@@ -12235,11 +12268,6 @@ async function fetchGeminiAIHelp(
       status: "open"
     };
     setActiveRouteFollowUp(followUp);
-    writeRouteFollowUpReport(followUp, "open");
-    showRouteNotice(
-      "Follow-up active",
-      `${followUp.choiceLabel} is open. Mark resolved, ask for more guidance, or set a reminder.`
-    );
   }
 
   function markRouteFollowUpResolved() {
@@ -12339,6 +12367,7 @@ async function fetchGeminiAIHelp(
 
     // Build a personal acknowledgment of what was shared — shown BEFORE routing
     const counseling = buildCounselingAcknowledgment(routeText, issue.id, route);
+    const detectedDimensions = detectThemes(routeText);
 
     setVisitReports((current) => [
       {
@@ -12378,7 +12407,19 @@ async function fetchGeminiAIHelp(
       setTimeout(() => openRedressTab(nextRedressRouteId), 600);
       return;
     }
-    if (calmIssueIds.has(issue.id)) {
+    // Any typed life issue should be heard first, then routed through the app.
+    const shouldCounselFirst =
+      text.length > 0 &&
+      (route === "professional" || issue.id !== "general" || detectedDimensions.length > 0);
+    if (shouldCounselFirst) {
+      setCounselingInitialText(routeText);
+      setTimeout(() => {
+        setIssueGuideId(issue.id);
+        setShowCounselingChat(true);
+      }, 700);
+      return;
+    }
+    if (text.length === 0 && calmIssueIds.has(issue.id)) {
       setTimeout(() => openCalmRoute(issue.id), 600);
       return;
     }
@@ -13813,6 +13854,15 @@ function isTrustedExternalUrl(url: string) {
 
           {activeTab === "guide" && (
             <View onLayout={captureSectionLayout("guide")}>
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "guide" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <IssueGuideSection
                 issueGuides={issueGuides}
                 selectedIssueGuide={selectedIssueGuide}
@@ -13844,6 +13894,15 @@ function isTrustedExternalUrl(url: string) {
 
           {activeTab === "redress" && (
             <View onLayout={captureSectionLayout("redress")}>
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "redress" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
               <RedressSection
                 redressRoutes={redressRoutes}
                 selectedRedressRoute={selectedRedressRoute}
@@ -14249,7 +14308,7 @@ function isTrustedExternalUrl(url: string) {
           visible={showCounselingChat}
           onClose={() => setShowCounselingChat(false)}
           onJourneyReady={handleJourneyReady}
-          initialIssue={homeIssueDraft.trim() || "I need some guidance"}
+          initialIssue={counselingInitialText || homeIssueDraft.trim() || "I need some guidance"}
           identityLabel={profileDisplayName}
           issueId={selectedIssueGuide.id}
           speakText={(text) => { void speakGuidance(text); }}
@@ -20740,7 +20799,8 @@ function BirthChartSection({
   const hasReading = !!rashiInfo && !!predictionLines;
   const isValidDOB = /^\d{4}-\d{2}-\d{2}$/.test(dobDraft);
   const isValidTime = /^\d{2}:\d{2}$/.test(timeDraft);
-  const isValidPlace = placeDraft.trim().length > 0;
+  const isValidPlace = placeDraft.trim().length >= 3;
+  const canSaveBirthDetails = isValidDOB && isValidTime && isValidPlace;
 
   // Lagna computed from saved birth time
   const lagnaInfo = rashiInfo ? getLagnaFromBirthDetails(rashiInfo.rashiId, profileBirthTime) : null;
@@ -20749,11 +20809,21 @@ function BirthChartSection({
   // Samvatsara from birth year
   const birthYearNum = profileDOB ? parseInt(profileDOB.split("-")[0], 10) : null;
   const samvatsaraInfo = birthYearNum && !isNaN(birthYearNum) ? getVedicSamvatsara(birthYearNum) : null;
-  const hasExactBirthDetails = isValidDOB && isValidTime && isValidPlace;
+  const hasExactBirthDetails =
+    /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
+    /^\d{2}:\d{2}$/.test(profileBirthTime) &&
+    profileBirthPlace.trim().length >= 3;
 
   function handleSave() {
-    if (isValidDOB) setProfileDOB(dobDraft.trim());
-    if (isValidTime) setProfileBirthTime(timeDraft.trim());
+    if (!canSaveBirthDetails) {
+      Alert.alert(
+        "Birth details",
+        "Enter exact birth date, 24-hour birth time, and city/state/country of birth before analysis."
+      );
+      return;
+    }
+    setProfileDOB(dobDraft.trim());
+    setProfileBirthTime(timeDraft.trim());
     setProfileBirthPlace(placeDraft.trim());
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -20766,7 +20836,7 @@ function BirthChartSection({
         <Text style={styles.tabBannerEmoji}>🪐</Text>
         <View style={styles.tabBannerText}>
           <Text style={styles.tabBannerTitle}>Birth Chart</Text>
-          <Text style={styles.tabBannerSub}>Vedic Jyotish reading — enter your exact birth details below</Text>
+          <Text style={styles.tabBannerSub}>Exact date, 24-hour time, and birth place are required</Text>
         </View>
       </View>
 
@@ -20776,7 +20846,7 @@ function BirthChartSection({
         borderWidth: 1, borderColor: "rgba(99,222,208,0.2)"
       }}>
         <Text style={{ color: "#F0F9FF", fontSize: 17, fontWeight: "900", marginBottom: 2 }}>
-          Enter your birth details
+          Enter exact birth details
         </Text>
 
         {/* Date of birth */}
@@ -20841,6 +20911,9 @@ function BirthChartSection({
               color: "#F0F9FF", fontSize: 16, padding: 13
             }}
           />
+          {placeDraft.length > 0 && !isValidPlace && (
+            <Text style={{ color: "#F37B64", fontSize: 11 }}>Enter city, state, and country as precisely as possible.</Text>
+          )}
         </View>
 
         {/* Save button */}
@@ -20848,27 +20921,29 @@ function BirthChartSection({
           accessibilityRole="button"
           onPress={handleSave}
           style={({ pressed }) => ({
-            backgroundColor: saved ? "#0E6F69" : pressed ? "#0E4A46" : "#0F3D5E",
+            backgroundColor: saved ? "#0E6F69" : pressed ? "#0E4A46" : canSaveBirthDetails ? "#0F3D5E" : "#10202A",
             borderRadius: 12, paddingVertical: 14, alignItems: "center",
-            borderWidth: 1, borderColor: saved ? "#22D3EE" : "rgba(99,222,208,0.3)"
+            borderWidth: 1, borderColor: saved ? "#22D3EE" : canSaveBirthDetails ? "rgba(99,222,208,0.3)" : "rgba(255,255,255,0.12)"
           })}
         >
           <Text style={{ color: saved ? "#22D3EE" : "#63DED0", fontSize: 16, fontWeight: "900" }}>
-            {saved ? "✓ Saved" : "Save & Analyse"}
+            {saved ? "✓ Saved" : canSaveBirthDetails ? "Save & Analyse" : "Complete details to analyse"}
           </Text>
         </Pressable>
 
         {/* Status chip */}
         <View style={{
           flexDirection: "row", alignItems: "center", gap: 8,
-          backgroundColor: hasExactBirthDetails ? "rgba(14,111,105,0.15)" : "rgba(255,255,255,0.04)",
+          backgroundColor: hasExactBirthDetails ? "rgba(14,111,105,0.15)" : canSaveBirthDetails ? "rgba(34,211,238,0.08)" : "rgba(255,255,255,0.04)",
           borderRadius: 8, padding: 10
         }}>
-          <Text style={{ fontSize: 14 }}>{hasExactBirthDetails ? "✅" : "⏳"}</Text>
-          <Text style={{ color: hasExactBirthDetails ? "#22D3EE" : "rgba(255,255,255,0.45)", fontSize: 13, fontWeight: "700" }}>
+          <Text style={{ fontSize: 14 }}>{hasExactBirthDetails ? "✅" : canSaveBirthDetails ? "📝" : "⏳"}</Text>
+          <Text style={{ color: hasExactBirthDetails ? "#22D3EE" : canSaveBirthDetails ? "#93C5FD" : "rgba(255,255,255,0.45)", fontSize: 13, fontWeight: "700" }}>
             {hasExactBirthDetails
-              ? "All details complete — reading generated below"
-              : "Enter all three fields above for your full reading"}
+              ? "Exact birth details saved - reading generated below"
+              : canSaveBirthDetails
+                ? "Exact details are ready. Tap Save & Analyse."
+                : "Enter all three fields above for your full reading"}
           </Text>
         </View>
       </View>
@@ -22725,13 +22800,13 @@ interface CounselingSession {
   originalIssue: string;
   turns: CounselingTurn[];
   questionIndex: number;
-  detectedThemes: string[];
+  detectedThemes: SupportDimensionId[];
   journeySteps: JourneyStep[];
 }
 
-function detectThemes(text: string): string[] {
+function detectThemes(text: string): SupportDimensionId[] {
   const t = text.toLowerCase();
-  const themes: string[] = [];
+  const themes: SupportDimensionId[] = [];
 
   // Self-image / body / appearance / self-worth
   if (/(look|appear|ugly|unattractive|body image|my body|face|skin|complexion|fat|weight|how i look|self.esteem|self.worth|self.image|self.confidence|insecur|ashamed|embarrassed|not good looking)/.test(t)) themes.push("self-image");
@@ -22760,8 +22835,8 @@ function detectThemes(text: string): string[] {
   // Relationship / romantic
   if (/(relationship|marriage|divorce|separation|breakup|broke up|cheating|affair|my wife|my husband|wife|husband|my partner|my boyfriend|my girlfriend|love life|romantic|couple|trust issues|infidelity)/.test(t)) themes.push("relationship");
 
-  // Unappreciated / invisible
-  if (/(ignor|unappreciat|not valued|not noticed|not seen|invisible|unwanted|no one cares|nobody cares|not recognised|not recognized|not appreciated|efforts not|work not recognized|taken for granted|overlooked)/.test(t)) themes.push("unappreciated");
+  // Unappreciated / invisible / recognition deficit
+  if (/(ignor|unappreciat|not valued|not noticed|not seen|invisible|unwanted|no one cares|nobody cares|not recognised|not recognized|not appreciated|efforts not|work not recognized|taken for granted|overlooked|due credit|not given credit|not credited|not acknowledged|not given recognition|credit.*not|hardwork.*not|underappreciated|undervalued|no credit|no recognition|not appreciated by|my contribution.*not|my efforts.*not)/.test(t)) themes.push("unappreciated");
 
   // Work / career
   if (/(work|office|senior|boss|manager|colleague|job|workplace|career|promotion|salary|professional)/.test(t)) themes.push("work");
@@ -22796,14 +22871,201 @@ function detectThemes(text: string): string[] {
   return themes;
 }
 
+type SupportDimensionGuide = {
+  id: SupportDimensionId;
+  label: string;
+  issueId: IssueId;
+  route: AIHelpRoute;
+  firstAction: string;
+  escalation: string;
+};
+
+const supportDimensionGuides: Record<SupportDimensionId, SupportDimensionGuide> = {
+  "self-image": {
+    id: "self-image",
+    label: "self-image and dignity",
+    issueId: "stigma",
+    route: "guide",
+    firstAction: "Write the exact self-critical sentence once, rewrite it without insult, then open Path for the private intake.",
+    escalation: "Bring in a counselor or psychologist if body shame is stopping sleep, food, work, study, relationships, or basic daily life."
+  },
+  grief: {
+    id: "grief",
+    label: "grief and loss",
+    issueId: "grief",
+    route: "professional",
+    firstAction: "Name the loss, tell one trusted person what today feels like, and choose one small ritual or practical task.",
+    escalation: "Use crisis support if grief includes self-harm thoughts, inability to eat or sleep, or feeling that life is not worth living."
+  },
+  trauma: {
+    id: "trauma",
+    label: "trauma or abuse",
+    issueId: "trauma",
+    route: "professional",
+    firstAction: "Check whether you are safe right now; if safe, write only the facts and choose one trauma-informed support contact.",
+    escalation: "Use SOS, 112, police, or a trusted nearby person immediately if danger, assault, threats, or self-harm risk is present."
+  },
+  addiction: {
+    id: "addiction",
+    label: "addiction or compulsion",
+    issueId: "addiction",
+    route: "professional",
+    firstAction: "Name the trigger, remove the next easy access point, and contact one recovery, doctor, or counselor support route.",
+    escalation: "Get medical or crisis help for overdose risk, withdrawal symptoms, self-harm thoughts, or loss of control."
+  },
+  academic: {
+    id: "academic",
+    label: "academic pressure",
+    issueId: "academic",
+    route: "guide",
+    firstAction: "Choose one 25-minute study block, one rest block, and one person or office that can clarify the next academic step.",
+    escalation: "Use Help or professional support if pressure includes threats, ragging, harassment, self-harm thoughts, or panic that feels unsafe."
+  },
+  financial: {
+    id: "financial",
+    label: "financial stress",
+    issueId: "financial",
+    route: "guide",
+    firstAction: "Write the amount, deadline, person or institution involved, and the one payment, call, or document needed first.",
+    escalation: "Use formal help if there is fraud, coercion, banking grievance, workplace salary issue, or self-harm risk."
+  },
+  health: {
+    id: "health",
+    label: "health or illness concern",
+    issueId: "health",
+    route: "professional",
+    firstAction: "Write symptoms, duration, medicines, and the last doctor advice; then choose a doctor, clinic, or counselor support route.",
+    escalation: "Seek urgent medical help for chest pain, fainting, severe symptoms, unsafe panic, or a worsening diagnosed condition."
+  },
+  parenting: {
+    id: "parenting",
+    label: "parenting or caregiving load",
+    issueId: "parenting",
+    route: "guide",
+    firstAction: "Name the child or care issue, the hardest time of day, and one support person or professional who can share the load.",
+    escalation: "Escalate if a child, caregiver, or vulnerable person is unsafe, neglected, abused, or at risk of harm."
+  },
+  relationship: {
+    id: "relationship",
+    label: "relationship distress",
+    issueId: "relationship",
+    route: "guide",
+    firstAction: "Write what happened, what you need, and one calm sentence you can say or save before the next conversation.",
+    escalation: "Use Help or professional support if there is violence, coercion, stalking, abuse, severe isolation, or self-harm risk."
+  },
+  unappreciated: {
+    id: "unappreciated",
+    label: "being unseen or unappreciated",
+    issueId: "loneliness",
+    route: "guide",
+    firstAction: "Separate work and home, write one clear example from each, and ask for one specific acknowledgement or change.",
+    escalation: "Escalate to counseling, HR, a mentor, or family support if this is damaging self-worth, work, sleep, or relationships."
+  },
+  work: {
+    id: "work",
+    label: "workplace pressure",
+    issueId: "burnout",
+    route: "guide",
+    firstAction: "Write the role, person, incident, and next work decision; choose whether this needs a conversation, HR, or a formal complaint.",
+    escalation: "Use Help for harassment, unpaid wages, retaliation, unsafe conditions, threats, or a workplace rights issue."
+  },
+  "home-family": {
+    id: "home-family",
+    label: "home and family pressure",
+    issueId: "relationship",
+    route: "guide",
+    firstAction: "Name the person, the repeated pattern, and the smallest boundary or request that would reduce pressure today.",
+    escalation: "Use trusted contacts, community, Help, or emergency support if home is unsafe, abusive, threatening, or isolating."
+  },
+  anger: {
+    id: "anger",
+    label: "anger and heat",
+    issueId: "anger",
+    route: "guide",
+    firstAction: "Step away for ten minutes, relax your jaw and shoulders, then write the hurt, boundary, or need under the anger.",
+    escalation: "Get immediate support if anger may turn into violence, threats, self-harm, or loss of control."
+  },
+  anxiety: {
+    id: "anxiety",
+    label: "anxiety and overthinking",
+    issueId: "anxiety",
+    route: "guide",
+    firstAction: "Take three slow exhales, write the one real decision in front of you, and delay every non-urgent worry.",
+    escalation: "Bring in a doctor, counselor, or crisis support if panic, sleep loss, appetite loss, or body symptoms are worsening."
+  },
+  sadness: {
+    id: "sadness",
+    label: "sadness or low mood",
+    issueId: "loneliness",
+    route: "professional",
+    firstAction: "Write how long this has lasted, what basic care is affected, and one person or professional support route to contact.",
+    escalation: "Use urgent support if sadness includes hopelessness, self-harm thoughts, no sleep or food, or inability to function."
+  },
+  burnout: {
+    id: "burnout",
+    label: "burnout and exhaustion",
+    issueId: "burnout",
+    route: "guide",
+    firstAction: "Drop or delay one demand today, protect one recovery block, and ask for one practical change from a real person.",
+    escalation: "Use professional help if exhaustion is causing collapse, panic, unsafe driving or work, or inability to function."
+  },
+  loneliness: {
+    id: "loneliness",
+    label: "loneliness and isolation",
+    issueId: "loneliness",
+    route: "guide",
+    firstAction: "Send one honest message to a safe person, then choose one community or support space where you can be seen.",
+    escalation: "Use crisis or professional support if loneliness is tied to hopelessness, self-harm thoughts, or total withdrawal."
+  },
+  safety: {
+    id: "safety",
+    label: "safety or intimidation",
+    issueId: "trauma",
+    route: "redress",
+    firstAction: "Move to safety first, save evidence without confronting the person, and use Help for the correct authority route.",
+    escalation: "Use SOS, 112, police, emergency services, or a trusted nearby person now if the danger is immediate."
+  },
+  fear: {
+    id: "fear",
+    label: "fear and self-doubt",
+    issueId: "fear",
+    route: "guide",
+    firstAction: "Write the feared outcome, the evidence for it, and one five-minute action that proves the situation can move.",
+    escalation: "Get support if fear is shrinking daily life, blocking basic tasks, or connected to threats, panic, or trauma."
+  },
+  direction: {
+    id: "direction",
+    label: "direction and purpose",
+    issueId: "identity",
+    route: "guide",
+    firstAction: "Write the decision, the options, and the smallest reversible step; avoid making a life-sized decision from a flooded mind.",
+    escalation: "Bring in a counselor, mentor, doctor, or trusted guide if confusion becomes hopelessness, paralysis, or unsafe withdrawal."
+  }
+};
+
+function getSupportDimensionPlan(text: string, fallbackIssueId: IssueId): SupportDimensionGuide[] {
+  const detected = detectThemes(text);
+  const guides = detected.map((theme) => supportDimensionGuides[theme]).filter(Boolean);
+  if (guides.length > 0) return guides;
+  const fallback = Object.values(supportDimensionGuides).find((guide) => guide.issueId === fallbackIssueId);
+  return [fallback ?? supportDimensionGuides.direction];
+}
+
+function formatSupportDimensionLabels(guides: SupportDimensionGuide[]) {
+  return guides
+    .slice(0, 4)
+    .map((guide) => guide.label)
+    .join(", ");
+}
+
 /**
  * Supreme-level adaptive counseling question builder.
  * 7 questions per theme — covers all emotional, practical, relational,
  * physical, existential dimensions. Branches across themes for turns 3-5.
  */
-function buildCounselingQuestions(themes: string[], turnIndex: number, allUserText?: string): string {
+function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: number, allUserText?: string): string {
   // ── Full 7-question banks for every theme ─────────────────────────────────
-  const byTheme: Record<string, string[]> = {
+  const byTheme: Record<SupportDimensionId, string[]> = {
     "self-image": [
       "Tell me more — when did this feeling about your appearance or how you see yourself start feeling this heavy? Was there a particular moment, or has it been quietly building?",
       "How much space does this thought take up in your average day? Are there specific things you avoid — like photos, mirrors, social events — because of how you feel about yourself?",
@@ -23086,13 +23348,13 @@ function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId):
  * Supreme-level journey builder — adapts to all 20 theme dimensions.
  * Steps are ordered by urgency/logic: calm body → process emotionally → act.
  */
-function buildJourneySteps(themes: string[], issueId: IssueId, route: AIHelpRoute): JourneyStep[] {
+function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route: AIHelpRoute): JourneyStep[] {
   const steps: JourneyStep[] = [];
-  const has = (t: string) => themes.includes(t);
+  const has = (t: SupportDimensionId) => themes.includes(t);
 
   // ── 1. Immediate calm / grounding — for any emotional distress ───────────────
-  const needsCalm = ["self-image", "anxiety", "anger", "burnout", "sadness", "loneliness", "grief", "trauma", "fear", "financial", "health", "academic", "relationship"].some(t => has(t));
-  if (needsCalm) {
+  const needsCalm: SupportDimensionId[] = ["self-image", "anxiety", "anger", "burnout", "sadness", "loneliness", "grief", "trauma", "fear", "financial", "health", "academic", "relationship"];
+  if (needsCalm.some((theme) => has(theme))) {
     steps.push({
       tabId: "focus",
       label: "Ground yourself first",
@@ -23124,6 +23386,17 @@ function buildJourneySteps(themes: string[], issueId: IssueId, route: AIHelpRout
     });
   }
 
+  // ── 4. Professional and locality support when symptoms or risk need a real person
+  if (route === "professional" || has("health") || has("trauma") || has("addiction") || has("sadness")) {
+    steps.push({
+      tabId: "search",
+      label: "Find real support",
+      emoji: "🧭",
+      reason: "Use verified professional, clinic, helpline, or locality search before the issue stays only inside the app.",
+      completed: false, skipped: false
+    });
+  }
+
   // ── 4. AI guidance / personalised path ───────────────────────────────────────
   steps.push({
     tabId: "aihelp",
@@ -23145,7 +23418,7 @@ function buildJourneySteps(themes: string[], issueId: IssueId, route: AIHelpRout
   // ── 6. Formal redress / safety steps ─────────────────────────────────────────
   if (has("safety") || has("trauma") || route === "redress") {
     steps.push({
-      tabId: "guide",
+      tabId: "redress",
       label: "Know your rights",
       emoji: "🛡️",
       reason: "If something wrong has been done to you, understanding your formal options is an important step — even if you have not decided to use them yet.",
@@ -23154,7 +23427,7 @@ function buildJourneySteps(themes: string[], issueId: IssueId, route: AIHelpRout
   }
 
   // ── 7. Vedic / spiritual / daily guidance — for direction, loss, loneliness ──
-  if (has("direction") || has("loneliness") || has("grief") || has("identity") || issueId === "identity") {
+  if (has("direction") || has("loneliness") || has("grief") || issueId === "identity") {
     steps.push({
       tabId: "vedic",
       label: "Daily cosmic guidance",

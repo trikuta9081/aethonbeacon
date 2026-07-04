@@ -618,7 +618,9 @@ function buildBirthChartPrompt(body) {
   return [
     "You are Beacon Guide writing a compact Gemini horoscope for a wellness app birth chart page.",
     "Use Vedic-style language, but stay calm, practical, and respectful.",
-    "Write 3 short sentences. Sentence 1: summarize the cosmic reading. Sentence 2: give one likely emotional/behavioral theme. Sentence 3: give one grounded action or caution for today.",
+    "Treat date of birth, exact 24-hour birth time, and full birth place as mandatory precision fields.",
+    "Do not pretend the reading is mathematically exact if coordinates, timezone, ayanamsa, or certified ephemeris details are not supplied.",
+    "Write 4 short sentences. Sentence 1: state the reading is anchored to the supplied date, time, and place. Sentence 2: summarize the cosmic reading. Sentence 3: give one likely emotional or behavioral theme. Sentence 4: give one grounded action or caution for today.",
     "Do not mention AI, Gemini, or that this is generated.",
     "Do not make medical, financial, or certainty-heavy claims.",
     `User name: ${name}.`,
@@ -637,15 +639,17 @@ function buildBirthChartPrompt(body) {
 function buildBirthChartFallback(body) {
   const rashiName = typeof body?.rashiName === "string" ? body.rashiName.trim() : "";
   const nakshatraName = typeof body?.nakshatraName === "string" ? body.nakshatraName.trim() : "";
+  const birthTime = typeof body?.birthTime === "string" ? body.birthTime.trim() : "";
   const place = typeof body?.birthPlace === "string" ? body.birthPlace.trim() : "";
-  const base = rashiName.length > 0 ? `Your chart leans through ${rashiName}.` : "Your chart is ready for a steady reading.";
+  const base = place.length > 0 && birthTime.length > 0
+    ? `Your reading is anchored to the saved birth time and place: ${birthTime}, ${place}.`
+    : "Complete exact birth time and place before treating this as a birth-chart reading.";
+  const rashiLine = rashiName.length > 0 ? `The chart leans through ${rashiName}.` : "Use the reading as a guide, not a fixed label.";
   const second = nakshatraName.length > 0
     ? `Your ${nakshatraName} detail suggests a pattern worth noticing in how you respond to stress and choice.`
     : "Use the reading as a guide, not a fixed label.";
-  const third = place.length > 0
-    ? `Because your birth place is on file, the app can anchor the horoscope to the right context.`
-    : "Open Profile and keep your birth details complete for a stronger reading.";
-  return `${base} ${second} ${third}`;
+  const third = "For exact Lagna and divisional-chart judgement, verify coordinates and timezone with a certified Jyotishi.";
+  return `${base} ${rashiLine} ${second} ${third}`;
 }
 
 async function generateGeminiBirthChart(body) {
@@ -1022,6 +1026,17 @@ async function handleRequest(req, res) {
   if (req.method === "POST" && url.pathname === "/ai/birth-chart") {
     try {
       const body = await readBody(req);
+      const dob = typeof body?.dob === "string" ? body.dob.trim() : "";
+      const birthTime = typeof body?.birthTime === "string" ? body.birthTime.trim() : "";
+      const birthPlace = typeof body?.birthPlace === "string" ? body.birthPlace.trim() : "";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dob) || !/^\d{2}:\d{2}$/.test(birthTime) || birthPlace.length < 3) {
+        json(res, 400, {
+          source: "fallback",
+          model: "fallback",
+          text: "Enter exact date of birth, 24-hour birth time, and full birth place before generating a birth-chart reading."
+        });
+        return;
+      }
       const result = await generateGeminiBirthChart(body);
       json(res, 200, { source: result.source, model: result.model ?? "fallback", text: result.text });
     } catch (error) {
