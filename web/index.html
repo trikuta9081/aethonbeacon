@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="%LANG_ISO_CODE%">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile-first viewport — no user scaling (app-like feel) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>%WEB_TITLE%</title>
+
+    <!-- PWA / Home-screen -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- iOS home-screen web-app support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Aethon Beacon" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <!-- Android / Chrome -->
+    <meta name="theme-color" content="#050D10" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- SEO / social -->
+    <meta name="description" content="Aethon Beacon — one route, one next step. Your personal clarity companion." />
+    <meta name="application-name" content="Aethon Beacon" />
+
+    <!-- React Native Web style reset -->
+    <style id="expo-reset">
+      html,
+      body {
+        height: 100%;
+        /* Fill safe-area on notch devices */
+        height: -webkit-fill-available;
+      }
+
+      body {
+        overflow: hidden;
+        /* Prevent pull-to-refresh / elastic bounce interfering with RN ScrollView */
+        overscroll-behavior: none;
+        -webkit-overflow-scrolling: touch;
+        /* Dark background flashes during load */
+        background-color: #050D10;
+        /* Crisp text on retina */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+        /* Safe areas handled by react-native-safe-area-context internally */
+      }
+
+      /* Prevent double-tap zoom on buttons / links */
+      button, a, [role="button"] {
+        touch-action: manipulation;
+      }
+
+      /* Remove tap highlight on mobile */
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Prevent text selection while swiping */
+      .no-select {
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      /* Loading splash — matches app dark bg so there's no white flash */
+      #splash {
+        position: fixed;
+        inset: 0;
+        background: #050D10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.4s ease;
+      }
+      #splash.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Splash screen removed once JS loads -->
+    <div id="splash">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" stroke="#38BDF8" stroke-width="2" opacity="0.3"/>
+        <circle cx="32" cy="32" r="20" stroke="#38BDF8" stroke-width="1.5" opacity="0.5"/>
+        <circle cx="32" cy="32" r="8" fill="#38BDF8" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <noscript>
+      You need to enable JavaScript to run Aethon Beacon.
+    </noscript>
+
+    <div id="root"></div>
+
+    <script>
+      // Remove splash once React mounts
+      (function() {
+        var splash = document.getElementById('splash');
+        if (!splash) return;
+        var observer = new MutationObserver(function() {
+          if (document.getElementById('root').children.length > 0) {
+            setTimeout(function() { splash.classList.add('hide'); }, 300);
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.getElementById('root'), { childList: true });
+        // Fallback: remove after 4 seconds regardless
+        setTimeout(function() { splash.classList.add('hide'); }, 4000);
+      })();
+    </script>
+  </body>
+</html>
