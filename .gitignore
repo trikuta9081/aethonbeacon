@@ -1,6 +1,6 @@
 node_modules/
 .expo/
-dist/
+# dist/ — committed to repo for fast Render deploys
 ios/Pods/
 android/.gradle/
 android/build/
