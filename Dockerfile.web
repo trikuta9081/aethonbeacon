@@ -1,17 +1,3 @@
-FROM node:22-alpine AS build
-
-WORKDIR /app
-
-ENV NODE_ENV=production
-ARG EXPO_PUBLIC_VERIFICATION_API_BASE_URL=https://aethon-beacon-verification.onrender.com
-ENV EXPO_PUBLIC_VERIFICATION_API_BASE_URL=$EXPO_PUBLIC_VERIFICATION_API_BASE_URL
-
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile
-
-COPY . .
-RUN npm run export:web
-
 FROM node:22-alpine
 
 WORKDIR /app
@@ -19,7 +5,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 
-COPY --from=build /app/dist ./dist
+# Serve pre-built dist committed to repo (no build step — instant deploys)
+COPY dist ./dist
 COPY scripts/static-server.mjs ./scripts/static-server.mjs
 
 EXPOSE 3000
