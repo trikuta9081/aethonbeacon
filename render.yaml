@@ -57,7 +57,7 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        value: gemini-3.5-flash
+        value: gemini-2.5-flash
       - key: ADMIN_LOGIN_ID
         sync: false
       - key: ADMIN_LOGIN_CODE

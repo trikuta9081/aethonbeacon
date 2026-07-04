@@ -44,10 +44,10 @@ const sendgridApiKey = (process.env.SENDGRID_API_KEY ?? "").trim();
 const sendgridFromEmail = (process.env.SENDGRID_FROM_EMAIL ?? "").trim();
 const sendgridFromName = (process.env.SENDGRID_FROM_NAME ?? brandName).trim() || brandName;
 const geminiApiKey = (process.env.GEMINI_API_KEY ?? "").trim();
-const geminiModel = (process.env.GEMINI_MODEL ?? "gemini-3.5-flash").trim() || "gemini-3.5-flash";
+const geminiModel = (process.env.GEMINI_MODEL ?? "gemini-2.5-flash").trim() || "gemini-2.5-flash";
 const adminLoginIdentity = (process.env.ADMIN_LOGIN_ID ?? "").trim().toLowerCase();
 const adminLoginCode = (process.env.ADMIN_LOGIN_CODE ?? "").trim();
-const geminiFallbackModels = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
+const geminiFallbackModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
 const geminiModelCandidates = [
   geminiModel,
   ...geminiFallbackModels.filter((model) => model !== geminiModel)

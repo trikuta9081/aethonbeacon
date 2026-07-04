@@ -21,7 +21,7 @@ echo "==> Step 3: Committing and pushing..."
 rm -f .git/HEAD.lock .git/index.lock
 git add -A
 git add -f dist/
-git commit -m "deploy: force fresh bundle — deleted old bundles, clean Metro rebuild" || echo "Nothing to commit"
+git commit -m "deploy: v1.0.2 — fix Gemini model, fresh web bundle" || echo "Nothing to commit"
 git push origin master
 git push render master
 
