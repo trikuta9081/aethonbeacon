@@ -6,9 +6,11 @@
   "build": {
     "development": {
       "developmentClient": true,
+      "channel": "development",
       "distribution": "internal"
     },
     "preview": {
+      "channel": "preview",
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_VERIFICATION_API_BASE_URL": "https://aethon-beacon-verification.onrender.com"
@@ -19,6 +21,7 @@
     },
     "production": {
       "autoIncrement": true,
+      "channel": "production",
       "env": {
         "EXPO_PUBLIC_VERIFICATION_API_BASE_URL": "https://aethon-beacon-verification.onrender.com"
       },
