@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import {
   Alert,
   Animated,
+  AppState,
+  AppStateStatus,
   InteractionManager,
   Image,
   ImageBackground,
@@ -6957,6 +6959,367 @@ class TabErrorBoundary extends React.Component<
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// EXIT REPORT ENGINE
+// ─────────────────────────────────────────────────────────────────────────────
+
+type SessionEvent = {
+  type: "tab_visit" | "issue_detected" | "guidance_viewed" | "checkin" | "counseling_turn" | "journal_written" | "horoscope_viewed" | "birth_chart_viewed" | "meditation" | "community";
+  label: string;
+  detail?: string;
+  ts: number;
+};
+
+type DailyVisitReport = {
+  userName: string;
+  sessionDurationMins: number;
+  tabsVisited: string[];
+  issuesDetected: string[];
+  guidanceTopics: string[];
+  checkInsLogged: number;
+  counselingTurns: number;
+  journalWritten: boolean;
+  moodScore: number | null;
+  moodLabel: string | null;
+  strengths: string[];
+  focusAreas: string[];
+  tomorrowRecommendations: string[];
+  overallSummary: string;
+  generatedAt: string;
+};
+
+const EXIT_REPORT_ISSUE_LABELS: Record<string, string> = {
+  general: "General wellbeing",
+  anger: "Anger & frustration",
+  anxiety: "Anxiety & worry",
+  fear: "Fear & phobias",
+  overconfidence: "Overconfidence",
+  stigma: "Social stigma",
+  burnout: "Burnout & exhaustion",
+  loneliness: "Loneliness & isolation",
+  grief: "Grief & loss",
+  identity: "Identity & self-worth",
+  health: "Health concerns",
+  financial: "Financial stress",
+  relationship: "Relationship issues",
+  parenting: "Parenting challenges",
+  trauma: "Trauma & PTSD",
+  academic: "Academic pressure",
+  addiction: "Addiction & habits",
+};
+
+function generateDailyVisitReport(
+  userName: string,
+  sessionStartTs: number,
+  events: SessionEvent[],
+  issueGuideId: string,
+  entries: { score: number; toneLabel: string }[],
+): DailyVisitReport {
+  const now = Date.now();
+  const durationMins = Math.max(1, Math.round((now - sessionStartTs) / 60000));
+
+  // Deduplicate tab visits
+  const tabsVisited = [...new Set(
+    events.filter(e => e.type === "tab_visit").map(e => e.label)
+  )];
+
+  // Issues detected this session
+  const issueEvents = events.filter(e => e.type === "issue_detected");
+  const issuesDetected = [...new Set(
+    issueEvents.map(e => EXIT_REPORT_ISSUE_LABELS[e.label] ?? e.label)
+  )];
+  if (issuesDetected.length === 0 && issueGuideId !== "general") {
+    issuesDetected.push(EXIT_REPORT_ISSUE_LABELS[issueGuideId] ?? issueGuideId);
+  }
+
+  // Guidance topics
+  const guidanceTopics = [...new Set(
+    events.filter(e => e.type === "guidance_viewed").map(e => e.label)
+  )];
+
+  // Check-ins
+  const checkInsLogged = events.filter(e => e.type === "checkin").length;
+
+  // Counseling
+  const counselingTurns = events.filter(e => e.type === "counseling_turn").length;
+
+  // Journal
+  const journalWritten = events.some(e => e.type === "journal_written");
+
+  // Mood from today's entries
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayEntries = entries.filter(e => {
+    // entries is CheckInEntry[], filter by today
+    return true; // all passed-in entries are today's
+  });
+  const avgScore = todayEntries.length > 0
+    ? Math.round(todayEntries.reduce((s, e) => s + e.score, 0) / todayEntries.length)
+    : null;
+  const latestToneLabel = todayEntries[0]?.toneLabel ?? null;
+
+  // Strengths from activities
+  const strengths: string[] = [];
+  if (checkInsLogged > 0) strengths.push("Self-awareness check-in completed");
+  if (journalWritten) strengths.push("Reflective journaling practiced");
+  if (counselingTurns > 0) strengths.push("Engaged in guided counseling");
+  if (tabsVisited.includes("Meditate") || tabsVisited.includes("Mind Rest")) strengths.push("Meditation session started");
+  if (tabsVisited.includes("Community")) strengths.push("Community connection explored");
+  if (tabsVisited.includes("Wisdom")) strengths.push("Wisdom resources accessed");
+  if (strengths.length === 0) strengths.push("Showed up for your mental health today");
+
+  // Focus areas
+  const focusAreas: string[] = [];
+  if (issuesDetected.length > 0) focusAreas.push(...issuesDetected.slice(0, 3));
+  if (focusAreas.length === 0) focusAreas.push("General wellbeing maintenance");
+
+  // Tomorrow's recommendations
+  const recs: string[] = [];
+  if (checkInsLogged === 0) recs.push("Log a mood check-in tomorrow to track your emotional baseline");
+  if (!journalWritten) recs.push("Try a 5-minute journal entry — even 3 sentences helps");
+  if (counselingTurns === 0) recs.push("Explore the guided counseling session for deeper insight");
+  if (avgScore !== null && avgScore < 4) recs.push("Practice the breathing or calm-tone exercises to ease tension");
+  if (tabsVisited.length < 3) recs.push("Explore the Wisdom or Community tabs for fresh perspective");
+  recs.push("Keep your streak alive — consistency is where transformation happens");
+
+  // Summary
+  const activityCount = tabsVisited.length + (checkInsLogged > 0 ? 1 : 0) + (journalWritten ? 1 : 0) + (counselingTurns > 0 ? 1 : 0);
+  const moodPhrase = avgScore !== null
+    ? `Your mood registered at ${avgScore}/7 (${latestToneLabel ?? "balanced"})`
+    : "No mood score logged";
+  const issuePhrase = issuesDetected.length > 0
+    ? `Key focus: ${issuesDetected.slice(0, 2).join(" & ")}`
+    : "General wellbeing maintained";
+
+  const overallSummary =
+    `You spent ${durationMins} minute${durationMins !== 1 ? "s" : ""} with Aethon Beacon today. ` +
+    `${moodPhrase}. ${issuePhrase}. ` +
+    `${activityCount} activit${activityCount !== 1 ? "ies" : "y"} completed across ${tabsVisited.length || 1} section${tabsVisited.length !== 1 ? "s" : ""}. ` +
+    `${strengths[0] ?? "Well done for showing up"}.`;
+
+  return {
+    userName,
+    sessionDurationMins: durationMins,
+    tabsVisited,
+    issuesDetected,
+    guidanceTopics,
+    checkInsLogged,
+    counselingTurns,
+    journalWritten,
+    moodScore: avgScore,
+    moodLabel: latestToneLabel,
+    strengths,
+    focusAreas,
+    tomorrowRecommendations: recs.slice(0, 4),
+    overallSummary,
+    generatedAt: new Date().toLocaleString("en-IN", { dateStyle: "full", timeStyle: "short" }),
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXIT REPORT MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ExitReportModal({
+  visible,
+  report,
+  onClose,
+  onShare,
+}: {
+  visible: boolean;
+  report: DailyVisitReport | null;
+  onClose: () => void;
+  onShare: (report: DailyVisitReport) => void;
+}) {
+  if (!report) return null;
+
+  const scoreColor = report.moodScore !== null
+    ? (report.moodScore >= 5 ? "#22D3EE" : report.moodScore >= 3 ? "#FBBF24" : "#F87171")
+    : "#94A3B8";
+
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent={false}
+      onRequestClose={onClose}
+    >
+      <View style={{ flex: 1, backgroundColor: "#050D14" }}>
+        {/* Header */}
+        <View style={{
+          paddingTop: Platform.OS === "ios" ? 54 : 40,
+          paddingHorizontal: 20,
+          paddingBottom: 16,
+          borderBottomWidth: 1,
+          borderBottomColor: "rgba(34,211,238,0.15)",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+          <View>
+            <Text style={{ color: "#22D3EE", fontSize: 12, fontWeight: "700", letterSpacing: 2, textTransform: "uppercase" }}>
+              Today's Visit Report
+            </Text>
+            <Text style={{ color: "#E8F4F0", fontSize: 18, fontWeight: "900", marginTop: 2 }}>
+              {report.userName || "Your Day with Aethon"}
+            </Text>
+            <Text style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>{report.generatedAt}</Text>
+          </View>
+          <Pressable
+            onPress={onClose}
+            style={({ pressed }) => ({
+              width: 36, height: 36, borderRadius: 18,
+              backgroundColor: pressed ? "#1E3A4A" : "#0C1A2E",
+              alignItems: "center", justifyContent: "center",
+              borderWidth: 1, borderColor: "rgba(34,211,238,0.2)",
+            })}
+          >
+            <Text style={{ color: "#94A3B8", fontSize: 18, lineHeight: 20 }}>✕</Text>
+          </Pressable>
+        </View>
+
+        <ScrollView
+          contentContainerStyle={{ padding: 20, paddingBottom: 50 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Summary Card */}
+          <View style={{
+            backgroundColor: "#0C1A2E",
+            borderRadius: 14,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: "rgba(34,211,238,0.25)",
+            marginBottom: 16,
+          }}>
+            <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 8, textTransform: "uppercase" }}>
+              📋 Session Summary
+            </Text>
+            <Text style={{ color: "#CBD5E1", fontSize: 14, lineHeight: 22 }}>{report.overallSummary}</Text>
+          </View>
+
+          {/* Stats Row */}
+          <View style={{ flexDirection: "row", gap: 10, marginBottom: 16 }}>
+            {[
+              { label: "Duration", value: `${report.sessionDurationMins}m`, icon: "⏱" },
+              { label: "Mood", value: report.moodScore !== null ? `${report.moodScore}/7` : "—", icon: "🎯", color: scoreColor },
+              { label: "Activities", value: String((report.checkInsLogged > 0 ? 1 : 0) + (report.journalWritten ? 1 : 0) + (report.counselingTurns > 0 ? 1 : 0) + report.tabsVisited.length), icon: "✅" },
+            ].map((stat) => (
+              <View key={stat.label} style={{
+                flex: 1, backgroundColor: "#0C1A2E", borderRadius: 12, padding: 12,
+                alignItems: "center", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)",
+              }}>
+                <Text style={{ fontSize: 20, marginBottom: 4 }}>{stat.icon}</Text>
+                <Text style={{ color: stat.color ?? "#E8F4F0", fontSize: 16, fontWeight: "900" }}>{stat.value}</Text>
+                <Text style={{ color: "#64748B", fontSize: 10, marginTop: 2 }}>{stat.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Issues Detected */}
+          {report.issuesDetected.length > 0 && (
+            <View style={{ backgroundColor: "#0C1A2E", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(251,191,36,0.2)", marginBottom: 14 }}>
+              <Text style={{ color: "#FBBF24", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+                🔍 Issues Identified
+              </Text>
+              {report.issuesDetected.map((issue, i) => (
+                <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 6 }}>
+                  <Text style={{ color: "#FBBF24", fontSize: 12, marginRight: 8, marginTop: 2 }}>▸</Text>
+                  <Text style={{ color: "#CBD5E1", fontSize: 14, flex: 1, lineHeight: 20 }}>{issue}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Guidance Received */}
+          {report.guidanceTopics.length > 0 && (
+            <View style={{ backgroundColor: "#0C1A2E", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", marginBottom: 14 }}>
+              <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+                🧭 Guidance Provided
+              </Text>
+              {report.guidanceTopics.map((topic, i) => (
+                <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 6 }}>
+                  <Text style={{ color: "#22D3EE", fontSize: 12, marginRight: 8, marginTop: 2 }}>▸</Text>
+                  <Text style={{ color: "#CBD5E1", fontSize: 14, flex: 1, lineHeight: 20 }}>{topic}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Strengths */}
+          <View style={{ backgroundColor: "#0A1C0F", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(34,197,94,0.2)", marginBottom: 14 }}>
+            <Text style={{ color: "#4ADE80", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+              💪 Today's Strengths
+            </Text>
+            {report.strengths.map((s, i) => (
+              <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 6 }}>
+                <Text style={{ color: "#4ADE80", fontSize: 12, marginRight: 8, marginTop: 2 }}>✓</Text>
+                <Text style={{ color: "#CBD5E1", fontSize: 14, flex: 1, lineHeight: 20 }}>{s}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Tomorrow's Focus */}
+          <View style={{ backgroundColor: "#1A0C2E", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(167,139,250,0.25)", marginBottom: 14 }}>
+            <Text style={{ color: "#A78BFA", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+              🌅 Tomorrow's Focus
+            </Text>
+            {report.tomorrowRecommendations.map((rec, i) => (
+              <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 8 }}>
+                <Text style={{ color: "#A78BFA", fontSize: 13, marginRight: 8, marginTop: 1 }}>{i + 1}.</Text>
+                <Text style={{ color: "#CBD5E1", fontSize: 13, flex: 1, lineHeight: 20 }}>{rec}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Sections Explored */}
+          {report.tabsVisited.length > 0 && (
+            <View style={{ backgroundColor: "#0C1A2E", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(34,211,238,0.1)", marginBottom: 20 }}>
+              <Text style={{ color: "#64748B", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+                🗺 Sections Explored
+              </Text>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                {report.tabsVisited.map((tab, i) => (
+                  <View key={i} style={{
+                    backgroundColor: "rgba(34,211,238,0.08)",
+                    borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5,
+                    borderWidth: 1, borderColor: "rgba(34,211,238,0.2)",
+                  }}>
+                    <Text style={{ color: "#22D3EE", fontSize: 12 }}>{tab}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Action Buttons */}
+          <View style={{ gap: 10 }}>
+            <Pressable
+              onPress={() => onShare(report)}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? "#0E4A46" : "#0E6F69",
+                borderRadius: 14, padding: 16, alignItems: "center",
+              })}
+            >
+              <Text style={{ color: "#E8F4F0", fontSize: 15, fontWeight: "800" }}>📤  Share Report</Text>
+            </Pressable>
+            <Pressable
+              onPress={onClose}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? "#1E2A3A" : "#0C1A2E",
+                borderRadius: 14, padding: 14, alignItems: "center",
+                borderWidth: 1, borderColor: "rgba(34,211,238,0.2)",
+              })}
+            >
+              <Text style={{ color: "#64748B", fontSize: 14, fontWeight: "700" }}>Close</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function App() {
   const { width } = useWindowDimensions();
   const isWide = width >= 920;
@@ -6987,6 +7350,21 @@ export default function App() {
   const [notifReengageEnabled, setNotifReengageEnabled] = useState(true);
   const [notifWellbeingEnabled, setNotifWellbeingEnabled] = useState(true);
   const [reminderAccess, setReminderAccess] = useState<ReminderAccess>("loading");
+  // ── Exit Report session tracking ─────────────────────────────────────────
+  const sessionStartTsRef = useRef<number>(Date.now());
+  const sessionEventsRef = useRef<SessionEvent[]>([]);
+  const [showExitReport, setShowExitReport] = useState(false);
+  const [currentVisitReport, setCurrentVisitReport] = useState<DailyVisitReport | null>(null);
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
+  const exitReportShownThisSessionRef = useRef(false);
+  // Mirror displayName + issueGuideId into refs so AppState handler can read them
+  const profileDisplayNameRef = useRef<string>("You");
+  const issueGuideIdRef = useRef<string>("general");
+
+  function logSessionEvent(event: SessionEvent) {
+    sessionEventsRef.current = [...sessionEventsRef.current, { ...event, ts: Date.now() }];
+  }
+  // ─────────────────────────────────────────────────────────────────────────
   const [emergencyNumber, setEmergencyNumber] = useState(defaultEmergencyNumber);
   const [identityId, setIdentityId] = useState<IdentityId>("other");
   const [issueGuideId, setIssueGuideId] = useState<IssueId>("general");
@@ -7485,6 +7863,56 @@ export default function App() {
     return () => sub.remove();
   }, []);
 
+  // ── AppState → Exit Report prompt ──────────────────────────────────────────
+  useEffect(() => {
+    const handleAppStateChange = (nextState: AppStateStatus) => {
+      const prev = appStateRef.current;
+      appStateRef.current = nextState;
+      // Trigger when app goes to background (user pressing home/task-switching)
+      if (prev === "active" && (nextState === "background" || nextState === "inactive")) {
+        if (exitReportShownThisSessionRef.current) return;
+        // Only offer report if user did something meaningful
+        const meaningfulEvents = sessionEventsRef.current.filter(
+          (e) => e.type !== "tab_visit"
+        );
+        if (meaningfulEvents.length === 0 && sessionEventsRef.current.length < 2) return;
+        exitReportShownThisSessionRef.current = true;
+        // On mobile show native Alert; on web skip (no AppState background on web)
+        if (Platform.OS !== "web") {
+          Alert.alert(
+            "📋 Today's Visit Report",
+            "Would you like a summary of your session — issues addressed, guidance received, and tomorrow's focus?",
+            [
+              {
+                text: "Yes, show report",
+                onPress: () => {
+                  const todayEntries = entries.filter((e) => {
+                    const d = new Date(e.createdAt);
+                    const today = new Date();
+                    return d.toDateString() === today.toDateString();
+                  });
+                  const report = generateDailyVisitReport(
+                    profileDisplayNameRef.current,
+                    sessionStartTsRef.current,
+                    sessionEventsRef.current,
+                    issueGuideIdRef.current,
+                    todayEntries,
+                  );
+                  setCurrentVisitReport(report);
+                  setShowExitReport(true);
+                },
+              },
+              { text: "Not now", style: "cancel" },
+            ]
+          );
+        }
+      }
+    };
+    const sub = AppState.addEventListener("change", handleAppStateChange);
+    return () => sub.remove();
+  }, [entries]);
+  // ─────────────────────────────────────────────────────────────────────────
+
   useEffect(() => {
     const markIssue = () => {
       setAppIssueCount((current) => current + 1);
@@ -7689,6 +8117,9 @@ export default function App() {
     profileRoleId,
     selectedIdentity.label
   );
+  // Keep refs in sync for the AppState exit-report handler
+  profileDisplayNameRef.current = profileDisplayName;
+  issueGuideIdRef.current = issueGuideId;
   const profileShortStatus = profilePhoneVerified || profileEmailVerified ? "Verified" : "Profile";
   const profileButtonMeta = isCompact ? "Open" : profileShortStatus;
 
@@ -9802,6 +10233,9 @@ export default function App() {
     Alert.alert("Report generated", reportNotice);
     setJournal(defaultDraft);
     setSessionActive(false);
+    // Log for exit report
+    logSessionEvent({ type: "checkin", label: selectedTone.label, detail: `score:${clarityScore}`, ts: Date.now() });
+    logSessionEvent({ type: "guidance_viewed", label: selectedIssueGuide.label, ts: Date.now() });
 
     // ── Post check-in practice suggestion ──────────────────────────────────
     const hour = new Date().getHours();
@@ -11425,6 +11859,14 @@ async function fetchGeminiAIHelp(
       const today = new Date().toISOString().slice(0, 10);
       setLastVedicViewDate(today);
     }
+    // Log tab visit for exit report
+    const tabLabelMap: Partial<Record<TabId, string>> = {
+      today: "Today", journal: "Journal", vedic: "Vedic / Horoscope",
+      guide: "Guidance", community: "Community", tones: "Tones",
+      meditation: "Meditation", settings: "Settings", focus: "Calm Focus",
+      play: "Practice", insights: "Insights", search: "Search",
+    };
+    logSessionEvent({ type: "tab_visit", label: tabLabelMap[tabId] ?? tabId, ts: Date.now() });
     setActiveTab(tabId);
     scrollTabSurfaceToTop();
   }
@@ -11848,6 +12290,8 @@ async function fetchGeminiAIHelp(
     setHomeIssueDraft("");
     setHasSubmittedIssue(true);
     setIssueGuideId(issue.id);
+    // Log issue detection for exit report
+    logSessionEvent({ type: "issue_detected", label: issue.id, detail: issue.label, ts: Date.now() });
 
     // Show the acknowledgment notice for 3 seconds, then route
     showRouteNotice("Heard", counseling.heard.slice(0, 120) + (counseling.heard.length > 120 ? "…" : ""));
@@ -11872,6 +12316,14 @@ async function fetchGeminiAIHelp(
     setShowCounselingChat(false);
     setActiveJourney(session);
     setJourneyStepIndex(0);
+    // Log counseling completion for exit report
+    const turnCount = session.turns?.length ?? 0;
+    for (let i = 0; i < Math.max(1, turnCount); i++) {
+      logSessionEvent({ type: "counseling_turn", label: session.originalIssue?.slice(0, 60) ?? "Counseling session", ts: Date.now() });
+    }
+    (session.detectedThemes ?? []).forEach((theme: string) => {
+      logSessionEvent({ type: "guidance_viewed", label: theme, ts: Date.now() });
+    });
     if (session.journeySteps.length > 0) {
       handleTabPress(session.journeySteps[0].tabId);
     }
@@ -12661,6 +13113,46 @@ function isTrustedExternalUrl(url: string) {
                     <Text style={{ color: "#475569", fontSize: 13 }}>✕</Text>
                   </Pressable>
                 </View>
+              )}
+
+              {/* ── View Today's Visit Report (manual trigger) ── */}
+              {entries.some(e => {
+                const d = new Date(e.createdAt);
+                return d.toDateString() === new Date().toDateString();
+              }) && !showExitReport && (
+                <Pressable
+                  onPress={() => {
+                    const todayEntries = entries.filter(e => {
+                      const d = new Date(e.createdAt);
+                      return d.toDateString() === new Date().toDateString();
+                    });
+                    const report = generateDailyVisitReport(
+                      profileDisplayName,
+                      sessionStartTsRef.current,
+                      sessionEventsRef.current,
+                      issueGuideId,
+                      todayEntries,
+                    );
+                    setCurrentVisitReport(report);
+                    setShowExitReport(true);
+                  }}
+                  style={({ pressed }) => ({
+                    marginHorizontal: 16, marginBottom: 10,
+                    backgroundColor: pressed ? "#0C2A3A" : "#0A1E2E",
+                    borderRadius: 14, borderWidth: 1,
+                    borderColor: "rgba(34,211,238,0.25)",
+                    padding: 13, flexDirection: "row", alignItems: "center", gap: 10,
+                  })}
+                  accessibilityRole="button"
+                  accessibilityLabel="View today's visit report"
+                >
+                  <Text style={{ fontSize: 20 }}>📋</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: "#22D3EE", fontSize: 13, fontWeight: "700" }}>View Today's Visit Report</Text>
+                    <Text style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>Session summary · issues · guidance · tomorrow's focus</Text>
+                  </View>
+                  <Text style={{ color: "#22D3EE", fontSize: 14 }}>›</Text>
+                </Pressable>
               )}
 
               {/* ── Gemini journal insight card (appears after check-in with a note) ── */}
@@ -13689,6 +14181,25 @@ function isTrustedExternalUrl(url: string) {
           issueId={selectedIssueGuide.id}
           speakText={(text) => { void speakGuidance(text); }}
           stopSpeech={stopVoiceGuidance}
+        />
+
+        {/* ── Exit / Visit Report Modal ── */}
+        <ExitReportModal
+          visible={showExitReport}
+          report={currentVisitReport}
+          onClose={() => setShowExitReport(false)}
+          onShare={(report) => {
+            const text =
+              `📋 Aethon Beacon — Today's Visit Report\n` +
+              `${report.generatedAt}\n\n` +
+              `${report.overallSummary}\n\n` +
+              (report.issuesDetected.length > 0 ? `🔍 Issues Identified:\n${report.issuesDetected.map(i => `• ${i}`).join("\n")}\n\n` : "") +
+              (report.guidanceTopics.length > 0 ? `🧭 Guidance Provided:\n${report.guidanceTopics.map(g => `• ${g}`).join("\n")}\n\n` : "") +
+              `💪 Strengths:\n${report.strengths.map(s => `• ${s}`).join("\n")}\n\n` +
+              `🌅 Tomorrow's Focus:\n${report.tomorrowRecommendations.map((r, i) => `${i + 1}. ${r}`).join("\n")}\n\n` +
+              `— Generated by Aethon Beacon`;
+            void Share.share({ message: text, title: "Today's Visit Report" });
+          }}
         />
       </SafeAreaView>
     </SafeAreaProvider>
