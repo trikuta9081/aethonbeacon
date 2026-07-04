@@ -1,3 +1,4 @@
+// build: 2026-07-04-v2
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
