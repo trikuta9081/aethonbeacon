@@ -287,7 +287,7 @@ type LanguageId =
   | "dogri";
 type IssueId = "general" | "anger" | "anxiety" | "fear" | "overconfidence" | "stigma" | "burnout" | "loneliness" | "grief" | "identity" | "health" | "financial" | "relationship" | "parenting" | "trauma" | "academic" | "addiction";
 type IssueReminderMode = "tomorrow" | "week";
-type RedressRouteId = "academic" | "harassment" | "ragging" | "public" | "private" | "crime" | "financial" | "domestic" | "workplace";
+type RedressRouteId = "academic" | "harassment" | "ragging" | "public" | "private" | "crime" | "financial" | "domestic" | "workplace" | "cybercrime" | "consumer";
 type InstitutionSectorId =
   | "university"
   | "iit"
@@ -1114,6 +1114,127 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     safety: "Use headphones. Keep sessions under 30 minutes.",
     accent: "#D4A017",
     mark: "G40"
+  },
+  // ── Trending & Social-media famous tones ─────────────────────────────────
+  {
+    id: "trend-lofi",
+    label: "LoFi Hip-hop Beat",
+    category: "Trending",
+    pattern: "Warm vinyl-crackle beat at 75 BPM with soft piano and muffled drums. Continuous loop.",
+    use: "Study, focus, creative flow. The most-streamed genre on YouTube/Spotify for focus.",
+    safety: "Safe for extended listening. Lower volume for long sessions.",
+    accent: "#7C5CBF",
+    mark: "LF"
+  },
+  {
+    id: "trend-tibetan-bowl",
+    label: "Tibetan Singing Bowl",
+    category: "Trending",
+    pattern: "7-tone singing bowl resonance at 432 Hz with natural overtone decay. Loops with gentle fade.",
+    use: "Chakra balancing, meditation, grounding. Trending on TikTok and YouTube meditation channels.",
+    safety: "Louder strikes may be startling — keep initial volume low.",
+    accent: "#C4913A",
+    mark: "TB"
+  },
+  {
+    id: "trend-schumann",
+    label: "Schumann 7.83 Hz",
+    category: "Trending",
+    pattern: "Earth's electromagnetic resonance frequency. Isochronic pulse at 7.83 Hz with ambient drone.",
+    use: "Synchronise with Earth's heartbeat. Anxiety relief, grounding, circadian rhythm support.",
+    safety: "Safe for extended use. No headphones required.",
+    accent: "#2E7D4A",
+    mark: "SR"
+  },
+  {
+    id: "trend-krishna-flute",
+    label: "Krishna Flute (Bansuri)",
+    category: "Trending",
+    pattern: "Classical Indian bansuri flute melody in Raag Yaman. Soft reverb loop.",
+    use: "Devotional calm, emotional release, cultural healing. Viral on Indian spiritual platforms.",
+    safety: "Safe for all. Particularly effective for grief and loneliness.",
+    accent: "#3A7CBF",
+    mark: "KF"
+  },
+  {
+    id: "trend-rain-tent",
+    label: "Rain on Tent (ASMR)",
+    category: "Trending",
+    pattern: "Gentle rain droplets on canvas with distant thunder. Binaural ASMR spatial recording.",
+    use: "Sleep induction, anxiety relief. One of the top ASMR sounds on YouTube with billions of plays.",
+    safety: "Safe for extended use. Ideal at very low to moderate volume.",
+    accent: "#4A7FA8",
+    mark: "RT"
+  },
+  {
+    id: "trend-cafe",
+    label: "Coffee Shop Ambience",
+    category: "Trending",
+    pattern: "Gentle cafe chatter, espresso machine, light jazz undertone. Spatial room sound.",
+    use: "Focus and productivity. Studies show moderate ambient noise boosts creative cognition.",
+    safety: "Safe. Background noise level, not a treatment tone.",
+    accent: "#8B6E4E",
+    mark: "CS"
+  },
+  {
+    id: "trend-fireplace",
+    label: "Fireplace Crackle",
+    category: "Trending",
+    pattern: "Wood-fire crackle and pop with warm low-frequency hum. 4K YouTube fireplace style.",
+    use: "Winter calm, safety feeling, comfort. Trending year-round on streaming platforms.",
+    safety: "Safe for extended use. Very gentle and non-stimulating.",
+    accent: "#C4561A",
+    mark: "FP"
+  },
+  {
+    id: "trend-432-guitar",
+    label: "432Hz Acoustic Guitar",
+    category: "Trending",
+    pattern: "Fingerpicked acoustic guitar tuned to 432 Hz. Gentle arpeggios with room reverb.",
+    use: "Emotional regulation, grief processing, relaxation. Widely shared in healing music communities.",
+    safety: "Safe for extended listening.",
+    accent: "#8B7355",
+    mark: "AG"
+  },
+  {
+    id: "trend-om-chant",
+    label: "Om / Aum Chant",
+    category: "Trending",
+    pattern: "Group om chant with natural resonance and harmonic overtones. Vedic tradition. Continuous loop.",
+    use: "Spiritual grounding, throat chakra activation, pre-meditation. Ancient and trending simultaneously.",
+    safety: "Very safe. The oldest meditation sound on record.",
+    accent: "#C4A800",
+    mark: "OM2"
+  },
+  {
+    id: "trend-forest-birds",
+    label: "Forest Birds at Dawn",
+    category: "Trending",
+    pattern: "Natural forest soundscape — birdsong, gentle breeze, stream in distance. Spatial stereo recording.",
+    use: "Morning energy, nature immersion, parasympathetic restoration. Top nature sound on Calm and Headspace.",
+    safety: "Safe for extended use.",
+    accent: "#2E6E3A",
+    mark: "FB"
+  },
+  {
+    id: "trend-deep-sleep",
+    label: "Deep Sleep Delta Drone",
+    category: "Trending",
+    pattern: "Sub-bass 1-3 Hz delta frequency drone with soft harmonic overtones. Engineered for sleep stages.",
+    use: "Sleep onset, trauma recovery, deep rest. Trending on sleep hygiene communities on Reddit and TikTok.",
+    safety: "Use while lying down only. Do not use while driving.",
+    accent: "#1A2A4A",
+    mark: "DS"
+  },
+  {
+    id: "trend-528-miracle",
+    label: "528 Hz Miracle Tone Extended",
+    category: "Trending",
+    pattern: "Extended 528 Hz sine with layered harmonic series and binaural theta entrainment at 6 Hz.",
+    use: "DNA healing, heart chakra activation, emotional transformation. Most viral frequency on healing platforms.",
+    safety: "Safe. Keep volume moderate.",
+    accent: "#6A4DB8",
+    mark: "528+"
   }
 ];
 
@@ -5376,6 +5497,46 @@ const redressRoutes: RedressRoute[] = [
     trackWebsite: "https://epfigms.gov.in/",
     urgentNote:
       "If you face physical intimidation or unsafe working conditions, contact the local police or 112 before pursuing the labour complaint."
+  },
+  {
+    id: "cybercrime",
+    label: "Cybercrime / online harassment",
+    subtitle: "Fraud, stalking, fake profiles, morphed images, online threats",
+    summary:
+      "Report to the National Cyber Crime Reporting Portal immediately. For financial fraud, also call 1930 within 24 hours to freeze the transaction before it is settled.",
+    firstOffice:
+      "National Cyber Crime Reporting Portal (cybercrime.gov.in), Cyber Cell of your nearest police station, or call 1930 for financial cybercrime.",
+    firstAction:
+      "File the complaint online at cybercrime.gov.in with screenshots, URLs, message logs, account IDs, and transaction IDs. Keep all evidence before reporting — platforms may remove content after a report.",
+    escalation:
+      "If the portal complaint stalls, visit the cyber cell physically with a printed copy. For severe cases (morphed images, sextortion, or child exploitation), escalate to SP/DSP and request a FIR.",
+    keepReady:
+      "Screenshots with timestamps, URLs and usernames, transaction IDs, mobile numbers used, email headers, and your own ID proof.",
+    phone: "1930",
+    website: "https://cybercrime.gov.in/",
+    trackWebsite: "https://cybercrime.gov.in/",
+    urgentNote:
+      "For financial cybercrime, call 1930 within 24 hours. Do not delete messages — they are evidence. If you face threats of violence, call 112 immediately."
+  },
+  {
+    id: "consumer",
+    label: "Consumer rights / product or service complaint",
+    subtitle: "Defective product, service failure, billing fraud, misleading claims",
+    summary:
+      "File on the Consumer Helpline Portal (consumerhelpline.gov.in) or call 1915. For e-commerce, both the platform and the seller can be held accountable under the Consumer Protection Act 2019.",
+    firstOffice:
+      "The company's customer service grievance cell first, then the National Consumer Helpline, then the District Consumer Disputes Redressal Commission.",
+    firstAction:
+      "Send a written complaint to the company with the product/service details, invoice, fault description, and the remedy you want. Give them 15 days to respond before escalating.",
+    escalation:
+      "If no resolution in 15–30 days, file on consumerhelpline.gov.in or file a case in the District Consumer Commission (for claims up to ₹50 lakh — free to file).",
+    keepReady:
+      "Invoice or bill, warranty card, photographs of the defect, all company communication, credit card statements, and the complaint reference number.",
+    phone: "1915",
+    website: "https://consumerhelpline.gov.in/",
+    trackWebsite: "https://consumerhelpline.gov.in/",
+    urgentNote:
+      "If the product caused bodily harm or is a safety hazard, contact the CDSCO for drugs/devices or local police. For food safety, contact FSSAI (1800-112-100)."
   }
 ];
 
@@ -6386,14 +6547,18 @@ function buildAIHelpSeedReply() {
  * Returns a smart, dimension-specific hint for each tab context strip.
  * Tab: "journal" | "tones" | "meditation" | "wisdom" | "community"
  */
-function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditation" | "wisdom" | "community"): string {
-  const hints: Record<IssueId, Record<"journal" | "tones" | "meditation" | "wisdom" | "community", string>> = {
+function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditation" | "wisdom" | "community" | "focus" | "play" | "guide" | "redress"): string {
+  const hints: Record<IssueId, Record<"journal" | "tones" | "meditation" | "wisdom" | "community" | "focus" | "play" | "guide" | "redress", string>> = {
     general: {
       journal: "write what is on your mind without filtering",
       tones: "try a grounding tone to settle the day",
       meditation: "begin with a breath practice to centre yourself",
       wisdom: "search for a teaching that resonates with your current state",
       community: "share what is on your mind or read others' experiences",
+      focus: "use the 5-lens reset to see your situation from multiple angles",
+      play: "pick one small action challenge and complete all 3 steps today",
+      guide: "pick the issue closest to what you are feeling right now",
+      redress: "use the official route if a system or person has caused harm",
     },
     anger: {
       journal: "write the trigger, the feeling, and what you actually needed",
@@ -6401,6 +6566,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "use a body-scan to find where the anger lives physically",
       wisdom: "find a teaching on restraint, dignity, and the choice behind a reaction",
       community: "share what you are going through — anger is more common than anyone admits",
+      focus: "use the emotional lens first — name what you felt before you name what they did",
+      play: "try the 'pause before responding' challenge — 3 steps, one moment at a time",
+      guide: "the anger route gives you practical, emotional, and cultural next steps together",
+      redress: "if the anger is about injustice, use the redress route to act rather than react",
     },
     anxiety: {
       journal: "write the worst-case scenario, then the most realistic one",
@@ -6408,6 +6577,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "4-7-8 breath: inhale 4, hold 7, exhale 8 — repeat 4 times",
       wisdom: "search for a teaching on what is and is not in your control",
       community: "read from others navigating anxiety — you are not the only one fighting this",
+      focus: "use the practical lens — list what is real and what is imagined right now",
+      play: "the anxiety route challenge breaks the freeze cycle with one micro-action at a time",
+      guide: "this path maps your anxiety to a calm route with 3 concrete next steps",
+      redress: "if anxiety has a specific cause — workplace, institution — the redress route can help act",
     },
     fear: {
       journal: "write what you are afraid of, then one fact that challenges that fear",
@@ -6415,6 +6588,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "visualise one moment of quiet safety and hold it for 2 minutes",
       wisdom: "look for a teaching on courage — not the absence of fear but action despite it",
       community: "share a fear that feels too embarrassing to say aloud — others have been there",
+      focus: "use the psychological lens — what belief is underneath the fear?",
+      play: "one small brave action is all the practice asks — not courage, just one step",
+      guide: "the fear path gives you a grounded, stepwise route through — not around — the fear",
+      redress: "if the fear is caused by threats or coercion, the redress route provides legal steps",
     },
     overconfidence: {
       journal: "write one assumption you made recently and what evidence supports or challenges it",
@@ -6422,6 +6599,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "try a loving-kindness practice — it builds other-awareness alongside self-belief",
       wisdom: "search for a teaching on humility and the discipline of staying teachable",
       community: "ask for honest feedback on a plan or decision — peer input is calibrating",
+      focus: "use the cultural lens — how do others see this situation differently than you do?",
+      play: "the overconfidence challenge tests assumptions with real-world feedback steps",
+      guide: "this path helps calibrate ambition with evidence, emotion, and peer perspective",
+      redress: "if overconfidence led to a conflict or injustice, the redress route helps correct it",
     },
     stigma: {
       journal: "write about yourself as a friend would — not as a critic",
@@ -6429,6 +6610,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "use a self-compassion practice: 'may I be kind to myself as I would be to a friend'",
       wisdom: "find a teaching on dignity, worth, and separating identity from issue",
       community: "share privately — many people carry shame about the same things you do",
+      focus: "use the spiritual lens — what is your worth independent of others' opinions?",
+      play: "the stigma challenge rebuilds self-respect through small, private acts of dignity",
+      guide: "this path separates who you are from what you are carrying — issue ≠ identity",
+      redress: "if stigma is being imposed by a system or institution, the redress route applies",
     },
     burnout: {
       journal: "write what you can remove or delay today — not what you need to add",
@@ -6436,6 +6621,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "body-scan to locate tension and consciously release each area",
       wisdom: "search for a teaching on rest as part of purpose, not opposed to it",
       community: "burnout is pervasive — read from others who found a way through",
+      focus: "use the practical lens — what is one thing you can stop doing today?",
+      play: "the burnout challenge is gentle: rest is the first step, not the reward",
+      guide: "this path maps burnout back to sustainable pace with 3 evidence-based steps",
+      redress: "if burnout is caused by workplace exploitation, the redress route has a labour route",
     },
     loneliness: {
       journal: "write about one connection — past or present — where you felt genuinely seen",
@@ -6443,6 +6632,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "visualise one person who cares about you and sit with that feeling for 3 minutes",
       wisdom: "look for a teaching on belonging, service, and being part of something larger",
       community: "share here — this is exactly where connection starts",
+      focus: "use the emotional lens — what does connection feel like when it is real for you?",
+      play: "the loneliness challenge starts with one outreach — message, call, or small kindness",
+      guide: "this path finds the nearest step back toward connection without forcing it",
+      redress: "if isolation was caused by discrimination or exclusion, the redress route is relevant",
     },
     grief: {
       journal: "write a memory of the person or thing you lost — not the pain, the memory",
@@ -6450,6 +6643,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "allow the grief to be present without trying to resolve it — just witness it for 5 minutes",
       wisdom: "search for a teaching on loss, honouring what was, and continuing to live",
       community: "grief is one of the most isolating experiences — sharing it here can ease the weight",
+      focus: "use the spiritual lens — what did this person or thing mean to your deepest values?",
+      play: "grief needs ritual: one small act of remembrance counts as the full practice today",
+      guide: "this path holds space for grief while pointing toward the smallest next step",
+      redress: "if the loss involved negligence or injustice, the redress route is available when ready",
     },
     identity: {
       journal: "write who you were at 10, who you are now, and what you would tell your younger self",
@@ -6457,6 +6654,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "spend 5 minutes with the question 'what do I actually want?' — without pressure for an answer",
       wisdom: "search for a teaching on purpose, authenticity, and what it means to be yourself",
       community: "others are quietly asking the same questions about identity and direction",
+      focus: "use the cultural lens — how has your context shaped who you think you are?",
+      play: "the identity challenge: do one thing today that is true to who you are becoming",
+      guide: "this path separates inherited identity from chosen identity — both matter",
+      redress: "if identity has been suppressed by a system or relationship, the redress route can help",
     },
     health: {
       journal: "write your symptoms, your fears, and one concrete next step toward clarity",
@@ -6464,6 +6665,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "send breath deliberately to the area of the body that needs attention",
       wisdom: "find a teaching on the body-mind connection and caring for physical health as a whole",
       community: "share what you are navigating — others dealing with health challenges understand in ways others cannot",
+      focus: "use the practical lens — what is the one specific action your body needs today?",
+      play: "the health challenge uses micro-actions: one sleep improvement, one food swap, one walk",
+      guide: "this path links physical symptoms to emotional, social, and practical next steps",
+      redress: "if health harm was caused by a hospital, employer, or product, the redress route applies",
     },
     financial: {
       journal: "write the one financial number that worries you most — naming it makes it smaller",
@@ -6471,6 +6676,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "practice releasing the shame around money for 5 minutes — shame is not useful information",
       wisdom: "search for a teaching that separates your worth from your net worth",
       community: "financial stress affects everyone — sharing it removes the private weight of it",
+      focus: "use the practical lens — what is the one number that needs to change first?",
+      play: "the financial challenge starts with one small concrete action: a call, a list, a question",
+      guide: "this path breaks financial overwhelm into one visible next step at a time",
+      redress: "if financial harm involved fraud, illegal deduction, or exploitation, the redress route applies",
     },
     relationship: {
       journal: "write exactly what you need from this relationship right now — as specifically as possible",
@@ -6478,6 +6687,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "visualise a conversation where both people feel heard — what would that look like?",
       wisdom: "find a teaching on communication, boundaries, and loving without losing yourself",
       community: "relationship difficulties are universal — read from others who have navigated similar dynamics",
+      focus: "use the emotional lens — what do you actually need that you haven't asked for?",
+      play: "the relationship challenge: one honest, specific conversation or one boundary set",
+      guide: "this path maps the relationship dynamic to practical, emotional, and cultural steps",
+      redress: "if the relationship involves abuse, coercion, or harassment, the redress route is urgent",
     },
     parenting: {
       journal: "write about your child's behaviour and your own emotional response to it separately",
@@ -6485,6 +6698,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "5 minutes of breath before a difficult parenting moment changes the entire tone",
       wisdom: "find a teaching on accompaniment, presence, and the long game of raising a person",
       community: "parenting communities are one of the most practical sources of real-world guidance",
+      focus: "use the cultural lens — what did your own upbringing teach you, and what do you want to keep?",
+      play: "the parenting challenge: one moment of full presence with your child, no screen, no task",
+      guide: "this path gives a grounded route through parenting stress with age-appropriate steps",
+      redress: "if a school, institution, or system has harmed your child, the redress route protects them",
     },
     trauma: {
       journal: "write about what safety feels like for you — not the event, but what safety is",
@@ -6492,6 +6709,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "grounding practice only: feel your feet, name 5 things you can see, slow your breath",
       wisdom: "search for a teaching on healing, witnessing, and the courage of survival",
       community: "you do not need to share the details — even a general 'I am carrying something heavy' reaches people who understand",
+      focus: "use the spiritual lens — what strength have you already shown just by being here?",
+      play: "trauma needs safety first: the challenge today is one grounding practice, nothing more",
+      guide: "this path moves at your pace — safety, then steadiness, then steps",
+      redress: "if the trauma involved a crime or institutional failure, the redress route preserves your rights",
     },
     academic: {
       journal: "write what you know well, what you are unsure about, and what you need to let go of worrying about",
@@ -6499,6 +6720,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "5-minute brain dump before studying: write everything distracting you, then close the page",
       wisdom: "find a teaching that separates performance from identity and effort from worth",
       community: "academic pressure is a shared experience — read from others who have been through it",
+      focus: "use the practical lens — what is the one task that would make today a success?",
+      play: "the academic challenge: 25 minutes of focused work, then a proper 5-minute break",
+      guide: "this path breaks academic overwhelm into one study block, one boundary, one conversation",
+      redress: "if academic harm involves unfair grading, harassment, or discrimination, use the redress route",
     },
     addiction: {
       journal: "write what the urge feels like, what triggered it, and what you actually need underneath it",
@@ -6506,6 +6731,10 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       meditation: "urge-surfing: observe the urge like a wave — watch it peak and then fall without acting on it",
       wisdom: "find a teaching on surrender, recovery, and the strength it takes to ask for help",
       community: "recovery communities are one of the most evidence-backed supports for addiction — you are not alone here",
+      focus: "use the psychological lens — what need does this substance or behaviour temporarily meet?",
+      play: "the addiction challenge: one urge surfed, one substitute action taken, one connection made",
+      guide: "this path maps the addiction cycle to a recovery route with psychological and social steps",
+      redress: "if exploitation or a system enabled the addiction, the redress route can address accountability",
     },
   };
 
@@ -6938,6 +7167,76 @@ function getJanmaNakshatra(dob: string): { id: number; name: string; lord: strin
   const nakshatraId = ((jdn * 13) % 27 + 27) % 27;
   return { id: nakshatraId, name: NAKSHATRAS[nakshatraId], lord: NAKSHATRA_LORDS[nakshatraId] };
 }
+
+// Vimshottari Mahadasha system
+const DASHA_YEARS: Record<string, number> = {
+  Ketu: 7, Shukra: 20, Surya: 6, Chandra: 10, Mangal: 7, Rahu: 18, Guru: 16, Shani: 19, Budha: 17
+};
+const DASHA_ORDER = ["Ketu","Shukra","Surya","Chandra","Mangal","Rahu","Guru","Shani","Budha"];
+const DASHA_QUALITIES: Record<string, string> = {
+  Ketu: "Spiritual liberation, detachment, past-life karma resolution",
+  Shukra: "Love, creativity, luxury, relationships, material prosperity",
+  Surya: "Leadership, authority, father, self-confidence, career peak",
+  Chandra: "Emotions, mother, mind, intuition, home and nurturing",
+  Mangal: "Courage, ambition, property, siblings, physical energy",
+  Rahu: "Ambition, foreign influences, technology, unconventional paths",
+  Guru: "Wisdom, expansion, children, teaching, spiritual growth",
+  Shani: "Discipline, karma, delays, hard work, long-term results",
+  Budha: "Communication, intellect, trade, learning, analytical thinking"
+};
+function getMahadasha(dob: string, nakshatraLord: string): { current: string; yearsLeft: number; endYear: number; next: string } | null {
+  const birthDate = new Date(dob);
+  if (isNaN(birthDate.getTime())) return null;
+  const ageMs = Date.now() - birthDate.getTime();
+  const ageYears = ageMs / (365.25 * 24 * 3600 * 1000);
+  const startIdx = DASHA_ORDER.indexOf(nakshatraLord);
+  if (startIdx < 0) return null;
+  let elapsed = ageYears;
+  let idx = startIdx;
+  while (true) {
+    const planet = DASHA_ORDER[idx % 9];
+    const yrs = DASHA_YEARS[planet] ?? 7;
+    if (elapsed <= yrs) {
+      const yearsLeft = Math.round((yrs - elapsed) * 10) / 10;
+      const endYear = new Date().getFullYear() + Math.ceil(yrs - elapsed);
+      const next = DASHA_ORDER[(idx + 1) % 9];
+      return { current: planet, yearsLeft, endYear, next };
+    }
+    elapsed -= yrs;
+    idx++;
+  }
+}
+
+// Nakshatra deep qualities
+const NAKSHATRA_QUALITIES: Array<{ deity: string; gana: string; symbol: string; nature: string; quality: string }> = [
+  { deity: "Ashwini Kumaras", gana: "Deva", symbol: "Horse head", nature: "Light/Swift", quality: "Healing, speed, new beginnings, pioneering spirit" },
+  { deity: "Yama", gana: "Manushya", symbol: "Female genitalia/yoni", nature: "Fierce", quality: "Creation, manifestation, artistic talent, sensuality" },
+  { deity: "Agni", gana: "Rakshasa", symbol: "Knife/flame", nature: "Mixed", quality: "Transformation, purification, sharp intellect, leadership" },
+  { deity: "Brahma/Prajapati", gana: "Manushya", symbol: "Chariot/ox cart", nature: "Fixed", quality: "Fertility, beauty, creativity, romantic nature" },
+  { deity: "Soma/Chandra", gana: "Deva", symbol: "Deer head/antelope", nature: "Soft", quality: "Searching, gentle curiosity, adaptability, artistic sensitivity" },
+  { deity: "Rudra", gana: "Manushya", symbol: "Teardrop/diamond", nature: "Sharp", quality: "Sorrow, hard work, breakthroughs, storms of change" },
+  { deity: "Aditi", gana: "Deva", symbol: "Bow and quiver", nature: "Movable", quality: "Renewal, motherly care, abundance, restoration" },
+  { deity: "Brihaspati", gana: "Deva", symbol: "Flower/circle", nature: "Light", quality: "Nourishment, protection, spiritual discipline, good fortune" },
+  { deity: "Sarpas (serpents)", gana: "Rakshasa", symbol: "Coiled serpent", nature: "Sharp", quality: "Mysticism, wisdom, clinging, transformation, secrecy" },
+  { deity: "Pitras", gana: "Rakshasa", symbol: "Royal throne", nature: "Fierce", quality: "Authority, ancestors, past lives, royal bearing, power" },
+  { deity: "Bhaga", gana: "Manushya", symbol: "Front legs of bed", nature: "Soft", quality: "Pleasure, luxury, creativity, romance, fine arts" },
+  { deity: "Aryaman", gana: "Manushya", symbol: "Back legs of bed", nature: "Fixed", quality: "Service, contracts, patronage, responsibility, partnerships" },
+  { deity: "Surya", gana: "Deva", symbol: "Open hand/palm", nature: "Movable", quality: "Skill, grace, healing, problem-solving, gentle persistence" },
+  { deity: "Vishvakarma", gana: "Rakshasa", symbol: "Bright jewel/pearl", nature: "Soft", quality: "Artistry, architecture, brilliance, dazzling presence" },
+  { deity: "Vayu", gana: "Deva", symbol: "Coral/sword", nature: "Movable", quality: "Independence, scattered energy, diplomacy, freedom-seeking" },
+  { deity: "Indra & Agni", gana: "Rakshasa", symbol: "Potter's wheel", nature: "Mixed", quality: "Power, triumph, ambition, leadership, transformation" },
+  { deity: "Mitra", gana: "Deva", symbol: "Lotus/umbrella", nature: "Soft", quality: "Friendship, devotion, loyalty, worship, collaborative nature" },
+  { deity: "Indra", gana: "Rakshasa", symbol: "Round earring", nature: "Sharp", quality: "Authority, control, intensity, protective nature, endings" },
+  { deity: "Niritti/Prajapati", gana: "Rakshasa", symbol: "Bunch of roots", nature: "Sharp", quality: "Foundation, destruction, philosophy, liberation, freedom" },
+  { deity: "Apas", gana: "Manushya", symbol: "Fan/tusk", nature: "Movable", quality: "Wealth, victory, artistic nature, ambition, invincibility" },
+  { deity: "Vishvedevas", gana: "Manushya", symbol: "Elephant tusk", nature: "Fixed", quality: "Victory, deep ethics, universal law, breakthrough after hardship" },
+  { deity: "Vishnu", gana: "Deva", symbol: "Ear/trident", nature: "Movable", quality: "Listening, devotion, learning, noble character, compassion" },
+  { deity: "Eight Vasus", gana: "Rakshasa", symbol: "Drum/flute", nature: "Movable", quality: "Wealth, fame, music, war, brilliant communication" },
+  { deity: "Varuna", gana: "Rakshasa", symbol: "Thousand flowers/stars", nature: "Movable", quality: "Healing, mysticism, science, vast vision, cosmic law" },
+  { deity: "Aja Ekapad", gana: "Manushya", symbol: "Sword/two faces", nature: "Fierce", quality: "Futuristic, intense, spiritual warrior, visionary power" },
+  { deity: "Ahir Budhnya", gana: "Manushya", symbol: "Twins/snake in water", nature: "Fixed", quality: "Deep wisdom, serpent kundalini, patience, spiritual depth" },
+  { deity: "Pushan", gana: "Deva", symbol: "Fish/pair of fish", nature: "Soft", quality: "Journeys, protection, gentle care, cosmic journey, moksha" },
+];
 
 // Nakshatra → Rashi mapping (27 nakshatras to 12 rashis)
 const NAKSHATRA_TO_RASHI_ID = [
@@ -10056,6 +10355,11 @@ export default function App() {
       wellbeingMorning: "aethon-wellbeing-morning",
       wellbeingAfternoon: "aethon-wellbeing-afternoon",
       wellbeingEvening: "aethon-wellbeing-evening",
+      birthChart: "aethon-birth-chart-prompt",
+      milestone7: "aethon-streak-milestone-7",
+      milestone14: "aethon-streak-milestone-14",
+      milestone30: "aethon-streak-milestone-30",
+      milestone60: "aethon-streak-milestone-60",
       followUp: (i: number) => `aethon-followup-${i}`,
     };
     const cancelOwnNotifications = async () => {
@@ -10069,6 +10373,11 @@ export default function App() {
         NOTIF_IDS.wellbeingMorning,
         NOTIF_IDS.wellbeingAfternoon,
         NOTIF_IDS.wellbeingEvening,
+        NOTIF_IDS.birthChart,
+        NOTIF_IDS.milestone7,
+        NOTIF_IDS.milestone14,
+        NOTIF_IDS.milestone30,
+        NOTIF_IDS.milestone60,
         ...Array.from({ length: 16 }, (_, i) => NOTIF_IDS.followUp(i + 1)),
       ];
       await Promise.all(
@@ -10214,40 +10523,48 @@ export default function App() {
 
       // ── Wellbeing check — 3x daily (gated by notifWellbeingEnabled) ─────────
       if (notifWellbeingEnabled) {
-      await Notifications.scheduleNotificationAsync({
-        identifier: NOTIF_IDS.wellbeingMorning,
-        content: {
-          title: "☀️ Good morning, " + profileDisplayName,
-          body: "How are you feeling as the day starts? A 10-second check-in keeps the pattern honest.",
-          data: { tab: "today" },
-          ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
-        },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 0 }
-      }).catch(() => undefined);
+        const issueLabel = selectedIssueGuide.id !== "general" ? selectedIssueGuide.label : "your wellbeing";
+        const name = profileDisplayName || "there";
+        await Notifications.scheduleNotificationAsync({
+          identifier: NOTIF_IDS.wellbeingMorning,
+          content: {
+            title: `☀️ Morning check-in, ${name}`,
+            body: checkInStreak >= 7
+              ? `${checkInStreak}-day streak! Set your intention for ${issueLabel} — 10 seconds is all it takes.`
+              : `Start your day with intention. How are you feeling about ${issueLabel} today?`,
+            data: { tab: "today" },
+            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+          },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 0 }
+        }).catch(() => undefined);
 
-      // ── Wellbeing check — afternoon (1 pm) ────────────────────────────────
-      await Notifications.scheduleNotificationAsync({
-        identifier: NOTIF_IDS.wellbeingAfternoon,
-        content: {
-          title: "🌤 Midday check — how are you doing?",
-          body: "Half the day is gone. Pause for a moment and tell the app how you're holding up.",
-          data: { tab: "today" },
-          ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
-        },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 13, minute: 0 }
-      }).catch(() => undefined);
+        // ── Wellbeing check — afternoon (1 pm) ────────────────────────────────
+        await Notifications.scheduleNotificationAsync({
+          identifier: NOTIF_IDS.wellbeingAfternoon,
+          content: {
+            title: "🌤 Midday — quick pulse check",
+            body: selectedIssueGuide.id !== "general"
+              ? `Halfway through. How is ${issueLabel} feeling right now? Your pattern depends on this data.`
+              : "Midday pulse check. 10 seconds keeps your clarity scores meaningful.",
+            data: { tab: "today" },
+            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+          },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 13, minute: 0 }
+        }).catch(() => undefined);
 
-      // ── Wellbeing check — evening (7 pm) ──────────────────────────────────
-      await Notifications.scheduleNotificationAsync({
-        identifier: NOTIF_IDS.wellbeingEvening,
-        content: {
-          title: "🌆 Evening — how was your day?",
-          body: "Before the night winds down, a moment to process what happened today.",
-          data: { tab: "today" },
-          ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
-        },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 19, minute: 0 }
-      }).catch(() => undefined);
+        // ── Wellbeing check — evening (7 pm) ──────────────────────────────────
+        await Notifications.scheduleNotificationAsync({
+          identifier: NOTIF_IDS.wellbeingEvening,
+          content: {
+            title: "🌆 Evening reflection",
+            body: checkInStreak >= 3
+              ? `Day ${checkInStreak} complete. Log tonight's note to lock in your ${issueLabel} progress.`
+              : "Before the day ends — how did you handle today? Your path forward depends on honest reflection.",
+            data: { tab: "journal" },
+            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+          },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 19, minute: 30 }
+        }).catch(() => undefined);
       } // end notifWellbeingEnabled
 
       // ── Re-engagement nudge (3 days from now, one-shot) ────────────────────
@@ -10256,18 +10573,55 @@ export default function App() {
         await Notifications.scheduleNotificationAsync({
           identifier: NOTIF_IDS.reengage,
           content: {
-            title: "✨ We miss you, " + profileDisplayName,
+            title: checkInStreak > 0 ? `⚡ Day ${checkInStreak} streak — don't let it slip` : "✨ Your path is still here",
             body: checkInStreak > 0
-              ? `Your ${checkInStreak}-day streak is waiting. Come back and keep the momentum going.`
-              : "Your wellness journey is still here. Take 30 seconds to check in today.",
+              ? `${checkInStreak} days in a row. Just one note today keeps your ${selectedIssueGuide.id !== "general" ? selectedIssueGuide.label : "wellbeing"} journey alive.`
+              : `${profileDisplayName || "Hey"}, your progress and pattern data are waiting. 30 seconds is all it takes to restart your streak.`,
             data: { tab: "today" },
             ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
           },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: reengageDate
-          }
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reengageDate }
         }).catch(() => undefined);
+      }
+
+      // ── Birth chart completion prompt (one-shot, 2 days) ──────────────────
+      if (reminderEnabled && !hasExactBirthDetails) {
+        const birthChartDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+        await Notifications.scheduleNotificationAsync({
+          identifier: NOTIF_IDS.birthChart,
+          content: {
+            title: "🪐 Unlock your Vedic birth chart",
+            body: "Add your date, time, and place of birth to unlock your Mahadasha, Nakshatra analysis, and personalised cosmic guidance.",
+            data: { tab: "vedic" },
+            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+          },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: birthChartDate }
+        }).catch(() => undefined);
+      }
+
+      // ── Streak milestone celebrations ─────────────────────────────────────
+      if (reminderEnabled) {
+        const milestones: Array<{ id: string; days: number; title: string; body: string }> = [
+          { id: NOTIF_IDS.milestone7,  days: 7 - checkInStreak,  title: "🔥 7-day streak — you're building real habit!", body: "One week of consistent check-ins. Your clarity pattern is now meaningful. Keep going!" },
+          { id: NOTIF_IDS.milestone14, days: 14 - checkInStreak, title: "⚡ 14-day streak — halfway to your first month!", body: "Two weeks of honest self-tracking. Your pattern data is now strong enough to reveal real insights." },
+          { id: NOTIF_IDS.milestone30, days: 30 - checkInStreak, title: "🏆 30-day streak — one month of growth!", body: "A full month of showing up for yourself. Your report card reflects real, lasting progress." },
+          { id: NOTIF_IDS.milestone60, days: 60 - checkInStreak, title: "🌟 60-day streak — you're transforming!", body: "Two months of consistent inner work. This is the level where lasting change happens. Remarkable." },
+        ];
+        for (const m of milestones) {
+          if (m.days > 0 && m.days <= 90) {
+            const mDate = new Date(Date.now() + m.days * 24 * 60 * 60 * 1000);
+            await Notifications.scheduleNotificationAsync({
+              identifier: m.id,
+              content: {
+                title: m.title,
+                body: m.body,
+                data: { tab: "insights" },
+                ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+              },
+              trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: mDate }
+            }).catch(() => undefined);
+          }
+        }
       }
     }
 
@@ -10276,7 +10630,7 @@ export default function App() {
     return () => {
       mounted = false;
     };
-  }, [hasLoaded, reminderChoice.hour, reminderChoice.minute, reminderEnabled, reminderMode, followUpMode, notifStreakEnabled, notifVedicEnabled, notifReengageEnabled, notifWellbeingEnabled, checkInStreak, vedicRashiInfo, profileDisplayName]);
+  }, [hasLoaded, reminderChoice.hour, reminderChoice.minute, reminderEnabled, reminderMode, followUpMode, notifStreakEnabled, notifVedicEnabled, notifReengageEnabled, notifWellbeingEnabled, checkInStreak, vedicRashiInfo, profileDisplayName, hasExactBirthDetails, selectedIssueGuide.id]);
 
   function saveCheckIn() {
     const note = journal.trim();
@@ -13085,6 +13439,130 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Today">
             <View onLayout={captureSectionLayout("today")}>
 
+              {/* ── LANDING HEADER — Premium redesign ── */}
+              {(() => {
+                const hour = new Date().getHours();
+                const greeting = hour < 5 ? "Still awake?" : hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : hour < 21 ? "Good evening" : "Good night";
+                const greetEmoji = hour < 5 ? "🌌" : hour < 12 ? "☀️" : hour < 17 ? "🌤" : hour < 21 ? "🌙" : "⭐";
+                const bgGrad = hour < 12 ? "#05101A" : hour < 17 ? "#06100F" : "#060818";
+                const issueActive = selectedIssueGuide.id !== "general";
+                const scoreColor = clarityScore >= 75 ? "#34D399" : clarityScore >= 55 ? "#FCD34D" : "#F87171";
+                const scoreLabel = clarityScore >= 75 ? "Strong" : clarityScore >= 55 ? "Growing" : "Building";
+                const motivations = [
+                  "Every small step is progress.", "You are not your struggle.", "Clarity comes with consistency.",
+                  "Today is another chance to move forward.", "Healing happens in layers.", "You showed up — that matters.",
+                  "Your journey is uniquely yours.", "Courage is choosing to continue.", "Progress over perfection.",
+                ];
+                const motivation = motivations[new Date().getDate() % motivations.length];
+                return (
+                  <View style={{ marginHorizontal: 0, marginBottom: 6 }}>
+                    {/* ── Hero greeting panel ── */}
+                    <View style={{ backgroundColor: bgGrad, paddingHorizontal: 18, paddingTop: 18, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: "rgba(99,222,208,0.12)" }}>
+                      {/* Row 1: greeting label */}
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                        <Text style={{ fontSize: 13 }}>{greetEmoji}</Text>
+                        <Text style={{ color: "#475569", fontSize: 10, fontWeight: "900", letterSpacing: 1.4, textTransform: "uppercase" }}>{greeting}</Text>
+                        <View style={{ flex: 1 }} />
+                        <Text style={{ color: "#1E3A5A", fontSize: 10, fontWeight: "700" }}>
+                          {new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
+                        </Text>
+                      </View>
+                      {/* Row 2: name + clarity orb */}
+                      <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 10 }}>
+                        <View style={{ flex: 1, marginRight: 12 }}>
+                          <Text style={{ color: "#F0F9FF", fontSize: 26, fontWeight: "900", letterSpacing: -0.5 }} numberOfLines={1}>
+                            {profileDisplayName || "Welcome back"}
+                          </Text>
+                          <Text style={{ color: "#334155", fontSize: 12, marginTop: 3, fontStyle: "italic" }} numberOfLines={1}>
+                            {motivation}
+                          </Text>
+                        </View>
+                        {/* Clarity score orb — bigger + labelled */}
+                        <View style={{ alignItems: "center" }}>
+                          <View style={{ width: 66, height: 66, borderRadius: 33, backgroundColor: scoreColor + "12", borderWidth: 2.5, borderColor: scoreColor, alignItems: "center", justifyContent: "center" }}>
+                            <Text style={{ color: scoreColor, fontSize: 22, fontWeight: "900", lineHeight: 26 }}>{clarityScore}</Text>
+                            <Text style={{ color: scoreColor, fontSize: 8, fontWeight: "900", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
+                          </View>
+                          <Text style={{ color: scoreColor, fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{scoreLabel}</Text>
+                        </View>
+                      </View>
+                      {/* Row 3: active issue + streak badges */}
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                        {issueActive ? (
+                          <View style={{ backgroundColor: "rgba(99,222,208,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(99,222,208,0.3)", flexDirection: "row", alignItems: "center", gap: 5 }}>
+                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#63DED0" }} />
+                            <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "900" }}>{selectedIssueGuide.label}</Text>
+                          </View>
+                        ) : (
+                          <View style={{ backgroundColor: "rgba(71,85,105,0.2)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(71,85,105,0.3)" }}>
+                            <Text style={{ color: "#64748B", fontSize: 11, fontWeight: "700" }}>No active focus</Text>
+                          </View>
+                        )}
+                        {checkInStreak > 0 && (
+                          <View style={{ backgroundColor: "rgba(251,191,36,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(251,191,36,0.25)", flexDirection: "row", alignItems: "center", gap: 4 }}>
+                            <Text style={{ fontSize: 11 }}>🔥</Text>
+                            <Text style={{ color: "#FBBF24", fontSize: 11, fontWeight: "900" }}>{checkInStreak} day streak</Text>
+                          </View>
+                        )}
+                        {visitReports.length > 0 && (
+                          <View style={{ backgroundColor: "rgba(129,140,248,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(129,140,248,0.25)" }}>
+                            <Text style={{ color: "#818CF8", fontSize: 11, fontWeight: "700" }}>{visitReports.length} session{visitReports.length !== 1 ? "s" : ""}</Text>
+                          </View>
+                        )}
+                      </View>
+                      {/* Row 4: 5-dimension progress bars (wider + labelled) */}
+                      {issueActive && (
+                        <View style={{ marginTop: 12, gap: 6 }}>
+                          <Text style={{ color: "#1E3A5A", fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>20-Dimension Progress</Text>
+                          <View style={{ flexDirection: "row", gap: 5 }}>
+                            {([
+                              { label: "Practical", short: "Prac", color: "#34D399" },
+                              { label: "Emotional", short: "Emot", color: "#F9A8D4" },
+                              { label: "Psychological", short: "Psych", color: "#818CF8" },
+                              { label: "Spiritual", short: "Spirit", color: "#FCD34D" },
+                              { label: "Cultural", short: "Cult", color: "#FB923C" },
+                            ] as const).map((dim) => (
+                              <View key={dim.label} style={{ flex: 1, backgroundColor: dim.color + "12", borderRadius: 8, paddingVertical: 7, alignItems: "center", borderWidth: 1, borderColor: dim.color + "30" }}>
+                                <Text style={{ fontSize: 11 }}>{dim.color === "#34D399" ? "🎯" : dim.color === "#F9A8D4" ? "💗" : dim.color === "#818CF8" ? "🧠" : dim.color === "#FCD34D" ? "✨" : "🌍"}</Text>
+                                <Text style={{ color: dim.color, fontSize: 8, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.3, marginTop: 2 }}>{dim.short}</Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      )}
+                    </View>
+                    {/* ── Quick-nav strip — bigger icons, highlighted ── */}
+                    <View style={{ backgroundColor: "#030C16", borderBottomWidth: 1, borderBottomColor: "rgba(99,222,208,0.08)" }}>
+                      <View style={{ flexDirection: "row", paddingHorizontal: 6, paddingVertical: 8, gap: 2 }}>
+                        {([
+                          { tab: "journal" as TabId, icon: "📖", label: "Journal", color: "#34D399" },
+                          { tab: "guide" as TabId, icon: "🧭", label: "Path", color: "#60A5FA" },
+                          { tab: "aihelp" as TabId, icon: "💬", label: "Guide", color: "#A78BFA" },
+                          { tab: "play" as TabId, icon: "🎯", label: "Practice", color: "#FB923C" },
+                          { tab: "insights" as TabId, icon: "📊", label: "Patterns", color: "#22D3EE" },
+                          { tab: "focus" as TabId, icon: "🧘", label: "Calm", color: "#86EFAC" },
+                          { tab: "vedic" as TabId, icon: "🪐", label: "Chart", color: "#C084FC" },
+                          { tab: "redress" as TabId, icon: "⚖️", label: "Help", color: "#F87171" },
+                        ] as const).map((item) => (
+                          <Pressable
+                            key={item.tab}
+                            accessibilityRole="button"
+                            onPress={() => handleTabPress(item.tab)}
+                            style={({ pressed }) => ({
+                              flex: 1, alignItems: "center", paddingVertical: 7, borderRadius: 10,
+                              backgroundColor: pressed ? item.color + "18" : "transparent",
+                            })}
+                          >
+                            <Text style={{ fontSize: 18 }}>{item.icon}</Text>
+                            <Text style={{ color: item.color, fontSize: 8, fontWeight: "800", marginTop: 3, textTransform: "uppercase", letterSpacing: 0.2, opacity: 0.85 }}>{item.label}</Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </View>
+                  </View>
+                );
+              })()}
+
               {/* ── First-run explainer card (shows once, dismissible) ── */}
               {!hasSeenWelcomeCard && (
                 <View style={styles.welcomeExplainerCard}>
@@ -13393,6 +13871,55 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               )}
 
+              {/* ── Urgent Help & Redress — always visible front page card ── */}
+              <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: "rgba(239,68,68,0.35)" }}>
+                <View style={{ backgroundColor: "#1A0A0A", paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <Text style={{ fontSize: 16 }}>🛡️</Text>
+                    <Text style={{ color: "#FCA5A5", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Help & Redress — Always Here</Text>
+                  </View>
+                  <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 17, marginBottom: 10 }}>
+                    {selectedIssueGuide.id !== "general"
+                      ? `Active: ${selectedIssueGuide.label} — official routes, rights, and escalation are one tap away.`
+                      : "Emergency call, counselling, and official complaint routes are one tap away."}
+                  </Text>
+                  <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => void handleEmergencyCall()}
+                      style={({ pressed }) => ({ backgroundColor: pressed ? "#7F1D1D" : "#991B1B", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
+                    >
+                      <Text style={{ fontSize: 14 }}>🆘</Text>
+                      <Text style={{ color: "#FEE2E2", fontSize: 12, fontWeight: "800" }}>Emergency</Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => setShowCounselingChat(true)}
+                      style={({ pressed }) => ({ backgroundColor: pressed ? "#0E2A40" : "#0F3460", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
+                    >
+                      <Text style={{ fontSize: 14 }}>💬</Text>
+                      <Text style={{ color: "#BAE6FD", fontSize: 12, fontWeight: "800" }}>Counselling</Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => handleTabPress("redress")}
+                      style={({ pressed }) => ({ backgroundColor: pressed ? "#1E0A30" : "#2D1B4E", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
+                    >
+                      <Text style={{ fontSize: 14 }}>⚖️</Text>
+                      <Text style={{ color: "#E9D5FF", fontSize: 12, fontWeight: "800" }}>File Complaint</Text>
+                    </Pressable>
+                  </View>
+                </View>
+                <View style={{ backgroundColor: "#120808", paddingHorizontal: 16, paddingVertical: 8, flexDirection: "row", gap: 6, alignItems: "center" }}>
+                  <Text style={{ color: "#EF4444", fontSize: 10, fontWeight: "900", letterSpacing: 0.8 }}>QUICK LINKS →</Text>
+                  <Pressable onPress={() => handleTabPress("redress")} style={{ flex: 1 }}>
+                    <Text style={{ color: "#64748B", fontSize: 11 }} numberOfLines={1}>
+                      Rights · Escalation · Safe channels · Official routes
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+
               <TodaySection
                 clarityScore={clarityScore}
                 selectedTone={selectedTone}
@@ -13501,7 +14028,20 @@ function isTrustedExternalUrl(url: string) {
           {activeTab === "focus" && (
             <TabErrorBoundary tabName="Calm">
             <View onLayout={captureSectionLayout("focus")}>
-
+              {/* ── Calm tab banner ── */}
+              <View style={[styles.tabBannerCard, { backgroundColor: "#0D1E2A" }]}>
+                <Text style={styles.tabBannerEmoji}>🧘</Text>
+                <View style={styles.tabBannerText}>
+                  <Text style={styles.tabBannerTitle}>Reset & Calm</Text>
+                  <Text style={styles.tabBannerSub}>5 lenses · 3 steps · Practical · Emotional · Spiritual</Text>
+                </View>
+              </View>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#091825", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "focus")}</Text></Text>
+                </View>
+              )}
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "focus" && (
                 <GuidedJourneyBar
                   steps={activeJourney.journeySteps}
@@ -13552,6 +14092,56 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "tones")}</Text></Text>
                 </View>
               )}
+
+              {/* ── 20-dimensional tone guide per active issue ── */}
+              {selectedIssueGuide.id !== "general" && (() => {
+                const issueTones: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
+                  anxiety:       { practical: "Alpha binaural 7–10 Hz (focus + calm)", emotional: "Rain ambience or ocean waves", psychological: "Theta binaural 4–5 Hz (subconscious reset)", spiritual: "Solfège 396 Hz (fear release)", cultural: "Nature forest ambience" },
+                  anger:         { practical: "Alpha binaural 6 Hz (self-control)", emotional: "Slow rain or soft ambient drone", psychological: "Bilateral soft tapping (nervous system)", spiritual: "Solfège 528 Hz (heart healing)", cultural: "Calm water ambience" },
+                  burnout:       { practical: "Alpha binaural 10 Hz (recovery)", emotional: "Ocean waves (parasympathetic restore)", psychological: "Reset quiet (silence protocol)", spiritual: "Solfège 174 Hz (pain + foundation)", cultural: "Ambient breath tones" },
+                  grief:         { practical: "Bilateral soft (grounding)", emotional: "Rain ambience (tears, release)", psychological: "Theta binaural 5 Hz (processing)", spiritual: "Solfège 432 Hz (universal harmony)", cultural: "Soft drone ambient" },
+                  loneliness:    { practical: "Alpha binaural 8 Hz (connection state)", emotional: "Ocean waves (belonging feeling)", psychological: "Theta binaural 4 Hz (self-compassion)", spiritual: "Isochronic 6 Hz (heart coherence)", cultural: "Nature birdsong ambient" },
+                  relationship:  { practical: "Alpha binaural 7 Hz (empathy boost)", emotional: "Soft ambient drone (safety)", psychological: "Bilateral soft (nervous system sync)", spiritual: "Solfège 528 Hz (love frequency)", cultural: "Gentle water tones" },
+                  financial:     { practical: "Alpha binaural 12 Hz (strategic thinking)", emotional: "Rain ambience (stress release)", psychological: "Binaural reset 14 Hz (clarity)", spiritual: "Solfège 432 Hz (abundance)", cultural: "Ambient forest" },
+                  trauma:        { practical: "Bilateral soft 1 (safe grounding)", emotional: "Ocean waves (nervous system safety)", psychological: "Theta binaural 4 Hz (trauma processing)", spiritual: "Solfège 396 Hz (root liberation)", cultural: "Quiet ambient breath" },
+                  identity:      { practical: "Alpha binaural 10 Hz (self-awareness)", emotional: "Ambient drone (inner stillness)", psychological: "Theta binaural 5 Hz (deep self)", spiritual: "Reset quiet (crown chakra)", cultural: "Nature sounds (grounding)" },
+                  stigma:        { practical: "Alpha binaural 8 Hz (confidence)", emotional: "Rain tones (emotional protection)", psychological: "Bilateral soft (shame release)", spiritual: "Isochronic 6 Hz (voice chakra)", cultural: "Ambient birdsong" },
+                  fear:          { practical: "Bilateral soft (root grounding)", emotional: "Rain ambience (safety cue)", psychological: "Theta binaural 4 Hz (courage)", spiritual: "Solfège 396 Hz (fear liberation)", cultural: "Forest ambient" },
+                  addiction:     { practical: "Binaural reset 14 Hz (impulse control)", emotional: "Ocean waves (craving release)", psychological: "Theta binaural 5 Hz (deep habit)", spiritual: "Solfège 528 Hz (repair)", cultural: "Ambient nature tones" },
+                  overconfidence:{ practical: "Theta binaural 4 Hz (humility + depth)", emotional: "Rain ambience (reflective calm)", psychological: "Alpha binaural 6 Hz (balanced ego)", spiritual: "Reset quiet (stillness)", cultural: "Soft ambient drone" },
+                  health:        { practical: "Alpha binaural 10 Hz (healing state)", emotional: "Ocean waves (stress hormones down)", psychological: "Bilateral soft (nervous repair)", spiritual: "Solfège 174 Hz (pain relief)", cultural: "Nature forest ambience" },
+                  academic:      { practical: "Alpha binaural 12 Hz (focus + memory)", emotional: "Rain ambience (test anxiety down)", psychological: "Theta binaural 5 Hz (deep learning)", spiritual: "Solfège 432 Hz (clarity)", cultural: "Ambient soft drone" },
+                  parenting:     { practical: "Alpha binaural 7 Hz (patience)", emotional: "Ocean waves (calm reset)", psychological: "Bilateral soft (regulation model)", spiritual: "Solfège 528 Hz (love frequency)", cultural: "Nature birdsong" },
+                };
+                const rec = issueTones[selectedIssueGuide.id];
+                if (!rec) return null;
+                return (
+                  <View style={{ marginHorizontal: 16, marginBottom: 12, backgroundColor: "#0A1520", borderRadius: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.18)", overflow: "hidden" }}>
+                    <View style={{ backgroundColor: "#050F1A", paddingHorizontal: 14, paddingVertical: 10 }}>
+                      <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                        🎵 20-Dimension tone guide — {selectedIssueGuide.label}
+                      </Text>
+                    </View>
+                    <View style={{ padding: 12, gap: 8 }}>
+                      {([
+                        { label: "Practical", text: rec.practical, color: "#34D399" },
+                        { label: "Emotional", text: rec.emotional, color: "#F9A8D4" },
+                        { label: "Psychological", text: rec.psychological, color: "#818CF8" },
+                        { label: "Spiritual", text: rec.spiritual, color: "#FCD34D" },
+                        { label: "Cultural", text: rec.cultural, color: "#FB923C" },
+                      ] as const).map((dim) => (
+                        <View key={dim.label} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start" }}>
+                          <View style={{ width: 3, borderRadius: 2, backgroundColor: dim.color, alignSelf: "stretch", minHeight: 14 }} />
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ color: dim.color, fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>{dim.label}</Text>
+                            <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 17, marginTop: 1 }}>{dim.text}</Text>
+                          </View>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                );
+              })()}
 
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "tones" && (
                 <GuidedJourneyBar
@@ -13653,15 +14243,18 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Practice">
               <>
                 <View onLayout={captureSectionLayout("play")}>
-                  {!dismissedHintTabs.includes("play") && (
-                    <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#132030", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center" }}>
-                      <Text style={{ fontSize: 18, marginRight: 10 }}>🎯</Text>
-                      <Text style={{ color: "#94A3B8", fontSize: 12, flex: 1, lineHeight: 18 }}>
-                        Each practice is 3 steps. Small, specific, and designed to actually stick. Finish all 3 to complete the challenge — and prove something to yourself.
-                      </Text>
-                      <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "play"])} hitSlop={8}>
-                        <Text style={{ color: "#475569", fontSize: 14, marginLeft: 8 }}>✕</Text>
-                      </Pressable>
+                  {/* ── Practice tab banner ── */}
+                  <View style={[styles.tabBannerCard, { backgroundColor: "#1A2A14" }]}>
+                    <Text style={styles.tabBannerEmoji}>🎯</Text>
+                    <View style={styles.tabBannerText}>
+                      <Text style={styles.tabBannerTitle}>Practice</Text>
+                      <Text style={styles.tabBannerSub}>3 steps · Small · Specific · Designed to stick</Text>
+                    </View>
+                  </View>
+                  {selectedIssueGuide.id !== "general" && (
+                    <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#111F0D", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                      <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                      <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "play")}</Text></Text>
                     </View>
                   )}
                   <PlaySection
@@ -13878,6 +14471,20 @@ function isTrustedExternalUrl(url: string) {
 
           {activeTab === "guide" && (
             <View onLayout={captureSectionLayout("guide")}>
+              {/* ── Path tab banner ── */}
+              <View style={[styles.tabBannerCard, { backgroundColor: "#131E30" }]}>
+                <Text style={styles.tabBannerEmoji}>🧭</Text>
+                <View style={styles.tabBannerText}>
+                  <Text style={styles.tabBannerTitle}>Your Path</Text>
+                  <Text style={styles.tabBannerSub}>Practical · Emotional · Psychological · Spiritual · Cultural</Text>
+                </View>
+              </View>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#0A1520", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "guide")}</Text></Text>
+                </View>
+              )}
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "guide" && (
                 <GuidedJourneyBar
                   steps={activeJourney.journeySteps}
@@ -13918,6 +14525,20 @@ function isTrustedExternalUrl(url: string) {
 
           {activeTab === "redress" && (
             <View onLayout={captureSectionLayout("redress")}>
+              {/* ── Help tab banner ── */}
+              <View style={[styles.tabBannerCard, { backgroundColor: "#1A1020" }]}>
+                <Text style={styles.tabBannerEmoji}>🛡️</Text>
+                <View style={styles.tabBannerText}>
+                  <Text style={styles.tabBannerTitle}>Help & Redress</Text>
+                  <Text style={styles.tabBannerSub}>Official routes · Rights · Escalation · Safe channels</Text>
+                </View>
+              </View>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#130D1A", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#63DED0", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "redress")}</Text></Text>
+                </View>
+              )}
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "redress" && (
                 <GuidedJourneyBar
                   steps={activeJourney.journeySteps}
@@ -13950,6 +14571,21 @@ function isTrustedExternalUrl(url: string) {
           {activeTab === "insights" && (
             <TabErrorBoundary tabName="Patterns">
             <View onLayout={captureSectionLayout("insights")}>
+              {/* ── Patterns tab banner ── */}
+              <View style={[styles.tabBannerCard, { backgroundColor: "#1A2A1A" }]}>
+                <Text style={styles.tabBannerEmoji}>📊</Text>
+                <View style={styles.tabBannerText}>
+                  <Text style={styles.tabBannerTitle}>Patterns</Text>
+                  <Text style={styles.tabBannerSub}>Weekly · Monthly · Signals · 5 lenses · Progress</Text>
+                </View>
+              </View>
+              {/* ── Active issue hint chip ── */}
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#0A1E10", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)", flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#34D399", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>Tracking</Text>
+                  <Text style={{ color: "#94A3B8", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "journal")}</Text>
+                </View>
+              )}
               {/* ── Gemini AI Pattern Summary ── */}
               <GeminiInsightsCard
                 apiBase={verificationApiBaseUrl}
@@ -14013,6 +14649,7 @@ function isTrustedExternalUrl(url: string) {
                 selectedIssueGuide={selectedIssueGuide}
                 selectedIdentityId={selectedIdentity.id}
                 visitReports={visitReports}
+                checkInStreak={checkInStreak}
                 onShareDailyReport={handleShareDailyReport}
                 onOpenTab={handleTabPress}
                 onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
@@ -14864,7 +15501,48 @@ function JournalSection({
           <Text style={styles.textButtonLabel}>{uiCopy.clearHistory}</Text>
         </Pressable>
       </View>
-{/* Journal Loop section removed */}
+{/* ── 20-DIMENSION JOURNAL LENS BAND ── */}
+      {selectedIssueGuide.id !== "general" && (() => {
+        const JOURNAL_DIM_COLORS = { practical: "#22D3EE", emotional: "#F472B6", psychological: "#818CF8", spiritual: "#FCD34D", cultural: "#34D399" };
+        const JOURNAL_DIM_PROMPTS: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
+          anxiety:      { practical: "Write the one concrete step you can take to reduce the source of anxiety today.", emotional: "Describe the feeling in your chest or stomach. What does it need most?", psychological: "What pattern keeps repeating here? What do you want to break?", spiritual: "What does your faith, intuition, or deeper self say about this worry?", cultural: "Is there a community belief or expectation contributing to this anxiety?" },
+          anger:        { practical: "What specific thing happened? Write the facts without judgment.", emotional: "What is the anger protecting underneath — hurt, fear, or injustice?", psychological: "What triggered this? Has it happened before in a similar form?", spiritual: "What would a peaceful resolution look like in your ideal world?", cultural: "Did social or family expectations play a role in this anger?" },
+          grief:        { practical: "Write one thing you need to handle today that grief is making harder.", emotional: "Describe the loss in one paragraph. What do you miss most?", psychological: "What does grief keep repeating in your thoughts or dreams?", spiritual: "Is there a belief, hope, or ritual that brings any comfort right now?", cultural: "How has your family or community shaped how you grieve?" },
+          burnout:      { practical: "List three things you can remove or defer from this week's schedule.", emotional: "What emotion shows up most when you think about your workload?", psychological: "When did you last feel genuinely rested? What was different?", spiritual: "What originally gave you a sense of meaning in this work?", cultural: "Are you carrying responsibility that belongs to others, due to role or expectation?" },
+          trauma:       { practical: "Write one grounding step that helps you feel safer today.", emotional: "What emotion comes up when you think about what happened?", psychological: "Notice any recurring thought or image. Write it without judgment.", spiritual: "What would healing look like for you — in your own words?", cultural: "Are there community or family dynamics that made the trauma harder to process?" },
+          loneliness:   { practical: "Write one action to connect with one person or community this week.", emotional: "Describe the loneliness. Is it isolation, invisibility, or disconnection?", psychological: "When do you feel most alone? Is there a pattern?", spiritual: "What would a sense of belonging feel like in your body?", cultural: "Is there a cultural community or practice that once gave you belonging?" },
+          relationship: { practical: "Write what you need the other person to understand, clearly and calmly.", emotional: "What are you feeling toward this person right now — and what do you need?", psychological: "What old pattern from your past is being activated in this relationship?", spiritual: "What values are at stake here for you? What matters most?", cultural: "Are family or community expectations shaping how this conflict plays out?" },
+          financial:    { practical: "Write the exact number or situation causing stress — facts, not fear.", emotional: "What emotion does money stress trigger most strongly in you?", psychological: "What money story from childhood is running here?", spiritual: "What does security or abundance mean to you beyond money?", cultural: "How did your family or community shape your relationship with money?" },
+          identity:     { practical: "Write one concrete way you are living in alignment with who you want to be.", emotional: "What emotion comes up when you think about who you truly are?", psychological: "What version of yourself are you most afraid others will reject?", spiritual: "What does your core self or soul want that the world hasn't yet seen?", cultural: "How has your community shaped — or constrained — your sense of self?" },
+        };
+        const rec = JOURNAL_DIM_PROMPTS[selectedIssueGuide.id];
+        if (!rec) return null;
+        const dims = [
+          { key: "practical",     label: "🎯 Practical",     text: rec.practical },
+          { key: "emotional",     label: "💗 Emotional",     text: rec.emotional },
+          { key: "psychological", label: "🧠 Psychological", text: rec.psychological },
+          { key: "spiritual",     label: "✨ Spiritual",     text: rec.spiritual },
+          { key: "cultural",      label: "🌍 Cultural",      text: rec.cultural },
+        ];
+        return (
+          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
+            <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>20-Dimension Journal Prompts</Text>
+              <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
+            </View>
+            <Text style={{ color: "#6A8899", fontSize: 11, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Use any of these lens prompts to deepen your entry.</Text>
+            {dims.map((dim) => (
+              <View key={dim.key} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 7, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+                <View style={{ width: 3, borderRadius: 2, backgroundColor: JOURNAL_DIM_COLORS[dim.key as keyof typeof JOURNAL_DIM_COLORS], alignSelf: "stretch", marginRight: 10, marginTop: 1 }} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: JOURNAL_DIM_COLORS[dim.key as keyof typeof JOURNAL_DIM_COLORS], fontSize: 10, fontWeight: "700", marginBottom: 2 }}>{dim.label}</Text>
+                  <Text style={{ color: "#8BA8B5", fontSize: 12, lineHeight: 17 }} numberOfLines={2}>{dim.text}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        );
+      })()}
       <View style={styles.homeOverviewActions}>
         <Pressable
           accessibilityRole="button"
@@ -15650,6 +16328,38 @@ function FocusSection({
   );
 }
 
+// Issue-specific healing session programs
+const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number; toneId: RelaxingToneMode["id"]; dim: string; dimColor: string; purpose: string; breathPattern: string }>> = {
+  anxiety:      [{ name: "Panic Reset", duration: 5, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#818CF8", purpose: "Grounds flight-or-fight via bilateral nervous system reset", breathPattern: "4-4-4-4 Box" },{ name: "Alpha Calm", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#34D399", purpose: "Shifts brainwaves from beta anxiety to alpha calm", breathPattern: "4-7-8 Exhale" },{ name: "Root Safety", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Nature sounds lower cortisol and signal safety", breathPattern: "Slow 5-5" }],
+  anger:        [{ name: "Cool-down", duration: 5, toneId: "binaural-alpha-6", dim: "Psychological", dimColor: "#818CF8", purpose: "Alpha waves inhibit amygdala reactivity", breathPattern: "4-7-8 Exhale" },{ name: "Heart Reset", duration: 10, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Ocean rhythms regulate heart rate variability", breathPattern: "Slow 6-6" },{ name: "Stillness", duration: 15, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#FCD34D", purpose: "Silence protocol for ego dissolution", breathPattern: "Natural breath" }],
+  grief:        [{ name: "Gentle Hold", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Rain tones allow grief processing without words", breathPattern: "Slow 5-5" },{ name: "Deep Process", duration: 15, toneId: "binaural-theta-4", dim: "Psychological", dimColor: "#818CF8", purpose: "Theta unlocks subconscious emotion integration", breathPattern: "4-4-4-4 Box" },{ name: "Reconnect", duration: 10, toneId: "ambient-softdrone", dim: "Spiritual", dimColor: "#FCD34D", purpose: "Drone tones restore sense of continuity", breathPattern: "Natural breath" }],
+  burnout:      [{ name: "Recovery", duration: 15, toneId: "binaural-alpha-10", dim: "Practical", dimColor: "#34D399", purpose: "Alpha 10 Hz restores depleted cognitive reserves", breathPattern: "Slow 6-6" },{ name: "System Reset", duration: 20, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Parasympathetic restoration via ocean rhythm", breathPattern: "4-7-8 Exhale" },{ name: "Deep Rest", duration: 10, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#FCD34D", purpose: "Conscious silence to rebuild internal resource", breathPattern: "Natural breath" }],
+  trauma:       [{ name: "Safe Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#818CF8", purpose: "Bilateral tapping mimics EMDR for trauma processing", breathPattern: "4-4-4-4 Box" },{ name: "Safety Cue", duration: 15, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Ocean tones reduce trauma hypervigilance", breathPattern: "Slow 5-5" },{ name: "Integration", duration: 10, toneId: "binaural-theta-5", dim: "Spiritual", dimColor: "#FCD34D", purpose: "Theta integrates fragmented memory safely", breathPattern: "Natural breath" }],
+  loneliness:   [{ name: "Connection", duration: 10, toneId: "binaural-alpha-8", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Alpha 8 Hz enhances social empathy circuits", breathPattern: "Slow 5-5" },{ name: "Belonging", duration: 15, toneId: "ambient-ocean", dim: "Cultural", dimColor: "#FB923C", purpose: "Vast natural sounds reduce felt isolation", breathPattern: "4-7-8 Exhale" },{ name: "Self-Love", duration: 10, toneId: "iso-6", dim: "Spiritual", dimColor: "#FCD34D", purpose: "Isochronic tones for self-compassion states", breathPattern: "Natural breath" }],
+  relationship: [{ name: "Empathy Mode", duration: 10, toneId: "binaural-alpha-7", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Alpha 7 Hz boosts mirror neuron activity", breathPattern: "Slow 6-6" },{ name: "Nervous Sync", duration: 10, toneId: "bilateral-soft-2", dim: "Psychological", dimColor: "#818CF8", purpose: "Bilateral tones synchronise two nervous systems", breathPattern: "4-4-4-4 Box" },{ name: "Heart Tone", duration: 15, toneId: "ambient-softdrone", dim: "Spiritual", dimColor: "#FCD34D", purpose: "Sustained drone for heart-chakra coherence", breathPattern: "Natural breath" }],
+  financial:    [{ name: "Focus Block", duration: 15, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#34D399", purpose: "Alpha 12 Hz for strategic analytical thinking", breathPattern: "Slow 5-5" },{ name: "Stress Drop", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Rain dissolves financial anxiety cortisol", breathPattern: "4-7-8 Exhale" },{ name: "Clarity", duration: 10, toneId: "binaural-reset-14", dim: "Psychological", dimColor: "#818CF8", purpose: "Beta-edge reset for sharp decision-making", breathPattern: "4-4-4-4 Box" }],
+  identity:     [{ name: "Inner Mirror", duration: 10, toneId: "binaural-alpha-10", dim: "Psychological", dimColor: "#818CF8", purpose: "Alpha 10 Hz for self-awareness and metacognition", breathPattern: "Slow 6-6" },{ name: "Core Still", duration: 15, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#FCD34D", purpose: "Silence to hear authentic inner voice", breathPattern: "Natural breath" },{ name: "Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Cultural", dimColor: "#FB923C", purpose: "Grounding via body-rhythm bilateral tones", breathPattern: "4-4-4-4 Box" }],
+  general:      [{ name: "Morning Set", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#34D399", purpose: "Alpha calm-alertness for a clear-headed start", breathPattern: "Slow 5-5" },{ name: "Stress Drop", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Nature sounds for general wellbeing reset", breathPattern: "4-7-8 Exhale" },{ name: "Deep Rest", duration: 10, toneId: "binaural-theta-4", dim: "Spiritual", dimColor: "#FCD34D", purpose: "Theta for subconscious recharge", breathPattern: "Natural breath" }],
+};
+// Breathing pattern guide text
+const BREATH_GUIDE: Record<string, string[]> = {
+  "4-4-4-4 Box": ["Inhale 4", "Hold 4", "Exhale 4", "Hold 4"],
+  "4-7-8 Exhale": ["Inhale 4", "Hold 7", "Exhale 8"],
+  "Slow 5-5": ["Inhale 5", "Exhale 5"],
+  "Slow 6-6": ["Inhale 6", "Exhale 6"],
+  "Natural breath": ["Breathe naturally", "Let the tone carry you"],
+};
+// Tone category groupings
+const TONE_CATEGORIES = [
+  { id: "trending", label: "🌟 Trending & Social", color: "#F472B6", desc: "Famous tones from YouTube, TikTok, Spotify & healing communities.", ids: ["trend-lofi","trend-tibetan-bowl","trend-schumann","trend-krishna-flute","trend-rain-tent","trend-cafe","trend-fireplace","trend-432-guitar","trend-om-chant","trend-forest-birds","trend-deep-sleep","trend-528-miracle"] },
+  { id: "binaural", label: "🧠 Binaural Beats", color: "#818CF8", desc: "Two-tone beats for brainwave entrainment. Use headphones.", ids: ["binaural-theta-4","binaural-theta-5","binaural-alpha-6","binaural-alpha-7","binaural-alpha-8","binaural-alpha-10","binaural-alpha-12","binaural-reset-14","binaural-release-16","binaural-delta-1","binaural-delta-2","binaural-gamma-40"] },
+  { id: "nature", label: "🌊 Nature & Ambient", color: "#34D399", desc: "Natural sounds — parasympathetic restore, cortisol reduction.", ids: ["ambient-rain","ambient-ocean","ambient-wind","ambient-softdrone","ambient-breath","noise-brown","noise-pink","noise-white"] },
+  { id: "solfege", label: "🔔 Solfège · Sacred Hz", color: "#FCD34D", desc: "Ancient sacred frequencies for emotional + spiritual healing.", ids: ["aum-136","sol-396","sol-417","sol-432","sol-528","sol-639","sol-741","sol-852","sol-963"] },
+  { id: "iso", label: "🎵 Isochronic Pulses", color: "#FB923C", desc: "Single-tone rhythmic pulses — effective without headphones.", ids: ["iso-1","iso-2","iso-3","iso-4","iso-6","iso-8","iso-10"] },
+  { id: "bilateral", label: "🔄 Bilateral · EMDR", color: "#F9A8D4", desc: "Left-right audio tapping — EMDR-style nervous system reset.", ids: ["bilateral-soft-1","bilateral-soft-2","bilateral-soft-3"] },
+  { id: "special", label: "⚡ Special & Reset", color: "#60A5FA", desc: "Deep sleep, brain reset, silence protocol, gamma states.", ids: ["reset-quiet","reset-gamma"] },
+];
+
 function ToneLibrarySection({
   selectedIssueGuide,
   selectedIdentityLabel,
@@ -15673,7 +16383,10 @@ function ToneLibrarySection({
   const [tonePaused, setTonePaused] = useState(false);
   const [showFullLibrary, setShowFullLibrary] = useState(false);
   const [sessionSeconds, setSessionSeconds] = useState(0);
-  const [presetMinutes, setPresetMinutes] = useState(0); // 0 = unlimited
+  const [presetMinutes, setPresetMinutes] = useState(0);
+  const [activeProgram, setActiveProgram] = useState<typeof ISSUE_TONE_PROGRAMS[string][0] | null>(null);
+  const [breathStep, setBreathStep] = useState(0);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     setSelectedToneId(recommendedTone.id);
@@ -15682,6 +16395,8 @@ function ToneLibrarySection({
     setShowFullLibrary(false);
     setSessionSeconds(0);
     setPresetMinutes(0);
+    setActiveProgram(null);
+    setBreathStep(0);
   }, [recommendedTone.id]);
 
   const selectedTone =
@@ -15713,10 +16428,19 @@ function ToneLibrarySection({
     if (sessionSeconds >= presetMinutes * 60) {
       setLoopEnabled(false);
       setTonePaused(false);
+      setActiveProgram(null);
     }
   }, [sessionSeconds, presetMinutes, loopEnabled]);
 
-  const selectedToneIndex = mindRelaxingToneModes.findIndex((item) => item.id === selectedTone.id);
+  // Breathing guide step rotation
+  useEffect(() => {
+    if (!loopEnabled || !activeProgram || tonePaused) return;
+    const steps = BREATH_GUIDE[activeProgram.breathPattern] ?? ["Breathe naturally"];
+    const interval = setInterval(() => {
+      setBreathStep((s) => (s + 1) % steps.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [loopEnabled, activeProgram, tonePaused]);
 
   const sessionMM = String(Math.floor(sessionSeconds / 60)).padStart(2, "0");
   const sessionSS = String(sessionSeconds % 60).padStart(2, "0");
@@ -15724,321 +16448,291 @@ function ToneLibrarySection({
   const presetTotal = presetMinutes > 0 ? presetMinutes * 60 : 0;
   const presetProgress = presetTotal > 0 ? Math.min(1, sessionSeconds / presetTotal) : 0;
 
+  const programs = ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS["general"];
+  const breathSteps = activeProgram ? (BREATH_GUIDE[activeProgram.breathPattern] ?? ["Breathe naturally"]) : [];
+
   return (
-    <View style={styles.panel}>
-      <View style={styles.sectionHeader}>
-        <View>
-          <Text style={styles.eyebrow}>Tone library</Text>
-          <Text style={styles.sectionTitle}>All mind rest tones</Text>
-        </View>
-        {loopEnabled ? (
-          <View style={styles.toneTimerBadge}>
-            <Text style={styles.toneTimerBadgeTime}>{sessionLabel}</Text>
-            {presetMinutes > 0 && (
-              <Text style={styles.toneTimerBadgeLabel}>/ {presetMinutes}m</Text>
+    <View style={{ paddingBottom: 20 }}>
+      {/* ── NOW PLAYING / IDLE PLAYER ── */}
+      <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 20, overflow: "hidden", backgroundColor: "#050F1A", borderWidth: 1, borderColor: loopEnabled ? "rgba(34,211,238,0.4)" : "rgba(99,222,208,0.15)" }}>
+        {/* Player header */}
+        <View style={{ backgroundColor: loopEnabled ? "#071C2E" : "#040C18", paddingHorizontal: 18, paddingTop: 16, paddingBottom: 12 }}>
+          <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 14 }}>
+            {/* Tone mark orb */}
+            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: loopEnabled ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.06)", borderWidth: 2, borderColor: loopEnabled ? "#22D3EE" : "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ fontSize: 22 }}>{selectedTone.mark}</Text>
+              {loopEnabled && !tonePaused && (
+                <View style={{ position: "absolute", bottom: -2, right: -2, width: 14, height: 14, borderRadius: 7, backgroundColor: "#22D3EE", borderWidth: 2, borderColor: "#071C2E" }} />
+              )}
+            </View>
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                <Text style={{ color: "#22D3EE", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
+                  {loopEnabled ? (tonePaused ? "⏸ PAUSED" : "▶ PLAYING") : "SELECTED"}
+                </Text>
+                {activeProgram && (
+                  <View style={{ backgroundColor: activeProgram.dimColor + "25", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: activeProgram.dimColor + "50" }}>
+                    <Text style={{ color: activeProgram.dimColor, fontSize: 9, fontWeight: "900" }}>{activeProgram.dim}</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={{ color: "#F0F9FF", fontSize: 17, fontWeight: "900" }} numberOfLines={1}>{selectedTone.label}</Text>
+              <Text style={{ color: "#64748B", fontSize: 12, marginTop: 2 }}>{selectedTone.category} · {selectedTone.pattern}</Text>
+            </View>
+            {/* Timer */}
+            {loopEnabled && (
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ color: tonePaused ? "#F6D46B" : "#22D3EE", fontSize: 20, fontWeight: "900", fontVariant: ["tabular-nums"] }}>{sessionLabel}</Text>
+                {presetMinutes > 0 && <Text style={{ color: "#475569", fontSize: 10 }}>/ {presetMinutes}m</Text>}
+              </View>
             )}
           </View>
-        ) : (
-          <Text style={styles.smallMeta}>{selectedIdentityLabel}</Text>
+          {/* Progress bar */}
+          {loopEnabled && presetMinutes > 0 && (
+            <View style={{ height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.08)", marginTop: 12, overflow: "hidden" }}>
+              <View style={{ height: 3, borderRadius: 2, backgroundColor: "#22D3EE", width: `${Math.round(presetProgress * 100)}%` as unknown as number }} />
+            </View>
+          )}
+        </View>
+        {/* Breathing guide — shows during active program */}
+        {loopEnabled && activeProgram && breathSteps.length > 0 && (
+          <View style={{ backgroundColor: "#040E1A", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(34,211,238,0.1)" }}>
+            <Text style={{ color: "#64748B", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
+              🫁 Breathing guide — {activeProgram.breathPattern}
+            </Text>
+            <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
+              {breathSteps.map((step, i) => (
+                <View key={step} style={{ flex: 1, minWidth: 60, backgroundColor: i === breathStep % breathSteps.length ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.04)", borderRadius: 8, paddingVertical: 8, alignItems: "center", borderWidth: 1, borderColor: i === breathStep % breathSteps.length ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.06)" }}>
+                  <Text style={{ color: i === breathStep % breathSteps.length ? "#22D3EE" : "#475569", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{step}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
         )}
-      </View>
-      {/* Suggested tone for current issue */}
-      <View style={{ backgroundColor: "#071820", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(14,111,105,0.3)" }}>
-        <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>
-          Recommended for {selectedIssueGuide.label}
-        </Text>
-        <Text style={{ color: "#E8F4F0", fontSize: 14, fontWeight: "800" }}>
-          {recommendedTone.label}
-        </Text>
-        <Text style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, marginTop: 2 }}>
-          {recommendedTone.use}
-        </Text>
-      </View>
-      <View style={styles.homeOverviewActions}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: showFullLibrary }}
-          onPress={() => setShowFullLibrary((value) => !value)}
-          style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.homeOverviewButtonLabel}>
-            {showFullLibrary ? "Hide full tones" : "Show full tones"}
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onOpenCalm}
-          style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
-        >
-          <Text style={styles.homeOverviewButtonSecondaryLabel}>Open Reset</Text>
-        </Pressable>
-      </View>
-      <View style={[styles.routePreviewCard, compact && styles.routePreviewCardCompact]}>
-        <Text style={[styles.routePreviewTitle, compact && styles.routePreviewTitleCompact]} numberOfLines={1}>
-          {selectedTone.label}
-        </Text>
-        <Text style={[styles.routePreviewDetail, compact && styles.routePreviewDetailCompact]} numberOfLines={2}>
-          {selectedTone.category} / {selectedTone.pattern}
-        </Text>
-        <Text style={styles.smallMeta}>
-          {selectedTone.use}
-        </Text>
-      </View>
-      {/* ── Tone Controls ── */}
-      <View style={{ gap: 10 }}>
-        {/* Status row */}
-        {loopEnabled && (
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 4 }}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: tonePaused ? "#F6D46B" : "#22D3EE" }} />
-            <Text style={{ color: tonePaused ? "#F6D46B" : "#22D3EE", fontSize: 12, fontWeight: "800", letterSpacing: 0.6 }}>
-              {tonePaused ? "PAUSED" : "LOOPING — " + sessionLabel}
+        {/* Issue purpose — shows during program */}
+        {loopEnabled && activeProgram && (
+          <View style={{ backgroundColor: "#03080F", paddingHorizontal: 18, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
+            <Text style={{ color: "#475569", fontSize: 11, lineHeight: 16 }}>
+              <Text style={{ color: activeProgram.dimColor, fontWeight: "800" }}>{activeProgram.dim}: </Text>
+              {activeProgram.purpose}
             </Text>
           </View>
         )}
-        {/* Primary controls row */}
-        <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
-          {/* Play once */}
+        {/* Control buttons */}
+        <View style={{ flexDirection: "row", gap: 8, padding: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Play once"
-            onPress={() => {
-              setLoopEnabled(false);
-              setTonePaused(false);
-              void playRelaxingToneCue(selectedTone);
-            }}
-            style={({ pressed }) => [{
-              flex: 1, minWidth: 80, minHeight: 48, borderRadius: 12,
-              backgroundColor: pressed ? "#0E4A46" : "#0E6F69",
-              alignItems: "center", justifyContent: "center",
-              paddingHorizontal: 12
-            }]}
+            onPress={() => { setLoopEnabled(false); setTonePaused(false); void playRelaxingToneCue(selectedTone); }}
+            style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: pressed ? "#0A3A34" : "#0E4A44", alignItems: "center", justifyContent: "center" })}
           >
-            <Text style={{ color: "#E8F4F0", fontSize: 15, fontWeight: "900" }}>▶  Play once</Text>
+            <Text style={{ color: "#34D399", fontSize: 14, fontWeight: "900" }}>▶ Play once</Text>
           </Pressable>
-
-          {/* Loop / Stop toggle */}
           <Pressable
             accessibilityRole="button"
-            accessibilityState={{ selected: loopEnabled }}
-            accessibilityLabel={loopEnabled ? "Stop loop" : "Start loop"}
-            onPress={() => {
-              setTonePaused(false);
-              setLoopEnabled((v) => !v);
-            }}
-            style={({ pressed }) => [{
-              flex: 1, minWidth: 80, minHeight: 48, borderRadius: 12,
-              backgroundColor: loopEnabled ? (pressed ? "#7A1010" : "#B91C1C") : (pressed ? "#0E2A36" : "#0F3D5E"),
-              alignItems: "center", justifyContent: "center",
-              paddingHorizontal: 12
-            }]}
+            onPress={() => { setTonePaused(false); setLoopEnabled((v) => !v); if (loopEnabled) setActiveProgram(null); }}
+            style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: loopEnabled ? (pressed ? "#7F1D1D" : "#991B1B") : (pressed ? "#0E2A40" : "#0F3460"), alignItems: "center", justifyContent: "center" })}
           >
-            <Text style={{ color: loopEnabled ? "#FFF" : "#63DED0", fontSize: 15, fontWeight: "900" }}>
-              {loopEnabled ? "⏹  Stop" : "🔁  Loop"}
-            </Text>
+            <Text style={{ color: loopEnabled ? "#FEE2E2" : "#60A5FA", fontSize: 14, fontWeight: "900" }}>{loopEnabled ? "⏹ Stop" : "🔁 Loop"}</Text>
           </Pressable>
-
-          {/* Pause / Resume — only when looping */}
           {loopEnabled && (
             <Pressable
               accessibilityRole="button"
-              accessibilityState={{ selected: tonePaused }}
-              accessibilityLabel={tonePaused ? "Resume" : "Pause"}
               onPress={() => setTonePaused((v) => !v)}
-              style={({ pressed }) => [{
-                flex: 1, minWidth: 80, minHeight: 48, borderRadius: 12,
-                backgroundColor: pressed ? "#2D2810" : "#1A1A0A",
-                borderWidth: 1, borderColor: "#F6D46B",
-                alignItems: "center", justifyContent: "center",
-                paddingHorizontal: 12
-              }]}
+              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 12, backgroundColor: pressed ? "#2D2810" : "#1C1A08", borderWidth: 1, borderColor: "#F6D46B", alignItems: "center", justifyContent: "center" })}
             >
-              <Text style={{ color: "#F6D46B", fontSize: 15, fontWeight: "900" }}>
-                {tonePaused ? "▶  Resume" : "⏸  Pause"}
-              </Text>
+              <Text style={{ color: "#F6D46B", fontSize: 16 }}>{tonePaused ? "▶" : "⏸"}</Text>
             </Pressable>
           )}
         </View>
-
-        {/* Timer presets — moved below controls for clarity */}
-        <View style={{ flexDirection: "row", gap: 6, alignItems: "center" }}>
-          <Text style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, fontWeight: "700", marginRight: 2 }}>Timer:</Text>
-          {([0, 5, 10, 20, 30] as const).map((min) => (
-            <Pressable
-              key={min}
-              accessibilityRole="button"
-              accessibilityLabel={min === 0 ? "No timer" : `${min} minutes`}
-              accessibilityState={{ selected: presetMinutes === min }}
-              onPress={() => setPresetMinutes(min)}
-              style={[{
-                paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
-                backgroundColor: presetMinutes === min ? "#0E6F69" : "#0D1F22",
-                borderWidth: 1, borderColor: presetMinutes === min ? "#0E9F95" : "rgba(255,255,255,0.1)"
-              }]}
-            >
-              <Text style={{ color: presetMinutes === min ? "#E8F4F0" : "rgba(255,255,255,0.55)", fontSize: 12, fontWeight: "800" }}>
-                {min === 0 ? "∞" : `${min}m`}
-              </Text>
+        {/* Timer presets */}
+        <View style={{ flexDirection: "row", gap: 6, paddingHorizontal: 14, paddingBottom: 14, alignItems: "center" }}>
+          <Text style={{ color: "#475569", fontSize: 11, fontWeight: "700" }}>Timer:</Text>
+          {([0, 5, 10, 15, 20, 30] as const).map((min) => (
+            <Pressable key={min} onPress={() => setPresetMinutes(min)} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#070F1A", borderWidth: 1, borderColor: presetMinutes === min ? "#22D3EE" : "rgba(255,255,255,0.08)" }}>
+              <Text style={{ color: presetMinutes === min ? "#E8F4F0" : "#475569", fontSize: 11, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
             </Pressable>
           ))}
         </View>
+      </View>
 
-        {/* Progress bar when preset active */}
-        {loopEnabled && presetMinutes > 0 && (
-          <View style={{ height: 4, borderRadius: 2, backgroundColor: "#0D1F22", overflow: "hidden" }}>
-            <View style={{ height: "100%", borderRadius: 2, backgroundColor: "#22D3EE", width: `${Math.round(presetProgress * 100)}%` as unknown as number }} />
+      {/* ── 20-DIMENSION TONE GUIDE ── */}
+      {selectedIssueGuide.id !== "general" && (() => {
+        const TONE_DIM_GUIDE: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
+          anxiety:      { practical: "🧠 Binaural alpha 7–10 Hz · calms cognitive overload", emotional: "🌊 Rain / ocean ambience · lowers cortisol", psychological: "🔄 Bilateral tapping · resets nervous system", spiritual: "🔔 396 Hz Solfège · releases fear at root", cultural: "🌿 Forest birds / bansuri · nature-culture grounding" },
+          anger:        { practical: "🧠 Binaural alpha 6 Hz · slows reactive thinking", emotional: "🌊 Ocean waves · parasympathetic rhythm reset", psychological: "🔄 Bilateral soft · discharges stored tension", spiritual: "🔔 417 Hz · facilitates energetic change", cultural: "🎵 Isochronic 6 Hz · cross-cultural regulation" },
+          grief:        { practical: "⏱ Theta 4–5 Hz · processing mode activation", emotional: "🌊 Rain on tent · safe container for feeling", psychological: "🔄 Bilateral tones · integrates fragmented memory", spiritual: "🔔 528 Hz miracle · heart restoration", cultural: "🎻 432 Hz guitar / bansuri · ancestral comfort" },
+          burnout:      { practical: "🧠 Alpha 10 Hz · cognitive reserve replenishment", emotional: "🌊 Ocean / nature · parasympathetic full reset", psychological: "⚡ Delta drone · cellular-level recovery", spiritual: "🔔 963 Hz · pineal restoration + higher awareness", cultural: "☕ Cafe ambience · gentle social reconnection cue" },
+          trauma:       { practical: "🔄 EMDR bilateral · nervous system processing", emotional: "🌊 Ocean safety tone · reduces hypervigilance", psychological: "🧠 Theta 4–5 Hz · sub-conscious integration", spiritual: "OM AUM 136 Hz · primordial safety feeling", cultural: "🌟 Tibetan bowls · cross-cultural somatic healing" },
+          loneliness:   { practical: "🧠 Alpha 8 Hz · social empathy circuit activation", emotional: "🌊 Vast nature sounds · reduce felt isolation", psychological: "🎵 Isochronic 6 Hz · present-moment grounding", spiritual: "🔔 639 Hz · reconnection and heart opening", cultural: "🎸 432 Hz guitar · musical belonging signal" },
+          relationship: { practical: "🧠 Alpha 7 Hz · mirror neuron activation", emotional: "🌊 Soft drone · heart-field coherence", psychological: "🔄 Bilateral sync · nervous system co-regulation", spiritual: "🔔 528 Hz love · DNA and bond healing", cultural: "🪘 Tibetan bowls · shared ritual and resonance" },
+          financial:    { practical: "🧠 Alpha 12 Hz · sharp analytical thinking", emotional: "🌊 Rain · dissolves financial anxiety", psychological: "🧠 Beta-edge 14 Hz · decision clarity", spiritual: "🔔 741 Hz · awakening intuition and solutions", cultural: "☕ Cafe ambience · productive focus environment" },
+          identity:     { practical: "🧠 Alpha 10 Hz · metacognitive self-awareness", emotional: "🌊 Ambient drone · continuity and self-sense", psychological: "⚡ Silence protocol · hear authentic inner voice", spiritual: "OM Schumann 7.83 Hz · Earth alignment", cultural: "🎵 Bansuri / om chant · cultural identity anchor" },
+        };
+        const rec = TONE_DIM_GUIDE[selectedIssueGuide.id];
+        if (!rec) return null;
+        return (
+          <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#050F1A", borderRadius: 16, borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden" }}>
+            <View style={{ backgroundColor: "#071C2E", paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(34,211,238,0.1)" }}>
+              <Text style={{ color: "#22D3EE", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
+                20-Dimension Tone Map · {selectedIssueGuide.label}
+              </Text>
+            </View>
+            {([
+              { label: "Practical", text: rec.practical, color: "#34D399" },
+              { label: "Emotional", text: rec.emotional, color: "#F9A8D4" },
+              { label: "Psychological", text: rec.psychological, color: "#818CF8" },
+              { label: "Spiritual", text: rec.spiritual, color: "#FCD34D" },
+              { label: "Cultural", text: rec.cultural, color: "#FB923C" },
+            ] as const).map((dim, i) => (
+              <View key={dim.label} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 9, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
+                <View style={{ width: 3, borderRadius: 2, backgroundColor: dim.color, alignSelf: "stretch", minHeight: 14 }} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: dim.color, fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>{dim.label}</Text>
+                  <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 17, marginTop: 1 }}>{dim.text}</Text>
+                </View>
+              </View>
+            ))}
           </View>
-        )}
-      </View>
-      <View style={styles.calmQuickActionRow}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => onOpenTab("meditation")}
-          style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.calmQuickActionLabel}>Open Meditation</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => onOpenTab("guide")}
-          style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.calmQuickActionLabel}>Open Path</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => onOpenTab("journal")}
-          style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.calmQuickActionLabel}>Open Journal</Text>
-        </Pressable>
-      </View>
-      <Text style={styles.homeToneLoopStatus}>
-        {loopEnabled
-          ? `${tonePaused ? "Paused" : "Playing"} ${selectedTone.label}${presetMinutes > 0 ? ` / ${presetMinutes}m timer` : " / unlimited"}. Use Pause, Continue, or Stop any time.`
-          : `Tone ${selectedToneIndex + 1} of ${mindRelaxingToneModes.length}. Tap any tone to switch.`}
-      </Text>
-      <View style={styles.toneLibraryGrid}>
-        {mindRelaxingToneModes.slice(0, 6).map((toneMode) => {
-          const isActive = toneMode.id === selectedTone.id;
-          return (
-            <Pressable
-              key={toneMode.id}
-              accessibilityRole="button"
-              accessibilityState={{ selected: isActive }}
-              onPress={() => {
-                setSelectedToneId(toneMode.id);
-                setLoopEnabled(false);
-                setTonePaused(false);
-              }}
-              style={({ pressed }) => [
-                styles.toneLibraryCard,
-                compact && styles.toneLibraryCardCompact,
-                isActive && styles.toneLibraryCardActive,
-                pressed && styles.pressed
-              ]}
-            >
-              <View style={styles.homeToneFeaturedTop}>
-                <View style={[styles.homeToneFeaturedMark, styles.toneLibraryMark]}>
-                  <Text style={styles.homeToneFeaturedMarkText}>{toneMode.mark}</Text>
-                </View>
-                <View style={styles.homeToneFeaturedCopy}>
-                  <Text style={styles.homeToneFeaturedTitle} numberOfLines={1}>
-                    {toneMode.label}
-                  </Text>
-                  <Text style={styles.homeToneFeaturedMeta} numberOfLines={1}>
-                    {toneMode.category}
-                  </Text>
-                </View>
-              </View>
-              <Text style={styles.homeToneFeaturedUse} numberOfLines={2}>
-                {toneMode.pattern}
-              </Text>
-              <Text style={styles.homeToneFeaturedSafety} numberOfLines={2}>
-                {toneMode.use}
-              </Text>
-              <Text style={styles.smallMeta} numberOfLines={2}>
-                {toneMode.safety}
-              </Text>
-              <View style={styles.calmQuickActionRow}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => {
-                    setSelectedToneId(toneMode.id);
-                    setLoopEnabled(false);
-                    setTonePaused(false);
-                    void playRelaxingToneCue(toneMode);
-                  }}
-                  style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
-                >
-                  <Text style={styles.calmQuickActionLabel}>Play</Text>
-                </Pressable>
-              </View>
-            </Pressable>
-          );
-        })}
-      </View>
-      {showFullLibrary ? (
-        <View style={styles.toneLibraryGrid}>
-          {mindRelaxingToneModes.slice(6).map((toneMode) => {
-            const isActive = toneMode.id === selectedTone.id;
+        );
+      })()}
+
+      {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
+      <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
+        <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
+          🎯 Healing Programs — {selectedIssueGuide.label}
+        </Text>
+        <View style={{ gap: 8 }}>
+          {programs.map((prog) => {
+            const isRunning = loopEnabled && activeProgram?.name === prog.name;
             return (
               <Pressable
-                key={toneMode.id}
+                key={prog.name}
                 accessibilityRole="button"
-                accessibilityState={{ selected: isActive }}
                 onPress={() => {
-                  setSelectedToneId(toneMode.id);
-                  setLoopEnabled(false);
+                  if (isRunning) {
+                    setLoopEnabled(false);
+                    setTonePaused(false);
+                    setActiveProgram(null);
+                    setBreathStep(0);
+                    return;
+                  }
+                  const tone = mindRelaxingToneModes.find((t) => t.id === prog.toneId) ?? mindRelaxingToneModes[0];
+                  setSelectedToneId(tone.id);
+                  setActiveProgram(prog);
+                  setPresetMinutes(prog.duration);
+                  setSessionSeconds(0);
                   setTonePaused(false);
+                  setBreathStep(0);
+                  setLoopEnabled(true);
                 }}
-                style={({ pressed }) => [
-                  styles.toneLibraryCard,
-                  compact && styles.toneLibraryCardCompact,
-                  isActive && styles.toneLibraryCardActive,
-                  pressed && styles.pressed
-                ]}
+                style={({ pressed }) => ({ borderRadius: 14, overflow: "hidden", backgroundColor: isRunning ? "#061520" : pressed ? "#050D18" : "#040C16", borderWidth: 1, borderColor: isRunning ? prog.dimColor + "60" : "rgba(255,255,255,0.07)" })}
               >
-                <View style={styles.homeToneFeaturedTop}>
-                  <View style={[styles.homeToneFeaturedMark, styles.toneLibraryMark]}>
-                    <Text style={styles.homeToneFeaturedMarkText}>{toneMode.mark}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", padding: 14, gap: 12 }}>
+                  <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: prog.dimColor + "20", borderWidth: isRunning ? 2 : 1, borderColor: prog.dimColor + (isRunning ? "90" : "40"), alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontSize: 18 }}>{mindRelaxingToneModes.find((t) => t.id === prog.toneId)?.mark ?? "🎵"}</Text>
                   </View>
-                  <View style={styles.homeToneFeaturedCopy}>
-                    <Text style={styles.homeToneFeaturedTitle} numberOfLines={1}>
-                      {toneMode.label}
-                    </Text>
-                    <Text style={styles.homeToneFeaturedMeta} numberOfLines={1}>
-                      {toneMode.category}
-                    </Text>
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                      <Text style={{ color: "#F0F9FF", fontSize: 14, fontWeight: "900" }}>{prog.name}</Text>
+                      <View style={{ backgroundColor: prog.dimColor + "20", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}>
+                        <Text style={{ color: prog.dimColor, fontSize: 9, fontWeight: "900" }}>{prog.dim}</Text>
+                      </View>
+                      <Text style={{ color: "#475569", fontSize: 11 }}>{prog.duration}m</Text>
+                    </View>
+                    <Text style={{ color: "#64748B", fontSize: 12, lineHeight: 16 }}>{prog.purpose}</Text>
+                    <Text style={{ color: "#334155", fontSize: 11, marginTop: 3 }}>🫁 {prog.breathPattern} breathing</Text>
+                  </View>
+                  <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: isRunning ? "#991B1B" : prog.dimColor + "20", borderWidth: 1, borderColor: isRunning ? "#F87171" : prog.dimColor + "50", alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ color: isRunning ? "#F87171" : prog.dimColor, fontSize: 14 }}>{isRunning ? "⏹" : "▶"}</Text>
                   </View>
                 </View>
-                <Text style={styles.homeToneFeaturedUse} numberOfLines={2}>
-                  {toneMode.pattern}
-                </Text>
-                <Text style={styles.homeToneFeaturedSafety} numberOfLines={2}>
-                  {toneMode.use}
-                </Text>
-                <Text style={styles.smallMeta} numberOfLines={2}>
-                  {toneMode.safety}
-                </Text>
-                <View style={styles.calmQuickActionRow}>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => {
-                      setSelectedToneId(toneMode.id);
-                      setLoopEnabled(false);
-                      setTonePaused(false);
-                      void playRelaxingToneCue(toneMode);
-                    }}
-                    style={({ pressed }) => [styles.calmQuickActionButton, pressed && styles.pressed]}
-                  >
-                    <Text style={styles.calmQuickActionLabel}>Play</Text>
-                  </Pressable>
-                </View>
+                {isRunning && (
+                  <View style={{ height: 3, backgroundColor: "rgba(255,255,255,0.05)" }}>
+                    <View style={{ height: 3, backgroundColor: prog.dimColor, width: `${Math.round(presetProgress * 100)}%` as unknown as number }} />
+                  </View>
+                )}
               </Pressable>
             );
           })}
         </View>
-      ) : null}
+      </View>
+
+      {/* ── TONE LIBRARY — by category ── */}
+      <View style={{ marginHorizontal: 16 }}>
+        <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
+          📚 Tone Library
+        </Text>
+        <View style={{ gap: 6 }}>
+          {TONE_CATEGORIES.map((cat) => {
+            const catTones = mindRelaxingToneModes.filter((t) => cat.ids.includes(t.id));
+            if (catTones.length === 0) return null;
+            const isOpen = expandedCategory === cat.id;
+            const hasActive = catTones.some((t) => t.id === selectedTone.id);
+            return (
+              <View key={cat.id} style={{ borderRadius: 14, overflow: "hidden", borderWidth: 1, borderColor: hasActive ? cat.color + "40" : "rgba(255,255,255,0.06)" }}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setExpandedCategory(isOpen ? null : cat.id)}
+                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: hasActive ? cat.color + "10" : pressed ? "#060E18" : "#040C16", paddingHorizontal: 14, paddingVertical: 12 })}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: cat.color, fontSize: 13, fontWeight: "900" }}>{cat.label}</Text>
+                    <Text style={{ color: "#475569", fontSize: 11, marginTop: 2 }}>{cat.desc}</Text>
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    {hasActive && <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#22D3EE" }} />}
+                    <Text style={{ color: "#475569", fontSize: 13 }}>{isOpen ? "▲" : "▼"}</Text>
+                  </View>
+                </Pressable>
+                {isOpen && (
+                  <View style={{ backgroundColor: "#030A12", padding: 10, gap: 6 }}>
+                    {catTones.map((toneMode) => {
+                      const isActive = toneMode.id === selectedTone.id;
+                      return (
+                        <Pressable
+                          key={toneMode.id}
+                          accessibilityRole="button"
+                          onPress={() => { setSelectedToneId(toneMode.id); setActiveProgram(null); setLoopEnabled(false); }}
+                          style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: isActive ? cat.color + "15" : pressed ? "rgba(255,255,255,0.04)" : "transparent", borderRadius: 10, padding: 10, borderWidth: isActive ? 1 : 0, borderColor: cat.color + "40" })}
+                        >
+                          <Text style={{ fontSize: 20, width: 30, textAlign: "center" }}>{toneMode.mark}</Text>
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ color: isActive ? cat.color : "#E2E8F0", fontSize: 13, fontWeight: isActive ? "900" : "700" }}>{toneMode.label}</Text>
+                            <Text style={{ color: "#475569", fontSize: 11, marginTop: 1 }}>{toneMode.use}</Text>
+                          </View>
+                          <View style={{ flexDirection: "row", gap: 6 }}>
+                            <Pressable
+                              onPress={() => { setSelectedToneId(toneMode.id); setLoopEnabled(false); void playRelaxingToneCue(toneMode); }}
+                              style={{ backgroundColor: "#0E4A44", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                            >
+                              <Text style={{ color: "#34D399", fontSize: 11, fontWeight: "900" }}>▶</Text>
+                            </Pressable>
+                            <Pressable
+                              onPress={() => { setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
+                              style={{ backgroundColor: "#0F3460", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                            >
+                              <Text style={{ color: "#60A5FA", fontSize: 11, fontWeight: "900" }}>🔁</Text>
+                            </Pressable>
+                          </View>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* ── Quick links ── */}
+      <View style={{ flexDirection: "row", gap: 8, marginHorizontal: 16, marginTop: 16 }}>
+        {[{ label: "Meditation", tab: "meditation" as TabId }, { label: "Path", tab: "guide" as TabId }, { label: "Journal", tab: "journal" as TabId }].map((item) => (
+          <Pressable key={item.tab} onPress={() => onOpenTab(item.tab)} style={({ pressed }) => ({ flex: 1, backgroundColor: pressed ? "#0A1A2E" : "#070F1E", borderRadius: 10, paddingVertical: 10, alignItems: "center", borderWidth: 1, borderColor: "rgba(99,222,208,0.12)" })}>
+            <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700" }}>{item.label}</Text>
+          </Pressable>
+        ))}
+      </View>
     </View>
   );
 }
@@ -16110,6 +16804,41 @@ function MeditationSection({
           This is a short regulation stop for {selectedIssueGuide.label.toLowerCase()}, not a separate spiritual detour. Use it to lower noise, then return to the right action channel.
         </Text>
       </View>
+
+      {/* ── 20-DIMENSION LENS STRIP ── */}
+      {(() => {
+        const MEDITATION_DIM_COLORS: Record<string, string> = {
+          practical:     "#22D3EE",
+          emotional:     "#F472B6",
+          psychological: "#818CF8",
+          spiritual:     "#FCD34D",
+          cultural:      "#34D399",
+        };
+        const dims = [
+          { key: "practical",     label: "🎯 Practical",     text: selectedIssueGuide.logicalLens },
+          { key: "emotional",     label: "💗 Emotional",     text: selectedIssueGuide.emotionalLens },
+          { key: "psychological", label: "🧠 Psychological", text: selectedIssueGuide.theoreticalLens },
+          { key: "spiritual",     label: "✨ Spiritual",     text: selectedIssueGuide.spiritualLens },
+          { key: "cultural",     label: "🌍 Cultural",      text: selectedIssueGuide.culturalLens },
+        ];
+        return (
+          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
+            <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>20-Dimension Meditation Frame</Text>
+              <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
+            </View>
+            {dims.map((dim) => (
+              <View key={dim.key} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 7, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+                <View style={{ width: 3, borderRadius: 2, backgroundColor: MEDITATION_DIM_COLORS[dim.key], alignSelf: "stretch", marginRight: 10, marginTop: 1 }} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: MEDITATION_DIM_COLORS[dim.key], fontSize: 10, fontWeight: "700", marginBottom: 2 }}>{dim.label}</Text>
+                  <Text style={{ color: "#8BA8B5", fontSize: 12, lineHeight: 17 }} numberOfLines={2}>{dim.text}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        );
+      })()}
 
       <Text style={styles.promptText}>
         Recommended start: {recommendedChakra.label} for {selectedIdentityLabel} dealing with {selectedIssueGuide.label.toLowerCase()}.
@@ -17909,6 +18638,48 @@ function SearchSection({
             { label: "Community", onPress: onOpenCommunity }
           ]}
         />
+        {/* ── 20-DIMENSION ISSUE LENS PANEL ── */}
+        {selectedIssueGuide.id !== "general" && (() => {
+          const SEARCH_DIM_COLORS: Record<string, string> = { practical: "#22D3EE", emotional: "#F472B6", psychological: "#818CF8", spiritual: "#FCD34D", cultural: "#34D399" };
+          const SEARCH_DIM_ROUTES: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
+            anxiety:      { practical: "Find a structured plan, therapist registry, or breathing technique guide", emotional: "Search for peer support groups or online communities for anxiety", psychological: "Look up CBT workbooks or trauma-informed counselling directories", spiritual: "Explore meditative or prayer-based anxiety relief resources", cultural: "Find culturally-appropriate local support for anxiety and worry" },
+            anger:        { practical: "Find anger management programmes or conflict resolution workshops", emotional: "Search peer support for processing anger without acting out", psychological: "Look up psychoeducation on anger triggers and impulse control", spiritual: "Find forgiveness-based or contemplative anger cooling resources", cultural: "Explore community-led justice and reconciliation routes" },
+            grief:        { practical: "Find bereavement counselling or legal estate-support contacts", emotional: "Search grief support groups and community companions", psychological: "Look up stages-of-grief guides and trauma integration resources", spiritual: "Find prayer, ritual, or spiritual grief companions near you", cultural: "Search culturally specific mourning and memorial support" },
+            burnout:      { practical: "Find occupational health, HR support, or legal employment guidance", emotional: "Search burnout recovery communities and peer support", psychological: "Look up mental fatigue education and recovery schedules", spiritual: "Find rest-and-restoration spiritual retreat resources", cultural: "Explore community balance and family role negotiation guides" },
+            trauma:       { practical: "Find EMDR or trauma-focused therapists and survivor helplines", emotional: "Search trauma survivor peer networks and safe spaces", psychological: "Look up PTSD education, somatic therapy, and grounding tools", spiritual: "Find spiritual healing and ancestral healing practice guides", cultural: "Search culturally sensitive trauma support and advocacy groups" },
+            loneliness:   { practical: "Find community centres, social clubs, or volunteering opportunities", emotional: "Search loneliness support communities and befriending services", psychological: "Look up attachment theory education and social skill-building resources", spiritual: "Find spiritual community, sangha, or congregational connection paths", cultural: "Explore cultural reunion events, diaspora groups, or festivals" },
+            relationship: { practical: "Find mediation services, couples counselling, and legal guidance", emotional: "Search relationship support groups and communication skill resources", psychological: "Look up attachment styles, conflict dynamics, and couples therapy guides", spiritual: "Find faith-based or values-aligned relationship mentoring resources", cultural: "Explore culturally specific family mediation and relationship guides" },
+            financial:    { practical: "Find debt counselling, government benefits, and financial planning tools", emotional: "Search financial stress support communities and peer forums", psychological: "Look up money mindset education and financial anxiety resources", spiritual: "Find values-based financial ethics and generosity guidance", cultural: "Explore community lending schemes and cultural financial support networks" },
+            identity:     { practical: "Find legal name-change support, career guidance, and rights resources", emotional: "Search identity and self-esteem support communities", psychological: "Look up self-concept theory and identity integration resources", spiritual: "Find purpose-finding retreats or spiritual direction services", cultural: "Explore heritage, diaspora, and cultural identity support groups" },
+          };
+          const rec = SEARCH_DIM_ROUTES[selectedIssueGuide.id];
+          if (!rec) return null;
+          const dims = [
+            { key: "practical",     label: "🎯 Practical",     text: rec.practical },
+            { key: "emotional",     label: "💗 Emotional",     text: rec.emotional },
+            { key: "psychological", label: "🧠 Psychological", text: rec.psychological },
+            { key: "spiritual",     label: "✨ Spiritual",     text: rec.spiritual },
+            { key: "cultural",      label: "🌍 Cultural",      text: rec.cultural },
+          ];
+          return (
+            <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
+              <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>20-Dimension Search Guide</Text>
+                <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
+              </View>
+              <Text style={{ color: "#6A8899", fontSize: 11, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Each dimension suggests where to search for the best match to your situation.</Text>
+              {dims.map((dim) => (
+                <View key={dim.key} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 7, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+                  <View style={{ width: 3, borderRadius: 2, backgroundColor: SEARCH_DIM_COLORS[dim.key], alignSelf: "stretch", marginRight: 10, marginTop: 1 }} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: SEARCH_DIM_COLORS[dim.key], fontSize: 10, fontWeight: "700", marginBottom: 2 }}>{dim.label}</Text>
+                    <Text style={{ color: "#8BA8B5", fontSize: 12, lineHeight: 17 }} numberOfLines={2}>{dim.text}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          );
+        })()}
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -18199,6 +18970,27 @@ function PlaySection({
               ? "Full practice deck is open."
               : "The practice loop starts with a few useful cards only."}
           </Text>
+        </View>
+        {/* 20-dimension issue lens strip for Practice */}
+        <View style={{ backgroundColor: "#0A1520", borderRadius: 12, padding: 14, gap: 10, borderWidth: 1, borderColor: "rgba(99,222,208,0.15)" }}>
+          <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            {selectedIssueGuide.label} — 5 dimensions
+          </Text>
+          {[
+            { label: "Practical", text: selectedIssueGuide.logicalLens, color: "#34D399" },
+            { label: "Emotional", text: selectedIssueGuide.emotionalLens, color: "#F9A8D4" },
+            { label: "Psychological", text: selectedIssueGuide.theoreticalLens, color: "#818CF8" },
+            { label: "Spiritual", text: selectedIssueGuide.spiritualLens, color: "#FCD34D" },
+            { label: "Cultural", text: selectedIssueGuide.culturalLens, color: "#FB923C" },
+          ].map((dim) => (
+            <View key={dim.label} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start" }}>
+              <View style={{ width: 3, borderRadius: 2, backgroundColor: dim.color, alignSelf: "stretch", minHeight: 14 }} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: dim.color, fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>{dim.label}</Text>
+                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 17, marginTop: 1 }}>{dim.text}</Text>
+              </View>
+            </View>
+          ))}
         </View>
         <Text style={styles.smallMeta}>Current issue: {selectedIssueGuide.label}</Text>
         <Text style={styles.smallMeta}>
@@ -18824,10 +19616,68 @@ function RedressSection({
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const routePhone = normalizePhoneNumber(selectedRedressRoute.phone);
   const [showFullRedress, setShowFullRedress] = useState(false);
+  const [showDraftTemplate, setShowDraftTemplate] = useState(false);
+  const [showScript, setShowScript] = useState(false);
+  const [checkedEvidence, setCheckedEvidence] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setShowFullRedress(false);
+    setShowDraftTemplate(false);
+    setShowScript(false);
+    setCheckedEvidence({});
   }, [selectedRedressRoute.id, selectedInstitutionSector.id, selectedIdentity.id, languageId]);
+
+  // Evidence items parsed from keepReady string
+  const evidenceItems = selectedRedressRoute.keepReady.split(",").map((item) => item.trim()).filter(Boolean);
+  const checkedCount = evidenceItems.filter((_, i) => checkedEvidence[String(i)]).length;
+
+  // Route-specific complaint draft template
+  const DRAFT_TEMPLATES: Partial<Record<RedressRouteId, string>> = {
+    academic: `To,\nThe [Grievance Officer / HOD / Dean],\n[Institution Name]\n\nSubject: Formal Grievance — [describe issue in one line]\n\nDear Sir/Madam,\n\nI, [Your Name], student of [Course/Department], hereby submit this written complaint regarding [describe the issue clearly, with dates and names].\n\nThe incident occurred on [Date] at [Location/Online]. The concerned person/office is [Name/Department].\n\nI request: [State the specific remedy — apology, marks correction, investigation, etc.]\n\nI have attached: [list evidence — screenshots, emails, fee receipts, etc.]\n\nKindly acknowledge receipt and resolve within the prescribed timeline.\n\nThank you,\n[Your Name]\n[Roll No / Student ID]\n[Contact Number]\n[Date]`,
+    harassment: `To,\nThe Presiding Officer,\nInternal Complaints Committee (ICC)\n[Institution / Organisation Name]\n\nSubject: Complaint of Harassment under POSH Act / Relevant Policy\n\nDear Madam/Sir,\n\nI, [Your Name], [Designation/Student], wish to formally report an incident of harassment.\n\nThe incident(s) occurred on [Date(s)] at [Location]. The person(s) involved: [Name(s) and designation].\n\nDescription of incident: [Describe clearly — what was said/done, how it affected you]\n\nI request:\n1. Immediate confidential inquiry\n2. Protection from retaliation\n3. [Any specific remedy]\n\nEvidence attached: [list evidence]\n\nI request an acknowledgement number and timeline of resolution.\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
+    financial: `To,\nThe Nodal Officer / Grievance Cell,\n[Bank/NBFC Name]\n[Branch Address]\n\nSubject: Complaint Regarding Unauthorised Transaction / Service Failure — Account No. [XXXX]\n\nDear Sir/Madam,\n\nI, [Your Name], hold Account No. [Account Number] with your branch. I wish to report the following issue:\n\nNature of complaint: [fraud / wrong debit / service failure / loan harassment]\nDate of incident: [Date]\nAmount involved: ₹[Amount]\nTransaction ID (if any): [ID]\n\nDespite [number] follow-ups, this has not been resolved.\n\nI request: [refund / block the fraudulent transaction / stop harassment]\n\nIf unresolved within 30 days, I will escalate to the RBI Banking Ombudsman.\n\nDocuments attached: [list]\n\nYours faithfully,\n[Your Name]\n[Account No.]\n[Contact]\n[Date]`,
+    domestic: `To,\nThe Protection Officer,\n[District Women & Child Development Office]\n\nSubject: Application for Protection Order under Protection of Women from Domestic Violence Act, 2005\n\nDear Madam,\n\nI, [Your Name], residing at [Address], wish to report domestic violence perpetrated by [Respondent's Name], who is my [relationship].\n\nNature of violence: [physical / verbal / economic / emotional — describe briefly]\nIncidents occurred: [dates and description]\n\nI am seeking:\n1. A Protection Order\n2. [Residence order / Monetary relief / Custody — whichever applies]\n\nI have/have not filed a police complaint. [If yes, add FIR number.]\n\nEvidence available: [photos, medical records, messages]\n\nI request immediate assistance and protection.\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
+    cybercrime: `To,\nThe In-charge,\nCyber Crime Cell,\n[Police Station / District]\n\nSubject: Complaint of Cybercrime — [type: financial fraud / online harassment / morphed image / stalking]\n\nDear Sir/Madam,\n\nI, [Your Name], residing at [Address], wish to report a cybercrime incident.\n\nNature of offence: [describe clearly]\nDate & time of incident: [Date and Time]\nPlatform / website / app involved: [Name and URL if available]\nPerpetrator details (if known): [username / phone / account ID]\n\nAmount lost (if financial fraud): ₹[Amount]\nTransaction ID(s): [IDs]\n\nEvidence: [screenshots attached, URLs, message logs]\n\nI have already reported on cybercrime.gov.in. Complaint Number: [if available]\n\nI request:\n1. Immediate freezing of the fraudulent account\n2. Investigation and FIR\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
+    consumer: `To,\nThe Grievance Officer,\n[Company / Brand Name]\n[Official Address / Email]\n\nSubject: Consumer Complaint — [Product / Service Name] — Invoice No. [XXXX]\n\nDear Sir/Madam,\n\nI, [Your Name], purchased [Product/Service] on [Date] for ₹[Amount]. Invoice No. [Number].\n\nNature of complaint: [defect / billing error / non-delivery / misleading claim]\nDescription: [Describe clearly what happened]\n\nImpact: [how it affected you — financial loss, health, inconvenience]\n\nRemedy sought:\n1. [Full refund / replacement / repair]\n2. Compensation of ₹[amount] for losses\n3. Written acknowledgement\n\nIf not resolved within 15 days, I will file a complaint with the National Consumer Helpline (1915) and the District Consumer Commission.\n\nEvidence attached: [invoice, photos, chat transcript]\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
+    workplace: `To,\n[HR Manager / Labour Commissioner],\n[Organisation / District Labour Office]\n\nSubject: Formal Grievance — [salary denial / wrongful termination / PF issue / discrimination]\n\nDear Sir/Madam,\n\nI, [Your Name], Employee ID [ID], was employed as [Designation] at [Company Name] from [Start Date] to [End Date / present].\n\nNature of grievance: [describe clearly — what was denied, when, by whom]\n\nDespite verbal requests on [dates], the matter has not been resolved.\n\nRelief sought:\n1. [Payment of dues / Reinstatement / PF settlement]\n2. Written response within 15 working days\n\nDocuments attached: [appointment letter, payslips, emails]\n\nIf unresolved, I will escalate to the District Labour Commissioner / EPFO / Labour Court.\n\nYours sincerely,\n[Your Name]\n[Employee ID]\n[Contact]\n[Date]`,
+  };
+
+  // First call/visit script
+  const FIRST_SCRIPTS: Partial<Record<RedressRouteId, string>> = {
+    academic: `"I am [Your Name], student of [Course], [Roll No]. I am here to submit a written complaint against [Name/Issue] that occurred on [Date]. I request a written acknowledgement with a complaint number and the name of the officer who will handle this. I also request the expected resolution timeline."`,
+    harassment: `"I need to speak with the Presiding Officer of the Internal Complaints Committee. I have a written complaint to submit. I request confidentiality throughout the process and an acknowledgement number. What is the SHe-Box ID or complaint reference I will receive?"`,
+    financial: `"My name is [Name], account number [XXXX]. On [Date], an unauthorised transaction of ₹[Amount] occurred. I need this flagged immediately, the transaction ID is [ID]. I am also submitting a written complaint. Please give me a complaint reference number and the name of the officer handling this."`,
+    domestic: `"I need to speak with the Protection Officer. I am here under the Protection of Women from Domestic Violence Act 2005. I need to file an application for a protection order. I would like the process to be confidential."`,
+    crime: `"I want to register an FIR. The incident occurred on [Date] at [Location]. I am the complainant. I have evidence with me — [describe briefly]. I am requesting a copy of the FIR and the name of the investigating officer."`,
+    cybercrime: `"I want to report a cybercrime. The incident occurred on [Date] involving [describe — fraud/harassment/morphed image]. I have already filed on cybercrime.gov.in, complaint number [if available]. I need a formal police report and request immediate freezing of the fraudulent account."`,
+    consumer: `"I am [Name], I purchased [product/service] on [Date] for ₹[Amount]. The product has [defect] / the service was [not delivered/faulty]. I am submitting a written complaint today and requesting a reference number and 15-day resolution."`,
+    ragging: `"I want to report ragging by [senior/batch name] that occurred on [Date] at [hostel/location]. I have already registered on antiragging.in, complaint number [number]. I request the anti-ragging committee to take immediate action and keep my identity protected."`,
+    workplace: `"I am [Name], Employee ID [ID]. I am here to formally submit a grievance regarding [salary denial/termination/PF issue]. I have the written complaint with supporting documents. I request a signed acknowledgement and the grievance officer's name for follow-up."`,
+    public: `"I am here to submit a formal grievance against [name of department or service]. The issue is [describe briefly]. I am requesting a CPGRAMS-registered acknowledgement with a docket number and the officer's name and designation."`,
+    private: `"I am [Name], [admission/membership ID]. I am here to file a formal complaint about [issue] that occurred on [Date]. I request a written acknowledgement, a complaint reference number, and the resolution timeline per your grievance policy."`,
+  };
+
+  // Route-specific timeline expectations
+  const ROUTE_TIMELINES: Partial<Record<RedressRouteId, { step1: string; step2: string; step3: string; flag: string }>> = {
+    academic:    { step1: "File written complaint", step2: "Await acknowledgement (1–3 days)", step3: "Resolution or next escalation (15–30 days)", flag: "Escalate if no reply in 15 days" },
+    harassment:  { step1: "Submit ICC complaint", step2: "Inquiry begins (within 7 days)", step3: "Report and resolution (within 90 days)", flag: "Escalate if inquiry stalls beyond 30 days" },
+    ragging:     { step1: "Register on antiragging.in", step2: "Committee notified (within 24 hours)", step3: "Action and resolution (7–21 days)", flag: "Call 1800-180-5522 if no acknowledgement in 24 hours" },
+    financial:   { step1: "File at bank/NBFC", step2: "Bank responds (within 30 days)", step3: "RBI Ombudsman if unresolved (30–90 days)", flag: "For fraud, call 1930 IMMEDIATELY — do not wait" },
+    domestic:    { step1: "Contact OSC or Protection Officer", step2: "Application heard by Magistrate (within 3 days for urgent orders)", step3: "Protection order issued", flag: "If in danger, call 112 now — do not wait for any process" },
+    crime:       { step1: "Go to police station, file FIR", step2: "Case registered, IO assigned (same day)", step3: "Follow up with IO every 7 days", flag: "If refused, go to SP office or file a private complaint in court" },
+    cybercrime:  { step1: "File on cybercrime.gov.in or call 1930", step2: "Case registered (1–3 days)", step3: "Investigation and resolution (30–90 days)", flag: "For financial fraud, call 1930 within 24 hours" },
+    consumer:    { step1: "Written complaint to company", step2: "Company responds (15–30 days)", step3: "Consumer Commission hearing (3–6 months)", flag: "File at Commission if no resolution in 30 days — it is free up to ₹50 lakh" },
+    workplace:   { step1: "HR grievance written submission", step2: "Labour Commissioner response (30 days)", step3: "Labour Court if unresolved (6–18 months)", flag: "Request EPFO portal for PF — much faster than courts" },
+    public:      { step1: "CPGRAMS complaint filed", step2: "Acknowledged (within 2 days)", step3: "Resolution (30–60 days)", flag: "If unresolved in 60 days, mark 'not satisfied' in CPGRAMS to auto-escalate" },
+    private:     { step1: "File written complaint to institution", step2: "Response from management (15 days)", step3: "Regulator or Consumer Commission (3–6 months)", flag: "Keep all replies — they are evidence of bad faith if you need to escalate" },
+  };
+
+  const timeline = ROUTE_TIMELINES[selectedRedressRoute.id];
+  const draftTemplate = DRAFT_TEMPLATES[selectedRedressRoute.id];
+  const firstScript = FIRST_SCRIPTS[selectedRedressRoute.id];
+  const isEmergencyRoute = selectedRedressRoute.id === "crime" || selectedRedressRoute.id === "domestic";
+  const isCrimeRoute = selectedRedressRoute.id === "crime";
+  const isDomesticRoute = selectedRedressRoute.id === "domestic";
 
   async function handleRouteCall() {
     if (!routePhone) return;
@@ -18858,46 +19708,70 @@ function RedressSection({
 
   return (
     <View style={[styles.grid, isWide && styles.gridWide]}>
+
+      {/* ── PANEL 1: ROUTE SELECTOR ── */}
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>{l("Redress", { hindi: "निवारण", punjabi: "ਇਨਸਾਫ਼", marathi: "निवारण", telugu: "పరిష్కారం", tamil: "தீர்வு", urdu: "ازالہ" })}</Text>
-            <Text style={styles.sectionTitle}>{l("Choose the complaint path", { hindi: "शिकायत का रास्ता चुनें", punjabi: "ਸ਼ਿਕਾਇਤ ਦਾ ਰਾਹ ਚੁਣੋ", marathi: "तक्रारीचा मार्ग निवडा", telugu: "ఫిర్యాదు మార్గాన్ని ఎంచుకోండి", tamil: "புகார் பாதையைத் தேர்ந்தெடுக்கவும்", urdu: "شکایت کا راستہ منتخب کریں" })}</Text>
+            <Text style={styles.eyebrow}>Help & Redress</Text>
+            <Text style={styles.sectionTitle}>Choose your complaint route</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
-          {l(
-            "This screen helps you file one complaint cleanly. It starts with the office that should hear you first, then shows the next step if the matter stalls.",
-            {
-              hindi: "यह स्क्रीन आपको एक शिकायत साफ़ तरीके से दर्ज करने में मदद करती है। यह उस office से शुरू होती है जिसे पहले सुनना चाहिए, फिर अगर मामला अटक जाए तो अगला कदम दिखाती है।",
-              punjabi: "ਇਹ ਸਕ੍ਰੀਨ ਤੁਹਾਨੂੰ ਇੱਕ ਸ਼ਿਕਾਇਤ ਸਾਫ਼ ਢੰਗ ਨਾਲ ਦਰਜ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਦੀ ਹੈ। ਇਹ ਉਸ office ਤੋਂ ਸ਼ੁਰੂ ਹੁੰਦੀ ਹੈ ਜਿਸ ਨੇ ਪਹਿਲਾਂ ਸੁਣਨਾ ਹੈ, ਫਿਰ ਜੇ ਮਾਮਲਾ ਫਸੇ ਤਾਂ ਅਗਲਾ ਕਦਮ ਦਿਖਾਉਂਦੀ ਹੈ।",
-              marathi: "ही स्क्रीन तुम्हाला एक तक्रार स्वच्छपणे नोंदवायला मदत करते. ती आधी ऐकायला हवे अशा office पासून सुरू होते, मग प्रकरण अडकल्यास पुढचे पाऊल दाखवते.",
-              telugu: "ఈ స్క్రీన్ ఒక ఫిర్యాదును శుభ్రంగా దాఖలు చేయడంలో సహాయపడుతుంది. ఇది ముందు వినాల్సిన office నుంచే మొదలై, విషయం ఆగితే తదుపరి దశను చూపిస్తుంది.",
-              tamil: "இந்த திரை ஒரு புகாரை சுத்தமாக பதிவு செய்ய உதவுகிறது. இது முதலில் கேட்க வேண்டிய அலுவலகத்திலிருந்து தொடங்கி, விஷயம் நின்றால் அடுத்த படியை காட்டுகிறது.",
-              urdu: "یہ اسکرین آپ کو ایک شکایت صاف طریقے سے درج کرنے میں مدد دیتی ہے۔ یہ اس office سے شروع ہوتی ہے جو پہلے سننا چاہیے، پھر اگر معاملہ رک جائے تو اگلا قدم دکھاتی ہے۔"
-            }
-          )}
+          Select the route that fits your situation. Each route gives you a specific first office, exact first action, and escalation path — no guessing.
         </Text>
-        <View style={styles.issueActionBand}>
-          <Text style={styles.issueActionTitle}>{l("Your next move", { hindi: "आपका अगला कदम", punjabi: "ਤੁਹਾਡਾ ਅਗਲਾ ਕਦਮ", marathi: "तुमचे पुढचे पाऊल", telugu: "మీ తదుపరి అడుగు", tamil: "உங்கள் அடுத்த படி", urdu: "آپ کا اگلا قدم" })}</Text>
-          <Text style={styles.issueActionText}>
-            {l(
-              "Write the facts once. Keep the dates, names, and evidence ready. Use the office below as the first step, then escalate only if the matter stalls.",
-              {
-                hindi: "तथ्य एक बार लिखें। तारीखें, नाम, और evidence तैयार रखें। नीचे दिए office को पहले कदम के रूप में इस्तेमाल करें, फिर सिर्फ़ तभी आगे बढ़ें जब मामला अटक जाए।",
-                punjabi: "ਤੱਥ ਇਕ ਵਾਰ ਲਿਖੋ। ਤਾਰੀਖਾਂ, ਨਾਮ, ਅਤੇ ਸਬੂਤ ਤਿਆਰ ਰੱਖੋ। ਹੇਠਾਂ ਵਾਲੇ office ਨੂੰ ਪਹਿਲੇ ਕਦਮ ਵਜੋਂ ਵਰਤੋ, ਫਿਰ ਸਿਰਫ਼ ਤਾਂ ਹੀ escalate ਕਰੋ ਜਦੋਂ ਮਾਮਲਾ ਫਸੇ।",
-                marathi: "तथ्य एकदाच लिहा. तारखा, नावे, आणि पुरावे तयार ठेवा. खालील office ला पहिला टप्पा मानून वापरा, मग प्रकरण अडकल्यासच पुढे जा.",
-                telugu: "వాస్తవాలను ఒక్కసారి రాయండి. తేదీలు, పేర్లు, సాక్ష్యాలు సిద్ధంగా ఉంచండి. దిగువ office ను మొదటి దశగా ఉపయోగించి, విషయం ఆగితే మాత్రమే escalate చేయండి.",
-                tamil: "உண்மைகளை ஒருமுறை எழுதுங்கள். தேதிகள், பெயர்கள், மற்றும் சான்றுகள் தயார் வைத்திருங்கள். கீழுள்ள office-ஐ முதல் படியாகப் பயன்படுத்தி, விஷயம் நின்றால் மட்டும் மேலே செல்லுங்கள்.",
-                urdu: "حقائق ایک بار لکھیں۔ تاریخیں، نام، اور ثبوت تیار رکھیں۔ نیچے والے office کو پہلے قدم کے طور پر استعمال کریں، پھر صرف تب escalate کریں جب معاملہ رک جائے۔"
-              }
-            )}
-          </Text>
+
+        {/* ── QUICK HELP NUMBERS STRIP ── */}
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#0A0F1A", borderWidth: 1, borderColor: "rgba(239,68,68,0.3)", overflow: "hidden" }}>
+          <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 6, flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Text style={{ color: "#EF4444", fontSize: 12, fontWeight: "800" }}>🚨 IMPORTANT NUMBERS</Text>
+            <Text style={{ color: "#6B7280", fontSize: 10, flex: 1, textAlign: "right" }}>Always available</Text>
+          </View>
+          {[
+            { label: "Emergency / Police", number: "112", color: "#EF4444", desc: "Any immediate danger, assault, or threat" },
+            { label: "Women's Helpline", number: "181", color: "#F472B6", desc: "Domestic violence, harassment, abuse" },
+            { label: "Child Helpline", number: "1098", color: "#60A5FA", desc: "Child in danger, abuse, trafficking" },
+            { label: "Cybercrime / Fraud", number: "1930", color: "#818CF8", desc: "Online fraud — call within 24 hrs to freeze funds" },
+            { label: "Consumer Helpline", number: "1915", color: "#34D399", desc: "Product/service complaints" },
+            { label: "Anti-Ragging", number: "1800-180-5522", color: "#FCD34D", desc: "Ragging, hostel intimidation" },
+          ].map((item) => (
+            <Pressable
+              key={item.number}
+              accessibilityRole="button"
+              accessibilityLabel={`Call ${item.label}: ${item.number}`}
+              onPress={() => {
+                const uri = `tel:${item.number.replace(/-/g, "")}`;
+                void Linking.openURL(uri).catch(() =>
+                  Alert.alert(item.label, `Please dial ${item.number}`)
+                );
+              }}
+              style={({ pressed }) => [{
+                flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 9,
+                borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)",
+                backgroundColor: pressed ? "rgba(255,255,255,0.04)" : "transparent"
+              }]}
+            >
+              <View style={{ width: 3, borderRadius: 2, backgroundColor: item.color, alignSelf: "stretch", marginRight: 10 }} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: item.color, fontSize: 11, fontWeight: "700" }}>{item.label}</Text>
+                <Text style={{ color: "#9CA3AF", fontSize: 11, lineHeight: 16 }}>{item.desc}</Text>
+              </View>
+              <View style={{ backgroundColor: item.color, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 }}>
+                <Text style={{ color: "#000", fontSize: 13, fontWeight: "800" }}>{item.number}</Text>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+
+        {/* ── ROUTE CHIPS ── */}
+        <View style={{ marginBottom: 8 }}>
+          <Text style={styles.eyebrow}>Select route type</Text>
         </View>
         <View style={styles.issueChipGrid}>
           {redressRoutes.map((route) => {
             const isSelected = route.id === selectedRedressRoute.id;
+            const ROUTE_ICONS: Partial<Record<string, string>> = { academic: "🎓", harassment: "⚠️", ragging: "🏫", public: "🏛️", private: "🏢", crime: "🚨", financial: "💰", domestic: "🏠", workplace: "👔", cybercrime: "💻", consumer: "🛒" };
             return (
               <Pressable
                 key={route.id}
@@ -18907,7 +19781,7 @@ function RedressSection({
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
                 <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>
-                  {route.label}
+                  {(ROUTE_ICONS[route.id] ?? "📋") + " " + route.label}
                 </Text>
                 <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>
                   {route.subtitle}
@@ -18918,26 +19792,17 @@ function RedressSection({
         </View>
       </View>
 
+      {/* ── PANEL 2: INSTITUTION TYPE ── */}
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>{l("Institution map", { hindi: "संस्था मानचित्र", punjabi: "ਸੰਸਥਾ ਨਕਸ਼ਾ", marathi: "संस्था नकाशा", telugu: "సంస్థ మ్యాప్", tamil: "நிறுவன வரைபடம்", urdu: "ادارہ نقشہ" })}</Text>
-            <Text style={styles.sectionTitle}>{l("Match the route to the institution", { hindi: "रास्ते को संस्था से मिलाएँ", punjabi: "ਰਾਹ ਨੂੰ ਸੰਸਥਾ ਨਾਲ ਮਿਲਾਓ", marathi: "मार्ग संस्थेशी जुळवा", telugu: "మార్గాన్ని సంస్థకు సరిపోల్చండి", tamil: "பாதையை நிறுவனத்துடன் பொருத்தவும்", urdu: "راستے کو ادارے سے ملائیں" })}</Text>
+            <Text style={styles.eyebrow}>Institution type</Text>
+            <Text style={styles.sectionTitle}>Refine for your institution</Text>
           </View>
-          <Text style={styles.smallMeta}>{l("Choose the real institution type", { hindi: "वास्तविक संस्था प्रकार चुनें", punjabi: "ਅਸਲੀ ਸੰਸਥਾ ਕਿਸਮ ਚੁਣੋ", marathi: "खरी संस्था निवडा", telugu: "నిజమైన సంస్థ రకాన్ని ఎంచుకోండి", tamil: "உண்மையான நிறுவன வகையைத் தேர்ந்தெடுக்கவும்", urdu: "اصل ادارے کی قسم منتخب کریں" })}</Text>
+          <Text style={styles.smallMeta}>Makes the route more precise</Text>
         </View>
         <Text style={styles.promptText}>
-          {l(
-            "This makes the redress path more exact for universities, IITs, NLUs, medical colleges, schools, banks, government offices, factories, and private firms.",
-            {
-              hindi: "इससे redress path universities, IITs, NLUs, medical colleges, schools, banks, government offices, factories, और private firms के लिए और सटीक हो जाता है।",
-              punjabi: "ਇਸ ਨਾਲ redress path universities, IITs, NLUs, medical colleges, schools, banks, government offices, factories, ਅਤੇ private firms ਲਈ ਹੋਰ ਸਹੀ ਬਣਦਾ ਹੈ।",
-              marathi: "यामुळे redress path universities, IITs, NLUs, medical colleges, schools, banks, government offices, factories, आणि private firms साठी अधिक अचूक होतो.",
-              telugu: "దీంతో universities, IITs, NLUs, medical colleges, schools, banks, government offices, factories, మరియు private firms కోసం redress path మరింత ఖచ్చితంగా ఉంటుంది.",
-              tamil: "இதனால் universities, IITs, NLUs, medical colleges, schools, banks, government offices, factories, மற்றும் private firms க்கான redress path இன்னும் துல்லியமாகிறது.",
-              urdu: "اس سے universities، IITs، NLUs، medical colleges، schools، banks، government offices، factories، اور private firms کے لیے redress path زیادہ درست ہو جاتا ہے۔"
-            }
-          )}
+          Select your institution type for a tuned escalation path and the exact portal to use.
         </Text>
         <View style={styles.issueChipGrid}>
           {institutionSectors.map((sector) => {
@@ -18950,276 +19815,368 @@ function RedressSection({
                 onPress={() => setInstitutionSectorId(sector.id)}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
-                <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>
-                  {sector.label}
-                </Text>
-                <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>
-                  {sector.subtitle}
-                </Text>
+                <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>{sector.label}</Text>
+                <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>{sector.subtitle}</Text>
               </Pressable>
             );
           })}
         </View>
       </View>
 
+      {/* ── PANEL 3: ACTIVE ROUTE DETAIL ── */}
       <View
         style={styles.panel}
         onLayout={onFocusSelectedRedressLayout ? onFocusSelectedRedressLayout(selectedRedressRoute.id) : undefined}
       >
+        {/* Emergency triage for crime/domestic routes */}
+        {isEmergencyRoute && (
+          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#1A0A0A", borderWidth: 2, borderColor: "#EF4444", padding: 14 }}>
+            <Text style={{ color: "#EF4444", fontSize: 13, fontWeight: "800", marginBottom: 6 }}>
+              {isCrimeRoute ? "🚨 SAFETY FIRST" : "🚨 YOUR SAFETY COMES FIRST"}
+            </Text>
+            <Text style={{ color: "#FCA5A5", fontSize: 13, lineHeight: 20, marginBottom: 10 }}>
+              {isCrimeRoute
+                ? "If the danger is live right now, call 112 immediately. Do not wait for any portal or office. Redressal follows protection — not the other way around."
+                : "If you or your children are at physical risk right now, call 112. Contact the One Stop Centre on 181 for shelter, legal aid, and medical help in one place. Your safety comes before any complaint process."}
+            </Text>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => void Linking.openURL("tel:112")}
+                style={{ flex: 1, backgroundColor: "#EF4444", borderRadius: 10, paddingVertical: 10, alignItems: "center" }}
+              >
+                <Text style={{ color: "#fff", fontWeight: "800", fontSize: 14 }}>📞 112 — Police</Text>
+              </Pressable>
+              {isDomesticRoute && (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => void Linking.openURL("tel:181")}
+                  style={{ flex: 1, backgroundColor: "#9B1C1C", borderRadius: 10, paddingVertical: 10, alignItems: "center" }}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "800", fontSize: 14 }}>📞 181 — Women</Text>
+                </Pressable>
+              )}
+            </View>
+          </View>
+        )}
+
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>{l("Current route", { hindi: "वर्तमान मार्ग", punjabi: "ਮੌਜੂਦਾ ਰਾਹ", marathi: "सध्याचा मार्ग", telugu: "ప్రస్తుత మార్గం", tamil: "தற்போதைய பாதை", urdu: "موجودہ راستہ" })}</Text>
+            <Text style={styles.eyebrow}>Active route</Text>
             <Text style={styles.sectionTitle}>{selectedRedressRoute.label}</Text>
           </View>
-          <Text style={styles.smallMeta}>{l("One paper trail", { hindi: "एक कागज़ी trail", punjabi: "ਇੱਕ ਕਾਗਜ਼ੀ trail", marathi: "एक कागदी trail", telugu: "ఒక పేపర్ trail", tamil: "ஒரு ஆவண வழித்தடம்", urdu: "ایک کاغذی trail" })}</Text>
+          <Text style={styles.smallMeta}>One paper trail</Text>
         </View>
         <Text style={styles.promptText}>{selectedRedressRoute.summary}</Text>
-        <View style={styles.issueLensList}>
-          <IssueLensRow label={l("First office", { hindi: "पहला office", punjabi: "ਪਹਿਲਾ office", marathi: "पहिले office", telugu: "మొదటి office", tamil: "முதல் அலுவலகம்", urdu: "پہلا دفتر" })} text={selectedRedressRoute.firstOffice} />
-          <IssueLensRow label={l("First action", { hindi: "पहला कदम", punjabi: "ਪਹਿਲਾ ਕਦਮ", marathi: "पहिले पाऊल", telugu: "మొదటి అడుగు", tamil: "முதல் நடவடிக்கை", urdu: "پہلا قدم" })} text={selectedRedressRoute.firstAction} />
-          <IssueLensRow label={l("Escalation", { hindi: "आगे बढ़ाना", punjabi: "ਅੱਗੇ ਵਧਾਉਣਾ", marathi: "पुढे नेणे", telugu: "ఎస్కలేషన్", tamil: "மேல்நிலை", urdu: "اگلا مرحلہ" })} text={selectedRedressRoute.escalation} />
-          <IssueLensRow label={l("Keep ready", { hindi: "तैयार रखें", punjabi: "ਤਿਆਰ ਰੱਖੋ", marathi: "तयार ठेवा", telugu: "సిద్ధంగా ఉంచండి", tamil: "தயாராக வைத்திருக்கவும்", urdu: "تیار رکھیں" })} text={selectedRedressRoute.keepReady} />
+
+        {/* ── URGENT NOTE ── */}
+        <View style={{ marginBottom: 12, backgroundColor: "#0F1A0A", borderRadius: 12, padding: 12, borderLeftWidth: 3, borderLeftColor: "#EF4444" }}>
+          <Text style={{ color: "#EF4444", fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>⚡ When to escalate immediately</Text>
+          <Text style={{ color: "#FCA5A5", fontSize: 12, lineHeight: 18 }}>{selectedRedressRoute.urgentNote}</Text>
         </View>
-        <View style={styles.issueActionBand}>
-          <Text style={styles.issueActionTitle}>{l("What this route is for", { hindi: "यह रास्ता किसलिए है", punjabi: "ਇਹ ਰਾਹ ਕਿਸ ਲਈ ਹੈ", marathi: "हा मार्ग कशासाठी आहे", telugu: "ఈ మార్గం దేనికోసం", tamil: "இந்த பாதை எதற்காக", urdu: "یہ راستہ کس کے لیے ہے" })}</Text>
-          <Text style={styles.issueActionText}>
-            {l(
-              `${selectedRedressRoute.label} is the cleanest first path when you need a complaint heard, logged, and followed up with a paper trail.`,
-              {
-                hindi: `${selectedRedressRoute.label} सबसे साफ़ पहला रास्ता है जब आपको शिकायत सुनवाई, दर्ज, और paper trail के साथ follow-up करनी हो।`,
-                punjabi: `${selectedRedressRoute.label} ਸਭ ਤੋਂ ਸਾਫ਼ ਪਹਿਲਾ ਰਾਹ ਹੈ ਜਦੋਂ ਤੁਹਾਨੂੰ ਸ਼ਿਕਾਇਤ ਸੁਣਵਾਈ, ਦਰਜ, ਅਤੇ paper trail ਨਾਲ follow-up ਕਰਨੀ ਹੋਵੇ।`,
-                marathi: `${selectedRedressRoute.label} हा सर्वात स्वच्छ पहिला मार्ग आहे जेव्हा तुम्हाला तक्रार ऐकवायची, नोंदवायची, आणि paper trail सह follow-up करायचा असेल.`,
-                telugu: `${selectedRedressRoute.label} అనేది ఫిర్యాదును వినిపించడానికి, నమోదు చేయడానికి, మరియు paper trail తో ఫాలోఅప్ చేయడానికి అత్యంత శుభ్రమైన మొదటి మార్గం.`,
-                tamil: `${selectedRedressRoute.label} என்பது புகார் கேட்கப்பட்டு, பதிவு செய்யப்பட்டு, paper trail உடன் பின்தொடரப்பட வேண்டுமெனில் சிறந்த முதல் பாதை.`,
-                urdu: `${selectedRedressRoute.label} سب سے صاف پہلا راستہ ہے جب آپ کو شکایت سنوانی، درج کرانی، اور paper trail کے ساتھ follow-up کرنا ہو۔`
-              }
+
+        {/* ── 4-STEP COMPLAINT FLOW ── */}
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden" }}>
+          <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Step-by-step complaint flow</Text>
+            <Text style={{ color: "#5B7A8A", fontSize: 10 }}>Do in order</Text>
+          </View>
+          {[
+            { num: "1", label: "First office", text: selectedRedressRoute.firstOffice, color: "#22D3EE" },
+            { num: "2", label: "First action", text: selectedRedressRoute.firstAction, color: "#34D399" },
+            { num: "3", label: "Escalation path", text: selectedRedressRoute.escalation, color: "#FCD34D" },
+            { num: "4", label: "Track & follow up", text: "Keep a copy of every acknowledgement number. Follow up every 7–15 days in writing. If stalled, use the escalation path above.", color: "#F472B6" },
+          ].map((step) => (
+            <View key={step.num} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+              <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: step.color, alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1, flexShrink: 0 }}>
+                <Text style={{ color: "#000", fontSize: 12, fontWeight: "800" }}>{step.num}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: step.color, fontSize: 10, fontWeight: "700", marginBottom: 3 }}>{step.label}</Text>
+                <Text style={{ color: "#8BA8B5", fontSize: 12, lineHeight: 18 }}>{step.text}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* ── INTERACTIVE EVIDENCE CHECKLIST ── */}
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(52,211,153,0.2)", overflow: "hidden" }}>
+          <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <Text style={{ color: "#34D399", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Evidence checklist</Text>
+            <Text style={{ color: "#34D399", fontSize: 11, fontWeight: "700" }}>{checkedCount}/{evidenceItems.length} ready</Text>
+          </View>
+          <Text style={{ color: "#6A8899", fontSize: 11, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Tap each item to mark it as collected. Do not file without these.</Text>
+          {evidenceItems.map((item, i) => {
+            const checked = !!checkedEvidence[String(i)];
+            return (
+              <Pressable
+                key={String(i)}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked }}
+                onPress={() => setCheckedEvidence((prev) => ({ ...prev, [String(i)]: !checked }))}
+                style={({ pressed }) => [{
+                  flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 9,
+                  borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)",
+                  backgroundColor: pressed ? "rgba(255,255,255,0.03)" : "transparent"
+                }]}
+              >
+                <View style={{
+                  width: 20, height: 20, borderRadius: 6, borderWidth: 2, flexShrink: 0,
+                  borderColor: checked ? "#34D399" : "#374151", backgroundColor: checked ? "#34D399" : "transparent",
+                  alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1
+                }}>
+                  {checked && <Text style={{ color: "#000", fontSize: 12, fontWeight: "900" }}>✓</Text>}
+                </View>
+                <Text style={{ color: checked ? "#34D399" : "#8BA8B5", fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: checked ? "line-through" : "none" }}>{item}</Text>
+              </Pressable>
+            );
+          })}
+          {checkedCount === evidenceItems.length && evidenceItems.length > 0 && (
+            <View style={{ margin: 14, backgroundColor: "rgba(52,211,153,0.1)", borderRadius: 10, padding: 10 }}>
+              <Text style={{ color: "#34D399", fontSize: 12, fontWeight: "700", textAlign: "center" }}>✅ All evidence collected — ready to file</Text>
+            </View>
+          )}
+        </View>
+
+        {/* ── WHAT TO SAY SCRIPT ── */}
+        {firstScript !== undefined && (
+          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(251,191,36,0.2)", overflow: "hidden" }}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setShowScript((v) => !v)}
+              style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.8 : 1 }]}
+            >
+              <Text style={{ color: "#FCD34D", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>💬 What to say at the first office</Text>
+              <Text style={{ color: "#FCD34D", fontSize: 11 }}>{showScript ? "▲ Hide" : "▼ Show"}</Text>
+            </Pressable>
+            {showScript && (
+              <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+                <Text style={{ color: "#6A8899", fontSize: 11, marginTop: 8, marginBottom: 6 }}>Use this as a starting script. Replace [brackets] with your real details.</Text>
+                <View style={{ backgroundColor: "rgba(251,191,36,0.07)", borderRadius: 10, padding: 12 }}>
+                  <Text style={{ color: "#E5C97A", fontSize: 12, lineHeight: 20, fontStyle: "italic" }}>{firstScript}</Text>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => void Share.share({ message: firstScript ?? "", title: "First office script" })}
+                  style={({ pressed }) => [{ marginTop: 10, backgroundColor: "rgba(251,191,36,0.15)", borderRadius: 8, paddingVertical: 8, alignItems: "center", opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={{ color: "#FCD34D", fontSize: 12, fontWeight: "700" }}>Share script ↗</Text>
+                </Pressable>
+              </View>
             )}
-          </Text>
-        </View>
+          </View>
+        )}
+
+        {/* ── COMPLAINT DRAFT TEMPLATE ── */}
+        {draftTemplate !== undefined && (
+          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(129,140,248,0.2)", overflow: "hidden" }}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setShowDraftTemplate((v) => !v)}
+              style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.8 : 1 }]}
+            >
+              <Text style={{ color: "#818CF8", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>📄 Complaint letter template</Text>
+              <Text style={{ color: "#818CF8", fontSize: 11 }}>{showDraftTemplate ? "▲ Hide" : "▼ Show"}</Text>
+            </Pressable>
+            {showDraftTemplate && (
+              <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+                <Text style={{ color: "#6A8899", fontSize: 11, marginTop: 8, marginBottom: 6 }}>Fill in [brackets] with your real details before sending. Keep a signed copy for your records.</Text>
+                <View style={{ backgroundColor: "rgba(129,140,248,0.07)", borderRadius: 10, padding: 12 }}>
+                  <Text style={{ color: "#A5B4FC", fontSize: 11, lineHeight: 19 }}>{draftTemplate}</Text>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => void Share.share({ message: draftTemplate ?? "", title: `${selectedRedressRoute.label} — complaint letter template` })}
+                  style={({ pressed }) => [{ marginTop: 10, backgroundColor: "rgba(129,140,248,0.15)", borderRadius: 8, paddingVertical: 8, alignItems: "center", opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={{ color: "#818CF8", fontSize: 12, fontWeight: "700" }}>Share template ↗</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ── TIMELINE EXPECTATION ── */}
+        {timeline !== undefined && (
+          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(244,114,182,0.2)", padding: 14 }}>
+            <Text style={{ color: "#F472B6", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 10 }}>⏱ What to expect — timeline</Text>
+            <View style={{ gap: 8 }}>
+              {[timeline.step1, timeline.step2, timeline.step3].map((step, i) => (
+                <View key={String(i)} style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
+                  <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: "rgba(244,114,182,0.2)", borderWidth: 1, borderColor: "#F472B6", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                    <Text style={{ color: "#F472B6", fontSize: 10, fontWeight: "800" }}>{i + 1}</Text>
+                  </View>
+                  <Text style={{ color: "#8BA8B5", fontSize: 12, lineHeight: 18, flex: 1 }}>{step}</Text>
+                </View>
+              ))}
+            </View>
+            <View style={{ marginTop: 10, backgroundColor: "rgba(239,68,68,0.08)", borderRadius: 8, padding: 8, borderLeftWidth: 3, borderLeftColor: "#EF4444" }}>
+              <Text style={{ color: "#FCA5A5", fontSize: 11, lineHeight: 17 }}>🚩 {timeline.flag}</Text>
+            </View>
+          </View>
+        )}
+
+        {/* ── OFFICIAL ACCESS: CALL + PORTALS ── */}
         <View style={styles.communityPreviewBand}>
-          <Text style={styles.visionGuidanceTitle}>Complaint route map</Text>
-          <Text style={styles.visionGuidanceText}>
-            The first view stays focused on the main complaint route. Open the full map for portals, calls, follow-up, and locality help.
-          </Text>
-          <View style={styles.homeOverviewActions}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.eyebrow}>Official access</Text>
+              <Text style={styles.sectionTitleSmall}>Portals, helpline, tracking</Text>
+            </View>
             <Pressable
               accessibilityRole="button"
               onPress={() => setShowFullRedress((value) => !value)}
-              style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
+              style={({ pressed }) => [styles.homeOverviewButton, { opacity: pressed ? 0.8 : 1 }]}
             >
-              <Text style={styles.homeOverviewButtonLabel}>
-                {showFullRedress ? "Show compact" : "Show full route map"}
-              </Text>
+              <Text style={styles.homeOverviewButtonLabel}>{showFullRedress ? "Compact" : "Show all"}</Text>
             </Pressable>
           </View>
-        </View>
-        {showFullRedress ? (
-          <>
-        <View style={styles.issueSupportBand}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>{l("Institution-specific path", { hindi: "संस्था-विशेष मार्ग", punjabi: "ਸੰਸਥਾ-ਖ਼ਾਸ ਰਾਹ", marathi: "संस्था-विशिष्ट मार्ग", telugu: "సంస్థ-ప్రత్యేక మార్గం", tamil: "நிறுவன-குறிப்பிட்ட பாதை", urdu: "ادارے کے مطابق راستہ" })}</Text>
-              <Text style={styles.sectionTitle}>{selectedInstitutionSector.label}</Text>
-            </View>
-            <Text style={styles.smallMeta}>{l("Tuned for the actual setting", { hindi: "असल सेटिंग के लिए समायोजित", punjabi: "ਅਸਲੀ ਸਥਿਤੀ ਲਈ ਢਾਲਿਆ", marathi: "खऱ्या परिस्थितीसाठी जुळवलेले", telugu: "నిజమైన పరిస్థితికి సరిపోయేలా", tamil: "உண்மையான சூழலுக்காக அமைக்கப்பட்டது", urdu: "اصل صورتِ حال کے مطابق" })}</Text>
-          </View>
-          <Text style={styles.promptText}>{selectedInstitutionSector.subtitle}</Text>
-          <View style={styles.issueLensList}>
-            <IssueLensRow label={l("First office", { hindi: "पहला office", punjabi: "ਪਹਿਲਾ office", marathi: "पहिले office", telugu: "మొదటి office", tamil: "முதல் அலுவலகம்", urdu: "پہلا دفتر" })} text={selectedInstitutionSector.firstOffice} />
-            <IssueLensRow label={l("Escalation", { hindi: "आगे बढ़ाना", punjabi: "ਅੱਗੇ ਵਧਾਉਣਾ", marathi: "पुढे नेणे", telugu: "ఎస్కలేషన్", tamil: "மேல்நிலை", urdu: "اگلا مرحلہ" })} text={selectedInstitutionSector.escalation} />
-            <IssueLensRow label={l("Portal", { hindi: "पोर्टल", punjabi: "ਪੋਰਟਲ", marathi: "पोर्टल", telugu: "పోర్టల్", tamil: "போர்டல்", urdu: "پورٹل" })} text={selectedInstitutionSector.portalLabel} />
-            <IssueLensRow label={l("Evidence", { hindi: "साक्ष्य", punjabi: "ਸਬੂਤ", marathi: "पुरावा", telugu: "సాక్ష్యం", tamil: "சான்று", urdu: "ثبوت" })} text={selectedInstitutionSector.evidence} />
-          </View>
-          <View style={styles.issueCalloutActions}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() =>
-                openWebsite(selectedInstitutionSector.portal, selectedInstitutionSector.portalLabel)
-              }
-              style={({ pressed }) => [styles.helpButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonLabel}>{l("Open portal", { hindi: "पोर्टल खोलें", punjabi: "ਪੋਰਟਲ ਖੋਲ੍ਹੋ", marathi: "पोर्टल उघडा", telugu: "పోర్టల్ తెరవండి", tamil: "போர்டலைத் திறக்கவும்", urdu: "پورٹل کھولیں" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onExportRedressPlan}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Share note", { hindi: "नोट साझा करें", punjabi: "ਨੋਟ ਸਾਂਝਾ ਕਰੋ", marathi: "नोट शेअर करा", telugu: "నోట్ పంచుకోండి", tamil: "குறிப்பைப் பகிரவும்", urdu: "نوٹ شیئر کریں" })}</Text>
-            </Pressable>
-          </View>
-        </View>
-        <View style={styles.issueCallout}>
-          <Text style={styles.issueCalloutTitle}>{l("Official access", { hindi: "आधिकारिक पहुंच", punjabi: "ਸਰਕਾਰੀ ਪਹੁੰਚ", marathi: "अधिकृत प्रवेश", telugu: "అధికారిక ప్రవేశం", tamil: "அதிகாரப்பூர்வ அணுகல்", urdu: "سرکاری رسائی" })}</Text>
-          <Text style={styles.issueCalloutText}>
-            {selectedRedressRoute.phone
-              ? l(`Phone: ${selectedRedressRoute.phone}`, {
-                  hindi: `फ़ोन: ${selectedRedressRoute.phone}`,
-                  punjabi: `ਫ਼ੋਨ: ${selectedRedressRoute.phone}`,
-                  marathi: `फोन: ${selectedRedressRoute.phone}`,
-                  telugu: `ఫోన్: ${selectedRedressRoute.phone}`,
-                  tamil: `தொலைபேசி: ${selectedRedressRoute.phone}`,
-                  urdu: `فون: ${selectedRedressRoute.phone}`
-                })
-              : l(
-                  "This route is better handled through the official portal and institution complaint cell.",
-                  {
-                    hindi: "यह route official portal और institution complaint cell के जरिए बेहतर संभाला जाता है।",
-                    punjabi: "ਇਹ ਰਾਹ official portal ਅਤੇ institution complaint cell ਰਾਹੀਂ ਵਧੀਆ ਸੰਭਾਲਿਆ ਜਾਂਦਾ ਹੈ।",
-                    marathi: "हा मार्ग अधिकृत portal आणि institution complaint cell द्वारे अधिक चांगल्या प्रकारे हाताळला जातो.",
-                    telugu: "ఈ మార్గం అధికారిక portal మరియు institution complaint cell ద్వారా మెరుగ్గా నిర్వహించబడుతుంది.",
-                    tamil: "இந்த பாதை official portal மற்றும் institution complaint cell மூலம் சிறப்பாக கையாளப்படுகிறது.",
-                    urdu: "یہ راستہ official portal اور institution complaint cell کے ذریعے بہتر سنبھالا جاتا ہے۔"
-                  }
-                )}
-          </Text>
-          <View style={styles.issueCalloutActions}>
-            {routePhone.length > 0 ? (
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
+            {routePhone.length > 0 && (
               <Pressable
                 accessibilityRole="button"
                 onPress={handleRouteCall}
-                style={styles.helpButton}
+                style={({ pressed }) => [styles.helpButton, { opacity: pressed ? 0.8 : 1 }]}
               >
-                <Text style={styles.helpButtonLabel}>{l("Call helpline", { hindi: "हेल्पलाइन कॉल करें", punjabi: "ਹੈਲਪਲਾਈਨ ਨੂੰ ਕਾਲ ਕਰੋ", marathi: "हेल्पलाइनला कॉल करा", telugu: "హెల్ప్‌లైన్‌కు కాల్ చేయండి", tamil: "உதவி எண்ணுக்கு அழைக்கவும்", urdu: "ہیلپ لائن پر کال کریں" })}</Text>
+                <Text style={styles.helpButtonLabel}>📞 Call {selectedRedressRoute.phone}</Text>
               </Pressable>
-            ) : null}
+            )}
             <Pressable
               accessibilityRole="button"
               onPress={() => openWebsite(selectedRedressRoute.website, selectedRedressRoute.label)}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+              style={({ pressed }) => [styles.helpButtonSecondary, { opacity: pressed ? 0.8 : 1 }]}
             >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Open site", { hindi: "साइट खोलें", punjabi: "ਸਾਈਟ ਖੋਲ੍ਹੋ", marathi: "साइट उघडा", telugu: "సైట్ తెరవండి", tamil: "தளத்தைத் திறக்கவும்", urdu: "سائٹ کھولیں" })}</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>Open site ↗</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              onPress={() =>
-                openWebsite(
-                  selectedRedressRoute.trackWebsite || selectedRedressRoute.website,
-                  `Track ${selectedRedressRoute.label}`
-                )
-              }
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+              onPress={() => openWebsite(selectedRedressRoute.trackWebsite ?? selectedRedressRoute.website, `Track ${selectedRedressRoute.label}`)}
+              style={({ pressed }) => [styles.helpButtonSecondary, { opacity: pressed ? 0.8 : 1 }]}
             >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Track status", { hindi: "स्थिति ट्रैक करें", punjabi: "ਸਥਿਤੀ ਟ੍ਰੈਕ ਕਰੋ", marathi: "स्थिती ट्रॅक करा", telugu: "స్థితిని ట్రాక్ చేయండి", tamil: "நிலையைப் பின்தொடரவும்", urdu: "اسٹیٹس ٹریک کریں" })}</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>Track status ↗</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={onExportRedressPlan}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+              style={({ pressed }) => [styles.helpButtonSecondary, { opacity: pressed ? 0.8 : 1 }]}
             >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Share note", { hindi: "नोट साझा करें", punjabi: "ਨੋਟ ਸਾਂਝਾ ਕਰੋ", marathi: "नोट शेअर करा", telugu: "నోట్ పంచుకోండి", tamil: "குறிப்பைப் பகிரவும்", urdu: "نوٹ شیئر کریں" })}</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>Share note ↗</Text>
             </Pressable>
           </View>
         </View>
-        <View style={styles.issueSupportBand}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>{l("Follow-up", { hindi: "फॉलो-अप", punjabi: "ਫਾਲੋ-ਅਪ", marathi: "फॉलो-अप", telugu: "ఫాలో-అప్", tamil: "பின்தொடர்வு", urdu: "فالو اپ" })}</Text>
-              <Text style={styles.sectionTitle}>{l("How to keep the complaint moving", { hindi: "शिकायत को आगे कैसे बढ़ाएँ", punjabi: "ਸ਼ਿਕਾਇਤ ਨੂੰ ਅੱਗੇ ਕਿਵੇਂ ਚਲਾਉਣਾ ਹੈ", marathi: "तक्रार कशी पुढे न्यायची", telugu: "ఫిర్యాదును ఎలా కొనసాగించాలి", tamil: "புகாரை எவ்வாறு முன்னேற்றுவது", urdu: "شکایت کو آگے کیسے بڑھائیں" })}</Text>
-            </View>
-            <Text style={styles.smallMeta}>{l("No lost paper trail", { hindi: "कागज़ी trail न खोए", punjabi: "ਕਾਗਜ਼ੀ trail ਨਾ ਖੋਵੇ", marathi: "कागदी trail हरवू देऊ नका", telugu: "పేపర్ trail కోల్పోకుండా", tamil: "ஆவண வழித்தடம் இழக்கப்படாமல்", urdu: "کاغذی trail ضائع نہ ہو" })}</Text>
-          </View>
-          <View style={styles.recommendList}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onOpenGuide}
-              style={({ pressed }) => [styles.recommendCard, pressed && styles.pressed]}
-            >
-              <Text style={styles.recommendLabel}>{l("Return to Path", { hindi: "Path पर लौटें", punjabi: "Path ਤੇ ਵਾਪਸ ਜਾਓ", marathi: "Path वर परत जा", telugu: "Path కి తిరిగి వెళ్ళండి", tamil: "Path-க்கு திரும்பவும்", urdu: "Path پر واپس جائیں" })}</Text>
-              <Text style={styles.recommendDetail}>
-                {l(
-                  "Use the issue guide first if you want to map the facts, tone, and support lens before filing.",
-                  {
-                    hindi: "अगर आप filing से पहले facts, tone, और support lens map करना चाहते हैं तो पहले issue guide का उपयोग करें।",
-                    punjabi: "ਜੇ ਤੁਸੀਂ filing ਤੋਂ ਪਹਿਲਾਂ facts, tone, ਅਤੇ support lens ਨੂੰ ਸਮਝਣਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਪਹਿਲਾਂ issue guide ਵਰਤੋ।",
-                    marathi: "फाइल करण्यापूर्वी facts, tone, आणि support lens नकाशित करायचे असतील तर आधी issue guide वापरा.",
-                    telugu: "దాఖలు చేసే ముందు facts, tone, మరియు support lens ను map చేయాలనుకుంటే ముందుగా issue guide ను వాడండి.",
-                    tamil: "புகார் கொடுப்பதற்கு முன் facts, tone, மற்றும் support lens-ஐப் புரிந்துகொள்ள வேண்டும் என்றால் முதலில் issue guide-ஐப் பயன்படுத்தவும்.",
-                    urdu: "فائل کرنے سے پہلے facts، tone، اور support lens سمجھنا ہو تو پہلے issue guide استعمال کریں۔"
-                  }
-                )}
-              </Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => openWebsite("https://pgportal.gov.in/", "CPGRAMS")}
-              style={({ pressed }) => [styles.recommendCard, pressed && styles.pressed]}
-            >
-              <Text style={styles.recommendLabel}>CPGRAMS</Text>
-              <Text style={styles.recommendDetail}>{l("Best for public offices and service-delivery complaints that need state or central tracking.", {
-                hindi: "सार्वजनिक offices और सेवा-आपूर्ति शिकायतों के लिए सबसे अच्छा, जिन्हें राज्य या केंद्र tracking चाहिए।",
-                punjabi: "ਸਾਰਵਜਨਿਕ ਦਫ਼ਤਰਾਂ ਅਤੇ ਸੇਵਾ-ਡਿਲੀਵਰੀ ਸ਼ਿਕਾਇਤਾਂ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ, ਜਿਹਨਾਂ ਨੂੰ ਰਾਜ ਜਾਂ ਕੇਂਦਰੀ tracking ਚਾਹੀਦੀ ਹੈ।",
-                marathi: "सार्वजनिक offices आणि सेवा-वितरण तक्रारींसाठी सर्वोत्तम, ज्यांना राज्य किंवा केंद्र tracking हवी असते.",
-                telugu: "రాష్ట్ర లేదా కేంద్ర tracking అవసరం ఉన్న public offices మరియు service-delivery complaints కోసం ఉత్తమం.",
-                tamil: "மாநில அல்லது மத்திய tracking தேவைப்படும் public offices மற்றும் service-delivery புகார்களுக்கு சிறந்தது.",
-                urdu: "public offices اور service-delivery شکایات کے لیے بہترین، جنہیں ریاستی یا مرکزی tracking چاہیے।"
-              })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => openWebsite("https://ugc.gov.in/", "UGC")}
-              style={({ pressed }) => [styles.recommendCard, pressed && styles.pressed]}
-            >
-              <Text style={styles.recommendLabel}>{l("UGC / institution", { hindi: "UGC / संस्था", punjabi: "UGC / ਸੰਸਥਾ", marathi: "UGC / संस्था", telugu: "UGC / సంస్థ", tamil: "UGC / நிறுவனம்", urdu: "UGC / ادارہ" })}</Text>
-              <Text style={styles.recommendDetail}>
-                {l("Best when the issue belongs inside higher education or needs the regulator's route.", {
-                  hindi: "जब मुद्दा higher education के अंदर का हो या regulator route की जरूरत हो तब सबसे अच्छा।",
-                  punjabi: "ਜਦੋਂ ਮੁੱਦਾ higher education ਦੇ ਅੰਦਰ ਦਾ ਹੋਵੇ ਜਾਂ regulator route ਚਾਹੀਦਾ ਹੋਵੇ, ਤਦੋਂ ਸਭ ਤੋਂ ਵਧੀਆ।",
-                  marathi: "जेव्हा मुद्दा higher education मधील असेल किंवा regulator route लागेल तेव्हा सर्वोत्तम.",
-                  telugu: "సమస్య higher education లోపలిదై ఉంటే లేదా regulator route అవసరమైతే ఉత్తమం.",
-                  tamil: "பிரச்சினை higher education-க்குள் இருந்தால் அல்லது regulator route தேவைப்பட்டால் சிறந்தது.",
-                  urdu: "جب معاملہ higher education کے اندر ہو یا regulator route درکار ہو تو بہترین۔"
-                })}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-        <View style={styles.issueReminderBand}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>{l("Locality", { hindi: "स्थानीयता", punjabi: "ਸਥਾਨਕਤਾ", marathi: "स्थानिकता", telugu: "స్థానికం", tamil: "உள்ளூர்மை", urdu: "مقامیّت" })}</Text>
-              <Text style={styles.sectionTitle}>{l("Use the right office near you", { hindi: "अपने पास का सही office उपयोग करें", punjabi: "ਆਪਣੇ ਨੇੜੇ ਦਾ ਸਹੀ office ਵਰਤੋ", marathi: "तुमच्याजवळील योग्य office वापरा", telugu: "మీ దగ్గరలోని సరైన office ను వాడండి", tamil: "உங்களுக்கருகிலுள்ள சரியான office-ஐப் பயன்படுத்தவும்", urdu: "اپنے قریب درست office استعمال کریں" })}</Text>
-            </View>
-            <Text style={styles.smallMeta}>{supportLocality.trim() || l("Set in Settings", { hindi: "Settings में सेट करें", punjabi: "Settings ਵਿੱਚ ਸੈੱਟ ਕਰੋ", marathi: "Settings मध्ये सेट करा", telugu: "Settings లో సెట్ చేయండి", tamil: "Settings-இல் அமைக்கவும்", urdu: "Settings میں سیٹ کریں" })}</Text>
-          </View>
-          <Text style={styles.promptText}>
-            {l("Keep the local office, grievance cell, or police station ready so the complaint does not get stuck in a general inbox.", {
-              hindi: "स्थानीय office, grievance cell, या पुलिस स्टेशन तैयार रखें ताकि शिकायत सामान्य inbox में न अटके।",
-              punjabi: "ਸਥਾਨਕ office, grievance cell, ਜਾਂ police station ਤਿਆਰ ਰੱਖੋ ਤਾਂ ਕਿ ਸ਼ਿਕਾਇਤ general inbox ਵਿੱਚ ਨਾ ਫਸੇ।",
-              marathi: "स्थानिक office, grievance cell, किंवा police station तयार ठेवा, म्हणजे तक्रार general inbox मध्ये अडकणार नाही.",
-              telugu: "ఫిర్యాదు సాధారణ inbox లో చిక్కుకోకుండా స్థానిక office, grievance cell, లేదా police station ను సిద్ధంగా ఉంచండి.",
-              tamil: "புகார் பொதுக் inbox-இல் சிக்காமல் உள்ளூர் office, grievance cell, அல்லது police station-ஐத் தயாராக வைத்திருங்கள்.",
-              urdu: "شکایت کے general inbox میں نہ پھنسنے کے لیے مقامی office، grievance cell، یا police station تیار رکھیں۔"
-            })}
-          </Text>
-          <View style={styles.issueReminderActions}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onExportRedressPlan}
-              style={({ pressed }) => [styles.helpButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonLabel}>{l("Export note", { hindi: "नोट निर्यात करें", punjabi: "ਨੋਟ ਨਿਰਯਾਤ ਕਰੋ", marathi: "नोट निर्यात करा", telugu: "నోట్ ఎగుమతి చేయండి", tamil: "குறிப்பை ஏற்றுமதி செய்யவும்", urdu: "نوٹ برآمد کریں" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onEmergencyCall}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Emergency", { hindi: "आपातकाल", punjabi: "ਐਮਰਜੈਂਸੀ", marathi: "आपत्काल", telugu: "అత్యవసర", tamil: "அவசரம்", urdu: "ایمرجنسی" })}</Text>
-            </Pressable>
-          </View>
-        </View>
-          </>
-        ) : (
-          <View style={styles.issueReminderBand}>
-            <View style={styles.sectionHeader}>
-              <View>
-                <Text style={styles.eyebrow}>{l("Full route map hidden", { hindi: "पूरा route map छिपा है", punjabi: "ਪੂਰਾ route map ਛੁਪਿਆ ਹੈ", marathi: "पूर्ण route map लपवले आहे", telugu: "పూర్తి route map దాచబడింది", tamil: "முழு route map மறைக்கப்பட்டுள்ளது", urdu: "مکمل route map چھپایا گیا ہے" })}</Text>
-                <Text style={styles.sectionTitle}>{l("Open it when you need the details", { hindi: "ज़रूरत पड़ने पर खोलें", punjabi: "ਜ਼ਰੂਰਤ ਹੋਵੇ ਤਾਂ ਖੋਲ੍ਹੋ", marathi: "गरज पडल्यावर उघडा", telugu: "అవసరమైతే తెరవండి", tamil: "தேவைப்படும் போது திறக்கவும்", urdu: "ضرورت ہو تو کھولیں" })}</Text>
+
+        {/* ── FULL MAP (toggle) ── */}
+        {showFullRedress && (
+          <>
+            {/* Institution-specific path */}
+            <View style={styles.issueSupportBand}>
+              <View style={styles.sectionHeader}>
+                <View>
+                  <Text style={styles.eyebrow}>Institution-specific path</Text>
+                  <Text style={styles.sectionTitle}>{selectedInstitutionSector.label}</Text>
+                </View>
+                <Text style={styles.smallMeta}>Tuned for this setting</Text>
               </View>
-              <Text style={styles.smallMeta}>{l("Portals, calls, follow-up, locality", { hindi: "पोर्टल, कॉल, फॉलो-अप, locality", punjabi: "ਪੋਰਟਲ, ਕਾਲ, ਫਾਲੋ-ਅਪ, locality", marathi: "पोर्टल, कॉल, फॉलो-अप, locality", telugu: "పోర్టల్, కాల్, ఫాలో-అప్, locality", tamil: "போர்டல், அழைப்பு, பின்தொடர்வு, locality", urdu: "پورٹل، کال، فالو اپ، locality" })}</Text>
+              <Text style={styles.promptText}>{selectedInstitutionSector.subtitle}</Text>
+              <View style={styles.issueLensList}>
+                <IssueLensRow label="First office" text={selectedInstitutionSector.firstOffice} />
+                <IssueLensRow label="Escalation" text={selectedInstitutionSector.escalation} />
+                <IssueLensRow label="Portal" text={selectedInstitutionSector.portalLabel} />
+                <IssueLensRow label="Evidence" text={selectedInstitutionSector.evidence} />
+              </View>
+              <View style={styles.issueCalloutActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => openWebsite(selectedInstitutionSector.portal, selectedInstitutionSector.portalLabel)}
+                  style={({ pressed }) => [styles.helpButton, { opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={styles.helpButtonLabel}>Open portal ↗</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onExportRedressPlan}
+                  style={({ pressed }) => [styles.helpButtonSecondary, { opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={styles.helpButtonSecondaryLabel}>Share note ↗</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
+
+            {/* Follow-up links */}
+            <View style={styles.issueSupportBand}>
+              <View style={styles.sectionHeader}>
+                <View>
+                  <Text style={styles.eyebrow}>Follow-up portals</Text>
+                  <Text style={styles.sectionTitle}>Keep the complaint moving</Text>
+                </View>
+                <Text style={styles.smallMeta}>No lost paper trail</Text>
+              </View>
+              <View style={styles.recommendList}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onOpenGuide}
+                  style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={styles.recommendLabel}>Return to Path</Text>
+                  <Text style={styles.recommendDetail}>Map facts, tone, and support lens before or after filing.</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => openWebsite("https://pgportal.gov.in/", "CPGRAMS")}
+                  style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={styles.recommendLabel}>CPGRAMS — Government portal</Text>
+                  <Text style={styles.recommendDetail}>Best for public offices and service-delivery complaints requiring state/central tracking.</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => openWebsite("https://consumerhelpline.gov.in/", "Consumer Helpline")}
+                  style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={styles.recommendLabel}>Consumer Helpline Portal</Text>
+                  <Text style={styles.recommendDetail}>For product/service complaints. Free filing at District Consumer Commission for claims up to ₹50 lakh.</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => openWebsite("https://cybercrime.gov.in/", "Cybercrime Portal")}
+                  style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={styles.recommendLabel}>Cybercrime.gov.in</Text>
+                  <Text style={styles.recommendDetail}>For online fraud, harassment, stalking, morphed images. Also call 1930 for financial cybercrime.</Text>
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Locality */}
+            <View style={styles.issueReminderBand}>
+              <View style={styles.sectionHeader}>
+                <View>
+                  <Text style={styles.eyebrow}>Locality</Text>
+                  <Text style={styles.sectionTitle}>Use the right local office</Text>
+                </View>
+                <Text style={styles.smallMeta}>{supportLocality.trim() || "Set in Settings"}</Text>
+              </View>
+              <Text style={styles.promptText}>
+                Keep the local office, grievance cell, or police station contact ready so the complaint does not get stuck in a general inbox.
+              </Text>
+              <View style={styles.issueReminderActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onExportRedressPlan}
+                  style={({ pressed }) => [styles.helpButton, { opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={styles.helpButtonLabel}>Export note</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onEmergencyCall}
+                  style={({ pressed }) => [styles.helpButtonSecondary, { opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <Text style={styles.helpButtonSecondaryLabel}>Emergency</Text>
+                </Pressable>
+              </View>
+            </View>
+          </>
         )}
       </View>
     </View>
@@ -19527,6 +20484,7 @@ function InsightsSection({
   selectedIssueGuide,
   selectedIdentityId,
   visitReports,
+  checkInStreak,
   onShareDailyReport,
   onOpenTab,
   onOpenCalm,
@@ -19545,6 +20503,7 @@ function InsightsSection({
   selectedIssueGuide: IssueGuide;
   selectedIdentityId: IdentityId;
   visitReports: VisitReport[];
+  checkInStreak: number;
   onShareDailyReport: () => Promise<void>;
   onOpenTab: (tab: TabId) => void;
   onOpenCalm: () => void;
@@ -19671,40 +20630,93 @@ function InsightsSection({
             </Pressable>
           </View>
         </View>
-        <View style={styles.insightBand}>
-          <Text style={styles.insightTitle}>{uiCopy.reportEyebrow}</Text>
-          <Text style={styles.insightText}>{uiCopy.reportPrompt}</Text>
-          <View style={styles.issueCalloutActions}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Share daily report"
-              onPress={() => void onShareDailyReport()}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{uiCopy.exportReport}</Text>
-            </Pressable>
-          </View>
-          <View style={styles.adminReportList}>
-            {visitReports.slice(0, 3).map((report) => (
-              <View key={report.id} style={styles.adminReportCard}>
-                <Text style={styles.adminReportMeta}>
-                  {report.sourceLabel} · {report.entryCount} step{report.entryCount === 1 ? "" : "s"}
-                </Text>
-                <Text style={styles.adminReportText}>{report.title}</Text>
-                <Text style={styles.adminReportText}>{report.summary}</Text>
-                <Text style={styles.smallMeta}>Suggested next: {report.nextStep}</Text>
+        {/* ── Upgraded Report Card ── */}
+        {(() => {
+          const score = weeklyAverage;
+          const grade =
+            score >= 82 ? "A" : score >= 68 ? "B" : score >= 52 ? "C" : score >= 36 ? "D" : "E";
+          const gradeLabel =
+            grade === "A" ? "Excellent" : grade === "B" ? "Good progress" : grade === "C" ? "Building steadily" : grade === "D" ? "Developing" : "Starting out";
+          const gradeColor =
+            grade === "A" ? "#34D399" : grade === "B" ? "#60A5FA" : grade === "C" ? "#FCD34D" : grade === "D" ? "#FB923C" : "#F87171";
+          const activityScore = Math.min(100, Math.round((weekEntries.length / 7) * 100));
+          const consistencyScore = Math.min(100, Math.round(checkInStreak * 14));
+          const progressScore = Math.min(100, Math.round(((weeklyAverage + monthlyAverage) / 2)));
+          const reportsScore = Math.min(100, visitReports.length * 25);
+          const overallPct = Math.round((activityScore + consistencyScore + progressScore + reportsScore) / 4);
+          return (
+            <View style={{ backgroundColor: "#0A1520", borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: "rgba(99,222,208,0.2)", marginTop: 4 }}>
+              {/* Report card header */}
+              <View style={{ backgroundColor: "#050F1A", paddingHorizontal: 16, paddingVertical: 14, flexDirection: "row", alignItems: "center", gap: 14 }}>
+                <View style={{ width: 60, height: 60, borderRadius: 14, backgroundColor: gradeColor + "22", borderWidth: 2, borderColor: gradeColor, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: gradeColor, fontSize: 28, fontWeight: "900" }}>{grade}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Progress Report Card</Text>
+                  <Text style={{ color: "#F0F9FF", fontSize: 16, fontWeight: "800", marginTop: 2 }}>{gradeLabel}</Text>
+                  <Text style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>
+                    {selectedIssueGuide.label} · {checkInStreak} day streak · {weekEntries.length}/7 this week
+                  </Text>
+                </View>
+                <View style={{ alignItems: "center" }}>
+                  <Text style={{ color: gradeColor, fontSize: 22, fontWeight: "900" }}>{overallPct}%</Text>
+                  <Text style={{ color: "#64748B", fontSize: 10, marginTop: 2 }}>Overall</Text>
+                </View>
               </View>
-            ))}
-            {visitReports.length === 0 ? (
-              <View style={styles.adminReportCard}>
-                <Text style={styles.adminReportMeta}>No reports yet</Text>
-                <Text style={styles.adminReportText}>
-                  Save a journal note or complete a check-in to generate your first progress report.
-                </Text>
+              {/* Score bars */}
+              <View style={{ padding: 14, gap: 10 }}>
+                {[
+                  { label: "Weekly clarity", score: activityScore, color: "#34D399" },
+                  { label: "Consistency streak", score: consistencyScore, color: "#60A5FA" },
+                  { label: "Score average", score: progressScore, color: "#FCD34D" },
+                  { label: "Reports filed", score: reportsScore, color: "#F9A8D4" },
+                ].map((item) => (
+                  <View key={item.label}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                      <Text style={{ color: "#94A3B8", fontSize: 11, fontWeight: "700" }}>{item.label}</Text>
+                      <Text style={{ color: item.color, fontSize: 11, fontWeight: "900" }}>{item.score}%</Text>
+                    </View>
+                    <View style={{ height: 6, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
+                      <View style={{ height: 6, width: `${item.score}%` as unknown as number, backgroundColor: item.color, borderRadius: 3 }} />
+                    </View>
+                  </View>
+                ))}
               </View>
-            ) : null}
-          </View>
-        </View>
+              {/* Insight + action */}
+              <View style={{ paddingHorizontal: 14, paddingBottom: 14, gap: 10 }}>
+                <View style={{ backgroundColor: "#071220", borderRadius: 10, padding: 12 }}>
+                  <Text style={{ color: "#64748B", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>Report insight</Text>
+                  <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18 }}>{patternCritique.summary}</Text>
+                  <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 18, marginTop: 6 }}>Next focus: {patternCritique.next}</Text>
+                </View>
+                {visitReports.length > 0 && (
+                  <View style={{ gap: 6 }}>
+                    <Text style={{ color: "#64748B", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>Latest session reports</Text>
+                    {visitReports.slice(0, 2).map((report) => (
+                      <View key={report.id} style={{ backgroundColor: "#071220", borderRadius: 10, padding: 12, borderLeftWidth: 3, borderLeftColor: gradeColor }}>
+                        <Text style={{ color: "#94A3B8", fontSize: 10, fontWeight: "700" }}>
+                          {report.sourceLabel} · {report.entryCount} step{report.entryCount === 1 ? "" : "s"}
+                        </Text>
+                        <Text style={{ color: "#E2E8F0", fontSize: 13, fontWeight: "700", marginTop: 3 }}>{report.title}</Text>
+                        <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 17, marginTop: 3 }}>{report.summary}</Text>
+                        <Text style={{ color: "#63DED0", fontSize: 11, marginTop: 4 }}>→ {report.nextStep}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Share progress report"
+                  onPress={() => void onShareDailyReport()}
+                  style={({ pressed }) => ({ backgroundColor: pressed ? "#0E2A20" : "#0F3A28", borderRadius: 10, paddingVertical: 11, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 })}
+                >
+                  <Text style={{ fontSize: 16 }}>📤</Text>
+                  <Text style={{ color: "#34D399", fontSize: 13, fontWeight: "800" }}>Export full progress report</Text>
+                </Pressable>
+              </View>
+            </View>
+          );
+        })()}
       </View>
 
       <View style={styles.panel}>
@@ -19723,6 +20735,27 @@ function InsightsSection({
         <SignalRow label="Weak spot" value={patternCritique.warning} />
         <SignalRow label="Next test" value={patternCritique.next} />
         <SignalRow label="Support lens" value={supportiveLens} />
+        {/* ── 20-dimension lens breakdown ── */}
+        <View style={{ backgroundColor: "#0A1520", borderRadius: 12, padding: 14, gap: 10, borderWidth: 1, borderColor: "rgba(99,222,208,0.15)", marginTop: 10, marginBottom: 4 }}>
+          <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            {selectedIssueGuide.label} — 5 dimensions
+          </Text>
+          {[
+            { label: "Practical", text: selectedIssueGuide.logicalLens, color: "#34D399" },
+            { label: "Emotional", text: selectedIssueGuide.emotionalLens, color: "#F9A8D4" },
+            { label: "Psychological", text: selectedIssueGuide.theoreticalLens, color: "#818CF8" },
+            { label: "Spiritual", text: selectedIssueGuide.spiritualLens, color: "#FCD34D" },
+            { label: "Cultural", text: selectedIssueGuide.culturalLens, color: "#FB923C" },
+          ].map((dim) => (
+            <View key={dim.label} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start" }}>
+              <View style={{ width: 3, borderRadius: 2, backgroundColor: dim.color, alignSelf: "stretch", minHeight: 14 }} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: dim.color, fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>{dim.label}</Text>
+                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 17, marginTop: 1 }}>{dim.text}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
         <View style={styles.issueCalloutActions}>
           <Pressable
             accessibilityRole="button"
@@ -21141,6 +22174,66 @@ function BirthChartSection({
               </Text>
             </View>
           )}
+          {/* Mahadasha (Vimshottari Dasha) panel */}
+          {janmaNakshatra && (() => {
+            const dasha = getMahadasha(profileDOB, janmaNakshatra.lord);
+            if (!dasha) return null;
+            const dashaColor = "#C084FC";
+            return (
+              <View style={{ backgroundColor: "#150D2E", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(192,132,252,0.3)" }}>
+                <Text style={{ color: dashaColor, fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
+                  🌀 Vimshottari Mahadasha — Current Planetary Period
+                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                  <View style={{ backgroundColor: "rgba(192,132,252,0.15)", borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: "rgba(192,132,252,0.4)" }}>
+                    <Text style={{ color: dashaColor, fontSize: 20, fontWeight: "900" }}>{dasha.current}</Text>
+                    <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textAlign: "center" }}>Mahadasha</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: "#E2E8F0", fontSize: 13, fontWeight: "700" }}>
+                      {dasha.yearsLeft} years remaining · ends ~{dasha.endYear}
+                    </Text>
+                    <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 17, marginTop: 3 }}>
+                      {DASHA_QUALITIES[dasha.current] ?? "Planetary period in effect"}
+                    </Text>
+                    <Text style={{ color: "#64748B", fontSize: 11, marginTop: 4 }}>
+                      Next: {dasha.next} Mahadasha
+                    </Text>
+                  </View>
+                </View>
+                <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontStyle: "italic" }}>
+                  Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods (Antardasha).
+                </Text>
+              </View>
+            );
+          })()}
+          {/* Janma Nakshatra deep characteristics */}
+          {janmaNakshatra && (() => {
+            const q = NAKSHATRA_QUALITIES[janmaNakshatra.id];
+            if (!q) return null;
+            return (
+              <View style={{ backgroundColor: "#0D1F1A", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)" }}>
+                <Text style={{ color: "#34D399", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 8 }}>
+                  ✨ {janmaNakshatra.name} — Nakshatra Characteristics
+                </Text>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+                  {[
+                    { label: "Deity", value: q.deity },
+                    { label: "Gana", value: q.gana },
+                    { label: "Symbol", value: q.symbol },
+                    { label: "Nature", value: q.nature },
+                    { label: "Lord", value: janmaNakshatra.lord },
+                  ].map((item) => (
+                    <View key={item.label} style={{ backgroundColor: "#071820", borderRadius: 8, padding: 8, minWidth: 80 }}>
+                      <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 9, fontWeight: "900", textTransform: "uppercase" }}>{item.label}</Text>
+                      <Text style={{ color: "#E8F4F0", fontSize: 12, fontWeight: "800", marginTop: 2 }}>{item.value}</Text>
+                    </View>
+                  ))}
+                </View>
+                <Text style={{ color: "#CBD5E1", fontSize: 13, lineHeight: 20 }}>{q.quality}</Text>
+              </View>
+            );
+          })()}
           {/* Cosmic Issue Guidance — connects current issue to Vedic reading */}
           {cosmicIssueGuidance && (
             <View style={{ backgroundColor: "#16082B", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(126,111,214,0.3)" }}>
@@ -21196,7 +22289,9 @@ function BirthChartSection({
         {[
           "Janma Rashi (Moon sign) + Surya Rashi (Sun sign)",
           "Lagna / Ascendant from birth time",
-          "Janma Nakshatra (approximate)",
+          "Janma Nakshatra · deity · gana · symbol",
+          "Vimshottari Mahadasha current period",
+          "Samvatsara 60-year Jupiter cycle",
           "Tithi, Vara, Moon Nakshatra daily",
           "Cosmic guidance for your issue",
           "AI horoscope analysis",
