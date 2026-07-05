@@ -21,7 +21,14 @@ echo "==> Step 3: Committing and pushing..."
 rm -f .git/HEAD.lock .git/index.lock
 git add -A
 git add -f dist/
-git commit -m "deploy: v1.0.2 — fix Gemini model, fresh web bundle" || echo "Nothing to commit"
+git commit -m "fix: counseling synthesis closing line + replay-aloud in journey panel
+
+- buildCounselingSynthesis: complete closing sentence (no more dangling colon)
+- CounselingChatModal: Replay guide summary aloud button added in journey panel
+- Voice: female/male toggle in Settings (persisted), humanized pitch+rate per gender
+- Redress: 11 routes, emergency triage, 4-step flow, evidence checklist, templates
+- 20-dim lens strips on all major tabs; tab banners + issue hint chips everywhere
+- TypeScript: zero errors" || echo "Nothing to commit"
 git push origin master
 git push render master
 

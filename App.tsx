@@ -207,6 +207,7 @@ type PersistedAppState = {
   communityPostingLocked: boolean;
   sensitivePreviewsLocked: boolean;
   voiceAssistEnabled: boolean;
+  voiceGender: "female" | "male";
   userReviews: UserReview[];
   appLaunchCount: number;
   appFirstOpenedAt: string | null;
@@ -7890,6 +7891,7 @@ export default function App() {
   const [communityPostingLocked, setCommunityPostingLocked] = useState(false);
   const [sensitivePreviewsLocked, setSensitivePreviewsLocked] = useState(false);
   const [voiceAssistEnabled, setVoiceAssistEnabled] = useState(true);
+  const [voiceGender, setVoiceGender] = useState<"female" | "male">("female");
   const [voiceAssistStatus, setVoiceAssistStatus] = useState("Ready");
   const [userReviews, setUserReviews] = useState<UserReview[]>([]);
   const [appLaunchCount, setAppLaunchCount] = useState(0);
@@ -9885,6 +9887,9 @@ export default function App() {
       if (typeof parsed.voiceAssistEnabled === "boolean") {
         setVoiceAssistEnabled(parsed.voiceAssistEnabled);
       }
+      if (parsed.voiceGender === "female" || parsed.voiceGender === "male") {
+        setVoiceGender(parsed.voiceGender);
+      }
       if (Array.isArray(parsed.userReviews)) {
         setUserReviews(normalizeUserReviews(parsed.userReviews).slice(0, 20));
       }
@@ -10208,6 +10213,7 @@ export default function App() {
       communityPostingLocked,
       sensitivePreviewsLocked,
       voiceAssistEnabled,
+      voiceGender,
       userReviews: userReviews.slice(0, 20),
       appLaunchCount,
       appFirstOpenedAt,
@@ -10283,6 +10289,7 @@ export default function App() {
     communityPostingLocked,
     sensitivePreviewsLocked,
     voiceAssistEnabled,
+    voiceGender,
     userReviews,
     appLaunchCount,
     appFirstOpenedAt,
@@ -12123,62 +12130,85 @@ async function fetchGeminiAIHelp(
   function scoreSpeechVoice(voiceLocale: string | undefined, targetLocale: string) {
     const normalizedVoice = normalizeSpeechLocale(voiceLocale ?? "");
     const normalizedTarget = normalizeSpeechLocale(targetLocale);
-    if (!normalizedVoice || !normalizedTarget) {
-      return 0;
-    }
-
-    if (normalizedVoice === normalizedTarget) {
-      return 100;
-    }
-
+    if (!normalizedVoice || !normalizedTarget) return 0;
+    if (normalizedVoice === normalizedTarget) return 100;
     const voiceBase = normalizedVoice.split("-")[0];
     const targetBase = normalizedTarget.split("-")[0];
     let score = 0;
-
-    if (voiceBase === targetBase) {
-      score += 70;
-    }
-    if (normalizedVoice.endsWith("-in")) {
-      score += 35;
-    }
-    if (normalizedVoice.includes("india")) {
-      score += 10;
-    }
-
+    if (voiceBase === targetBase) score += 70;
+    if (normalizedVoice.endsWith("-in")) score += 35;
+    if (normalizedVoice.includes("india")) score += 10;
     return score;
   }
 
-  function pickBestWebVoice(voices: SpeechSynthesisVoice[], targetLocale: string) {
+  // Gender affinity score: +20 strong match, -20 strong mismatch, 0 neutral
+  function scoreVoiceGender(voiceName: string, gender: "female" | "male"): number {
+    const n = voiceName.toLowerCase();
+    const FEMALE_KW = [
+      "female", "woman", "samantha", "karen", "moira", "fiona", "victoria",
+      "tessa", "veena", "kanya", "lekha", "heera", "neerja", "aditi", "zira",
+      "meera", "priya", "asha", "siri", "en-in-standard-a", "en-in-standard-c",
+      "hi-in-standard-a", "hi-in-standard-c",
+    ];
+    const MALE_KW = [
+      "male", "man", "daniel", "alex", "fred", "tom", "rishi", "oliver",
+      "google uk english male", "en-in-standard-b", "en-in-standard-d",
+      "hi-in-standard-b", "hi-in-standard-d",
+    ];
+    const preferred = gender === "female" ? FEMALE_KW : MALE_KW;
+    const other     = gender === "female" ? MALE_KW   : FEMALE_KW;
+    for (const kw of preferred) { if (n.includes(kw)) return 20; }
+    for (const kw of other)     { if (n.includes(kw)) return -20; }
+    return 0;
+  }
+
+  function pickBestWebVoice(voices: SpeechSynthesisVoice[], targetLocale: string, gender: "female" | "male" = "female") {
     return voices.reduce<{ voice: SpeechSynthesisVoice | null; score: number }>(
       (best, voice) => {
-        const score = scoreSpeechVoice(voice.lang, targetLocale);
-        if (score > best.score) {
-          return { voice, score };
-        }
+        const score = scoreSpeechVoice(voice.lang, targetLocale) + scoreVoiceGender(voice.name, gender);
+        if (score > best.score) return { voice, score };
         return best;
       },
-      { voice: null, score: 0 }
+      { voice: null, score: -999 }
     ).voice ?? undefined;
   }
 
-  function pickBestNativeVoice(voices: Speech.Voice[], targetLocale: string) {
+  function pickBestNativeVoice(voices: Speech.Voice[], targetLocale: string, gender: "female" | "male" = "female") {
     return voices.reduce<{ voice: Speech.Voice | null; score: number }>(
       (best, voice) => {
-        const score = scoreSpeechVoice(voice.language, targetLocale);
-        if (score > best.score) {
-          return { voice, score };
-        }
+        const nameScore = scoreVoiceGender(voice.name ?? voice.identifier ?? "", gender);
+        const score = scoreSpeechVoice(voice.language, targetLocale) + nameScore;
+        if (score > best.score) return { voice, score };
         return best;
       },
-      { voice: null, score: 0 }
+      { voice: null, score: -999 }
     ).voice ?? undefined;
+  }
+
+  // Humanise text: strip markdown clutter, normalise punctuation spacing for natural pacing
+  function humaniseTextForSpeech(raw: string): string {
+    return raw
+      .replace(/[*_`#~]/g, "")
+      .replace(/\n+/g, ". ")
+      .replace(/\s+/g, " ")
+      .replace(/([.!?])\s+/g, "$1  ")
+      .replace(/,\s*/g, ", ")
+      .replace(/;\s*/g, "; ")
+      .replace(/:\s*/g, ": ")
+      .trim()
+      .slice(0, 1100);
   }
 
   async function speakGuidance(text: string) {
-    const cleanText = text.replace(/\s+/g, " ").trim().slice(0, 900);
+    const cleanText = humaniseTextForSpeech(text);
     if (!cleanText) return;
-    // Only speak if voice assist is enabled by the user (don't force-enable)
     if (!voiceAssistEnabled) return;
+
+    // Humanized params — female: warmer pitch, slightly faster; male: deeper, calm
+    const isFemale  = voiceGender === "female";
+    const speakRate  = isFemale ? 0.87 : 0.84;
+    const speakPitch = isFemale ? 1.08 : 0.88;
+
     const speechApi = (globalThis as typeof globalThis & {
       speechSynthesis?: SpeechSynthesis;
       SpeechSynthesisUtterance?: typeof SpeechSynthesisUtterance;
@@ -12188,16 +12218,17 @@ async function fetchGeminiAIHelp(
       speechApi.speechSynthesis.cancel();
       const utterance = new speechApi.SpeechSynthesisUtterance(cleanText);
       const webVoices = speechApi.speechSynthesis.getVoices?.() ?? [];
-      const preferredWebVoice = pickBestWebVoice(webVoices, selectedLanguage.speechLang);
+      const preferredWebVoice = pickBestWebVoice(webVoices, selectedLanguage.speechLang, voiceGender);
       if (preferredWebVoice) {
         utterance.voice = preferredWebVoice;
-        utterance.lang = preferredWebVoice.lang || selectedLanguage.speechLang;
+        utterance.lang  = preferredWebVoice.lang || selectedLanguage.speechLang;
       } else {
         utterance.lang = selectedLanguage.speechLang;
       }
-      utterance.rate = 0.96;
-      utterance.pitch = 1;
-      utterance.onend = () => setVoiceAssistStatus("Finished");
+      utterance.rate   = speakRate;
+      utterance.pitch  = speakPitch;
+      utterance.volume = 1;
+      utterance.onend   = () => setVoiceAssistStatus("Finished");
       utterance.onerror = () => setVoiceAssistStatus("Voice preview unavailable here");
       setVoiceAssistStatus("Speaking now");
       speechApi.speechSynthesis.speak(utterance);
@@ -12212,7 +12243,7 @@ async function fetchGeminiAIHelp(
     let preferredNativeVoice: string | undefined;
     try {
       const availableVoices = await Speech.getAvailableVoicesAsync();
-      preferredNativeVoice = pickBestNativeVoice(availableVoices, selectedLanguage.speechLang)?.identifier;
+      preferredNativeVoice = pickBestNativeVoice(availableVoices, selectedLanguage.speechLang, voiceGender)?.identifier;
     } catch {
       preferredNativeVoice = undefined;
     }
@@ -12221,12 +12252,13 @@ async function fetchGeminiAIHelp(
     setVoiceAssistStatus("Speaking now");
     Speech.speak(cleanText, {
       language: selectedLanguage.speechLang,
-      voice: preferredNativeVoice,
-      rate: 0.96,
-      pitch: 1,
-      onDone: () => setVoiceAssistStatus("Finished"),
+      voice:    preferredNativeVoice,
+      rate:     speakRate,
+      pitch:    speakPitch,
+      volume:   1,
+      onDone:    () => setVoiceAssistStatus("Finished"),
       onStopped: () => setVoiceAssistStatus("Stopped"),
-      onError: () => setVoiceAssistStatus("Voice preview unavailable here")
+      onError:   () => setVoiceAssistStatus("Voice preview unavailable here")
     });
   }
 
@@ -14797,6 +14829,8 @@ function isTrustedExternalUrl(url: string) {
                 clearEntries={clearEntries}
                 voiceAssistEnabled={voiceAssistEnabled}
                 setVoiceAssistEnabled={setVoiceAssistEnabled}
+                voiceGender={voiceGender}
+                setVoiceGender={setVoiceGender}
                 voiceAssistStatus={voiceAssistStatus}
                 onReadGuidance={() => {
                   void speakGuidance(voiceGuidanceText);
@@ -20836,6 +20870,8 @@ function SettingsSection({
   clearEntries,
   voiceAssistEnabled,
   setVoiceAssistEnabled,
+  voiceGender,
+  setVoiceGender,
   voiceAssistStatus,
   onReadGuidance,
   onStopVoice,
@@ -20900,6 +20936,8 @@ function SettingsSection({
   clearEntries: () => void;
   voiceAssistEnabled: boolean;
   setVoiceAssistEnabled: (value: boolean) => void;
+  voiceGender: "female" | "male";
+  setVoiceGender: (value: "female" | "male") => void;
   voiceAssistStatus: string;
   onReadGuidance: () => void;
   onStopVoice: () => void;
@@ -21188,6 +21226,45 @@ function SettingsSection({
         value={voiceAssistEnabled}
         onValueChange={setVoiceAssistEnabled}
       />
+      {/* ── Voice gender + humanized speech settings ── */}
+      <View style={styles.settingsBlock}>
+        <Text style={styles.settingsTitle}>Voice character</Text>
+        <Text style={styles.promptText}>
+          Choose a voice character for the guide readout. The app selects the best matching voice from your device and applies humanized pitch and pacing — slower, warmer, and more natural than default.
+        </Text>
+        <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
+          {(["female", "male"] as const).map((g) => {
+            const isActive = voiceGender === g;
+            return (
+              <Pressable
+                key={g}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isActive }}
+                onPress={() => setVoiceGender(g)}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  backgroundColor: isActive ? (g === "female" ? "#F472B6" : "#60A5FA") : "#0A1520",
+                  borderWidth: 1.5,
+                  borderColor: isActive ? (g === "female" ? "#F472B6" : "#60A5FA") : "#1E3A5A",
+                  borderRadius: 12,
+                  paddingVertical: 12,
+                  alignItems: "center",
+                  opacity: pressed ? 0.8 : 1,
+                })}
+              >
+                <Text style={{ fontSize: 22, marginBottom: 4 }}>{g === "female" ? "♀" : "♂"}</Text>
+                <Text style={{ color: isActive ? "#fff" : "#6B7280", fontSize: 13, fontWeight: "800", textTransform: "capitalize" }}>{g}</Text>
+                <Text style={{ color: isActive ? "rgba(255,255,255,0.75)" : "#374151", fontSize: 10, marginTop: 2 }}>
+                  {g === "female" ? "Warm · Higher pitch" : "Calm · Deeper tone"}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Text style={[styles.promptText, { marginTop: 8, color: "#374151" }]}>
+          Pitch and speed are automatically tuned for a human-sounding readout. Available voices depend on your device.
+        </Text>
+      </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>Voice assistance</Text>
         <Text style={styles.promptText}>
@@ -24573,7 +24650,7 @@ function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId):
   }
 
   // ── Route options ────────────────────────────────────────────────────────────
-  synthesis += "Here is what I think makes most sense for you, in a sequence. You can follow the full path, skip what does not feel right, or come back to any step later:";
+  synthesis += "Here is what I think makes most sense for you, in a sequence. You can follow the full path, skip what does not feel right, or come back to any step later. Each step below is chosen specifically for what you have shared with me today.";
 
   return synthesis;
 }
@@ -24916,6 +24993,17 @@ function CounselingChatModal({
                   </View>
                 </View>
               ))}
+              {/* Replay synthesis aloud */}
+              {synthText.trim().length > 0 && (
+                <Pressable
+                  onPress={() => speakText(synthText)}
+                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#0A1A28", borderRadius: 12, padding: 12, marginTop: 4, opacity: pressed ? 0.7 : 1, borderWidth: 1, borderColor: "#1E3A4A" })}
+                  accessibilityLabel="Replay guide summary aloud"
+                >
+                  <Text style={{ fontSize: 18 }}>🔊</Text>
+                  <Text style={{ color: "#63DED0", fontSize: 13, fontWeight: "700" }}>Replay guide summary aloud</Text>
+                </Pressable>
+              )}
               <Pressable
                 onPress={handleStartJourney}
                 style={({ pressed }) => ({ backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 14, padding: 16, alignItems: "center", marginTop: 8 })}
