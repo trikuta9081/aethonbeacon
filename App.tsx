@@ -6939,6 +6939,23 @@ function getJanmaNakshatra(dob: string): { id: number; name: string; lord: strin
   return { id: nakshatraId, name: NAKSHATRAS[nakshatraId], lord: NAKSHATRA_LORDS[nakshatraId] };
 }
 
+// Nakshatra → Rashi mapping (27 nakshatras to 12 rashis)
+const NAKSHATRA_TO_RASHI_ID = [
+  0,0,1,1,2,2,3,3,3,   // Ashwini–Ashlesha   → Mesha–Karka
+  4,4,5,5,6,6,6,7,7,   // Magha–Jyeshtha     → Simha–Vrishchika
+  8,8,9,9,10,10,11,11,11 // Mula–Revati       → Dhanu–Meena
+];
+
+// Janma Rashi (Moon sign) derived from Janma Nakshatra approximation
+function getMoonRashiFromDOB(dob: string): { rashiId: number; rashi: typeof VEDIC_RASHIS[0] } | null {
+  const nakshatra = getJanmaNakshatra(dob);
+  if (!nakshatra) return null;
+  const rashiId = NAKSHATRA_TO_RASHI_ID[nakshatra.id] ?? 0;
+  const rashi = VEDIC_RASHIS[rashiId];
+  if (!rashi) return null;
+  return { rashiId, rashi };
+}
+
 // Today's Moon Nakshatra (rotates every ~13.3 hours — approximate daily)
 function getTodayNakshatra(): { id: number; name: string; lord: string } {
   const today = new Date();
@@ -8260,7 +8277,9 @@ export default function App() {
   );
 
   // ── Vedic Daily Prediction ─────────────────────────────────────────────────
-  const vedicRashiInfo = useMemo(() => getVedicRashiFromDOB(profileDOB), [profileDOB]);
+  // Primary = Janma Rashi (Moon sign, from Nakshatra); secondary = Sun Rashi
+  const vedicSunRashiInfo = useMemo(() => getVedicRashiFromDOB(profileDOB), [profileDOB]);
+  const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB), [profileDOB]);
   const vedicJanmaNakshatra = useMemo(() => getJanmaNakshatra(profileDOB), [profileDOB]);
   const vedicTodayNakshatra = useMemo(() => getTodayNakshatra(), []);
   const vedicTithi = useMemo(() => getTodayTithi(), []);
@@ -13610,6 +13629,7 @@ function isTrustedExternalUrl(url: string) {
               )}
               <BirthChartSection
                 rashiInfo={vedicRashiInfo}
+                sunRashiInfo={vedicSunRashiInfo}
                 predictionLines={vedicPredictionLines}
                 janmaNakshatra={vedicJanmaNakshatra}
                 todayNakshatra={vedicTodayNakshatra}
@@ -13758,6 +13778,9 @@ function isTrustedExternalUrl(url: string) {
                 selectedIssueGuideLabel={selectedIssueGuide.label}
                 isWide={isWide}
                 isPrivateIntakeOpen={isPrivateIntakeOpen}
+                birthChartRashiInfo={vedicRashiInfo}
+                birthChartNakshatra={vedicJanmaNakshatra}
+                birthChartHasDetails={hasExactBirthDetails}
               />
             </View>
           )}
@@ -16345,7 +16368,10 @@ function AIHelpSection({
   selectedIssueGuideLabel,
   routePreview,
   isWide,
-  isPrivateIntakeOpen
+  isPrivateIntakeOpen,
+  birthChartRashiInfo,
+  birthChartNakshatra,
+  birthChartHasDetails,
 }: {
   aiHelpMessages: AIHelpMessage[];
   aiHelpDraft: string;
@@ -16365,9 +16391,13 @@ function AIHelpSection({
   routePreview: RoutePreview;
   isWide: boolean;
   isPrivateIntakeOpen: boolean;
+  birthChartRashiInfo?: ReturnType<typeof getMoonRashiFromDOB> | null;
+  birthChartNakshatra?: ReturnType<typeof getJanmaNakshatra> | null;
+  birthChartHasDetails?: boolean;
 }) {
   const latestAIHelpMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
   const compact = !isWide;
+  const [useBirthChart, setUseBirthChart] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const visibleMessages = showHistory ? aiHelpMessages : aiHelpMessages.slice(0, 1);
   const hiddenMessageCount = Math.max(0, aiHelpMessages.length - visibleMessages.length);
@@ -16584,6 +16614,37 @@ function AIHelpSection({
         </Pressable>
       ) : null}
 
+      {/* Birth chart context toggle */}
+      {birthChartHasDetails && birthChartRashiInfo && (
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setUseBirthChart((v) => !v)}
+          style={{
+            flexDirection: "row", alignItems: "center", gap: 10,
+            backgroundColor: useBirthChart ? "rgba(34,211,238,0.1)" : "rgba(255,255,255,0.04)",
+            borderRadius: 10, padding: 12, marginBottom: 4,
+            borderWidth: 1, borderColor: useBirthChart ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.1)"
+          }}
+        >
+          <View style={{
+            width: 20, height: 20, borderRadius: 4, borderWidth: 1.5,
+            borderColor: useBirthChart ? "#22D3EE" : "rgba(255,255,255,0.3)",
+            backgroundColor: useBirthChart ? "#22D3EE" : "transparent",
+            alignItems: "center", justifyContent: "center"
+          }}>
+            {useBirthChart && <Text style={{ color: "#000", fontSize: 12, fontWeight: "900" }}>✓</Text>}
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: useBirthChart ? "#22D3EE" : "#94A3B8", fontSize: 13, fontWeight: "800" }}>
+              🪐 Include my birth chart in this session
+            </Text>
+            <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, marginTop: 2 }}>
+              {`Janma Rashi: ${birthChartRashiInfo.rashi.name}${birthChartNakshatra ? ` · Nakshatra: ${birthChartNakshatra.name}` : ""}`}
+            </Text>
+          </View>
+        </Pressable>
+      )}
+
         <TextInput
         multiline
         value={aiHelpDraft}
@@ -16593,7 +16654,14 @@ function AIHelpSection({
         editable={!inputLocked}
         returnKeyType="send"
         blurOnSubmit
-        onSubmitEditing={onPostAIHelp}
+        onSubmitEditing={() => {
+          if (useBirthChart && birthChartRashiInfo && aiHelpDraft.trim().length > 0) {
+            setAIHelpDraft(
+              `[Birth chart context — Janma Rashi: ${birthChartRashiInfo.rashi.name} (${birthChartRashiInfo.rashi.en})${birthChartNakshatra ? `, Nakshatra: ${birthChartNakshatra.name} (lord: ${birthChartNakshatra.lord})` : ""}]\n${aiHelpDraft.trim()}`
+            );
+          }
+          setTimeout(onPostAIHelp, 0);
+        }}
         style={[
           styles.communityInput,
           styles.aiHelpInput,
@@ -16606,7 +16674,16 @@ function AIHelpSection({
       <View style={[styles.communityActions, compact && styles.aiHelpActionRow]}>
         <Pressable
           accessibilityRole="button"
-          onPress={onPostAIHelp}
+          onPress={() => {
+            if (useBirthChart && birthChartRashiInfo && aiHelpDraft.trim().length > 0) {
+              setAIHelpDraft(
+                `[Birth chart context — Janma Rashi: ${birthChartRashiInfo.rashi.name} (${birthChartRashiInfo.rashi.en})${birthChartNakshatra ? `, Nakshatra: ${birthChartNakshatra.name} (lord: ${birthChartNakshatra.lord})` : ""}]\n${aiHelpDraft.trim()}`
+              );
+              setTimeout(onPostAIHelp, 0);
+            } else {
+              onPostAIHelp();
+            }
+          }}
           disabled={inputLocked}
           style={({ pressed }) => [
             styles.helpButton,
@@ -20692,6 +20769,7 @@ function VedicDailyCard({
 
 function BirthChartSection({
   rashiInfo,
+  sunRashiInfo,
   predictionLines,
   janmaNakshatra,
   todayNakshatra,
@@ -20708,7 +20786,8 @@ function BirthChartSection({
   onOpenHome,
   selectedIssueGuide,
 }: {
-  rashiInfo: ReturnType<typeof getVedicRashiFromDOB> | null;
+  rashiInfo: ReturnType<typeof getMoonRashiFromDOB> | null;
+  sunRashiInfo: ReturnType<typeof getVedicRashiFromDOB> | null;
   predictionLines: string[] | null;
   janmaNakshatra: ReturnType<typeof getJanmaNakshatra>;
   todayNakshatra: ReturnType<typeof getTodayNakshatra>;
@@ -20725,10 +20804,29 @@ function BirthChartSection({
   onOpenHome: () => void;
   selectedIssueGuide: IssueGuide;
 }) {
-  const [dobDraft, setDobDraft] = useState(profileDOB);
-  const [timeDraft, setTimeDraft] = useState(profileBirthTime);
+  // Split DOB into day / month / year segments for easy keypad entry
+  const [dobDD, setDobDD] = useState(() => profileDOB.slice(8, 10) || "");
+  const [dobMM, setDobMM] = useState(() => profileDOB.slice(5, 7) || "");
+  const [dobYYYY, setDobYYYY] = useState(() => profileDOB.slice(0, 4) || "");
+  // Split time into HH / MM segments
+  const [timeHH, setTimeHH] = useState(() => profileBirthTime.slice(0, 2) || "");
+  const [timeMM, setTimeMM] = useState(() => profileBirthTime.slice(3, 5) || "");
   const [placeDraft, setPlaceDraft] = useState(profileBirthPlace);
   const [saved, setSaved] = useState(false);
+
+  // Derived combined values for validation/save
+  const dobDraft = dobYYYY.length === 4 && dobMM.length >= 1 && dobDD.length >= 1
+    ? `${dobYYYY}-${dobMM.padStart(2,"0")}-${dobDD.padStart(2,"0")}`
+    : "";
+  const timeDraft = timeHH.length >= 1 && timeMM.length >= 1
+    ? `${timeHH.padStart(2,"0")}:${timeMM.padStart(2,"0")}`
+    : "";
+
+  // Refs for auto-advancing focus between segments
+  const refDobMM = React.useRef<any>(null);
+  const refDobYYYY = React.useRef<any>(null);
+  const refTimeMM = React.useRef<any>(null);
+  const refPlace = React.useRef<any>(null);
 
   const hasReading = !!rashiInfo && !!predictionLines;
   const isValidDOB = /^\d{4}-\d{2}-\d{2}$/.test(dobDraft);
@@ -20783,70 +20881,176 @@ function BirthChartSection({
           Enter exact birth details
         </Text>
 
-        {/* Date of birth */}
-        <View style={{ gap: 6 }}>
+        {/* Date of birth — segmented DD / MM / YYYY */}
+        <View style={{ gap: 8 }}>
           <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            Date of birth (YYYY-MM-DD)
+            Date of birth
           </Text>
-          <TextInput
-            value={dobDraft}
-            onChangeText={setDobDraft}
-            placeholder="e.g. 1990-07-15"
-            placeholderTextColor="rgba(255,255,255,0.3)"
-            keyboardType="numeric"
-            maxLength={10}
-            style={{
-              backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
-              borderColor: isValidDOB ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
-              color: "#F0F9FF", fontSize: 16, padding: 13
-            }}
-          />
-          {dobDraft.length > 0 && !isValidDOB && (
-            <Text style={{ color: "#F37B64", fontSize: 11 }}>Use format YYYY-MM-DD, e.g. 1990-07-15</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            {/* Day */}
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>DAY</Text>
+              <TextInput
+                value={dobDD}
+                onChangeText={(v) => {
+                  const digits = v.replace(/\D/g, "").slice(0, 2);
+                  setDobDD(digits);
+                  if (digits.length === 2) refDobMM.current?.focus();
+                }}
+                placeholder="DD"
+                placeholderTextColor="rgba(255,255,255,0.25)"
+                keyboardType="number-pad"
+                maxLength={2}
+                returnKeyType="next"
+                onSubmitEditing={() => refDobMM.current?.focus()}
+                style={{
+                  backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: dobDD.length === 2 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  color: "#F0F9FF", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
+                }}
+              />
+            </View>
+            <Text style={{ color: "rgba(255,255,255,0.3)", fontSize: 22, marginTop: 16 }}>/</Text>
+            {/* Month */}
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>MONTH</Text>
+              <TextInput
+                ref={refDobMM}
+                value={dobMM}
+                onChangeText={(v) => {
+                  const digits = v.replace(/\D/g, "").slice(0, 2);
+                  setDobMM(digits);
+                  if (digits.length === 2) refDobYYYY.current?.focus();
+                }}
+                placeholder="MM"
+                placeholderTextColor="rgba(255,255,255,0.25)"
+                keyboardType="number-pad"
+                maxLength={2}
+                returnKeyType="next"
+                onSubmitEditing={() => refDobYYYY.current?.focus()}
+                style={{
+                  backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: dobMM.length === 2 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  color: "#F0F9FF", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
+                }}
+              />
+            </View>
+            <Text style={{ color: "rgba(255,255,255,0.3)", fontSize: 22, marginTop: 16 }}>/</Text>
+            {/* Year */}
+            <View style={{ flex: 2, alignItems: "center" }}>
+              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>YEAR</Text>
+              <TextInput
+                ref={refDobYYYY}
+                value={dobYYYY}
+                onChangeText={(v) => {
+                  const digits = v.replace(/\D/g, "").slice(0, 4);
+                  setDobYYYY(digits);
+                  if (digits.length === 4) refTimeMM.current?.focus();
+                }}
+                placeholder="YYYY"
+                placeholderTextColor="rgba(255,255,255,0.25)"
+                keyboardType="number-pad"
+                maxLength={4}
+                returnKeyType="next"
+                onSubmitEditing={() => refTimeMM.current?.focus()}
+                style={{
+                  backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: dobYYYY.length === 4 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  color: "#F0F9FF", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
+                }}
+              />
+            </View>
+          </View>
+          {isValidDOB && (
+            <Text style={{ color: "#22D3EE", fontSize: 12, fontWeight: "700", textAlign: "center" }}>
+              ✓ {new Date(dobDraft).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+            </Text>
           )}
         </View>
 
-        {/* Birth time */}
-        <View style={{ gap: 6 }}>
+        {/* Birth time — segmented HH : MM */}
+        <View style={{ gap: 8 }}>
           <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            Birth time — 24-hour format (HH:MM)
+            Birth time (24-hour)
           </Text>
-          <TextInput
-            value={timeDraft}
-            onChangeText={setTimeDraft}
-            placeholder="e.g. 14:30 (2:30 PM)"
-            placeholderTextColor="rgba(255,255,255,0.3)"
-            keyboardType="numeric"
-            maxLength={5}
-            style={{
-              backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
-              borderColor: isValidTime ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
-              color: "#F0F9FF", fontSize: 16, padding: 13
-            }}
-          />
-          {timeDraft.length > 0 && !isValidTime && (
-            <Text style={{ color: "#F37B64", fontSize: 11 }}>Use 24-hour format HH:MM, e.g. 14:30</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>HOUR (00–23)</Text>
+              <TextInput
+                value={timeHH}
+                onChangeText={(v) => {
+                  const digits = v.replace(/\D/g, "").slice(0, 2);
+                  setTimeHH(digits);
+                  if (digits.length === 2) refTimeMM.current?.focus();
+                }}
+                placeholder="HH"
+                placeholderTextColor="rgba(255,255,255,0.25)"
+                keyboardType="number-pad"
+                maxLength={2}
+                returnKeyType="next"
+                onSubmitEditing={() => refTimeMM.current?.focus()}
+                style={{
+                  backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: timeHH.length === 2 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  color: "#F0F9FF", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
+                }}
+              />
+            </View>
+            <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 28, marginTop: 18, fontWeight: "900" }}>:</Text>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>MINUTE (00–59)</Text>
+              <TextInput
+                ref={refTimeMM}
+                value={timeMM}
+                onChangeText={(v) => {
+                  const digits = v.replace(/\D/g, "").slice(0, 2);
+                  setTimeMM(digits);
+                  if (digits.length === 2) refPlace.current?.focus();
+                }}
+                placeholder="MM"
+                placeholderTextColor="rgba(255,255,255,0.25)"
+                keyboardType="number-pad"
+                maxLength={2}
+                returnKeyType="next"
+                onSubmitEditing={() => refPlace.current?.focus()}
+                style={{
+                  backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: timeMM.length === 2 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  color: "#F0F9FF", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
+                }}
+              />
+            </View>
+          </View>
+          {isValidTime && (
+            <Text style={{ color: "#22D3EE", fontSize: 12, fontWeight: "700", textAlign: "center" }}>
+              ✓ {(() => { const h = parseInt(timeHH, 10); const m = timeMM.padStart(2,"0"); const suffix = h >= 12 ? "PM" : "AM"; const h12 = h % 12 || 12; return `${timeHH}:${m} (${h12}:${m} ${suffix})`; })()}
+            </Text>
           )}
         </View>
 
         {/* Birth place */}
         <View style={{ gap: 6 }}>
           <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            Place of birth (City, State, Country)
+            Place of birth
           </Text>
           <TextInput
+            ref={refPlace}
             value={placeDraft}
             onChangeText={setPlaceDraft}
-            placeholder="e.g. Mumbai, Maharashtra, India"
+            placeholder="City, State, Country — e.g. Mumbai, Maharashtra, India"
             placeholderTextColor="rgba(255,255,255,0.3)"
+            autoCorrect={false}
+            autoCapitalize="words"
+            returnKeyType="done"
+            onSubmitEditing={handleSave}
             style={{
               backgroundColor: "#071820", borderRadius: 10, borderWidth: 1.5,
               borderColor: isValidPlace ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
-              color: "#F0F9FF", fontSize: 16, padding: 13
+              color: "#F0F9FF", fontSize: 15, padding: 13
             }}
           />
           {placeDraft.length > 0 && !isValidPlace && (
-            <Text style={{ color: "#F37B64", fontSize: 11 }}>Enter city, state, and country as precisely as possible.</Text>
+            <Text style={{ color: "#F37B64", fontSize: 11 }}>Enter city, state, and country (at least 3 characters).</Text>
           )}
         </View>
 
@@ -20891,7 +21095,8 @@ function BirthChartSection({
               { label: "Date of Birth", value: profileDOB },
               { label: "Birth Time", value: profileBirthTime },
               { label: "Birth Place", value: profileBirthPlace },
-              { label: "Rashi (Sun sign)", value: rashiInfo ? `${rashiInfo.rashi.name} (${rashiInfo.rashi.en})` : "—" },
+              { label: "Janma Rashi (Moon sign)", value: rashiInfo ? `${rashiInfo.rashi.name} (${rashiInfo.rashi.en})` : "—" },
+              { label: "Surya Rashi (Sun sign)", value: sunRashiInfo ? `${sunRashiInfo.rashi.name} (${sunRashiInfo.rashi.en})` : "—" },
               { label: "Lagna / Ascendant", value: lagnaInfo ? `${lagnaInfo.lagna.name} (${lagnaInfo.lagna.en})` : "Enter birth time" },
               { label: "Janma Nakshatra", value: janmaNakshatra ? `${janmaNakshatra.name} · ${janmaNakshatra.lord}` : "—" },
               { label: "Birth Period", value: lagnaInfo?.lagnaLabel ?? "—" },
@@ -20989,7 +21194,7 @@ function BirthChartSection({
 
       <View style={styles.birthChartFactGrid}>
         {[
-          "Sidereal Rashi (Sun sign)",
+          "Janma Rashi (Moon sign) + Surya Rashi (Sun sign)",
           "Lagna / Ascendant from birth time",
           "Janma Nakshatra (approximate)",
           "Tithi, Vara, Moon Nakshatra daily",
