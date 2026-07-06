@@ -14,7 +14,7 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.aethon.beacon",
+      "bundleIdentifier": "com.aethonbeacon.app",
       "buildNumber": "2",
       "requireFullScreen": true,
       "infoPlist": {
