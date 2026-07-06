@@ -1,0 +1,34 @@
+=== Deploy: Web + Android ===
+Mon Jul  6 11:16:06 IST 2026
+
+── Step 1: Commit app.json ──
+ app.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+[master 1289ea2] fix: update iOS bundleIdentifier to com.aethonbeacon.app
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+── Step 2: Building fresh web bundle ──
+
+> aethon-beacon-app@1.0.2 export:web
+> node scripts/with-build-id.mjs expo export --platform web && node scripts/copy-public-web.mjs
+
+Starting Metro Bundler
+
+Web Bundled 11829ms node_modules/.pnpm/expo@56.0.12_@babel+core@7.29.7_@expo+dom-webview@56.0.5_react-dom@19.2.3_react@19.2.3__0e2467d717a2ebb8b720d70be7c42654/node_modules/expo/AppEntry.js (413 modules)
+
+› Assets (2):
+assets/aethon-beacon-icon.dca46f54753aa90bf0386cab6fb2c45f.png (2.1MB)
+assets/calm-tone-beep.d53061c924244a971822f9b3d00e3f27.wav (49KB)
+
+› web bundles (1):
+_expo/static/js/web/AppEntry-6075b7face0cc80fd903ae90bdf7a354.js (1.9MB)
+
+› Files (3):
+favicon.ico (15KB)
+index.html (1.2KB)
+metadata.json (49B)
+
+Exported: dist
+Copied public web assets from /Users/rajeshwerslathiia/AethonBeacon/public to /Users/rajeshwerslathiia/AethonBeacon/dist
+
+── Step 3: Pushing web to GitHub + Render ──

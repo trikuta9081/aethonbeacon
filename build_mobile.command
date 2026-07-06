@@ -3,17 +3,15 @@ cd ~/AethonBeacon
 
 echo ""
 echo "==========================================="
-echo "  Aethon Beacon — iOS Archive (Direct)"
+echo "  Aethon Beacon — iOS Archive via Xcode"
 echo "==========================================="
 
-# Clean old archive
-rm -rf /tmp/AethonBeacon.xcarchive
+echo ""
+echo "==> Updating CocoaPods ..."
+cd ios && pod install 2>&1 | tail -5 && cd ..
 
 echo ""
-echo "==> Archiving (Automatic signing, team DD3GZBF2N9)..."
-echo "    This will create Distribution certificate if needed."
-echo ""
-
+echo "==> Archiving for App Store ..."
 xcodebuild \
   -workspace ios/AethonBeacon.xcworkspace \
   -scheme AethonBeacon \
@@ -22,31 +20,29 @@ xcodebuild \
   -archivePath /tmp/AethonBeacon.xcarchive \
   archive \
   DEVELOPMENT_TEAM=DD3GZBF2N9 \
-  CODE_SIGN_STYLE=Automatic \
   -allowProvisioningUpdates \
-  -allowProvisioningDeviceRegistration \
-  2>&1 | tee /tmp/archive_full.log | grep -E "error:|warning:.*sign|Archive|FAILED|succeeded|BUILD|provisioning|signing|Compiling|note:.*sign|Generating|Creating"
+  2>&1 | grep -E "error:|Archive|FAILED|succeeded|BUILD|provisioning|signing|Compiling"
 
 echo ""
 if [ -d "/tmp/AethonBeacon.xcarchive" ]; then
-  echo "ARCHIVE SUCCEEDED!"
+  echo "Archive succeeded!"
   echo ""
-  echo "==> Exporting IPA for App Store..."
+  echo "==> Exporting IPA for App Store ..."
   xcodebuild \
     -exportArchive \
     -archivePath /tmp/AethonBeacon.xcarchive \
     -exportPath /tmp/AethonBeacon_IPA \
     -exportOptionsPlist ~/AethonBeacon/ios/exportOptions.plist \
     -allowProvisioningUpdates \
-    2>&1 | tee -a /tmp/archive_full.log | grep -E "error:|EXPORT|succeeded|FAILED|Exported|IPA"
+    2>&1 | grep -E "error:|EXPORT|succeeded|FAILED|Exported"
   echo ""
   echo "IPA location: /tmp/AethonBeacon_IPA/"
   ls /tmp/AethonBeacon_IPA/ 2>/dev/null
 else
-  echo "ARCHIVE FAILED --- last errors:"
-  grep -E "error:" /tmp/archive_full.log | tail -20
+  echo "Archive not found — check errors above."
 fi
 
 echo ""
-echo "Full log: /tmp/archive_full.log"
+echo "==========================================="
+echo "  Done!"
 echo "==========================================="
