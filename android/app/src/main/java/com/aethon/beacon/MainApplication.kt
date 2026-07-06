@@ -1,4 +1,4 @@
-package com.aethonbeacon.app
+package com.aethon.beacon
 
 import android.app.Application
 import android.content.res.Configuration

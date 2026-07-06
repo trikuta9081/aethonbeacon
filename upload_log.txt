@@ -1,11 +1,46 @@
 === Deploy: Web + Android ===
-Mon Jul  6 11:16:06 IST 2026
+Mon Jul  6 11:19:52 IST 2026
 
 ── Step 1: Commit app.json ──
- app.json | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-[master 1289ea2] fix: update iOS bundleIdentifier to com.aethonbeacon.app
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   android/app/build.gradle
+	modified:   android/app/src/main/AndroidManifest.xml
+	deleted:    android/app/src/main/java/com/aethonbeacon/app/MainActivity.kt
+	deleted:    android/app/src/main/java/com/aethonbeacon/app/MainApplication.kt
+	deleted:    android/app/src/main/res/drawable-hdpi/notification_icon.png
+	deleted:    android/app/src/main/res/drawable-mdpi/notification_icon.png
+	deleted:    android/app/src/main/res/drawable-xhdpi/notification_icon.png
+	deleted:    android/app/src/main/res/drawable-xxhdpi/notification_icon.png
+	deleted:    android/app/src/main/res/drawable-xxxhdpi/notification_icon.png
+	modified:   android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
+	modified:   android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.webp
+	modified:   android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
+	modified:   android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
+	modified:   android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.webp
+	modified:   android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
+	modified:   android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
+	modified:   android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.webp
+	modified:   android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
+	modified:   android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
+	modified:   android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.webp
+	modified:   android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
+	modified:   android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
+	modified:   android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.webp
+	modified:   android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+	modified:   android/app/src/main/res/values/colors.xml
+	modified:   android/app/src/main/res/values/styles.xml
+	modified:   upload_log.txt
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	android/app/src/main/java/com/aethon/
+
+no changes added to commit (use "git add" and/or "git commit -a")
 
 ── Step 2: Building fresh web bundle ──
 
@@ -14,7 +49,7 @@ Mon Jul  6 11:16:06 IST 2026
 
 Starting Metro Bundler
 
-Web Bundled 11829ms node_modules/.pnpm/expo@56.0.12_@babel+core@7.29.7_@expo+dom-webview@56.0.5_react-dom@19.2.3_react@19.2.3__0e2467d717a2ebb8b720d70be7c42654/node_modules/expo/AppEntry.js (413 modules)
+Web Bundled 215ms node_modules/.pnpm/expo@56.0.12_@babel+core@7.29.7_@expo+dom-webview@56.0.5_react-dom@19.2.3_react@19.2.3__0e2467d717a2ebb8b720d70be7c42654/node_modules/expo/AppEntry.js (413 modules)
 
 › Assets (2):
 assets/aethon-beacon-icon.dca46f54753aa90bf0386cab6fb2c45f.png (2.1MB)
