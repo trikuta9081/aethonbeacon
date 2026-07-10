@@ -69,6 +69,11 @@ type RelaxingToneMode = {
   safety: string;
   accent: string;
   mark: string;
+  // Optional external open — YouTube / Spotify search or curated link for
+  // trending social-media / lyric-heavy tracks the internal tone-gen can't
+  // reproduce (lo-fi mixes, motivational speeches, bhajans, Bollywood chill).
+  externalUrl?: string;
+  externalLabel?: string;
 };
 
 type Routine = {
@@ -1236,6 +1241,130 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     safety: "Safe. Keep volume moderate.",
     accent: "#6A4DB8",
     mark: "528+"
+  },
+  // ── Social-trending picks — opens curated search on YouTube ──────────────
+  // These aren't internal tone patterns; they route to the trending community
+  // tracks users find on socials (lo-fi, phonk, bhajan, Bollywood chill,
+  // motivational speech loops). Each opens a YouTube search in-browser.
+  {
+    id: "social-lofi",
+    label: "Lo-fi study beats (live)",
+    category: "Social trending",
+    pattern: "24/7 lofi hip-hop radio streams. Chillhop / Lofi Girl / ChilledCow style.",
+    use: "Study, focus, coding, writing. #1 category on YouTube for background work music.",
+    safety: "Safe. Use at moderate volume; may include ads on external platform.",
+    accent: "#F472B6",
+    mark: "LO",
+    externalUrl: "https://www.youtube.com/results?search_query=lofi+hip+hop+radio+beats+to+relax+study",
+    externalLabel: "Open lo-fi live streams"
+  },
+  {
+    id: "social-phonk",
+    label: "Phonk sigma motivation",
+    category: "Social trending",
+    pattern: "Cowbell-driven Memphis phonk with heavy 808s. Gym/motivation subculture.",
+    use: "Workout, physical push, motivation. Massive on TikTok and Reels.",
+    safety: "Not for sleep or study. High energy — use headphones with care.",
+    accent: "#FB7185",
+    mark: "PK",
+    externalUrl: "https://www.youtube.com/results?search_query=phonk+sigma+motivation+mix",
+    externalLabel: "Open phonk mixes"
+  },
+  {
+    id: "social-bhajan",
+    label: "Krishna bhajan mix",
+    category: "Social trending",
+    pattern: "Devotional Krishna bhajans — Hare Krishna kirtan, Radha bhajans, morning Vishnu chants.",
+    use: "Devotional practice, morning routine, grief processing, cultural comfort.",
+    safety: "Safe for all ages. Very grounding.",
+    accent: "#FCD34D",
+    mark: "BJ",
+    externalUrl: "https://www.youtube.com/results?search_query=krishna+bhajan+kirtan+mix",
+    externalLabel: "Open bhajan mixes"
+  },
+  {
+    id: "social-bolly-chill",
+    label: "Bollywood chill / instrumental",
+    category: "Social trending",
+    pattern: "Softened Bollywood classics, sitar covers, sad-song instrumental piano playlists.",
+    use: "Emotional processing, nostalgic calm, romantic reflection.",
+    safety: "Safe. Some tracks may trigger nostalgia strongly — pause if overwhelming.",
+    accent: "#FB923C",
+    mark: "BC",
+    externalUrl: "https://www.youtube.com/results?search_query=bollywood+chill+instrumental+sad+piano+playlist",
+    externalLabel: "Open Bollywood chill"
+  },
+  {
+    id: "social-motiv-speech",
+    label: "Motivational speech loop",
+    category: "Social trending",
+    pattern: "Curated motivational speeches over cinematic score. Goggins/Peterson/Robbins style compilations.",
+    use: "Early-morning intention setting, gym push, hard task priming.",
+    safety: "Consult a professional for depression — do not substitute speech loops for care.",
+    accent: "#F87171",
+    mark: "MS",
+    externalUrl: "https://www.youtube.com/results?search_query=motivational+speech+compilation+2026+cinematic",
+    externalLabel: "Open motivation reels"
+  },
+  {
+    id: "social-hanuman-chalisa",
+    label: "Hanuman Chalisa (108x)",
+    category: "Social trending",
+    pattern: "Recitations of Hanuman Chalisa by classical singers — Hariharan, Shankar Mahadevan, Anup Jalota.",
+    use: "Tuesday/Saturday practice, courage, protection from fear.",
+    safety: "Safe. Listen with attention or play as background during work.",
+    accent: "#F97316",
+    mark: "HC",
+    externalUrl: "https://www.youtube.com/results?search_query=hanuman+chalisa+108+times",
+    externalLabel: "Open Hanuman Chalisa"
+  },
+  {
+    id: "social-nature-rain",
+    label: "Nature rain — Reddit r/ambientmusic pick",
+    category: "Social trending",
+    pattern: "10-hour rain-on-leaves recordings from top-voted r/ambientmusic threads.",
+    use: "Sleep, deep work, anxiety reduction. Top-shared in sleep-hygiene communities.",
+    safety: "Safe for extended use.",
+    accent: "#22D3EE",
+    mark: "NR",
+    externalUrl: "https://www.youtube.com/results?search_query=rain+sounds+10+hours+deep+sleep",
+    externalLabel: "Open rain mixes"
+  },
+  {
+    id: "social-40hz-adhd",
+    label: "40 Hz gamma — ADHD focus (clinical)",
+    category: "Social trending",
+    pattern: "Steady 40 Hz gamma binaural pulse — MIT Picower Institute research signal for cognition + memory.",
+    use: "ADHD focus support, deep work sessions, memory-heavy study.",
+    safety: "Use headphones. Not a treatment — evidence is early-stage.",
+    accent: "#A855F7",
+    mark: "40",
+    externalUrl: "https://www.youtube.com/results?search_query=40hz+gamma+binaural+beats+focus+memory",
+    externalLabel: "Open 40Hz focus"
+  },
+  {
+    id: "social-pomodoro",
+    label: "Pomodoro 25/5 with beeps",
+    category: "Social trending",
+    pattern: "25-minute focus interval + 5-minute break, with gentle bell start/stop cues.",
+    use: "Structured deep work. #1 productivity method globally.",
+    safety: "Safe. Take the breaks — don't skip.",
+    accent: "#34D399",
+    mark: "PM",
+    externalUrl: "https://www.youtube.com/results?search_query=pomodoro+25+5+study+timer+ambient",
+    externalLabel: "Open Pomodoro timers"
+  },
+  {
+    id: "social-mantra-lyrics",
+    label: "Om Mani Padme Hum — chanted with lyrics",
+    category: "Social trending",
+    pattern: "Group chant of Om Mani Padme Hum with visible Sanskrit + Devanagari + English translation.",
+    use: "Compassion practice, learning pronunciation, cross-cultural meditation.",
+    safety: "Safe for all.",
+    accent: "#C084FC",
+    mark: "OM3",
+    externalUrl: "https://www.youtube.com/results?search_query=om+mani+padme+hum+chant+with+lyrics",
+    externalLabel: "Open mantra with lyrics"
   }
 ];
 
@@ -1340,6 +1469,68 @@ const calmTeachings: CalmTeaching[] = [
       "Slower breathing, better sleep, movement, and naming the feeling all reduce stress load and improve clarity.",
     practice: "Use a longer exhale, water, and a five-minute walk before the next decision."
   }
+];
+
+// ── STATE OFFICER DIRECTORY (India) ──────────────────────────────────────
+// We do NOT hardcode individual DC / SSP / SHO phone numbers — they rotate
+// every 6–24 months and stale numbers cause real harm (missed complaints,
+// wrong redress). Instead we route the user to each state's OFFICIAL
+// police portal, DC/collector directory, e-FIR portal and helplines,
+// which the state itself keeps live and accurate.
+//
+// Each entry: portal (state police home), efir (online FIR / grievance),
+// collectors (district collector / DM directory), helplines (state control
+// rooms). The user picks their state; the app opens the authoritative
+// source. This is safer + always up-to-date.
+type StateOfficerDirectory = {
+  code: string;
+  name: string;
+  portal: string;            // State police home
+  efir?: string;             // e-FIR / online FIR portal (state-specific)
+  collectors?: string;       // District collector / DM directory
+  dgp?: string;              // DGP office contact page
+  women?: string;            // Women's helpline (state)
+  cyber?: string;            // Cyber cell page (state)
+  emergency: string;         // State emergency control room (usually 112)
+  slsa?: string;             // State Legal Services Authority (free legal aid)
+};
+const STATE_OFFICER_DIRECTORY: StateOfficerDirectory[] = [
+  { code: "AN", name: "Andaman & Nicobar Islands", portal: "https://police.andaman.gov.in/", collectors: "https://andaman.gov.in/dc-directory", emergency: "112" },
+  { code: "AP", name: "Andhra Pradesh", portal: "https://appolice.gov.in/", efir: "https://appolice.gov.in/citizens/citizen-services.html", collectors: "https://ap.gov.in/districts", emergency: "112", women: "181", cyber: "https://cybercrime.appolice.gov.in/" },
+  { code: "AR", name: "Arunachal Pradesh", portal: "https://arunpol.nic.in/", collectors: "https://arunachalpradesh.gov.in/districts/", emergency: "112" },
+  { code: "AS", name: "Assam", portal: "https://police.assam.gov.in/", efir: "https://police.assam.gov.in/portlet-innerpage/e-services", collectors: "https://assam.gov.in/districts", emergency: "112", women: "181" },
+  { code: "BR", name: "Bihar", portal: "https://police.bihar.gov.in/", efir: "https://citizen.bhpolice.gov.in/", collectors: "https://state.bihar.gov.in/main/CitizenHome.html", emergency: "112", women: "181" },
+  { code: "CH", name: "Chandigarh", portal: "https://chandigarhpolice.gov.in/", efir: "https://chandigarhpolice.gov.in/services.htm", emergency: "112" },
+  { code: "CG", name: "Chhattisgarh", portal: "https://cgpolice.gov.in/", efir: "https://citizenservice.cgpolice.gov.in/", collectors: "https://cgstate.gov.in/districts", emergency: "112" },
+  { code: "DN", name: "Dadra & Nagar Haveli and Daman & Diu", portal: "https://dnh.gov.in/police/", collectors: "https://dnh.gov.in/", emergency: "112" },
+  { code: "DL", name: "Delhi", portal: "https://delhipolice.gov.in/", efir: "https://delhipolice.gov.in/e-services/lost-report", collectors: "https://revenue.delhi.gov.in/", dgp: "https://delhipolice.gov.in/notification/whoswho", emergency: "112", women: "1091", cyber: "https://cybercrime.delhipolice.gov.in/" },
+  { code: "GA", name: "Goa", portal: "https://citizen.goapolice.gov.in/", efir: "https://citizen.goapolice.gov.in/", collectors: "https://www.goa.gov.in/districts/", emergency: "112" },
+  { code: "GJ", name: "Gujarat", portal: "https://police.gujarat.gov.in/", efir: "https://citizen.gujaratpolice.gov.in/", collectors: "https://gujaratindia.gov.in/state-profile/districts.htm", emergency: "112", women: "181", cyber: "https://cybercrime.gujaratpolice.gov.in/" },
+  { code: "HR", name: "Haryana", portal: "https://haryanapolice.gov.in/", efir: "https://haryanapolice.gov.in/citizen-services", collectors: "https://haryana.gov.in/", emergency: "112", women: "181" },
+  { code: "HP", name: "Himachal Pradesh", portal: "https://citizenportal.hppolice.gov.in/", efir: "https://citizenportal.hppolice.gov.in/", collectors: "https://himachal.nic.in/", emergency: "112" },
+  { code: "JK", name: "Jammu & Kashmir", portal: "https://jkpolice.gov.in/", collectors: "https://jk.gov.in/jammukashmir/", emergency: "112" },
+  { code: "JH", name: "Jharkhand", portal: "https://jhpolice.gov.in/", efir: "https://jhpolice.gov.in/citizen-services", collectors: "https://jharkhand.gov.in/districts", emergency: "112" },
+  { code: "KA", name: "Karnataka", portal: "https://ksp.karnataka.gov.in/", efir: "https://citizen.ksp.gov.in/", collectors: "https://karnataka.gov.in/english/", emergency: "112", women: "181", cyber: "https://ksp.karnataka.gov.in/page/CID-Cyber-Crime-Cell" },
+  { code: "KL", name: "Kerala", portal: "https://keralapolice.gov.in/", efir: "https://thuna.keralapolice.gov.in/", collectors: "https://kerala.gov.in/districts", emergency: "112", women: "1091" },
+  { code: "LA", name: "Ladakh", portal: "https://police.ladakh.gov.in/", collectors: "https://ladakh.gov.in/", emergency: "112" },
+  { code: "LD", name: "Lakshadweep", portal: "https://lakshadweep.gov.in/police/", emergency: "112" },
+  { code: "MP", name: "Madhya Pradesh", portal: "https://citizen.mppolice.gov.in/", efir: "https://citizen.mppolice.gov.in/", collectors: "https://mp.gov.in/collectors-of-mp", emergency: "112", women: "181" },
+  { code: "MH", name: "Maharashtra", portal: "https://citizen.mahapolice.gov.in/", efir: "https://citizen.mahapolice.gov.in/", collectors: "https://maharashtra.gov.in/", emergency: "112", women: "103", cyber: "https://cybercrime.maharashtra.gov.in/" },
+  { code: "MN", name: "Manipur", portal: "https://manipurpolice.gov.in/", collectors: "https://manipur.gov.in/", emergency: "112" },
+  { code: "ML", name: "Meghalaya", portal: "https://megpolice.gov.in/", collectors: "https://meghalaya.gov.in/districts", emergency: "112" },
+  { code: "MZ", name: "Mizoram", portal: "https://police.mizoram.gov.in/", collectors: "https://mizoram.gov.in/", emergency: "112" },
+  { code: "NL", name: "Nagaland", portal: "https://police.nagaland.gov.in/", collectors: "https://nagaland.gov.in/", emergency: "112" },
+  { code: "OD", name: "Odisha", portal: "https://odishapolice.gov.in/", efir: "https://citizenportal.odishapolice.gov.in/", collectors: "https://odisha.gov.in/districts", emergency: "112", women: "181" },
+  { code: "PY", name: "Puducherry", portal: "https://police.py.gov.in/", collectors: "https://py.gov.in/", emergency: "112" },
+  { code: "PB", name: "Punjab", portal: "https://punjabpolice.gov.in/", efir: "https://saanjh.punjabpolice.gov.in/", collectors: "https://punjab.gov.in/districts/", emergency: "112", women: "181" },
+  { code: "RJ", name: "Rajasthan", portal: "https://police.rajasthan.gov.in/", efir: "https://police.rajasthan.gov.in/e-fir-application", collectors: "https://rajasthan.gov.in/districts", emergency: "112", women: "1090" },
+  { code: "SK", name: "Sikkim", portal: "https://sikkimpolice.nic.in/", collectors: "https://sikkim.gov.in/departments", emergency: "112" },
+  { code: "TN", name: "Tamil Nadu", portal: "https://www.tnpolice.gov.in/", efir: "https://eservices.tnpolice.gov.in/CCTNSNICSDC/", collectors: "https://www.tn.gov.in/", emergency: "112", women: "181", cyber: "https://www.cybercrime.tn.gov.in/" },
+  { code: "TG", name: "Telangana", portal: "https://tspolice.gov.in/", efir: "https://tspolice.gov.in/tspoliceonline/", collectors: "https://telangana.gov.in/about/districts", emergency: "112", women: "181", cyber: "https://cybercrime.tspolice.gov.in/" },
+  { code: "TR", name: "Tripura", portal: "https://tripurapolice.gov.in/", collectors: "https://tripura.gov.in/districts", emergency: "112" },
+  { code: "UP", name: "Uttar Pradesh", portal: "https://uppolice.gov.in/", efir: "https://uppolice.gov.in/pages/en/topmenu/services/e-fir/en", collectors: "https://up.gov.in/en/districtProfile", emergency: "112", women: "1090", cyber: "https://cybercrime.up.gov.in/" },
+  { code: "UK", name: "Uttarakhand", portal: "https://uttarakhandpolice.uk.gov.in/", efir: "https://uttarakhandpolice.uk.gov.in/pages/show/97-e-fir", collectors: "https://uk.gov.in/", emergency: "112", women: "181" },
+  { code: "WB", name: "West Bengal", portal: "https://wbpolice.gov.in/", efir: "https://citizenservices.wbpolice.gov.in/", collectors: "https://wb.gov.in/districts", emergency: "112", women: "1091" },
 ];
 
 const meditationChakraTeachings: MeditationChakra[] = [
@@ -7159,6 +7350,104 @@ function getVedicIssueGuidance(issueId: IssueId, rashiId: number): string {
   return guidanceMap[issueId] ?? `${rashiName}'s energy today offers perspective on your situation. Read the cosmic snapshot below alongside your practical path.`;
 }
 
+// ── Astro two-way chat engine ────────────────────────────────────────────────
+// User asks anything → engine classifies question, pulls the user's Moon Rashi
+// + current Mahadasha + Nakshatra lord + today's Panchang, and returns a
+// guidance line + a specific Vedic remedy (mantra, gemstone, day-fast, deity).
+type AstroChatCategory = "career" | "relationship" | "health" | "money" | "family" | "spiritual" | "timing" | "identity" | "general";
+
+function classifyAstroQuestion(text: string): AstroChatCategory {
+  const t = text.toLowerCase();
+  if (/(job|career|work|boss|promotion|interview|salary|business|office|colleague)/.test(t)) return "career";
+  if (/(love|partner|husband|wife|girlfriend|boyfriend|marriage|relationship|breakup|fight)/.test(t)) return "relationship";
+  if (/(health|sick|pain|illness|disease|body|sleep|energy|tired|doctor)/.test(t)) return "health";
+  if (/(money|finance|debt|loan|invest|save|wealth|rich|poor|income|expense)/.test(t)) return "money";
+  if (/(family|parent|mother|father|child|kid|son|daughter|sibling|brother|sister|home)/.test(t)) return "family";
+  if (/(god|spiritual|meditat|dharma|purpose|soul|karma|moksha|pray|temple)/.test(t)) return "spiritual";
+  if (/(when|time|muhurat|start|begin|launch|marriage date|auspicious)/.test(t)) return "timing";
+  if (/(who am i|myself|identity|confidence|self)/.test(t)) return "identity";
+  return "general";
+}
+
+// Per-Rashi remedy pack. Mantra + gemstone + day-fast + deity + dietary tip.
+const RASHI_REMEDIES: Array<{ mantra: string; gem: string; fast: string; deity: string; food: string }> = [
+  { mantra: "Om Angarakaya Namah", gem: "Red Coral", fast: "Tuesday", deity: "Hanuman", food: "Reduce spicy · add jaggery" },   // 0 Mesha
+  { mantra: "Om Shukraya Namah", gem: "Diamond / White Sapphire", fast: "Friday", deity: "Lakshmi", food: "Sweet fruits · milk" }, // 1 Vrishabha
+  { mantra: "Om Budhaya Namah", gem: "Emerald", fast: "Wednesday", deity: "Vishnu / Ganesha", food: "Green leafy · sprouts" },     // 2 Mithuna
+  { mantra: "Om Chandraya Namah", gem: "Pearl / Moonstone", fast: "Monday", deity: "Shiva", food: "Milk · rice · white foods" },    // 3 Karka
+  { mantra: "Om Suryaya Namah", gem: "Ruby", fast: "Sunday", deity: "Surya", food: "Wheat · warm foods · reduce salt" },           // 4 Simha
+  { mantra: "Om Budhaya Namah", gem: "Emerald", fast: "Wednesday", deity: "Vishnu", food: "Green vegetables · light meals" },       // 5 Kanya
+  { mantra: "Om Shukraya Namah", gem: "Diamond / Opal", fast: "Friday", deity: "Lakshmi", food: "Curd · sweet · aesthetic plating" },// 6 Tula
+  { mantra: "Om Angarakaya Namah", gem: "Red Coral", fast: "Tuesday", deity: "Kartikeya / Kali", food: "Reduce heat · add coconut" },// 7 Vrischika
+  { mantra: "Om Brihaspataye Namah", gem: "Yellow Sapphire", fast: "Thursday", deity: "Vishnu / Guru", food: "Turmeric · yellow foods" },// 8 Dhanus
+  { mantra: "Om Shanaye Namah", gem: "Blue Sapphire", fast: "Saturday", deity: "Shani / Hanuman", food: "Black sesame · iron-rich" },// 9 Makara
+  { mantra: "Om Shanaye Namah", gem: "Blue Sapphire", fast: "Saturday", deity: "Shani", food: "Simple · unrefined grains" },       //10 Kumbha
+  { mantra: "Om Brihaspataye Namah", gem: "Yellow Sapphire", fast: "Thursday", deity: "Vishnu", food: "Ghee · yellow lentils" },   //11 Meena
+];
+
+// Category × Rashi guidance lens. Uses the Rashi name so replies feel personal.
+function rashiCategoryLens(cat: AstroChatCategory, rashiId: number): string {
+  const r = VEDIC_RASHIS[rashiId]?.name ?? "your Rashi";
+  const lenses: Record<AstroChatCategory, string[]> = {
+    career: ["initiative-driven — lead visibly", "value-anchored — steady building beats speed", "communication-heavy — write and network", "care-first — nurture the team", "spotlight-favoured — take the podium", "detail-oriented — the fine print is your edge", "diplomacy-first — mediate rather than push", "intense — invest deeply in fewer bets", "vision-led — teach and expand", "structure-first — systems compound", "innovative — unusual paths open", "intuitive — trust the pattern under the data"],
+    relationship: ["direct — say the difficult thing kindly", "steady — small consistent gestures", "conversation-fed — call, don't text", "emotionally attuned — receive and reflect", "generous — but avoid one-sided giving", "service-oriented — small acts land big", "harmony-seeking — but not at cost of truth", "loyal — verify before intensifying", "expansive — protect them, don't teach at them", "committed — schedule warmth into the calendar", "unconventional — friendship first", "empathic — set a soft boundary"],
+    health: ["watch head/BP; walk daily", "watch throat/neck; hydrate", "watch nervous system; deep breathing", "watch stomach/emotions; regular meals", "watch heart/back; cardio + rest", "watch digestion; smaller meals", "watch kidneys; reduce salt", "watch reproductive system; detox gently", "watch hips/liver; movement + turmeric", "watch knees/joints; strength work", "watch calves/circulation; walk daily", "watch feet/lymph; sleep discipline"],
+    money: ["earn actively, then save", "build slow reliable assets", "diversify across small streams", "save in liquid/emergency funds", "invest in name/brand", "budget with detailed tracking", "partner-based ventures suit you", "concentrated bets after research", "long-horizon wisdom-based capital", "systematic investment plans", "unconventional / tech assets", "faith-backed but verify-then-trust"],
+    family: ["lead but listen", "provide steadily", "communicate more, assume less", "hold the emotional centre", "make space for their pride too", "serve without controlling", "mediate disputes gently", "protect their privacy fiercely", "guide with wisdom, not orders", "carry duty without carrying resentment", "give freedom generously", "make the home a sanctuary"],
+    spiritual: ["karma yoga — action as offering", "bhakti — devotion through beauty", "jnana — study and inquiry", "bhakti — devotion through emotion", "karma — service in public role", "seva — quiet service", "bhakti — through art and balance", "kundalini — transformation practice", "jnana — teaching and study", "karma — discipline and duty", "jnana — meditation and detachment", "bhakti — surrender and dissolution"],
+    timing: ["Tuesday mornings favour launches", "Friday afternoons favour agreements", "Wednesday for negotiations", "Monday nights for reflection", "Sunday for public moves", "Wednesday for detailed work", "Friday for aesthetic launches", "Tuesday for research phase", "Thursday for teaching/travel", "Saturday for structural commitments", "Saturday for unconventional moves", "Thursday for spiritual commitments"],
+    identity: ["you are the initiator — own that role", "you are the builder — patience is strength", "you are the messenger — words shape your world", "you are the nurturer — feelings are data", "you are the sovereign — magnanimity befits you", "you are the analyst — precision serves love", "you are the harmoniser — decisiveness balances it", "you are the transformer — depth is your gift", "you are the teacher — expansion is your path", "you are the architect — legacy over speed", "you are the visionary — walk your own timeline", "you are the mystic — dissolve, then rebuild"],
+    general: ["today favours action over rumination", "steady daily practice compounds", "one honest conversation clears three assumptions", "an early night resets more than caffeine", "a small public step lifts the mood", "one careful list beats scattered urgency", "one act of harmony ripples", "one deep breath before the next reaction", "one wise teacher's word for the day", "one commitment kept beats ten promised", "one unusual walk clears mental fog", "one moment of silence brings the answer"],
+  };
+  return `${r} energy is ${lenses[cat][rashiId] ?? lenses[cat][0]}.`;
+}
+
+function nextAstroChatReply(question: string, ctx: {
+  moonRashiId: number | null;
+  moonRashiName: string;
+  nakshatraLord: string | null;
+  currentDasha: string | null;
+  todayTithi: string;
+  todayVara: string;
+}): { category: AstroChatCategory; reply: string; remedy: string } {
+  const cat = classifyAstroQuestion(question);
+  const lines: string[] = [];
+
+  if (ctx.moonRashiId === null) {
+    lines.push(`Add your date of birth in Profile so I can read your Moon Rashi — the reply will be sharper.`);
+    lines.push(`General direction for a ${cat} question: pause, name what you actually want, then take one small step that a wise friend would suggest.`);
+    return {
+      category: cat,
+      reply: lines.join("\n\n"),
+      remedy: `Light a diya at dusk. Chant Om Namah Shivaya 11 times. Add your birth details for a personalised remedy.`,
+    };
+  }
+
+  // 1. Rashi lens
+  lines.push(rashiCategoryLens(cat, ctx.moonRashiId));
+
+  // 2. Dasha lens
+  if (ctx.currentDasha) {
+    const q = DASHA_QUALITIES[ctx.currentDasha] ?? "a mixed influence";
+    lines.push(`You are in ${ctx.currentDasha} Mahadasha (${q.toLowerCase()}). Frame your question through this planetary period — it colours what will and won't stick right now.`);
+  }
+
+  // 3. Today's Panchang lens
+  lines.push(`Today is ${ctx.todayVara}, ${ctx.todayTithi} — factor this into any decision that can wait 24 hours for the right window.`);
+
+  // 4. Remedy from the Rashi remedy pack
+  const R = RASHI_REMEDIES[ctx.moonRashiId] ?? RASHI_REMEDIES[0];
+  const remedy = [
+    `Mantra: ${R.mantra} — 108 times, morning after bath.`,
+    `Gemstone: ${R.gem} (consult a Jyotishi before wearing).`,
+    `Fast: ${R.fast} — sunrise to sunset, break with fruit.`,
+    `Deity: offer flowers or a diya to ${R.deity}.`,
+    `Food: ${R.food}.`,
+  ].join("\n");
+
+  return { category: cat, reply: lines.join("\n\n"), remedy };
+}
+
 // Janma Nakshatra: Approximated from birth Julian Day Number
 function getJanmaNakshatra(dob: string): { id: number; name: string; lord: string } | null {
   if (!dob || dob.length < 10) return null;
@@ -7822,6 +8111,9 @@ export default function App() {
   const [aiHelpMessages, setAIHelpMessages] = useState<AIHelpMessage[]>(aiHelpSeed);
   const [aiHelpDraft, setAIHelpDraft] = useState("");
   const [aiHelpLoading, setAIHelpLoading] = useState(false);
+  // Astro two-way chat — user asks anything, engine replies with Rashi + Dasha + Panchang lens + remedy
+  const [astroChatMessages, setAstroChatMessages] = useState<Array<{ id: string; role: "user" | "astro"; text: string; remedy?: string; category?: string; ts: string }>>([]);
+  const [astroChatDraft, setAstroChatDraft] = useState("");
   const [aiHelpProvider, setAIHelpProvider] = useState<AIHelpProvider>("local");
   // ── Gemini AI state ────────────────────────────────────────────────────────
   const [geminiDailyBrief, setGeminiDailyBrief] = useState<string | null>(null);
@@ -7856,7 +8148,7 @@ export default function App() {
   const [appIssueCount, setAppIssueCount] = useState(0);
   const [appLastIssueAt, setAppLastIssueAt] = useState<string | null>(null);
   const [hasSeenWelcomeCard, setHasSeenWelcomeCard] = useState(false); // first-run explainer card
-  const [onboardingCompleted, setOnboardingCompleted] = useState(true); // show value first; onboarding opt-in from Profile
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false); // profile prompt is the FIRST screen for new users; once completed, persisted true survives reloads
   const [onboardingCompletedAt, setOnboardingCompletedAt] = useState<string | null>(null);
   const [showOnboardingPanel, setShowOnboardingPanel] = useState(false);
   const [trustedContacts, setTrustedContacts] = useState<TrustedContact[]>([]);
@@ -9798,9 +10090,10 @@ export default function App() {
           parsed.onboardingCompletedAt.trim().length > 0
             ? parsed.onboardingCompletedAt
             : null;
-        // Onboarding is opt-in — always proceed without blocking the user
-        setOnboardingCompleted(true);
-        setOnboardingCompletedAt(completedAt ?? new Date().toISOString());
+        // Respect the persisted value — returning users who finished profile stay
+        // unblocked; new users (nothing persisted or explicit false) see the prompt.
+        setOnboardingCompleted(parsed.onboardingCompleted);
+        setOnboardingCompletedAt(parsed.onboardingCompleted ? (completedAt ?? new Date().toISOString()) : null);
       }
       if (typeof parsed.supportLocality === "string") {
         setSupportLocality(parsed.supportLocality);
@@ -9954,6 +10247,16 @@ export default function App() {
     }, 10000);
     return () => clearTimeout(timeout);
   }, [hasLoaded, hasSeenWelcomeCard]);
+
+  // Profile prompt is the FIRST screen on first launch. When persisted state
+  // hydrates and reveals the user hasn't completed the profile yet, open the
+  // onboarding panel so it renders before anything else.
+  useEffect(() => {
+    if (!hasLoaded) return;
+    if (onboardingCompleted) return;
+    if (showOnboardingPanel) return;
+    setShowOnboardingPanel(true);
+  }, [hasLoaded, onboardingCompleted, showOnboardingPanel]);
 
   // Show weekly vedic prediction banner at start of session on Mondays or if not seen this week
   useEffect(() => {
@@ -11425,6 +11728,171 @@ export default function App() {
     return detectAIHelpRouteFromText(text);
   }
 
+  // ── Aggravated-abuse detector — inspects any counselling input for
+  // sexual / cultural / emotional / cyber / physical / financial / academic /
+  // ragging / staff-abuse signals. When it fires, the caller renders a
+  // high-priority guidance card with the user's specific legal rights under
+  // BNS 2023 + BNSS 2023 (new codes replacing IPC/CrPC), the correct
+  // grievance platform, an emotional grounding line, and FIR filing options.
+  function detectAggravatedAbuse(text: string): {
+    category: "sexual" | "cultural" | "emotional" | "physical" | "cyber" | "financial" | "workplace" | "ragging" | "academic-staff";
+    severity: "high" | "critical";
+    rightsSummary: string;
+    routeId: RedressRouteId;
+    routeLabel: string;
+    groundingLine: string;
+    firstAction: string;
+    firFilingOptions?: string;
+  } | null {
+    const t = text.toLowerCase();
+
+    // Universal FIR-filing options block. Attached to every critical-severity
+    // detection so users know every legal path to registering an FIR.
+    const FIR_OPTIONS =
+      "FIR filing options: " +
+      "(1) NORMAL FIR — go to police station where crime occurred; officer MUST register under Section 173(1) BNSS (was Section 154 CrPC). " +
+      "(2) ZERO-FIR — file at ANY police station regardless of jurisdiction; they must forward it. Refusing is illegal. " +
+      "(3) e-FIR / ONLINE FIR — most states (Delhi, UP, MH, KA, TN, TG, GJ) allow filing at state police portal for non-cognisable + petty crimes; some allow cognisable for property offences. " +
+      "(4) SP / Commissioner complaint — if SHO refuses, escalate in writing to Superintendent of Police / Commissioner under Section 173(4) BNSS. " +
+      "(5) MAGISTRATE u/s 175(3) BNSS (was 156(3) CrPC) — file private complaint before Judicial Magistrate who can direct police to register FIR + investigate. " +
+      "(6) PRIVATE COMPLAINT u/s 223 BNSS (was 200 CrPC) — Magistrate takes cognisance directly; useful when police unhelpful. " +
+      "(7) NCW / NCPCR / NHRC / State Commission — parallel constitutional complaint for women, children, human rights. " +
+      "Every FIR must be given to you in writing with the FIR number — free of cost. You have the right to receive a copy.";
+
+    // Order matters — critical/physical checks first so they win over category overlaps.
+    if (/(rape|raped|molest|molested|sexual assault|forced sex|forced me|forced her|forced him|penetrat)/i.test(t)) {
+      return {
+        category: "sexual", severity: "critical", routeId: "crime", routeLabel: "File an FIR",
+        rightsSummary: "BNS 2023 Section 74 (was IPC 354 — assault to outrage modesty); Section 75 (sexual harassment); Sections 63–72 (was IPC 375–376 — rape). POCSO Act if a minor. BNSS 2023 Section 173 — FIR MUST be registered. Section 176(1) BNSS — statement of woman victim recorded by woman officer. Section 183 BNSS — magistrate-recorded statement (was Sec 164 CrPC). Medical exam free under Section 184 BNSS. No fee for FIR.",
+        groundingLine: "What happened is not your fault. Your body, your consent — the law recognises both. I am here with you.",
+        firstAction: "Call 112 now if danger present. Otherwise: File Zero-FIR at ANY police station — Section 173 BNSS makes it MANDATORY. Ask for woman officer under Section 176(1) BNSS. Do NOT wash / change clothes / bathe until medical exam.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    // Ragging / teacher / colleague harassment — new dedicated branch.
+    if (/(ragging|hazing|senior.*bully|senior.*harass|senior.*intimidat|hostel.*bully|hostel.*ragging|forced.*to drink|forced.*strip|forced.*naked|antiragging)/i.test(t)) {
+      return {
+        category: "ragging", severity: "critical", routeId: "ragging", routeLabel: "Anti-Ragging 1800-180-5522",
+        rightsSummary: "UGC Anti-Ragging Regulations 2009 — ragging is a criminal offence. BNS 2023 Sections 117 (grievous hurt), 351 (criminal intimidation, was IPC 506), 74 (outraging modesty). Section 3(k) SC/ST Act if targeted for caste. Institution can be de-affiliated. Every college MUST have Anti-Ragging Committee + Squad. UGC helpline anti-ragging@nic.in. National portal antiragging.in — anonymous complaint accepted. Cognisable + non-bailable if grievous. FIR is mandatory.",
+        groundingLine: "Ragging is not a rite of passage — it is a crime. You are not weak for reporting; you are protecting yourself and the next student.",
+        firstAction: "Register on antiragging.in (24×7, anonymous) + call 1800-180-5522. Then file FIR at nearest police station under BNS 2023. Institution MUST take action within 24 hours — inform Principal + Anti-Ragging Committee in writing.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    if (/(teacher.*harass|professor.*harass|hod.*harass|dean.*harass|colleague.*harass|coworker.*harass|supervisor.*harass|guide.*harass|mentor.*harass|principal.*harass|faculty.*harass|teaching staff.*harass|academic.*harass|research supervisor.*harass|examiner.*harass|invigilat.*harass)/i.test(t)) {
+      return {
+        category: "academic-staff", severity: "critical", routeId: "harassment", routeLabel: "ICC + Anti-Ragging + UGC",
+        rightsSummary: "POSH Act 2013 covers educational institutions — ICC is mandatory. UGC Regulations 2015 on Prevention of Sexual Harassment. BNS 2023 Section 74–79 (sexual harassment / outraging modesty), Section 351 (criminal intimidation), Section 356 (defamation). Right to change guide / supervisor / examiner. Institution CANNOT retaliate against complainant — Section 19 POSH Act protects. Parallel FIR possible under BNS. UGC direct complaint at ugc.ac.in.",
+        groundingLine: "The power imbalance does not make what they did acceptable. Your career + your studies matter, and the law protects both.",
+        firstAction: "Written complaint to ICC (Presiding Officer must be a woman external member). Simultaneously file at antiragging.in (covers staff misconduct too) + UGC. If evidence of criminal offence — file FIR under BNS at police station. You can request guide-change during inquiry.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    if (/(sexual harass|inappropriate touch|groped|stalking|revealing photos|nude photos|morphed|explicit messages|dick pic|obscene call|obscene message|posh|internal complaints committee|icc)/i.test(t)) {
+      return {
+        category: "sexual", severity: "high", routeId: "harassment", routeLabel: "ICC / POSH complaint",
+        rightsSummary: "POSH Act 2013 — every workplace with 10+ employees MUST have ICC. 90-day inquiry limit. Confidentiality is your right. No retaliation permitted. BNS 2023 Section 75 (sexual harassment), Section 74 (assault to outrage modesty), Section 78 (stalking, was IPC 354D). BNSS Section 173 — FIR must be registered for criminal parallel. If no ICC → Local Complaints Committee at District Officer or SHe-Box portal (shebox.wcd.gov.in).",
+        groundingLine: "You have named something hard. You are believed. This does not have to define you — but it does need to be addressed.",
+        firstAction: "Write down every incident with date + time + place + witnesses. Submit to ICC/LCC in writing today. Ask for written acknowledgement + complaint number. Criminal parallel: FIR under BNS.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    if (/(hit me|beats me|beaten|slapped|kicked|punched|choked|strangled|broke my|domestic violence|dv act|husband hits|wife hits|in-laws.*harass|dowry harass|marital rape)/i.test(t)) {
+      return {
+        category: "physical", severity: "critical", routeId: "domestic", routeLabel: "Protection Officer / OSC",
+        rightsSummary: "Protection of Women from Domestic Violence Act 2005: Protection Order + Residence Order + Monetary Relief + Custody Order — all can be sought together. BNS 2023 Section 85 (was IPC 498A — cruelty by husband/relatives). BNS Section 115 (voluntarily causing hurt), Section 117 (grievous hurt), Section 351 (criminal intimidation). BNSS Section 173 — Zero-FIR mandatory. Section 144 BNSS (was Sec 125 CrPC) — maintenance. Free legal aid via DLSA. One-Stop Centre (Sakhi) — 24/7, every district.",
+        groundingLine: "Violence is never love. You are not overreacting. Your safety comes first — everything else after.",
+        firstAction: "Call 181 (Women's Helpline) or 112 if in immediate danger. Nearest One-Stop Centre gives shelter + medical + legal + counselling under one roof, free. File Zero-FIR at any police station.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    if (/(cyberbully|cyber bully|cyber stalking|leaked my photos|deepfake|doxxing|doxxed|revenge porn|shared my private|fake profile|blackmail online|extort online|online fraud|upi fraud|otp fraud)/i.test(t)) {
+      return {
+        category: "cyber", severity: "critical", routeId: "cybercrime", routeLabel: "cybercrime.gov.in + 1930",
+        rightsSummary: "IT Act 2000 Sec 66E (privacy), 67 (obscene), 67A (sexual content), 67B (child). BNS 2023 Section 78 (stalking incl. online), Section 351 (criminal intimidation), Section 356 (defamation). Cybercrime portal cybercrime.gov.in — women/child anonymous. 1930 for financial fraud — 24hr golden window to freeze funds. Right to takedown under IT Rules 2021 within 24 hrs. FIR under BNS + IT Act mandatory for cognisable offences.",
+        groundingLine: "Digital harm is real harm. What was done to you is a crime, not a mistake or misunderstanding.",
+        firstAction: "Screenshot everything (URLs + timestamps visible) BEFORE reporting to platform. File on cybercrime.gov.in + FIR at cyber cell / any police station. If money involved: call 1930 within 24 hrs to freeze accounts.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    if (/(caste slur|casteist|dalit|scheduled caste|scheduled tribe|sc.st|religious slur|communal|jihad|kaafir|bhagwa|racist|racial slur|honour killing|honor killing|cultural pressure|forced marriage|caste discrimination)/i.test(t)) {
+      return {
+        category: "cultural", severity: "critical", routeId: "crime", routeLabel: "SC/ST Act FIR",
+        rightsSummary: "SC/ST (Prevention of Atrocities) Act 1989 — non-bailable, cognisable. Free legal aid + compensation from state. BNS 2023 Section 196 (was IPC 153A — promoting enmity), Section 299 (was IPC 295A — insulting religion), Section 302 (was IPC 298 — hurting religious feelings). Article 15 & 17 Constitutional protection. NCSC/NCST direct complaint. Zero-FIR under BNSS 173. Investigation by DSP-rank or above under SC/ST Act.",
+        groundingLine: "Your identity is not a burden. What was done was wrong by law and by conscience.",
+        firstAction: "File FIR at any police station under SC/ST Act + BNS 2023 — investigation MUST be done by DSP-rank officer or above. Take a witness with you. Parallel: complain to NCSC / NCST.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    if (/(emotional abuse|emotional harass|gaslight|manipulat|controlling|isolat.*from family|withholding money|coercive control|silent treatment|constantly criticiz|degrad|humiliat|belittl|threaten|name-call)/i.test(t)) {
+      return {
+        category: "emotional", severity: "high", routeId: "domestic", routeLabel: "Protection Officer",
+        rightsSummary: "DV Act 2005 Section 3 explicitly includes emotional/verbal/economic abuse. Protection Order can be sought without physical injury. BNS 2023 Section 85 (cruelty by husband/relatives, was IPC 498A), Section 351 (criminal intimidation). Free counselling at One-Stop Centre. Section 144 BNSS for maintenance.",
+        groundingLine: "Emotional harm leaves invisible bruises but real wounds. Being called crazy for hurting is itself part of the pattern.",
+        firstAction: "Keep a dated diary of incidents. Reach One-Stop Centre — counselling AND legal aid together, free. You do not have to leave home to seek protection. FIR under BNS 85 possible.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    if (/(fired.*unfair|termina.*without|no salary|salary not paid|denied pf|denied gratuity|wage theft|workplace bully|toxic boss|forced resignation|constructive dismissal)/i.test(t)) {
+      return {
+        category: "workplace", severity: "high", routeId: "workplace", routeLabel: "Labour Commissioner",
+        rightsSummary: "Industrial Disputes Act; Payment of Wages Act; Code on Wages 2019; EPF Act. Free complaint to Labour Commissioner. Section 25F ID Act — retrenchment protections. EPFO grievance portal (EPFiGMS) for PF issues — much faster than court. No employer can force resignation as termination. BNS 2023 Section 316 (criminal breach of trust) for wage theft above threshold.",
+        groundingLine: "Being denied what you earned is not a small thing. You are not lucky to have had the job — you worked for it.",
+        firstAction: "Send written notice via email + registered post first. Then file at labour.gov.in — free. EPF issues use EPFiGMS portal. Criminal parallel: FIR under BNS 316 for wage theft.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    if (/(loan shark|recovery agent|harass.*loan|threaten.*loan|fake bank|fake ipo|ponzi|scam money|cheated me)/i.test(t)) {
+      return {
+        category: "financial", severity: "high", routeId: "financial", routeLabel: "RBI / Bank Ombudsman",
+        rightsSummary: "RBI Fair Practices Code — recovery agents cannot call before 8am or after 7pm, cannot threaten, cannot contact your family/employer. BNS 2023 Section 318 (cheating, was IPC 420), Section 316 (criminal breach of trust), Section 308 (extortion). Complaint to bank first, then RBI Ombudsman (free, online at cms.rbi.org.in). SEBI SCORES for capital-market fraud. Consumer Commission for misrepresentation.",
+        groundingLine: "Being cheated does not make you foolish. Predators are skilled — that is why they succeed.",
+        firstAction: "Record all calls (permitted for your own line). Written complaint to bank. Escalate to RBI Ombudsman if unresolved in 30 days. Criminal parallel: FIR under BNS 318 for cheating.",
+        firFilingOptions: FIR_OPTIONS,
+      };
+    }
+    return null;
+  }
+
+  // Build a strongly-worded, action-forward assistant message that
+  // (a) validates emotionally, (b) names the legal rights, (c) opens the
+  // right redress route, (d) commits to staying through resolution.
+  function buildAbuseGuidanceMessage(
+    detection: NonNullable<ReturnType<typeof detectAggravatedAbuse>>,
+    createdAt: string
+  ): AIHelpMessage {
+    const severityLabel = detection.severity === "critical" ? "CRITICAL SAFETY SIGNAL" : "AGGRAVATED SIGNAL";
+    const parts: string[] = [
+      `${severityLabel} — ${detection.category.toUpperCase()} abuse.`,
+      "",
+      detection.groundingLine,
+      "",
+      `Your rights (BNS / BNSS 2023 + special laws):`,
+      detection.rightsSummary,
+      "",
+      `First action:`,
+      detection.firstAction,
+    ];
+    if (detection.firFilingOptions) {
+      parts.push("");
+      parts.push(`How to register an FIR (know every option):`);
+      parts.push(detection.firFilingOptions);
+    }
+    parts.push("");
+    parts.push(
+      `I am opening the ${detection.routeLabel} route in Help. I will stay with you across every step — the letter template, the follow-up dates, the escalation if the first office delays. You are not doing this alone.`
+    );
+    const text = parts.join("\n");
+    return {
+      id: `abuse-guide-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+      createdAt,
+      author: "Safety Guide",
+      role: "assistant",
+      text,
+      route: "urgent",
+    };
+  }
+
   function findAIHelpIssue(text: string) {
     const issueId = findAIHelpIssueIdFromText(text);
     if (!issueId) {
@@ -12006,6 +12474,35 @@ async function fetchGeminiAIHelp(
     );
   }
 
+  // Astro two-way chat submit handler. Uses the user's Moon Rashi + Nakshatra
+  // lord + current Mahadasha + today's Panchang to reply with guidance +
+  // a specific Vedic remedy.
+  function submitAstroQuestion() {
+    const q = astroChatDraft.trim();
+    if (q.length === 0) return;
+    const nowIso = new Date().toISOString();
+    const userMsg = { id: `u-${Date.now()}`, role: "user" as const, text: q, ts: nowIso };
+    const dasha = vedicJanmaNakshatra ? getMahadasha(profileDOB, vedicJanmaNakshatra.lord) : null;
+    const result = nextAstroChatReply(q, {
+      moonRashiId: vedicRashiInfo ? vedicRashiInfo.rashiId : null,
+      moonRashiName: vedicRashiInfo?.rashi.name ?? "",
+      nakshatraLord: vedicJanmaNakshatra?.lord ?? null,
+      currentDasha: dasha?.current ?? null,
+      todayTithi: vedicTithi?.name ?? "today's Tithi",
+      todayVara: vedicVara?.name ?? "today",
+    });
+    const astroMsg = {
+      id: `a-${Date.now()}`,
+      role: "astro" as const,
+      text: result.reply,
+      remedy: result.remedy,
+      category: result.category,
+      ts: new Date().toISOString(),
+    };
+    setAstroChatMessages((prev) => [astroMsg, userMsg, ...prev].slice(0, 40));
+    setAstroChatDraft("");
+  }
+
   async function submitAIHelpText(rawText?: string, issueOverride?: IssueId) {
     const requestedText = (rawText ?? aiHelpDraft).trim();
     const issueGuide =
@@ -12027,14 +12524,23 @@ async function fetchGeminiAIHelp(
       return;
     }
 
-    const route = detectAIHelpRoute(text);
+    // Aggravated-abuse check FIRST — if it fires, force redress routing regardless
+    // of what the general classifier would pick.
+    const abuseDetection = detectAggravatedAbuse(text);
+    const route: AIHelpRoute = abuseDetection ? "urgent" : detectAIHelpRoute(text);
     const issueFocus = findAIHelpIssue(text);
-    const redressFocus = findAIHelpRedressRoute(text);
+    const redressFocus: RedressRouteId = abuseDetection ? abuseDetection.routeId : findAIHelpRedressRoute(text);
     const routeTab = getAIHelpOpenTab(route);
     const pendingRouteTab: "guide" | "redress" = routeTab === "redress" ? "redress" : "guide";
     const focusAnchorKey =
       routeTab === "redress" ? `redress:${redressFocus}` : `guide:${issueFocus.id}`;
-    applyAIHelpRoute(text, route);
+    if (abuseDetection) {
+      // Direct-set the redress route so the Help tab pre-lands on the correct
+      // grievance platform when the user follows through.
+      setRedressRouteId(abuseDetection.routeId);
+    } else {
+      applyAIHelpRoute(text, route);
+    }
     setPendingTabFocusAnchor({ tab: pendingRouteTab, key: focusAnchorKey });
     handleTabPress("aihelp");
     const createdAt = new Date().toISOString();
@@ -12057,7 +12563,14 @@ async function fetchGeminiAIHelp(
     };
 
     setAIHelpLoading(true);
-    setAIHelpMessages((current) => [pendingMessage, userMessage, ...current].slice(0, 50));
+    if (abuseDetection) {
+      // Abuse guidance goes IN FRONT of the pending generic reply so the user
+      // sees rights + first action immediately, not after the network round-trip.
+      const abuseMsg = buildAbuseGuidanceMessage(abuseDetection, createdAt);
+      setAIHelpMessages((current) => [pendingMessage, abuseMsg, userMessage, ...current].slice(0, 50));
+    } else {
+      setAIHelpMessages((current) => [pendingMessage, userMessage, ...current].slice(0, 50));
+    }
     setAIHelpDraft("");
     try {
       const geminiReply = await fetchGeminiAIHelp(text, route, profileDisplayName, issueGuide);
@@ -13099,6 +13612,11 @@ function isTrustedExternalUrl(url: string) {
             ]}
           >
           <View style={[styles.topBeaconStrip, isCompact && styles.topBeaconStripCompact]}>
+          {/* Home-only chrome: the big brand strip + logo tagline show only on
+              the Home tab. Every other tab opens as its OWN page — no home
+              hero above it. Tab rail below stays visible so users can navigate. */}
+          {showFullHomeHero && (
+            <>
             <View
               style={[
                 styles.sectionHeader,
@@ -13123,25 +13641,9 @@ function isTrustedExternalUrl(url: string) {
                   </Text>
                 </View>
               </View>
-              <View style={[styles.topBeaconUtilityStack, isCompact && styles.topBeaconUtilityStackCompact]}>
-                <View
-                  style={[
-                    styles.topBeaconLogoBadge,
-                    isCompact && styles.topBeaconLogoBadgeCompact,
-                    Platform.OS === "web" && styles.topBeaconLogoBadgeNoPointer
-                  ]}
-                >
-                  <Image
-                    source={require("./assets/aethon-beacon-icon.png")}
-                    style={[styles.topBeaconLogoImage, isCompact && styles.topBeaconLogoImageCompact]}
-                    resizeMode="cover"
-                    accessibilityLabel="Aethon Beacon logo"
-                  />
-                </View>
-                <Text style={[styles.topBeaconLogoPhrase, isCompact && styles.topBeaconLogoPhraseCompact]} numberOfLines={2}>
-                  Find your next step. Always.
-                </Text>
-              </View>
+              {/* Duplicate logo + tagline stack removed — brand badge above
+                  already carries logo + one-line tag. Home now shows a single,
+                  clean brand row. */}
             </View>
             <View style={[styles.topBeaconSecondaryRow, isCompact && styles.topBeaconSecondaryRowCompact]}>
               <Pressable
@@ -13201,6 +13703,9 @@ function isTrustedExternalUrl(url: string) {
                 </Text>
               </Pressable>
             </View>
+            </>
+          )}
+          {/* End home-only chrome. Tab rail below stays visible on every page. */}
             <View style={styles.topTabRail}>
               {isCompact ? (
                 <ScrollView
@@ -13511,9 +14016,9 @@ function isTrustedExternalUrl(url: string) {
                         </View>
                         {/* Clarity score orb — bigger + labelled */}
                         <View style={{ alignItems: "center" }}>
-                          <View style={{ width: 66, height: 66, borderRadius: 33, backgroundColor: scoreColor + "12", borderWidth: 2.5, borderColor: scoreColor, alignItems: "center", justifyContent: "center" }}>
-                            <Text style={{ color: scoreColor, fontSize: 22, fontWeight: "900", lineHeight: 26 }}>{clarityScore}</Text>
-                            <Text style={{ color: scoreColor, fontSize: 8, fontWeight: "900", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
+                          <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: scoreColor + "12", borderWidth: 2, borderColor: scoreColor, alignItems: "center", justifyContent: "center" }}>
+                            <Text style={{ color: scoreColor, fontSize: 18, fontWeight: "900", lineHeight: 22 }}>{clarityScore}</Text>
+                            <Text style={{ color: scoreColor, fontSize: 7, fontWeight: "900", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
                           </View>
                           <Text style={{ color: scoreColor, fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{scoreLabel}</Text>
                         </View>
@@ -13542,55 +14047,38 @@ function isTrustedExternalUrl(url: string) {
                           </View>
                         )}
                       </View>
-                      {/* Row 4: 5-dimension progress bars (wider + labelled) */}
+                      {/* 20-Dimension issue-redressal snapshot — compact one-line
+                          strip. Signature of the app; stays on Home but tightened. */}
                       {issueActive && (
-                        <View style={{ marginTop: 12, gap: 6 }}>
-                          <Text style={{ color: "#1E3A5A", fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>20-Dimension Progress</Text>
-                          <View style={{ flexDirection: "row", gap: 5 }}>
+                        <View style={{ marginTop: 10 }}>
+                          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                            <Text style={{ color: "#63DED0", fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
+                              20-dim redressal
+                            </Text>
+                            <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
+                              <Text style={{ color: "#94A3B8", fontSize: 9, fontWeight: "700" }}>Details →</Text>
+                            </Pressable>
+                          </View>
+                          <View style={{ flexDirection: "row", gap: 4 }}>
                             {([
-                              { label: "Practical", short: "Prac", color: "#34D399" },
-                              { label: "Emotional", short: "Emot", color: "#F9A8D4" },
-                              { label: "Psychological", short: "Psych", color: "#818CF8" },
-                              { label: "Spiritual", short: "Spirit", color: "#FCD34D" },
-                              { label: "Cultural", short: "Cult", color: "#FB923C" },
+                              { label: "Practical", emoji: "🎯", color: "#34D399" },
+                              { label: "Emotional", emoji: "💗", color: "#F9A8D4" },
+                              { label: "Psychological", emoji: "🧠", color: "#818CF8" },
+                              { label: "Spiritual", emoji: "✨", color: "#FCD34D" },
+                              { label: "Cultural", emoji: "🌍", color: "#FB923C" },
                             ] as const).map((dim) => (
-                              <View key={dim.label} style={{ flex: 1, backgroundColor: dim.color + "12", borderRadius: 8, paddingVertical: 7, alignItems: "center", borderWidth: 1, borderColor: dim.color + "30" }}>
-                                <Text style={{ fontSize: 11 }}>{dim.color === "#34D399" ? "🎯" : dim.color === "#F9A8D4" ? "💗" : dim.color === "#818CF8" ? "🧠" : dim.color === "#FCD34D" ? "✨" : "🌍"}</Text>
-                                <Text style={{ color: dim.color, fontSize: 8, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.3, marginTop: 2 }}>{dim.short}</Text>
+                              <View key={dim.label} style={{ flex: 1, backgroundColor: dim.color + "12", borderRadius: 6, paddingVertical: 5, alignItems: "center", borderWidth: 1, borderColor: dim.color + "30", flexDirection: "row", justifyContent: "center", gap: 4 }}>
+                                <Text style={{ fontSize: 10 }}>{dim.emoji}</Text>
+                                <Text style={{ color: dim.color, fontSize: 8, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.3 }}>{dim.label.slice(0, 4)}</Text>
                               </View>
                             ))}
                           </View>
                         </View>
                       )}
                     </View>
-                    {/* ── Quick-nav strip — bigger icons, highlighted ── */}
-                    <View style={{ backgroundColor: "#030C16", borderBottomWidth: 1, borderBottomColor: "rgba(99,222,208,0.08)" }}>
-                      <View style={{ flexDirection: "row", paddingHorizontal: 6, paddingVertical: 8, gap: 2 }}>
-                        {([
-                          { tab: "journal" as TabId, icon: "📖", label: "Journal", color: "#34D399" },
-                          { tab: "guide" as TabId, icon: "🧭", label: "Path", color: "#60A5FA" },
-                          { tab: "aihelp" as TabId, icon: "💬", label: "Guide", color: "#A78BFA" },
-                          { tab: "play" as TabId, icon: "🎯", label: "Practice", color: "#FB923C" },
-                          { tab: "insights" as TabId, icon: "📊", label: "Patterns", color: "#22D3EE" },
-                          { tab: "focus" as TabId, icon: "🧘", label: "Calm", color: "#86EFAC" },
-                          { tab: "vedic" as TabId, icon: "🪐", label: "Chart", color: "#C084FC" },
-                          { tab: "redress" as TabId, icon: "⚖️", label: "Help", color: "#F87171" },
-                        ] as const).map((item) => (
-                          <Pressable
-                            key={item.tab}
-                            accessibilityRole="button"
-                            onPress={() => handleTabPress(item.tab)}
-                            style={({ pressed }) => ({
-                              flex: 1, alignItems: "center", paddingVertical: 7, borderRadius: 10,
-                              backgroundColor: pressed ? item.color + "18" : "transparent",
-                            })}
-                          >
-                            <Text style={{ fontSize: 18 }}>{item.icon}</Text>
-                            <Text style={{ color: item.color, fontSize: 8, fontWeight: "800", marginTop: 3, textTransform: "uppercase", letterSpacing: 0.2, opacity: 0.85 }}>{item.label}</Text>
-                          </Pressable>
-                        ))}
-                      </View>
-                    </View>
+                    {/* Quick-nav strip removed — duplicates the top tab rail and bottom nav.
+                        Users reach every section via the tab rail / bottom nav; the Home hero
+                        stays clean. */}
                   </View>
                 );
               })()}
@@ -14220,6 +14708,77 @@ function isTrustedExternalUrl(url: string) {
                   onEndJourney={endJourney}
                 />
               )}
+
+              {/* Issue-matched practice — recommends a specific tone + breath pattern
+                  for the user's active issue. Tap → Practice/Calm tab with that
+                  practice pre-selected. */}
+              {selectedIssueGuide.id !== "general" && (() => {
+                type Rec = { emoji: string; title: string; body: string; toneId: string; breath: string; color: string };
+                const REC: Partial<Record<IssueId, Rec>> = {
+                  anxiety:      { emoji: "🌊", title: "Slow-wave settling", body: "Theta binaural 5 Hz + 4-7-8 breath. 6 min softens the nervous system.", toneId: "binaural-theta-5", breath: "4-7-8", color: "#22D3EE" },
+                  anger:        { emoji: "🌧️", title: "Rain-bed cool-down", body: "Ambient rain + box breath (4-4-4-4). Discharge without acting.", toneId: "ambient-rain", breath: "4-4-4-4 box", color: "#60A5FA" },
+                  fear:         { emoji: "🛡️", title: "Ground + Hanuman Chalisa", body: "Solfeggio 396 Hz for release + repeat the courage line 3×.", toneId: "sol-396", breath: "Slow diaphragm", color: "#FCD34D" },
+                  burnout:      { emoji: "💆", title: "432 Hz restoration", body: "432 Hz ambient + long exhale (4-in, 8-out). Rest without guilt.", toneId: "sol-432", breath: "4-in / 8-out", color: "#34D399" },
+                  loneliness:   { emoji: "🎵", title: "Krishna flute + heart open", body: "Bansuri melody + one message to one trusted person after.", toneId: "trend-krishna-flute", breath: "Natural", color: "#F472B6" },
+                  grief:        { emoji: "🕯️", title: "Om chant + release", body: "Group Om chant. Let the sound carry weight for you.", toneId: "trend-om-chant", breath: "In-through-nose, out-through-mouth", color: "#C084FC" },
+                  addiction:    { emoji: "⚡", title: "40 Hz gamma focus", body: "40 Hz reset + urge surfing: watch the wave for 10 min, don't act.", toneId: "reset-gamma", breath: "Steady 5 sec each", color: "#A855F7" },
+                  overconfidence: { emoji: "🧭", title: "Quiet close reset", body: "Very soft close pulse + 5 slow breaths. Cool the heat before deciding.", toneId: "reset-quiet", breath: "5 slow", color: "#818CF8" },
+                  trauma:       { emoji: "🌱", title: "Bilateral soft + safety cue", body: "Soft bilateral tapping 1 Hz + name 5 things you see in the room.", toneId: "bilateral-soft-1", breath: "Grounding count", color: "#6EE7B7" },
+                  stigma:       { emoji: "🌟", title: "528 Hz heart + acceptance", body: "528 Hz + self-compassion phrase: 'this belongs to my humanity too'.", toneId: "sol-528", breath: "Natural", color: "#F0ABFC" },
+                  health:       { emoji: "🫁", title: "Iso 6 Hz + body scan", body: "Isochronic 6 Hz + slow head-to-toe scan. Note without fixing.", toneId: "iso-6", breath: "Body-scan pace", color: "#38BDF8" },
+                  financial:    { emoji: "🌿", title: "Alpha 8 + one small action", body: "Alpha 8 Hz for calm focus, then take one 10-minute money step.", toneId: "binaural-alpha-8", breath: "Steady 4-4", color: "#84CC16" },
+                  relationship: { emoji: "💗", title: "Bollywood chill + reflect", body: "Instrumental chill + write one sentence you can't say aloud yet.", toneId: "trend-bolly-chill", breath: "Natural", color: "#FB7185" },
+                  parenting:    { emoji: "🍃", title: "Forest birds + patience", body: "Dawn forest + one moment of 'I will breathe before I speak'.", toneId: "trend-forest-birds", breath: "In 4, out 4", color: "#22C55E" },
+                  academic:     { emoji: "📚", title: "Pomodoro 25/5 + lo-fi", body: "25 min lo-fi focus + 5 min break. Repeat three times max.", toneId: "social-pomodoro", breath: "Diaphragmatic", color: "#0EA5E9" },
+                  identity:     { emoji: "🌌", title: "Deep sleep drone + who-am-I", body: "Delta drone + repeat 'I am the awareness behind all this' 5×.", toneId: "trend-deep-sleep", breath: "Very slow", color: "#8B5CF6" },
+                };
+                const rec = REC[selectedIssueGuide.id];
+                if (!rec) return null;
+                return (
+                  <View style={{
+                    marginHorizontal: 16, marginBottom: 12,
+                    backgroundColor: "#1A1030", borderRadius: 16,
+                    borderWidth: 1, borderColor: rec.color + "45", padding: 14
+                  }}>
+                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
+                      <Text style={{ fontSize: 30 }}>{rec.emoji}</Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ color: rec.color, fontSize: 10, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                          Practice for {selectedIssueGuide.label}
+                        </Text>
+                        <Text style={{ color: "#F0F9FF", fontSize: 15, fontWeight: "800", marginTop: 2 }}>{rec.title}</Text>
+                        <Text style={{ color: "rgba(240,249,255,0.75)", fontSize: 12, lineHeight: 17, marginTop: 4 }}>{rec.body}</Text>
+                        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                          <View style={{ backgroundColor: rec.color + "18", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: rec.color + "40" }}>
+                            <Text style={{ color: rec.color, fontSize: 10, fontWeight: "800" }}>🎵 {rec.toneId}</Text>
+                          </View>
+                          <View style={{ backgroundColor: rec.color + "18", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: rec.color + "40" }}>
+                            <Text style={{ color: rec.color, fontSize: 10, fontWeight: "800" }}>🫁 {rec.breath}</Text>
+                          </View>
+                        </View>
+                        <Pressable
+                          onPress={() => { setSelectedToneId(rec.toneId); handleTabPress("focus"); }}
+                          accessibilityRole="button"
+                          style={({ pressed }) => ({
+                            marginTop: 10, alignSelf: "flex-start",
+                            backgroundColor: pressed ? rec.color + "55" : rec.color + "30",
+                            borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8,
+                            borderWidth: 1, borderColor: rec.color + "60"
+                          })}>
+                          <Text style={{ color: rec.color, fontSize: 12, fontWeight: "900" }}>Start this practice →</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </View>
+                );
+              })()}
+
+              {/* National health directory belongs here — mental-health helplines,
+                  verified doctor / psychologist search, hospitals, telemedicine.
+                  Moved out of the Redress tab into the Wellness tab where the
+                  user is already thinking about care. */}
+              <HealthDirectoryCard openWebsite={openWebsite} />
+
               <MeditationSection
                 selectedIssueGuide={selectedIssueGuide}
                 selectedIdentityLabel={profileDisplayName}
@@ -14239,6 +14798,13 @@ function isTrustedExternalUrl(url: string) {
 
           {activeTab === "vedic" && (
             <View onLayout={captureSectionLayout("vedic")}>
+              {/* Active issue chip — keeps chart tab in sync with the user's focus */}
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginTop: 4, marginBottom: 8, backgroundColor: "#241640", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: "rgba(192,132,252,0.3)" }}>
+                  <Text style={{ color: "#C084FC", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#C084FC", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#94A3B8", fontWeight: "400" }}>{selectedIssueGuide.label} — read the chart below through this lens.</Text></Text>
+                </View>
+              )}
 
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "vedic" && (
                 <GuidedJourneyBar
@@ -14268,6 +14834,94 @@ function isTrustedExternalUrl(url: string) {
                 onOpenHome={() => handleTabPress("today")}
                 selectedIssueGuide={selectedIssueGuide}
               />
+
+              {/* ── Astro two-way chat — ask anything, engine replies with Rashi + Dasha + Panchang lens + remedy ── */}
+              <View style={{
+                marginHorizontal: 16, marginTop: 16, marginBottom: 12,
+                backgroundColor: "#1A0F2E", borderRadius: 18,
+                borderWidth: 1, borderColor: "rgba(252,211,77,0.35)",
+                padding: 16, gap: 12
+              }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                  <Text style={{ fontSize: 22 }}>🔮</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: "#FCD34D", fontSize: 11, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                      Ask the chart
+                    </Text>
+                    <Text style={{ color: "#F0F9FF", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
+                      Two-way astro guidance
+                    </Text>
+                    <Text style={{ color: "rgba(240,249,255,0.65)", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
+                      Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha and today's Panchang, then returns a remedy.
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Composer */}
+                <View style={{
+                  backgroundColor: "#0D1520", borderRadius: 12, padding: 10, gap: 8,
+                  borderWidth: 1, borderColor: "rgba(252,211,77,0.2)"
+                }}>
+                  <TextInput
+                    value={astroChatDraft}
+                    onChangeText={setAstroChatDraft}
+                    placeholder="e.g. Will I get this job? Should I marry now? Why am I always tired?"
+                    placeholderTextColor="rgba(255,255,255,0.35)"
+                    multiline
+                    style={{
+                      color: "#F0F9FF", fontSize: 14, minHeight: 46, lineHeight: 20,
+                      padding: 8
+                    }}
+                  />
+                  <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 8 }}>
+                    <Pressable
+                      onPress={submitAstroQuestion}
+                      disabled={astroChatDraft.trim().length === 0}
+                      accessibilityRole="button"
+                      style={({ pressed }) => ({
+                        backgroundColor: astroChatDraft.trim().length === 0 ? "#334155" : (pressed ? "#B45309" : "#D97706"),
+                        borderRadius: 10, paddingHorizontal: 16, paddingVertical: 9
+                      })}>
+                      <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>Ask the chart →</Text>
+                    </Pressable>
+                  </View>
+                </View>
+
+                {/* Conversation history */}
+                {astroChatMessages.length > 0 && (
+                  <View style={{ gap: 10 }}>
+                    {astroChatMessages.map((m) => (
+                      <View key={m.id} style={{
+                        backgroundColor: m.role === "user" ? "#0F1E38" : "#241640",
+                        borderRadius: 12, padding: 12,
+                        borderWidth: 1, borderColor: m.role === "user" ? "rgba(56,189,248,0.25)" : "rgba(252,211,77,0.25)"
+                      }}>
+                        <Text style={{
+                          color: m.role === "user" ? "#38BDF8" : "#FCD34D",
+                          fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4
+                        }}>
+                          {m.role === "user" ? "You asked" : `Chart reply · ${m.category ?? "general"}`}
+                        </Text>
+                        <Text style={{ color: "#F0F9FF", fontSize: 13, lineHeight: 19, whiteSpace: "pre-wrap" } as any}>
+                          {m.text}
+                        </Text>
+                        {m.remedy && (
+                          <View style={{
+                            marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(252,211,77,0.15)"
+                          }}>
+                            <Text style={{ color: "#FCD34D", fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
+                              Vedic remedy
+                            </Text>
+                            <Text style={{ color: "rgba(240,249,255,0.85)", fontSize: 12, lineHeight: 17, whiteSpace: "pre-wrap" } as any}>
+                              {m.remedy}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
             </View>
           )}
 
@@ -14437,6 +15091,29 @@ function isTrustedExternalUrl(url: string) {
                   onEndJourney={endJourney}
                 />
               )}
+              {/* Safe-space rules banner — sets tone, tells users what's protected + expected */}
+              <View style={{
+                marginHorizontal: 16, marginBottom: 10,
+                backgroundColor: "#0E1F1F", borderRadius: 14,
+                borderWidth: 1, borderColor: "rgba(52,211,153,0.28)", padding: 14, gap: 8
+              }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ fontSize: 18 }}>🌱</Text>
+                  <Text style={{ color: "#6EE7B7", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
+                    Safe-space rules
+                  </Text>
+                </View>
+                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 17 }}>
+                  Verified-only posting · Moderated for safety · No advice on self-harm — the app routes those to a helpline · Report anything harmful with the flag icon on any post.
+                </Text>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
+                  {["Kind", "Specific", "First-person", "No diagnosis", "No shaming"].map((rule) => (
+                    <View key={rule} style={{ backgroundColor: "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(52,211,153,0.28)" }}>
+                      <Text style={{ color: "#6EE7B7", fontSize: 10, fontWeight: "800" }}>✓ {rule}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
               <CommunitySection
                 communityMessages={visibleCommunityMessages}
                 communityFilter={communityFilter}
@@ -16735,18 +17412,37 @@ function ToneLibrarySection({
                             <Text style={{ color: "#475569", fontSize: 11, marginTop: 1 }}>{toneMode.use}</Text>
                           </View>
                           <View style={{ flexDirection: "row", gap: 6 }}>
-                            <Pressable
-                              onPress={() => { setSelectedToneId(toneMode.id); setLoopEnabled(false); void playRelaxingToneCue(toneMode); }}
-                              style={{ backgroundColor: "#0E4A44", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
-                            >
-                              <Text style={{ color: "#34D399", fontSize: 11, fontWeight: "900" }}>▶</Text>
-                            </Pressable>
-                            <Pressable
-                              onPress={() => { setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
-                              style={{ backgroundColor: "#0F3460", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
-                            >
-                              <Text style={{ color: "#60A5FA", fontSize: 11, fontWeight: "900" }}>🔁</Text>
-                            </Pressable>
+                            {toneMode.externalUrl ? (
+                              // Social-trending entries route to the curated
+                              // external search (lo-fi, phonk, bhajan, etc).
+                              <Pressable
+                                onPress={() => {
+                                  const url = toneMode.externalUrl!;
+                                  void Linking.openURL(url).catch(() =>
+                                    Alert.alert(toneMode.label, `Could not open external link.`)
+                                  );
+                                }}
+                                accessibilityLabel={toneMode.externalLabel ?? "Open external link"}
+                                style={{ backgroundColor: "#4C1D95", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                              >
+                                <Text style={{ color: "#C4B5FD", fontSize: 11, fontWeight: "900" }}>↗</Text>
+                              </Pressable>
+                            ) : (
+                              <>
+                                <Pressable
+                                  onPress={() => { setSelectedToneId(toneMode.id); setLoopEnabled(false); void playRelaxingToneCue(toneMode); }}
+                                  style={{ backgroundColor: "#0E4A44", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                                >
+                                  <Text style={{ color: "#34D399", fontSize: 11, fontWeight: "900" }}>▶</Text>
+                                </Pressable>
+                                <Pressable
+                                  onPress={() => { setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
+                                  style={{ backgroundColor: "#0F3460", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                                >
+                                  <Text style={{ color: "#60A5FA", fontSize: 11, fontWeight: "900" }}>🔁</Text>
+                                </Pressable>
+                              </>
+                            )}
                           </View>
                         </Pressable>
                       );
@@ -19613,6 +20309,610 @@ function IssueGuideSection({
   );
 }
 
+// Free legal aid + women + child helpline directory (nationwide).
+// NALSA statutory right: EVERY citizen with income under threshold (or in
+// vulnerable category — woman, child, SC/ST, disabled, in custody, mass
+// disaster victim, industrial workman, victim of trafficking) gets FREE
+// legal representation. This card exposes it.
+function FreeLegalAidCard({
+  openWebsite,
+}: {
+  openWebsite: (url: string, title: string) => Promise<void>;
+}) {
+  const callNumber = (num: string, label: string) => {
+    const clean = num.replace(/[^0-9+]/g, "");
+    void Linking.openURL(`tel:${clean}`).catch(() =>
+      Alert.alert(label, `Please dial ${num}`)
+    );
+  };
+
+  const NATIONAL_HELPLINES: Array<{ label: string; number: string; url?: string; note: string; color: string }> = [
+    { label: "NALSA — Free legal aid (National)", number: "15100", url: "https://nalsa.gov.in/", note: "Statutory RIGHT. Every state has SLSA + every district has DLSA. Free lawyer, free court fees, in your language.", color: "#34D399" },
+    { label: "Women's Helpline (National)", number: "181", url: "https://wcd.nic.in/schemes/women-helpline-scheme", note: "One-Stop Centre (Sakhi) network. Legal aid + medical + shelter + counselling.", color: "#F472B6" },
+    { label: "Women in Distress", number: "1091", url: "", note: "Police Women helpline. Immediate protection for any woman in distress.", color: "#EC4899" },
+    { label: "Childline (National)", number: "1098", url: "https://www.childlineindia.org/", note: "24x7 for any child in need. Rescue, medical, counselling, legal — all free.", color: "#60A5FA" },
+    { label: "Emergency (Police / Fire / Ambulance)", number: "112", url: "", note: "Nationwide unified emergency. Fastest for immediate danger.", color: "#EF4444" },
+    { label: "Cyber Fraud Golden Hour", number: "1930", url: "https://cybercrime.gov.in/", note: "Call within 24hr of financial cyber fraud to freeze funds. Faster than filing FIR first.", color: "#818CF8" },
+    { label: "NCW (National Commission for Women)", number: "7827170170", url: "https://ncw.nic.in/", note: "WhatsApp/call. Constitutional body. Direct complaints of any women's rights violation.", color: "#FB7185" },
+    { label: "NCPCR (Child Rights)", number: "011-25478250", url: "https://ncpcr.gov.in/", note: "National Commission for Protection of Child Rights. Statutory. Files POCSO complaints.", color: "#38BDF8" },
+    { label: "NHRC (Human Rights)", number: "14433", url: "https://nhrc.nic.in/", note: "National Human Rights Commission. Complaints of custodial abuse, encounter, torture, etc.", color: "#A78BFA" },
+    { label: "Senior Citizen Helpline", number: "14567", url: "", note: "For elder abuse, neglect, property harassment.", color: "#FBBF24" },
+    { label: "Anti-Ragging (UGC)", number: "1800-180-5522", url: "https://www.antiragging.in/", note: "Ragging, hostel intimidation. Anonymous. Covers staff misconduct too.", color: "#FCD34D" },
+    { label: "Mental Health (KIRAN)", number: "1800-599-0019", url: "https://www.mohfw.gov.in/", note: "24x7 free mental health support. 13 languages. Govt of India.", color: "#86EFAC" },
+  ];
+
+  const [expanded, setExpanded] = useState(true);
+
+  return (
+    <View style={{
+      marginBottom: 14, borderRadius: 14,
+      backgroundColor: "#0A1F1A", borderWidth: 1, borderColor: "rgba(52,211,153,0.35)", overflow: "hidden"
+    }}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => setExpanded((v) => !v)}
+        style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.85 : 1 }]}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: "#6EE7B7", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            ⚖️ Free legal aid · Women · Child · Nationwide helplines
+          </Text>
+          <Text style={{ color: "#94A3B8", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
+            NALSA free legal representation is your statutory RIGHT. Every state has SLSA + every district has DLSA. Tap-to-dial. Tap-to-open portal.
+          </Text>
+        </View>
+        <Text style={{ color: "#6EE7B7", fontSize: 11, marginLeft: 8 }}>{expanded ? "▲" : "▼"}</Text>
+      </Pressable>
+
+      {expanded && (
+        <View style={{ padding: 10, gap: 8, borderTopWidth: 1, borderTopColor: "rgba(52,211,153,0.15)" }}>
+          {NATIONAL_HELPLINES.map((h) => (
+            <View key={h.label} style={{
+              flexDirection: "row", alignItems: "center", gap: 8,
+              backgroundColor: h.color + "10", borderRadius: 10, padding: 10,
+              borderWidth: 1, borderColor: h.color + "30"
+            }}>
+              <View style={{ width: 4, backgroundColor: h.color, alignSelf: "stretch", borderRadius: 2 }} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: h.color, fontSize: 12, fontWeight: "800" }}>{h.label}</Text>
+                <Text style={{ color: "#94A3B8", fontSize: 11, lineHeight: 15, marginTop: 2 }}>{h.note}</Text>
+              </View>
+              <View style={{ flexDirection: "column", gap: 4 }}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Call ${h.label}`}
+                  onPress={() => callNumber(h.number, h.label)}
+                  style={{ backgroundColor: h.color, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, minWidth: 78, alignItems: "center" }}
+                >
+                  <Text style={{ color: "#000", fontSize: 11, fontWeight: "900" }}>📞 {h.number}</Text>
+                </Pressable>
+                {h.url ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => void openWebsite(h.url!, h.label)}
+                    style={{ backgroundColor: h.color + "25", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, minWidth: 78, alignItems: "center", borderWidth: 1, borderColor: h.color + "50" }}
+                  >
+                    <Text style={{ color: h.color, fontSize: 10, fontWeight: "800" }}>Portal ↗</Text>
+                  </Pressable>
+                ) : null}
+              </View>
+            </View>
+          ))}
+          <View style={{ backgroundColor: "rgba(52,211,153,0.08)", borderRadius: 10, padding: 10, borderLeftWidth: 3, borderLeftColor: "#34D399", marginTop: 4 }}>
+            <Text style={{ color: "#6EE7B7", fontSize: 10, fontWeight: "900", letterSpacing: 1 }}>💡 KNOW YOUR RIGHT</Text>
+            <Text style={{ color: "rgba(110,231,183,0.85)", fontSize: 11, lineHeight: 16, marginTop: 3 }}>
+              Under the Legal Services Authorities Act 1987, free legal aid is a fundamental right (Article 39A) for: women, children, SC/ST, disabled, victims of trafficking / mass disaster / industrial disaster, persons in custody, and anyone with income below the state threshold. Walk into any DLSA (District Legal Services Authority — every district court complex has one). No fees. Your own lawyer. Court fees waived.
+            </Text>
+          </View>
+        </View>
+      )}
+    </View>
+  );
+}
+
+// All-India govt helplines + sector grievance cells. One card, organised by
+// sector, tap-to-call for numbers, tap-to-open for portals. Every entry is
+// a stable government portal / official helpline (not a rotating officer).
+function GovtGrievanceCellsCard({
+  openWebsite,
+}: {
+  openWebsite: (url: string, title: string) => Promise<void>;
+}) {
+  const callNumber = (num: string, label: string) => {
+    const clean = num.replace(/[^0-9+]/g, "");
+    void Linking.openURL(`tel:${clean}`).catch(() =>
+      Alert.alert(label, `Please dial ${num}`)
+    );
+  };
+
+  type Cell = { label: string; number?: string; url?: string; note: string };
+  const SECTIONS: Array<{ title: string; color: string; cells: Cell[] }> = [
+    { title: "Single-window grievance", color: "#60A5FA", cells: [
+      { label: "CPGRAMS — Central Public Grievance", url: "https://pgportal.gov.in/", note: "Single window for every central ministry + state. 30-day resolution target. Auto-escalation." },
+      { label: "PMO Grievance", url: "https://pmindia.gov.in/en/interact-with-honble-pm/", note: "Direct write to PM office. Routed to appropriate ministry." },
+    ]},
+    { title: "Consumer + market", color: "#34D399", cells: [
+      { label: "National Consumer Helpline", number: "1915", url: "https://consumerhelpline.gov.in/", note: "Product / service complaints. INGRAM portal." },
+      { label: "Consumer Commission (Jago Grahak)", url: "https://consumeraffairs.nic.in/", note: "District / state / national commissions. Free up to ₹50 lakh." },
+      { label: "RBI Ombudsman (Banks / NBFCs / UPI)", number: "14448", url: "https://cms.rbi.org.in/", note: "Bank complaints unresolved in 30 days. Free, online." },
+      { label: "SEBI SCORES (securities)", url: "https://scores.sebi.gov.in/", note: "Mutual funds, brokers, IPOs, listed companies. 30-day timeline." },
+      { label: "IRDAI (insurance)", number: "1800-4254-732", url: "https://bimabharosa.irdai.gov.in/", note: "Any insurance claim dispute or policy grievance." },
+      { label: "TRAI (telecom)", url: "https://www.tccms.gov.in/", note: "Mobile / broadband / DTH complaints. Ombudsman route via TDSAT if unresolved." },
+    ]},
+    { title: "Cyber + digital", color: "#818CF8", cells: [
+      { label: "Cybercrime Portal", url: "https://cybercrime.gov.in/", note: "Women/child anonymous route. All types of cybercrime. 1930 for financial fraud." },
+      { label: "MeitY Grievance", url: "https://www.meity.gov.in/", note: "IT Ministry — issues with govt digital services (Aadhaar, DigiLocker, UPI infra)." },
+      { label: "UIDAI Aadhaar", number: "1947", url: "https://uidai.gov.in/", note: "Aadhaar issues, update, correction, misuse." },
+    ]},
+    { title: "Constitutional bodies", color: "#F472B6", cells: [
+      { label: "NCW (Women)", number: "7827170170", url: "https://ncw.nic.in/", note: "National Commission for Women. Direct complaints." },
+      { label: "NCPCR (Child rights)", number: "011-25478250", url: "https://ncpcr.gov.in/", note: "POCSO + all child rights violations." },
+      { label: "NHRC (Human rights)", number: "14433", url: "https://nhrc.nic.in/", note: "Custodial abuse, encounter, torture, discrimination." },
+      { label: "NCSC (SC rights)", url: "https://ncsc.nic.in/", note: "Scheduled Caste atrocities + rights." },
+      { label: "NCST (ST rights)", url: "https://ncst.nic.in/", note: "Scheduled Tribe atrocities + rights." },
+      { label: "NCM (Minorities)", url: "https://ncm.nic.in/", note: "National Commission for Minorities." },
+      { label: "NCBC (OBC)", url: "https://ncbc.nic.in/", note: "OBC rights + reservation grievances." },
+    ]},
+    { title: "Employment + workplace", color: "#FCD34D", cells: [
+      { label: "EPFO (Provident Fund)", number: "1800-118-005", url: "https://epfigms.gov.in/", note: "PF withdrawal, transfer, employer default. Fastest for money owed." },
+      { label: "ESIC (Employee State Insurance)", number: "1800-11-2526", url: "https://www.esic.gov.in/", note: "Medical care, disability, maternity benefits under ESI Act." },
+      { label: "Labour Ministry Portal", url: "https://labour.gov.in/", note: "Wage theft, wrongful termination, workplace safety, migrant labour." },
+      { label: "SHe-Box (POSH)", url: "https://shebox.wcd.gov.in/", note: "Central portal for sexual harassment complaints across workplaces." },
+    ]},
+    { title: "Tax + revenue", color: "#A78BFA", cells: [
+      { label: "Income Tax Grievance", number: "1800-103-4455", url: "https://www.incometax.gov.in/", note: "Refunds, notices, PAN issues, TDS mismatch." },
+      { label: "GST Grievance", url: "https://selfservice.gstsystem.in/", note: "GST portal issues, ITC blockage, refund delays." },
+      { label: "CBIC Customs / Excise", url: "https://cbec-easiest.gov.in/", note: "Customs, excise, service-tax legacy." },
+    ]},
+    { title: "Travel + transport", color: "#22D3EE", cells: [
+      { label: "Rail Madad (IR)", number: "139", url: "https://railmadad.indianrailways.gov.in/", note: "Any Indian Railways complaint. Ticket, staff, cleanliness, security." },
+      { label: "AirSewa (Aviation)", number: "155433", url: "https://airsewa.gov.in/", note: "Flight delays, baggage, refunds, airport service." },
+      { label: "Passport Seva", number: "1800-258-1800", url: "https://portal2.passportindia.gov.in/", note: "Passport application, delays, corrections." },
+      { label: "Sarathi (RTO Driving Licence)", url: "https://parivahan.gov.in/", note: "Driving licence, vehicle registration, RTO complaints." },
+    ]},
+    { title: "Health + welfare", color: "#F87171", cells: [
+      { label: "Ayushman Bharat (PM-JAY)", number: "14555", url: "https://pmjay.gov.in/", note: "Free hospitalisation up to ₹5L/year for eligible families." },
+      { label: "Mental Health (KIRAN)", number: "1800-599-0019", url: "https://www.mohfw.gov.in/", note: "24×7, 13 languages, free. Govt of India." },
+      { label: "Health Ministry Grievance", url: "https://www.mohfw.gov.in/pdf/StatusofOnlineGrievance.pdf", note: "Hospital, health scheme, drug-price complaints." },
+      { label: "AIDS Helpline", number: "1097", url: "", note: "NACO. 24×7 counselling + treatment info." },
+    ]},
+    { title: "Elections + governance", color: "#FB923C", cells: [
+      { label: "cVIGIL (Election Commission)", url: "https://eci.gov.in/mobile-app-cvigil/", note: "Report MCC violations during elections." },
+      { label: "ECI Complaints", number: "1950", url: "https://eci.gov.in/", note: "Voter enrolment, EPIC, election-day issues." },
+      { label: "RTI Portal (Central)", url: "https://rtionline.gov.in/", note: "File RTI online for central ministries. State portals separate." },
+    ]},
+    { title: "Vulnerable + welfare groups", color: "#22C55E", cells: [
+      { label: "Senior Citizen Helpline", number: "14567", url: "", note: "Elder abuse, neglect, property harassment." },
+      { label: "Disability Rights (Divyangjan)", number: "1800-233-5956", url: "https://depwd.gov.in/", note: "Persons with disabilities grievance + certification." },
+      { label: "Transgender Helpline", url: "https://transgender.dosje.gov.in/", note: "National Portal for Transgender Persons. Certification, welfare, complaints." },
+      { label: "Anti-trafficking (NHRC)", number: "1800-11-2334", url: "https://nhrc.nic.in/human-rights/trafficking-persons", note: "Human trafficking + bonded labour." },
+      { label: "Missing Persons (Khoya-Paya)", url: "https://khoyapaya.gov.in/", note: "Report / trace missing children + adults." },
+    ]},
+  ];
+
+  const [openSection, setOpenSection] = useState<string | null>("Single-window grievance");
+
+  return (
+    <View style={{
+      marginBottom: 14, borderRadius: 14,
+      backgroundColor: "#0F1524", borderWidth: 1, borderColor: "rgba(129,140,248,0.35)", overflow: "hidden"
+    }}>
+      <View style={{ paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "rgba(129,140,248,0.15)" }}>
+        <Text style={{ color: "#A5B4FC", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          🏛️ All-India govt helplines + grievance cells
+        </Text>
+        <Text style={{ color: "#94A3B8", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
+          {SECTIONS.length} sectors · {SECTIONS.reduce((a, s) => a + s.cells.length, 0)} channels. CPGRAMS is the single window for every central ministry + state.
+        </Text>
+      </View>
+      {SECTIONS.map((section) => {
+        const isOpen = openSection === section.title;
+        return (
+          <View key={section.title}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setOpenSection(isOpen ? null : section.title)}
+              style={({ pressed }) => [{
+                paddingHorizontal: 14, paddingVertical: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+                backgroundColor: pressed ? "rgba(255,255,255,0.03)" : "transparent",
+                borderTopWidth: 1, borderTopColor: "rgba(129,140,248,0.1)"
+              }]}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                <View style={{ width: 4, height: 18, backgroundColor: section.color, borderRadius: 2 }} />
+                <Text style={{ color: section.color, fontSize: 12, fontWeight: "800" }}>{section.title}</Text>
+                <View style={{ backgroundColor: section.color + "20", borderRadius: 999, paddingHorizontal: 6, paddingVertical: 1 }}>
+                  <Text style={{ color: section.color, fontSize: 10, fontWeight: "800" }}>{section.cells.length}</Text>
+                </View>
+              </View>
+              <Text style={{ color: section.color, fontSize: 11 }}>{isOpen ? "▲" : "▼"}</Text>
+            </Pressable>
+            {isOpen && (
+              <View style={{ backgroundColor: "#0A0F1C", padding: 10, gap: 8 }}>
+                {section.cells.map((cell) => (
+                  <View key={cell.label} style={{
+                    flexDirection: "row", alignItems: "center", gap: 8,
+                    backgroundColor: section.color + "10", borderRadius: 10, padding: 10,
+                    borderWidth: 1, borderColor: section.color + "28"
+                  }}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ color: section.color, fontSize: 12, fontWeight: "800" }}>{cell.label}</Text>
+                      <Text style={{ color: "#94A3B8", fontSize: 11, lineHeight: 15, marginTop: 2 }}>{cell.note}</Text>
+                    </View>
+                    <View style={{ flexDirection: "column", gap: 4 }}>
+                      {cell.number ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`Call ${cell.label}`}
+                          onPress={() => callNumber(cell.number!, cell.label)}
+                          style={{ backgroundColor: section.color, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5, minWidth: 80, alignItems: "center" }}
+                        >
+                          <Text style={{ color: "#000", fontSize: 10, fontWeight: "900" }}>📞 {cell.number}</Text>
+                        </Pressable>
+                      ) : null}
+                      {cell.url ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          onPress={() => void openWebsite(cell.url!, cell.label)}
+                          style={{ backgroundColor: section.color + "25", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4, minWidth: 80, alignItems: "center", borderWidth: 1, borderColor: section.color + "50" }}
+                        >
+                          <Text style={{ color: section.color, fontSize: 10, fontWeight: "800" }}>Portal ↗</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+// Unified directories hub — hosts the three redress-related directories
+// (legal aid + govt grievance cells + state officer directory) behind a
+// single card with internal tabs. Users get one entry point, not four
+// competing cards.
+function RedressDirectoriesHub({
+  openWebsite,
+  defaultLocality,
+}: {
+  openWebsite: (url: string, title: string) => Promise<void>;
+  defaultLocality?: string;
+}) {
+  const [tab, setTab] = useState<"legal" | "govt" | "state" | "health">("legal");
+  const tabs: Array<{ id: "legal" | "govt" | "state" | "health"; label: string; icon: string; color: string; sub: string }> = [
+    { id: "legal", label: "Legal aid + helplines", icon: "⚖️", color: "#34D399", sub: "NALSA · Women · Child" },
+    { id: "govt", label: "Govt grievance", icon: "🏛️", color: "#A5B4FC", sub: "CPGRAMS · sector-wise" },
+    { id: "state", label: "State police + officers", icon: "🏢", color: "#60A5FA", sub: "Portal · e-FIR · DC · cyber" },
+    { id: "health", label: "Health + hospitals", icon: "🏥", color: "#6EE7B7", sub: "Doctors · MH · Ayushman · eSanjeevani" },
+  ];
+  return (
+    <View style={{ marginBottom: 14 }}>
+      {/* Segmented header — one row of three tabs */}
+      <View style={{
+        flexDirection: "row", gap: 6, marginBottom: 10,
+        backgroundColor: "#0A0F1A", borderRadius: 12, padding: 4,
+        borderWidth: 1, borderColor: "rgba(148,163,184,0.2)"
+      }}>
+        {tabs.map((t) => {
+          const isActive = tab === t.id;
+          return (
+            <Pressable
+              key={t.id}
+              accessibilityRole="button"
+              onPress={() => setTab(t.id)}
+              style={({ pressed }) => ({
+                flex: 1, borderRadius: 9, paddingVertical: 8, paddingHorizontal: 6,
+                backgroundColor: isActive ? t.color + "20" : pressed ? "rgba(255,255,255,0.03)" : "transparent",
+                borderWidth: 1, borderColor: isActive ? t.color + "70" : "transparent",
+                alignItems: "center"
+              })}
+            >
+              <Text style={{ fontSize: 14 }}>{t.icon}</Text>
+              <Text style={{ color: isActive ? t.color : "#94A3B8", fontSize: 10, fontWeight: "900", marginTop: 2, textAlign: "center" }} numberOfLines={1}>
+                {t.label}
+              </Text>
+              <Text style={{ color: isActive ? t.color : "#64748B", fontSize: 9, marginTop: 1, opacity: 0.75, textAlign: "center" }} numberOfLines={1}>
+                {t.sub}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      {/* Body — render the selected directory (each card already has its
+          own affordances; we don't wrap or duplicate). */}
+      {tab === "legal" && <FreeLegalAidCard openWebsite={openWebsite} />}
+      {tab === "govt" && <GovtGrievanceCellsCard openWebsite={openWebsite} />}
+      {tab === "state" && <StateOfficerDirectoryCard openWebsite={openWebsite} defaultLocality={defaultLocality} />}
+      {tab === "health" && <HealthDirectoryCard openWebsite={openWebsite} />}
+    </View>
+  );
+}
+
+// National health directory — free mental-health helplines, verified doctor
+// / psychologist search (official registers), hospital empanelment lookup,
+// govt telemedicine. Individual clinics + phone numbers change constantly;
+// we route to the LIVE registers maintained by NMC, RCI, Ayushman Bharat,
+// CGHS, ESIC and MoHFW. Only helpline numbers are hardcoded (stable, national).
+function HealthDirectoryCard({
+  openWebsite,
+}: {
+  openWebsite: (url: string, title: string) => Promise<void>;
+}) {
+  const callNumber = (num: string, label: string) => {
+    const clean = num.replace(/[^0-9+]/g, "");
+    void Linking.openURL(`tel:${clean}`).catch(() =>
+      Alert.alert(label, `Please dial ${num}`)
+    );
+  };
+
+  type Row = { label: string; number?: string; url?: string; note: string };
+  const SECTIONS: Array<{ title: string; color: string; rows: Row[] }> = [
+    { title: "Free mental-health helplines (24×7 / crisis)", color: "#22C55E", rows: [
+      { label: "KIRAN (MoSJE, Govt of India)", number: "1800-599-0019", url: "https://socialjustice.gov.in/", note: "24×7, 13 languages. Free. First-line mental-health support + referral." },
+      { label: "Vandrevala Foundation Helpline", number: "1860-266-2345", url: "https://www.vandrevalafoundation.com/", note: "24×7. Free. Licensed counsellors. Also WhatsApp + video call." },
+      { label: "iCall (TISS)", number: "9152987821", url: "https://icallhelpline.org/", note: "Mon–Sat 8am–10pm. Free. Email + chat also. Trained counsellors from TISS." },
+      { label: "NIMHANS Toll-Free", number: "080-46110007", url: "https://nimhans.ac.in/", note: "National Institute of Mental Health and Neuro-Sciences — national referral centre + toll-free." },
+      { label: "iCare (Fortis)", number: "8376804102", url: "https://www.fortishealthcare.com/mental-health", note: "Free 24×7. English + Hindi. Fortis network." },
+      { label: "AASRA (Suicide prevention)", number: "9820466726", url: "http://www.aasra.info/", note: "24×7, all-India, free + confidential. Trained volunteers." },
+      { label: "Sneha India (Chennai, all-India)", number: "044-24640050", url: "https://snehaindia.org/", note: "24×7 suicide prevention. Volunteer-driven, decades old." },
+      { label: "COOJ (Goa)", number: "0832-2252525", url: "https://coojmentalhealthfoundation.org/", note: "Regional mental-health support — welcomes all-India callers." },
+    ]},
+    { title: "Verified doctor + psychologist search (official registers)", color: "#60A5FA", rows: [
+      { label: "NMC — Registered doctor search", url: "https://www.nmc.org.in/information-desk/indian-medical-register/", note: "National Medical Commission Indian Medical Register. Verify any allopathic doctor is genuinely registered." },
+      { label: "RCI — Registered clinical psychologists / counsellors", url: "https://rehabcouncil.nic.in/", note: "Rehabilitation Council of India Central Register. ONLY RCI-registered professionals can call themselves clinical psychologists / rehab counsellors in India." },
+      { label: "IAP — Indian Association of Clinical Psychologists", url: "https://iacpindia.com/", note: "Directory of practising clinical psychologists across India." },
+      { label: "IACP — Indian Association of Counselling Practitioners", url: "https://iacpindia.com/", note: "Directory of practising counsellors." },
+      { label: "IPS — Indian Psychiatric Society", url: "https://indianpsychiatricsociety.org/", note: "Directory of psychiatrists (MD Psychiatry). For medication + severe illness." },
+      { label: "CCH — Central Council of Homoeopathy register", url: "https://www.nch.org.in/", note: "Verify homoeopath registration." },
+      { label: "CCIM — Central Council of Indian Medicine (Ayurveda / Unani / Siddha)", url: "https://ccimindia.org/", note: "Verify AYUSH practitioner registration." },
+      { label: "Practo (private telemedicine platform)", url: "https://www.practo.com/", note: "Online + in-person consult. Filter by RCI/NMC verified." },
+      { label: "Manas Mitra (govt digital MH)", url: "https://www.mohfw.gov.in/", note: "Mental health digital platform, MoHFW. Free digital MH counsel + resources." },
+    ]},
+    { title: "Hospital empanelment + free care lookup", color: "#F472B6", rows: [
+      { label: "Ayushman Bharat PM-JAY hospital lookup", number: "14555", url: "https://hospitals.pmjay.gov.in/", note: "Free ₹5 lakh/yr hospitalisation for eligible families. Search empanelled hospitals in your district." },
+      { label: "CGHS panel hospitals (central govt employees)", url: "https://cghs.gov.in/", note: "Cashless hospitalisation for CGHS beneficiaries." },
+      { label: "ESIC network hospitals + dispensaries", number: "1800-11-2526", url: "https://www.esic.gov.in/", note: "Free care for insured workers + family. All-India network." },
+      { label: "AIIMS network (govt tertiary care)", url: "https://www.aiims.edu/", note: "All 22 AIIMS + New Delhi. OPD, IPD, referral." },
+      { label: "PMSSY (PGIMER etc — regional tertiary care)", url: "https://pmssy-mohfw.nic.in/", note: "6 AIIMS-like institutes + PGI-network — subsidised tertiary care." },
+      { label: "WHO India hospital directory", url: "https://www.who.int/india/", note: "WHO country office India — health system data + directory." },
+    ]},
+    { title: "Free / low-cost telemedicine", color: "#FCD34D", rows: [
+      { label: "eSanjeevani (Govt of India telemedicine)", url: "https://esanjeevani.mohfw.gov.in/", note: "Free consult with govt doctors. All-India. Multiple specialties incl. MH." },
+      { label: "eSanjeevani OPD (patient-to-doctor)", url: "https://esanjeevani.mohfw.gov.in/#/", note: "Book slot online. Free. Prescription generated." },
+      { label: "Aarogya Setu → health services", url: "https://www.aarogyasetu.gov.in/", note: "Consult + health-record access." },
+      { label: "ABHA (health-ID + digital records)", url: "https://healthid.ndhm.gov.in/", note: "Create Ayushman Bharat Health Account — carry your records everywhere." },
+    ]},
+    { title: "District Mental Health Programme + regional centres", color: "#A78BFA", rows: [
+      { label: "DMHP — District Mental Health Programme", url: "https://main.mohfw.gov.in/Organisation/departments-health-and-family-welfare/national-programmes/national-mental-health-programme", note: "EVERY district has a DMHP unit at the district hospital. Free psychiatrist / psychologist / social-worker. Ask at the district hospital reception." },
+      { label: "NIMHANS (Bengaluru, national centre)", url: "https://nimhans.ac.in/", note: "National Institute of Mental Health. OPD + tele-OPD available." },
+      { label: "IHBAS (Delhi, tertiary MH)", url: "https://ihbas.delhi.gov.in/", note: "Institute of Human Behaviour and Allied Sciences. Free / subsidised MH care." },
+      { label: "CIP Ranchi (Central Institute of Psychiatry)", url: "https://cipranchi.nic.in/", note: "Oldest MH institute in India. Referral centre for East + Central India." },
+      { label: "AIIMS Departments of Psychiatry", url: "https://www.aiims.edu/", note: "Psychiatry OPD at every AIIMS. Subsidised." },
+    ]},
+    { title: "Substance-use + de-addiction", color: "#F87171", rows: [
+      { label: "NDDTC (AIIMS) De-addiction OPD", url: "https://www.nddtcaiims.org/", note: "National Drug Dependence Treatment Centre — AIIMS Delhi." },
+      { label: "Nasha Mukt Bharat Abhiyan (Govt)", url: "https://socialjustice.gov.in/", note: "Nation-wide de-addiction network + IRCA-registered rehab centres." },
+      { label: "Alcoholics Anonymous India", number: "9022771011", url: "https://aagsoindia.org/", note: "Peer support meetings across every major city. Free." },
+      { label: "SPYM / IRCA rehab search", url: "https://socialjustice.gov.in/schemes/94", note: "Search Integrated Rehabilitation Centres for Addicts (IRCA) — govt-funded, free." },
+    ]},
+  ];
+
+  const [openSection, setOpenSection] = useState<string | null>("Free mental-health helplines (24×7 / crisis)");
+
+  return (
+    <View style={{
+      marginBottom: 14, borderRadius: 14,
+      backgroundColor: "#0F1B24", borderWidth: 1, borderColor: "rgba(34,197,94,0.35)", overflow: "hidden"
+    }}>
+      <View style={{ paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "rgba(34,197,94,0.15)" }}>
+        <Text style={{ color: "#6EE7B7", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          🏥 National health directory · Doctors · Psychologists · Hospitals
+        </Text>
+        <Text style={{ color: "#94A3B8", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
+          Free helplines + verified professional registers + free care lookup + telemedicine. We link to OFFICIAL registries so you always see current data. In a life-threatening emergency: dial 112 first.
+        </Text>
+      </View>
+      {SECTIONS.map((section) => {
+        const isOpen = openSection === section.title;
+        return (
+          <View key={section.title}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setOpenSection(isOpen ? null : section.title)}
+              style={({ pressed }) => [{
+                paddingHorizontal: 14, paddingVertical: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+                backgroundColor: pressed ? "rgba(255,255,255,0.03)" : "transparent",
+                borderTopWidth: 1, borderTopColor: "rgba(34,197,94,0.12)"
+              }]}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                <View style={{ width: 4, height: 18, backgroundColor: section.color, borderRadius: 2 }} />
+                <Text style={{ color: section.color, fontSize: 12, fontWeight: "800", flexShrink: 1 }}>{section.title}</Text>
+                <View style={{ backgroundColor: section.color + "20", borderRadius: 999, paddingHorizontal: 6, paddingVertical: 1 }}>
+                  <Text style={{ color: section.color, fontSize: 10, fontWeight: "800" }}>{section.rows.length}</Text>
+                </View>
+              </View>
+              <Text style={{ color: section.color, fontSize: 11 }}>{isOpen ? "▲" : "▼"}</Text>
+            </Pressable>
+            {isOpen && (
+              <View style={{ backgroundColor: "#0A0F1C", padding: 10, gap: 8 }}>
+                {section.rows.map((row) => (
+                  <View key={row.label} style={{
+                    flexDirection: "row", alignItems: "center", gap: 8,
+                    backgroundColor: section.color + "10", borderRadius: 10, padding: 10,
+                    borderWidth: 1, borderColor: section.color + "28"
+                  }}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ color: section.color, fontSize: 12, fontWeight: "800" }}>{row.label}</Text>
+                      <Text style={{ color: "#94A3B8", fontSize: 11, lineHeight: 15, marginTop: 2 }}>{row.note}</Text>
+                    </View>
+                    <View style={{ flexDirection: "column", gap: 4 }}>
+                      {row.number ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`Call ${row.label}`}
+                          onPress={() => callNumber(row.number!, row.label)}
+                          style={{ backgroundColor: section.color, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5, minWidth: 96, alignItems: "center" }}
+                        >
+                          <Text style={{ color: "#000", fontSize: 10, fontWeight: "900" }}>📞 {row.number}</Text>
+                        </Pressable>
+                      ) : null}
+                      {row.url ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          onPress={() => void openWebsite(row.url!, row.label)}
+                          style={{ backgroundColor: section.color + "25", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4, minWidth: 96, alignItems: "center", borderWidth: 1, borderColor: section.color + "50" }}
+                        >
+                          <Text style={{ color: section.color, fontSize: 10, fontWeight: "800" }}>Portal ↗</Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        );
+      })}
+      <View style={{ padding: 12, borderTopWidth: 1, borderTopColor: "rgba(34,197,94,0.15)" }}>
+        <Text style={{ color: "#64748B", fontSize: 10, lineHeight: 14, fontStyle: "italic" }}>
+          The app is not a substitute for professional care. If you are in immediate danger of self-harm — dial 112 or KIRAN 1800-599-0019 right now. Verified-doctor / verified-psychologist links go to the OFFICIAL national registers (NMC, RCI) — always confirm the practitioner's registration number before starting treatment.
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+// State officer directory card — user picks their state, gets one-tap links
+// to the OFFICIAL police portal / e-FIR / DC directory / cyber cell /
+// women helpline for that state. We intentionally do NOT store individual
+// officer phone numbers (they rotate every 6-24 months); we link to the
+// live source of truth maintained by each state.
+function StateOfficerDirectoryCard({
+  openWebsite,
+  defaultLocality,
+}: {
+  openWebsite: (url: string, title: string) => Promise<void>;
+  defaultLocality?: string;
+}) {
+  // Best-guess pre-selection from user's saved locality (matches state name).
+  const initialGuess = React.useMemo<StateOfficerDirectory | null>(() => {
+    if (!defaultLocality || defaultLocality.trim().length === 0) return null;
+    const n = defaultLocality.toLowerCase();
+    return STATE_OFFICER_DIRECTORY.find((s) => n.includes(s.name.toLowerCase())) ?? null;
+  }, [defaultLocality]);
+  const [selectedCode, setSelectedCode] = useState<string | null>(initialGuess?.code ?? null);
+  const [showPicker, setShowPicker] = useState(false);
+  const selected = STATE_OFFICER_DIRECTORY.find((s) => s.code === selectedCode) ?? null;
+
+  return (
+    <View style={{
+      marginBottom: 14, borderRadius: 14,
+      backgroundColor: "#0F1524", borderWidth: 1, borderColor: "rgba(96,165,250,0.28)", overflow: "hidden"
+    }}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => setShowPicker((v) => !v)}
+        style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.85 : 1 }]}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: "#60A5FA", fontSize: 11, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            🏛️ Officer directory · {selected ? selected.name : "pick your state"}
+          </Text>
+          <Text style={{ color: "#94A3B8", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
+            Direct links to your state's OFFICIAL police portal, e-FIR, DC directory & cyber cell — kept live by each state (officer names rotate).
+          </Text>
+        </View>
+        <Text style={{ color: "#60A5FA", fontSize: 11, marginLeft: 8 }}>{showPicker ? "▲ Hide" : "▼ Pick state"}</Text>
+      </Pressable>
+
+      {showPicker && (
+        <View style={{ backgroundColor: "#0A0F1A", padding: 10, borderTopWidth: 1, borderTopColor: "rgba(96,165,250,0.15)" }}>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+            {STATE_OFFICER_DIRECTORY.map((s) => {
+              const isActive = s.code === selectedCode;
+              return (
+                <Pressable
+                  key={s.code}
+                  onPress={() => setSelectedCode(s.code)}
+                  accessibilityRole="button"
+                  style={({ pressed }) => ({
+                    backgroundColor: isActive ? "#1E40AF" : pressed ? "rgba(96,165,250,0.15)" : "#0F1B33",
+                    borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6,
+                    borderWidth: 1, borderColor: isActive ? "#60A5FA" : "rgba(96,165,250,0.2)"
+                  })}
+                >
+                  <Text style={{ color: isActive ? "#F0F9FF" : "#94A3B8", fontSize: 11, fontWeight: isActive ? "800" : "600" }}>
+                    {s.name}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      )}
+
+      {selected && (
+        <View style={{ padding: 12, gap: 8, borderTopWidth: 1, borderTopColor: "rgba(96,165,250,0.15)" }}>
+          {[
+            { label: "State police portal", url: selected.portal, note: "Search 'contact us' → DC / SSP / SHO of your district", color: "#60A5FA" },
+            selected.efir ? { label: "e-FIR / online complaint", url: selected.efir, note: "File FIR online where the state supports it", color: "#34D399" } : null,
+            selected.collectors ? { label: "District Collector / DM directory", url: selected.collectors, note: "DC / DM contact for administrative escalation", color: "#F472B6" } : null,
+            selected.cyber ? { label: "Cyber crime cell", url: selected.cyber, note: "State cyber cell portal + officer list", color: "#818CF8" } : null,
+            selected.dgp ? { label: "DGP / senior officers", url: selected.dgp, note: "Direct escalation to senior police leadership", color: "#FCD34D" } : null,
+          ].filter(Boolean).map((row) => {
+            const r = row as { label: string; url: string; note: string; color: string };
+            return (
+              <Pressable
+                key={r.label}
+                accessibilityRole="button"
+                onPress={() => void openWebsite(r.url, `${selected.name} — ${r.label}`)}
+                style={({ pressed }) => [{
+                  flexDirection: "row", alignItems: "flex-start", gap: 10, padding: 10, borderRadius: 10,
+                  backgroundColor: pressed ? r.color + "18" : r.color + "08",
+                  borderWidth: 1, borderColor: r.color + "35"
+                }]}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: r.color, fontSize: 12, fontWeight: "800" }}>{r.label}</Text>
+                  <Text style={{ color: "#94A3B8", fontSize: 11, lineHeight: 15, marginTop: 2 }}>{r.note}</Text>
+                </View>
+                <Text style={{ color: r.color, fontSize: 14, fontWeight: "800" }}>↗</Text>
+              </Pressable>
+            );
+          })}
+          {/* State-level helplines row */}
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
+            <Pressable
+              onPress={() => void Linking.openURL(`tel:${selected.emergency}`)}
+              style={{ backgroundColor: "#7F1D1D", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#EF4444" }}
+              accessibilityRole="button"
+            >
+              <Text style={{ color: "#FCA5A5", fontSize: 11, fontWeight: "900" }}>🚨 Emergency {selected.emergency}</Text>
+            </Pressable>
+            {selected.women && (
+              <Pressable
+                onPress={() => void Linking.openURL(`tel:${selected.women}`)}
+                style={{ backgroundColor: "#831843", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#F472B6" }}
+                accessibilityRole="button"
+              >
+                <Text style={{ color: "#FBCFE8", fontSize: 11, fontWeight: "900" }}>👩 Women {selected.women}</Text>
+              </Pressable>
+            )}
+          </View>
+          <Text style={{ color: "#64748B", fontSize: 10, marginTop: 6, fontStyle: "italic", lineHeight: 14 }}>
+            Note: officer names + phone numbers change every 6–24 months. These links go to each state's live directory — always dial the number YOU see there, not one you saw last month. If the portal is temporarily down, dial 112 for police assistance.
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
 function RedressSection({
   redressRoutes,
   selectedRedressRoute,
@@ -19797,6 +21097,14 @@ function RedressSection({
             </Pressable>
           ))}
         </View>
+
+        {/* ── UNIFIED DIRECTORIES HUB ── */}
+        {/* One card with internal tabs for: free legal aid + helplines,
+            all-India govt grievance cells, and state-wise police portals.
+            Consolidated because these three cover overlapping ground —
+            "where to seek help." Health directory moved to the Wellness tab
+            where mental-health resources belong. */}
+        <RedressDirectoriesHub openWebsite={openWebsite} defaultLocality={supportLocality} />
 
         {/* ── ROUTE CHIPS ── */}
         <View style={{ marginBottom: 8 }}>
@@ -20018,13 +21326,55 @@ function RedressSection({
                 <View style={{ backgroundColor: "rgba(129,140,248,0.07)", borderRadius: 10, padding: 12 }}>
                   <Text style={{ color: "#A5B4FC", fontSize: 11, lineHeight: 19 }}>{draftTemplate}</Text>
                 </View>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => void Share.share({ message: draftTemplate ?? "", title: `${selectedRedressRoute.label} — complaint letter template` })}
-                  style={({ pressed }) => [{ marginTop: 10, backgroundColor: "rgba(129,140,248,0.15)", borderRadius: 8, paddingVertical: 8, alignItems: "center", opacity: pressed ? 0.8 : 1 }]}
-                >
-                  <Text style={{ color: "#818CF8", fontSize: 12, fontWeight: "700" }}>Share template ↗</Text>
-                </Pressable>
+                {/* Upgraded action row — Copy · Email · Share */}
+                <View style={{ marginTop: 10, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Copy complaint template to clipboard"
+                    onPress={async () => {
+                      // Web: use the browser clipboard API. Native: fall back to Share.
+                      if (Platform.OS === "web" && typeof navigator !== "undefined" && (navigator as any).clipboard) {
+                        try {
+                          await (navigator as any).clipboard.writeText(draftTemplate ?? "");
+                          Alert.alert("Copied", "Complaint template copied. Paste it into email or a document.");
+                          return;
+                        } catch { /* fall through */ }
+                      }
+                      void Share.share({ message: draftTemplate ?? "", title: `${selectedRedressRoute.label} — template` });
+                    }}
+                    style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(129,140,248,0.18)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(129,140,248,0.35)" }]}
+                  >
+                    <Text style={{ color: "#A5B4FC", fontSize: 12, fontWeight: "800" }}>📋 Copy</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Open email app with complaint pre-filled"
+                    onPress={() => {
+                      const subject = encodeURIComponent(`Formal complaint — ${selectedRedressRoute.label}`);
+                      const body = encodeURIComponent(draftTemplate ?? "");
+                      const mailto = `mailto:?subject=${subject}&body=${body}`;
+                      void Linking.openURL(mailto).catch(() =>
+                        Alert.alert("Email", "Could not open your mail app. Use Copy instead and paste into email.")
+                      );
+                    }}
+                    style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(52,211,153,0.15)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(52,211,153,0.35)" }]}
+                  >
+                    <Text style={{ color: "#6EE7B7", fontSize: 12, fontWeight: "800" }}>✉️ Email</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => void Share.share({ message: draftTemplate ?? "", title: `${selectedRedressRoute.label} — complaint letter template` })}
+                    style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(129,140,248,0.12)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(129,140,248,0.25)" }]}
+                  >
+                    <Text style={{ color: "#818CF8", fontSize: 12, fontWeight: "800" }}>↗ Share</Text>
+                  </Pressable>
+                </View>
+                <View style={{ marginTop: 10, backgroundColor: "rgba(252,211,77,0.08)", borderRadius: 8, padding: 10, borderLeftWidth: 3, borderLeftColor: "#FCD34D" }}>
+                  <Text style={{ color: "#FDE68A", fontSize: 11, lineHeight: 17, fontWeight: "700" }}>💡 Tip</Text>
+                  <Text style={{ color: "rgba(253,230,138,0.85)", fontSize: 11, lineHeight: 17, marginTop: 2 }}>
+                    Fill every [bracket] with your real details before sending. Attach evidence separately. Keep a signed hardcopy. Ask for a written acknowledgement number.
+                  </Text>
+                </View>
               </View>
             )}
           </View>
@@ -23343,13 +24693,16 @@ function AccessOverlay({
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
           {profileDOB.match(/^\d{4}-\d{2}-\d{2}$/) && (() => {
-            const ri = getVedicRashiFromDOB(profileDOB);
+            // Moon Rashi (Janma Rashi) is the PRIMARY chart. Sun Rashi shown as
+            // secondary reference below.
+            const moonRi = getMoonRashiFromDOB(profileDOB);
+            const sunRi = getVedicRashiFromDOB(profileDOB);
             const nk = getJanmaNakshatra(profileDOB);
-            if (!ri) return null;
+            if (!moonRi) return null;
             return (
               <View style={styles.vedicDOBResult}>
                 <Text style={styles.vedicDOBResultText}>
-                  {ri.rashi.symbol} Rashi: <Text style={styles.vedicDOBResultHighlight}>{ri.rashi.name} ({ri.rashi.en})</Text>
+                  {moonRi.rashi.symbol} Janma Rashi (Moon): <Text style={styles.vedicDOBResultHighlight}>{moonRi.rashi.name} ({moonRi.rashi.en})</Text>
                 </Text>
                 {nk && (
                   <Text style={styles.vedicDOBResultText}>
@@ -23357,8 +24710,13 @@ function AccessOverlay({
                   </Text>
                 )}
                 <Text style={styles.vedicDOBResultText}>
-                  ⚡ Rashi Lord: <Text style={styles.vedicDOBResultHighlight}>{ri.rashi.lord}</Text>
+                  ⚡ Rashi Lord: <Text style={styles.vedicDOBResultHighlight}>{moonRi.rashi.lord}</Text>
                 </Text>
+                {sunRi && (
+                  <Text style={[styles.vedicDOBResultText, { opacity: 0.7 }]}>
+                    ☀️ Surya Rashi (Sun): <Text style={styles.vedicDOBResultHighlight}>{sunRi.rashi.name} ({sunRi.rashi.en})</Text>
+                  </Text>
+                )}
               </View>
             );
           })()}
@@ -23672,6 +25030,43 @@ function OnboardingOverlay({
             <Text style={styles.sheetCloseIconButtonLabel}>✕</Text>
           </Pressable>
         </View>
+        {!showExitReviewPrompt && (
+          // Upgraded profile-prompt intro — appears at the very top of the
+          // onboarding overlay when the user hasn't completed their profile.
+          // Explains the 3-step flow so nothing feels arbitrary.
+          <View style={{
+            marginHorizontal: 12, marginBottom: 14,
+            backgroundColor: "#0F2540", borderRadius: 16,
+            borderWidth: 1, borderColor: "rgba(56,189,248,0.35)", padding: 16, gap: 10
+          }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+              <Text style={{ fontSize: 26 }}>👋</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: "#38BDF8", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                  Set up your profile
+                </Text>
+                <Text style={{ color: "#F0F9FF", fontSize: 16, fontWeight: "800", marginTop: 2 }}>
+                  A few quick choices tailor everything
+                </Text>
+                <Text style={{ color: "rgba(240,249,255,0.65)", fontSize: 12, marginTop: 3, lineHeight: 17 }}>
+                  Your data stays on this device. Nothing is shared unless you explicitly share it.
+                </Text>
+              </View>
+            </View>
+            <View style={{ flexDirection: "row", gap: 6, marginTop: 4 }}>
+              {[
+                { n: "1", label: "Identity" },
+                { n: "2", label: "Focus" },
+                { n: "3", label: "Birth details (optional)" },
+              ].map((s) => (
+                <View key={s.n} style={{ flex: 1, backgroundColor: "rgba(56,189,248,0.1)", borderRadius: 10, padding: 8, borderWidth: 1, borderColor: "rgba(56,189,248,0.25)" }}>
+                  <Text style={{ color: "#38BDF8", fontSize: 10, fontWeight: "900" }}>STEP {s.n}</Text>
+                  <Text style={{ color: "#CBD5E1", fontSize: 11, fontWeight: "700", marginTop: 2 }}>{s.label}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
         {showExitReviewPrompt ? (
           <View
             style={styles.onboardingBlock}
