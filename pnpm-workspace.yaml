@@ -1,2 +1,6 @@
+# pnpm 9 requires a `packages` field. Root itself is the package (single-package repo).
+packages:
+  - .
+
 minimumReleaseAgeExclude:
   - expo-updates@56.0.21
