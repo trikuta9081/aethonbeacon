@@ -7407,6 +7407,13 @@ function nextAstroChatReply(question: string, ctx: {
   moonRashiName: string;
   nakshatraLord: string | null;
   currentDasha: string | null;
+  currentAntardasha: string | null;
+  currentDashaYearsLeft: number | null;
+  currentAntardashaYearsLeft: number | null;
+  currentDashaStartedAtIso: string | null;
+  currentDashaEndsAtIso: string | null;
+  currentAntardashaStartedAtIso: string | null;
+  currentAntardashaEndsAtIso: string | null;
   todayTithi: string;
   todayVara: string;
 }): { category: AstroChatCategory; reply: string; remedy: string } {
@@ -7423,29 +7430,101 @@ function nextAstroChatReply(question: string, ctx: {
     };
   }
 
+  const categoryActions: Record<AstroChatCategory, string> = {
+    career: "Take one concrete move this week: apply, ask, or publish once. The phase rewards structure over waiting for perfect clarity.",
+    relationship: "Speak directly but softly. Name the actual need, keep one boundary clean, and do not rely on hints.",
+    health: "Simplify the routine. Sleep, water, meals, and one daily walk will stabilize the phase better than overthinking it.",
+    money: "Track the next 30 days carefully, reduce leakage, and make one disciplined saving or repayment action.",
+    family: "Keep the tone calm, repeat the important point once, and stop the loop of arguing the same thing in different words.",
+    spiritual: "Use one steady practice every day. Repetition matters more than intensity in this phase.",
+    timing: "Choose the smallest reversible step if the decision cannot wait; otherwise let the window mature a little longer.",
+    identity: "Act like the person you are trying to become in one visible way today. Small consistency changes the pattern.",
+    general: "Reduce confusion with one clear step and one clear boundary. The chart likes action that is simple and repeatable."
+  };
+  const currentDashaQuality = ctx.currentDasha ? summarizePlanetQuality(ctx.currentDasha) : "mixed influences";
+  const currentAntardashaQuality = ctx.currentAntardasha ? summarizePlanetQuality(ctx.currentAntardasha) : "mixed influences";
+  const dashaTiming = [
+    ctx.currentAntardashaYearsLeft !== null ? `the current Antardasha has about ${formatPhaseSpan(ctx.currentAntardashaYearsLeft)} left` : null,
+    ctx.currentDashaYearsLeft !== null ? `the broader Mahadasha has about ${formatPhaseSpan(ctx.currentDashaYearsLeft)} left` : null
+  ].filter(Boolean).join(" and ");
+  const phaseWindow = [
+    ctx.currentDashaStartedAtIso && ctx.currentDashaEndsAtIso
+      ? `Mahadasha started around ${formatApproxDate(ctx.currentDashaStartedAtIso)} and ends around ${formatApproxDate(ctx.currentDashaEndsAtIso)}`
+      : null,
+    ctx.currentAntardashaStartedAtIso && ctx.currentAntardashaEndsAtIso
+      ? `Antardasha started around ${formatApproxDate(ctx.currentAntardashaStartedAtIso)} and ends around ${formatApproxDate(ctx.currentAntardashaEndsAtIso)}`
+      : null,
+  ].filter(Boolean).join(" • ");
+  const domainOutlook = buildPhaseDomainOutlook(
+    ctx.currentDasha && ctx.currentAntardasha
+      ? { currentMahadasha: ctx.currentDasha, currentAntardasha: ctx.currentAntardasha }
+      : null
+  );
+
   // 1. Rashi lens
-  lines.push(rashiCategoryLens(cat, ctx.moonRashiId));
+  lines.push(`What is happening for ${ctx.moonRashiName}: ${rashiCategoryLens(cat, ctx.moonRashiId)}`);
 
   // 2. Dasha lens
-  if (ctx.currentDasha) {
-    const q = DASHA_QUALITIES[ctx.currentDasha] ?? "a mixed influence";
-    lines.push(`You are in ${ctx.currentDasha} Mahadasha (${q.toLowerCase()}). Frame your question through this planetary period — it colours what will and won't stick right now.`);
+  if (ctx.currentDasha && ctx.currentAntardasha) {
+    lines.push(
+      `How it is happening: ${ctx.currentDasha} Mahadasha is the broad life lesson and ${ctx.currentAntardasha} Antardasha is the active sub-pattern. ${ctx.currentDasha} brings ${currentDashaQuality.toLowerCase()}, while ${ctx.currentAntardasha} adds ${currentAntardashaQuality.toLowerCase()}; that blend is what the chart is expressing right now.`
+    );
+  } else if (ctx.currentDasha) {
+    lines.push(
+      `How it is happening: you are in ${ctx.currentDasha} Mahadasha (${currentDashaQuality.toLowerCase()}). It is shaping the larger current and deciding which efforts can actually stick.`
+    );
   }
 
-  // 3. Today's Panchang lens
-  lines.push(`Today is ${ctx.todayVara}, ${ctx.todayTithi} — factor this into any decision that can wait 24 hours for the right window.`);
+  // 3. Timing lens
+  if (dashaTiming.length > 0) {
+    lines.push(`How long this phase lasts: ${dashaTiming}. These timings are approximate because they are derived from the birth date here; an exact birth time and location will sharpen the result.`);
+  }
+  if (phaseWindow.length > 0) {
+    lines.push(`When it started and ends: ${phaseWindow}.`);
+  }
+
+  if (domainOutlook.length > 0) {
+    lines.push(`Domain outlook from the same phase:`);
+    domainOutlook.forEach((item) => {
+      lines.push(`${item.domain}: ${item.verdict} — ${item.note}`);
+    });
+  }
+
+  // 4. Practical action lens
+  lines.push(`What to do now: ${categoryActions[cat]}.`);
+
+  // 5. Today's Panchang lens
+  lines.push(`Today’s Panchang: ${ctx.todayVara}, ${ctx.todayTithi}. If the decision can wait, use this window to observe once more before forcing the outcome.`);
+  lines.push(`If you want, ask the same thing in a narrower way and I will go one layer deeper into the same phase.`);
 
   // 4. Remedy from the Rashi remedy pack
   const R = RASHI_REMEDIES[ctx.moonRashiId] ?? RASHI_REMEDIES[0];
+  const lalKitabRemedies = buildLalKitabRemedies(ctx.currentDasha, ctx.currentAntardasha, cat);
   const remedy = [
+    "Vedic remedy",
     `Mantra: ${R.mantra} — 108 times, morning after bath.`,
     `Gemstone: ${R.gem} (consult a Jyotishi before wearing).`,
     `Fast: ${R.fast} — sunrise to sunset, break with fruit.`,
     `Deity: offer flowers or a diya to ${R.deity}.`,
     `Food: ${R.food}.`,
+    "",
+    "Lal Kitab remedies",
+    ...lalKitabRemedies,
   ].join("\n");
 
   return { category: cat, reply: lines.join("\n\n"), remedy };
+}
+
+type VedicEngineSource = "home" | "counseling" | "aihelp" | "manual";
+
+interface VedicEngineIssueContext {
+  issueText: string;
+  issueLabel: string;
+  issueId: IssueId;
+  source: VedicEngineSource;
+  receivedAtIso: string;
+  autoAsk: boolean;
+  autoAskedAtIso: string | null;
 }
 
 // Janma Nakshatra: Approximated from birth Julian Day Number
@@ -7474,27 +7553,284 @@ const DASHA_QUALITIES: Record<string, string> = {
   Shani: "Discipline, karma, delays, hard work, long-term results",
   Budha: "Communication, intellect, trade, learning, analytical thinking"
 };
-function getMahadasha(dob: string, nakshatraLord: string): { current: string; yearsLeft: number; endYear: number; next: string } | null {
+type VimshottariDashaState = {
+  currentMahadasha: string;
+  mahadashaYears: number;
+  mahadashaYearsLeft: number;
+  mahadashaEndYear: number;
+  mahadashaStartedAtIso: string;
+  mahadashaEndsAtIso: string;
+  nextMahadasha: string;
+  mahadashaProgress: number;
+  currentAntardasha: string;
+  antardashaYears: number;
+  antardashaYearsLeft: number;
+  antardashaEndYear: number;
+  antardashaStartedAtIso: string;
+  antardashaEndsAtIso: string;
+  nextAntardasha: string;
+  antardashaProgress: number;
+};
+
+function formatPhaseSpan(years: number): string {
+  if (!isFinite(years) || years <= 0) return "less than a month";
+  if (years < 1) {
+    const months = Math.max(1, Math.round(years * 12));
+    return `${months} month${months === 1 ? "" : "s"}`;
+  }
+  const rounded = years < 10 ? Math.round(years * 10) / 10 : Math.round(years);
+  return `${rounded} year${rounded === 1 ? "" : "s"}`;
+}
+
+function formatApproxDate(iso: string): string {
+  const date = new Date(iso);
+  if (isNaN(date.getTime())) return "unknown";
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function summarizePlanetQuality(planet: string): string {
+  const text = DASHA_QUALITIES[planet] ?? "mixed influences";
+  return text.split(",")[0]?.trim() ?? text;
+}
+
+function getVimshottariDashaState(dob: string, nakshatraLord: string): VimshottariDashaState | null {
   const birthDate = new Date(dob);
   if (isNaN(birthDate.getTime())) return null;
-  const ageMs = Date.now() - birthDate.getTime();
-  const ageYears = ageMs / (365.25 * 24 * 3600 * 1000);
   const startIdx = DASHA_ORDER.indexOf(nakshatraLord);
   if (startIdx < 0) return null;
-  let elapsed = ageYears;
-  let idx = startIdx;
-  while (true) {
-    const planet = DASHA_ORDER[idx % 9];
-    const yrs = DASHA_YEARS[planet] ?? 7;
-    if (elapsed <= yrs) {
-      const yearsLeft = Math.round((yrs - elapsed) * 10) / 10;
-      const endYear = new Date().getFullYear() + Math.ceil(yrs - elapsed);
-      const next = DASHA_ORDER[(idx + 1) % 9];
-      return { current: planet, yearsLeft, endYear, next };
+
+  const ageMs = Date.now() - birthDate.getTime();
+  const ageYears = ageMs / (365.25 * 24 * 3600 * 1000);
+  const yearMs = 365.25 * 24 * 3600 * 1000;
+  let remainingAge = ageYears;
+  const todayYear = new Date().getFullYear();
+
+  for (let offset = 0; offset < DASHA_ORDER.length; offset++) {
+    const mahadashaIndex = (startIdx + offset) % DASHA_ORDER.length;
+    const mahadashaPlanet = DASHA_ORDER[mahadashaIndex];
+    const mahadashaYears = DASHA_YEARS[mahadashaPlanet] ?? 7;
+
+    if (remainingAge <= mahadashaYears) {
+      const elapsedBeforeMahadasha = ageYears - remainingAge;
+      const mahadashaStartedAt = new Date(birthDate.getTime() + elapsedBeforeMahadasha * yearMs);
+      const mahadashaEndsAt = new Date(mahadashaStartedAt.getTime() + mahadashaYears * yearMs);
+      const mahadashaYearsLeft = Math.max(0, mahadashaYears - remainingAge);
+      const mahadashaEndYear = todayYear + Math.ceil(mahadashaYearsLeft);
+      const nextMahadasha = DASHA_ORDER[(mahadashaIndex + 1) % DASHA_ORDER.length];
+      const mahadashaProgress = mahadashaYears > 0 ? Math.max(0, Math.min(1, remainingAge / mahadashaYears)) : 0;
+
+      let antardashaElapsed = remainingAge;
+      for (let subOffset = 0; subOffset < DASHA_ORDER.length; subOffset++) {
+        const antardashaIndex = (mahadashaIndex + subOffset) % DASHA_ORDER.length;
+        const antardashaPlanet = DASHA_ORDER[antardashaIndex];
+        const antardashaYears = mahadashaYears * ((DASHA_YEARS[antardashaPlanet] ?? 0) / 120);
+        if (antardashaElapsed <= antardashaYears) {
+          const elapsedBeforeAntardasha = remainingAge - antardashaElapsed;
+          const antardashaStartedAt = new Date(mahadashaStartedAt.getTime() + elapsedBeforeAntardasha * yearMs);
+          const antardashaEndsAt = new Date(antardashaStartedAt.getTime() + antardashaYears * yearMs);
+          const antardashaYearsLeft = Math.max(0, antardashaYears - antardashaElapsed);
+          const antardashaEndYear = todayYear + Math.ceil(antardashaYearsLeft);
+          const nextAntardasha = DASHA_ORDER[(antardashaIndex + 1) % DASHA_ORDER.length];
+          const antardashaProgress = antardashaYears > 0 ? Math.max(0, Math.min(1, antardashaElapsed / antardashaYears)) : 0;
+
+          return {
+            currentMahadasha: mahadashaPlanet,
+            mahadashaYears,
+            mahadashaYearsLeft,
+            mahadashaEndYear,
+            mahadashaStartedAtIso: mahadashaStartedAt.toISOString(),
+            mahadashaEndsAtIso: mahadashaEndsAt.toISOString(),
+            nextMahadasha,
+            mahadashaProgress,
+            currentAntardasha: antardashaPlanet,
+            antardashaYears,
+            antardashaYearsLeft,
+            antardashaEndYear,
+            antardashaStartedAtIso: antardashaStartedAt.toISOString(),
+            antardashaEndsAtIso: antardashaEndsAt.toISOString(),
+            nextAntardasha,
+            antardashaProgress,
+          };
+        }
+        antardashaElapsed -= antardashaYears;
+      }
     }
-    elapsed -= yrs;
-    idx++;
+
+    remainingAge -= mahadashaYears;
   }
+
+  return null;
+}
+
+function getMahadasha(dob: string, nakshatraLord: string): { current: string; yearsLeft: number; endYear: number; next: string } | null {
+  const state = getVimshottariDashaState(dob, nakshatraLord);
+  if (!state) return null;
+  return {
+    current: state.currentMahadasha,
+    yearsLeft: Math.round(state.mahadashaYearsLeft * 10) / 10,
+    endYear: state.mahadashaEndYear,
+    next: state.nextMahadasha
+  };
+}
+
+type PhaseDomain = "health" | "wealth" | "peace" | "tension" | "relationships" | "job" | "home";
+
+const DOMAIN_PHASE_WEIGHTS: Record<PhaseDomain, Record<string, number>> = {
+  health: { Ketu: -0.5, Shukra: 0.8, Surya: 0.4, Chandra: 1.0, Mangal: -1.0, Rahu: -0.8, Guru: 0.8, Shani: -1.0, Budha: 0.2 },
+  wealth: { Ketu: -0.8, Shukra: 1.2, Surya: 0.8, Chandra: 0.2, Mangal: 0.2, Rahu: 0.8, Guru: 1.2, Shani: 0.6, Budha: 1.0 },
+  peace: { Ketu: 0.2, Shukra: 1.0, Surya: 0.0, Chandra: 1.4, Mangal: -1.2, Rahu: -1.4, Guru: 1.2, Shani: -1.4, Budha: 0.6 },
+  tension: { Ketu: -0.2, Shukra: 0.8, Surya: 0.2, Chandra: 1.0, Mangal: -1.2, Rahu: -1.4, Guru: 0.8, Shani: -1.2, Budha: 0.4 },
+  relationships: { Ketu: -0.4, Shukra: 1.4, Surya: 0.2, Chandra: 1.0, Mangal: -0.8, Rahu: -0.8, Guru: 1.0, Shani: -0.6, Budha: 0.8 },
+  job: { Ketu: 0.2, Shukra: 0.4, Surya: 1.4, Chandra: 0.2, Mangal: 1.0, Rahu: 0.8, Guru: 1.0, Shani: 1.4, Budha: 1.2 },
+  home: { Ketu: -0.4, Shukra: 1.0, Surya: 0.2, Chandra: 1.4, Mangal: -0.8, Rahu: -0.8, Guru: 1.0, Shani: -1.0, Budha: 0.2 },
+};
+
+function getDomainVerdict(score: number): "Good" | "Mixed" | "Watch" {
+  if (score >= 0.75) return "Good";
+  if (score <= -0.75) return "Watch";
+  return "Mixed";
+}
+
+function buildPhaseDomainOutlook(
+  state: Pick<VimshottariDashaState, "currentMahadasha" | "currentAntardasha"> | null
+): Array<{ domain: string; verdict: "Good" | "Mixed" | "Watch"; note: string }> {
+  if (!state) return [];
+  const currentWeight = 0.65;
+  const antardashaWeight = 0.35;
+  const domains: PhaseDomain[] = ["health", "wealth", "peace", "tension", "relationships", "job", "home"];
+
+  const notes: Record<PhaseDomain, Record<"Good" | "Mixed" | "Watch", string>> = {
+    health: {
+      Good: "Good for routine, recovery, and body discipline.",
+      Mixed: "Mixed. Keep sleep, meals, water, and walking steady.",
+      Watch: "Watch the body. Reduce strain, late nights, and over-pushing.",
+    },
+    wealth: {
+      Good: "Good for saving, negotiation, and measured gains.",
+      Mixed: "Mixed. Prefer clean budgeting over speculation.",
+      Watch: "Watch cash flow and avoid risky spending or lending.",
+    },
+    peace: {
+      Good: "Good for calm, prayer, reflection, and emotional settling.",
+      Mixed: "Mixed. Plan quiet time so the mind does not get overloaded.",
+      Watch: "Watch stress and noise. Keep the day simpler than usual.",
+    },
+    tension: {
+      Good: "Low tension or manageable pressure if you keep the pace steady.",
+      Mixed: "Tension rises and falls. Keep the environment uncluttered.",
+      Watch: "High tension. Pause before reacting and trim unnecessary commitments.",
+    },
+    relationships: {
+      Good: "Good for warmth, repair, honest talk, and deeper commitment.",
+      Mixed: "Mixed. Speak clearly and do not expect people to read hints.",
+      Watch: "Watch arguments, assumptions, and emotional impulse.",
+    },
+    job: {
+      Good: "Good for interviews, promotions, structure, and visible work.",
+      Mixed: "Mixed. Keep the task list short and complete what is already open.",
+      Watch: "Watch delays, politics, and scattered effort.",
+    },
+    home: {
+      Good: "Good for settling in, family order, and practical home progress.",
+      Mixed: "Mixed. Keep domestic routines steady and avoid drama.",
+      Watch: "Watch friction, restlessness, and avoid impulsive home moves.",
+    },
+  };
+
+  return domains.map((domain) => {
+    const mahaScore = DOMAIN_PHASE_WEIGHTS[domain][state.currentMahadasha] ?? 0;
+    const antarScore = DOMAIN_PHASE_WEIGHTS[domain][state.currentAntardasha] ?? 0;
+    const score = mahaScore * currentWeight + antarScore * antardashaWeight;
+    const verdict = getDomainVerdict(score);
+    return {
+      domain: domain.charAt(0).toUpperCase() + domain.slice(1),
+      verdict,
+      note: notes[domain][verdict],
+    };
+  });
+}
+
+const LAL_KITAB_REMEDY_PACK: Record<string, { action: string; avoid: string }> = {
+  Ketu: {
+    action: "Donate a blanket, medicine, or a small useful item to someone in need, and keep a 10-minute silence practice once a week.",
+    avoid: "isolation, confusion, and unnecessary secrecy",
+  },
+  Shukra: {
+    action: "Keep your home and clothes clean, donate white sweets or rice on Friday, and show one act of kindness to a woman/partner/elder.",
+    avoid: "overindulgence, vanity, and waste",
+  },
+  Surya: {
+    action: "Offer water to the rising Sun, respect father/elders, and do one honest act of leadership without ego.",
+    avoid: "pride, disrespect, and empty display",
+  },
+  Chandra: {
+    action: "Donate milk or rice on Monday, keep water vessels clean, and spend a few quiet minutes with family or prayer.",
+    avoid: "emotional flooding, sleep irregularity, and harsh words",
+  },
+  Mangal: {
+    action: "Donate red lentils or jaggery on Tuesday, do physical exercise, and channel anger into disciplined work.",
+    avoid: "impulsive arguments, injury, and reckless action",
+  },
+  Rahu: {
+    action: "Donate a dark blanket or mustard seeds to a shelter/charity, keep your routine simple, and avoid shortcuts.",
+    avoid: "intoxicants, lies, obsession, and hurried decisions",
+  },
+  Guru: {
+    action: "Donate turmeric, chana dal, or books on Thursday, respect teachers, and keep a daily gratitude practice.",
+    avoid: "arrogance, overpromising, and wasteful advice-giving",
+  },
+  Shani: {
+    action: "Donate black sesame or a blanket on Saturday, serve an elder or laborer, and keep commitments small but steady.",
+    avoid: "laziness, cruelty, and neglect of duty",
+  },
+  Budha: {
+    action: "Donate green moong or stationery on Wednesday, write down your plans, and keep your speech factual.",
+    avoid: "gossip, scattered focus, and over-talking",
+  },
+};
+
+function buildLalKitabRemedies(
+  currentDasha: string | null,
+  currentAntardasha: string | null,
+  category: AstroChatCategory
+): string[] {
+  const lines: string[] = [];
+
+  if (currentDasha) {
+    const pack = LAL_KITAB_REMEDY_PACK[currentDasha];
+    if (pack) {
+      lines.push(`For ${currentDasha}: ${pack.action} Avoid ${pack.avoid}.`);
+    }
+  }
+
+  if (currentAntardasha && currentAntardasha !== currentDasha) {
+    const pack = LAL_KITAB_REMEDY_PACK[currentAntardasha];
+    if (pack) {
+      lines.push(`For ${currentAntardasha}: ${pack.action} Avoid ${pack.avoid}.`);
+    }
+  }
+
+  const categoryRemedies: Record<AstroChatCategory, string> = {
+    career: "Keep a clean desk, send one structured follow-up, and write tomorrow's next action on paper before sleep.",
+    relationship: "Speak one true sentence kindly, listen without interrupting, and avoid testing the other person indirectly.",
+    health: "Sleep on time, hydrate well, and walk a little after meals instead of forcing intense effort.",
+    money: "Write your expenses, cancel one leak, and keep one small savings action automatic.",
+    family: "Keep the home corner tidy, reduce sharp speech, and make one small act of service for the family.",
+    spiritual: "Keep a daily lamp/prayer or mantra, even if brief, and stay consistent rather than intense.",
+    timing: "Wait for the cleaner window if possible; if not, act small, documented, and reversible.",
+    identity: "Choose one habit that matches the life you want and repeat it for 21 days without drama.",
+    general: "Keep one diya/candle or prayer lamp in a clean place and complete one quiet act of charity this week.",
+  };
+
+  lines.push(`For ${category} matters: ${categoryRemedies[category]}`);
+  lines.push("Traditional Lal Kitab remedies are symbolic and gentle. Keep the one that fits your faith and local practice, and avoid anything unsafe or extreme.");
+
+  return lines;
 }
 
 // Nakshatra deep qualities
@@ -7584,12 +7920,32 @@ function getTodayTithi(): { number: number; name: string; type: string; paksha: 
 }
 
 // Generate the daily prediction text for a given rashi
-function getVedicDailyPrediction(rashiId: number): string[] {
+function getVedicDailyPrediction(
+  rashiId: number,
+  dashaState: VimshottariDashaState | null = null
+): string[] {
   const predictions = RASHI_DAILY_PREDICTIONS[rashiId];
-  if (!predictions) return ["Cosmic energies are aligning for you. Reflect, rest, and trust the divine flow.","Keep intentions pure and actions selfless.","Health: Maintain daily routine.","Spiritually: Offer gratitude to the divine."];
+  const fallback = [
+    "Cosmic energies are aligning for you. Reflect, rest, and trust the divine flow.",
+    "Keep intentions pure and actions selfless.",
+    "Health: Maintain daily routine.",
+    "Spiritually: Offer gratitude to the divine."
+  ];
   const today = new Date();
   const dayIdx = today.getDay(); // 0-6
-  return predictions[dayIdx] ?? predictions[0];
+  const dailyLines = predictions?.[dayIdx] ?? predictions?.[0] ?? fallback;
+
+  if (!dashaState) {
+    return dailyLines;
+  }
+
+  const rashiName = VEDIC_RASHIS[rashiId]?.name ?? "your Rashi";
+  return [
+    `What is happening: ${dashaState.currentMahadasha} Mahadasha with ${dashaState.currentAntardasha} Antardasha is active. ${summarizePlanetQuality(dashaState.currentMahadasha)} meets ${summarizePlanetQuality(dashaState.currentAntardasha)} in this phase.`,
+    `Why it is happening: the Mahadasha sets the large life theme, while the Antardasha shows the current sub-pattern. Your Moon Rashi (${rashiName}) decides where that pressure lands in daily life.`,
+    `How long it lasts: about ${formatPhaseSpan(dashaState.antardashaYearsLeft)} remain in the current Antardasha and about ${formatPhaseSpan(dashaState.mahadashaYearsLeft)} remain in the larger Mahadasha.`,
+    ...dailyLines
+  ];
 }
 
 // ── Error Boundary ─────────────────────────────────────────────────────────
@@ -8111,11 +8467,12 @@ export default function App() {
   const [aiHelpMessages, setAIHelpMessages] = useState<AIHelpMessage[]>(aiHelpSeed);
   const [aiHelpDraft, setAIHelpDraft] = useState("");
   const [aiHelpLoading, setAIHelpLoading] = useState(false);
-  // Astro two-way chat — user asks anything, engine replies with Rashi + Dasha + Panchang lens + remedy
+  const [vedicEngineIssueContext, setVedicEngineIssueContext] = useState<VedicEngineIssueContext | null>(null);
+  // Astro two-way chat — user asks anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy
   const [astroChatMessages, setAstroChatMessages] = useState<Array<{ id: string; role: "user" | "astro"; text: string; remedy?: string; category?: string; ts: string }>>([]);
   const [astroChatDraft, setAstroChatDraft] = useState("");
   const [aiHelpProvider, setAIHelpProvider] = useState<AIHelpProvider>("local");
-  // ── Gemini AI state ────────────────────────────────────────────────────────
+  // ── Personal guidance state ────────────────────────────────────────────────
   const [geminiDailyBrief, setGeminiDailyBrief] = useState<string | null>(null);
   const [geminiDailyBriefLoading, setGeminiDailyBriefLoading] = useState(false);
   const [geminiJournalInsight, setGeminiJournalInsight] = useState<string | null>(null);
@@ -8874,12 +9231,16 @@ export default function App() {
   const vedicSunRashiInfo = useMemo(() => getVedicRashiFromDOB(profileDOB), [profileDOB]);
   const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB), [profileDOB]);
   const vedicJanmaNakshatra = useMemo(() => getJanmaNakshatra(profileDOB), [profileDOB]);
+  const vedicDashaState = useMemo(
+    () => (vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord) : null),
+    [profileDOB, vedicJanmaNakshatra]
+  );
   const vedicTodayNakshatra = useMemo(() => getTodayNakshatra(), []);
   const vedicTithi = useMemo(() => getTodayTithi(), []);
   const vedicVara = useMemo(() => VARA_INFO[new Date().getDay()], []);
   const vedicPredictionLines = useMemo(
-    () => vedicRashiInfo ? getVedicDailyPrediction(vedicRashiInfo.rashiId) : null,
-    [vedicRashiInfo]
+    () => vedicRashiInfo ? getVedicDailyPrediction(vedicRashiInfo.rashiId, vedicDashaState) : null,
+    [vedicRashiInfo, vedicDashaState]
   );
   const hasExactBirthDetails =
     /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
@@ -8898,7 +9259,7 @@ export default function App() {
     async function fetchBirthChartHoroscope() {
       if (verificationApiBaseUrl.length === 0) {
         setGeminiBirthChartHoroscope(
-          `Your chart is anchored in ${vedicRashiInfo?.rashi.name ?? "your birth details"} and the day’s ${vedicVara.name} rhythm.`
+          `Your chart is anchored in ${vedicRashiInfo?.rashi.name ?? "your birth details"} and the day’s ${vedicVara.name} rhythm. The current ${vedicDashaState?.currentMahadasha ?? "Mahadasha"} / ${vedicDashaState?.currentAntardasha ?? "Antardasha"} phase suggests the bigger theme is ${vedicDashaState?.currentMahadasha ? summarizePlanetQuality(vedicDashaState.currentMahadasha).toLowerCase() : "still forming"}, while the live sub-period adds ${vedicDashaState?.currentAntardasha ? summarizePlanetQuality(vedicDashaState.currentAntardasha).toLowerCase() : "nuance"}.`
         );
         return;
       }
@@ -8915,6 +9276,10 @@ export default function App() {
             birthPlace: profileBirthPlace,
             rashiName: vedicRashiInfo?.rashi?.name ?? "",
             nakshatraName: vedicJanmaNakshatra?.name ?? "",
+            mahadashaName: vedicDashaState?.currentMahadasha ?? "",
+            antardashaName: vedicDashaState?.currentAntardasha ?? "",
+            mahadashaYearsLeft: vedicDashaState?.mahadashaYearsLeft ?? null,
+            antardashaYearsLeft: vedicDashaState?.antardashaYearsLeft ?? null,
             tithiName: vedicTithi?.name ?? "",
             varaName: vedicVara?.name ?? "",
             predictionLines: vedicPredictionLines ?? []
@@ -12067,7 +12432,7 @@ export default function App() {
     return [
       "You are Beacon Guide, a calm human-style guide.",
       "Your job is operational triage: classify, route, give one concrete action, and tell the user what to do next inside the app.",
-      "Do not mention AI, Gemini, models, prompts, or system details.",
+      "Do not mention providers, models, prompts, or system details.",
       "Do not add greetings, filler, therapy-style reflection, or a long essay.",
       `Address the user as ${profileAddressLabel}.`,
       `Preferred language: ${selectedLanguage.label}.`,
@@ -12474,20 +12839,35 @@ async function fetchGeminiAIHelp(
     );
   }
 
-  // Astro two-way chat submit handler. Uses the user's Moon Rashi + Nakshatra
+  // Astro two-way chat submit handler. Uses the user's Moon Rashi + Nakshatra + Vimshottari phase
   // lord + current Mahadasha + today's Panchang to reply with guidance +
   // a specific Vedic remedy.
-  function submitAstroQuestion() {
-    const q = astroChatDraft.trim();
+  function submitAstroQuestion(rawQuestion?: string) {
+    if (!hasExactBirthDetails) {
+      Alert.alert(
+        "Exact birth details required",
+        "Add your exact birth date, 24-hour birth time, and full birth place before the Vedic engine can calculate a response."
+      );
+      handleTabPress("vedic");
+      return;
+    }
+    const q = (rawQuestion ?? astroChatDraft).trim();
     if (q.length === 0) return;
     const nowIso = new Date().toISOString();
     const userMsg = { id: `u-${Date.now()}`, role: "user" as const, text: q, ts: nowIso };
-    const dasha = vedicJanmaNakshatra ? getMahadasha(profileDOB, vedicJanmaNakshatra.lord) : null;
+    const dasha = vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord) : null;
     const result = nextAstroChatReply(q, {
       moonRashiId: vedicRashiInfo ? vedicRashiInfo.rashiId : null,
       moonRashiName: vedicRashiInfo?.rashi.name ?? "",
       nakshatraLord: vedicJanmaNakshatra?.lord ?? null,
-      currentDasha: dasha?.current ?? null,
+      currentDasha: dasha?.currentMahadasha ?? null,
+      currentAntardasha: dasha?.currentAntardasha ?? null,
+      currentDashaYearsLeft: dasha?.mahadashaYearsLeft ?? null,
+      currentAntardashaYearsLeft: dasha?.antardashaYearsLeft ?? null,
+      currentDashaStartedAtIso: dasha?.mahadashaStartedAtIso ?? null,
+      currentDashaEndsAtIso: dasha?.mahadashaEndsAtIso ?? null,
+      currentAntardashaStartedAtIso: dasha?.antardashaStartedAtIso ?? null,
+      currentAntardashaEndsAtIso: dasha?.antardashaEndsAtIso ?? null,
       todayTithi: vedicTithi?.name ?? "today's Tithi",
       todayVara: vedicVara?.name ?? "today",
     });
@@ -12502,6 +12882,37 @@ async function fetchGeminiAIHelp(
     setAstroChatMessages((prev) => [astroMsg, userMsg, ...prev].slice(0, 40));
     setAstroChatDraft("");
   }
+
+  function queueVedicEngineIssue(rawText: string, issue: IssueGuide, source: VedicEngineSource) {
+    const issueText = rawText.trim();
+    if (issueText.length === 0) return;
+    setVedicEngineIssueContext((current) => {
+      const isSameIssue = current?.issueText.trim().toLowerCase() === issueText.toLowerCase();
+      if (isSameIssue) return current;
+      return {
+        issueText,
+        issueLabel: issue.label,
+        issueId: issue.id,
+        source,
+        receivedAtIso: new Date().toISOString(),
+        autoAsk: true,
+        autoAskedAtIso: null,
+      };
+    });
+  }
+
+  useEffect(() => {
+    if (!hasLoaded || !hasExactBirthDetails || !vedicEngineIssueContext?.autoAsk || vedicEngineIssueContext.autoAskedAtIso) {
+      return;
+    }
+    const askedAtIso = new Date().toISOString();
+    setVedicEngineIssueContext((current) =>
+      current && current.issueText === vedicEngineIssueContext.issueText
+        ? { ...current, autoAskedAtIso: askedAtIso }
+        : current
+    );
+    submitAstroQuestion(vedicEngineIssueContext.issueText);
+  }, [hasLoaded, hasExactBirthDetails, vedicEngineIssueContext]);
 
   async function submitAIHelpText(rawText?: string, issueOverride?: IssueId) {
     const requestedText = (rawText ?? aiHelpDraft).trim();
@@ -12529,6 +12940,7 @@ async function fetchGeminiAIHelp(
     const abuseDetection = detectAggravatedAbuse(text);
     const route: AIHelpRoute = abuseDetection ? "urgent" : detectAIHelpRoute(text);
     const issueFocus = findAIHelpIssue(text);
+    queueVedicEngineIssue(text, issueFocus, "aihelp");
     const redressFocus: RedressRouteId = abuseDetection ? abuseDetection.routeId : findAIHelpRedressRoute(text);
     const routeTab = getAIHelpOpenTab(route);
     const pendingRouteTab: "guide" | "redress" = routeTab === "redress" ? "redress" : "guide";
@@ -13140,7 +13552,7 @@ async function fetchGeminiAIHelp(
           status === "resolved"
             ? "Close the loop and keep the report trail."
             : status === "more-guidance"
-              ? "Open AI Guide with the original issue context."
+              ? "Open Beacon Guide with the original issue context."
               : status === "reminder-set"
                 ? "Return tomorrow and check what changed."
                 : "Ask whether the route worked, needs escalation, or needs a reminder.",
@@ -13281,6 +13693,9 @@ async function fetchGeminiAIHelp(
     }
     const route = detectAIHelpRouteFromText(routeText);
     const issue = findAIHelpIssue(routeText);
+    if (text.length > 0) {
+      queueVedicEngineIssue(routeText, issue, "home");
+    }
     const issueDisplayLabel = issue.id === "anxiety" ? "Calm route" : issue.label;
     const routeLabel =
       route === "redress" || route === "urgent"
@@ -13357,6 +13772,11 @@ async function fetchGeminiAIHelp(
     setShowCounselingChat(false);
     setActiveJourney(session);
     setJourneyStepIndex(0);
+    const counselingIssueText = session.originalIssue?.trim() ?? "";
+    if (counselingIssueText.length > 0) {
+      const counselingIssue = findAIHelpIssue(counselingIssueText);
+      queueVedicEngineIssue(counselingIssueText, counselingIssue, "counseling");
+    }
     // Log counseling completion for exit report
     const turnCount = session.turns?.length ?? 0;
     for (let i = 0; i < Math.max(1, turnCount); i++) {
@@ -14120,6 +14540,51 @@ function isTrustedExternalUrl(url: string) {
                 onOpenTab={handleTabPress}
               />
 
+              {/* Compact premium entry point; the full calculated reading opens on tap. */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Open premium Vedic answer engine"
+                onPress={() => handleTabPress("vedic")}
+                style={({ pressed }) => ({
+                  marginHorizontal: 16,
+                  marginBottom: 12,
+                  backgroundColor: pressed ? "#241438" : "#160D27",
+                  borderRadius: 16,
+                  borderWidth: 1,
+                  borderColor: hasExactBirthDetails ? "rgba(252,211,77,0.42)" : "rgba(148,163,184,0.22)",
+                  padding: 14,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 12,
+                  opacity: pressed ? 0.82 : 1,
+                })}
+              >
+                <View style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: "rgba(252,211,77,0.1)", alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ fontSize: 23 }}>🪐</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 7, marginBottom: 3 }}>
+                    <Text style={{ color: "#FCD34D", fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
+                      Premium Vedic engine
+                    </Text>
+                    <View style={{ backgroundColor: hasExactBirthDetails ? "rgba(52,211,153,0.12)" : "rgba(148,163,184,0.1)", borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 }}>
+                      <Text style={{ color: hasExactBirthDetails ? "#34D399" : "#94A3B8", fontSize: 9, fontWeight: "900" }}>
+                        {hasExactBirthDetails ? "READY" : "DETAILS NEEDED"}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={{ color: "#F8FAFC", fontSize: 15, fontWeight: "900" }} numberOfLines={1}>
+                    {vedicEngineIssueContext ? `Chart answer for ${vedicEngineIssueContext.issueLabel}` : "Ask your chart. Understand the phase."}
+                  </Text>
+                  <Text style={{ color: "#94A3B8", fontSize: 11, lineHeight: 16, marginTop: 2 }} numberOfLines={2}>
+                    {hasExactBirthDetails
+                      ? "Mahadasha + Antardasha timing, life-area outlook, Vedic and Lal Kitab remedies."
+                      : "Enter exact date, time, and birth place to unlock calculated answers."}
+                  </Text>
+                </View>
+                <Text style={{ color: "#FCD34D", fontSize: 22, fontWeight: "700" }}>›</Text>
+              </Pressable>
+
               {/* ── Weekly / monthly vedic banner ── */}
               {showWeeklyVedicBanner && (
                 <Pressable
@@ -14144,7 +14609,7 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
                   <Text style={[styles.smartBriefGreeting, { opacity: 0.55, fontSize: 10, letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }]}>Daily Snapshot</Text>
                   {geminiDailyBrief && (
-                    <Text style={{ color: "#63DED0", fontSize: 9, opacity: 0.7, letterSpacing: 0.5 }}>✦ AI</Text>
+                    <Text style={{ color: "#63DED0", fontSize: 9, opacity: 0.7, letterSpacing: 0.5 }}>✦ PERSONAL</Text>
                   )}
                 </View>
                 <Text style={styles.smartBriefGreeting}>{smartBrief.greeting}</Text>
@@ -14757,7 +15222,7 @@ function isTrustedExternalUrl(url: string) {
                           </View>
                         </View>
                         <Pressable
-                          onPress={() => { setSelectedToneId(rec.toneId); handleTabPress("focus"); }}
+                          onPress={() => { handleTabPress("focus"); }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
                             marginTop: 10, alignSelf: "flex-start",
@@ -14820,6 +15285,7 @@ function isTrustedExternalUrl(url: string) {
                 sunRashiInfo={vedicSunRashiInfo}
                 predictionLines={vedicPredictionLines}
                 janmaNakshatra={vedicJanmaNakshatra}
+                dashaState={vedicDashaState}
                 todayNakshatra={vedicTodayNakshatra}
                 tithi={vedicTithi}
                 vara={vedicVara}
@@ -14833,9 +15299,10 @@ function isTrustedExternalUrl(url: string) {
                 setProfileBirthPlace={setProfileBirthPlace}
                 onOpenHome={() => handleTabPress("today")}
                 selectedIssueGuide={selectedIssueGuide}
+                issueContext={vedicEngineIssueContext}
               />
 
-              {/* ── Astro two-way chat — ask anything, engine replies with Rashi + Dasha + Panchang lens + remedy ── */}
+              {/* ── Astro two-way chat — ask anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy ── */}
               <View style={{
                 marginHorizontal: 16, marginTop: 16, marginBottom: 12,
                 backgroundColor: "#1A0F2E", borderRadius: 18,
@@ -14852,7 +15319,7 @@ function isTrustedExternalUrl(url: string) {
                       Two-way astro guidance
                     </Text>
                     <Text style={{ color: "rgba(240,249,255,0.65)", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
-                      Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha and today's Panchang, then returns a remedy.
+                      Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha, current Antardasha, and today's Panchang, then explains what is happening, why it is happening, how long it may last, and what to do next.
                     </Text>
                   </View>
                 </View>
@@ -14865,9 +15332,10 @@ function isTrustedExternalUrl(url: string) {
                   <TextInput
                     value={astroChatDraft}
                     onChangeText={setAstroChatDraft}
-                    placeholder="e.g. Will I get this job? Should I marry now? Why am I always tired?"
+                    placeholder={hasExactBirthDetails ? "e.g. Will I get this job? Should I marry now? Why am I always tired?" : "Enter exact birth details above to unlock chart questions"}
                     placeholderTextColor="rgba(255,255,255,0.35)"
                     multiline
+                    editable={hasExactBirthDetails}
                     style={{
                       color: "#F0F9FF", fontSize: 14, minHeight: 46, lineHeight: 20,
                       padding: 8
@@ -14875,17 +15343,27 @@ function isTrustedExternalUrl(url: string) {
                   />
                   <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 8 }}>
                     <Pressable
-                      onPress={submitAstroQuestion}
-                      disabled={astroChatDraft.trim().length === 0}
+                      onPress={() => submitAstroQuestion()}
+                      disabled={!hasExactBirthDetails || astroChatDraft.trim().length === 0}
                       accessibilityRole="button"
                       style={({ pressed }) => ({
-                        backgroundColor: astroChatDraft.trim().length === 0 ? "#334155" : (pressed ? "#B45309" : "#D97706"),
+                        backgroundColor: !hasExactBirthDetails || astroChatDraft.trim().length === 0 ? "#334155" : (pressed ? "#B45309" : "#D97706"),
                         borderRadius: 10, paddingHorizontal: 16, paddingVertical: 9
                       })}>
                       <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>Ask the chart →</Text>
                     </Pressable>
                   </View>
                 </View>
+
+                {!hasExactBirthDetails && (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => handleTabPress("vedic")}
+                    style={{ backgroundColor: "rgba(251,191,36,0.08)", borderRadius: 10, borderWidth: 1, borderColor: "rgba(251,191,36,0.22)", padding: 11 }}
+                  >
+                    <Text style={{ color: "#FCD34D", fontSize: 12, fontWeight: "800" }}>Complete date, time, and birth place above to activate the engine.</Text>
+                  </Pressable>
+                )}
 
                 {/* Conversation history */}
                 {astroChatMessages.length > 0 && (
@@ -14910,7 +15388,7 @@ function isTrustedExternalUrl(url: string) {
                             marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(252,211,77,0.15)"
                           }}>
                             <Text style={{ color: "#FCD34D", fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
-                              Vedic remedy
+                              Vedic + Lal Kitab remedies
                             </Text>
                             <Text style={{ color: "rgba(240,249,255,0.85)", fontSize: 12, lineHeight: 17, whiteSpace: "pre-wrap" } as any}>
                               {m.remedy}
@@ -15059,6 +15537,7 @@ function isTrustedExternalUrl(url: string) {
                 isPrivateIntakeOpen={isPrivateIntakeOpen}
                 birthChartRashiInfo={vedicRashiInfo}
                 birthChartNakshatra={vedicJanmaNakshatra}
+                birthChartDashaState={vedicDashaState}
                 birthChartHasDetails={hasExactBirthDetails}
               />
             </View>
@@ -15295,7 +15774,7 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ color: "#94A3B8", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "journal")}</Text>
                 </View>
               )}
-              {/* ── Gemini AI Pattern Summary ── */}
+              {/* ── Personal Pattern Summary ── */}
               <GeminiInsightsCard
                 apiBase={verificationApiBaseUrl}
                 name={profileDisplayName || accessName || ""}
@@ -17830,6 +18309,7 @@ function AIHelpSection({
   isPrivateIntakeOpen,
   birthChartRashiInfo,
   birthChartNakshatra,
+  birthChartDashaState,
   birthChartHasDetails,
 }: {
   aiHelpMessages: AIHelpMessage[];
@@ -17852,6 +18332,7 @@ function AIHelpSection({
   isPrivateIntakeOpen: boolean;
   birthChartRashiInfo?: ReturnType<typeof getMoonRashiFromDOB> | null;
   birthChartNakshatra?: ReturnType<typeof getJanmaNakshatra> | null;
+  birthChartDashaState?: VimshottariDashaState | null;
   birthChartHasDetails?: boolean;
 }) {
   const latestAIHelpMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
@@ -17886,6 +18367,10 @@ function AIHelpSection({
     ...message,
     text: message.text.trim().length > 0 ? message.text : latestReplyText
   }));
+  const birthChartContextPrefix =
+    useBirthChart && birthChartRashiInfo
+      ? `[Birth chart context — Janma Rashi: ${birthChartRashiInfo.rashi.name} (${birthChartRashiInfo.rashi.en})${birthChartNakshatra ? `, Nakshatra: ${birthChartNakshatra.name} (lord: ${birthChartNakshatra.lord})` : ""}${birthChartDashaState ? `, Mahadasha: ${birthChartDashaState.currentMahadasha} (left: ${formatPhaseSpan(birthChartDashaState.mahadashaYearsLeft)}), Antardasha: ${birthChartDashaState.currentAntardasha} (left: ${formatPhaseSpan(birthChartDashaState.antardashaYearsLeft)})` : ""}]\n`
+      : "";
 
   const inputLocked = aiHelpLoading || isPrivateIntakeOpen;
 
@@ -18098,7 +18583,7 @@ function AIHelpSection({
               🪐 Include my birth chart in this session
             </Text>
             <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, marginTop: 2 }}>
-              {`Janma Rashi: ${birthChartRashiInfo.rashi.name}${birthChartNakshatra ? ` · Nakshatra: ${birthChartNakshatra.name}` : ""}`}
+              {`Janma Rashi: ${birthChartRashiInfo.rashi.name}${birthChartNakshatra ? ` · Nakshatra: ${birthChartNakshatra.name}` : ""}${birthChartDashaState ? ` · Mahadasha: ${birthChartDashaState.currentMahadasha} · Antardasha: ${birthChartDashaState.currentAntardasha}` : ""}`}
             </Text>
           </View>
         </Pressable>
@@ -18114,10 +18599,8 @@ function AIHelpSection({
         returnKeyType="send"
         blurOnSubmit
         onSubmitEditing={() => {
-          if (useBirthChart && birthChartRashiInfo && aiHelpDraft.trim().length > 0) {
-            setAIHelpDraft(
-              `[Birth chart context — Janma Rashi: ${birthChartRashiInfo.rashi.name} (${birthChartRashiInfo.rashi.en})${birthChartNakshatra ? `, Nakshatra: ${birthChartNakshatra.name} (lord: ${birthChartNakshatra.lord})` : ""}]\n${aiHelpDraft.trim()}`
-            );
+          if (birthChartContextPrefix.length > 0 && aiHelpDraft.trim().length > 0) {
+            setAIHelpDraft(`${birthChartContextPrefix}${aiHelpDraft.trim()}`);
           }
           setTimeout(onPostAIHelp, 0);
         }}
@@ -18134,10 +18617,8 @@ function AIHelpSection({
         <Pressable
           accessibilityRole="button"
           onPress={() => {
-            if (useBirthChart && birthChartRashiInfo && aiHelpDraft.trim().length > 0) {
-              setAIHelpDraft(
-                `[Birth chart context — Janma Rashi: ${birthChartRashiInfo.rashi.name} (${birthChartRashiInfo.rashi.en})${birthChartNakshatra ? `, Nakshatra: ${birthChartNakshatra.name} (lord: ${birthChartNakshatra.lord})` : ""}]\n${aiHelpDraft.trim()}`
-              );
+            if (birthChartContextPrefix.length > 0 && aiHelpDraft.trim().length > 0) {
+              setAIHelpDraft(`${birthChartContextPrefix}${aiHelpDraft.trim()}`);
               setTimeout(onPostAIHelp, 0);
             } else {
               onPostAIHelp();
@@ -21672,7 +22153,7 @@ function RouteDecisionOverlay({
       : decision.route === "professional"
         ? "path"
         : counselingOverlayIds.has(decision.issueId)
-          ? "path"   // "Path" = AI help which includes counseling
+          ? "path"   // "Path" includes guided counseling
           : calmIssueIds.has(decision.issueId)
             ? "reset"
             : "path";
@@ -21681,18 +22162,18 @@ function RouteDecisionOverlay({
     ? [
         { id: "sos", label: "SOS", detail: "Call urgent help now." },
         { id: "help", label: "Help", detail: "Open the complaint route." },
-        { id: "path", label: "Path", detail: "Get AI guidance first." },
+        { id: "path", label: "Path", detail: "Get guided support first." },
         { id: "reset", label: "Reset", detail: "Slow the body." }
       ]
     : decision.route === "redress"
       ? [
           { id: "help", label: "Help", detail: "Open the right office path." },
-          { id: "path", label: "Path", detail: "Let AI shape the next step." },
+          { id: "path", label: "Path", detail: "Let the guide shape the next step." },
           { id: "search", label: "Search", detail: "Scan more support options." },
           { id: "reset", label: "Reset", detail: "Calm down before acting." }
         ]
       : [
-          { id: "path", label: "Path", detail: "AI guidance and next-step framing." },
+          { id: "path", label: "Path", detail: "Guidance and next-step framing." },
           { id: "help", label: "Help", detail: "Open office or complaint routes." },
           { id: "reset", label: "Reset", detail: "Use breath and body calm." },
           { id: "search", label: "Search", detail: "Find related support quickly." }
@@ -23142,6 +23623,7 @@ function VedicDailyCard({
   todayNakshatra,
   tithi,
   vara,
+  dashaState,
   predictionLines,
 }: {
   rashi: typeof VEDIC_RASHIS[0];
@@ -23149,6 +23631,7 @@ function VedicDailyCard({
   todayNakshatra: ReturnType<typeof getTodayNakshatra>;
   tithi: ReturnType<typeof getTodayTithi>;
   vara: typeof VARA_INFO[0];
+  dashaState: VimshottariDashaState | null;
   predictionLines: string[];
 }) {
   const today = new Date();
@@ -23197,6 +23680,20 @@ function VedicDailyCard({
             <Text style={styles.vedicChipSub}>Lord: {janmaNakshatra.lord}</Text>
           </View>
         )}
+        {dashaState && (
+          <>
+            <View style={styles.vedicChip}>
+              <Text style={styles.vedicChipLabel}>Mahadasha</Text>
+              <Text style={styles.vedicChipValue}>{dashaState.currentMahadasha}</Text>
+              <Text style={styles.vedicChipSub}>Left: {formatPhaseSpan(dashaState.mahadashaYearsLeft)}</Text>
+            </View>
+            <View style={styles.vedicChip}>
+              <Text style={styles.vedicChipLabel}>Antardasha</Text>
+              <Text style={styles.vedicChipValue}>{dashaState.currentAntardasha}</Text>
+              <Text style={styles.vedicChipSub}>Left: {formatPhaseSpan(dashaState.antardashaYearsLeft)}</Text>
+            </View>
+          </>
+        )}
       </View>
 
       {/* Main prediction */}
@@ -23232,6 +23729,7 @@ function BirthChartSection({
   sunRashiInfo,
   predictionLines,
   janmaNakshatra,
+  dashaState,
   todayNakshatra,
   tithi,
   vara,
@@ -23245,11 +23743,13 @@ function BirthChartSection({
   setProfileBirthPlace,
   onOpenHome,
   selectedIssueGuide,
+  issueContext,
 }: {
   rashiInfo: ReturnType<typeof getMoonRashiFromDOB> | null;
   sunRashiInfo: ReturnType<typeof getVedicRashiFromDOB> | null;
   predictionLines: string[] | null;
   janmaNakshatra: ReturnType<typeof getJanmaNakshatra>;
+  dashaState: VimshottariDashaState | null;
   todayNakshatra: ReturnType<typeof getTodayNakshatra>;
   tithi: ReturnType<typeof getTodayTithi>;
   vara: typeof VARA_INFO[0];
@@ -23263,6 +23763,7 @@ function BirthChartSection({
   setProfileBirthPlace: (v: string) => void;
   onOpenHome: () => void;
   selectedIssueGuide: IssueGuide;
+  issueContext: VedicEngineIssueContext | null;
 }) {
   // Split DOB into day / month / year segments for easy keypad entry
   const [dobDD, setDobDD] = useState(() => profileDOB.slice(8, 10) || "");
@@ -23331,6 +23832,20 @@ function BirthChartSection({
           <Text style={styles.tabBannerSub}>Exact date, 24-hour time, and birth place are required</Text>
         </View>
       </View>
+
+      {issueContext && (
+        <View style={{ backgroundColor: "#160D27", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)", gap: 5 }}>
+          <Text style={{ color: "#FCD34D", fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
+            Active chart question · {issueContext.issueLabel}
+          </Text>
+          <Text style={{ color: "#F8FAFC", fontSize: 13, lineHeight: 19 }} numberOfLines={3}>{issueContext.issueText}</Text>
+          <Text style={{ color: hasExactBirthDetails ? "#34D399" : "#94A3B8", fontSize: 11, fontWeight: "700" }}>
+            {hasExactBirthDetails
+              ? issueContext.autoAskedAtIso ? "Calculated response is ready below." : "Calculating from your saved birth details."
+              : "Saved safely. Add exact birth details to calculate the response."}
+          </Text>
+        </View>
+      )}
 
       {/* Inline birth detail inputs */}
       <View style={{
@@ -23559,7 +24074,7 @@ function BirthChartSection({
               { label: "Surya Rashi (Sun sign)", value: sunRashiInfo ? `${sunRashiInfo.rashi.name} (${sunRashiInfo.rashi.en})` : "—" },
               { label: "Lagna / Ascendant", value: lagnaInfo ? `${lagnaInfo.lagna.name} (${lagnaInfo.lagna.en})` : "Enter birth time" },
               { label: "Janma Nakshatra", value: janmaNakshatra ? `${janmaNakshatra.name} · ${janmaNakshatra.lord}` : "—" },
-              { label: "Birth Period", value: lagnaInfo?.lagnaLabel ?? "—" },
+              { label: "Vimshottari Phase", value: dashaState ? `${dashaState.currentMahadasha} / ${dashaState.currentAntardasha}` : "Enter birth date" },
               { label: "Samvatsara (60-yr cycle)", value: samvatsaraInfo ? `${samvatsaraInfo.name} (#${samvatsaraInfo.index + 1})` : "Enter date of birth" },
             ].map((item) => (
               <View key={item.label} style={{ backgroundColor: "#071820", borderRadius: 8, padding: 10, minWidth: 90, flex: 1 }}>
@@ -23603,7 +24118,7 @@ function BirthChartSection({
           )}
           {/* Mahadasha (Vimshottari Dasha) panel */}
           {janmaNakshatra && (() => {
-            const dasha = getMahadasha(profileDOB, janmaNakshatra.lord);
+            const dasha = dashaState ?? getVimshottariDashaState(profileDOB, janmaNakshatra.lord);
             if (!dasha) return null;
             const dashaColor = "#C084FC";
             return (
@@ -23613,23 +24128,40 @@ function BirthChartSection({
                 </Text>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 }}>
                   <View style={{ backgroundColor: "rgba(192,132,252,0.15)", borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: "rgba(192,132,252,0.4)" }}>
-                    <Text style={{ color: dashaColor, fontSize: 20, fontWeight: "900" }}>{dasha.current}</Text>
+                    <Text style={{ color: dashaColor, fontSize: 20, fontWeight: "900" }}>{dasha.currentMahadasha}</Text>
                     <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textAlign: "center" }}>Mahadasha</Text>
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#E2E8F0", fontSize: 13, fontWeight: "700" }}>
-                      {dasha.yearsLeft} years remaining · ends ~{dasha.endYear}
+                      {formatPhaseSpan(dasha.mahadashaYearsLeft)} remaining · ends ~{dasha.mahadashaEndYear}
+                    </Text>
+                    <Text style={{ color: "#C4B5FD", fontSize: 11, lineHeight: 16, marginTop: 2 }}>
+                      Started ~{formatApproxDate(dasha.mahadashaStartedAtIso)} · Ends ~{formatApproxDate(dasha.mahadashaEndsAtIso)}
                     </Text>
                     <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 17, marginTop: 3 }}>
-                      {DASHA_QUALITIES[dasha.current] ?? "Planetary period in effect"}
+                      {DASHA_QUALITIES[dasha.currentMahadasha] ?? "Planetary period in effect"}
                     </Text>
                     <Text style={{ color: "#64748B", fontSize: 11, marginTop: 4 }}>
-                      Next: {dasha.next} Mahadasha
+                      Next: {dasha.nextMahadasha} Mahadasha
                     </Text>
                   </View>
                 </View>
+                <View style={{ backgroundColor: "rgba(192,132,252,0.08)", borderRadius: 10, padding: 10, borderWidth: 1, borderColor: "rgba(192,132,252,0.18)", marginBottom: 8 }}>
+                  <Text style={{ color: "#E9D5FF", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
+                    Current Antardasha
+                  </Text>
+                  <Text style={{ color: "#F8FAFC", fontSize: 16, fontWeight: "900" }}>
+                    {dasha.currentAntardasha}
+                  </Text>
+                  <Text style={{ color: "#C4B5FD", fontSize: 12, marginTop: 3, lineHeight: 18 }}>
+                    {summarizePlanetQuality(dasha.currentAntardasha)}. About {formatPhaseSpan(dasha.antardashaYearsLeft)} remain in this sub-period, then {dasha.nextAntardasha} starts.
+                  </Text>
+                  <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 2, lineHeight: 16 }}>
+                    Started ~{formatApproxDate(dasha.antardashaStartedAtIso)} · Ends ~{formatApproxDate(dasha.antardashaEndsAtIso)}
+                  </Text>
+                </View>
                 <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontStyle: "italic" }}>
-                  Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods (Antardasha).
+                  Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods, exact birth time, and true Antardasha timing.
                 </Text>
               </View>
             );
@@ -23675,10 +24207,10 @@ function BirthChartSection({
 
       <View style={styles.birthChartGeminiCard}>
         <View style={styles.birthChartGeminiHeader}>
-          <Text style={styles.birthChartGeminiTitle}>AI Horoscope Analysis</Text>
+          <Text style={styles.birthChartGeminiTitle}>Personal Horoscope Analysis</Text>
           <Text style={styles.birthChartGeminiBadge}>{geminiHoroscopeLoading ? "Reading…" : hasExactBirthDetails ? "Ready" : "Waiting"}</Text>
         </View>
-        <Text style={styles.birthChartGeminiText}>
+              <Text style={styles.birthChartGeminiText}>
           {geminiHoroscopeLoading
             ? "Analysing your birth details…"
             : geminiHoroscope ?? (hasExactBirthDetails ? "Tap 'Save & Analyse' above to generate your reading." : "Enter date, time, and place of birth above to unlock your horoscope analysis.")}
@@ -23692,6 +24224,7 @@ function BirthChartSection({
           todayNakshatra={todayNakshatra}
           tithi={tithi}
           vara={vara}
+          dashaState={dashaState}
           predictionLines={predictionLines}
         />
       ) : (
@@ -23721,7 +24254,7 @@ function BirthChartSection({
           "Samvatsara 60-year Jupiter cycle",
           "Tithi, Vara, Moon Nakshatra daily",
           "Cosmic guidance for your issue",
-          "AI horoscope analysis",
+          "Personal horoscope analysis",
         ].map((item) => (
           <View key={item} style={styles.birthChartFactChip}>
             <Text style={styles.birthChartFactChipText}>{item}</Text>
@@ -26103,7 +26636,7 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
     });
   }
 
-  // ── 4. AI guidance / personalised path ───────────────────────────────────────
+  // ── 4. Guided personalised path ──────────────────────────────────────────────
   steps.push({
     tabId: "aihelp",
     label: "Get personalised guidance",
@@ -27433,7 +27966,7 @@ function getRespectfulAddressLabel(
   return prefix.length > 0 ? `${prefix} ${cleanedName}` : cleanedName;
 }
 
-// ── GeminiInsightsCard ── AI-powered pattern summary on the Patterns tab ──────
+// ── GeminiInsightsCard ── personal pattern summary on the Patterns tab ─────────
 
 function GeminiInsightsCard({
   apiBase,
@@ -27477,13 +28010,13 @@ function GeminiInsightsCard({
         <Text style={{ fontSize: 18, marginRight: 10 }}>✦</Text>
         <View style={{ flex: 1 }}>
           <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            AI Pattern Analysis
+            Personal Pattern Analysis
           </Text>
           <Text style={{ color: "#475569", fontSize: 11, marginTop: 1 }}>
             {entryCount} check-ins · {streakDays > 0 ? `${streakDays}-day streak` : "No active streak"}
           </Text>
         </View>
-        <Text style={{ color: "#FCD34D", fontSize: 10, opacity: 0.7 }}>Gemini</Text>
+        <Text style={{ color: "#FCD34D", fontSize: 10, opacity: 0.7 }}>Beacon</Text>
       </View>
 
       {/* Content */}
@@ -27497,8 +28030,8 @@ function GeminiInsightsCard({
         <View>
           <Text style={{ color: "#64748B", fontSize: 13, lineHeight: 19, marginBottom: 14 }}>
             {entryCount >= 3
-              ? `You have ${entryCount} check-ins to analyse. Get a personalised AI reading of your emotional patterns.`
-              : `Add a few more check-ins and come back for your AI pattern reading.`}
+              ? `You have ${entryCount} check-ins to analyse. Get a personalised reading of your emotional patterns.`
+              : `Add a few more check-ins and come back for your pattern reading.`}
           </Text>
           {entryCount >= 3 && (
             <Pressable
@@ -27866,9 +28399,9 @@ function normalizeAIHelpMessage(value: unknown): AIHelpMessage | null {
     typeof message.author === "string" && message.author.trim().length > 0
       ? message.author
           .trim()
-          .replace(/^Gemini AI Help$/i, "Beacon Guide")
+          .replace(/^Gemini Help$/i, "Beacon Guide")
           .replace(/^Gemini Router$/i, "Beacon Guide")
-          .replace(/^Aethon AI Help$/i, "Beacon Guide")
+          .replace(/^Aethon Help$/i, "Beacon Guide")
           .replace(/^Aethon Router$/i, "Beacon Guide")
       : role === "user"
         ? "You"

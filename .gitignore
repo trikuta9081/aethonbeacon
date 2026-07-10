@@ -10,6 +10,7 @@ android/build/
 *.key
 *.mobileprovision
 android/keystore.properties
+android/upload_certificate.pem
 .DS_Store
 ._*
 qa/
