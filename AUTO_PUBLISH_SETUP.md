@@ -1,65 +1,62 @@
 # Auto-publish setup — TestFlight + Play Console
 
-Your GitHub CI workflows are wired to publish automatically on every push to `master` — but only if the following secrets are set. Without them, the workflows still build the app and upload `.apk` / `.aab` / `.ipa` as GitHub Actions artifacts you can download and upload manually.
-
-Account: `slathiarimple567@gmail.com` (Apple Team ID `846YFF8Z98`, same email for Play Console).
+Once the secrets below are set, every push to `master` publishes automatically.
 
 Add secrets at: **`github.com/trikuta9081/aethonbeacon/settings/secrets/actions`**
 
-## iOS → TestFlight (auto-upload)
+Account: `slathiarimple567@gmail.com` (Apple Team `846YFF8Z98`, same email for Play).
 
-You need **8 secrets** total for full end-to-end auto-upload. If you skip any of them, the workflow still archives the `.ipa` (downloadable artifact) but does not upload.
+---
 
-### Apple signing (5 secrets)
+## iOS → TestFlight (3 secrets, no passwords, no 2FA at runtime)
 
-1. **`APPLE_TEAM_ID`** = `846YFF8Z98`
+Xcode auto-manages certs + provisioning profiles at build time via the ASC API key.
 
-2. **`APPLE_CERTIFICATE_BASE64`** — your Apple Distribution `.p12` file, base64-encoded.
-   Export from Keychain Access → your distribution cert → right-click Export → `.p12` with a password.
-   Then in Terminal:
-   ```
-   base64 -i ~/Downloads/AethonDist.p12 | pbcopy
-   ```
-   Paste the copied text as the secret value.
+### 1. `APPSTORE_API_KEY_ID`
+Value: `4Y6H9428FJ`
 
-3. **`APPLE_CERTIFICATE_PASSWORD`** = the password you chose when exporting the `.p12`.
+### 2. `APPSTORE_API_ISSUER_ID`
+Value: `987583dc-d087-45b3-ad8a-550f59621e8d`
 
-4. **`APPLE_PROVISIONING_PROFILE`** — your `Aethon Beacon App Store` provisioning profile, base64-encoded.
-   Download from `developer.apple.com/account/resources/profiles/list`.
-   ```
-   base64 -i ~/Downloads/Aethon_Beacon_App_Store.mobileprovision | pbcopy
-   ```
+### 3. `APPSTORE_API_KEY_P8`
+Value: full contents of the `AuthKey_4Y6H9428FJ.p8` file you downloaded from App Store Connect.
 
-5. **`KEYCHAIN_PASSWORD`** = any random string you make up (used inside the CI runner).
+Open the .p8 file in TextEdit → Cmd+A → Cmd+C → paste the entire text (including `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----` lines and the base64 block between them) as the secret value.
 
-### App Store Connect API for upload (3 secrets)
+**⚠️ You can only download the .p8 once from Apple.** If lost, generate a new key at `appstoreconnect.apple.com/access/integrations/api` and update `APPSTORE_API_KEY_ID` + the new .p8 content.
 
-6. **`APPSTORE_API_KEY_ID`** — the 10-char key ID.
+Once these 3 are set → next push builds + uploads to TestFlight automatically.
 
-7. **`APPSTORE_API_ISSUER_ID`** — the UUID from ASC → Users and Access → Integrations → Team Keys.
+---
 
-8. **`APPSTORE_API_KEY_P8`** — the contents of the `.p8` API key file (you can only download it once when created).
+## Android → Play Console (1 secret)
 
-Get them here: `appstoreconnect.apple.com/access/api` → generate an "App Manager" role key.
+### 4. `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`
+Value: full JSON contents of a Google Cloud service account key.
 
-Once these 8 are set, the next push to `master` builds and uploads to TestFlight automatically. No Apple ID / 2FA needed at runtime.
+Steps to generate:
+1. Play Console → Setup → API access → Create service account (follows link to Google Cloud Console).
+2. Name it `aethon-beacon-ci`, click Create.
+3. Grant this role: **Service Account User**.
+4. Back in Play Console → API access → find your new service account → Grant access → give it `Release manager` role for the Aethon Beacon app.
+5. Google Cloud Console → IAM & Admin → Service Accounts → your new one → Keys tab → Add Key → Create new key → JSON → downloads a `.json` file.
+6. Open the .json in TextEdit → Cmd+A → Cmd+C → paste the entire contents (including the outer `{` and `}`) as the secret value.
 
-## Android → Play Console (auto-upload)
+Once this 1 secret is set → next push builds AAB + uploads to Play Console internal track as a draft.
 
-You need **1 secret**.
+---
 
-1. **`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`** — full JSON contents of a Google Cloud service account key.
-   How to create:
-   - Play Console → Setup → API access → Create service account
-   - Give it the `Release manager` role for your app
-   - Google Cloud Console → IAM & Admin → Service Accounts → your new one → Keys → Add Key → JSON
-   - Paste the entire JSON (including braces) as the secret value.
+## Manual upload for the current release (if you don't want to wait for automation)
 
-Once set, each push builds the AAB and uploads to the `internal` track as a draft. You review + promote to production from Play Console.
+The current push is building at `github.com/trikuta9081/aethonbeacon/actions`. In ~20–25 min:
 
-## Manual upload for this current release
+- **iOS `.ipa`:** latest run → `AethonBeacon-ios-ipa` artifact → download → open Transporter.app → drag it in → Deliver.
+- **Android `.aab`:** same run → `aethon-beacon-release-aab` artifact → download → Play Console → Internal testing → Create release → upload.
 
-The current push (`050952c`) is already building. In ~20–30 min:
+---
 
-- **iOS `.ipa`:** `github.com/trikuta9081/aethonbeacon/actions` → latest run → `AethonBeacon-ios-ipa` artifact → open Transporter.app, drag it in, deliver.
-- **Android `.aab`:** same actions run → `aethon-beacon-release-aab` artifact → Play Console → Internal testing → create release → upload.
+## Security note
+
+- The three iOS secrets and one Android secret above are API keys, not passwords. They can be scoped and revoked from their respective consoles at any time.
+- Never paste any of these values into chat with anyone — including AI assistants. Paste them straight from your file/clipboard into the GitHub Secrets input.
+- If a `.p8` or service-account `.json` is ever exposed, revoke it at the console and generate a new one. GitHub Secrets are encrypted at rest and never displayed after entry.
