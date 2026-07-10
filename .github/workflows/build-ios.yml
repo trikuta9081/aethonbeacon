@@ -56,15 +56,39 @@ jobs:
         working-directory: ios
         run: pod install --repo-update
 
-      - name: Write App Store Connect API key file
+      - name: Write App Store Connect API key file (normalize to PEM)
         run: |
           if [ -n "${APPSTORE_API_KEY_ID:-}" ] && [ -n "${APPSTORE_API_KEY_P8:-}" ]; then
             mkdir -p "$HOME/.appstoreconnect/private_keys"
             KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8"
-            printf '%s\n' "$APPSTORE_API_KEY_P8" > "$KEY_PATH"
+            # Normalize the pasted secret to a valid PEM regardless of
+            # whether the user pasted (a) proper PEM with newlines,
+            # (b) all-on-one-line PEM (GitHub textarea can strip newlines),
+            # or (c) just the bare base64 body without BEGIN/END lines.
+            python3 - <<'PY' > "$KEY_PATH"
+          import os, re, sys
+          raw = os.environ["APPSTORE_API_KEY_P8"].strip()
+          # Strip any BEGIN/END header lines, then all whitespace — leaves pure base64.
+          body = re.sub(r"-----BEGIN [^-]+-----", "", raw)
+          body = re.sub(r"-----END [^-]+-----", "", body)
+          body = re.sub(r"\s+", "", body)
+          # Rewrap at 64 cols with proper PEM PRIVATE KEY header/footer.
+          out = ["-----BEGIN PRIVATE KEY-----"]
+          for i in range(0, len(body), 64):
+              out.append(body[i:i+64])
+          out.append("-----END PRIVATE KEY-----")
+          sys.stdout.write("\n".join(out) + "\n")
+          PY
+            chmod 600 "$KEY_PATH"
             echo "APPSTORE_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
             echo "HAS_ASC_KEY=true" >> "$GITHUB_ENV"
             echo "API key written to $KEY_PATH"
+            echo "First line of key (should be -----BEGIN PRIVATE KEY-----):"
+            head -1 "$KEY_PATH"
+            echo "Last line of key (should be -----END PRIVATE KEY-----):"
+            tail -1 "$KEY_PATH"
+            echo "Line count (should be > 2):"
+            wc -l "$KEY_PATH"
           else
             echo "APPSTORE_API_KEY_ID or APPSTORE_API_KEY_P8 not set — skipping ASC key write"
             echo "HAS_ASC_KEY=false" >> "$GITHUB_ENV"
