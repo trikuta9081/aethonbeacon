@@ -42,9 +42,35 @@ jobs:
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m"
 
+      - name: Build release AAB (App Bundle for Play Console)
+        working-directory: android
+        run: ./gradlew bundleRelease --no-daemon
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m"
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: aethon-beacon-release
           path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aethon-beacon-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      # ── Play Console publish (only runs if GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret is set) ──
+      # Add the secret in: GitHub → Settings → Secrets and variables → Actions.
+      # Uses r0adkll/upload-google-play to submit the AAB to the internal track.
+      - name: Publish to Play Console (internal track)
+        if: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != '' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.aethon.beacon
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: draft

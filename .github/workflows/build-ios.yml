@@ -1,0 +1,154 @@
+name: Build iOS (+ optional TestFlight upload)
+
+# Builds a signed iOS .ipa on a macOS runner. If Apple secrets are set,
+# also uploads to TestFlight automatically via App Store Connect API.
+#
+# Required GitHub repo secrets for full auto-upload (Settings → Secrets → Actions):
+#   APPLE_TEAM_ID              e.g. 846YFF8Z98
+#   APPLE_CERTIFICATE_BASE64   base64 of your .p12 distribution certificate
+#   APPLE_CERTIFICATE_PASSWORD password for that .p12
+#   APPLE_PROVISIONING_PROFILE base64 of your .mobileprovision file
+#   KEYCHAIN_PASSWORD          any random long string
+#   APPSTORE_API_KEY_ID        App Store Connect API key ID (10-char)
+#   APPSTORE_API_ISSUER_ID     App Store Connect API issuer UUID
+#   APPSTORE_API_KEY_P8        contents of the .p8 API key file
+#
+# Without those, the archive step still runs; the .ipa artifact is downloadable
+# but Transporter / manual upload is needed for TestFlight.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install JS dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Install CocoaPods
+        run: gem install cocoapods -v 1.15.2
+
+      - name: Install pods
+        working-directory: ios
+        run: pod install --repo-update
+
+      - name: Import Apple certificate (if provided)
+        if: ${{ secrets.APPLE_CERTIFICATE_BASE64 != '' }}
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode -o cert.p12
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security import cert.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+          rm cert.p12
+
+      - name: Install provisioning profile (if provided)
+        if: ${{ secrets.APPLE_PROVISIONING_PROFILE != '' }}
+        env:
+          APPLE_PROVISIONING_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$APPLE_PROVISIONING_PROFILE" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/aethon-beacon.mobileprovision
+
+      - name: Archive iOS
+        working-directory: ios
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcodebuild \
+            -workspace AethonBeacon.xcworkspace \
+            -scheme AethonBeacon \
+            -configuration Release \
+            -archivePath $PWD/build/AethonBeacon.xcarchive \
+            -destination "generic/platform=iOS" \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM="${APPLE_TEAM_ID:-846YFF8Z98}" \
+            archive
+
+      - name: Export .ipa
+        working-directory: ios
+        run: |
+          cat > ExportOptions.plist <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>846YFF8Z98</string>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>signingStyle</key>
+            <string>automatic</string>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild \
+            -exportArchive \
+            -archivePath $PWD/build/AethonBeacon.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath $PWD/build
+
+      - name: Upload .ipa artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AethonBeacon-ios-ipa
+          path: ios/build/*.ipa
+          retention-days: 14
+
+      - name: Upload archive artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AethonBeacon-ios-xcarchive
+          path: ios/build/AethonBeacon.xcarchive
+          retention-days: 7
+
+      # ── TestFlight upload (only runs if App Store Connect API secrets are set) ──
+      # Uses xcrun altool with an ASC API key — no Apple ID / 2FA needed.
+      - name: Upload to TestFlight
+        if: ${{ secrets.APPSTORE_API_KEY_ID != '' && secrets.APPSTORE_API_ISSUER_ID != '' && secrets.APPSTORE_API_KEY_P8 != '' }}
+        env:
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APPSTORE_API_KEY_P8" > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
+          IPA=$(ls ios/build/*.ipa | head -1)
+          echo "Uploading $IPA to TestFlight..."
+          xcrun altool --upload-app -f "$IPA" -t ios \
+            --apiKey "$APPSTORE_API_KEY_ID" \
+            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
+            --verbose
