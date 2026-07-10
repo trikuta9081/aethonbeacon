@@ -3,15 +3,12 @@ name: Build iOS → TestFlight (App Store Connect API)
 # Builds a signed iOS .ipa on a macOS runner and uploads to TestFlight,
 # using ONLY an App Store Connect API key — no Apple ID / 2FA / password
 # needed at runtime, no .p12 certificate export, no manual provisioning
-# profile management. Xcode auto-manages signing at build time.
+# profile management.
 #
 # Required GitHub repo secrets (Settings → Secrets and variables → Actions):
 #   APPSTORE_API_KEY_ID     = 4Y6H9428FJ
 #   APPSTORE_API_ISSUER_ID  = 987583dc-d087-45b3-ad8a-550f59621e8d
 #   APPSTORE_API_KEY_P8     = full contents of the AuthKey_<KEYID>.p8 file
-#
-# If any of those three secrets is missing, the workflow still builds the
-# .ipa and uploads it as a GitHub Actions artifact — just no TestFlight push.
 
 on:
   push:
@@ -25,6 +22,9 @@ jobs:
 
     env:
       APPLE_TEAM_ID: '846YFF8Z98'
+      APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+      APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+      APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
 
     steps:
       - name: Checkout
@@ -56,35 +56,29 @@ jobs:
         working-directory: ios
         run: pod install --repo-update
 
-      - name: Write App Store Connect API key file (if provided)
-        if: ${{ secrets.APPSTORE_API_KEY_P8 != '' }}
-        env:
-          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-          APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
+      - name: Write App Store Connect API key file
         run: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8"
-          printf '%s\n' "$APPSTORE_API_KEY_P8" > "$KEY_PATH"
-          echo "APPSTORE_KEY_PATH=$KEY_PATH" >> $GITHUB_ENV
-          echo "API key written to $KEY_PATH"
+          if [ -n "${APPSTORE_API_KEY_ID:-}" ] && [ -n "${APPSTORE_API_KEY_P8:-}" ]; then
+            mkdir -p "$HOME/.appstoreconnect/private_keys"
+            KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8"
+            printf '%s\n' "$APPSTORE_API_KEY_P8" > "$KEY_PATH"
+            echo "APPSTORE_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+            echo "HAS_ASC_KEY=true" >> "$GITHUB_ENV"
+            echo "API key written to $KEY_PATH"
+          else
+            echo "APPSTORE_API_KEY_ID or APPSTORE_API_KEY_P8 not set — skipping ASC key write"
+            echo "HAS_ASC_KEY=false" >> "$GITHUB_ENV"
+          fi
 
-      - name: Archive iOS (Xcode auto-manages signing via ASC API key)
+      - name: Archive iOS
         working-directory: ios
-        env:
-          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
         run: |
-          # When the ASC API key is present, use -allowProvisioningUpdates so
-          # Xcode can create/fetch signing certificates and provisioning
-          # profiles on the fly. Otherwise fall back to Automatic signing (which
-          # still works for archiving but may fail if the runner has no local
-          # signing assets).
-          if [ -n "${APPSTORE_API_KEY_ID:-}" ] && [ -n "${APPSTORE_API_ISSUER_ID:-}" ] && [ -f "$APPSTORE_KEY_PATH" ]; then
+          if [ "${HAS_ASC_KEY:-false}" = "true" ]; then
             xcodebuild \
               -workspace AethonBeacon.xcworkspace \
               -scheme AethonBeacon \
               -configuration Release \
-              -archivePath $PWD/build/AethonBeacon.xcarchive \
+              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
               -destination "generic/platform=iOS" \
               -allowProvisioningUpdates \
               -authenticationKeyID "$APPSTORE_API_KEY_ID" \
@@ -98,7 +92,7 @@ jobs:
               -workspace AethonBeacon.xcworkspace \
               -scheme AethonBeacon \
               -configuration Release \
-              -archivePath $PWD/build/AethonBeacon.xcarchive \
+              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
               -destination "generic/platform=iOS" \
               CODE_SIGN_STYLE=Automatic \
               DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
@@ -107,9 +101,6 @@ jobs:
 
       - name: Export .ipa
         working-directory: ios
-        env:
-          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
         run: |
           cat > ExportOptions.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
@@ -119,7 +110,7 @@ jobs:
             <key>method</key>
             <string>app-store</string>
             <key>teamID</key>
-            <string>$APPLE_TEAM_ID</string>
+            <string>${APPLE_TEAM_ID}</string>
             <key>uploadBitcode</key>
             <false/>
             <key>uploadSymbols</key>
@@ -129,12 +120,12 @@ jobs:
           </dict>
           </plist>
           EOF
-          if [ -n "${APPSTORE_API_KEY_ID:-}" ] && [ -n "${APPSTORE_API_ISSUER_ID:-}" ] && [ -f "$APPSTORE_KEY_PATH" ]; then
+          if [ "${HAS_ASC_KEY:-false}" = "true" ]; then
             xcodebuild \
               -exportArchive \
-              -archivePath $PWD/build/AethonBeacon.xcarchive \
+              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
               -exportOptionsPlist ExportOptions.plist \
-              -exportPath $PWD/build \
+              -exportPath "$PWD/build" \
               -allowProvisioningUpdates \
               -authenticationKeyID "$APPSTORE_API_KEY_ID" \
               -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID" \
@@ -142,9 +133,9 @@ jobs:
           else
             xcodebuild \
               -exportArchive \
-              -archivePath $PWD/build/AethonBeacon.xcarchive \
+              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
               -exportOptionsPlist ExportOptions.plist \
-              -exportPath $PWD/build
+              -exportPath "$PWD/build"
           fi
 
       - name: Upload .ipa artifact
@@ -161,17 +152,20 @@ jobs:
           path: ios/build/AethonBeacon.xcarchive
           retention-days: 7
 
-      # ── TestFlight upload via App Store Connect API ──
-      # Only runs if all three ASC secrets are present.
       - name: Upload to TestFlight
-        if: ${{ secrets.APPSTORE_API_KEY_ID != '' && secrets.APPSTORE_API_ISSUER_ID != '' && secrets.APPSTORE_API_KEY_P8 != '' }}
-        env:
-          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
         run: |
-          IPA=$(ls ios/build/*.ipa | head -1)
-          echo "Uploading $IPA to TestFlight via ASC API..."
-          xcrun altool --upload-app -f "$IPA" -t ios \
-            --apiKey "$APPSTORE_API_KEY_ID" \
-            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
-            --verbose
+          if [ "${HAS_ASC_KEY:-false}" = "true" ]; then
+            IPA=$(ls ios/build/*.ipa 2>/dev/null | head -1)
+            if [ -z "$IPA" ]; then
+              echo "No .ipa found in ios/build/ — skipping upload"
+              exit 0
+            fi
+            echo "Uploading $IPA to TestFlight via App Store Connect API..."
+            xcrun altool --upload-app -f "$IPA" -t ios \
+              --apiKey "$APPSTORE_API_KEY_ID" \
+              --apiIssuer "$APPSTORE_API_ISSUER_ID" \
+              --verbose
+          else
+            echo "ASC API key not configured — skipping TestFlight upload."
+            echo "Download the .ipa artifact and use Transporter for manual upload."
+          fi

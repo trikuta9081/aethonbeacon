@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
+    env:
+      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,7 +69,7 @@ jobs:
       # Add the secret in: GitHub → Settings → Secrets and variables → Actions.
       # Uses r0adkll/upload-google-play to submit the AAB to the internal track.
       - name: Publish to Play Console (internal track)
-        if: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != '' }}
+        if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
