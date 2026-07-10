@@ -33,6 +33,7 @@ Once these 3 are set → next push builds + uploads to TestFlight automatically.
 
 ### 4. `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`
 Value: full JSON contents of a Google Cloud service account key.
+Paste the complete JSON object as plain text. If you copied it from a file, keep the braces and all fields intact; the workflow now validates the JSON before publish.
 
 Steps to generate:
 1. Play Console → Setup → API access → Create service account (follows link to Google Cloud Console).
