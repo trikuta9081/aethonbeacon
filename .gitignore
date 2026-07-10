@@ -9,6 +9,7 @@ android/build/
 *.p12
 *.key
 *.mobileprovision
+android/keystore.properties
 .DS_Store
 ._*
 qa/
