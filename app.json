@@ -43,7 +43,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0A0F1E"
       },
-      "package": "com.aethon.beacon",
+      "package": "com.aethonbeacon.app",
       "versionCode": 18,
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",
