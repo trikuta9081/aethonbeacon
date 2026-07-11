@@ -14,7 +14,7 @@
   <string>manual</string>
   <key>provisioningProfiles</key>
   <dict>
-    <key>com.aethon.beacon</key>
+    <key>com.aethonbeacon.app</key>
     <string>AethonBeacon AppStore Distribution</string>
   </dict>
 </dict>
