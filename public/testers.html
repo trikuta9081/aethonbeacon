@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Join Aethon Beacon Testing</title>
+  <meta name="description" content="Join the Aethon Beacon Android closed test and send feedback." />
+  <style>
+    :root { color-scheme: dark; --bg:#06121f; --panel:#0e1f2e; --accent:#63ded0; --text:#e5f3f7; --muted:#9bb3bf; --border:#1e3a4a; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top, #123345, var(--bg) 58%); color:var(--text); }
+    main { width:min(880px, 92vw); margin:0 auto; padding:48px 0 56px; }
+    .hero { border:1px solid rgba(99,222,208,.28); background:rgba(14,31,46,.86); border-radius:28px; padding:32px; box-shadow:0 24px 80px rgba(0,0,0,.32); }
+    .eyebrow { color:var(--accent); font-size:12px; letter-spacing:.18em; text-transform:uppercase; font-weight:800; }
+    h1 { margin:10px 0 10px; font-size:clamp(34px, 6vw, 58px); line-height:.98; }
+    p { color:var(--muted); font-size:17px; line-height:1.65; }
+    .actions { display:flex; flex-wrap:wrap; gap:14px; margin:26px 0; }
+    a.btn { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 18px; border-radius:999px; text-decoration:none; font-weight:800; }
+    .primary { background:var(--accent); color:#042128; }
+    .secondary { color:var(--accent); border:1px solid rgba(99,222,208,.45); }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:22px; }
+    .card { border:1px solid var(--border); background:rgba(6,18,31,.72); border-radius:18px; padding:18px; }
+    .card h2 { margin:0 0 8px; font-size:18px; }
+    ol { margin:10px 0 0; padding-left:22px; color:var(--muted); line-height:1.7; }
+    code { color:var(--accent); word-break:break-word; }
+    .note { margin-top:18px; padding:14px 16px; border-left:4px solid var(--accent); background:rgba(99,222,208,.08); border-radius:12px; }
+    footer { color:#6f8793; margin-top:22px; font-size:13px; text-align:center; }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Aethon Beacon closed test</div>
+      <h1>Help test Aethon Beacon on Android</h1>
+      <p>Aethon Beacon is in Google Play closed testing. Please opt in with your Gmail account, install the app, keep it installed, and send feedback. Your opt-in helps the app qualify for production access.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://play.google.com/apps/testing/com.aethonbeacon.app">1. Join closed test</a>
+        <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.aethonbeacon.app">2. Install from Play</a>
+        <a class="btn secondary" href="mailto:slathiarimple567@gmail.com?subject=Aethon%20Beacon%20testing%20feedback">Send feedback</a>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h2>Steps</h2>
+          <ol>
+            <li>Open the join link using your Gmail account.</li>
+            <li>Tap <strong>Become a tester</strong> or <strong>Join</strong>.</li>
+            <li>Install Aethon Beacon from Google Play.</li>
+            <li>Use the app and keep your tester opt-in active for 14 days.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h2>What to test</h2>
+          <ol>
+            <li>Open the app and check the Today screen.</li>
+            <li>Try voice input/readout if available.</li>
+            <li>Try message/beep/notification behaviour.</li>
+            <li>Try Vedic/moon-chart guidance and community screens.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h2>Feedback</h2>
+          <p>Email screenshots, crashes, device model, Android version, and what felt confusing to:</p>
+          <p><code>slathiarimple567@gmail.com</code></p>
+        </div>
+      </div>
+      <div class="note">Google requires at least 12 opted-in testers for 14 continuous days before production access can be requested. Thank you for helping us cross that bridge.</div>
+    </section>
+    <footer>Aethon Beacon · Closed testing page</footer>
+  </main>
+</body>
+</html>
