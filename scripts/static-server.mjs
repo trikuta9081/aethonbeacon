@@ -10,7 +10,7 @@ function parsePositiveInt(value, fallback) {
 const port = parsePositiveInt(process.env.PORT, 3000);
 const host = process.env.HOST?.trim() || "0.0.0.0";
 const staticRoot = resolve(process.env.STATIC_ROOT ?? "dist");
-const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://aethon-beacon-testers.trikuta9081.chatgpt.site/?v=20260715-0245";
+const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://aethonbeacon.com/join-testers-20260715.html?v=20260715-0315";
 
 const mimeTypes = new Map([
   [".html", "text/html; charset=utf-8"],
@@ -98,9 +98,12 @@ const server = createServer(async (req, res) => {
   if (url.pathname === "/testers" || url.pathname === "/testers.html") {
     res.writeHead(302, {
       Location: testerPromotionUrl,
-      "Cache-Control": "no-store, max-age=0, must-revalidate",
+      "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate, proxy-revalidate",
       Pragma: "no-cache",
       Expires: "0",
+      "Clear-Site-Data": "\"cache\", \"storage\"",
+      "Vary": "*",
+      "X-Robots-Tag": "noarchive",
       "Content-Type": "text/plain; charset=utf-8"
     });
     if (req.method === "HEAD") {

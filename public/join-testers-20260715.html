@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Join Aethon Beacon Testing — Android and iPhone</title>
+  <meta name="description" content="Fresh Aethon Beacon tester page for Android closed testing and iOS TestFlight." />
+  <style>
+    :root { color-scheme: dark; --bg:#081122; --panel:#0d2344; --gold:#facc6b; --green:#4ade80; --purple:#a78bfa; --text:#ffffff; --muted:#d7e3f2; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; background:radial-gradient(circle at top left, rgba(250,204,107,.25), transparent 38%), radial-gradient(circle at bottom right, rgba(96,165,250,.24), transparent 42%), var(--bg); color:var(--text); }
+    main { width:min(1040px,92vw); margin:0 auto; padding:34px 0 48px; }
+    .hero { border:1px solid rgba(255,255,255,.16); background:rgba(13,35,68,.86); border-radius:30px; padding:28px; box-shadow:0 28px 90px rgba(0,0,0,.36); }
+    .eyebrow { color:var(--gold); text-transform:uppercase; letter-spacing:.22em; font-weight:900; font-size:12px; }
+    h1 { margin:12px 0; font-size:clamp(38px,7vw,72px); line-height:.96; letter-spacing:-.05em; }
+    p { color:var(--muted); font-size:17px; line-height:1.65; }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; margin:22px 0; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 18px; border-radius:17px; text-decoration:none; font-weight:900; text-align:center; }
+    .android { background:var(--green); color:#062014; }
+    .ios { background:var(--purple); color:white; }
+    .secondary { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:white; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:16px; margin-top:20px; }
+    .card { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.13); border-radius:22px; padding:20px; }
+    .card h2 { margin:6px 0 8px; }
+    ol { color:var(--muted); line-height:1.7; padding-left:22px; }
+    code { color:#fde68a; word-break:break-word; }
+    .notice { margin-top:18px; padding:16px; border-radius:18px; background:rgba(250,204,107,.12); border:1px solid rgba(250,204,107,.25); color:#fff7df; }
+    .detected { display:none; margin-top:16px; padding:14px 16px; border-radius:16px; background:rgba(74,222,128,.12); border:1px solid rgba(74,222,128,.25); font-weight:800; color:#dcfce7; }
+    footer { text-align:center; color:#93a6bd; font-size:13px; margin-top:18px; }
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="eyebrow">Fresh link · July 15, 2026</div>
+    <h1>Join Aethon Beacon testing</h1>
+    <p>This is the current tester page for Android and iPhone. If an older page appeared before, this fresh page replaces it.</p>
+    <div id="deviceHint" class="detected"></div>
+    <div class="actions">
+      <a class="btn android" href="https://play.google.com/apps/testing/com.aethonbeacon.app">Android: Join closed test</a>
+      <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.aethonbeacon.app">Android: Install app</a>
+      <a class="btn ios" href="https://apps.apple.com/app/testflight/id899247664">iPhone: Install TestFlight</a>
+      <a class="btn secondary" href="mailto:slathiarimple567@gmail.com?subject=Please%20send%20Aethon%20Beacon%20TestFlight%20invite">iPhone: Request invite</a>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h2>Android testers</h2>
+        <ol>
+          <li>Open the Android closed test button.</li>
+          <li>Join with your Gmail account.</li>
+          <li>Install Aethon Beacon from Google Play.</li>
+          <li>Keep testing/opt-in active for 14 days.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h2>iPhone testers</h2>
+        <ol>
+          <li>Install Apple TestFlight.</li>
+          <li>Request/open the Aethon Beacon TestFlight invite.</li>
+          <li>Accept the beta and install.</li>
+          <li>Send feedback/screenshots from TestFlight or email.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h2>Feedback</h2>
+        <p>If the email button does not open, manually email:</p>
+        <p><code>slathiarimple567@gmail.com</code></p>
+        <p>Please include phone model, Android/iOS version, screenshot/video, and what happened.</p>
+      </div>
+    </div>
+    <div class="notice"><strong>Current page:</strong> <code>https://aethonbeacon.com/join-testers-20260715.html?v=20260715-0315</code></div>
+  </section>
+  <footer>Aethon Beacon · Android + iPhone tester page</footer>
+</main>
+<script>
+  const hint = document.getElementById('deviceHint');
+  const ua = navigator.userAgent || '';
+  if (/Android/i.test(ua)) { hint.style.display='block'; hint.textContent='Android detected — use the Android closed test button first.'; }
+  else if (/iPhone|iPad|iPod/i.test(ua)) { hint.style.display='block'; hint.textContent='iPhone detected — install TestFlight, then request/open the Aethon Beacon invite.'; }
+</script>
+</body>
+</html>
