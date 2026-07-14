@@ -9,8 +9,8 @@ type PermissionResponse = {
 };
 
 const noopModule = {
-  AndroidImportance: { DEFAULT: 0 },
-  SchedulableTriggerInputTypes: { DAILY: "daily", DATE: "date" },
+  AndroidImportance: { DEFAULT: 0, HIGH: 1 },
+  SchedulableTriggerInputTypes: { DAILY: "daily", WEEKLY: "weekly", DATE: "date" },
   setNotificationHandler: () => undefined,
   getPermissionsAsync: async () => ({ granted: false, canAskAgain: false }) as PermissionResponse,
   requestPermissionsAsync: async () => ({ granted: false, canAskAgain: false }) as PermissionResponse,

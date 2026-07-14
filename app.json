@@ -19,7 +19,8 @@
       "requireFullScreen": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Aethon Beacon does not use your camera.",
-        "NSMicrophoneUsageDescription": "Aethon Beacon does not use your microphone.",
+        "NSMicrophoneUsageDescription": "Aethon Beacon uses the microphone when you choose voice input for guidance and journaling.",
+        "NSSpeechRecognitionUsageDescription": "Aethon Beacon uses speech recognition to transcribe voice input into text on supported devices.",
         "NSPhotoLibraryUsageDescription": "Aethon Beacon does not access your photo library.",
         "NSContactsUsageDescription": "Aethon Beacon does not access your contacts.",
         "NSLocationWhenInUseUsageDescription": "Aethon Beacon does not use your location.",
@@ -46,6 +47,7 @@
       "package": "com.aethonbeacon.app",
       "versionCode": 18,
       "permissions": [
+        "RECORD_AUDIO",
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
         "SCHEDULE_EXACT_ALARM",
@@ -59,7 +61,17 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow Aethon Beacon to use the microphone when you choose voice input.",
+          "speechRecognitionPermission": "Allow Aethon Beacon to transcribe your voice input into text.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
+      ]
     ],
     "extra": {
       "privacyPolicyUrl": "https://trikuta9081.github.io/aethonbeacon/privacy-policy.html",

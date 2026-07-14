@@ -636,14 +636,16 @@ async function generateGeminiBrief(body) {
   return { source: "fallback", text: buildBriefFallback(body) };
 }
 
-// ── /ai/birth-chart — Gemini horoscope based on exact birth details ─────────
+// ── /ai/birth-chart — Moon-chart horoscope based on exact birth details ─────
 
 function buildBirthChartPrompt(body) {
   const name = typeof body?.name === "string" ? body.name.trim() : "the user";
   const dob = typeof body?.dob === "string" ? body.dob.trim() : "";
   const birthTime = typeof body?.birthTime === "string" ? body.birthTime.trim() : "";
   const birthPlace = typeof body?.birthPlace === "string" ? body.birthPlace.trim() : "";
-  const rashiName = typeof body?.rashiName === "string" ? body.rashiName.trim() : "";
+  const moonRashiName = typeof body?.moonRashiName === "string"
+    ? body.moonRashiName.trim()
+    : typeof body?.rashiName === "string" ? body.rashiName.trim() : "";
   const nakshatraName = typeof body?.nakshatraName === "string" ? body.nakshatraName.trim() : "";
   const tithiName = typeof body?.tithiName === "string" ? body.tithiName.trim() : "";
   const varaName = typeof body?.varaName === "string" ? body.varaName.trim() : "";
@@ -652,8 +654,10 @@ function buildBirthChartPrompt(body) {
     : "";
 
   return [
-    "You are Beacon Guide writing a compact Gemini horoscope for a wellness app birth chart page.",
+    "You are Beacon Guide writing a compact Vedic Moon-chart horoscope for a wellness app birth chart page.",
     "Use Vedic-style language, but stay calm, practical, and respectful.",
+    "Base every prediction only on the Moon chart: Janma Rashi, lunar Nakshatra, Tithi, and Moon-derived Vimshottari periods.",
+    "Do not calculate, mention, infer, or use a Sun sign, Surya Rashi, solar chart, or Sun-chart prediction.",
     "Treat date of birth, exact 24-hour birth time, and full birth place as mandatory precision fields.",
     "Do not pretend the reading is mathematically exact if coordinates, timezone, ayanamsa, or certified ephemeris details are not supplied.",
     "Write 4 short sentences. Sentence 1: state the reading is anchored to the supplied date, time, and place. Sentence 2: summarize the cosmic reading. Sentence 3: give one likely emotional or behavioral theme. Sentence 4: give one grounded action or caution for today.",
@@ -663,24 +667,26 @@ function buildBirthChartPrompt(body) {
     `Date of birth: ${dob}.`,
     `Time of birth: ${birthTime}.`,
     `Place of birth: ${birthPlace}.`,
-    rashiName.length > 0 ? `Rashi: ${rashiName}.` : "",
+    moonRashiName.length > 0 ? `Janma Rashi (Moon sign): ${moonRashiName}.` : "",
     nakshatraName.length > 0 ? `Nakshatra: ${nakshatraName}.` : "",
     tithiName.length > 0 ? `Tithi: ${tithiName}.` : "",
     varaName.length > 0 ? `Vara: ${varaName}.` : "",
-    predictionLines.length > 0 ? `Local chart hints: ${predictionLines}.` : "",
+    predictionLines.length > 0 ? `Local Moon-chart hints: ${predictionLines}.` : "",
     "Keep the tone steady, useful, and precise."
   ].filter(Boolean).join("\n");
 }
 
 function buildBirthChartFallback(body) {
-  const rashiName = typeof body?.rashiName === "string" ? body.rashiName.trim() : "";
+  const moonRashiName = typeof body?.moonRashiName === "string"
+    ? body.moonRashiName.trim()
+    : typeof body?.rashiName === "string" ? body.rashiName.trim() : "";
   const nakshatraName = typeof body?.nakshatraName === "string" ? body.nakshatraName.trim() : "";
   const birthTime = typeof body?.birthTime === "string" ? body.birthTime.trim() : "";
   const place = typeof body?.birthPlace === "string" ? body.birthPlace.trim() : "";
   const base = place.length > 0 && birthTime.length > 0
     ? `Your reading is anchored to the saved birth time and place: ${birthTime}, ${place}.`
     : "Complete exact birth time and place before treating this as a birth-chart reading.";
-  const rashiLine = rashiName.length > 0 ? `The chart leans through ${rashiName}.` : "Use the reading as a guide, not a fixed label.";
+  const rashiLine = moonRashiName.length > 0 ? `The Moon chart is anchored in ${moonRashiName} Janma Rashi.` : "Use the Moon-chart reading as a guide, not a fixed label.";
   const second = nakshatraName.length > 0
     ? `Your ${nakshatraName} detail suggests a pattern worth noticing in how you respond to stress and choice.`
     : "Use the reading as a guide, not a fixed label.";

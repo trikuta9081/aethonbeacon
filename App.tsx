@@ -33,9 +33,17 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import type { AudioPlayer } from "expo-audio";
 import type { NotificationResponse } from "expo-notifications";
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from "expo-speech-recognition";
 import * as Speech from "expo-speech";
 import Notifications, { notificationsAvailable } from "./notifications";
 import { supabaseConfigured, pushToSupabase, pullFromSupabase } from "./supabaseSync";
+import {
+  communityRealtimeConfigured,
+  fetchRealtimeCommunityMessages,
+  sendRealtimeCommunityChatMessage,
+  sendRealtimeCommunityFeedMessage,
+  subscribeRealtimeCommunityMessages
+} from "./realtimeCommunity";
 
 const TextWithDefaults = Text as unknown as { defaultProps?: Record<string, unknown> };
 const TextInputWithDefaults = TextInput as unknown as { defaultProps?: Record<string, unknown> };
@@ -396,6 +404,7 @@ type CommunityMessage = {
   tag: string;
   text: string;
   topic: string;
+  clientId?: string;
 };
 type CommunityChatMessage = {
   id: string;
@@ -404,6 +413,7 @@ type CommunityChatMessage = {
   role: CommunityMessageRole;
   text: string;
   persona: CommunityChatPersonaId;
+  clientId?: string;
 };
 type PrivateSpaceKind = "dm" | "group";
 type PrivateSpaceMessageRole = "you" | "member" | "moderator";
@@ -619,13 +629,20 @@ const publicLegalLinks = [
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: false,
     shouldShowAlert: true,
     shouldShowBanner: true,
     shouldShowList: true
   })
 });
+
+function reminderNotificationContentOptions() {
+  return {
+    sound: "default",
+    ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+  };
+}
 
 const tones: Tone[] = [
   { id: "heavy", label: "Overloaded", score: 1, accent: "#F37B64", mark: "!" },
@@ -1905,6 +1922,81 @@ async function playRelaxingToneCue(tone: RelaxingToneMode) {
 
   if (Platform.OS !== "web") {
     Vibration.vibrate(tone.id === "reset-gamma" ? [0, 40, 20, 40, 20, 40] : 120);
+  }
+}
+
+async function playMessageFeedbackCue(kind: "sent" | "received" | "blocked" = "sent") {
+  const durationSeconds = kind === "received" ? 0.18 : kind === "blocked" ? 0.11 : 0.14;
+  const baseFrequency = kind === "received" ? 660 : kind === "blocked" ? 220 : 520;
+  const secondFrequency = kind === "received" ? 880 : kind === "blocked" ? 196 : 690;
+
+  if (Platform.OS === "web" && typeof window !== "undefined") {
+    const audioWindow = window as Window & {
+      AudioContext?: typeof AudioContext;
+      webkitAudioContext?: typeof AudioContext;
+      __aethonMessageContext?: AudioContext;
+    };
+    const AudioContextClass = audioWindow.AudioContext ?? audioWindow.webkitAudioContext;
+    if (!AudioContextClass) return;
+    try {
+      let audioContext = audioWindow.__aethonMessageContext;
+      if (!audioContext || audioContext.state === "closed") {
+        audioContext = new AudioContextClass();
+        audioWindow.__aethonMessageContext = audioContext;
+      }
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+
+      const gain = audioContext.createGain();
+      const first = audioContext.createOscillator();
+      const second = audioContext.createOscillator();
+      const now = audioContext.currentTime;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + durationSeconds);
+      first.type = "sine";
+      second.type = "triangle";
+      first.frequency.setValueAtTime(baseFrequency, now);
+      second.frequency.setValueAtTime(secondFrequency, now + durationSeconds * 0.42);
+      first.connect(gain);
+      second.connect(gain);
+      gain.connect(audioContext.destination);
+      first.start(now);
+      first.stop(now + durationSeconds * 0.6);
+      second.start(now + durationSeconds * 0.36);
+      second.stop(now + durationSeconds);
+    } catch {
+      // Non-critical feedback cue.
+    }
+    return;
+  }
+
+  try {
+    Vibration.vibrate(kind === "received" ? [0, 25, 35, 35] : kind === "blocked" ? 65 : 30);
+  } catch {
+    // Vibration is best-effort only.
+  }
+
+  try {
+    const sound = await ensureRelaxingToneSoundLoaded();
+    if (!sound) return;
+    sound.volume = kind === "blocked" ? 0.22 : 0.28;
+    try {
+      await sound.seekTo(0);
+    } catch {
+      // Play can still succeed after the asset finishes loading.
+    }
+    sound.play();
+    setTimeout(() => {
+      try {
+        sound.pause();
+      } catch {
+        // Ignore cue cutoff failures.
+      }
+    }, Math.round(durationSeconds * 1000) + 120);
+  } catch {
+    // Sound feedback must never block chat/message actions.
   }
 }
 
@@ -7227,36 +7319,9 @@ const RASHI_DAILY_PREDICTIONS: Record<number, string[][]> = {
   11: [["Imagination and intuition guide you to the right path.","Romantic sensitivity creates a deeply beautiful connection.","Health: Feet and immune system — rest and warm socks.","Spiritually: Offer yellow flowers to Guru on Thursday."],["Spiritual insights translate into creative work today.","Compassion and empathy deepen your most meaningful bond.","Health: Lymphatic system — gentle movement and hydration.","Spiritually: Chant 'Om Namah Shivaya' at dawn."],["A hidden talent or gift surfaces unexpectedly today.","Dreams and intuition carry important messages — listen.","Health: Sleep quality — establish a sacred bedtime ritual.","Spiritually: Chant Vishnu Sahasranama for blessings."],["Creative or artistic work receives wonderful recognition.","Unconditional love and forgiveness heal old wounds now.","Health: Emotional sensitivity — be gentle with yourself.","Spiritually: Thursday fast to Guru brings abundance."],["A spiritual or meditative practice brings a breakthrough.","Soul-level connection with a partner is deepened today.","Health: Water element is strong — stay anchored.","Spiritually: Visit Vishnu temple and offer tulsi."],["Generosity and compassion attract abundant blessings.","A quiet, intimate moment with a loved one is precious.","Health: Avoid alcohol and escapism — face things directly.","Spiritually: Recite Om Namo Narayanaya 108 times."],["Surrender and trust in the divine unfolds something beautiful.","Love expressed through sacrifice or service is deeply real.","Health: Feet reflexology and warm water soaks heal.","Spiritually: Meditate by water bodies for clarity."]],
 };
 
-// Approximate Vedic Sun Rashi from Gregorian DOB (Nirayana / sidereal boundaries)
-// NOTE: This gives the Sidereal Sun Sign. Janma Rashi (Moon sign) requires lunar ephemeris.
-// The Sun sign is used here as the primary Rashi for predictions and as base for Lagna.
-function getVedicRashiFromDOB(dob: string): { rashiId: number; rashi: typeof VEDIC_RASHIS[0] } | null {
-  if (!dob || dob.length < 10) return null;
-  const d = new Date(dob);
-  if (isNaN(d.getTime())) return null;
-  const month = d.getMonth() + 1; // 1-12
-  const day = d.getDate();
-  // Sidereal dates (approx, using common Nirayana boundary dates)
-  let rashiId = 0;
-  if ((month === 4 && day >= 13) || (month === 5 && day <= 14)) rashiId = 0;       // Mesha: Apr 13 – May 14
-  else if ((month === 5 && day >= 15) || (month === 6 && day <= 15)) rashiId = 1;  // Vrishabha: May 15 – Jun 15
-  else if ((month === 6 && day >= 16) || (month === 7 && day <= 16)) rashiId = 2;  // Mithuna: Jun 16 – Jul 16
-  else if ((month === 7 && day >= 17) || (month === 8 && day <= 16)) rashiId = 3;  // Karka: Jul 17 – Aug 16
-  else if ((month === 8 && day >= 17) || (month === 9 && day <= 17)) rashiId = 4;  // Simha: Aug 17 – Sep 17
-  else if ((month === 9 && day >= 18) || (month === 10 && day <= 17)) rashiId = 5; // Kanya: Sep 18 – Oct 17
-  else if ((month === 10 && day >= 18) || (month === 11 && day <= 16)) rashiId = 6;// Tula: Oct 18 – Nov 16
-  else if ((month === 11 && day >= 17) || (month === 12 && day <= 15)) rashiId = 7;// Vrishchika: Nov 17 – Dec 15
-  else if ((month === 12 && day >= 16) || (month === 1 && day <= 13)) rashiId = 8; // Dhanu: Dec 16 – Jan 13
-  else if ((month === 1 && day >= 14) || (month === 2 && day <= 12)) rashiId = 9;  // Makara: Jan 14 – Feb 12
-  else if ((month === 2 && day >= 13) || (month === 3 && day <= 14)) rashiId = 10; // Kumbha: Feb 13 – Mar 14
-  else rashiId = 11; // Meena: Mar 15 – Apr 12
-  return { rashiId, rashi: VEDIC_RASHIS[rashiId] };
-}
-
-// Approximate Lagna (Ascendant) from birth time using Sun-sign base + time offset
-// Lagna changes every ~2 hours. At 6am (approximate sunrise), Lagna ≈ Sun Rashi.
-// Each 2 hours after sunrise, Lagna advances by 1 Rashi (clockwise).
-// This is a simplified approximation; precise Lagna requires local sidereal time.
+// Approximate Lagna (Ascendant) from birth time using the Moon-chart Rashi as
+// the sole chart anchor. Lagna changes every ~2 hours. This remains a simplified
+// approximation; precise Lagna requires local sidereal time.
 function getLagnaFromBirthDetails(rashiId: number, birthTime: string): { lagnaId: number; lagna: typeof VEDIC_RASHIS[0]; birthHour: number; lagnaLabel: string } | null {
   if (!birthTime || !/^\d{2}:\d{2}$/.test(birthTime)) return null;
   const hour = parseInt(birthTime.split(":")[0], 10);
@@ -8427,6 +8492,7 @@ export default function App() {
   // Mirror displayName + issueGuideId into refs so AppState handler can read them
   const profileDisplayNameRef = useRef<string>("You");
   const issueGuideIdRef = useRef<string>("general");
+  const communityLocallySentMessageIdsRef = useRef<Set<string>>(new Set());
 
   function logSessionEvent(event: SessionEvent) {
     sessionEventsRef.current = [...sessionEventsRef.current, { ...event, ts: Date.now() }];
@@ -8451,6 +8517,9 @@ export default function App() {
   const [communityChatMessages, setCommunityChatMessages] = useState<CommunityChatMessage[]>(communityChatSeed);
   const [communityChatDraft, setCommunityChatDraft] = useState("");
   const [communityChatPersona, setCommunityChatPersona] = useState<CommunityChatPersonaId>("mentor");
+  const [communityRealtimeStatus, setCommunityRealtimeStatus] = useState(
+    communityRealtimeConfigured ? "Connecting realtime…" : "Local fallback"
+  );
   const [privateSpaceThreads, setPrivateSpaceThreads] = useState<PrivateSpaceThread[]>(privateSpaceSeedThreads);
   const [privateSpaceSelectedThreadId, setPrivateSpaceSelectedThreadId] = useState<string | null>(
     privateSpaceSeedThreads[0]?.id ?? null
@@ -8634,6 +8703,76 @@ export default function App() {
   const showFullHomeHero = activeTab === "today";
   const isAdmin = accessRole === "admin";
   const communityVerifiedAccess = accessRole === "verified" && (profilePhoneVerified || profileEmailVerified);
+
+  useEffect(() => {
+    if (!communityVerifiedAccess) {
+      setCommunityRealtimeStatus(communityRealtimeConfigured ? "Verify to connect realtime" : "Local fallback");
+      return;
+    }
+    if (!communityRealtimeConfigured) {
+      setCommunityRealtimeStatus("Local fallback");
+      return;
+    }
+
+    let cancelled = false;
+    setCommunityRealtimeStatus("Connecting realtime…");
+
+    fetchRealtimeCommunityMessages()
+      .then((result) => {
+        if (cancelled) return;
+        if (!result.ok) {
+          setCommunityRealtimeStatus(`Realtime unavailable: ${result.error ?? "check Supabase table"}`);
+          return;
+        }
+        if (result.feed.length > 0) {
+          setCommunityMessages((current) => mergeCommunityMessages(current, result.feed));
+        }
+        if (result.chat.length > 0) {
+          setCommunityChatMessages((current) => mergeCommunityChatMessages(current, result.chat));
+        }
+        setCommunityRealtimeStatus("Realtime connected");
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setCommunityRealtimeStatus(
+            `Realtime unavailable: ${error instanceof Error ? error.message : "check Supabase"}`
+          );
+        }
+      });
+
+    const subscription = subscribeRealtimeCommunityMessages({
+      onFeedMessage: (message) => {
+        if (cancelled) return;
+        const isOwnEcho = communityLocallySentMessageIdsRef.current.delete(message.id);
+        setCommunityMessages((current) => mergeCommunityMessages(current, message));
+        if (!isOwnEcho) void playMessageFeedbackCue("received");
+      },
+      onChatMessage: (message) => {
+        if (cancelled) return;
+        const isOwnEcho = communityLocallySentMessageIdsRef.current.delete(message.id);
+        setCommunityChatMessages((current) => mergeCommunityChatMessages(current, message));
+        if (!isOwnEcho) void playMessageFeedbackCue("received");
+      },
+      onStatus: (status) => {
+        if (cancelled) return;
+        if (status === "SUBSCRIBED") {
+          setCommunityRealtimeStatus("Realtime connected");
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+          setCommunityRealtimeStatus(`Realtime ${status.toLowerCase()}`);
+        } else {
+          setCommunityRealtimeStatus(`Realtime ${status.toLowerCase()}`);
+        }
+      },
+      onError: (message) => {
+        if (!cancelled) setCommunityRealtimeStatus(`Realtime error: ${message}`);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  }, [communityVerifiedAccess]);
 
   // ── Streak tracker ──────────────────────────────────────────────────────────
   const checkInStreak = useMemo(() => {
@@ -9227,8 +9366,7 @@ export default function App() {
   );
 
   // ── Vedic Daily Prediction ─────────────────────────────────────────────────
-  // Primary = Janma Rashi (Moon sign, from Nakshatra); secondary = Sun Rashi
-  const vedicSunRashiInfo = useMemo(() => getVedicRashiFromDOB(profileDOB), [profileDOB]);
+  // Janma Rashi (Moon sign, from Nakshatra) is the sole prediction anchor.
   const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB), [profileDOB]);
   const vedicJanmaNakshatra = useMemo(() => getJanmaNakshatra(profileDOB), [profileDOB]);
   const vedicDashaState = useMemo(
@@ -9274,6 +9412,9 @@ export default function App() {
             dob: profileDOB,
             birthTime: profileBirthTime,
             birthPlace: profileBirthPlace,
+            moonRashiName: vedicRashiInfo?.rashi?.name ?? "",
+            // Compatibility alias for older verification servers; this value
+            // still comes exclusively from the Janma Rashi (Moon chart).
             rashiName: vedicRashiInfo?.rashi?.name ?? "",
             nakshatraName: vedicJanmaNakshatra?.name ?? "",
             mahadashaName: vedicDashaState?.currentMahadasha ?? "",
@@ -10162,7 +10303,7 @@ export default function App() {
         title: "Aethon Beacon retention check-in",
         body,
         data: { tab: "today" },
-        ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+        ...reminderNotificationContentOptions()
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -10214,7 +10355,7 @@ export default function App() {
         title: "Aethon Beacon follow-up",
         body: `${reminderIssue.label}: open Path and continue the next step.`,
         data: { tab: "today" },
-        ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+        ...reminderNotificationContentOptions()
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -10269,7 +10410,7 @@ export default function App() {
       content: {
         title: "Aethon Beacon emotional check-in",
         body: getReminderBody(reminderMode, selectedIssueGuide, profileDisplayName),
-        ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+        ...reminderNotificationContentOptions()
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -11002,6 +11143,7 @@ export default function App() {
         await Notifications.setNotificationChannelAsync("aethon-reminders", {
           name: "Aethon Beacon reminders",
           importance: Notifications.AndroidImportance.HIGH,
+          sound: "default",
           vibrationPattern: [0, 250, 250, 250],
           lightColor: "#22D3EE"
         }).catch(() => undefined);
@@ -11099,7 +11241,7 @@ export default function App() {
             title: "Aethon Beacon emotional check-in",
             body: getReminderBody(reminderMode, selectedIssueGuide, profileDisplayName),
             data: { tab: "today" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -11117,7 +11259,7 @@ export default function App() {
                 title: "Aethon Beacon follow-up",
                 body: getFollowUpReminderBody(weekIndex, followUpWeeks, selectedIssueGuide, profileDisplayName),
                 data: { tab: "today" },
-                ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+                ...reminderNotificationContentOptions()
               },
               trigger: {
                 type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -11136,7 +11278,7 @@ export default function App() {
             title: "⚡ Protect your streak!",
             body: `You have a ${checkInStreak}-day streak going. Log a quick note before midnight to keep it alive.`,
             data: { tab: "today" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -11155,7 +11297,7 @@ export default function App() {
             title: "🪐 Your cosmic reading is ready",
             body: `Open Aethon Beacon to see today's ${rashiName} prediction, Tithi, and Vara guidance.`,
             data: { tab: "vedic" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -11174,7 +11316,7 @@ export default function App() {
             title: "🌙 Evening cosmic reflection",
             body: `Your ${rashiName} evening reading is ready. See what today's stars say about tomorrow.`,
             data: { tab: "vedic" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 20, minute: 0 }
         }).catch(() => undefined);
@@ -11189,7 +11331,7 @@ export default function App() {
             title: "🪐 Your weekly reading — " + rashiName,
             body: "A new week begins. Open Aethon Beacon to see your weekly and monthly cosmic guidance.",
             data: { tab: "vedic" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           // WEEKLY trigger — fires every Monday at 7:30 am (weekday 2 = Monday in Expo)
           trigger: { type: Notifications.SchedulableTriggerInputTypes.WEEKLY, weekday: 2, hour: 7, minute: 30 }
@@ -11208,7 +11350,7 @@ export default function App() {
               ? `${checkInStreak}-day streak! Set your intention for ${issueLabel} — 10 seconds is all it takes.`
               : `Start your day with intention. How are you feeling about ${issueLabel} today?`,
             data: { tab: "today" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 0 }
         }).catch(() => undefined);
@@ -11222,7 +11364,7 @@ export default function App() {
               ? `Halfway through. How is ${issueLabel} feeling right now? Your pattern depends on this data.`
               : "Midday pulse check. 10 seconds keeps your clarity scores meaningful.",
             data: { tab: "today" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 13, minute: 0 }
         }).catch(() => undefined);
@@ -11236,7 +11378,7 @@ export default function App() {
               ? `Day ${checkInStreak} complete. Log tonight's note to lock in your ${issueLabel} progress.`
               : "Before the day ends — how did you handle today? Your path forward depends on honest reflection.",
             data: { tab: "journal" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 19, minute: 30 }
         }).catch(() => undefined);
@@ -11253,7 +11395,7 @@ export default function App() {
               ? `${checkInStreak} days in a row. Just one note today keeps your ${selectedIssueGuide.id !== "general" ? selectedIssueGuide.label : "wellbeing"} journey alive.`
               : `${profileDisplayName || "Hey"}, your progress and pattern data are waiting. 30 seconds is all it takes to restart your streak.`,
             data: { tab: "today" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reengageDate }
         }).catch(() => undefined);
@@ -11268,7 +11410,7 @@ export default function App() {
             title: "🪐 Unlock your Vedic birth chart",
             body: "Add your date, time, and place of birth to unlock your Mahadasha, Nakshatra analysis, and personalised cosmic guidance.",
             data: { tab: "vedic" },
-            ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+            ...reminderNotificationContentOptions()
           },
           trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: birthChartDate }
         }).catch(() => undefined);
@@ -11291,7 +11433,7 @@ export default function App() {
                 title: m.title,
                 body: m.body,
                 data: { tab: "insights" },
-                ...(Platform.OS === "android" ? { channelId: "aethon-reminders" } : {})
+                ...reminderNotificationContentOptions()
               },
               trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: mDate }
             }).catch(() => undefined);
@@ -12552,24 +12694,24 @@ async function fetchGeminiAIHelp(
   function buildVerifiedReply(text: string) {
     const normalized = text.toLowerCase();
     if (/(student|exam|school|college|class|assignment|paper|hostel)/.test(normalized)) {
-      return "Verified support: pick one study block, one rest block, and one person who can keep you grounded.";
+      return "Aethon guide: pick one study block, one rest block, and one person who can keep you grounded.";
     }
     if (/(complaint|ragging|harass|threat|abuse|police|112|redress)/.test(normalized)) {
-      return "Verified support: keep the written complaint, acknowledgement number, and the first office name together in one note.";
+      return "Aethon guide: keep the written complaint, acknowledgement number, and the first office name together in one note.";
     }
     if (/(anxiety|anger|burnout|lonely|loneliness|fear|stigma|shame)/.test(normalized)) {
-      return "Verified support: name the feeling, choose one small step, and use the Path tab when you want a structured follow-up.";
+      return "Aethon guide: name the feeling, choose one small step, and use the Path tab when you want a structured follow-up.";
     }
     if (/(work|office|job|professional|shift|duty)/.test(normalized)) {
-      return "Verified support: tighten the next action, not the pressure. A short reset often gives better judgment.";
+      return "Aethon guide: tighten the next action, not the pressure. A short reset often gives better judgment.";
     }
     if (/(parent|family|child|care|caregiver)/.test(normalized)) {
-      return "Verified support: your own pause counts too. A calmer caregiver usually makes a steadier day for everyone.";
+      return "Aethon guide: your own pause counts too. A calmer caregiver usually makes a steadier day for everyone.";
     }
-    return "Verified support: thank you for sharing that. Keep the next step small, plain, and doable.";
+    return "Aethon guide: thank you for sharing that. Keep the next step small, plain, and doable.";
   }
 
-  function postCommunityMessage() {
+  async function postCommunityMessage() {
     const text = communityDraft.trim();
     if (!text) {
       Alert.alert("Community", "Write a short message first.");
@@ -12593,6 +12735,7 @@ async function fetchGeminiAIHelp(
     if (safetyViolation) {
       const nextStrikeCount = communitySafetyStrikeCount + 1;
       logBlockedCommunityContent("feed", safetyViolation.reason, text);
+      void playMessageFeedbackCue("blocked");
       safetyAlertMessage(safetyViolation.message);
       if (nextStrikeCount >= 3) {
         Alert.alert("Community safety", "Posting has been paused after repeated unsafe attempts.");
@@ -12603,18 +12746,40 @@ async function fetchGeminiAIHelp(
     const userMessage = createCommunityMessage(
       text,
       "user",
-      "You",
+      communityRealtimeConfigured ? `${selectedIdentity.label} member` : "You",
       selectedIdentity.label
     );
+    userMessage.clientId = presenceSessionId;
     const verifiedReply = createCommunityMessage(
       buildVerifiedReply(text),
       "verified",
-      "Verified Contributor",
-      "Verified"
+      "Aethon Guide",
+      "Guidance"
     );
 
-    setCommunityMessages((current) => [verifiedReply, userMessage, ...current].slice(0, 60));
     setCommunityDraft("");
+    void playMessageFeedbackCue("sent");
+    setCommunityMessages((current) =>
+      communityRealtimeConfigured
+        ? mergeCommunityMessages(current, userMessage)
+        : [verifiedReply, userMessage, ...current].slice(0, 60)
+    );
+
+    if (communityRealtimeConfigured) {
+      communityLocallySentMessageIdsRef.current.add(userMessage.id);
+      const result = await sendRealtimeCommunityFeedMessage(userMessage);
+      if (!result.ok) {
+        communityLocallySentMessageIdsRef.current.delete(userMessage.id);
+        setCommunityRealtimeStatus(`Realtime send failed: ${result.error ?? "check Supabase"}`);
+      } else {
+        setCommunityRealtimeStatus("Realtime connected");
+      }
+      return;
+    }
+
+    setTimeout(() => {
+      void playMessageFeedbackCue("received");
+    }, 260);
   }
 
   function clearCommunityMessages() {
@@ -12653,7 +12818,7 @@ async function fetchGeminiAIHelp(
     return "Verified mentor: tell me the one part that matters most, and we can keep the next step plain.";
   }
 
-  function postCommunityChatMessage() {
+  async function postCommunityChatMessage() {
     const text = communityChatDraft.trim();
     if (!text) {
       Alert.alert("Community chat", "Write a short message first.");
@@ -12677,6 +12842,7 @@ async function fetchGeminiAIHelp(
     if (safetyViolation) {
       const nextStrikeCount = communitySafetyStrikeCount + 1;
       logBlockedCommunityContent("chat", safetyViolation.reason, text);
+      void playMessageFeedbackCue("blocked");
       safetyAlertMessage(safetyViolation.message);
       if (nextStrikeCount >= 3) {
         Alert.alert("Community safety", "Posting has been paused after repeated unsafe attempts.");
@@ -12688,10 +12854,11 @@ async function fetchGeminiAIHelp(
     const userMessage = {
       id: `${Date.now()}-${Math.floor(Math.random() * 100000)}`,
       createdAt: new Date().toISOString(),
-      author: "You",
+      author: communityRealtimeConfigured ? `${selectedIdentity.label} member` : "You",
       role: "user" as const,
       text,
-      persona: communityChatPersona
+      persona: communityChatPersona,
+      clientId: presenceSessionId
     };
     const replyRole: CommunityMessageRole = persona.id === "moderator" ? "moderator" : "verified";
     const replyMessage = {
@@ -12703,8 +12870,29 @@ async function fetchGeminiAIHelp(
       persona: persona.id
     };
 
-    setCommunityChatMessages((current) => [replyMessage, userMessage, ...current].slice(0, 80));
     setCommunityChatDraft("");
+    void playMessageFeedbackCue("sent");
+    setCommunityChatMessages((current) =>
+      communityRealtimeConfigured
+        ? mergeCommunityChatMessages(current, userMessage)
+        : [replyMessage, userMessage, ...current].slice(0, 80)
+    );
+
+    if (communityRealtimeConfigured) {
+      communityLocallySentMessageIdsRef.current.add(userMessage.id);
+      const result = await sendRealtimeCommunityChatMessage(userMessage);
+      if (!result.ok) {
+        communityLocallySentMessageIdsRef.current.delete(userMessage.id);
+        setCommunityRealtimeStatus(`Realtime send failed: ${result.error ?? "check Supabase"}`);
+      } else {
+        setCommunityRealtimeStatus("Realtime connected");
+      }
+      return;
+    }
+
+    setTimeout(() => {
+      void playMessageFeedbackCue("received");
+    }, 260);
   }
 
   function createPrivateSpaceRoom() {
@@ -15282,7 +15470,6 @@ function isTrustedExternalUrl(url: string) {
               )}
               <BirthChartSection
                 rashiInfo={vedicRashiInfo}
-                sunRashiInfo={vedicSunRashiInfo}
                 predictionLines={vedicPredictionLines}
                 janmaNakshatra={vedicJanmaNakshatra}
                 dashaState={vedicDashaState}
@@ -15595,6 +15782,8 @@ function isTrustedExternalUrl(url: string) {
               </View>
               <CommunitySection
                 communityMessages={visibleCommunityMessages}
+                communityRealtimeStatus={communityRealtimeStatus}
+                communityClientId={presenceSessionId}
                 communityFilter={communityFilter}
                 setCommunityFilter={setCommunityFilter}
                 communityTopicFilter={communityTopicFilter}
@@ -16164,6 +16353,7 @@ function isTrustedExternalUrl(url: string) {
           issueId={selectedIssueGuide.id}
           speakText={(text) => { void speakGuidance(text); }}
           stopSpeech={stopVoiceGuidance}
+          speechLocale={selectedLanguage.speechLang}
         />
 
         {/* ── Exit / Visit Report Modal ── */}
@@ -18654,6 +18844,8 @@ function AIHelpSection({
 
 function CommunitySection({
   communityMessages,
+  communityRealtimeStatus,
+  communityClientId,
   communityFilter,
   setCommunityFilter,
   communityTopicFilter,
@@ -18713,6 +18905,8 @@ function CommunitySection({
   isPrivateIntakeOpen
 }: {
   communityMessages: CommunityMessage[];
+  communityRealtimeStatus: string;
+  communityClientId: string;
   communityFilter: CommunityFilterId;
   setCommunityFilter: (value: CommunityFilterId) => void;
   communityTopicFilter: CommunityTopicFilterId;
@@ -18888,6 +19082,7 @@ function CommunitySection({
             {communityVerifiedCount} verified voices / {communityReports.length} reports
           </Text>
         </View>
+        <Text style={styles.smallMeta}>{communityRealtimeStatus}</Text>
         {/* ── How to use this section ── */}
         <View style={{ backgroundColor: "#071220", borderRadius: 12, padding: 14, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: "#63DED0" }}>
           <Text style={{ color: "#63DED0", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, marginBottom: 6 }}>HOW TO USE COMMUNITY</Text>
@@ -19066,7 +19261,7 @@ function CommunitySection({
         </View>
         <View style={styles.communityChatList}>
           {visibleCommunityChatMessages.map((message) => {
-            const isUser = message.role === "user";
+            const isUser = message.author === "You" || message.clientId === communityClientId;
             const isVerified = message.role === "verified" || message.role === "moderator";
             return (
               <View
@@ -23726,7 +23921,6 @@ function VedicDailyCard({
 
 function BirthChartSection({
   rashiInfo,
-  sunRashiInfo,
   predictionLines,
   janmaNakshatra,
   dashaState,
@@ -23746,7 +23940,6 @@ function BirthChartSection({
   issueContext,
 }: {
   rashiInfo: ReturnType<typeof getMoonRashiFromDOB> | null;
-  sunRashiInfo: ReturnType<typeof getVedicRashiFromDOB> | null;
   predictionLines: string[] | null;
   janmaNakshatra: ReturnType<typeof getJanmaNakshatra>;
   dashaState: VimshottariDashaState | null;
@@ -23828,8 +24021,8 @@ function BirthChartSection({
       <View style={[styles.tabBannerCard, { backgroundColor: "#241640" }]}>
         <Text style={styles.tabBannerEmoji}>🪐</Text>
         <View style={styles.tabBannerText}>
-          <Text style={styles.tabBannerTitle}>Birth Chart</Text>
-          <Text style={styles.tabBannerSub}>Exact date, 24-hour time, and birth place are required</Text>
+          <Text style={styles.tabBannerTitle}>Moon Birth Chart</Text>
+          <Text style={styles.tabBannerSub}>Predictions use Janma Rashi and lunar factors only</Text>
         </View>
       </View>
 
@@ -24071,7 +24264,6 @@ function BirthChartSection({
               { label: "Birth Time", value: profileBirthTime },
               { label: "Birth Place", value: profileBirthPlace },
               { label: "Janma Rashi (Moon sign)", value: rashiInfo ? `${rashiInfo.rashi.name} (${rashiInfo.rashi.en})` : "—" },
-              { label: "Surya Rashi (Sun sign)", value: sunRashiInfo ? `${sunRashiInfo.rashi.name} (${sunRashiInfo.rashi.en})` : "—" },
               { label: "Lagna / Ascendant", value: lagnaInfo ? `${lagnaInfo.lagna.name} (${lagnaInfo.lagna.en})` : "Enter birth time" },
               { label: "Janma Nakshatra", value: janmaNakshatra ? `${janmaNakshatra.name} · ${janmaNakshatra.lord}` : "—" },
               { label: "Vimshottari Phase", value: dashaState ? `${dashaState.currentMahadasha} / ${dashaState.currentAntardasha}` : "Enter birth date" },
@@ -24247,7 +24439,7 @@ function BirthChartSection({
 
       <View style={styles.birthChartFactGrid}>
         {[
-          "Janma Rashi (Moon sign) + Surya Rashi (Sun sign)",
+          "Janma Rashi (Moon sign) prediction anchor",
           "Lagna / Ascendant from birth time",
           "Janma Nakshatra · deity · gana · symbol",
           "Vimshottari Mahadasha current period",
@@ -25226,10 +25418,8 @@ function AccessOverlay({
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
           {profileDOB.match(/^\d{4}-\d{2}-\d{2}$/) && (() => {
-            // Moon Rashi (Janma Rashi) is the PRIMARY chart. Sun Rashi shown as
-            // secondary reference below.
+            // Moon Rashi (Janma Rashi) is the sole chart and prediction anchor.
             const moonRi = getMoonRashiFromDOB(profileDOB);
-            const sunRi = getVedicRashiFromDOB(profileDOB);
             const nk = getJanmaNakshatra(profileDOB);
             if (!moonRi) return null;
             return (
@@ -25245,11 +25435,6 @@ function AccessOverlay({
                 <Text style={styles.vedicDOBResultText}>
                   ⚡ Rashi Lord: <Text style={styles.vedicDOBResultHighlight}>{moonRi.rashi.lord}</Text>
                 </Text>
-                {sunRi && (
-                  <Text style={[styles.vedicDOBResultText, { opacity: 0.7 }]}>
-                    ☀️ Surya Rashi (Sun): <Text style={styles.vedicDOBResultHighlight}>{sunRi.rashi.name} ({sunRi.rashi.en})</Text>
-                  </Text>
-                )}
               </View>
             );
           })()}
@@ -26712,6 +26897,7 @@ function CounselingChatModal({
   issueId,
   speakText,
   stopSpeech,
+  speechLocale,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -26721,6 +26907,7 @@ function CounselingChatModal({
   issueId: IssueId;
   speakText: (text: string) => void;
   stopSpeech: () => void;
+  speechLocale: string;
 }) {
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
@@ -26732,10 +26919,51 @@ function CounselingChatModal({
   }));
   const [draft, setDraft] = React.useState("");
   const [isListening, setIsListening] = React.useState(false);
+  const [speechInputNotice, setSpeechInputNotice] = React.useState("");
   const [synthText, setSynthText] = React.useState("");
   const [journeySteps, setJourneySteps] = React.useState<JourneyStep[]>([]);
   const scrollRef = React.useRef<ScrollView>(null);
-  const recognitionRef = React.useRef<any>(null);
+
+  useSpeechRecognitionEvent("start", () => {
+    if (!visible) return;
+    setIsListening(true);
+    setSpeechInputNotice("Listening...");
+  });
+
+  useSpeechRecognitionEvent("end", () => {
+    if (!visible) return;
+    setIsListening(false);
+  });
+
+  useSpeechRecognitionEvent("result", (event) => {
+    if (!visible) return;
+    const transcript = event.results?.[0]?.transcript?.trim();
+    if (!transcript) return;
+    setDraft((prev) => {
+      const nextText = prev.trim();
+      if (!nextText) return transcript;
+      if (nextText.endsWith(transcript)) return nextText;
+      return `${nextText} ${transcript}`;
+    });
+    setSpeechInputNotice(event.isFinal ? "Voice captured." : "Listening...");
+    if (event.isFinal) {
+      setIsListening(false);
+    }
+  });
+
+  useSpeechRecognitionEvent("error", (event) => {
+    if (!visible) return;
+    setIsListening(false);
+    const message =
+      event.error === "not-allowed"
+        ? "Microphone or speech recognition permission is not enabled."
+        : event.error === "language-not-supported"
+          ? "This device does not support speech recognition for the selected language."
+          : event.error === "no-speech" || event.error === "speech-timeout"
+            ? "No speech was heard. Try again close to the microphone."
+            : "Voice input could not start on this device.";
+    setSpeechInputNotice(message);
+  });
 
   // Reset when modal opens with new issue
   React.useEffect(() => {
@@ -26755,11 +26983,23 @@ function CounselingChatModal({
     });
     setDraft("");
     setSynthText("");
+    setSpeechInputNotice("");
     setJourneySteps([]);
 
     // Speak the opening message
     setTimeout(() => speakText(openingMsg), 400);
   }, [visible, initialIssue]);
+
+  React.useEffect(() => {
+    if (visible) return;
+    setIsListening(false);
+    setSpeechInputNotice("");
+    try {
+      ExpoSpeechRecognitionModule.abort();
+    } catch {
+      // Recognition may already be inactive.
+    }
+  }, [visible]);
 
   // Auto-scroll to bottom
   React.useEffect(() => {
@@ -26819,30 +27059,51 @@ function CounselingChatModal({
     }
   }
 
-  function startVoiceInput() {
-    if (Platform.OS !== "web") return;
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+  async function startVoiceInput() {
     stopSpeech();
-    const recognition = new SpeechRecognition();
-    recognitionRef.current = recognition;
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = "en-IN";
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setDraft((prev) => (prev ? prev + " " + transcript : transcript));
+    setSpeechInputNotice("");
+    try {
+      const recognitionAvailable = ExpoSpeechRecognitionModule.isRecognitionAvailable();
+      if (!recognitionAvailable) {
+        setSpeechInputNotice("Speech recognition is not available on this device.");
+        return;
+      }
+
+      const permissions = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      if (!permissions.granted) {
+        setSpeechInputNotice("Enable microphone and speech recognition permission to use voice input.");
+        return;
+      }
+
+      ExpoSpeechRecognitionModule.start({
+        lang: speechLocale || "en-IN",
+        interimResults: true,
+        continuous: false,
+        maxAlternatives: 1,
+        addsPunctuation: true,
+        androidIntentOptions: {
+          EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS: 1800,
+          EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS: 1200
+        },
+        iosVoiceProcessingEnabled: true
+      });
+      setIsListening(true);
+      setSpeechInputNotice("Listening...");
+      void playMessageFeedbackCue("sent");
+    } catch {
       setIsListening(false);
-    };
-    recognition.onerror = () => setIsListening(false);
-    recognition.onend = () => setIsListening(false);
-    recognition.start();
-    setIsListening(true);
+      setSpeechInputNotice("Voice input could not start on this device.");
+    }
   }
 
   function stopVoiceInput() {
-    recognitionRef.current?.stop();
+    try {
+      ExpoSpeechRecognitionModule.stop();
+    } catch {
+      // Recognition may already be inactive.
+    }
     setIsListening(false);
+    setSpeechInputNotice("");
   }
 
   function handleStartJourney() {
@@ -26951,24 +27212,30 @@ function CounselingChatModal({
         {/* Input area */}
         {session.stage !== "synthesizing" && (
           <View style={{ backgroundColor: "#071220", borderTopWidth: 1, borderTopColor: "#0E1E2A", paddingHorizontal: 16, paddingVertical: 12, paddingBottom: Platform.OS === "ios" ? 34 : 16, flexDirection: "row", alignItems: "flex-end", gap: 10 }}>
-            <TextInput
-              value={draft}
-              onChangeText={setDraft}
-              placeholder={isListening ? "Listening..." : "Reply here..."}
-              placeholderTextColor="#334155"
-              style={{ flex: 1, backgroundColor: "#0A1A28", borderRadius: 12, padding: 12, color: "#E2EAF0", fontSize: 14, lineHeight: 20, maxHeight: 120, borderWidth: 1, borderColor: "#1E3A4A" }}
-              multiline
-              textAlignVertical="top"
-            />
-            {/* Voice input button (web only) */}
-            {Platform.OS === "web" && (
-              <Pressable
-                onPress={isListening ? stopVoiceInput : startVoiceInput}
-                style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
-              >
-                <Text style={{ fontSize: 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
-              </Pressable>
-            )}
+            <View style={{ flex: 1 }}>
+              <TextInput
+                value={draft}
+                onChangeText={setDraft}
+                placeholder={isListening ? "Listening..." : "Reply here..."}
+                placeholderTextColor="#334155"
+                style={{ backgroundColor: "#0A1A28", borderRadius: 12, padding: 12, color: "#E2EAF0", fontSize: 14, lineHeight: 20, maxHeight: 120, borderWidth: 1, borderColor: isListening ? "#63DED0" : "#1E3A4A" }}
+                multiline
+                textAlignVertical="top"
+              />
+              {speechInputNotice ? (
+                <Text style={{ color: isListening ? "#63DED0" : "#64748B", fontSize: 11, marginTop: 6 }}>
+                  {speechInputNotice}
+                </Text>
+              ) : null}
+            </View>
+            {/* Voice input button */}
+            <Pressable
+              onPress={isListening ? stopVoiceInput : startVoiceInput}
+              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+              accessibilityLabel={isListening ? "Stop voice input" : "Start voice input"}
+            >
+              <Text style={{ fontSize: 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
+            </Pressable>
             <Pressable
               onPress={handleSend}
               style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() ? "#0E6F69" : "#0E1E2A", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
@@ -28202,6 +28469,18 @@ function normalizeCommunityMessages(value: unknown): CommunityMessage[] {
     .slice(0, 60);
 }
 
+function mergeCommunityMessages(current: CommunityMessage[], incoming: CommunityMessage | CommunityMessage[]) {
+  const incomingList = Array.isArray(incoming) ? incoming : [incoming];
+  const byId = new Map<string, CommunityMessage>();
+  [...incomingList, ...current].forEach((message) => {
+    const normalized = normalizeCommunityMessage(message);
+    if (normalized) byId.set(normalized.id, normalized);
+  });
+  return Array.from(byId.values())
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+    .slice(0, 60);
+}
+
 function normalizeCommunityMessage(value: unknown): CommunityMessage | null {
   if (!value || typeof value !== "object") return null;
   const message = value as Partial<CommunityMessage>;
@@ -28212,6 +28491,10 @@ function normalizeCommunityMessage(value: unknown): CommunityMessage | null {
   const author = typeof message.author === "string" && message.author.trim().length > 0 ? message.author.trim() : role === "user" ? "Community member" : "Verified contributor";
   const tag = typeof message.tag === "string" && message.tag.trim().length > 0 ? message.tag.trim() : role === "verified" ? "Verified" : "Community";
   const topic = typeof message.topic === "string" && message.topic.trim().length > 0 ? message.topic.trim() : "general";
+  const clientId =
+    typeof message.clientId === "string" && message.clientId.trim().length > 0
+      ? message.clientId.trim()
+      : undefined;
 
   return {
     id:
@@ -28226,7 +28509,8 @@ function normalizeCommunityMessage(value: unknown): CommunityMessage | null {
     role,
     tag,
     text,
-    topic
+    topic,
+    clientId
   };
 }
 
@@ -28236,6 +28520,21 @@ function normalizeCommunityChatMessages(value: unknown): CommunityChatMessage[] 
   return value
     .map(normalizeCommunityChatMessage)
     .filter((message): message is CommunityChatMessage => message !== null)
+    .slice(0, 80);
+}
+
+function mergeCommunityChatMessages(
+  current: CommunityChatMessage[],
+  incoming: CommunityChatMessage | CommunityChatMessage[]
+) {
+  const incomingList = Array.isArray(incoming) ? incoming : [incoming];
+  const byId = new Map<string, CommunityChatMessage>();
+  [...incomingList, ...current].forEach((message) => {
+    const normalized = normalizeCommunityChatMessage(message);
+    if (normalized) byId.set(normalized.id, normalized);
+  });
+  return Array.from(byId.values())
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 80);
 }
 
@@ -28257,6 +28556,10 @@ function normalizeCommunityChatMessage(value: unknown): CommunityChatMessage | n
         : persona === "moderator"
           ? "Community Moderator"
           : "Verified Mentor";
+  const clientId =
+    typeof message.clientId === "string" && message.clientId.trim().length > 0
+      ? message.clientId.trim()
+      : undefined;
 
   return {
     id:
@@ -28270,7 +28573,8 @@ function normalizeCommunityChatMessage(value: unknown): CommunityChatMessage | n
     author,
     role,
     text,
-    persona
+    persona,
+    clientId
   };
 }
 
