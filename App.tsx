@@ -16559,7 +16559,7 @@ function TodaySection({
             <Pressable
               accessibilityRole="button"
               onPress={() =>
-                void Linking.openURL("https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2215")
+                void Linking.openURL("https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2245")
               }
               style={({ pressed }) => [
                 {
