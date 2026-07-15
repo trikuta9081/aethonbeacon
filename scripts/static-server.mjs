@@ -11,7 +11,7 @@ function parsePositiveInt(value, fallback) {
 const port = parsePositiveInt(process.env.PORT, 3000);
 const host = process.env.HOST?.trim() || "0.0.0.0";
 const staticRoot = resolve(process.env.STATIC_ROOT ?? "dist");
-const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2045";
+const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2115";
 const testerRequestNotifyEmail = process.env.TESTER_REQUEST_NOTIFY_EMAIL?.trim() || "slathiarimple567@gmail.com";
 const sendgridApiKey = process.env.SENDGRID_API_KEY?.trim() || "";
 const sendgridFromEmail = process.env.SENDGRID_FROM_EMAIL?.trim() || testerRequestNotifyEmail;
