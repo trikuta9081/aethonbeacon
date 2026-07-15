@@ -50,6 +50,7 @@
       <a class="btn android" href="https://groups.google.com/g/aethon-beacon-android-testers">Android step 1: Join Google Group</a>
       <a class="btn android" href="https://play.google.com/apps/testing/com.aethonbeacon.app">Android step 2: Join closed test</a>
       <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.aethonbeacon.app">Android: Install app</a>
+      <a class="btn ios" href="https://aethonbeacon.com/?v=ios-web-20260715">iPhone: Open web app now</a>
       <a class="btn ios" href="https://apps.apple.com/app/testflight/id899247664">iPhone: Install TestFlight</a>
       <a class="btn secondary" href="#iosAccess" onclick="document.getElementById('testerPlatform').value='iOS TestFlight';document.getElementById('testerEmail').focus();">iPhone: Submit Apple ID email</a>
     </div>
@@ -70,10 +71,12 @@
       <div class="card">
         <h2>iPhone / TestFlight testers</h2>
         <ol>
+          <li>Open the web app now on iPhone while the native TestFlight invite is pending.</li>
           <li>Install Apple TestFlight from the App Store.</li>
           <li>Enter the Apple ID email you use on your iPhone in the form below.</li>
           <li>If a public TestFlight link is not yet enabled, the Apple ID email must be invited from App Store Connect.</li>
           <li>After the invite arrives, open it on the iPhone, accept the beta, and install Aethon Beacon.</li>
+          <li>Optional web fallback: in Safari, open <code>aethonbeacon.com</code> and use Share → Add to Home Screen.</li>
           <li>Send feedback/screenshots from TestFlight or from this page.</li>
         </ol>
         <div class="actions">
@@ -118,10 +121,10 @@
       </div>
     </div>
     <div class="notice"><strong>Android closed test note:</strong> Google Play access now uses the Aethon Beacon Google Group: <code>aethon-beacon-android-testers@googlegroups.com</code>. Use the same Gmail for Google Groups and Google Play. If Play says “only invited people can download,” join the group first with the same Gmail, then retry the opt-in link.</div>
-    <div class="notice"><strong>iOS TestFlight note:</strong> Aethon Beacon iPhone beta access requires either an invited Apple ID email or a public TestFlight link from App Store Connect. App Store Connect login/API access is required to enable the public link or add testers. Until that is active, submit your Apple ID email here so the invite request is captured.</div>
+    <div class="notice"><strong>iOS TestFlight note:</strong> Native iPhone beta access requires either an invited Apple ID email or a public TestFlight link from App Store Connect. Until App Store Connect login/API access is active, iPhone testers can open the live web app now and submit their Apple ID email here so the native invite request is captured.</div>
     <div class="notice"><strong>Testify / feedback:</strong> After installing, testers should send one short report: platform, device, what worked, what failed, and one optional short testimony. This helps prove the test is active and collect release feedback.</div>
     <div class="notice"><strong>Request delivery:</strong> If server email is not configured, the form will open a prepared email draft after recording the request. Testers should tap <strong>Send</strong> so the access/testify request reaches the app owner.</div>
-    <div class="notice"><strong>Current page:</strong> <code>https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2245</code></div>
+    <div class="notice"><strong>Current page:</strong> <code>https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2315</code></div>
   </section>
   <footer>Aethon Beacon · Android + iPhone tester page</footer>
 </main>
@@ -179,7 +182,7 @@
   const hint = document.getElementById('deviceHint');
   const ua = navigator.userAgent || '';
   if (/Android/i.test(ua)) { hint.style.display='block'; hint.textContent='Android detected — join the Google Group first, then use the Play closed test link.'; }
-  else if (/iPhone|iPad|iPod/i.test(ua)) { hint.style.display='block'; hint.textContent='iPhone detected — install TestFlight, then submit your Apple ID email here for the Aethon Beacon invite.'; }
+  else if (/iPhone|iPad|iPod/i.test(ua)) { hint.style.display='block'; hint.textContent='iPhone detected — you can open the web app now, then submit your Apple ID email for the native TestFlight invite.'; }
 </script>
 </body>
 </html>
