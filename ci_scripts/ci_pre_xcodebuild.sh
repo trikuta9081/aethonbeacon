@@ -11,7 +11,12 @@ export RUBYOPT="${RUBYOPT:-} -rlogger"
 # Xcode Cloud workflow is currently archiving the .xcodeproj. Build the workspace first
 # so CocoaPods module maps/products exist before the archive step starts.
 cd ios
+DERIVED_DATA_ARGS=()
+if [[ -n "${CI_DERIVED_DATA_PATH:-}" ]]; then
+  DERIVED_DATA_ARGS=(-derivedDataPath "${CI_DERIVED_DATA_PATH}")
+fi
 xcodebuild \
+  ${DERIVED_DATA_ARGS[@]} \
   -workspace AethonBeacon.xcworkspace \
   -scheme AethonBeacon \
   -configuration Release \
