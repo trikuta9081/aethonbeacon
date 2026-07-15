@@ -18,6 +18,20 @@ services:
         sync: false
       - key: SENDGRID_FROM_NAME
         value: Aethon Beacon
+      - key: GOOGLE_TESTER_GROUP_EMAIL
+        sync: false
+      - key: GOOGLE_GROUP_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: GOOGLE_WORKSPACE_SUBJECT
+        sync: false
+      - key: APPSTORE_API_KEY_ID
+        sync: false
+      - key: APPSTORE_API_ISSUER_ID
+        sync: false
+      - key: APPSTORE_API_KEY_P8
+        sync: false
+      - key: APPSTORE_BETA_GROUP_ID
+        sync: false
 
   - type: web
     name: aethon-beacon-verification

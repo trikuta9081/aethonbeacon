@@ -159,7 +159,8 @@
       });
       const result = await response.json().catch(() => ({}));
       if (response.ok && result.ok) {
-        copyBox.textContent = `${result.message || 'Request received.'}\n\nRequest ID: ${result.id || '(created)'}\n\nImportant: Android access still requires adding the Gmail to Play Console/Google Group. iOS access still requires adding the Apple ID email to TestFlight or a public TestFlight link.`;
+        const provisioning = result.provisioning ? `\n\nAuto-add status: ${JSON.stringify(result.provisioning)}` : '';
+        copyBox.textContent = `${result.message || 'Request received.'}\n\nRequest ID: ${result.id || '(created)'}${provisioning}\n\nImportant: Android auto-add requires the Google Group setup. iOS auto-add requires App Store Connect beta group setup. If not configured yet, the request is still recorded for manual add.`;
         if (result.mailto && result.emailSent !== true) {
           copyBox.textContent += `\n\nIf you do not receive confirmation, tap here to email manually:\n${result.mailto}`;
         }
