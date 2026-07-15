@@ -17,7 +17,7 @@
                BlueprintIdentifier = "28D34F327F92990C1CF8EFC6D00EC3B9"
                BuildableName = "libPods-AethonBeacon.a"
                BlueprintName = "Pods-AethonBeacon"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
+               ReferencedContainer = "container:../Pods/Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
