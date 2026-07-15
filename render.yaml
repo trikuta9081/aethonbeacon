@@ -10,6 +10,14 @@ services:
         value: "3000"
       - key: EXPO_PUBLIC_VERIFICATION_API_BASE_URL
         value: https://aethon-beacon-verification.onrender.com
+      - key: TESTER_REQUEST_NOTIFY_EMAIL
+        value: slathiarimple567@gmail.com
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDGRID_FROM_EMAIL
+        sync: false
+      - key: SENDGRID_FROM_NAME
+        value: Aethon Beacon
 
   - type: web
     name: aethon-beacon-verification

@@ -124,7 +124,7 @@
   <footer>Aethon Beacon · Android + iPhone tester page</footer>
 </main>
 <script>
-  function prepareTesterRequest() {
+  async function prepareTesterRequest() {
     const platform = document.getElementById('testerPlatform').value;
     const email = document.getElementById('testerEmail').value.trim();
     const name = document.getElementById('testerName').value.trim();
@@ -146,8 +146,31 @@
     const mailto = `mailto:slathiarimple567@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     const copyBox = document.getElementById('requestCopy');
     copyBox.style.display = 'block';
-    copyBox.textContent = `If email does not open, copy this and send it to slathiarimple567@gmail.com:\n\nSubject: ${subject}\n\n${body}`;
-    window.location.href = mailto;
+    copyBox.textContent = 'Submitting request...';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      copyBox.textContent = 'Please enter a valid email address first.';
+      return;
+    }
+    try {
+      const response = await fetch('/api/tester-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform, email, name, device, feedback, source: 'https://aethonbeacon.com/testers' })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok && result.ok) {
+        copyBox.textContent = `${result.message || 'Request received.'}\n\nRequest ID: ${result.id || '(created)'}\n\nImportant: Android access still requires adding the Gmail to Play Console/Google Group. iOS access still requires adding the Apple ID email to TestFlight or a public TestFlight link.`;
+        if (result.mailto && result.emailSent !== true) {
+          copyBox.textContent += `\n\nIf you do not receive confirmation, tap here to email manually:\n${result.mailto}`;
+        }
+        return;
+      }
+      copyBox.textContent = `${result.message || 'Could not submit automatically.'}\n\nIf email does not open, copy this and send it to slathiarimple567@gmail.com:\n\nSubject: ${subject}\n\n${body}`;
+      window.location.href = mailto;
+    } catch (error) {
+      copyBox.textContent = `Automatic submit failed. If email does not open, copy this and send it to slathiarimple567@gmail.com:\n\nSubject: ${subject}\n\n${body}`;
+      window.location.href = mailto;
+    }
   }
 
   const hint = document.getElementById('deviceHint');
