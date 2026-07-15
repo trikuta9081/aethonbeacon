@@ -16523,6 +16523,81 @@ function TodaySection({
   return (
     <View style={styles.grid}>
       <View style={styles.panel}>
+        <View
+          style={{
+            marginBottom: 14,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: "rgba(250,204,107,0.45)",
+            backgroundColor: "#0D2344",
+            padding: compact ? 14 : 18,
+            shadowColor: "#000",
+            shadowOpacity: 0.18,
+            shadowRadius: 18,
+            shadowOffset: { width: 0, height: 10 }
+          }}
+        >
+          <Text
+            style={{
+              color: "#FACC6B",
+              fontSize: 11,
+              fontWeight: "900",
+              letterSpacing: 1.1,
+              textTransform: "uppercase",
+              marginBottom: 6
+            }}
+          >
+            Current tester page · July 15 update
+          </Text>
+          <Text style={{ color: "#FFFFFF", fontSize: compact ? 19 : 23, fontWeight: "900", marginBottom: 8 }}>
+            Android + iPhone testing link is live
+          </Text>
+          <Text style={{ color: "#D7E3F2", fontSize: compact ? 13 : 15, lineHeight: compact ? 19 : 22, marginBottom: 14 }}>
+            If you came here from WhatsApp, email, or an older preview, open the fresh tester page below. It has Android closed testing, iPhone TestFlight, and feedback instructions.
+          </Text>
+          <View style={{ flexDirection: compact ? "column" : "row", gap: 10 }}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() =>
+                void Linking.openURL("https://aethonbeacon.com/join-testers-20260715.html?v=20260715-0315")
+              }
+              style={({ pressed }) => [
+                {
+                  minHeight: 48,
+                  borderRadius: 15,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 16,
+                  backgroundColor: "#4ADE80",
+                  flex: compact ? undefined : 1
+                },
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={{ color: "#062014", fontWeight: "900", fontSize: 14 }}>Open current tester page</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => void Linking.openURL("https://play.google.com/apps/testing/com.aethonbeacon.app")}
+              style={({ pressed }) => [
+                {
+                  minHeight: 48,
+                  borderRadius: 15,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 16,
+                  backgroundColor: "rgba(255,255,255,0.10)",
+                  borderWidth: 1,
+                  borderColor: "rgba(255,255,255,0.18)",
+                  flex: compact ? undefined : 1
+                },
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={{ color: "#FFFFFF", fontWeight: "900", fontSize: 14 }}>Android opt-in</Text>
+            </Pressable>
+          </View>
+        </View>
         <View style={[styles.homeToneBand, compact && styles.homeToneBandCompact]}>
           <View style={[styles.sectionHeader, compact && styles.sectionHeaderCompact, styles.homeToneBandHeader]}>
             <View style={styles.homeToneBandHeaderCopy}>
