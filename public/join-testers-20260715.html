@@ -30,6 +30,13 @@
     .notice { margin-top:18px; padding:16px; border-radius:18px; background:rgba(250,204,107,.12); border:1px solid rgba(250,204,107,.25); color:#fff7df; }
     .detected { display:none; margin-top:16px; padding:14px 16px; border-radius:16px; background:rgba(74,222,128,.12); border:1px solid rgba(74,222,128,.25); font-weight:800; color:#dcfce7; }
     footer { text-align:center; color:#93a6bd; font-size:13px; margin-top:18px; }
+
+    .form-grid { display:grid; gap:10px; margin-top:14px; }
+    label { color:#d7e3f2; font-size:13px; font-weight:800; }
+    input, select, textarea { width:100%; margin-top:5px; border:1px solid rgba(255,255,255,.18); border-radius:14px; background:rgba(255,255,255,.08); color:#fff; padding:12px; font:inherit; }
+    textarea { min-height:92px; resize:vertical; }
+    select option { color:#081122; }
+    .copy-box { display:none; margin-top:12px; white-space:pre-wrap; text-align:left; color:#d7e3f2; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:12px; font-size:13px; }
   </style>
 </head>
 <body>
@@ -82,6 +89,33 @@
         </div>
       </div>
     </div>
+    <div class="card" style="margin-top:16px;">
+      <h2>Enter email for access / testify</h2>
+      <p>Use this form to prepare one complete request. For Android, enter the Gmail used on Google Play. For iPhone, enter the Apple ID email used for TestFlight.</p>
+      <div class="form-grid">
+        <label>Platform
+          <select id="testerPlatform">
+            <option value="Android closed test">Android closed test</option>
+            <option value="iOS TestFlight">iOS TestFlight</option>
+            <option value="Feedback/testify only">Feedback/testify only</option>
+          </select>
+        </label>
+        <label>Email address
+          <input id="testerEmail" type="email" autocomplete="email" placeholder="tester@gmail.com or Apple ID email" />
+        </label>
+        <label>Name
+          <input id="testerName" type="text" autocomplete="name" placeholder="Tester name" />
+        </label>
+        <label>Device / OS
+          <input id="testerDevice" type="text" placeholder="e.g. Samsung A54 Android 14 / iPhone 14 iOS 18" />
+        </label>
+        <label>Feedback / testimony / issue
+          <textarea id="testerFeedback" placeholder="What worked, what failed, or one short testimony after testing"></textarea>
+        </label>
+        <button class="btn android" type="button" onclick="prepareTesterRequest()">Submit access/testify request</button>
+        <div id="requestCopy" class="copy-box"></div>
+      </div>
+    </div>
     <div class="notice"><strong>Android closed test note:</strong> Google Play only allows Gmail accounts that have been added to the tester list. If Play says “only invited people can download,” use <strong>Request Android access</strong> and send the Gmail address to be added.</div>
     <div class="notice"><strong>iOS TestFlight note:</strong> TestFlight beta installs require an invited Apple ID email or a public TestFlight link from App Store Connect. If the invite is missing, use <strong>Request iOS/TestFlight access</strong> and send the Apple ID email to be added.</div>
     <div class="notice"><strong>Testify / feedback:</strong> After installing, testers should send one short report: platform, device, what worked, what failed, and one optional short testimony. This helps prove the test is active and collect release feedback.</div>
@@ -90,6 +124,32 @@
   <footer>Aethon Beacon · Android + iPhone tester page</footer>
 </main>
 <script>
+  function prepareTesterRequest() {
+    const platform = document.getElementById('testerPlatform').value;
+    const email = document.getElementById('testerEmail').value.trim();
+    const name = document.getElementById('testerName').value.trim();
+    const device = document.getElementById('testerDevice').value.trim();
+    const feedback = document.getElementById('testerFeedback').value.trim();
+    const subject = `Aethon Beacon ${platform} access / testify request`;
+    const body = [
+      'Please process this Aethon Beacon tester request.',
+      '',
+      `Platform: ${platform}`,
+      `Email to add: ${email || '(not entered)'}`,
+      `Name: ${name || '(not entered)'}`,
+      `Device / OS: ${device || '(not entered)'}`,
+      '',
+      `Feedback / testimony / issue: ${feedback || '(not entered)'}`,
+      '',
+      'Tester link: https://aethonbeacon.com/testers'
+    ].join('\n');
+    const mailto = `mailto:slathiarimple567@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const copyBox = document.getElementById('requestCopy');
+    copyBox.style.display = 'block';
+    copyBox.textContent = `If email does not open, copy this and send it to slathiarimple567@gmail.com:\n\nSubject: ${subject}\n\n${body}`;
+    window.location.href = mailto;
+  }
+
   const hint = document.getElementById('deviceHint');
   const ua = navigator.userAgent || '';
   if (/Android/i.test(ua)) { hint.style.display='block'; hint.textContent='Android detected — use the Android closed test button first.'; }
