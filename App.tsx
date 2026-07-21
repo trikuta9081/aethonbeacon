@@ -27124,13 +27124,37 @@ function formatSupportDimensionLabels(guides: SupportDimensionGuide[]) {
     .join(", ");
 }
 
+function buildSupportDimensionQuestionBank(theme: SupportDimensionId): string[] {
+  const guide = supportDimensionGuides[theme] ?? supportDimensionGuides.direction;
+  const label = guide.label;
+  const routeLabel =
+    guide.route === "urgent" ? "urgent safety support" :
+    guide.route === "professional" ? "professional support" :
+    guide.route === "redress" ? "formal remedy or redressal" :
+    guide.route === "guide" ? "guided practical action" :
+    "steady support";
+
+  return [
+    `For ${label}, what happened most recently that made this feel important today? I want the real situation, not a generic category.`,
+    `How long has ${label} been affecting you, and is it getting heavier, lighter, or changing shape?`,
+    `Where does ${label} show up most strongly — body, thoughts, emotions, relationships, work or home?`,
+    `Who else is involved in ${label}, and what do you need from them that you are not getting right now?`,
+    `What have you already tried for ${label}, and what made those attempts work, fail, or feel incomplete?`,
+    `If we choose the safest ${routeLabel} route, what would one acceptable next step look like for you?`,
+    `Before we act, is there any risk, evidence, deadline, medical concern, or safety issue around ${label} that should change the priority?`,
+  ];
+}
+
 /**
  * Supreme-level adaptive counseling question builder.
- * 7 questions per theme — covers all emotional, practical, relational,
- * physical, existential dimensions. Branches across themes for turns 3-5.
+ * Full 48-dimension coverage: bespoke banks for core themes plus generated
+ * high-quality banks for every advanced dimension in SupportDimensionId.
+ * Branches across themes for turns 3-5.
  */
 function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: number, allUserText?: string): string {
-  // ── Full 7-question banks for every theme ─────────────────────────────────
+  // ── Bespoke 7-question banks for the core dimensions ───────────────────────
+  // Advanced dimensions use buildSupportDimensionQuestionBank so the counseling
+  // engine remains fully complementary with the 48-dimension support engine.
   const byTheme: Partial<Record<SupportDimensionId, string[]>> = {
     "self-image": [
       "Tell me more — when did this feeling about your appearance or how you see yourself start feeling this heavy? Was there a particular moment, or has it been quietly building?",
@@ -27324,16 +27348,19 @@ function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: numbe
     "What would feel most helpful to you right now — being heard, clarity, practical steps, or something else?"
   ];
 
+  const getQuestionPool = (theme: SupportDimensionId): string[] =>
+    byTheme[theme] ?? buildSupportDimensionQuestionBank(theme) ?? defaultQuestions;
+
   // For turns 0-1: always use primary theme
   // For turns 2-3: cross into secondary theme if present
   // For turns 4-5: cross into tertiary or use physical/support/what-you-need dimensions
   const primaryTheme = themes[0] ?? "direction";
-  const primaryPool = byTheme[primaryTheme] ?? defaultQuestions;
+  const primaryPool = getQuestionPool(primaryTheme);
 
   // Cross-theme adaptive branching
   if (turnIndex >= 2 && themes.length > 1) {
     const secondTheme = themes[1];
-    const secondPool = byTheme[secondTheme] ?? defaultQuestions;
+    const secondPool = getQuestionPool(secondTheme);
     // Turn 2: second theme question 1
     if (turnIndex === 2) return secondPool[1] ?? primaryPool[2] ?? defaultQuestions[2];
     // Turn 3: secondary theme question 2
@@ -27341,7 +27368,7 @@ function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: numbe
   }
   if (turnIndex >= 4 && themes.length > 2) {
     const thirdTheme = themes[2];
-    const thirdPool = byTheme[thirdTheme] ?? defaultQuestions;
+    const thirdPool = getQuestionPool(thirdTheme);
     if (turnIndex === 4) return thirdPool[2] ?? primaryPool[4] ?? defaultQuestions[4];
   }
 
