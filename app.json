@@ -2,7 +2,7 @@
   "expo": {
     "name": "Aethon Beacon",
     "slug": "aethon-beacon",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.aethonbeacon.app",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "requireFullScreen": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Aethon Beacon does not use your camera.",
@@ -45,7 +45,7 @@
         "backgroundColor": "#0A0F1E"
       },
       "package": "com.aethonbeacon.app",
-      "versionCode": 18,
+      "versionCode": 19,
       "permissions": [
         "RECORD_AUDIO",
         "RECEIVE_BOOT_COMPLETED",
