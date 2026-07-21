@@ -57,14 +57,26 @@
 	<array>
 		<string>_expo._tcp</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Aethon Beacon does not use your camera.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Aethon Beacon does not access your contacts.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Use Face ID to protect your Aethon Beacon data.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Aethon Beacon does not use your location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Aethon Beacon uses the microphone when you choose voice input for guidance and journaling.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Aethon Beacon does not access your photo library.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Aethon Beacon uses speech recognition to transcribe voice input into text on supported devices.</string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Aethon Beacon sends check-in reminders and mental wellness nudges.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Aethon Beacon does not track you across apps or websites.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIBackgroundModes</key>
