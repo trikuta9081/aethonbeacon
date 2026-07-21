@@ -18,7 +18,8 @@
     "verification:qa": "node scripts/verification-qa.mjs",
     "dev:launch": "node scripts/dev-launch.mjs",
     "run:android": "node scripts/with-build-id.mjs expo run:android",
-    "run:ios": "node scripts/with-build-id.mjs expo run:ios"
+    "run:ios": "node scripts/with-build-id.mjs expo run:ios",
+    "test:vedic": "node scripts/vedic-engine-regression.mjs"
   },
   "dependencies": {
     "@expo/log-box": "56.0.14",

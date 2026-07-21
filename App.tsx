@@ -7620,14 +7620,130 @@ interface VedicEngineIssueContext {
   autoAskedAtIso: string | null;
 }
 
-// Janma Nakshatra: Approximated from birth Julian Day Number
-function getJanmaNakshatra(dob: string): { id: number; name: string; lord: string } | null {
-  if (!dob || dob.length < 10) return null;
-  const d = new Date(dob);
-  if (isNaN(d.getTime())) return null;
-  const jdn = Math.floor(d.getTime() / 86400000) + 2440588;
-  const nakshatraId = ((jdn * 13) % 27 + 27) % 27;
-  return { id: nakshatraId, name: NAKSHATRAS[nakshatraId], lord: NAKSHATRA_LORDS[nakshatraId] };
+// High-precision Moon-chart astronomy helpers. These deliberately avoid any
+// alternate natal prediction path: the solar longitude is used only for Panchang Tithi math.
+const DEG_PER_NAKSHATRA = 360 / 27;
+const DEG_PER_NAKSHATRA_PADA = DEG_PER_NAKSHATRA / 4;
+const MS_PER_DAY = 86400000;
+const VIMSHOTTARI_TOTAL_YEARS = 120;
+const SIDEREAL_YEAR_MS = 365.256363004 * MS_PER_DAY;
+
+type JanmaNakshatraInfo = {
+  id: number;
+  name: string;
+  lord: string;
+  pada: number;
+  siderealMoonLongitude: number;
+  degreesInNakshatra: number;
+  fractionElapsed: number;
+  balanceFraction: number;
+  calculationPrecision: string;
+};
+
+function normalizeDegrees(value: number): number {
+  return ((value % 360) + 360) % 360;
+}
+
+function degToRad(value: number): number {
+  return (value * Math.PI) / 180;
+}
+
+function parseVedicDateAtNoonUtc(value: string): Date | null {
+  if (!value || value.length < 10) return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
+  if (match) {
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    if (!year || month < 1 || month > 12 || day < 1 || day > 31) return null;
+    const parsed = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    return isNaN(parsed.getTime()) ? null : parsed;
+  }
+  const parsed = new Date(value);
+  return isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function julianDay(date: Date): number {
+  return date.getTime() / MS_PER_DAY + 2440587.5;
+}
+
+function lahiriAyanamsaDegrees(jd: number): number {
+  // Lahiri/Chitrapaksha approximation. Reference around J2000 is ~23.85675°.
+  // Precession drift is ~50.29 arcseconds/year. This keeps nakshatra/rashi
+  // boundaries stable enough for app-level birth-date calculations without a
+  // heavy native ephemeris dependency.
+  const tropicalYear = 365.242189;
+  const yearsFromJ2000 = (jd - 2451545.0) / tropicalYear;
+  return 23.85675 + yearsFromJ2000 * (50.290966 / 3600);
+}
+
+function getApproxTropicalMoonLongitude(date: Date): number {
+  // Meeus-style low precision lunar longitude, error usually under ~1 degree.
+  // That is a major upgrade over the old date modulo placeholder and is
+  // deterministic across web/iOS/Android. Exact professional charts still need
+  // birth time, birthplace and a full ephemeris.
+  const d = julianDay(date) - 2451545.0;
+  const L = normalizeDegrees(218.3164477 + 13.17639648 * d);
+  const D = normalizeDegrees(297.8501921 + 12.19074912 * d);
+  const M = normalizeDegrees(357.5291092 + 0.98560028 * d);
+  const Mp = normalizeDegrees(134.9633964 + 13.06499295 * d);
+  const F = normalizeDegrees(93.2720950 + 13.22935024 * d);
+
+  const lon = L
+    + 6.289 * Math.sin(degToRad(Mp))
+    + 1.274 * Math.sin(degToRad(2 * D - Mp))
+    + 0.658 * Math.sin(degToRad(2 * D))
+    + 0.214 * Math.sin(degToRad(2 * Mp))
+    - 0.186 * Math.sin(degToRad(M))
+    - 0.114 * Math.sin(degToRad(2 * F))
+    + 0.059 * Math.sin(degToRad(2 * D - 2 * Mp))
+    + 0.057 * Math.sin(degToRad(2 * D - M - Mp))
+    + 0.053 * Math.sin(degToRad(2 * D + Mp))
+    + 0.046 * Math.sin(degToRad(2 * D - M))
+    + 0.041 * Math.sin(degToRad(M - Mp))
+    - 0.035 * Math.sin(degToRad(D))
+    - 0.031 * Math.sin(degToRad(M + Mp))
+    - 0.015 * Math.sin(degToRad(2 * F - 2 * D))
+    + 0.011 * Math.sin(degToRad(2 * D - M - 2 * Mp));
+
+  return normalizeDegrees(lon);
+}
+
+function getApproxTropicalSunLongitude(date: Date): number {
+  const d = julianDay(date) - 2451545.0;
+  const g = normalizeDegrees(357.529 + 0.98560028 * d);
+  const q = normalizeDegrees(280.459 + 0.98564736 * d);
+  return normalizeDegrees(q + 1.915 * Math.sin(degToRad(g)) + 0.020 * Math.sin(degToRad(2 * g)));
+}
+
+function getSiderealMoonLongitude(date: Date): number {
+  return normalizeDegrees(getApproxTropicalMoonLongitude(date) - lahiriAyanamsaDegrees(julianDay(date)));
+}
+
+function buildNakshatraFromMoonLongitude(siderealMoonLongitude: number): JanmaNakshatraInfo {
+  const longitude = normalizeDegrees(siderealMoonLongitude);
+  const id = Math.min(26, Math.floor(longitude / DEG_PER_NAKSHATRA));
+  const degreesInNakshatra = longitude - id * DEG_PER_NAKSHATRA;
+  const pada = Math.min(4, Math.floor(degreesInNakshatra / DEG_PER_NAKSHATRA_PADA) + 1);
+  const fractionElapsed = Math.max(0, Math.min(1, degreesInNakshatra / DEG_PER_NAKSHATRA));
+  return {
+    id,
+    name: NAKSHATRAS[id],
+    lord: NAKSHATRA_LORDS[id],
+    pada,
+    siderealMoonLongitude: longitude,
+    degreesInNakshatra,
+    fractionElapsed,
+    balanceFraction: 1 - fractionElapsed,
+    calculationPrecision: "sidereal Moon longitude, Lahiri ayanamsa approximation",
+  };
+}
+
+// Janma Nakshatra from sidereal Moon longitude, not a date-modulo placeholder.
+function getJanmaNakshatra(dob: string): JanmaNakshatraInfo | null {
+  const d = parseVedicDateAtNoonUtc(dob);
+  if (!d) return null;
+  return buildNakshatraFromMoonLongitude(getSiderealMoonLongitude(d));
 }
 
 // Vimshottari Mahadasha system
@@ -7692,69 +7808,89 @@ function summarizePlanetQuality(planet: string): string {
 }
 
 function getVimshottariDashaState(dob: string, nakshatraLord: string): VimshottariDashaState | null {
-  const birthDate = new Date(dob);
-  if (isNaN(birthDate.getTime())) return null;
-  const startIdx = DASHA_ORDER.indexOf(nakshatraLord);
+  const birthDate = parseVedicDateAtNoonUtc(dob);
+  if (!birthDate) return null;
+
+  const janmaNakshatra = getJanmaNakshatra(dob);
+  const birthDashaLord = janmaNakshatra?.lord ?? nakshatraLord;
+  const startIdx = DASHA_ORDER.indexOf(birthDashaLord);
   if (startIdx < 0) return null;
 
-  const ageMs = Date.now() - birthDate.getTime();
-  const ageYears = ageMs / (365.25 * 24 * 3600 * 1000);
-  const yearMs = 365.25 * 24 * 3600 * 1000;
-  let remainingAge = ageYears;
-  const todayYear = new Date().getFullYear();
+  const asOf = new Date();
+  const ageYears = Math.max(0, (asOf.getTime() - birthDate.getTime()) / SIDEREAL_YEAR_MS);
+  const birthDashaYears = DASHA_YEARS[birthDashaLord] ?? 7;
+  const elapsedFractionAtBirth = janmaNakshatra?.fractionElapsed ?? 0;
+  const balanceFractionAtBirth = janmaNakshatra?.balanceFraction ?? 1;
+  const elapsedYearsAtBirth = birthDashaYears * elapsedFractionAtBirth;
+  const balanceYearsAtBirth = birthDashaYears * balanceFractionAtBirth;
 
-  for (let offset = 0; offset < DASHA_ORDER.length; offset++) {
-    const mahadashaIndex = (startIdx + offset) % DASHA_ORDER.length;
+  let cursorStart = new Date(birthDate.getTime() - elapsedYearsAtBirth * SIDEREAL_YEAR_MS);
+  let cursorEnd = new Date(birthDate.getTime() + balanceYearsAtBirth * SIDEREAL_YEAR_MS);
+  let mahadashaIndex = startIdx;
+
+  // Vimshottari is a 120-year cycle. Loop across repeated cycles so older users
+  // still receive a valid phase instead of falling out after one 9-planet pass.
+  for (let segment = 0; segment < DASHA_ORDER.length * 4; segment++) {
     const mahadashaPlanet = DASHA_ORDER[mahadashaIndex];
     const mahadashaYears = DASHA_YEARS[mahadashaPlanet] ?? 7;
 
-    if (remainingAge <= mahadashaYears) {
-      const elapsedBeforeMahadasha = ageYears - remainingAge;
-      const mahadashaStartedAt = new Date(birthDate.getTime() + elapsedBeforeMahadasha * yearMs);
-      const mahadashaEndsAt = new Date(mahadashaStartedAt.getTime() + mahadashaYears * yearMs);
-      const mahadashaYearsLeft = Math.max(0, mahadashaYears - remainingAge);
-      const mahadashaEndYear = todayYear + Math.ceil(mahadashaYearsLeft);
+    if (asOf.getTime() <= cursorEnd.getTime()) {
+      const elapsedInMahadasha = Math.max(0, (asOf.getTime() - cursorStart.getTime()) / SIDEREAL_YEAR_MS);
+      const mahadashaYearsLeft = Math.max(0, (cursorEnd.getTime() - asOf.getTime()) / SIDEREAL_YEAR_MS);
       const nextMahadasha = DASHA_ORDER[(mahadashaIndex + 1) % DASHA_ORDER.length];
-      const mahadashaProgress = mahadashaYears > 0 ? Math.max(0, Math.min(1, remainingAge / mahadashaYears)) : 0;
+      const mahadashaProgress = mahadashaYears > 0 ? Math.max(0, Math.min(1, elapsedInMahadasha / mahadashaYears)) : 0;
 
-      let antardashaElapsed = remainingAge;
+      let antarStart = new Date(cursorStart.getTime());
       for (let subOffset = 0; subOffset < DASHA_ORDER.length; subOffset++) {
         const antardashaIndex = (mahadashaIndex + subOffset) % DASHA_ORDER.length;
         const antardashaPlanet = DASHA_ORDER[antardashaIndex];
-        const antardashaYears = mahadashaYears * ((DASHA_YEARS[antardashaPlanet] ?? 0) / 120);
-        if (antardashaElapsed <= antardashaYears) {
-          const elapsedBeforeAntardasha = remainingAge - antardashaElapsed;
-          const antardashaStartedAt = new Date(mahadashaStartedAt.getTime() + elapsedBeforeAntardasha * yearMs);
-          const antardashaEndsAt = new Date(antardashaStartedAt.getTime() + antardashaYears * yearMs);
-          const antardashaYearsLeft = Math.max(0, antardashaYears - antardashaElapsed);
-          const antardashaEndYear = todayYear + Math.ceil(antardashaYearsLeft);
+        const antardashaYears = mahadashaYears * ((DASHA_YEARS[antardashaPlanet] ?? 0) / VIMSHOTTARI_TOTAL_YEARS);
+        const antarEnd = new Date(antarStart.getTime() + antardashaYears * SIDEREAL_YEAR_MS);
+
+        if (asOf.getTime() <= antarEnd.getTime() || subOffset === DASHA_ORDER.length - 1) {
+          const elapsedInAntardasha = Math.max(0, (asOf.getTime() - antarStart.getTime()) / SIDEREAL_YEAR_MS);
+          const antardashaYearsLeft = Math.max(0, (antarEnd.getTime() - asOf.getTime()) / SIDEREAL_YEAR_MS);
           const nextAntardasha = DASHA_ORDER[(antardashaIndex + 1) % DASHA_ORDER.length];
-          const antardashaProgress = antardashaYears > 0 ? Math.max(0, Math.min(1, antardashaElapsed / antardashaYears)) : 0;
+          const antardashaProgress = antardashaYears > 0 ? Math.max(0, Math.min(1, elapsedInAntardasha / antardashaYears)) : 0;
 
           return {
             currentMahadasha: mahadashaPlanet,
             mahadashaYears,
             mahadashaYearsLeft,
-            mahadashaEndYear,
-            mahadashaStartedAtIso: mahadashaStartedAt.toISOString(),
-            mahadashaEndsAtIso: mahadashaEndsAt.toISOString(),
+            mahadashaEndYear: cursorEnd.getUTCFullYear(),
+            mahadashaStartedAtIso: cursorStart.toISOString(),
+            mahadashaEndsAtIso: cursorEnd.toISOString(),
             nextMahadasha,
             mahadashaProgress,
             currentAntardasha: antardashaPlanet,
             antardashaYears,
             antardashaYearsLeft,
-            antardashaEndYear,
-            antardashaStartedAtIso: antardashaStartedAt.toISOString(),
-            antardashaEndsAtIso: antardashaEndsAt.toISOString(),
+            antardashaEndYear: antarEnd.getUTCFullYear(),
+            antardashaStartedAtIso: antarStart.toISOString(),
+            antardashaEndsAtIso: antarEnd.toISOString(),
             nextAntardasha,
             antardashaProgress,
           };
         }
-        antardashaElapsed -= antardashaYears;
+
+        antarStart = antarEnd;
       }
     }
 
-    remainingAge -= mahadashaYears;
+    cursorStart = cursorEnd;
+    mahadashaIndex = (mahadashaIndex + 1) % DASHA_ORDER.length;
+    const nextYears = DASHA_YEARS[DASHA_ORDER[mahadashaIndex]] ?? 7;
+    cursorEnd = new Date(cursorStart.getTime() + nextYears * SIDEREAL_YEAR_MS);
+
+    // Fast-forward by full 120-year cycles when safely past the first partial cycle.
+    if (segment === DASHA_ORDER.length - 1 && asOf.getTime() > cursorEnd.getTime()) {
+      const cyclesToSkip = Math.max(0, Math.floor((asOf.getTime() - cursorEnd.getTime()) / (VIMSHOTTARI_TOTAL_YEARS * SIDEREAL_YEAR_MS)));
+      if (cyclesToSkip > 0) {
+        const shift = cyclesToSkip * VIMSHOTTARI_TOTAL_YEARS * SIDEREAL_YEAR_MS;
+        cursorStart = new Date(cursorStart.getTime() + shift);
+        cursorEnd = new Date(cursorEnd.getTime() + shift);
+      }
+    }
   }
 
   return null;
@@ -7957,33 +8093,32 @@ const NAKSHATRA_QUALITIES: Array<{ deity: string; gana: string; symbol: string; 
   { deity: "Pushan", gana: "Deva", symbol: "Fish/pair of fish", nature: "Soft", quality: "Journeys, protection, gentle care, cosmic journey, moksha" },
 ];
 
-// Nakshatra → Rashi mapping (27 nakshatras to 12 rashis)
+// Fallback Nakshatra → Rashi mapping. Primary Moon Rashi now comes from
+// sidereal Moon longitude because Krittika, Mrigashira, Punarvasu and other
+// nakshatras span sign boundaries. This map is only a defensive fallback.
 const NAKSHATRA_TO_RASHI_ID = [
-  0,0,1,1,2,2,3,3,3,   // Ashwini–Ashlesha   → Mesha–Karka
-  4,4,5,5,6,6,6,7,7,   // Magha–Jyeshtha     → Simha–Vrishchika
-  8,8,9,9,10,10,11,11,11 // Mula–Revati       → Dhanu–Meena
+  0,0,1,1,2,2,3,3,3,
+  4,4,5,5,6,6,7,7,7,
+  8,8,9,9,10,10,11,11,11
 ];
 
-// Janma Rashi (Moon sign) derived from Janma Nakshatra approximation
+// Janma Rashi (Moon sign) from sidereal Moon longitude.
 function getMoonRashiFromDOB(dob: string): { rashiId: number; rashi: typeof VEDIC_RASHIS[0] } | null {
   const nakshatra = getJanmaNakshatra(dob);
   if (!nakshatra) return null;
-  const rashiId = NAKSHATRA_TO_RASHI_ID[nakshatra.id] ?? 0;
-  const rashi = VEDIC_RASHIS[rashiId];
+  const rashiId = Math.min(11, Math.floor(nakshatra.siderealMoonLongitude / 30));
+  const rashi = VEDIC_RASHIS[rashiId] ?? VEDIC_RASHIS[NAKSHATRA_TO_RASHI_ID[nakshatra.id] ?? 0];
   if (!rashi) return null;
-  return { rashiId, rashi };
+  return { rashiId: rashi.id, rashi };
 }
 
-// Today's Moon Nakshatra (rotates every ~13.3 hours — approximate daily)
-function getTodayNakshatra(): { id: number; name: string; lord: string } {
-  const today = new Date();
-  const daysSinceEpoch = Math.floor(today.getTime() / 86400000);
-  // Moon moves ~13.2° per day; 27 nakshatras * 13.33° = 360°; cycle ≈ 27.32 days
-  const nakshatraId = Math.floor((daysSinceEpoch * 13 + 7) % 27);
-  return { id: nakshatraId, name: NAKSHATRAS[nakshatraId], lord: NAKSHATRA_LORDS[nakshatraId] };
+// Today's Moon Nakshatra from current sidereal Moon longitude.
+function getTodayNakshatra(): JanmaNakshatraInfo {
+  return buildNakshatraFromMoonLongitude(getSiderealMoonLongitude(new Date()));
 }
 
-// Approximate Tithi (lunar day) from current date
+// Panchang Tithi from Moon-solar angular separation. The solar value is used
+// only as the standard Panchang reference for lunar day calculation.
 function getTodayTithi(): { number: number; name: string; type: string; paksha: string } {
   const TITHI_NAMES = [
     "Pratipad","Dwitiya","Tritiya","Chaturthi","Panchami",
@@ -7994,19 +8129,14 @@ function getTodayTithi(): { number: number; name: string; type: string; paksha: 
     "Nanda","Bhadra","Jaya","Rikta","Purna","Nanda","Bhadra","Jaya","Rikta","Purna",
     "Nanda","Bhadra","Jaya","Rikta","Purna"
   ];
-  // Lunar cycle ≈ 29.53 days, 30 tithis per cycle
-  const synodic = 29.53059;
-  const ref = new Date("2000-01-06").getTime() / 86400000; // known new moon
   const today = new Date();
-  const daysSinceRef = (today.getTime() / 86400000) - ref;
-  const tithiRaw = Math.floor((daysSinceRef % synodic) / synodic * 30);
-  const tithiNum = ((tithiRaw % 30) + 30) % 30;
+  const elongation = normalizeDegrees(getApproxTropicalMoonLongitude(today) - getApproxTropicalSunLongitude(today));
+  const tithiNum = Math.min(29, Math.floor(elongation / 12));
   const paksha = tithiNum < 15 ? "Shukla Paksha (Waxing)" : "Krishna Paksha (Waning)";
-  const halfIndex = tithiNum % 15;
-  const idx = Math.min(halfIndex, 14);
+  const idx = Math.min(tithiNum % 15, 14);
   return {
     number: tithiNum + 1,
-    name: TITHI_NAMES[idx] ?? "Purnima",
+    name: TITHI_NAMES[idx] ?? "Purnima/Amavasya",
     type: TITHI_TYPES[idx] ?? "Purna",
     paksha
   };
@@ -8134,6 +8264,65 @@ function moonChartCategoryRemedy(category: MoonChart48Category, rashiName: strin
   return remedies[category];
 }
 
+const PLANET_MOON_CHART_STRENGTH: Record<string, Record<MoonChart48Category, number>> = {
+  Ketu: { self: -4, mind: -2, body: -3, relationship: -5, work: 0, money: -4, family: -3, spiritual: 9, risk: -4, growth: 4 },
+  Shukra: { self: 4, mind: 5, body: 2, relationship: 9, work: 3, money: 7, family: 6, spiritual: 2, risk: 1, growth: 4 },
+  Surya: { self: 8, mind: 0, body: 4, relationship: -1, work: 9, money: 5, family: 0, spiritual: 4, risk: -1, growth: 5 },
+  Chandra: { self: 3, mind: 9, body: 4, relationship: 7, work: 1, money: 2, family: 9, spiritual: 5, risk: 1, growth: 4 },
+  Mangal: { self: 7, mind: -4, body: 5, relationship: -5, work: 7, money: 2, family: -3, spiritual: 0, risk: -7, growth: 4 },
+  Rahu: { self: 1, mind: -7, body: -4, relationship: -4, work: 6, money: 4, family: -5, spiritual: 1, risk: -8, growth: 5 },
+  Guru: { self: 6, mind: 6, body: 5, relationship: 6, work: 6, money: 8, family: 7, spiritual: 9, risk: 3, growth: 9 },
+  Shani: { self: -2, mind: -6, body: -5, relationship: -3, work: 8, money: 4, family: -2, spiritual: 5, risk: -6, growth: 3 },
+  Budha: { self: 4, mind: 5, body: 2, relationship: 5, work: 7, money: 7, family: 2, spiritual: 3, risk: 2, growth: 8 },
+};
+
+const HOUSE_MOON_CHART_STRENGTH: Record<MoonChart48Category, Record<number, number>> = {
+  self: { 1: 9, 3: 5, 5: 6, 9: 5, 10: 4, 12: -3 },
+  mind: { 1: 5, 4: 9, 5: 4, 8: -6, 12: -4 },
+  body: { 1: 4, 2: 2, 6: -5, 8: -7, 12: -4 },
+  relationship: { 3: 4, 5: 5, 7: 8, 8: -4, 11: 5 },
+  work: { 3: 4, 6: 5, 7: 3, 10: 9, 11: 6, 12: -3 },
+  money: { 2: 8, 6: -3, 8: -2, 11: 9, 12: -7 },
+  family: { 2: 6, 4: 9, 5: 5, 9: 3, 12: -2 },
+  spiritual: { 4: 4, 8: 4, 9: 9, 12: 8 },
+  risk: { 6: -4, 8: -8, 12: -7, 3: 2, 11: 3 },
+  growth: { 3: 5, 5: 8, 8: 2, 9: 8, 10: 4, 11: 7, 12: 3 },
+};
+
+function getMoonChartPlanetCategoryScore(planet: string | null | undefined, category: MoonChart48Category): number {
+  if (!planet) return 0;
+  return PLANET_MOON_CHART_STRENGTH[planet]?.[category] ?? 0;
+}
+
+function getMoonChartHouseScore(category: MoonChart48Category, house: number): number {
+  const specific = HOUSE_MOON_CHART_STRENGTH[category]?.[house];
+  if (typeof specific === "number") return specific;
+  if (house === 1 || house === 5 || house === 9) return 4;
+  if (house === 4 || house === 7 || house === 10) return 3;
+  if (house === 3 || house === 6 || house === 11) return 2;
+  if (house === 8 || house === 12) return -4;
+  return 0;
+}
+
+function describeMoonChartScore(score: number, category: MoonChart48Category): string {
+  const categoryFocus: Record<MoonChart48Category, string> = {
+    self: "identity and confidence",
+    mind: "mental and emotional steadiness",
+    body: "body rhythm and routine",
+    relationship: "bonding, trust, and communication",
+    work: "duty, visibility, and execution",
+    money: "resources, saving, and obligations",
+    family: "home, speech, and nurturance",
+    spiritual: "faith, release, and dharma",
+    risk: "caution, hidden pressure, and restraint",
+    growth: "learning, courage, and future direction",
+  };
+  if (score >= 82) return `${categoryFocus[category]} are strongly supported`;
+  if (score >= 68) return `${categoryFocus[category]} are workable with steady choices`;
+  if (score >= 50) return `${categoryFocus[category]} need balance and timing`;
+  return `${categoryFocus[category]} need extra caution and grounding`;
+}
+
 function buildMoonChart48DimensionEngine(input: {
   rashiId: number;
   janmaNakshatra: ReturnType<typeof getJanmaNakshatra>;
@@ -8142,40 +8331,54 @@ function buildMoonChart48DimensionEngine(input: {
   vara: typeof VARA_INFO[0];
 }): MoonChart48Reading[] {
   const rashi = VEDIC_RASHIS[input.rashiId] ?? VEDIC_RASHIS[0];
-  const nakshatraId = input.janmaNakshatra?.id ?? 0;
-  const nakshatraLord = input.janmaNakshatra?.lord ?? "Chandra";
+  const nakshatra = input.janmaNakshatra;
+  const nakshatraId = nakshatra?.id ?? 0;
+  const nakshatraLord = nakshatra?.lord ?? "Chandra";
+  const pada = nakshatra?.pada ?? 1;
+  const degreesInNakshatra = nakshatra?.degreesInNakshatra ?? 0;
+  const lunarFinePulse = ((degreesInNakshatra / DEG_PER_NAKSHATRA) - 0.5) * 10;
   const tithiNumber = input.tithi?.number ?? 1;
-  const dayNumber = input.vara?.day ?? 1;
-  const mahaSeed = input.dashaState?.currentMahadasha ? DASHA_ORDER.indexOf(input.dashaState.currentMahadasha) : 0;
-  const antarSeed = input.dashaState?.currentAntardasha ? DASHA_ORDER.indexOf(input.dashaState.currentAntardasha) : 0;
+  const tithiBalance = tithiNumber === 11 ? 5 : tithiNumber === 4 || tithiNumber === 8 || tithiNumber === 14 ? -4 : tithiNumber <= 5 ? 2 : 0;
+  const varaPlanet = input.vara?.planet?.split(" ")[0] ?? "Chandra";
+  const maha = input.dashaState?.currentMahadasha ?? nakshatraLord;
+  const antar = input.dashaState?.currentAntardasha ?? nakshatraLord;
 
   return MOON_CHART_48_BLUEPRINTS.map((dimension, index) => {
-    const houseDistance = ((dimension.house - (input.rashiId % 12) + 12) % 12) + 1;
-    const lunarPulse = ((nakshatraId + 1) * (index + 3) + tithiNumber + dayNumber) % 17;
-    const dashaPulse = ((Math.max(mahaSeed, 0) + 1) * 3 + (Math.max(antarSeed, 0) + 1) * 2 + dimension.house) % 19;
-    const categoryBias =
-      dimension.category === "mind" || dimension.category === "family" ? 4 :
-      dimension.category === "risk" ? -3 :
-      dimension.category === "growth" ? 3 :
-      dimension.category === "money" ? 1 : 0;
-    const houseBias = houseDistance === 1 || houseDistance === 5 || houseDistance === 9 ? 8 : houseDistance === 6 || houseDistance === 8 || houseDistance === 12 ? -5 : 2;
-    const raw = 58 + categoryBias + houseBias + (lunarPulse - 8) * dimension.weight + (dashaPulse - 9) * 0.9;
+    const houseScore = getMoonChartHouseScore(dimension.category, dimension.house);
+    const mahaScore = getMoonChartPlanetCategoryScore(maha, dimension.category);
+    const antarScore = getMoonChartPlanetCategoryScore(antar, dimension.category);
+    const nakshatraScore = getMoonChartPlanetCategoryScore(nakshatraLord, dimension.category);
+    const varaScore = getMoonChartPlanetCategoryScore(varaPlanet, dimension.category) * 0.25;
+    const padaStability = pada === 2 || pada === 3 ? 2 : 0;
+    const moonSignElementBias =
+      rashi.element.includes("Jal") && (dimension.category === "mind" || dimension.category === "family" || dimension.category === "spiritual") ? 3 :
+      rashi.element.includes("Agni") && (dimension.category === "self" || dimension.category === "work" || dimension.category === "growth") ? 3 :
+      rashi.element.includes("Prithvi") && (dimension.category === "body" || dimension.category === "money" || dimension.category === "family") ? 3 :
+      rashi.element.includes("Vayu") && (dimension.category === "relationship" || dimension.category === "growth" || dimension.category === "work") ? 3 : 0;
+
+    const raw = 60
+      + houseScore * 1.55
+      + mahaScore * 0.85
+      + antarScore * 0.65
+      + nakshatraScore * 0.4
+      + varaScore
+      + moonSignElementBias
+      + tithiBalance
+      + lunarFinePulse * 0.35
+      + ((nakshatraId + index) % 3 - 1) * dimension.weight;
+
     const score = clampMoonScore(raw);
     const verdict = moonChartVerdict(score);
-    const trend = verdict === "Excellent"
-      ? "is strongly supported and can be used with confidence"
-      : verdict === "Supportive"
-        ? "has workable support if you act steadily"
-        : verdict === "Mixed"
-          ? "needs patience, timing, and cleaner choices"
-          : "needs caution, restraint, and extra grounding";
+    const focus = describeMoonChartScore(score, dimension.category);
+    const dashaText = input.dashaState ? `${maha} Mahadasha / ${antar} Antardasha` : `${nakshatraLord} Nakshatra-lord phase`;
+
     return {
       ...dimension,
       score,
       verdict,
-      prediction: `From Moon Rashi ${rashi.name}${input.janmaNakshatra ? ` and ${input.janmaNakshatra.name} Nakshatra` : ""}, ${dimension.label.toLowerCase()} ${trend} today. The active lunar pattern is read through house ${dimension.house}, Tithi ${input.tithi.name}, and the ${input.dashaState ? `${input.dashaState.currentMahadasha}/${input.dashaState.currentAntardasha}` : nakshatraLord} phase.`,
+      prediction: `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. The reading is calculated through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}.`,
       remedy: moonChartCategoryRemedy(dimension.category, rashi.name),
-      calculationBasis: `Moon-only basis: Janma Rashi ${rashi.name}; Nakshatra ${input.janmaNakshatra?.name ?? "approximated"}; house ${dimension.house}; Tithi ${input.tithi.name}; lunar-only calculation.`,
+      calculationBasis: `Moon-only basis: sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.`,
     };
   });
 }
