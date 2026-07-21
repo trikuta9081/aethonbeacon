@@ -77,11 +77,37 @@ type RelaxingToneMode = {
   safety: string;
   accent: string;
   mark: string;
+  intent?: string;
+  brainState?: string;
+  bestTime?: string;
+  durationMin?: number;
+  requiresHeadphones?: boolean;
+  contraindication?: string;
+  qualityGrade?: "Core" | "Pristine" | "External";
+  tags?: string[];
   // Optional external open — YouTube / Spotify search or curated link for
   // trending social-media / lyric-heavy tracks the internal tone-gen can't
   // reproduce (lo-fi mixes, motivational speeches, bhajans, Bollywood chill).
   externalUrl?: string;
   externalLabel?: string;
+};
+
+type ToneSessionPreset = {
+  id: "quick-reset" | "moon-balance" | "deep-calm" | "focus-flow" | "sleep-soft";
+  label: string;
+  minutes: number;
+  volume: number;
+  fadeInMs: number;
+  breath: string;
+  intent: string;
+  guardrail: string;
+};
+
+type ToneEngineOptions = {
+  volume?: number;
+  fadeInMs?: number;
+  durationMs?: number;
+  presetId?: ToneSessionPreset["id"];
 };
 
 type Routine = {
@@ -2039,9 +2065,25 @@ type AethonContinuousNodes = {
   masterGain: GainNode;
   oscillators: OscillatorNode[];
   gainNodes: GainNode[];
+  effectNodes: AudioNode[];
   merger?: ChannelMergerNode;
   bufferSource?: AudioBufferSourceNode;
+  stopTimer?: ReturnType<typeof setTimeout>;
 };
+
+let nativeContinuousToneSoundInstance: AudioPlayer | null = null;
+let nativeContinuousToneStopTimer: ReturnType<typeof setTimeout> | null = null;
+
+async function ensureNativeContinuousToneSoundLoaded() {
+  if (Platform.OS === "web") return null;
+  if (!nativeContinuousToneSoundInstance) {
+    nativeContinuousToneSoundInstance = createAudioPlayer(require("./assets/aethon-pristine-tone.wav"), {
+      downloadFirst: true,
+      keepAudioSessionActive: true
+    });
+  }
+  return nativeContinuousToneSoundInstance;
+}
 
 const _aethonContinuousWindow =
   typeof window !== "undefined"
@@ -2064,28 +2106,76 @@ function _getOrCreateAudioContext(): AudioContext | null {
 }
 
 async function stopContinuousTone(fadeMs = 700): Promise<void> {
+  if (nativeContinuousToneStopTimer) {
+    clearTimeout(nativeContinuousToneStopTimer);
+    nativeContinuousToneStopTimer = null;
+  }
+
+  if (Platform.OS !== "web") {
+    try {
+      const nativeSound = nativeContinuousToneSoundInstance;
+      if (nativeSound) {
+        nativeSound.loop = false;
+        nativeSound.pause();
+        await nativeSound.seekTo(0);
+      }
+    } catch {
+      // Native ambient loop teardown must never block the UI.
+    }
+  }
+
   const nodes = _aethonContinuousWindow?.__aethonContinuous;
   if (!nodes) return;
-  const { masterGain, oscillators, gainNodes, bufferSource, context } = nodes;
+  const { masterGain, oscillators, gainNodes, effectNodes, bufferSource, context, stopTimer } = nodes;
+  if (stopTimer) clearTimeout(stopTimer);
   const now = context.currentTime;
-  const fadeSec = fadeMs / 1000;
+  const fadeSec = Math.max(0.08, Math.min(4, fadeMs / 1000));
   try {
     masterGain.gain.cancelScheduledValues(now);
-    masterGain.gain.setValueAtTime(masterGain.gain.value, now);
-    masterGain.gain.linearRampToValueAtTime(0, now + fadeSec);
+    masterGain.gain.setValueAtTime(Math.max(0.0001, masterGain.gain.value), now);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + fadeSec);
   } catch {}
-  await new Promise<void>((resolve) => setTimeout(resolve, fadeMs + 60));
+  await new Promise<void>((resolve) => setTimeout(resolve, fadeMs + 80));
   for (const osc of oscillators) { try { osc.stop(); osc.disconnect(); } catch {} }
   for (const g of gainNodes) { try { g.disconnect(); } catch {} }
+  for (const effect of effectNodes) { try { effect.disconnect(); } catch {} }
   try { bufferSource?.stop(); bufferSource?.disconnect(); } catch {}
   try { masterGain.disconnect(); } catch {}
   if (_aethonContinuousWindow) _aethonContinuousWindow.__aethonContinuous = undefined;
 }
 
-async function startContinuousTone(tone: RelaxingToneMode): Promise<void> {
-  // Mobile fallback — haptic rhythm
+async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOptions = {}): Promise<void> {
+  const targetGain = clampToneVolume(
+    options.volume ??
+      (tone.id === "reset-gamma" ? 0.1 :
+        tone.id.startsWith("noise-") ? 0.12 :
+        tone.id.startsWith("binaural") ? 0.14 :
+        tone.id.startsWith("bilateral") ? 0.15 :
+        0.16)
+  );
+  const fadeInSec = Math.max(0.2, Math.min(3.5, (options.fadeInMs ?? 1200) / 1000));
+  const scheduledSeconds = Math.max(330, Math.ceil(((options.durationMs ?? 20 * 60 * 1000) / 1000) + 8));
+
+  // Native fallback — upgraded from pure vibration to a packaged, loopable WAV
+  // plus a short haptic entrance cue. Procedural WebAudio remains web-only.
   if (Platform.OS !== "web" || !_aethonContinuousWindow) {
-    Vibration.vibrate([0, 300, 200, 300, 200, 300]);
+    await stopContinuousTone(140);
+    try {
+      const nativeSound = await ensureNativeContinuousToneSoundLoaded();
+      if (nativeSound) {
+        nativeSound.loop = true;
+        nativeSound.volume = targetGain;
+        await nativeSound.seekTo(0);
+        nativeSound.play();
+        if (options.durationMs && options.durationMs > 0) {
+          nativeContinuousToneStopTimer = setTimeout(() => {
+            void stopContinuousTone(700);
+          }, options.durationMs);
+        }
+      }
+    } catch {
+      Vibration.vibrate([0, 120, 80, 120, 120, 180]);
+    }
     return;
   }
 
@@ -2099,14 +2189,27 @@ async function startContinuousTone(tone: RelaxingToneMode): Promise<void> {
   if (context.state !== "running") return;
 
   const masterGain = context.createGain();
-  masterGain.gain.setValueAtTime(0, context.currentTime);
-  masterGain.connect(context.destination);
+  const warmthFilter = context.createBiquadFilter();
+  const safetyLimiter = context.createDynamicsCompressor();
+  warmthFilter.type = "lowpass";
+  warmthFilter.frequency.setValueAtTime(tone.id === "reset-gamma" ? 6200 : tone.id.startsWith("noise-white") ? 9000 : 7200, context.currentTime);
+  warmthFilter.Q.setValueAtTime(0.55, context.currentTime);
+  safetyLimiter.threshold.setValueAtTime(-28, context.currentTime);
+  safetyLimiter.knee.setValueAtTime(24, context.currentTime);
+  safetyLimiter.ratio.setValueAtTime(8, context.currentTime);
+  safetyLimiter.attack.setValueAtTime(0.006, context.currentTime);
+  safetyLimiter.release.setValueAtTime(0.22, context.currentTime);
+  masterGain.gain.setValueAtTime(0.0001, context.currentTime);
+  masterGain.connect(warmthFilter);
+  warmthFilter.connect(safetyLimiter);
+  safetyLimiter.connect(context.destination);
 
   const nodes: AethonContinuousNodes = {
     context,
     masterGain,
     oscillators: [],
     gainNodes: [],
+    effectNodes: [warmthFilter, safetyLimiter],
   };
 
   const isBinaural = tone.id.startsWith("binaural");
@@ -2276,11 +2379,11 @@ async function startContinuousTone(tone: RelaxingToneMode): Promise<void> {
     gR.connect(merger, 0, 1);
     oscR.start();
 
-    // Schedule 300 seconds of alternating L/R pulses
+    // Schedule the full requested session horizon of alternating L/R pulses
     const period = 1 / beatHz;
     const pulseDur = period * 0.42;
     const now = context.currentTime;
-    const totalPulses = Math.ceil(300 / period);
+    const totalPulses = Math.ceil(scheduledSeconds / period);
     for (let i = 0; i < totalPulses; i++) {
       const t = now + i * period;
       const tgGain = i % 2 === 0 ? gL : gR;
@@ -2311,11 +2414,11 @@ async function startContinuousTone(tone: RelaxingToneMode): Promise<void> {
     g.connect(masterGain);
     osc.start();
 
-    // Schedule 300 seconds of isochronic pulses
+    // Schedule the full requested session horizon of isochronic pulses
     const period = 1 / beatFreq;
     const pulseDur = period * 0.46;
     const now = context.currentTime;
-    const totalPulses = Math.ceil(300 * beatFreq);
+    const totalPulses = Math.ceil(scheduledSeconds * beatFreq);
     for (let i = 0; i < totalPulses; i++) {
       const t = now + i * period;
       g.gain.setValueAtTime(0, t);
@@ -2340,12 +2443,17 @@ async function startContinuousTone(tone: RelaxingToneMode): Promise<void> {
     nodes.gainNodes.push(g);
   }
 
-  // ── Store & fade in ────────────────────────────────────────────────────────
+  // ── Store, safety-cap, and fade in ─────────────────────────────────────────
+  if (options.durationMs && options.durationMs > 0) {
+    nodes.stopTimer = setTimeout(() => {
+      void stopContinuousTone(1400);
+    }, options.durationMs);
+  }
   if (_aethonContinuousWindow) _aethonContinuousWindow.__aethonContinuous = nodes;
   const now2 = context.currentTime;
   masterGain.gain.cancelScheduledValues(now2);
-  masterGain.gain.setValueAtTime(0, now2);
-  masterGain.gain.linearRampToValueAtTime(0.82, now2 + 1.8);
+  masterGain.gain.setValueAtTime(0.0001, now2);
+  masterGain.gain.exponentialRampToValueAtTime(targetGain, now2 + fadeInSec);
 }
 
 function getTodayPrompt(
@@ -7193,7 +7301,7 @@ async function ensureRelaxingToneSoundLoaded() {
   }
   if (!relaxingToneSoundLoadPromise) {
     relaxingToneSoundLoadPromise = Promise.resolve(
-      createAudioPlayer(require("./assets/calm-tone-beep.wav"), {
+      createAudioPlayer(require("./assets/aethon-pristine-tone.wav"), {
         downloadFirst: true
       })
     )
@@ -16884,14 +16992,18 @@ function TodaySection({
     const toneMode =
       mindRelaxingToneModes.find((t) => t.id === selectedRelaxingToneId) ??
       mindRelaxingToneModes[0];
-    void startContinuousTone(toneMode);
+    void startContinuousTone(toneMode, {
+      volume: 0.13,
+      fadeInMs: 1000,
+      durationMs: mindRestPresetMinutes > 0 ? mindRestPresetMinutes * 60 * 1000 : undefined
+    });
     setMindRestSessionSeconds(0);
     const ticker = setInterval(() => setMindRestSessionSeconds((s) => s + 1), 1000);
     return () => {
       clearInterval(ticker);
       void stopContinuousTone();
     };
-  }, [mindRestLoopEnabled, selectedRelaxingToneId]);
+  }, [mindRestLoopEnabled, selectedRelaxingToneId, mindRestPresetMinutes]);
 
   // Auto-stop home tones when preset duration reached
   useEffect(() => {
@@ -18173,6 +18285,122 @@ function FocusSection({
   );
 }
 
+const PRISTINE_TONE_SESSION_PRESETS: ToneSessionPreset[] = [
+  {
+    id: "quick-reset",
+    label: "3m Quick Reset",
+    minutes: 3,
+    volume: 0.13,
+    fadeInMs: 650,
+    breath: "3 slow cycles",
+    intent: "Fast downshift when the mind is overloaded.",
+    guardrail: "Short, low volume, stop if the tone feels irritating."
+  },
+  {
+    id: "moon-balance",
+    label: "11m Moon Balance",
+    minutes: 11,
+    volume: 0.15,
+    fadeInMs: 1200,
+    breath: "4-7-8 Exhale",
+    intent: "Moon-chart emotional balancing before counsel or prediction reading.",
+    guardrail: "Use as reflective support only; not medical or emergency care."
+  },
+  {
+    id: "deep-calm",
+    label: "12m Deep Calm",
+    minutes: 12,
+    volume: 0.16,
+    fadeInMs: 1600,
+    breath: "Slow 6-6",
+    intent: "Longer parasympathetic settling after stress, grief, or conflict.",
+    guardrail: "Do not use while driving or operating machinery."
+  },
+  {
+    id: "focus-flow",
+    label: "25m Focus Flow",
+    minutes: 25,
+    volume: 0.12,
+    fadeInMs: 900,
+    breath: "Natural breath",
+    intent: "Calm-alert background for writing, planning, or review.",
+    guardrail: "Keep very low; avoid 40 Hz if you are sensitive to pulsing tones."
+  },
+  {
+    id: "sleep-soft",
+    label: "20m Sleep Soft",
+    minutes: 20,
+    volume: 0.11,
+    fadeInMs: 2200,
+    breath: "Slow 5-5",
+    intent: "Soft landing for night-time decompression and body release.",
+    guardrail: "Use only at safe volume; stop if it disturbs sleep."
+  }
+];
+
+function clampToneVolume(value: number): number {
+  if (!Number.isFinite(value)) return 0.14;
+  return Math.max(0.04, Math.min(0.22, value));
+}
+
+function getToneBrainState(tone: RelaxingToneMode): string {
+  if (tone.brainState) return tone.brainState;
+  if (tone.id.includes("delta")) return "Delta · sleep-depth settling";
+  if (tone.id.includes("theta")) return "Theta · reflective processing";
+  if (tone.id.includes("alpha") || tone.id.startsWith("iso-8") || tone.id.startsWith("iso-10")) return "Alpha · calm focus";
+  if (tone.id === "reset-gamma") return "Gamma · brief alert reset";
+  if (tone.id.startsWith("bilateral")) return "Bilateral · left-right regulation";
+  if (tone.id.startsWith("noise-") || tone.id.startsWith("ambient")) return "Ambient · parasympathetic texture";
+  if (tone.id.startsWith("sol-") || tone.id === "aum-136") return "Resonance · sacred-frequency layer";
+  return "Gentle reset · low-stimulation support";
+}
+
+function getToneDeliveryProfile(tone: RelaxingToneMode): string {
+  if (tone.externalUrl) return "External stream link";
+  if (tone.id.startsWith("binaural")) return "True stereo L/R binaural synthesis";
+  if (tone.id.startsWith("bilateral")) return "Alternating left/right pulse engine";
+  if (tone.id.startsWith("iso-") || tone.id === "reset-gamma") return "Precision isochronic pulse engine";
+  if (tone.id.startsWith("noise-")) return "Procedural stereo noise bed";
+  if (tone.id.startsWith("sol-") || tone.id === "aum-136") return "Harmonic sine + warm overtone stack";
+  return "Soft ambient oscillator / native WAV fallback";
+}
+
+function toneRequiresHeadphones(tone: RelaxingToneMode): boolean {
+  return tone.requiresHeadphones ?? tone.id.startsWith("binaural") ?? false;
+}
+
+function getToneContraindication(tone: RelaxingToneMode): string {
+  if (tone.contraindication) return tone.contraindication;
+  if (tone.id === "reset-gamma" || tone.id.startsWith("iso-") || tone.id.startsWith("binaural-gamma")) {
+    return "Avoid if pulsing audio causes discomfort; never use while driving.";
+  }
+  if (tone.id.startsWith("binaural")) return "Headphones required; keep volume low and stop if dizzy or uncomfortable.";
+  if (tone.id.startsWith("bilateral")) return "Use gently; pause if left-right stimulation feels activating.";
+  return "Use at a comfortable low volume; stop if the sound feels unpleasant.";
+}
+
+function getToneDefaultDuration(tone: RelaxingToneMode): number {
+  if (tone.durationMin) return tone.durationMin;
+  if (tone.id === "reset-gamma") return 3;
+  if (tone.id.includes("delta")) return 20;
+  if (tone.id.includes("theta")) return 12;
+  if (tone.id.startsWith("bilateral")) return 5;
+  if (tone.id.startsWith("iso-")) return 8;
+  if (tone.id.startsWith("noise-") || tone.id.startsWith("ambient")) return 15;
+  return 10;
+}
+
+function getPristineToneBadges(tone: RelaxingToneMode): string[] {
+  const badges = [
+    tone.qualityGrade ?? (tone.externalUrl ? "External" : "Pristine"),
+    getToneBrainState(tone),
+    getToneDeliveryProfile(tone),
+    `${getToneDefaultDuration(tone)}m suggested`
+  ];
+  if (toneRequiresHeadphones(tone)) badges.push("Headphones");
+  return badges;
+}
+
 // Issue-specific healing session programs
 const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number; toneId: RelaxingToneMode["id"]; dim: string; dimColor: string; purpose: string; breathPattern: string }>> = {
   anxiety:      [{ name: "Panic Reset", duration: 5, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#818CF8", purpose: "Grounds flight-or-fight via bilateral nervous system reset", breathPattern: "4-4-4-4 Box" },{ name: "Alpha Calm", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#34D399", purpose: "Shifts brainwaves from beta anxiety to alpha calm", breathPattern: "4-7-8 Exhale" },{ name: "Root Safety", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#F9A8D4", purpose: "Nature sounds lower cortisol and signal safety", breathPattern: "Slow 5-5" }],
@@ -18228,7 +18456,9 @@ function ToneLibrarySection({
   const [tonePaused, setTonePaused] = useState(false);
   const [showFullLibrary, setShowFullLibrary] = useState(false);
   const [sessionSeconds, setSessionSeconds] = useState(0);
-  const [presetMinutes, setPresetMinutes] = useState(0);
+  const [selectedSessionPresetId, setSelectedSessionPresetId] = useState<ToneSessionPreset["id"]>("moon-balance");
+  const [presetMinutes, setPresetMinutes] = useState(11);
+  const [toneVolume, setToneVolume] = useState(0.15);
   const [activeProgram, setActiveProgram] = useState<typeof ISSUE_TONE_PROGRAMS[string][0] | null>(null);
   const [breathStep, setBreathStep] = useState(0);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -18239,13 +18469,22 @@ function ToneLibrarySection({
     setTonePaused(false);
     setShowFullLibrary(false);
     setSessionSeconds(0);
-    setPresetMinutes(0);
+    setSelectedSessionPresetId("moon-balance");
+    setPresetMinutes(11);
+    setToneVolume(0.15);
     setActiveProgram(null);
     setBreathStep(0);
   }, [recommendedTone.id]);
 
   const selectedTone =
     mindRelaxingToneModes.find((toneMode) => toneMode.id === selectedToneId) ?? mindRelaxingToneModes[0];
+  const selectedSessionPreset =
+    PRISTINE_TONE_SESSION_PRESETS.find((preset) => preset.id === selectedSessionPresetId) ??
+    PRISTINE_TONE_SESSION_PRESETS[1];
+  const selectedToneBadges = getPristineToneBadges(selectedTone);
+  const selectedToneHeadphones = toneRequiresHeadphones(selectedTone);
+  const selectedToneContraindication = getToneContraindication(selectedTone);
+  const toneVolumePercent = Math.round(clampToneVolume(toneVolume) * 100);
 
   useEffect(() => {
     if (!loopEnabled) {
@@ -18257,7 +18496,12 @@ function ToneLibrarySection({
       void stopContinuousTone();
       return undefined;
     }
-    void startContinuousTone(selectedTone);
+    void startContinuousTone(selectedTone, {
+      volume: toneVolume,
+      fadeInMs: selectedSessionPreset.fadeInMs,
+      durationMs: presetMinutes > 0 ? presetMinutes * 60 * 1000 : undefined,
+      presetId: selectedSessionPreset.id
+    });
     const ticker = setInterval(() => {
       setSessionSeconds((s) => s + 1);
     }, 1000);
@@ -18265,7 +18509,7 @@ function ToneLibrarySection({
       clearInterval(ticker);
       void stopContinuousTone();
     };
-  }, [loopEnabled, selectedTone.id, tonePaused]);
+  }, [loopEnabled, selectedTone.id, tonePaused, toneVolume, presetMinutes, selectedSessionPreset.id]);
 
   // Auto-stop when preset duration is reached
   useEffect(() => {
@@ -18389,11 +18633,87 @@ function ToneLibrarySection({
             </Pressable>
           )}
         </View>
+        {/* Pristine engine controls */}
+        <View style={{ marginHorizontal: 14, marginBottom: 12, borderRadius: 16, backgroundColor: "#03111D", borderWidth: 1, borderColor: "rgba(34,211,238,0.18)", padding: 12 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: "#67E8F9", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
+                Pristine Tone Engine
+              </Text>
+              <Text style={{ color: "#94A3B8", fontSize: 11, marginTop: 2 }}>Limiter + warm filter + smooth ramp + safe gain cap</Text>
+            </View>
+            <View style={{ backgroundColor: selectedToneHeadphones ? "rgba(251,191,36,0.13)" : "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: selectedToneHeadphones ? "rgba(251,191,36,0.4)" : "rgba(52,211,153,0.35)" }}>
+              <Text style={{ color: selectedToneHeadphones ? "#FCD34D" : "#34D399", fontSize: 10, fontWeight: "900" }}>
+                {selectedToneHeadphones ? "🎧 Headphones" : "🔊 Speaker OK"}
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+            {selectedToneBadges.slice(0, 5).map((badge) => (
+              <View key={badge} style={{ borderRadius: 999, backgroundColor: "rgba(255,255,255,0.045)", borderWidth: 1, borderColor: "rgba(255,255,255,0.075)", paddingHorizontal: 8, paddingVertical: 4 }}>
+                <Text style={{ color: "#CBD5E1", fontSize: 10, fontWeight: "800" }}>{badge}</Text>
+              </View>
+            ))}
+          </View>
+
+          <Text style={{ color: "#64748B", fontSize: 11, lineHeight: 16, marginBottom: 10 }}>
+            Safety: {selectedToneContraindication}
+          </Text>
+
+          <Text style={{ color: "#22D3EE", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+            Session preset
+          </Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+            {PRISTINE_TONE_SESSION_PRESETS.map((preset) => {
+              const selected = preset.id === selectedSessionPreset.id && presetMinutes === preset.minutes;
+              return (
+                <Pressable
+                  key={preset.id}
+                  accessibilityRole="button"
+                  onPress={() => {
+                    setSelectedSessionPresetId(preset.id);
+                    setPresetMinutes(preset.minutes);
+                    setToneVolume(preset.volume);
+                    setActiveProgram(null);
+                  }}
+                  style={({ pressed }) => ({
+                    minWidth: compact ? "47%" as unknown as number : 128,
+                    flexGrow: 1,
+                    borderRadius: 12,
+                    padding: 10,
+                    backgroundColor: selected ? "rgba(34,211,238,0.13)" : pressed ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.035)",
+                    borderWidth: 1,
+                    borderColor: selected ? "rgba(34,211,238,0.46)" : "rgba(255,255,255,0.07)"
+                  })}
+                >
+                  <Text style={{ color: selected ? "#67E8F9" : "#E2E8F0", fontSize: 12, fontWeight: "900" }}>{preset.label}</Text>
+                  <Text style={{ color: "#64748B", fontSize: 10, lineHeight: 14, marginTop: 3 }}>{preset.intent}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Text style={{ color: "#94A3B8", fontSize: 11, fontWeight: "800", width: 72 }}>Safe gain</Text>
+            <Pressable onPress={() => setToneVolume((v) => clampToneVolume(v - 0.02))} style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#071827", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}>
+              <Text style={{ color: "#CBD5E1", fontSize: 16, fontWeight: "900" }}>−</Text>
+            </Pressable>
+            <View style={{ flex: 1, height: 8, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+              <View style={{ height: 8, borderRadius: 999, backgroundColor: "#22D3EE", width: `${Math.round((clampToneVolume(toneVolume) / 0.22) * 100)}%` as unknown as number }} />
+            </View>
+            <Pressable onPress={() => setToneVolume((v) => clampToneVolume(v + 0.02))} style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#071827", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}>
+              <Text style={{ color: "#CBD5E1", fontSize: 16, fontWeight: "900" }}>+</Text>
+            </Pressable>
+            <Text style={{ color: "#67E8F9", fontSize: 11, fontWeight: "900", width: 36, textAlign: "right" }}>{toneVolumePercent}%</Text>
+          </View>
+        </View>
+
         {/* Timer presets */}
         <View style={{ flexDirection: "row", gap: 6, paddingHorizontal: 14, paddingBottom: 14, alignItems: "center" }}>
           <Text style={{ color: "#475569", fontSize: 11, fontWeight: "700" }}>Timer:</Text>
           {([0, 5, 10, 15, 20, 30] as const).map((min) => (
-            <Pressable key={min} onPress={() => setPresetMinutes(min)} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#070F1A", borderWidth: 1, borderColor: presetMinutes === min ? "#22D3EE" : "rgba(255,255,255,0.08)" }}>
+            <Pressable key={min} onPress={() => { setPresetMinutes(min); setActiveProgram(null); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#070F1A", borderWidth: 1, borderColor: presetMinutes === min ? "#22D3EE" : "rgba(255,255,255,0.08)" }}>
               <Text style={{ color: presetMinutes === min ? "#E8F4F0" : "#475569", fontSize: 11, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
             </Pressable>
           ))}
