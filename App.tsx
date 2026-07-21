@@ -454,6 +454,34 @@ type SupportDimensionId =
   | "loneliness"
   | "safety"
   | "fear"
+  | "sleep"
+  | "appetite"
+  | "body-symptoms"
+  | "legal-rights"
+  | "digital-safety"
+  | "social-reputation"
+  | "career-growth"
+  | "workplace-conflict"
+  | "education-admin"
+  | "exam-performance"
+  | "time-management"
+  | "procrastination"
+  | "motivation"
+  | "confidence"
+  | "boundaries"
+  | "communication"
+  | "trust"
+  | "intimacy"
+  | "caregiving"
+  | "elder-care"
+  | "pregnancy-postpartum"
+  | "identity-values"
+  | "spirituality-faith"
+  | "cultural-belonging"
+  | "decision-making"
+  | "habit-routine"
+  | "environment"
+  | "documentation-evidence"
   | "direction";
 type RouteChoiceId = "path" | "help" | "reset" | "search" | "journal" | "sos";
 type PendingRouteDecision = {
@@ -8013,6 +8041,152 @@ function getVedicDailyPrediction(
   ];
 }
 
+
+// 48-DIMENSION MOON CHART ENGINE
+// Calculated predictions and remedies are anchored solely to Janma Rashi
+// (Moon sign), Janma Nakshatra, Vimshottari phase, Tithi and Vara. Only lunar-chart prediction paths are used here.
+type MoonChart48Category = "self" | "mind" | "body" | "relationship" | "work" | "money" | "family" | "spiritual" | "risk" | "growth";
+type MoonChart48Verdict = "Excellent" | "Supportive" | "Mixed" | "Careful";
+type MoonChart48Blueprint = { id: string; label: string; category: MoonChart48Category; house: number; weight: number };
+type MoonChart48Reading = MoonChart48Blueprint & {
+  score: number;
+  verdict: MoonChart48Verdict;
+  prediction: string;
+  remedy: string;
+  calculationBasis: string;
+};
+
+const MOON_CHART_48_BLUEPRINTS: MoonChart48Blueprint[] = [
+  { id: "mind-peace", label: "Mind peace", category: "mind", house: 4, weight: 1.3 },
+  { id: "emotional-regulation", label: "Emotional regulation", category: "mind", house: 1, weight: 1.25 },
+  { id: "confidence", label: "Confidence", category: "self", house: 1, weight: 1.1 },
+  { id: "self-image", label: "Self-image", category: "self", house: 2, weight: 0.95 },
+  { id: "decision-clarity", label: "Decision clarity", category: "growth", house: 5, weight: 1.05 },
+  { id: "communication", label: "Communication", category: "relationship", house: 3, weight: 1.0 },
+  { id: "siblings-network", label: "Siblings and close network", category: "relationship", house: 3, weight: 0.8 },
+  { id: "home-peace", label: "Home peace", category: "family", house: 4, weight: 1.15 },
+  { id: "mother-support", label: "Mother and nurturance", category: "family", house: 4, weight: 1.0 },
+  { id: "education-learning", label: "Education and learning", category: "growth", house: 5, weight: 1.05 },
+  { id: "creativity", label: "Creativity", category: "growth", house: 5, weight: 0.9 },
+  { id: "children-parenting", label: "Children and parenting", category: "family", house: 5, weight: 0.95 },
+  { id: "health-vitality", label: "Health vitality", category: "body", house: 6, weight: 1.2 },
+  { id: "stress-immunity", label: "Stress immunity", category: "body", house: 6, weight: 1.1 },
+  { id: "habits-routine", label: "Habits and routine", category: "body", house: 6, weight: 1.0 },
+  { id: "debt-obligations", label: "Debt and obligations", category: "money", house: 6, weight: 1.0 },
+  { id: "marriage-partnership", label: "Marriage and partnership", category: "relationship", house: 7, weight: 1.2 },
+  { id: "trust-bonding", label: "Trust and bonding", category: "relationship", house: 7, weight: 1.15 },
+  { id: "public-dealings", label: "Public dealings", category: "work", house: 7, weight: 0.9 },
+  { id: "transformation", label: "Transformation", category: "growth", house: 8, weight: 1.05 },
+  { id: "hidden-fears", label: "Hidden fears", category: "risk", house: 8, weight: 1.15 },
+  { id: "inheritance-shared-assets", label: "Shared assets", category: "money", house: 8, weight: 0.9 },
+  { id: "dharma-faith", label: "Dharma and faith", category: "spiritual", house: 9, weight: 1.1 },
+  { id: "luck-grace", label: "Luck and grace", category: "spiritual", house: 9, weight: 1.0 },
+  { id: "father-mentors", label: "Father and mentors", category: "growth", house: 9, weight: 0.85 },
+  { id: "career-direction", label: "Career direction", category: "work", house: 10, weight: 1.25 },
+  { id: "authority-recognition", label: "Authority and recognition", category: "work", house: 10, weight: 1.05 },
+  { id: "workload-discipline", label: "Workload discipline", category: "work", house: 10, weight: 1.0 },
+  { id: "income-gains", label: "Income and gains", category: "money", house: 11, weight: 1.2 },
+  { id: "friends-community", label: "Friends and community", category: "relationship", house: 11, weight: 0.95 },
+  { id: "long-term-goals", label: "Long-term goals", category: "growth", house: 11, weight: 1.0 },
+  { id: "expenses", label: "Expenses", category: "money", house: 12, weight: 1.0 },
+  { id: "sleep-dreams", label: "Sleep and dreams", category: "mind", house: 12, weight: 1.1 },
+  { id: "spiritual-release", label: "Spiritual release", category: "spiritual", house: 12, weight: 1.05 },
+  { id: "foreign-distance", label: "Distance and foreign links", category: "growth", house: 12, weight: 0.8 },
+  { id: "speech-family-values", label: "Speech and family values", category: "family", house: 2, weight: 1.0 },
+  { id: "savings", label: "Savings", category: "money", house: 2, weight: 1.1 },
+  { id: "food-nourishment", label: "Food and nourishment", category: "body", house: 2, weight: 0.9 },
+  { id: "courage-initiative", label: "Courage and initiative", category: "self", house: 3, weight: 1.0 },
+  { id: "skills-practice", label: "Skills and practice", category: "growth", house: 3, weight: 0.95 },
+  { id: "property-comforts", label: "Property and comforts", category: "family", house: 4, weight: 0.9 },
+  { id: "romance-joy", label: "Romance and joy", category: "relationship", house: 5, weight: 0.95 },
+  { id: "competition", label: "Competition", category: "work", house: 6, weight: 0.95 },
+  { id: "legal-conflicts", label: "Legal conflicts", category: "risk", house: 6, weight: 1.0 },
+  { id: "intimacy", label: "Intimacy", category: "relationship", house: 8, weight: 0.9 },
+  { id: "travel-pilgrimage", label: "Travel and pilgrimage", category: "spiritual", house: 9, weight: 0.85 },
+  { id: "status-impact", label: "Status and impact", category: "work", house: 10, weight: 1.0 },
+  { id: "wish-fulfilment", label: "Wish fulfilment", category: "growth", house: 11, weight: 1.05 },
+];
+
+function clampMoonScore(value: number): number {
+  return Math.max(22, Math.min(98, Math.round(value)));
+}
+
+function moonChartVerdict(score: number): MoonChart48Verdict {
+  if (score >= 82) return "Excellent";
+  if (score >= 68) return "Supportive";
+  if (score >= 50) return "Mixed";
+  return "Careful";
+}
+
+function moonChartCategoryRemedy(category: MoonChart48Category, rashiName: string): string {
+  const remedies: Record<MoonChart48Category, string> = {
+    self: `Moon-chart remedy: write one courage action before noon; chant Om Chandraya Namah 11 times while holding ${rashiName} steady in mind.`,
+    mind: "Moon-chart remedy: cool the nervous system with water, slow breathing, and 11 repetitions of Om Chandraya Namah before sleep.",
+    body: "Moon-chart remedy: choose warm simple food, hydrate, and keep one body-care routine consistent today.",
+    relationship: "Moon-chart remedy: speak one soft truth, avoid reactive replies, and offer one act of care without bargaining.",
+    work: "Moon-chart remedy: do the most accountable task first; keep words factual and finish one visible duty cleanly.",
+    money: "Moon-chart remedy: write inflow, outflow, and one avoidable expense; donate or share food only within your means.",
+    family: "Moon-chart remedy: reduce heat at home, speak respectfully, and do one nurturing action for the household.",
+    spiritual: "Moon-chart remedy: sit quietly for five minutes, remember your Ishta or Guru, and dedicate one action to dharma.",
+    risk: "Moon-chart remedy: do not escalate while emotional; preserve facts, avoid extremes, and take advice before a hard move.",
+    growth: "Moon-chart remedy: learn one page, practice one skill, and take one small reversible step toward the bigger path.",
+  };
+  return remedies[category];
+}
+
+function buildMoonChart48DimensionEngine(input: {
+  rashiId: number;
+  janmaNakshatra: ReturnType<typeof getJanmaNakshatra>;
+  dashaState: VimshottariDashaState | null;
+  tithi: ReturnType<typeof getTodayTithi>;
+  vara: typeof VARA_INFO[0];
+}): MoonChart48Reading[] {
+  const rashi = VEDIC_RASHIS[input.rashiId] ?? VEDIC_RASHIS[0];
+  const nakshatraId = input.janmaNakshatra?.id ?? 0;
+  const nakshatraLord = input.janmaNakshatra?.lord ?? "Chandra";
+  const tithiNumber = input.tithi?.number ?? 1;
+  const dayNumber = input.vara?.day ?? 1;
+  const mahaSeed = input.dashaState?.currentMahadasha ? DASHA_ORDER.indexOf(input.dashaState.currentMahadasha) : 0;
+  const antarSeed = input.dashaState?.currentAntardasha ? DASHA_ORDER.indexOf(input.dashaState.currentAntardasha) : 0;
+
+  return MOON_CHART_48_BLUEPRINTS.map((dimension, index) => {
+    const houseDistance = ((dimension.house - (input.rashiId % 12) + 12) % 12) + 1;
+    const lunarPulse = ((nakshatraId + 1) * (index + 3) + tithiNumber + dayNumber) % 17;
+    const dashaPulse = ((Math.max(mahaSeed, 0) + 1) * 3 + (Math.max(antarSeed, 0) + 1) * 2 + dimension.house) % 19;
+    const categoryBias =
+      dimension.category === "mind" || dimension.category === "family" ? 4 :
+      dimension.category === "risk" ? -3 :
+      dimension.category === "growth" ? 3 :
+      dimension.category === "money" ? 1 : 0;
+    const houseBias = houseDistance === 1 || houseDistance === 5 || houseDistance === 9 ? 8 : houseDistance === 6 || houseDistance === 8 || houseDistance === 12 ? -5 : 2;
+    const raw = 58 + categoryBias + houseBias + (lunarPulse - 8) * dimension.weight + (dashaPulse - 9) * 0.9;
+    const score = clampMoonScore(raw);
+    const verdict = moonChartVerdict(score);
+    const trend = verdict === "Excellent"
+      ? "is strongly supported and can be used with confidence"
+      : verdict === "Supportive"
+        ? "has workable support if you act steadily"
+        : verdict === "Mixed"
+          ? "needs patience, timing, and cleaner choices"
+          : "needs caution, restraint, and extra grounding";
+    return {
+      ...dimension,
+      score,
+      verdict,
+      prediction: `From Moon Rashi ${rashi.name}${input.janmaNakshatra ? ` and ${input.janmaNakshatra.name} Nakshatra` : ""}, ${dimension.label.toLowerCase()} ${trend} today. The active lunar pattern is read through house ${dimension.house}, Tithi ${input.tithi.name}, and the ${input.dashaState ? `${input.dashaState.currentMahadasha}/${input.dashaState.currentAntardasha}` : nakshatraLord} phase.`,
+      remedy: moonChartCategoryRemedy(dimension.category, rashi.name),
+      calculationBasis: `Moon-only basis: Janma Rashi ${rashi.name}; Nakshatra ${input.janmaNakshatra?.name ?? "approximated"}; house ${dimension.house}; Tithi ${input.tithi.name}; lunar-only calculation.`,
+    };
+  });
+}
+
+function summarizeMoonChart48(readings: MoonChart48Reading[]): { top: MoonChart48Reading[]; careful: MoonChart48Reading[]; average: number } {
+  const sorted = [...readings].sort((a, b) => b.score - a.score);
+  const careful = [...readings].sort((a, b) => a.score - b.score).slice(0, 4);
+  const average = readings.length ? Math.round(readings.reduce((sum, item) => sum + item.score, 0) / readings.length) : 0;
+  return { top: sorted.slice(0, 6), careful, average };
+}
+
 // ── Error Boundary ─────────────────────────────────────────────────────────
 class AppErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -14655,13 +14829,13 @@ function isTrustedExternalUrl(url: string) {
                           </View>
                         )}
                       </View>
-                      {/* 20-Dimension issue-redressal snapshot — compact one-line
+                      {/* 48-Dimension issue-redressal snapshot — compact one-line
                           strip. Signature of the app; stays on Home but tightened. */}
                       {issueActive && (
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                             <Text style={{ color: "#63DED0", fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
-                              20-dim redressal
+                              48-dim redressal
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
                               <Text style={{ color: "#94A3B8", fontSize: 9, fontWeight: "700" }}>Details →</Text>
@@ -15266,7 +15440,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               )}
 
-              {/* ── 20-dimensional tone guide per active issue ── */}
+              {/* ── 48-dimensional tone guide per active issue ── */}
               {selectedIssueGuide.id !== "general" && (() => {
                 const issueTones: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
                   anxiety:       { practical: "Alpha binaural 7–10 Hz (focus + calm)", emotional: "Rain ambience or ocean waves", psychological: "Theta binaural 4–5 Hz (subconscious reset)", spiritual: "Solfège 396 Hz (fear release)", cultural: "Nature forest ambience" },
@@ -15292,7 +15466,7 @@ function isTrustedExternalUrl(url: string) {
                   <View style={{ marginHorizontal: 16, marginBottom: 12, backgroundColor: "#0A1520", borderRadius: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.18)", overflow: "hidden" }}>
                     <View style={{ backgroundColor: "#050F1A", paddingHorizontal: 14, paddingVertical: 10 }}>
                       <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                        🎵 20-Dimension tone guide — {selectedIssueGuide.label}
+                        🎵 48-Dimension tone guide — {selectedIssueGuide.label}
                       </Text>
                     </View>
                     <View style={{ padding: 12, gap: 8 }}>
@@ -16956,7 +17130,7 @@ function JournalSection({
           <Text style={styles.textButtonLabel}>{uiCopy.clearHistory}</Text>
         </Pressable>
       </View>
-{/* ── 20-DIMENSION JOURNAL LENS BAND ── */}
+{/* ── 48-DIMENSION JOURNAL LENS BAND ── */}
       {selectedIssueGuide.id !== "general" && (() => {
         const JOURNAL_DIM_COLORS = { practical: "#22D3EE", emotional: "#F472B6", psychological: "#818CF8", spiritual: "#FCD34D", cultural: "#34D399" };
         const JOURNAL_DIM_PROMPTS: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
@@ -16982,7 +17156,7 @@ function JournalSection({
         return (
           <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
             <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>20-Dimension Journal Prompts</Text>
+              <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>48-Dimension Journal Prompts</Text>
               <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
             </View>
             <Text style={{ color: "#6A8899", fontSize: 11, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Use any of these lens prompts to deepen your entry.</Text>
@@ -18010,7 +18184,7 @@ function ToneLibrarySection({
         </View>
       </View>
 
-      {/* ── 20-DIMENSION TONE GUIDE ── */}
+      {/* ── 48-DIMENSION TONE GUIDE ── */}
       {selectedIssueGuide.id !== "general" && (() => {
         const TONE_DIM_GUIDE: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
           anxiety:      { practical: "🧠 Binaural alpha 7–10 Hz · calms cognitive overload", emotional: "🌊 Rain / ocean ambience · lowers cortisol", psychological: "🔄 Bilateral tapping · resets nervous system", spiritual: "🔔 396 Hz Solfège · releases fear at root", cultural: "🌿 Forest birds / bansuri · nature-culture grounding" },
@@ -18029,7 +18203,7 @@ function ToneLibrarySection({
           <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#050F1A", borderRadius: 16, borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden" }}>
             <View style={{ backgroundColor: "#071C2E", paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(34,211,238,0.1)" }}>
               <Text style={{ color: "#22D3EE", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
-                20-Dimension Tone Map · {selectedIssueGuide.label}
+                48-Dimension Tone Map · {selectedIssueGuide.label}
               </Text>
             </View>
             {([
@@ -18279,7 +18453,7 @@ function MeditationSection({
         </Text>
       </View>
 
-      {/* ── 20-DIMENSION LENS STRIP ── */}
+      {/* ── 48-DIMENSION LENS STRIP ── */}
       {(() => {
         const MEDITATION_DIM_COLORS: Record<string, string> = {
           practical:     "#22D3EE",
@@ -18298,7 +18472,7 @@ function MeditationSection({
         return (
           <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
             <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>20-Dimension Meditation Frame</Text>
+              <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>48-Dimension Meditation Frame</Text>
               <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
             </View>
             {dims.map((dim) => (
@@ -20119,7 +20293,7 @@ function SearchSection({
             { label: "Community", onPress: onOpenCommunity }
           ]}
         />
-        {/* ── 20-DIMENSION ISSUE LENS PANEL ── */}
+        {/* ── 48-DIMENSION ISSUE LENS PANEL ── */}
         {selectedIssueGuide.id !== "general" && (() => {
           const SEARCH_DIM_COLORS: Record<string, string> = { practical: "#22D3EE", emotional: "#F472B6", psychological: "#818CF8", spiritual: "#FCD34D", cultural: "#34D399" };
           const SEARCH_DIM_ROUTES: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
@@ -20145,7 +20319,7 @@ function SearchSection({
           return (
             <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#050F1A", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
               <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>20-Dimension Search Guide</Text>
+                <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>48-Dimension Search Guide</Text>
                 <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
               </View>
               <Text style={{ color: "#6A8899", fontSize: 11, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Each dimension suggests where to search for the best match to your situation.</Text>
@@ -20452,7 +20626,7 @@ function PlaySection({
               : "The practice loop starts with a few useful cards only."}
           </Text>
         </View>
-        {/* 20-dimension issue lens strip for Practice */}
+        {/* 48-dimension issue lens strip for Practice */}
         <View style={{ backgroundColor: "#0A1520", borderRadius: 12, padding: 14, gap: 10, borderWidth: 1, borderColor: "rgba(99,222,208,0.15)" }}>
           <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
             {selectedIssueGuide.label} — 5 dimensions
@@ -22870,7 +23044,7 @@ function InsightsSection({
         <SignalRow label="Weak spot" value={patternCritique.warning} />
         <SignalRow label="Next test" value={patternCritique.next} />
         <SignalRow label="Support lens" value={supportiveLens} />
-        {/* ── 20-dimension lens breakdown ── */}
+        {/* ── 48-dimension lens breakdown ── */}
         <View style={{ backgroundColor: "#0A1520", borderRadius: 12, padding: 14, gap: 10, borderWidth: 1, borderColor: "rgba(99,222,208,0.15)", marginTop: 10, marginBottom: 4 }}>
           <Text style={{ color: "#22D3EE", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
             {selectedIssueGuide.label} — 5 dimensions
@@ -23906,13 +24080,21 @@ function VedicDailyCard({
 }) {
   const today = new Date();
   const dateLabel = today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+  const moonChart48Readings = buildMoonChart48DimensionEngine({
+    rashiId: rashi.id,
+    janmaNakshatra,
+    dashaState,
+    tithi,
+    vara,
+  });
+  const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
 
   return (
     <View style={styles.vedicCard}>
       {/* Header */}
       <View style={styles.vedicCardHeader}>
         <View style={styles.vedicCardHeaderLeft}>
-          <Text style={styles.vedicCardEyebrow}>🪐 DAILY HOROSCOPE ANALYSIS</Text>
+          <Text style={styles.vedicCardEyebrow}>🌙 DAILY MOON CHART ANALYSIS</Text>
           <Text style={styles.vedicCardDate}>{dateLabel}</Text>
         </View>
         <View style={styles.vedicRashiBadge}>
@@ -23980,6 +24162,18 @@ function VedicDailyCard({
         })}
       </View>
 
+      {/* 48-dimension Moon chart snapshot */}
+      <View style={styles.vedicPredSection}>
+        <Text style={styles.vedicPredTitle}>48-Dimension Moon Chart Engine · Score {moonChart48Summary.average}/100</Text>
+        <Text style={[styles.vedicDisclaimer, { marginTop: 0, marginBottom: 8 }]}>Calculated from Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara only — lunar-chart prediction only.</Text>
+        {moonChart48Summary.top.slice(0, 4).map((item) => (
+          <View key={item.id} style={styles.vedicPredRow}>
+            <Text style={styles.vedicPredIcon}>{item.score >= 82 ? "🌟" : "🌙"}</Text>
+            <Text style={styles.vedicPredLine}>{item.label}: {item.verdict} ({item.score}/100). {item.remedy}</Text>
+          </View>
+        ))}
+      </View>
+
       {/* Rashi meta */}
       <View style={styles.vedicRashiMeta}>
         <Text style={styles.vedicRashiMetaItem}>🌍 {rashi.element}</Text>
@@ -23988,7 +24182,7 @@ function VedicDailyCard({
       </View>
 
       <Text style={styles.vedicDisclaimer}>
-        Horoscope analysis is based on Vedic Jyotish approximations. For precise readings consult a certified Jyotishi.
+        This reading is calculated from Moon-chart Vedic Jyotish approximations only. Only lunar-chart prediction is used. For precise readings consult a certified Jyotishi.
       </Text>
     </View>
   );
@@ -24074,6 +24268,10 @@ function BirthChartSection({
     /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
     /^\d{2}:\d{2}$/.test(profileBirthTime) &&
     profileBirthPlace.trim().length >= 3;
+  const moonChart48Readings = rashiInfo
+    ? buildMoonChart48DimensionEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara })
+    : [];
+  const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
 
   function handleSave() {
     if (!canSaveBirthDetails) {
@@ -24472,15 +24670,72 @@ function BirthChartSection({
         </View>
       )}
 
+      {hasReading && moonChart48Readings.length === 48 && (
+        <View style={{ backgroundColor: "#061A24", borderRadius: 16, padding: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.28)", gap: 10 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                🌙 48-Dimension Vedic Moon Chart Engine
+              </Text>
+              <Text style={{ color: "#E8F4F0", fontSize: 17, fontWeight: "900", marginTop: 3 }}>
+                Calculated lunar score {moonChart48Summary.average}/100
+              </Text>
+              <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 18, marginTop: 3 }}>
+                Every prediction and remedy below is calculated from Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara only. Only lunar-chart prediction is used and shown.
+              </Text>
+            </View>
+            <View style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: "rgba(99,222,208,0.12)", borderWidth: 1, borderColor: "rgba(99,222,208,0.42)", alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ color: "#63DED0", fontSize: 18, fontWeight: "900" }}>48</Text>
+              <Text style={{ color: "#94A3B8", fontSize: 8, fontWeight: "900", letterSpacing: 0.8 }}>DIM</Text>
+            </View>
+          </View>
+
+          <View style={{ backgroundColor: "rgba(15,23,42,0.7)", borderRadius: 12, padding: 10, gap: 8 }}>
+            <Text style={{ color: "#FCD34D", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Strongest lunar supports</Text>
+            {moonChart48Summary.top.map((item) => (
+              <View key={`top-${item.id}`} style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
+                <Text style={{ color: "#FCD34D", fontSize: 11, fontWeight: "900", width: 34 }}>{item.score}</Text>
+                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18, flex: 1 }}><Text style={{ color: "#F8FAFC", fontWeight: "900" }}>{item.label}</Text> — {item.prediction}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={{ backgroundColor: "rgba(30,41,59,0.58)", borderRadius: 12, padding: 10, gap: 8 }}>
+            <Text style={{ color: "#FCA5A5", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Needs careful remedy</Text>
+            {moonChart48Summary.careful.map((item) => (
+              <View key={`care-${item.id}`} style={{ gap: 2 }}>
+                <Text style={{ color: "#F8FAFC", fontSize: 12, fontWeight: "900" }}>{item.label} · {item.verdict} · {item.score}/100</Text>
+                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18 }}>{item.remedy}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={{ gap: 8 }}>
+            <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>All 48 calculated dimensions</Text>
+            {moonChart48Readings.map((item) => (
+              <View key={item.id} style={{ backgroundColor: "rgba(2,6,23,0.42)", borderRadius: 10, padding: 10, borderWidth: 1, borderColor: "rgba(148,163,184,0.14)", gap: 4 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                  <Text style={{ color: "#E8F4F0", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
+                  <Text style={{ color: item.verdict === "Careful" ? "#FCA5A5" : item.verdict === "Mixed" ? "#FCD34D" : "#63DED0", fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}</Text>
+                </View>
+                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18 }}>{item.prediction}</Text>
+                <Text style={{ color: "#A7F3D0", fontSize: 12, lineHeight: 18 }}>{item.remedy}</Text>
+                <Text style={{ color: "rgba(148,163,184,0.75)", fontSize: 10, lineHeight: 15 }}>{item.calculationBasis}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+
       <View style={styles.birthChartGeminiCard}>
         <View style={styles.birthChartGeminiHeader}>
-          <Text style={styles.birthChartGeminiTitle}>Personal Horoscope Analysis</Text>
+          <Text style={styles.birthChartGeminiTitle}>Personal Moon Chart Analysis</Text>
           <Text style={styles.birthChartGeminiBadge}>{geminiHoroscopeLoading ? "Reading…" : hasExactBirthDetails ? "Ready" : "Waiting"}</Text>
         </View>
               <Text style={styles.birthChartGeminiText}>
           {geminiHoroscopeLoading
-            ? "Analysing your birth details…"
-            : geminiHoroscope ?? (hasExactBirthDetails ? "Tap 'Save & Analyse' above to generate your reading." : "Enter date, time, and place of birth above to unlock your horoscope analysis.")}
+            ? "Analysing your Moon-chart birth details…"
+            : geminiHoroscope ?? (hasExactBirthDetails ? "Tap 'Save & Analyse' above to generate your reading." : "Enter date, time, and place of birth above to unlock your Moon-chart analysis.")}
         </Text>
       </View>
 
@@ -24515,13 +24770,15 @@ function BirthChartSection({
       <View style={styles.birthChartFactGrid}>
         {[
           "Janma Rashi (Moon sign) prediction anchor",
+          "48-dimension Moon chart engine",
+          "48 calculated predictions + remedies",
           "Lagna / Ascendant from birth time",
           "Janma Nakshatra · deity · gana · symbol",
           "Vimshottari Mahadasha current period",
           "Samvatsara 60-year Jupiter cycle",
           "Tithi, Vara, Moon Nakshatra daily",
           "Cosmic guidance for your issue",
-          "Personal horoscope analysis",
+          "Personal Moon-chart analysis",
         ].map((item) => (
           <View key={item} style={styles.birthChartFactChip}>
             <Text style={styles.birthChartFactChipText}>{item}</Text>
@@ -25458,7 +25715,7 @@ function AccessOverlay({
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
           <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Birth details</Text>
           <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-            Add exact birth date, 24-hour birth time, and full birth place. Horoscope analysis stays locked until all three are precise.
+            Add exact birth date, 24-hour birth time, and full birth place. Moon-chart analysis stays locked until all three are precise.
           </Text>
           <TextInput
             value={profileDOB}
@@ -26364,6 +26621,91 @@ function detectThemes(text: string): SupportDimensionId[] {
   // Fear / phobia
   if (/(fear|fearful|scared|afraid|phobia|terrified|dread|coward)/.test(t)) themes.push("fear");
 
+
+  // Sleep and restoration
+  if (/(sleep|insomnia|can't sleep|cannot sleep|nightmare|waking up|restless night|oversleep|sleep cycle)/.test(t)) themes.push("sleep");
+
+  // Appetite and nourishment
+  if (/(appetite|not eating|overeating|binge eating|food|meal|hungry|nausea|weight loss|weight gain|nutrition)/.test(t)) themes.push("appetite");
+
+  // Body symptoms and somatic stress
+  if (/(body|chest tight|headache|stomach|palpitation|breathless|pain|tension|shaking|dizzy|fatigue|somatic)/.test(t)) themes.push("body-symptoms");
+
+  // Legal rights and formal redressal
+  if (/(legal|law|rights|police|fir|complaint|court|notice|advocate|lawyer|case|consumer forum|ombudsman)/.test(t)) themes.push("legal-rights");
+
+  // Digital safety
+  if (/(phone hacked|account hacked|otp|password|cyber|online abuse|social media|leaked|morphed|privacy|stalking online|digital)/.test(t)) themes.push("digital-safety");
+
+  // Reputation and social standing
+  if (/(reputation|defame|defamation|rumour|rumor|people will think|social image|insulted publicly|public shame)/.test(t)) themes.push("social-reputation");
+
+  // Career growth
+  if (/(promotion|career growth|appraisal|interview|resume|cv|switch job|new job|professional growth|career move)/.test(t)) themes.push("career-growth");
+
+  // Workplace conflict
+  if (/(boss|manager|colleague|coworker|office politics|hr|workplace conflict|toxic workplace|senior|team issue)/.test(t)) themes.push("workplace-conflict");
+
+  // Education administration
+  if (/(admission|fees|scholarship|university office|college office|certificate|marksheet|attendance|education complaint)/.test(t)) themes.push("education-admin");
+
+  // Exam performance
+  if (/(exam performance|test anxiety|marks|rank|entrance|result|fail|failing|revision|memory|concentration)/.test(t)) themes.push("exam-performance");
+
+  // Time management
+  if (/(time management|deadline|late|schedule|routine|no time|too many tasks|calendar|planning)/.test(t)) themes.push("time-management");
+
+  // Procrastination
+  if (/(procrastinat|delay|putting off|can't start|cannot start|avoid doing|stuck starting|doomscroll)/.test(t)) themes.push("procrastination");
+
+  // Motivation and drive
+  if (/(motivation|demotivated|no drive|no interest|can't continue|give up|discipline|consistency)/.test(t)) themes.push("motivation");
+
+  // Confidence
+  if (/(confidence|self doubt|self-doubt|inferior|not capable|imposter|can't speak|low confidence)/.test(t)) themes.push("confidence");
+
+  // Boundaries
+  if (/(boundary|boundaries|can't say no|cannot say no|people pleasing|overgiving|space|personal limit)/.test(t)) themes.push("boundaries");
+
+  // Communication
+  if (/(communicat|conversation|message|call|talk to|explain|misunderstood|argument|discussion)/.test(t)) themes.push("communication");
+
+  // Trust
+  if (/(trust|betray|betrayed|doubt them|suspicious|loyalty|cheating|lied|lie|broken trust)/.test(t)) themes.push("trust");
+
+  // Intimacy
+  if (/(intimacy|sexual|physical closeness|affection|touch|desire|bedroom|romantic distance)/.test(t)) themes.push("intimacy");
+
+  // Caregiving load
+  if (/(caregiver|caregiving|looking after|taking care|dependent|care load|caretaker)/.test(t)) themes.push("caregiving");
+
+  // Elder care
+  if (/(elder|elderly|aged parent|old parent|senior citizen|dementia|grandparent)/.test(t)) themes.push("elder-care");
+
+  // Pregnancy and postpartum
+  if (/(pregnant|pregnancy|postpartum|new mother|miscarriage|fertility|ivf|delivery|birth recovery)/.test(t)) themes.push("pregnancy-postpartum");
+
+  // Identity and values
+  if (/(values|morals|who i am|identity crisis|authentic|my principles|self respect|self-respect)/.test(t)) themes.push("identity-values");
+
+  // Spirituality and faith
+  if (/(spiritual|faith|god|prayer|karma|religion|mandir|temple|gurdwara|church|mosque|divine)/.test(t)) themes.push("spirituality-faith");
+
+  // Cultural belonging
+  if (/(culture|caste|community pressure|tradition|belonging|outsider|language|family honour|honor)/.test(t)) themes.push("cultural-belonging");
+
+  // Decision making
+  if (/(decision|choose|choice|options|conflicted|which one|should i|whether to|pros and cons)/.test(t)) themes.push("decision-making");
+
+  // Habit and routine
+  if (/(habit|routine|daily pattern|streak|morning routine|night routine|lifestyle|discipline)/.test(t)) themes.push("habit-routine");
+
+  // Environment and living conditions
+  if (/(environment|room|neighbour|neighbor|noise|pollution|living condition|hostel|pg|house condition)/.test(t)) themes.push("environment");
+
+  // Documentation and evidence
+  if (/(document|evidence|proof|screenshot|receipt|recording|paperwork|file|application number|acknowledgement)/.test(t)) themes.push("documentation-evidence");
+
   // Identity / direction / purpose
   if (/(confus|lost|don't know|not sure|unclear|direction|purpose|meaningless|identity|who am i|lost myself|existential|what should i do|what's the point)/.test(t)) themes.push("direction");
 
@@ -26532,6 +26874,231 @@ const supportDimensionGuides: Record<SupportDimensionId, SupportDimensionGuide> 
     firstAction: "Write the feared outcome, the evidence for it, and one five-minute action that proves the situation can move.",
     escalation: "Get support if fear is shrinking daily life, blocking basic tasks, or connected to threats, panic, or trauma."
   },
+
+  sleep: {
+    id: "sleep",
+    label: "sleep and restoration",
+    issueId: "anxiety",
+    route: "guide",
+    firstAction: "Protect tonight first: reduce stimulation, write tomorrow's worry list, and choose one wind-down cue before bed.",
+    escalation: "Bring in a doctor or counselor if sleep loss lasts several nights, includes panic, unsafe thoughts, or daytime collapse."
+  },
+  appetite: {
+    id: "appetite",
+    label: "appetite and nourishment",
+    issueId: "health",
+    route: "professional",
+    firstAction: "Note what changed in food, appetite, nausea, weight, or cravings; choose one safe meal and one medical or support check if needed.",
+    escalation: "Seek medical help if appetite change is rapid, severe, tied to vomiting, fainting, self-harm, or eating-disorder risk."
+  },
+  "body-symptoms": {
+    id: "body-symptoms",
+    label: "body symptoms and nervous system",
+    issueId: "health",
+    route: "professional",
+    firstAction: "Write the symptom, start time, intensity, medicines, and what makes it better or worse before deciding the next support route.",
+    escalation: "Use urgent medical care for chest pain, breathing difficulty, fainting, severe pain, neurological symptoms, or rapidly worsening signs."
+  },
+  "legal-rights": {
+    id: "legal-rights",
+    label: "legal rights and formal remedy",
+    issueId: "financial",
+    route: "redress",
+    firstAction: "Write the law-facing facts: who, what, when, where, evidence, and the exact remedy you want before contacting the authority.",
+    escalation: "Use police, legal aid, emergency, or a qualified lawyer if there are threats, violence, fraud, coercion, or limitation deadlines."
+  },
+  "digital-safety": {
+    id: "digital-safety",
+    label: "digital safety and privacy",
+    issueId: "trauma",
+    route: "redress",
+    firstAction: "Preserve screenshots, change passwords from a safe device, enable two-factor authentication, and avoid confronting the abuser online.",
+    escalation: "Use cybercrime, police, platform reporting, or trusted support if there is blackmail, leaked images, stalking, extortion, or account takeover."
+  },
+  "social-reputation": {
+    id: "social-reputation",
+    label: "reputation and social standing",
+    issueId: "stigma",
+    route: "guide",
+    firstAction: "Separate facts from public fear, save proof of what was said, and choose one calm correction or formal route only if needed.",
+    escalation: "Use legal or institutional help if defamation, harassment, threats, workplace harm, or public safety risk is present."
+  },
+  "career-growth": {
+    id: "career-growth",
+    label: "career growth and opportunity",
+    issueId: "identity",
+    route: "guide",
+    firstAction: "Name the next role or opportunity, the missing skill or proof, and one concrete action for the next 48 hours.",
+    escalation: "Bring in a mentor, HR, or professional support if career pressure is causing collapse, exploitation, discrimination, or hopelessness."
+  },
+  "workplace-conflict": {
+    id: "workplace-conflict",
+    label: "workplace conflict and power dynamics",
+    issueId: "burnout",
+    route: "redress",
+    firstAction: "Record incidents with dates, people, witnesses, and impact; decide whether the first step is a boundary, manager conversation, HR, or complaint.",
+    escalation: "Use HR, labor route, legal aid, or emergency support for harassment, retaliation, unsafe work, wage issues, or threats."
+  },
+  "education-admin": {
+    id: "education-admin",
+    label: "education administration and records",
+    issueId: "academic",
+    route: "redress",
+    firstAction: "Collect admission, fee, marksheet, attendance, scholarship, or certificate proof and ask the exact office for a dated written response.",
+    escalation: "Escalate to grievance cell, regulator, legal aid, or safety support for harassment, withheld records, fraud, ragging, or severe distress."
+  },
+  "exam-performance": {
+    id: "exam-performance",
+    label: "exam performance and concentration",
+    issueId: "academic",
+    route: "guide",
+    firstAction: "Pick one scoring topic, one timed practice block, and one mistake log before adding more study material.",
+    escalation: "Use counselor, teacher, or crisis support if exam fear causes panic, self-harm thoughts, sleep collapse, or inability to function."
+  },
+  "time-management": {
+    id: "time-management",
+    label: "time management and load",
+    issueId: "burnout",
+    route: "guide",
+    firstAction: "List every demand, mark what is urgent, delay one non-essential item, and block the next 25 minutes for only one task.",
+    escalation: "Ask for real support if deadlines are tied to job loss, academic penalty, medical neglect, caregiving danger, or unsafe exhaustion."
+  },
+  procrastination: {
+    id: "procrastination",
+    label: "procrastination and task avoidance",
+    issueId: "fear",
+    route: "guide",
+    firstAction: "Make the task embarrassingly small: open the file, write one line, or set a five-minute timer without negotiating with the fear.",
+    escalation: "Bring in support if avoidance is linked with depression, ADHD symptoms, panic, academic failure risk, or work consequences."
+  },
+  motivation: {
+    id: "motivation",
+    label: "motivation and drive",
+    issueId: "burnout",
+    route: "guide",
+    firstAction: "Do not wait for motivation; choose the smallest meaningful action and pair it with a recovery reward immediately after.",
+    escalation: "Use professional help if loss of motivation includes hopelessness, no pleasure, self-harm thoughts, or major functioning decline."
+  },
+  confidence: {
+    id: "confidence",
+    label: "confidence and self-belief",
+    issueId: "fear",
+    route: "guide",
+    firstAction: "Write one proof that you have handled something before, then take one low-risk action that gives fresh evidence today.",
+    escalation: "Use counseling, mentoring, or medical support if low confidence is blocking basic life, work, study, relationships, or safety."
+  },
+  boundaries: {
+    id: "boundaries",
+    label: "boundaries and personal space",
+    issueId: "relationship",
+    route: "guide",
+    firstAction: "Write the limit in one sentence: what is okay, what is not okay, and what you will do if it continues.",
+    escalation: "Use trusted contacts, Help, or emergency support if boundary violations include coercion, stalking, abuse, threats, or violence."
+  },
+  communication: {
+    id: "communication",
+    label: "communication and repair",
+    issueId: "relationship",
+    route: "guide",
+    firstAction: "Prepare one calm sentence using facts, feeling, need, and request; avoid arguing while flooded.",
+    escalation: "Bring in a mediator, counselor, HR, or safety route if conversations become threats, humiliation, coercion, or repeated harm."
+  },
+  trust: {
+    id: "trust",
+    label: "trust and betrayal",
+    issueId: "relationship",
+    route: "guide",
+    firstAction: "Separate what is known from what is feared, then ask for one verifiable repair action rather than endless reassurance.",
+    escalation: "Use professional or safety support if betrayal includes abuse, stalking, financial control, sexual coercion, or self-harm risk."
+  },
+  intimacy: {
+    id: "intimacy",
+    label: "intimacy and closeness",
+    issueId: "relationship",
+    route: "professional",
+    firstAction: "Name whether the issue is safety, desire, communication, pain, shame, or distance before trying to force closeness.",
+    escalation: "Seek medical, counseling, or safety help for pain, coercion, trauma triggers, sexual violence, or distress that feels unsafe."
+  },
+  caregiving: {
+    id: "caregiving",
+    label: "caregiving load and duty",
+    issueId: "parenting",
+    route: "guide",
+    firstAction: "Write the care tasks, the riskiest gap, and one person or service that can take one task off you this week.",
+    escalation: "Escalate if a child, elder, patient, caregiver, or dependent person is unsafe, neglected, abused, or medically at risk."
+  },
+  "elder-care": {
+    id: "elder-care",
+    label: "elder care and ageing family needs",
+    issueId: "health",
+    route: "professional",
+    firstAction: "List medicines, appointments, mobility risks, documents, and the one family decision that needs clarity first.",
+    escalation: "Use medical, legal, or emergency help for falls, confusion, abuse, financial exploitation, neglect, or urgent symptoms."
+  },
+  "pregnancy-postpartum": {
+    id: "pregnancy-postpartum",
+    label: "pregnancy and postpartum wellbeing",
+    issueId: "health",
+    route: "professional",
+    firstAction: "Track symptoms, mood, sleep, bleeding, pain, feeding, and support needs; contact a qualified clinician for anything worrying.",
+    escalation: "Seek urgent care for severe pain, heavy bleeding, fever, fainting, suicidal thoughts, psychosis signs, or danger to mother or baby."
+  },
+  "identity-values": {
+    id: "identity-values",
+    label: "identity, values, and self-respect",
+    issueId: "identity",
+    route: "guide",
+    firstAction: "Write the value being violated and one action that protects self-respect without creating unnecessary danger.",
+    escalation: "Bring in trusted or professional support if identity conflict becomes isolation, coercion, family violence, or hopelessness."
+  },
+  "spirituality-faith": {
+    id: "spirituality-faith",
+    label: "spirituality and faith support",
+    issueId: "identity",
+    route: "guide",
+    firstAction: "Choose one safe practice that steadies you—prayer, seva, mantra, reflection, or silence—without replacing necessary real-world help.",
+    escalation: "Use professional, medical, or emergency help if spiritual distress includes delusions, self-harm, coercion, or refusal of essential care."
+  },
+  "cultural-belonging": {
+    id: "cultural-belonging",
+    label: "culture, belonging, and community pressure",
+    issueId: "stigma",
+    route: "guide",
+    firstAction: "Name the tradition, pressure, or community rule involved, then separate respect from coercion before choosing your response.",
+    escalation: "Use Help, legal aid, or trusted safety routes if community pressure includes threats, violence, forced marriage, discrimination, or isolation."
+  },
+  "decision-making": {
+    id: "decision-making",
+    label: "decision making and trade-offs",
+    issueId: "identity",
+    route: "guide",
+    firstAction: "Write the options, reversibility, worst realistic cost, best realistic gain, and the smallest test before deciding fully.",
+    escalation: "Bring in a mentor, counselor, doctor, lawyer, or trusted person when the decision affects safety, health, legal status, or major finances."
+  },
+  "habit-routine": {
+    id: "habit-routine",
+    label: "habit, routine, and consistency",
+    issueId: "burnout",
+    route: "guide",
+    firstAction: "Anchor the habit to an existing cue, make it two minutes long, and track it once without judging the whole week.",
+    escalation: "Use professional support if routine collapse is tied to depression, addiction, ADHD symptoms, health decline, or unsafe neglect."
+  },
+  environment: {
+    id: "environment",
+    label: "environment and living conditions",
+    issueId: "health",
+    route: "redress",
+    firstAction: "Document the condition with dates/photos, reduce immediate exposure if possible, and identify the owner, office, or authority responsible.",
+    escalation: "Escalate for unsafe housing, violence nearby, hazardous pollution, sanitation risk, fire/electrical danger, or health-threatening conditions."
+  },
+  "documentation-evidence": {
+    id: "documentation-evidence",
+    label: "documentation and evidence trail",
+    issueId: "financial",
+    route: "redress",
+    firstAction: "Create a dated folder with screenshots, receipts, messages, IDs, complaint numbers, and a one-page chronology.",
+    escalation: "Use formal help if documents are being withheld, forged, destroyed, or needed for police, legal, employment, education, or medical action."
+  },
   direction: {
     id: "direction",
     label: "direction and purpose",
@@ -26564,7 +27131,7 @@ function formatSupportDimensionLabels(guides: SupportDimensionGuide[]) {
  */
 function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: number, allUserText?: string): string {
   // ── Full 7-question banks for every theme ─────────────────────────────────
-  const byTheme: Record<SupportDimensionId, string[]> = {
+  const byTheme: Partial<Record<SupportDimensionId, string[]>> = {
     "self-image": [
       "Tell me more — when did this feeling about your appearance or how you see yourself start feeling this heavy? Was there a particular moment, or has it been quietly building?",
       "How much space does this thought take up in your average day? Are there specific things you avoid — like photos, mirrors, social events — because of how you feel about yourself?",
