@@ -8290,8 +8290,14 @@ type MoonChart48Reading = MoonChart48Blueprint & {
   score: number;
   verdict: MoonChart48Verdict;
   prediction: string;
+  interpretation: string;
+  scoreReason: string;
   remedy: string;
+  remedyTitle: string;
+  remedySteps: string[];
   calculationBasis: string;
+  visualAngle: number;
+  visualDepth: number;
 };
 
 const MOON_CHART_48_BLUEPRINTS: MoonChart48Blueprint[] = [
@@ -8357,19 +8363,129 @@ function moonChartVerdict(score: number): MoonChart48Verdict {
 }
 
 function moonChartCategoryRemedy(category: MoonChart48Category, rashiName: string): string {
-  const remedies: Record<MoonChart48Category, string> = {
-    self: `Moon-chart remedy: write one courage action before noon; chant Om Chandraya Namah 11 times while holding ${rashiName} steady in mind.`,
-    mind: "Moon-chart remedy: cool the nervous system with water, slow breathing, and 11 repetitions of Om Chandraya Namah before sleep.",
-    body: "Moon-chart remedy: choose warm simple food, hydrate, and keep one body-care routine consistent today.",
-    relationship: "Moon-chart remedy: speak one soft truth, avoid reactive replies, and offer one act of care without bargaining.",
-    work: "Moon-chart remedy: do the most accountable task first; keep words factual and finish one visible duty cleanly.",
-    money: "Moon-chart remedy: write inflow, outflow, and one avoidable expense; donate or share food only within your means.",
-    family: "Moon-chart remedy: reduce heat at home, speak respectfully, and do one nurturing action for the household.",
-    spiritual: "Moon-chart remedy: sit quietly for five minutes, remember your Ishta or Guru, and dedicate one action to dharma.",
-    risk: "Moon-chart remedy: do not escalate while emotional; preserve facts, avoid extremes, and take advice before a hard move.",
-    growth: "Moon-chart remedy: learn one page, practice one skill, and take one small reversible step toward the bigger path.",
+  const pack = moonChartCategoryRemedyPack(category, rashiName);
+  return `Moon-chart remedy: ${pack.steps.join(" ")}`;
+}
+
+function moonChartCategoryLabel(category: MoonChart48Category): string {
+  const labels: Record<MoonChart48Category, string> = {
+    self: "Self and courage",
+    mind: "Mind and emotional climate",
+    body: "Body rhythm",
+    relationship: "Relationships and bonding",
+    work: "Work and duty",
+    money: "Money and resources",
+    family: "Family and home",
+    spiritual: "Dharma and release",
+    risk: "Risk and restraint",
+    growth: "Growth and learning",
   };
-  return remedies[category];
+  return labels[category];
+}
+
+function moonChartCategoryMeaning(category: MoonChart48Category): string {
+  const meanings: Record<MoonChart48Category, string> = {
+    self: "how firmly you can stand in your own identity without forcing the outcome",
+    mind: "how the inner weather, memory, sleep, and sensitivity may behave today",
+    body: "how steadily the body can cooperate through food, rest, rhythm, and routine",
+    relationship: "how trust, affection, boundaries, and communication are likely to flow",
+    work: "how duty, public visibility, discipline, and execution can be handled",
+    money: "how resources, spending, obligations, and practical security should be treated",
+    family: "how speech, home atmosphere, elders, care, and belonging can be protected",
+    spiritual: "how faith, prayer, surrender, pilgrimage, and inner release can support you",
+    risk: "where emotional escalation, hidden pressure, conflict, or avoidable mistakes need restraint",
+    growth: "where learning, courage, skill, future direction, and wise experimentation are supported",
+  };
+  return meanings[category];
+}
+
+function moonChartCategoryRemedyPack(category: MoonChart48Category, rashiName: string): { title: string; steps: string[] } {
+  const packs: Record<MoonChart48Category, { title: string; steps: string[] }> = {
+    self: {
+      title: "Courage without heat",
+      steps: [`Write one clean courage action before noon while holding ${rashiName} steady in mind.`, "Chant Om Chandraya Namah 11 times.", "Do the action quietly before explaining it to anyone."],
+    },
+    mind: {
+      title: "Cool the Moon",
+      steps: ["Drink water slowly and reduce one unnecessary stimulation source.", "Take 9 slow breaths with a longer exhale.", "Chant Om Chandraya Namah 11 times before sleep."],
+    },
+    body: {
+      title: "Stabilise the vessel",
+      steps: ["Choose warm, simple food and hydrate early.", "Keep one body-care routine consistent today.", "Avoid testing the body when tired or emotionally charged."],
+    },
+    relationship: {
+      title: "Soft truth, firm boundary",
+      steps: ["Speak one soft truth without accusation.", "Avoid reactive replies for one lunar hour when upset.", "Offer one act of care without bargaining."],
+    },
+    work: {
+      title: "Visible duty first",
+      steps: ["Do the most accountable task first.", "Keep words factual and written where possible.", "Finish one visible duty cleanly before starting a new one."],
+    },
+    money: {
+      title: "Resource clarity",
+      steps: ["Write inflow, outflow, and one avoidable expense.", "Delay non-essential spending by one day.", "Share food or help only within your means."],
+    },
+    family: {
+      title: "Reduce heat at home",
+      steps: ["Keep speech respectful and shorter than usual.", "Do one nurturing action for the household.", "Do not reopen an old family wound when the mood is high."],
+    },
+    spiritual: {
+      title: "Dharma alignment",
+      steps: ["Sit quietly for five minutes.", "Remember your Ishta, Guru, or highest conscience.", "Dedicate one practical action to dharma rather than ego."],
+    },
+    risk: {
+      title: "Pause before escalation",
+      steps: ["Do not escalate while emotional.", "Preserve facts, receipts, screenshots, and dates.", "Take calm advice before a hard move."],
+    },
+    growth: {
+      title: "Small reversible progress",
+      steps: ["Learn one page or practise one skill.", "Take one small reversible step toward the bigger path.", "Record what worked before expanding it."],
+    },
+  };
+  return packs[category];
+}
+
+function moonChartVerdictTone(verdict: MoonChart48Verdict): string {
+  if (verdict === "Excellent") return "This is a strong lunar support. Use it confidently, but keep humility.";
+  if (verdict === "Supportive") return "This area can work well when you stay steady and intentional.";
+  if (verdict === "Mixed") return "This area is usable, but timing and emotional regulation matter.";
+  return "This area needs care first. Do less, verify facts, and avoid impulsive escalation.";
+}
+
+function buildMoonChartScoreReason(input: {
+  houseScore: number;
+  mahaScore: number;
+  antarScore: number;
+  nakshatraScore: number;
+  varaScore: number;
+  tithiBalance: number;
+  moonSignElementBias: number;
+  lunarFinePulse: number;
+  house: number;
+  category: MoonChart48Category;
+  maha: string;
+  antar: string;
+  nakshatraLord: string;
+  varaPlanet: string;
+}): string {
+  const parts = [
+    `Moon-house ${input.house} contributes ${input.houseScore >= 0 ? "+" : ""}${input.houseScore.toFixed(1)}`,
+    `${input.maha} Mahadasha ${input.mahaScore >= 0 ? "supports" : "pressures"} ${moonChartCategoryLabel(input.category).toLowerCase()}`,
+    `${input.antar} Antardasha adds ${input.antarScore >= 0 ? "help" : "caution"}`,
+    `${input.nakshatraLord} Nakshatra-lord gives ${input.nakshatraScore >= 0 ? "tone" : "friction"}`,
+    `${input.varaPlanet} Vara influence ${input.varaScore >= 0 ? "+" : ""}${input.varaScore.toFixed(1)}`,
+    `Tithi adjustment ${input.tithiBalance >= 0 ? "+" : ""}${input.tithiBalance.toFixed(1)}`,
+    `Moon-sign element bias ${input.moonSignElementBias >= 0 ? "+" : ""}${input.moonSignElementBias.toFixed(1)}`,
+    `fine lunar pulse ${input.lunarFinePulse >= 0 ? "+" : ""}${input.lunarFinePulse.toFixed(1)}`,
+  ];
+  return parts.join(" · ");
+}
+
+function moonChartVisualColor(reading: Pick<MoonChart48Reading, "verdict" | "score">): string {
+  if (reading.verdict === "Excellent") return "#67E8F9";
+  if (reading.verdict === "Supportive") return "#34D399";
+  if (reading.verdict === "Mixed") return "#FCD34D";
+  return "#FCA5A5";
 }
 
 const PLANET_MOON_CHART_STRENGTH: Record<string, Record<MoonChart48Category, number>> = {
@@ -8479,14 +8595,38 @@ function buildMoonChart48DimensionEngine(input: {
     const verdict = moonChartVerdict(score);
     const focus = describeMoonChartScore(score, dimension.category);
     const dashaText = input.dashaState ? `${maha} Mahadasha / ${antar} Antardasha` : `${nakshatraLord} Nakshatra-lord phase`;
+    const remedyPack = moonChartCategoryRemedyPack(dimension.category, rashi.name);
+    const scoreReason = buildMoonChartScoreReason({
+      houseScore,
+      mahaScore,
+      antarScore,
+      nakshatraScore,
+      varaScore,
+      tithiBalance,
+      moonSignElementBias,
+      lunarFinePulse: lunarFinePulse * 0.35,
+      house: dimension.house,
+      category: dimension.category,
+      maha,
+      antar,
+      nakshatraLord,
+      varaPlanet,
+    });
+    const interpretation = `In plain language, ${dimension.label.toLowerCase()} belongs to ${moonChartCategoryMeaning(dimension.category)}. ${moonChartVerdictTone(verdict)}`;
 
     return {
       ...dimension,
       score,
       verdict,
       prediction: `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. The reading is calculated through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}.`,
+      interpretation,
+      scoreReason,
       remedy: moonChartCategoryRemedy(dimension.category, rashi.name),
+      remedyTitle: remedyPack.title,
+      remedySteps: remedyPack.steps,
       calculationBasis: `Moon-only basis: sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.`,
+      visualAngle: (index % 12) * 30,
+      visualDepth: Math.max(0.12, Math.min(1, score / 100)),
     };
   });
 }
@@ -24614,6 +24754,8 @@ function VedicDailyCard({
   dashaState: VimshottariDashaState | null;
   predictionLines: string[];
 }) {
+  const { width } = useWindowDimensions();
+  const compact = width < 760;
   const today = new Date();
   const dateLabel = today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
   const moonChart48Readings = buildMoonChart48DimensionEngine({
@@ -24624,6 +24766,13 @@ function VedicDailyCard({
     vara,
   });
   const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
+  const lunarHousePreview = Array.from({ length: 12 }, (_, houseIndex) => {
+    const house = houseIndex + 1;
+    const items = moonChart48Readings.filter((item) => item.house === house);
+    const avg = items.length ? Math.round(items.reduce((sum, item) => sum + item.score, 0) / items.length) : 0;
+    const anchor = items.sort((a, b) => b.score - a.score)[0];
+    return { house, avg, anchor };
+  });
 
   return (
     <View style={styles.vedicCard}>
@@ -24636,6 +24785,50 @@ function VedicDailyCard({
         <View style={styles.vedicRashiBadge}>
           <Text style={styles.vedicRashiSymbol}>{rashi.symbol}</Text>
           <Text style={styles.vedicRashiName}>{rashi.name}</Text>
+        </View>
+      </View>
+
+      {/* Pristine 2D/3D lunar map */}
+      <View style={{ borderRadius: 22, backgroundColor: "#060B1B", borderWidth: 1, borderColor: "rgba(103,232,249,0.28)", padding: 14, overflow: "hidden", shadowColor: "#22D3EE", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.28, shadowRadius: 26, elevation: 14 }}>
+        <View pointerEvents="none" style={{ position: "absolute", left: -42, top: -46, width: 160, height: 160, borderRadius: 80, backgroundColor: "rgba(99,102,241,0.18)" }} />
+        <View pointerEvents="none" style={{ position: "absolute", right: -34, bottom: -48, width: 150, height: 150, borderRadius: 75, backgroundColor: "rgba(34,211,238,0.15)" }} />
+        <View style={{ flexDirection: compact ? "column" : "row", gap: 14, alignItems: "stretch" }}>
+          <View style={{ flex: 1, minHeight: 230, borderRadius: 20, backgroundColor: "rgba(15,23,42,0.72)", borderWidth: 1, borderColor: "rgba(148,163,184,0.16)", padding: 12, transform: [{ perspective: 900 }, { rotateX: "2deg" }] }}>
+            <Text style={{ color: "#67E8F9", fontSize: 10, fontWeight: "900", letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 10 }}>
+              Pristine 2D/3D lunar chart map
+            </Text>
+            <View style={{ alignSelf: "center", width: 190, height: 190, borderRadius: 95, borderWidth: 1, borderColor: "rgba(103,232,249,0.32)", backgroundColor: "rgba(2,6,23,0.7)", alignItems: "center", justifyContent: "center", shadowColor: "#67E8F9", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 20 }}>
+              <View style={{ position: "absolute", width: 148, height: 148, borderRadius: 74, borderWidth: 1, borderColor: "rgba(196,181,253,0.32)" }} />
+              <View style={{ position: "absolute", width: 104, height: 104, borderRadius: 52, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)" }} />
+              <Text style={{ fontSize: 34, lineHeight: 40 }}>{rashi.symbol}</Text>
+              <Text style={{ color: "#F8FAFC", fontSize: 16, fontWeight: "900", marginTop: 2 }}>{moonChart48Summary.average}/100</Text>
+              <Text style={{ color: "#94A3B8", fontSize: 9, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Moon score</Text>
+            </View>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
+              {lunarHousePreview.map((house) => {
+                const color = house.anchor ? moonChartVisualColor(house.anchor) : "#64748B";
+                return (
+                  <View key={`daily-house-${house.house}`} style={{ width: "23%" as unknown as number, minWidth: 42, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 5, backgroundColor: `${color}18`, borderWidth: 1, borderColor: `${color}55`, alignItems: "center" }}>
+                    <Text style={{ color, fontSize: 10, fontWeight: "900" }}>H{house.house}</Text>
+                    <Text style={{ color: "#F8FAFC", fontSize: 11, fontWeight: "900" }}>{house.avg || "—"}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={{ flex: 1, gap: 8 }}>
+            <Text style={{ color: "#FCD34D", fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Top lunar supports</Text>
+            {moonChart48Summary.top.slice(0, 3).map((item, index) => (
+              <View key={`daily-3d-${item.id}`} style={{ borderRadius: 16, padding: 12, backgroundColor: index === 0 ? "rgba(103,232,249,0.14)" : "rgba(255,255,255,0.045)", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}66`, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 6 + index * 2 }, shadowOpacity: 0.22, shadowRadius: 14, elevation: 8, transform: [{ perspective: 800 }, { rotateY: compact ? "0deg" : "-2deg" }] }}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                  <Text style={{ color: "#F8FAFC", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
+                  <Text style={{ color: moonChartVisualColor(item), fontSize: 13, fontWeight: "900" }}>{item.score}</Text>
+                </View>
+                <Text style={{ color: "#CBD5E1", fontSize: 11, lineHeight: 16, marginTop: 5 }}>{item.interpretation}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
 
@@ -24700,12 +24893,17 @@ function VedicDailyCard({
 
       {/* 48-dimension Moon chart snapshot */}
       <View style={styles.vedicPredSection}>
-        <Text style={styles.vedicPredTitle}>48-Dimension Moon Chart Engine · Score {moonChart48Summary.average}/100</Text>
+        <Text style={styles.vedicPredTitle}>48-Dimension Moon Chart Engine · Explainable Score {moonChart48Summary.average}/100</Text>
         <Text style={[styles.vedicDisclaimer, { marginTop: 0, marginBottom: 8 }]}>Calculated from Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara only — lunar-chart prediction only.</Text>
         {moonChart48Summary.top.slice(0, 4).map((item) => (
-          <View key={item.id} style={styles.vedicPredRow}>
-            <Text style={styles.vedicPredIcon}>{item.score >= 82 ? "🌟" : "🌙"}</Text>
-            <Text style={styles.vedicPredLine}>{item.label}: {item.verdict} ({item.score}/100). {item.remedy}</Text>
+          <View key={item.id} style={{ borderRadius: 14, backgroundColor: "rgba(15,23,42,0.72)", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}44`, padding: 11, gap: 6 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Text style={{ fontSize: 17 }}>{item.score >= 82 ? "🌟" : "🌙"}</Text>
+              <Text style={{ color: "#F8FAFC", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
+              <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}</Text>
+            </View>
+            <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18 }}>{item.interpretation}</Text>
+            <Text style={{ color: "#A7F3D0", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{item.remedyTitle}: </Text>{item.remedySteps[0]}</Text>
           </View>
         ))}
       </View>
@@ -24763,6 +24961,8 @@ function BirthChartSection({
   selectedIssueGuide: IssueGuide;
   issueContext: VedicEngineIssueContext | null;
 }) {
+  const { width } = useWindowDimensions();
+  const isWide = width >= 760;
   // Split DOB into day / month / year segments for easy keypad entry
   const [dobDD, setDobDD] = useState(() => profileDOB.slice(8, 10) || "");
   const [dobMM, setDobMM] = useState(() => profileDOB.slice(5, 7) || "");
@@ -24808,6 +25008,22 @@ function BirthChartSection({
     ? buildMoonChart48DimensionEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara })
     : [];
   const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
+  const moonChartCategorySummary = (["mind", "relationship", "work", "money", "body", "spiritual", "risk", "growth"] as MoonChart48Category[])
+    .map((category) => {
+      const items = moonChart48Readings.filter((item) => item.category === category);
+      const average = items.length ? Math.round(items.reduce((sum, item) => sum + item.score, 0) / items.length) : 0;
+      const anchor = items.sort((a, b) => b.score - a.score)[0];
+      return { category, average, anchor };
+    })
+    .filter((item) => item.anchor);
+  const moonChartHouseSummary = Array.from({ length: 12 }, (_, houseIndex) => {
+    const house = houseIndex + 1;
+    const items = moonChart48Readings.filter((item) => item.house === house);
+    const average = items.length ? Math.round(items.reduce((sum, item) => sum + item.score, 0) / items.length) : 0;
+    const carefulCount = items.filter((item) => item.verdict === "Careful").length;
+    const anchor = items.sort((a, b) => b.score - a.score)[0];
+    return { house, average, carefulCount, anchor };
+  });
 
   function handleSave() {
     if (!canSaveBirthDetails) {
@@ -25207,55 +25423,113 @@ function BirthChartSection({
       )}
 
       {hasReading && moonChart48Readings.length === 48 && (
-        <View style={{ backgroundColor: "#061A24", borderRadius: 16, padding: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.28)", gap: 10 }}>
+        <View style={{ backgroundColor: "#030B16", borderRadius: 22, padding: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.34)", gap: 12, overflow: "hidden", shadowColor: "#22D3EE", shadowOffset: { width: 0, height: 14 }, shadowOpacity: 0.24, shadowRadius: 28, elevation: 16 }}>
+          <View pointerEvents="none" style={{ position: "absolute", left: -50, top: -70, width: 190, height: 190, borderRadius: 95, backgroundColor: "rgba(99,102,241,0.16)" }} />
+          <View pointerEvents="none" style={{ position: "absolute", right: -55, top: 80, width: 175, height: 175, borderRadius: 88, backgroundColor: "rgba(34,211,238,0.12)" }} />
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
                 🌙 48-Dimension Vedic Moon Chart Engine
               </Text>
-              <Text style={{ color: "#E8F4F0", fontSize: 17, fontWeight: "900", marginTop: 3 }}>
-                Calculated lunar score {moonChart48Summary.average}/100
+              <Text style={{ color: "#F8FAFC", fontSize: 19, fontWeight: "900", marginTop: 3 }}>
+                Explainable lunar score {moonChart48Summary.average}/100
               </Text>
-              <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 18, marginTop: 3 }}>
-                Every prediction and remedy below is calculated from Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara only. Only lunar-chart prediction is used and shown.
+              <Text style={{ color: "#94A3B8", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
+                Reorganised into calculation → interpretation → remedy. Every prediction is anchored only to Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara. No Sun-chart prediction is shown.
               </Text>
             </View>
-            <View style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: "rgba(99,222,208,0.12)", borderWidth: 1, borderColor: "rgba(99,222,208,0.42)", alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ color: "#63DED0", fontSize: 18, fontWeight: "900" }}>48</Text>
-              <Text style={{ color: "#94A3B8", fontSize: 8, fontWeight: "900", letterSpacing: 0.8 }}>DIM</Text>
+            <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: "rgba(99,222,208,0.12)", borderWidth: 1, borderColor: "rgba(99,222,208,0.5)", alignItems: "center", justifyContent: "center", shadowColor: "#63DED0", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 14, transform: [{ perspective: 900 }, { rotateZ: "-4deg" }] }}>
+              <Text style={{ color: "#63DED0", fontSize: 24, fontWeight: "900" }}>48</Text>
+              <Text style={{ color: "#CFFAFE", fontSize: 8, fontWeight: "900", letterSpacing: 1 }}>DIM</Text>
             </View>
           </View>
 
-          <View style={{ backgroundColor: "rgba(15,23,42,0.7)", borderRadius: 12, padding: 10, gap: 8 }}>
-            <Text style={{ color: "#FCD34D", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Strongest lunar supports</Text>
+          <View style={{ flexDirection: isWide ? "row" : "column", gap: 12 }}>
+            <View style={{ flex: 1.05, borderRadius: 20, backgroundColor: "rgba(15,23,42,0.82)", borderWidth: 1, borderColor: "rgba(103,232,249,0.2)", padding: 12, transform: [{ perspective: 900 }, { rotateX: isWide ? "3deg" : "0deg" }] }}>
+              <Text style={{ color: "#67E8F9", fontSize: 10, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>2D/3D Moon-house visual map</Text>
+              <View style={{ alignSelf: "center", width: isWide ? 250 : 220, height: isWide ? 250 : 220, borderRadius: isWide ? 125 : 110, borderWidth: 1, borderColor: "rgba(103,232,249,0.36)", backgroundColor: "rgba(2,6,23,0.72)", alignItems: "center", justifyContent: "center", shadowColor: "#67E8F9", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.3, shadowRadius: 24 }}>
+                <View style={{ position: "absolute", width: isWide ? 202 : 178, height: isWide ? 202 : 178, borderRadius: isWide ? 101 : 89, borderWidth: 1, borderColor: "rgba(196,181,253,0.28)" }} />
+                <View style={{ position: "absolute", width: isWide ? 152 : 132, height: isWide ? 152 : 132, borderRadius: isWide ? 76 : 66, borderWidth: 1, borderColor: "rgba(252,211,77,0.24)" }} />
+                <View style={{ position: "absolute", width: isWide ? 84 : 74, height: isWide ? 84 : 74, borderRadius: isWide ? 42 : 37, backgroundColor: "rgba(99,222,208,0.1)", borderWidth: 1, borderColor: "rgba(99,222,208,0.42)", alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ fontSize: 28 }}>{rashiInfo.rashi.symbol}</Text>
+                  <Text style={{ color: "#F8FAFC", fontSize: 10, fontWeight: "900" }}>{rashiInfo.rashi.name}</Text>
+                </View>
+                {moonChartHouseSummary.map((house) => {
+                  const color = house.anchor ? moonChartVisualColor(house.anchor) : "#64748B";
+                  const angle = ((house.house - 1) * 30 - 90) * Math.PI / 180;
+                  const radius = isWide ? 102 : 90;
+                  const x = Math.cos(angle) * radius;
+                  const y = Math.sin(angle) * radius;
+                  return (
+                    <View key={`moon-house-orbit-${house.house}`} style={{ position: "absolute", left: "50%", top: "50%", width: 44, minHeight: 44, marginLeft: x - 22, marginTop: y - 22, borderRadius: 14, backgroundColor: `${color}1F`, borderWidth: 1, borderColor: `${color}66`, alignItems: "center", justifyContent: "center", shadowColor: color, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.28, shadowRadius: 8, transform: [{ perspective: 700 }, { rotateZ: `${house.house % 2 === 0 ? 3 : -3}deg` }] }}>
+                      <Text style={{ color, fontSize: 9, fontWeight: "900" }}>H{house.house}</Text>
+                      <Text style={{ color: "#F8FAFC", fontSize: 12, fontWeight: "900" }}>{house.average || "—"}</Text>
+                      {house.carefulCount > 0 && <Text style={{ color: "#FCA5A5", fontSize: 8, fontWeight: "900" }}>care</Text>}
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+
+            <View style={{ flex: 0.95, gap: 8 }}>
+              <Text style={{ color: "#FCD34D", fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Category strength board</Text>
+              {moonChartCategorySummary.map((item) => {
+                const color = moonChartVisualColor(item.anchor);
+                return (
+                  <View key={`category-${item.category}`} style={{ borderRadius: 14, padding: 10, backgroundColor: `${color}12`, borderWidth: 1, borderColor: `${color}44`, transform: [{ perspective: 800 }, { rotateY: isWide ? "-2deg" : "0deg" }] }}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                      <Text style={{ color, fontSize: 12, fontWeight: "900", width: 34 }}>{item.average}</Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ color: "#F8FAFC", fontSize: 12, fontWeight: "900" }}>{moonChartCategoryLabel(item.category)}</Text>
+                        <Text style={{ color: "#94A3B8", fontSize: 10, lineHeight: 14 }}>{item.anchor.label} · {item.anchor.verdict}</Text>
+                      </View>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={{ backgroundColor: "rgba(15,23,42,0.78)", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,211,77,0.18)" }}>
+            <Text style={{ color: "#FCD34D", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Strongest lunar supports · with explanation</Text>
             {moonChart48Summary.top.map((item) => (
-              <View key={`top-${item.id}`} style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
-                <Text style={{ color: "#FCD34D", fontSize: 11, fontWeight: "900", width: 34 }}>{item.score}</Text>
-                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18, flex: 1 }}><Text style={{ color: "#F8FAFC", fontWeight: "900" }}>{item.label}</Text> — {item.prediction}</Text>
+              <View key={`top-${item.id}`} style={{ borderRadius: 13, backgroundColor: "rgba(2,6,23,0.44)", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}38`, padding: 10, gap: 5 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                  <Text style={{ color: "#F8FAFC", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
+                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}/100</Text>
+                </View>
+                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18 }}>{item.interpretation}</Text>
+                <Text style={{ color: "#93C5FD", fontSize: 11, lineHeight: 16 }}>Why: {item.scoreReason}</Text>
               </View>
             ))}
           </View>
 
-          <View style={{ backgroundColor: "rgba(30,41,59,0.58)", borderRadius: 12, padding: 10, gap: 8 }}>
-            <Text style={{ color: "#FCA5A5", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Needs careful remedy</Text>
+          <View style={{ backgroundColor: "rgba(30,41,59,0.72)", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,165,165,0.2)" }}>
+            <Text style={{ color: "#FCA5A5", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Care points · remedies made practical</Text>
             {moonChart48Summary.careful.map((item) => (
-              <View key={`care-${item.id}`} style={{ gap: 2 }}>
-                <Text style={{ color: "#F8FAFC", fontSize: 12, fontWeight: "900" }}>{item.label} · {item.verdict} · {item.score}/100</Text>
-                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18 }}>{item.remedy}</Text>
+              <View key={`care-${item.id}`} style={{ gap: 6, borderRadius: 13, padding: 10, backgroundColor: "rgba(127,29,29,0.12)", borderWidth: 1, borderColor: "rgba(252,165,165,0.22)" }}>
+                <Text style={{ color: "#F8FAFC", fontSize: 13, fontWeight: "900" }}>{item.label} · {item.verdict} · {item.score}/100</Text>
+                <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18 }}>{item.interpretation}</Text>
+                <Text style={{ color: "#A7F3D0", fontSize: 12, fontWeight: "900" }}>{item.remedyTitle}</Text>
+                {item.remedySteps.map((step, stepIndex) => (
+                  <Text key={`${item.id}-step-${stepIndex}`} style={{ color: "#D1FAE5", fontSize: 12, lineHeight: 17 }}>✓ {step}</Text>
+                ))}
               </View>
             ))}
           </View>
 
           <View style={{ gap: 8 }}>
-            <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>All 48 calculated dimensions</Text>
+            <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>All 48 calculated dimensions · full trace</Text>
             {moonChart48Readings.map((item) => (
-              <View key={item.id} style={{ backgroundColor: "rgba(2,6,23,0.42)", borderRadius: 10, padding: 10, borderWidth: 1, borderColor: "rgba(148,163,184,0.14)", gap: 4 }}>
+              <View key={item.id} style={{ backgroundColor: "rgba(2,6,23,0.5)", borderRadius: 14, padding: 11, borderWidth: 1, borderColor: `${moonChartVisualColor(item)}2E`, gap: 5, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 8, transform: [{ perspective: 700 }, { translateY: item.verdict === "Excellent" ? -1 : 0 }] }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                   <Text style={{ color: "#E8F4F0", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
-                  <Text style={{ color: item.verdict === "Careful" ? "#FCA5A5" : item.verdict === "Mixed" ? "#FCD34D" : "#63DED0", fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}</Text>
+                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}</Text>
                 </View>
                 <Text style={{ color: "#CBD5E1", fontSize: 12, lineHeight: 18 }}>{item.prediction}</Text>
-                <Text style={{ color: "#A7F3D0", fontSize: 12, lineHeight: 18 }}>{item.remedy}</Text>
+                <Text style={{ color: "#E0F2FE", fontSize: 12, lineHeight: 17 }}>{item.interpretation}</Text>
+                <Text style={{ color: "#A7F3D0", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{item.remedyTitle}: </Text>{item.remedySteps.join(" ")}</Text>
+                <Text style={{ color: "rgba(147,197,253,0.78)", fontSize: 10, lineHeight: 15 }}>Score trace: {item.scoreReason}</Text>
                 <Text style={{ color: "rgba(148,163,184,0.75)", fontSize: 10, lineHeight: 15 }}>{item.calculationBasis}</Text>
               </View>
             ))}

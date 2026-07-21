@@ -37,6 +37,17 @@ assert(source.includes('buildCounselingSynthesis(updatedSession, issueId, moonCh
 assert(source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings)'), 'Counselling journey is not using Moon Chart 48D readings');
 assert(source.includes('48D Moon Chart counselling layer'), 'User-facing 48D counselling layer text is missing');
 
+assert(source.includes('interpretation: string'), 'Moon Chart readings must include plain-language interpretation');
+assert(source.includes('scoreReason: string'), 'Moon Chart readings must include explainable score reason');
+assert(source.includes('remedySteps: string[]'), 'Moon Chart readings must include step-by-step remedies');
+assert(source.includes('moonChartCategoryRemedyPack'), 'Moon Chart remedy packs are missing');
+assert(source.includes('buildMoonChartScoreReason'), 'Moon Chart score trace builder is missing');
+assert(source.includes('Pristine 2D/3D lunar chart map'), 'Pristine 2D/3D lunar chart layout is missing');
+assert(source.includes('2D/3D Moon-house visual map'), 'Moon-house visual map is missing');
+assert(source.includes('Score trace:'), 'All-dimensions score trace UI is missing');
+assert(source.includes('Care points · remedies made practical'), 'Practical remedy panel is missing');
+assert(source.includes('No Sun-chart prediction is shown'), 'Moon-only no-Sun-chart assurance text is missing');
+
 function antardashaDurations(mahadasha) {
   return dashaOrder.map((planet, index) => ({
     planet,
@@ -54,4 +65,4 @@ const sampleNakshatraElapsed = 0.25;
 const expectedBalance = dashaYears[sampleBirthLord] * (1 - sampleNakshatraElapsed);
 assert(expectedBalance === 7.5, `Sample Chandra balance should be 7.5 years; got ${expectedBalance}`);
 
-console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, antardasha totals, and no sun-chart user-facing text.');
+console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, antardasha totals, and no sun-chart user-facing text.');
