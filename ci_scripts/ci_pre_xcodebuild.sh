@@ -16,9 +16,19 @@ export RUBYOPT="${RUBYOPT:-} -rlogger"
 # CocoaPods workspace first, without signing, so the ArchiveIntermediates
 # module maps/products exist before the managed archive step starts.
 cd ios
+# Xcode Cloud's managed archive uses /Volumes/workspace/DerivedData.
+# If CI_DERIVED_DATA_PATH is not exported into this script, warm the same
+# DerivedData location explicitly; otherwise the final archive starts without
+# the CocoaPods module maps/products and fails during Swift bridging-header
+# precompilation. Local runs fall back to /tmp.
 if [[ -z "${CI_DERIVED_DATA_PATH:-}" ]]; then
-  export CI_DERIVED_DATA_PATH="/tmp/AethonBeacon-XcodeCloudWarmupDerivedData"
+  if [[ -d "/Volumes/workspace" ]]; then
+    export CI_DERIVED_DATA_PATH="/Volumes/workspace/DerivedData"
+  else
+    export CI_DERIVED_DATA_PATH="/tmp/AethonBeacon-XcodeCloudWarmupDerivedData"
+  fi
 fi
+echo "Using DerivedData warmup path: ${CI_DERIVED_DATA_PATH}"
 rm -rf /tmp/AethonBeacon-XcodeCloudWarmup.xcarchive
 xcodebuild \
   -derivedDataPath "${CI_DERIVED_DATA_PATH}" \
