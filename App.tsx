@@ -9757,6 +9757,18 @@ export default function App() {
     () => vedicRashiInfo ? getVedicDailyPrediction(vedicRashiInfo.rashiId, vedicDashaState) : null,
     [vedicRashiInfo, vedicDashaState]
   );
+  const vedicMoonChart48Readings = useMemo(
+    () => vedicRashiInfo
+      ? buildMoonChart48DimensionEngine({
+          rashiId: vedicRashiInfo.rashiId,
+          janmaNakshatra: vedicJanmaNakshatra,
+          dashaState: vedicDashaState,
+          tithi: vedicTithi,
+          vara: vedicVara,
+        })
+      : [],
+    [vedicRashiInfo, vedicJanmaNakshatra, vedicDashaState, vedicTithi, vedicVara]
+  );
   const hasExactBirthDetails =
     /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
     /^\d{2}:\d{2}$/.test(profileBirthTime) &&
@@ -16731,6 +16743,7 @@ function isTrustedExternalUrl(url: string) {
           speakText={(text) => { void speakGuidance(text); }}
           stopSpeech={stopVoiceGuidance}
           speechLocale={selectedLanguage.speechLang}
+          moonChart48Readings={vedicMoonChart48Readings}
         />
 
         {/* ── Exit / Visit Report Modal ── */}
@@ -27348,6 +27361,102 @@ function buildSupportDimensionQuestionBank(theme: SupportDimensionId): string[] 
   ];
 }
 
+const COUNSELING_THEME_TO_MOON48_CATEGORIES: Partial<Record<SupportDimensionId, MoonChart48Category[]>> = {
+  "self-image": ["self", "mind", "relationship"],
+  grief: ["mind", "family", "spiritual", "relationship"],
+  trauma: ["risk", "mind", "body", "spiritual"],
+  addiction: ["body", "mind", "risk", "growth"],
+  academic: ["growth", "mind", "work"],
+  financial: ["money", "mind", "risk"],
+  health: ["body", "mind", "risk"],
+  parenting: ["family", "mind", "relationship"],
+  relationship: ["relationship", "mind", "family"],
+  unappreciated: ["self", "relationship", "work"],
+  work: ["work", "mind", "money"],
+  "home-family": ["family", "mind", "relationship"],
+  anger: ["mind", "risk", "relationship"],
+  anxiety: ["mind", "body", "risk"],
+  sadness: ["mind", "spiritual", "relationship"],
+  burnout: ["body", "mind", "work"],
+  loneliness: ["relationship", "mind", "spiritual"],
+  safety: ["risk", "body", "relationship"],
+  fear: ["risk", "mind", "body"],
+  sleep: ["mind", "body", "spiritual"],
+  appetite: ["body", "mind"],
+  "body-symptoms": ["body", "risk", "mind"],
+  "legal-rights": ["risk", "work", "relationship"],
+  "digital-safety": ["risk", "relationship", "work"],
+  "social-reputation": ["relationship", "self", "work"],
+  "career-growth": ["work", "growth", "money"],
+  "workplace-conflict": ["work", "relationship", "risk"],
+  "education-admin": ["growth", "work", "risk"],
+  "exam-performance": ["growth", "mind", "work"],
+  "time-management": ["work", "body", "growth"],
+  procrastination: ["growth", "mind", "work"],
+  motivation: ["self", "growth", "work"],
+  confidence: ["self", "mind", "work"],
+  boundaries: ["relationship", "self", "risk"],
+  communication: ["relationship", "mind", "work"],
+  trust: ["relationship", "risk", "mind"],
+  intimacy: ["relationship", "mind", "body"],
+  caregiving: ["family", "body", "mind"],
+  "elder-care": ["family", "body", "money"],
+  "pregnancy-postpartum": ["body", "family", "mind"],
+  "identity-values": ["self", "spiritual", "growth"],
+  "spirituality-faith": ["spiritual", "mind", "growth"],
+  "cultural-belonging": ["family", "relationship", "spiritual"],
+  "decision-making": ["growth", "mind", "risk"],
+  "habit-routine": ["body", "work", "growth"],
+  environment: ["family", "mind", "body"],
+  "documentation-evidence": ["risk", "work", "mind"],
+  direction: ["growth", "spiritual", "self"],
+};
+
+function getCounselingMoonChartCategories(themes: SupportDimensionId[]): MoonChart48Category[] {
+  const categories = new Set<MoonChart48Category>();
+  themes.forEach((theme) => {
+    (COUNSELING_THEME_TO_MOON48_CATEGORIES[theme] ?? ["mind", "growth"]).forEach((category) => categories.add(category));
+  });
+  if (categories.size === 0) {
+    categories.add("mind");
+    categories.add("growth");
+  }
+  return Array.from(categories);
+}
+
+function buildMoonChartCounselingOverlay(
+  themes: SupportDimensionId[],
+  moonChart48Readings: MoonChart48Reading[] = []
+): string {
+  if (moonChart48Readings.length === 0) {
+    return "";
+  }
+
+  const categories = getCounselingMoonChartCategories(themes);
+  const relevant = moonChart48Readings.filter((reading) => categories.includes(reading.category));
+  const pool = relevant.length > 0 ? relevant : moonChart48Readings;
+  const strongest = [...pool].sort((a, b) => b.score - a.score).slice(0, 3);
+  const careful = [...pool].sort((a, b) => a.score - b.score).slice(0, 3);
+  const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
+  const topLine = strongest.map((item) => `${item.label} ${item.score}/100`).join("; ");
+  const carefulLine = careful.map((item) => `${item.label} ${item.score}/100`).join("; ");
+  const primaryRemedy = careful[0]?.remedy ?? strongest[0]?.remedy ?? "Moon-chart remedy: keep the next step small, calm, and repeatable today.";
+
+  return [
+    `48D Moon Chart counselling layer: I also checked the Moon-chart dimensions connected to this issue. The relevant 48D average is ${average}/100.`,
+    `Supported capacities: ${topLine}.`,
+    `Care points: ${carefulLine}.`,
+    `How to use this today: treat the supported areas as resources, and protect the careful areas before making a big decision. ${primaryRemedy}`,
+    "This is a reflective Vedic timing layer, not a medical, legal, or emergency substitute."
+  ].join("\n");
+}
+
+function shouldAddMoonChartJourneyStep(themes: SupportDimensionId[], moonChart48Readings: MoonChart48Reading[] = []): boolean {
+  if (moonChart48Readings.length === 0) return false;
+  const categories = getCounselingMoonChartCategories(themes);
+  return moonChart48Readings.some((reading) => categories.includes(reading.category));
+}
+
 /**
  * Supreme-level adaptive counseling question builder.
  * Full 48-dimension coverage: bespoke banks for core themes plus generated
@@ -27583,7 +27692,7 @@ function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: numbe
  * Supreme-level synthesis: covers all dimension combinations, presents
  * multiple route options with reasoning, acknowledges every theme heard.
  */
-function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId): string {
+function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId, moonChart48Readings: MoonChart48Reading[] = []): string {
   const themes = session.detectedThemes;
   const userAnswers = session.turns.filter(t => t.role === "user").map(t => t.message).join(" ");
   const combined = (session.originalIssue + " " + userAnswers).toLowerCase();
@@ -27634,6 +27743,12 @@ function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId):
     synthesis += "I also want to check in on the physical side — what you are going through often shows up in the body first. Please pay attention to your sleep, appetite, and breathing as we go through this.\n\n";
   }
 
+  // ── 48D Moon Chart counselling overlay ───────────────────────────────────────
+  const moonChartCounselingOverlay = buildMoonChartCounselingOverlay(themes, moonChart48Readings);
+  if (moonChartCounselingOverlay.length > 0) {
+    synthesis += `${moonChartCounselingOverlay}\n\n`;
+  }
+
   // ── Route options ────────────────────────────────────────────────────────────
   synthesis += "Here is what I think makes most sense for you, in a sequence. You can follow the full path, skip what does not feel right, or come back to any step later. Each step below is chosen specifically for what you have shared with me today.";
 
@@ -27644,7 +27759,7 @@ function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId):
  * Supreme-level journey builder — adapts to all 20 theme dimensions.
  * Steps are ordered by urgency/logic: calm body → process emotionally → act.
  */
-function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route: AIHelpRoute): JourneyStep[] {
+function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route: AIHelpRoute, moonChart48Readings: MoonChart48Reading[] = []): JourneyStep[] {
   const steps: JourneyStep[] = [];
   const has = (t: SupportDimensionId) => themes.includes(t);
 
@@ -27711,7 +27826,23 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
     completed: false, skipped: false
   });
 
-  // ── 6. Formal redress / safety steps ─────────────────────────────────────────
+  // ── 6. 48D Moon Chart layer — when birth details make it operational ─────────
+  if (shouldAddMoonChartJourneyStep(themes, moonChart48Readings) && !steps.some((step) => step.tabId === "vedic")) {
+    const categories = getCounselingMoonChartCategories(themes);
+    const focused = moonChart48Readings.filter((reading) => categories.includes(reading.category));
+    const careful = [...(focused.length > 0 ? focused : moonChart48Readings)].sort((a, b) => a.score - b.score)[0];
+    steps.push({
+      tabId: "vedic",
+      label: "Check 48D Moon Chart",
+      emoji: "🌙",
+      reason: careful
+        ? `Use the Moon-chart layer for timing and remedies; today it flags ${careful.label.toLowerCase()} as the main care point.`
+        : "Use the Moon-chart layer for timing, remedies, and the lunar pattern behind this issue.",
+      completed: false, skipped: false
+    });
+  }
+
+  // ── 7. Formal redress / safety steps ─────────────────────────────────────────
   if (has("safety") || has("trauma") || route === "redress") {
     steps.push({
       tabId: "redress",
@@ -27770,6 +27901,7 @@ function CounselingChatModal({
   speakText,
   stopSpeech,
   speechLocale,
+  moonChart48Readings,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -27780,6 +27912,7 @@ function CounselingChatModal({
   speakText: (text: string) => void;
   stopSpeech: () => void;
   speechLocale: string;
+  moonChart48Readings: MoonChart48Reading[];
 }) {
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
@@ -27902,8 +28035,8 @@ function CounselingChatModal({
         ...session, turns: newTurns, stage: "synthesizing",
         questionIndex: newQuestionIndex, detectedThemes: mergedThemes
       };
-      const synthesis = buildCounselingSynthesis(updatedSession, issueId);
-      const steps = buildJourneySteps(mergedThemes, issueId, route);
+      const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings);
+      const steps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings);
 
       const finalTurns: CounselingTurn[] = [...newTurns, { role: "friend", message: synthesis }];
       const finalSession: CounselingSession = {
@@ -27985,7 +28118,7 @@ function CounselingChatModal({
 
   function skipToRoute() {
     const route = detectAIHelpRouteFromText(session.originalIssue);
-    const steps = buildJourneySteps(session.detectedThemes, issueId, route);
+    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChart48Readings);
     const finalSession: CounselingSession = { ...session, stage: "done", journeySteps: steps };
     onJourneyReady(finalSession);
   }
