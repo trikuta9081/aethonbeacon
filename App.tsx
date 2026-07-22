@@ -7458,15 +7458,32 @@ const RASHI_DAILY_PREDICTIONS: Record<number, string[][]> = {
 // Approximate Lagna (Ascendant) from birth time using the Moon-chart Rashi as
 // the sole chart anchor. Lagna changes every ~2 hours. This remains a simplified
 // approximation; precise Lagna requires local sidereal time.
-function getLagnaFromBirthDetails(rashiId: number, birthTime: string): { lagnaId: number; lagna: typeof VEDIC_RASHIS[0]; birthHour: number; lagnaLabel: string } | null {
+function getLagnaFromBirthDetails(dob: string, birthTime: string): { lagnaId: number; lagna: typeof VEDIC_RASHIS[0]; birthHour: number; lagnaLabel: string } | null {
   if (!birthTime || !/^\d{2}:\d{2}$/.test(birthTime)) return null;
   const hour = parseInt(birthTime.split(":")[0], 10);
   const minute = parseInt(birthTime.split(":")[1], 10);
   if (isNaN(hour) || isNaN(minute)) return null;
+
+  // Lagna (Ascendant) is the zodiac degree rising on the eastern horizon at
+  // the moment of birth. It has NO relationship to the Moon's position —
+  // that was the previous bug here (this used to anchor off the Moon Rashi,
+  // which is astronomically unrelated to what's rising on the horizon).
+  // The Sun IS a valid anchor: at local sunrise the Ascendant is
+  // approximately the Sun's own sidereal degree, and Lagna then advances
+  // roughly one sign every ~2 hours afterward. This remains a simplified
+  // approximation without true local sidereal time and birth latitude/
+  // longitude, but anchoring off the Sun instead of the Moon fixes the
+  // conceptual error and gets meaningfully closer to a real chart.
+  const birthMoment = parseVedicBirthMoment(dob, birthTime);
+  const sunSiderealLongitude = birthMoment
+    ? normalizeDegrees(getApproxTropicalSunLongitude(birthMoment) - lahiriAyanamsaDegrees(julianDay(birthMoment)))
+    : null;
+  const sunRashiId = sunSiderealLongitude !== null ? Math.min(11, Math.floor(sunSiderealLongitude / 30)) : 0;
+
   // Lagna advances 1 sign every ~2 hours from sunrise (6am)
   const hoursSinceSunrise = ((hour - 6 + 24) % 24) + minute / 60;
   const lagnaOffset = Math.floor(hoursSinceSunrise / 2);
-  const lagnaId = (rashiId + lagnaOffset) % 12;
+  const lagnaId = (sunRashiId + lagnaOffset) % 12;
   const lagna = VEDIC_RASHIS[lagnaId];
   // Birth time context
   const period =
@@ -7756,6 +7773,46 @@ function degToRad(value: number): number {
   return (value * Math.PI) / 180;
 }
 
+// IST is assumed for all birth-time conversions since birth place is
+// India-focused throughout this app (Panchang, Indian helplines, etc.).
+// Without a stored timezone/coordinates this is the best available default —
+// still far more accurate than ignoring birth time entirely (the prior bug).
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+// Combines birth date + birth time (local, assumed IST) into the correct UTC
+// instant. Falls back to noon UTC only when no valid birth time is supplied,
+// so users who haven't entered a birth time still get a (less precise) result
+// instead of a crash. This is what actually fixes Rashi/Nakshatra/Dasha
+// accuracy — previously birth time was collected from the user but never
+// used in any Moon-longitude calculation, always defaulting to noon UTC
+// regardless of the real birth time.
+function parseVedicBirthMoment(dob: string, birthTime?: string | null): Date | null {
+  if (!dob || dob.length < 10) return null;
+  const dateMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(dob.trim());
+  if (!dateMatch) return null;
+  const year = Number(dateMatch[1]);
+  const month = Number(dateMatch[2]);
+  const day = Number(dateMatch[3]);
+  if (!year || month < 1 || month > 12 || day < 1 || day > 31) return null;
+
+  const timeMatch = birthTime && /^\d{2}:\d{2}$/.test(birthTime) ? birthTime : null;
+  if (!timeMatch) {
+    const parsed = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    return isNaN(parsed.getTime()) ? null : parsed;
+  }
+  const hour = Number(timeMatch.slice(0, 2));
+  const minute = Number(timeMatch.slice(3, 5));
+  if (isNaN(hour) || isNaN(minute) || hour > 23 || minute > 59) {
+    const parsed = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    return isNaN(parsed.getTime()) ? null : parsed;
+  }
+  // Construct the local (IST) clock time as if it were UTC, then subtract the
+  // IST offset to get the true UTC instant.
+  const localAsUtc = Date.UTC(year, month - 1, day, hour, minute, 0);
+  const trueUtc = new Date(localAsUtc - IST_OFFSET_MS);
+  return isNaN(trueUtc.getTime()) ? null : trueUtc;
+}
+
 function parseVedicDateAtNoonUtc(value: string): Date | null {
   if (!value || value.length < 10) return null;
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
@@ -7828,7 +7885,7 @@ function getSiderealMoonLongitude(date: Date): number {
   return normalizeDegrees(getApproxTropicalMoonLongitude(date) - lahiriAyanamsaDegrees(julianDay(date)));
 }
 
-function buildNakshatraFromMoonLongitude(siderealMoonLongitude: number): JanmaNakshatraInfo {
+function buildNakshatraFromMoonLongitude(siderealMoonLongitude: number, usedExactBirthTime: boolean = false): JanmaNakshatraInfo {
   const longitude = normalizeDegrees(siderealMoonLongitude);
   const id = Math.min(26, Math.floor(longitude / DEG_PER_NAKSHATRA));
   const degreesInNakshatra = longitude - id * DEG_PER_NAKSHATRA;
@@ -7843,15 +7900,22 @@ function buildNakshatraFromMoonLongitude(siderealMoonLongitude: number): JanmaNa
     degreesInNakshatra,
     fractionElapsed,
     balanceFraction: 1 - fractionElapsed,
-    calculationPrecision: "sidereal Moon longitude, Lahiri ayanamsa approximation",
+    calculationPrecision: usedExactBirthTime
+      ? "sidereal Moon longitude at exact birth time (IST assumed), Lahiri ayanamsa approximation"
+      : "sidereal Moon longitude at noon UTC fallback (no birth time entered), Lahiri ayanamsa approximation",
   };
 }
 
-// Janma Nakshatra from sidereal Moon longitude, not a date-modulo placeholder.
-function getJanmaNakshatra(dob: string): JanmaNakshatraInfo | null {
-  const d = parseVedicDateAtNoonUtc(dob);
+// Janma Nakshatra from sidereal Moon longitude at the actual birth moment.
+// Passing birthTime matters: the Moon moves ~0.55°/hour, so using noon UTC
+// regardless of real birth time (the old behaviour) could shift the result
+// by several degrees — enough to flip nakshatra/pada near a boundary and
+// throw off every downstream Dasha calculation.
+function getJanmaNakshatra(dob: string, birthTime?: string | null): JanmaNakshatraInfo | null {
+  const d = parseVedicBirthMoment(dob, birthTime);
   if (!d) return null;
-  return buildNakshatraFromMoonLongitude(getSiderealMoonLongitude(d));
+  const usedExactBirthTime = !!(birthTime && /^\d{2}:\d{2}$/.test(birthTime));
+  return buildNakshatraFromMoonLongitude(getSiderealMoonLongitude(d), usedExactBirthTime);
 }
 
 // Vimshottari Mahadasha system
@@ -7915,11 +7979,11 @@ function summarizePlanetQuality(planet: string): string {
   return text.split(",")[0]?.trim() ?? text;
 }
 
-function getVimshottariDashaState(dob: string, nakshatraLord: string): VimshottariDashaState | null {
-  const birthDate = parseVedicDateAtNoonUtc(dob);
+function getVimshottariDashaState(dob: string, nakshatraLord: string, birthTime?: string | null): VimshottariDashaState | null {
+  const birthDate = parseVedicBirthMoment(dob, birthTime);
   if (!birthDate) return null;
 
-  const janmaNakshatra = getJanmaNakshatra(dob);
+  const janmaNakshatra = getJanmaNakshatra(dob, birthTime);
   const birthDashaLord = janmaNakshatra?.lord ?? nakshatraLord;
   const startIdx = DASHA_ORDER.indexOf(birthDashaLord);
   if (startIdx < 0) return null;
@@ -8004,8 +8068,8 @@ function getVimshottariDashaState(dob: string, nakshatraLord: string): Vimshotta
   return null;
 }
 
-function getMahadasha(dob: string, nakshatraLord: string): { current: string; yearsLeft: number; endYear: number; next: string } | null {
-  const state = getVimshottariDashaState(dob, nakshatraLord);
+function getMahadasha(dob: string, nakshatraLord: string, birthTime?: string | null): { current: string; yearsLeft: number; endYear: number; next: string } | null {
+  const state = getVimshottariDashaState(dob, nakshatraLord, birthTime);
   if (!state) return null;
   return {
     current: state.currentMahadasha,
@@ -8211,8 +8275,8 @@ const NAKSHATRA_TO_RASHI_ID = [
 ];
 
 // Janma Rashi (Moon sign) from sidereal Moon longitude.
-function getMoonRashiFromDOB(dob: string): { rashiId: number; rashi: typeof VEDIC_RASHIS[0] } | null {
-  const nakshatra = getJanmaNakshatra(dob);
+function getMoonRashiFromDOB(dob: string, birthTime?: string | null): { rashiId: number; rashi: typeof VEDIC_RASHIS[0] } | null {
+  const nakshatra = getJanmaNakshatra(dob, birthTime);
   if (!nakshatra) return null;
   const rashiId = Math.min(11, Math.floor(nakshatra.siderealMoonLongitude / 30));
   const rashi = VEDIC_RASHIS[rashiId] ?? VEDIC_RASHIS[NAKSHATRA_TO_RASHI_ID[nakshatra.id] ?? 0];
@@ -9992,11 +10056,11 @@ export default function App() {
 
   // ── Vedic Daily Prediction ─────────────────────────────────────────────────
   // Janma Rashi (Moon sign, from Nakshatra) is the sole prediction anchor.
-  const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB), [profileDOB]);
-  const vedicJanmaNakshatra = useMemo(() => getJanmaNakshatra(profileDOB), [profileDOB]);
+  const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
+  const vedicJanmaNakshatra = useMemo(() => getJanmaNakshatra(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
   const vedicDashaState = useMemo(
-    () => (vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord) : null),
-    [profileDOB, vedicJanmaNakshatra]
+    () => (vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord, profileBirthTime) : null),
+    [profileDOB, vedicJanmaNakshatra, profileBirthTime]
   );
   const vedicTodayNakshatra = useMemo(() => getTodayNakshatra(), []);
   const vedicTithi = useMemo(() => getTodayTithi(), []);
@@ -13680,7 +13744,7 @@ async function fetchGeminiAIHelp(
     if (q.length === 0) return;
     const nowIso = new Date().toISOString();
     const userMsg = { id: `u-${Date.now()}`, role: "user" as const, text: q, ts: nowIso };
-    const dasha = vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord) : null;
+    const dasha = vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord, profileBirthTime) : null;
     const result = nextAstroChatReply(q, {
       moonRashiId: vedicRashiInfo ? vedicRashiInfo.rashiId : null,
       moonRashiName: vedicRashiInfo?.rashi.name ?? "",
@@ -24993,8 +25057,8 @@ function BirthChartSection({
   const isValidPlace = placeDraft.trim().length >= 3;
   const canSaveBirthDetails = isValidDOB && isValidTime && isValidPlace;
 
-  // Lagna computed from saved birth time
-  const lagnaInfo = rashiInfo ? getLagnaFromBirthDetails(rashiInfo.rashiId, profileBirthTime) : null;
+  // Lagna computed from saved birth time (anchored off the Sun, not the Moon)
+  const lagnaInfo = rashiInfo ? getLagnaFromBirthDetails(profileDOB, profileBirthTime) : null;
   // Cosmic issue guidance connecting Vedic reading to current issue dimension
   const cosmicIssueGuidance = rashiInfo ? getVedicIssueGuidance(selectedIssueGuide.id, rashiInfo.rashiId) : null;
   // Samvatsara from birth year
@@ -25335,7 +25399,7 @@ function BirthChartSection({
           )}
           {/* Mahadasha (Vimshottari Dasha) panel */}
           {janmaNakshatra && (() => {
-            const dasha = dashaState ?? getVimshottariDashaState(profileDOB, janmaNakshatra.lord);
+            const dasha = dashaState ?? getVimshottariDashaState(profileDOB, janmaNakshatra.lord, profileBirthTime);
             if (!dasha) return null;
             const dashaColor = "#C084FC";
             return (
@@ -26561,8 +26625,8 @@ function AccessOverlay({
           />
           {profileDOB.match(/^\d{4}-\d{2}-\d{2}$/) && (() => {
             // Moon Rashi (Janma Rashi) is the sole chart and prediction anchor.
-            const moonRi = getMoonRashiFromDOB(profileDOB);
-            const nk = getJanmaNakshatra(profileDOB);
+            const moonRi = getMoonRashiFromDOB(profileDOB, profileBirthTime);
+            const nk = getJanmaNakshatra(profileDOB, profileBirthTime);
             if (!moonRi) return null;
             return (
               <View style={styles.vedicDOBResult}>
