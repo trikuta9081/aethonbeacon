@@ -12,6 +12,7 @@ jobs:
 
     env:
       GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
 
     steps:
       - name: Checkout
@@ -38,6 +39,32 @@ jobs:
 
       - name: Make Gradle executable
         run: chmod +x android/gradlew
+
+      - name: Write release keystore
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
+          ANDROID_KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
+          ANDROID_KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
+        run: |
+          # android/app/build.gradle throws a hard error for the release build
+          # type unless keystore.properties exists (it's gitignored on purpose,
+          # so CI has to materialize it from secrets, same pattern as the iOS
+          # ASC key).
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > app/upload-release.jks
+          cat > keystore.properties <<EOF
+          storeFile=upload-release.jks
+          storePassword=${ANDROID_KEYSTORE_STORE_PASSWORD}
+          keyAlias=${ANDROID_KEYSTORE_KEY_ALIAS}
+          keyPassword=${ANDROID_KEYSTORE_KEY_PASSWORD}
+          EOF
+          if ! keytool -list -keystore app/upload-release.jks -storepass "$ANDROID_KEYSTORE_STORE_PASSWORD" >/dev/null 2>/tmp/keytool_err.txt; then
+            echo "::error::Decoded keystore failed validation: $(cat /tmp/keytool_err.txt | tr '\n' ' '). Re-check the ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_STORE_PASSWORD secrets."
+            exit 1
+          fi
+          echo "Release keystore written and validated."
 
       - name: Build release APK
         working-directory: android

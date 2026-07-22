@@ -15,3 +15,4 @@ android/upload_certificate.pem
 ._*
 qa/
 .github/scripts/__pycache__/
+keystore_base64_for_github_secret.txt
