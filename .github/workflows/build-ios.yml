@@ -97,6 +97,30 @@ jobs:
             echo "HAS_ASC_KEY=false" >> "$GITHUB_ENV"
           fi
 
+      - name: Warm up CocoaPods Swift modules (clean-checkout race workaround)
+        working-directory: ios
+        run: |
+          # On a completely clean checkout (no DerivedData), Xcode has been
+          # observed to start compiling AppDelegate.swift before the "Expo"
+          # pod's own Swift module has finished building under static
+          # framework linkage, failing with "No such module 'Expo'". A single
+          # unsigned `build` pass beforehand forces all pod targets to build
+          # in dependency order and populates the module cache, so the real
+          # archive step below reuses it instead of racing. Not fatal if it
+          # fails — the archive step is the one that actually matters.
+          set +e
+          xcodebuild \
+            -workspace AethonBeacon.xcworkspace \
+            -scheme AethonBeacon \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            CODE_SIGN_STYLE=Automatic \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            build 2>&1 | tee warmup-build.log | tail -100
+          echo "Warmup build exit status: ${PIPESTATUS[0]}"
+          set -e
+
       - name: Archive iOS
         working-directory: ios
         run: |
@@ -113,7 +137,8 @@ jobs:
               -authenticationKeyPath "$APPSTORE_KEY_PATH" \
               CODE_SIGN_STYLE=Automatic \
               DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-              archive
+              archive 2>&1 | tee archive.log | tail -300
+            ARCHIVE_STATUS=${PIPESTATUS[0]}
           else
             xcodebuild \
               -workspace AethonBeacon.xcworkspace \
@@ -123,8 +148,24 @@ jobs:
               -destination "generic/platform=iOS" \
               CODE_SIGN_STYLE=Automatic \
               DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-              archive
+              archive 2>&1 | tee archive.log | tail -300
+            ARCHIVE_STATUS=${PIPESTATUS[0]}
           fi
+          if [ "$ARCHIVE_STATUS" != "0" ]; then
+            echo "::error::Archive failed (exit $ARCHIVE_STATUS). Last 300 lines shown above; full log in archive.log artifact."
+            exit "$ARCHIVE_STATUS"
+          fi
+
+      - name: Upload archive log (always, for diagnostics)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: AethonBeacon-ios-archive-log
+          path: |
+            ios/warmup-build.log
+            ios/archive.log
+          retention-days: 14
+          if-no-files-found: ignore
 
       - name: Export .ipa
         working-directory: ios
