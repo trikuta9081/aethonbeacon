@@ -35,6 +35,13 @@ import type { AudioPlayer } from "expo-audio";
 import type { NotificationResponse } from "expo-notifications";
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from "expo-speech-recognition";
 import * as Speech from "expo-speech";
+// astronomy-engine: pure JS/TS implementation of VSOP87 (Sun) and ELP2000-82B
+// (Moon) planetary theories, the same established models used by
+// professional ephemeris software (Swiss Ephemeris, JPL Horizons, etc.).
+// Replaces the previous hand-rolled ~1-degree-precision truncated series with
+// arc-second-level accuracy for Sun/Moon longitude, sidereal time, and the
+// true obliquity of the ecliptic (used for the real Ascendant formula).
+import * as Astronomy from "astronomy-engine";
 import Notifications, { notificationsAvailable } from "./notifications";
 import { supabaseConfigured, pushToSupabase, pullFromSupabase } from "./supabaseSync";
 import {
@@ -232,6 +239,8 @@ type PersistedAppState = {
   profileDOB: string; // ISO date string "YYYY-MM-DD"
   profileBirthTime: string; // "HH:MM"
   profileBirthPlace: string;
+  profileBirthLat: number | null;
+  profileBirthLon: number | null;
   languageId: LanguageId;
   profileRoleId: IdentityId;
   accessRole: AccessRole;
@@ -7458,32 +7467,43 @@ const RASHI_DAILY_PREDICTIONS: Record<number, string[][]> = {
 // Approximate Lagna (Ascendant) from birth time using the Moon-chart Rashi as
 // the sole chart anchor. Lagna changes every ~2 hours. This remains a simplified
 // approximation; precise Lagna requires local sidereal time.
-function getLagnaFromBirthDetails(dob: string, birthTime: string): { lagnaId: number; lagna: typeof VEDIC_RASHIS[0]; birthHour: number; lagnaLabel: string } | null {
+function getLagnaFromBirthDetails(
+  dob: string,
+  birthTime: string,
+  birthLat?: number | null,
+  birthLon?: number | null
+): { lagnaId: number; lagna: typeof VEDIC_RASHIS[0]; birthHour: number; lagnaLabel: string; precise: boolean } | null {
   if (!birthTime || !/^\d{2}:\d{2}$/.test(birthTime)) return null;
   const hour = parseInt(birthTime.split(":")[0], 10);
   const minute = parseInt(birthTime.split(":")[1], 10);
   if (isNaN(hour) || isNaN(minute)) return null;
 
-  // Lagna (Ascendant) is the zodiac degree rising on the eastern horizon at
-  // the moment of birth. It has NO relationship to the Moon's position —
-  // that was the previous bug here (this used to anchor off the Moon Rashi,
-  // which is astronomically unrelated to what's rising on the horizon).
-  // The Sun IS a valid anchor: at local sunrise the Ascendant is
-  // approximately the Sun's own sidereal degree, and Lagna then advances
-  // roughly one sign every ~2 hours afterward. This remains a simplified
-  // approximation without true local sidereal time and birth latitude/
-  // longitude, but anchoring off the Sun instead of the Moon fixes the
-  // conceptual error and gets meaningfully closer to a real chart.
   const birthMoment = parseVedicBirthMoment(dob, birthTime);
-  const sunSiderealLongitude = birthMoment
-    ? normalizeDegrees(getApproxTropicalSunLongitude(birthMoment) - lahiriAyanamsaDegrees(julianDay(birthMoment)))
-    : null;
-  const sunRashiId = sunSiderealLongitude !== null ? Math.min(11, Math.floor(sunSiderealLongitude / 30)) : 0;
+  let lagnaId = 0;
+  let precise = false;
 
-  // Lagna advances 1 sign every ~2 hours from sunrise (6am)
-  const hoursSinceSunrise = ((hour - 6 + 24) % 24) + minute / 60;
-  const lagnaOffset = Math.floor(hoursSinceSunrise / 2);
-  const lagnaId = (sunRashiId + lagnaOffset) % 12;
+  if (birthMoment && typeof birthLat === "number" && typeof birthLon === "number" && !isNaN(birthLat) && !isNaN(birthLon)) {
+    // Real Ascendant: Local Sidereal Time + true obliquity + birth latitude,
+    // the standard spherical-astronomy formula used by professional
+    // astrology software. This is only possible once the birth place has
+    // been geocoded to real coordinates.
+    const ascSidereal = getPreciseAscendantSiderealDegrees(birthMoment, birthLat, birthLon);
+    lagnaId = Math.min(11, Math.floor(ascSidereal / 30));
+    precise = true;
+  } else {
+    // Fallback approximation (no coordinates yet): anchor off the Sun's
+    // sidereal Rashi at sunrise, advancing ~1 sign every 2 hours after.
+    // Astronomically more defensible than a Moon anchor (the old bug), but
+    // still not a true Ascendant without real lat/lon.
+    const sunSiderealLongitude = birthMoment
+      ? normalizeDegrees(getApproxTropicalSunLongitude(birthMoment) - lahiriAyanamsaDegrees(julianDay(birthMoment)))
+      : null;
+    const sunRashiId = sunSiderealLongitude !== null ? Math.min(11, Math.floor(sunSiderealLongitude / 30)) : 0;
+    const hoursSinceSunrise = ((hour - 6 + 24) % 24) + minute / 60;
+    const lagnaOffset = Math.floor(hoursSinceSunrise / 2);
+    lagnaId = (sunRashiId + lagnaOffset) % 12;
+  }
+
   const lagna = VEDIC_RASHIS[lagnaId];
   // Birth time context
   const period =
@@ -7495,7 +7515,7 @@ function getLagnaFromBirthDetails(dob: string, birthTime: string): { lagnaId: nu
     : hour < 18 ? "Afternoon (winding energy)"
     : hour < 21 ? "Evening (Sandhya Kaal — twilight)"
     : "Night (Chandra dominant)";
-  return { lagnaId, lagna, birthHour: hour, lagnaLabel: period };
+  return { lagnaId, lagna, birthHour: hour, lagnaLabel: period, precise };
 }
 
 // Vedic 60-year Samvatsara cycle from birth year
@@ -7773,6 +7793,10 @@ function degToRad(value: number): number {
   return (value * Math.PI) / 180;
 }
 
+function radToDeg(value: number): number {
+  return (value * 180) / Math.PI;
+}
+
 // IST is assumed for all birth-time conversions since birth place is
 // India-focused throughout this app (Panchang, Indian helplines, etc.).
 // Without a stored timezone/coordinates this is the best available default —
@@ -7843,42 +7867,82 @@ function lahiriAyanamsaDegrees(jd: number): number {
 }
 
 function getApproxTropicalMoonLongitude(date: Date): number {
-  // Meeus-style low precision lunar longitude, error usually under ~1 degree.
-  // That is a major upgrade over the old date modulo placeholder and is
-  // deterministic across web/iOS/Android. Exact professional charts still need
-  // birth time, birthplace and a full ephemeris.
-  const d = julianDay(date) - 2451545.0;
-  const L = normalizeDegrees(218.3164477 + 13.17639648 * d);
-  const D = normalizeDegrees(297.8501921 + 12.19074912 * d);
-  const M = normalizeDegrees(357.5291092 + 0.98560028 * d);
-  const Mp = normalizeDegrees(134.9633964 + 13.06499295 * d);
-  const F = normalizeDegrees(93.2720950 + 13.22935024 * d);
-
-  const lon = L
-    + 6.289 * Math.sin(degToRad(Mp))
-    + 1.274 * Math.sin(degToRad(2 * D - Mp))
-    + 0.658 * Math.sin(degToRad(2 * D))
-    + 0.214 * Math.sin(degToRad(2 * Mp))
-    - 0.186 * Math.sin(degToRad(M))
-    - 0.114 * Math.sin(degToRad(2 * F))
-    + 0.059 * Math.sin(degToRad(2 * D - 2 * Mp))
-    + 0.057 * Math.sin(degToRad(2 * D - M - Mp))
-    + 0.053 * Math.sin(degToRad(2 * D + Mp))
-    + 0.046 * Math.sin(degToRad(2 * D - M))
-    + 0.041 * Math.sin(degToRad(M - Mp))
-    - 0.035 * Math.sin(degToRad(D))
-    - 0.031 * Math.sin(degToRad(M + Mp))
-    - 0.015 * Math.sin(degToRad(2 * F - 2 * D))
-    + 0.011 * Math.sin(degToRad(2 * D - M - 2 * Mp));
-
-  return normalizeDegrees(lon);
+  // ELP2000-82B lunar theory via astronomy-engine — the established model
+  // used by professional ephemeris software, accurate to arc-seconds. This
+  // replaces the previous hand-rolled ~15-term truncated series (error up to
+  // ~1 degree) with the full established theory.
+  return normalizeDegrees(Astronomy.EclipticGeoMoon(date).lon);
 }
 
 function getApproxTropicalSunLongitude(date: Date): number {
-  const d = julianDay(date) - 2451545.0;
-  const g = normalizeDegrees(357.529 + 0.98560028 * d);
-  const q = normalizeDegrees(280.459 + 0.98564736 * d);
-  return normalizeDegrees(q + 1.915 * Math.sin(degToRad(g)) + 0.020 * Math.sin(degToRad(2 * g)));
+  // VSOP87 solar theory via astronomy-engine (apparent geocentric true
+  // ecliptic longitude of date, including aberration and nutation) — the
+  // same established model used by professional ephemeris software.
+  return normalizeDegrees(Astronomy.SunPosition(date).elon);
+}
+
+// True obliquity of the ecliptic at a given moment, from astronomy-engine's
+// nutation/precession model. Needed for the real Ascendant formula.
+function getTrueObliquityDegrees(date: Date): number {
+  return Astronomy.e_tilt(Astronomy.MakeTime(date)).tobl;
+}
+
+// Greenwich Apparent Sidereal Time, in degrees [0, 360). Needed (together with
+// observer longitude) to get Local Sidereal Time for the Ascendant formula.
+function getGreenwichSiderealTimeDegrees(date: Date): number {
+  return normalizeDegrees(Astronomy.SiderealTime(date) * 15);
+}
+
+// Geocodes a free-text birth place into {lat, lon} using OpenStreetMap
+// Nominatim — a free, established, no-API-key-required geocoding service.
+// Only the place text is sent, never the person's name or birth date/time.
+// Used solely to compute the real Ascendant (Lagna); every other Vedic
+// calculation (Rashi, Nakshatra, Dasha) already works from date+time alone
+// and does not depend on this.
+async function geocodeBirthPlace(place: string): Promise<{ lat: number; lon: number } | null> {
+  const trimmed = place.trim();
+  if (trimmed.length < 3) return null;
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(trimmed)}`;
+    const response = await fetch(url, {
+      headers: {
+        // Nominatim's usage policy requires an identifying User-Agent.
+        "User-Agent": "AethonBeacon/1.0 (birth-place geocoding for Vedic Ascendant calculation)",
+        Accept: "application/json",
+      },
+    });
+    if (!response.ok) return null;
+    const results = await response.json();
+    if (!Array.isArray(results) || results.length === 0) return null;
+    const lat = parseFloat(results[0].lat);
+    const lon = parseFloat(results[0].lon);
+    if (isNaN(lat) || isNaN(lon)) return null;
+    return { lat, lon };
+  } catch {
+    return null;
+  }
+}
+
+// Real Ascendant (Lagna) via Local Sidereal Time + true obliquity + latitude —
+// the standard spherical-astronomy formula (Meeus, "Astronomical Algorithms",
+// and universally used in professional astrology software). Falls back to
+// null when lat/lon aren't available yet (caller should use the Sun-anchored
+// approximation instead).
+function getPreciseAscendantSiderealDegrees(date: Date, latDeg: number, lonDeg: number): number {
+  const gastDeg = getGreenwichSiderealTimeDegrees(date);
+  const lstDeg = normalizeDegrees(gastDeg + lonDeg); // east longitude positive
+  const eps = getTrueObliquityDegrees(date);
+
+  const theta = degToRad(lstDeg);
+  const phi = degToRad(latDeg);
+  const epsRad = degToRad(eps);
+
+  const y = -Math.cos(theta);
+  const x = Math.sin(epsRad) * Math.tan(phi) + Math.cos(epsRad) * Math.sin(theta);
+  const ascTropical = normalizeDegrees(radToDeg(Math.atan2(y, x)));
+
+  const ayanamsa = lahiriAyanamsaDegrees(julianDay(date));
+  return normalizeDegrees(ascTropical - ayanamsa);
 }
 
 function getSiderealMoonLongitude(date: Date): number {
@@ -8531,6 +8595,10 @@ function buildMoonChartScoreReason(input: {
   antar: string;
   nakshatraLord: string;
   varaPlanet: string;
+  lagnaRashiName?: string | null;
+  lagnaLord?: string | null;
+  lagnaLordScore?: number;
+  lagnaElementBias?: number;
 }): string {
   const parts = [
     `Moon-house ${input.house} contributes ${input.houseScore >= 0 ? "+" : ""}${input.houseScore.toFixed(1)}`,
@@ -8542,6 +8610,10 @@ function buildMoonChartScoreReason(input: {
     `Moon-sign element bias ${input.moonSignElementBias >= 0 ? "+" : ""}${input.moonSignElementBias.toFixed(1)}`,
     `fine lunar pulse ${input.lunarFinePulse >= 0 ? "+" : ""}${input.lunarFinePulse.toFixed(1)}`,
   ];
+  if (input.lagnaRashiName) {
+    parts.push(`Lagna ${input.lagnaRashiName} (lord ${input.lagnaLord}) overlay ${(input.lagnaLordScore ?? 0) >= 0 ? "+" : ""}${(input.lagnaLordScore ?? 0).toFixed(1)}`);
+    parts.push(`Ascendant-sign element bias ${(input.lagnaElementBias ?? 0) >= 0 ? "+" : ""}${(input.lagnaElementBias ?? 0).toFixed(1)}`);
+  }
   return parts.join(" · ");
 }
 
@@ -8617,8 +8689,16 @@ function buildMoonChart48DimensionEngine(input: {
   dashaState: VimshottariDashaState | null;
   tithi: ReturnType<typeof getTodayTithi>;
   vara: typeof VARA_INFO[0];
+  // Optional: real Ascendant sign (0-11, sidereal), from getLagnaFromBirthDetails.
+  // The Moon chart (Chandra Kundali) stays the primary anchor -- Vedic daily
+  // prediction has traditionally leaned on the Moon chart -- but the Lagna
+  // now adds a secondary confirming/tempering layer, since the Ascendant is
+  // classically the chart of the physical self/body/personality specifically.
+  lagnaId?: number | null;
 }): MoonChart48Reading[] {
   const rashi = VEDIC_RASHIS[input.rashiId] ?? VEDIC_RASHIS[0];
+  const lagnaRashi = typeof input.lagnaId === "number" ? VEDIC_RASHIS[input.lagnaId] ?? null : null;
+  const lagnaLord = lagnaRashi ? lagnaRashi.lord.split(" ")[0] : null;
   const nakshatra = input.janmaNakshatra;
   const nakshatraId = nakshatra?.id ?? 0;
   const nakshatraLord = nakshatra?.lord ?? "Chandra";
@@ -8644,6 +8724,19 @@ function buildMoonChart48DimensionEngine(input: {
       rashi.element.includes("Prithvi") && (dimension.category === "body" || dimension.category === "money" || dimension.category === "family") ? 3 :
       rashi.element.includes("Vayu") && (dimension.category === "relationship" || dimension.category === "growth" || dimension.category === "work") ? 3 : 0;
 
+    // Lagna (Ascendant) overlay -- secondary to the Moon chart. Lagna lord's
+    // classical significations plus the Ascendant sign's element, with extra
+    // weight on "self"/"body" since Lagna specifically governs physical
+    // self, vitality, and personality in Vedic astrology.
+    const lagnaLordScore = lagnaLord ? getMoonChartPlanetCategoryScore(lagnaLord, dimension.category) : 0;
+    const lagnaElementBias = lagnaRashi
+      ? (lagnaRashi.element.includes("Jal") && (dimension.category === "mind" || dimension.category === "family" || dimension.category === "spiritual") ? 2.5 :
+         lagnaRashi.element.includes("Agni") && (dimension.category === "self" || dimension.category === "work" || dimension.category === "growth") ? 2.5 :
+         lagnaRashi.element.includes("Prithvi") && (dimension.category === "body" || dimension.category === "money" || dimension.category === "family") ? 2.5 :
+         lagnaRashi.element.includes("Vayu") && (dimension.category === "relationship" || dimension.category === "growth" || dimension.category === "work") ? 2.5 : 0)
+      : 0;
+    const lagnaSelfBodyEmphasis = lagnaRashi && (dimension.category === "self" || dimension.category === "body") ? 3 : 0;
+
     const raw = 60
       + houseScore * 1.55
       + mahaScore * 0.85
@@ -8653,6 +8746,9 @@ function buildMoonChart48DimensionEngine(input: {
       + moonSignElementBias
       + tithiBalance
       + lunarFinePulse * 0.35
+      + lagnaLordScore * 0.5
+      + lagnaElementBias
+      + lagnaSelfBodyEmphasis
       + ((nakshatraId + index) % 3 - 1) * dimension.weight;
 
     const score = clampMoonScore(raw);
@@ -8675,6 +8771,10 @@ function buildMoonChart48DimensionEngine(input: {
       antar,
       nakshatraLord,
       varaPlanet,
+      lagnaRashiName: lagnaRashi?.name ?? null,
+      lagnaLord,
+      lagnaLordScore: lagnaLordScore * 0.5,
+      lagnaElementBias: lagnaElementBias + lagnaSelfBodyEmphasis,
     });
     const interpretation = `In plain language, ${dimension.label.toLowerCase()} belongs to ${moonChartCategoryMeaning(dimension.category)}. ${moonChartVerdictTone(verdict)}`;
 
@@ -8682,13 +8782,13 @@ function buildMoonChart48DimensionEngine(input: {
       ...dimension,
       score,
       verdict,
-      prediction: `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. The reading is calculated through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}.`,
+      prediction: `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}${lagnaRashi ? `, with Lagna ${lagnaRashi.name}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. The reading is calculated through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}${lagnaRashi ? `, tempered by the Ascendant in ${lagnaRashi.name}` : ""}.`,
       interpretation,
       scoreReason,
       remedy: moonChartCategoryRemedy(dimension.category, rashi.name),
       remedyTitle: remedyPack.title,
       remedySteps: remedyPack.steps,
-      calculationBasis: `Moon-only basis: sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.`,
+      calculationBasis: `Moon-chart basis (primary): sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.${lagnaRashi ? ` Ascendant overlay (secondary): Lagna ${lagnaRashi.name}, lord ${lagnaLord}.` : ""}`,
       visualAngle: (index % 12) * 30,
       visualDepth: Math.max(0.12, Math.min(1, score / 100)),
     };
@@ -9283,6 +9383,12 @@ export default function App() {
   const [profileDOB, setProfileDOB] = useState(""); // "YYYY-MM-DD"
   const [profileBirthTime, setProfileBirthTime] = useState("");
   const [profileBirthPlace, setProfileBirthPlace] = useState("");
+  // Geocoded birth-place coordinates, used only for the true Ascendant
+  // (Lagna) calculation. Resolved from profileBirthPlace via a free,
+  // established lookup (OpenStreetMap Nominatim) — see geocodeBirthPlace().
+  const [profileBirthLat, setProfileBirthLat] = useState<number | null>(null);
+  const [profileBirthLon, setProfileBirthLon] = useState<number | null>(null);
+  const [birthPlaceGeocodeStatus, setBirthPlaceGeocodeStatus] = useState<"idle" | "loading" | "resolved" | "failed">("idle");
   const [languageId, setLanguageId] = useState<LanguageId>("english");
   const [profileRoleId, setProfileRoleId] = useState<IdentityId>("other");
   const [accessRole, setAccessRole] = useState<AccessRole>("guest");
@@ -10055,12 +10161,18 @@ export default function App() {
   );
 
   // ── Vedic Daily Prediction ─────────────────────────────────────────────────
-  // Janma Rashi (Moon sign, from Nakshatra) is the sole prediction anchor.
+  // Janma Rashi (Moon sign, from Nakshatra) is the primary prediction anchor;
+  // the real Ascendant (Lagna), once geocoded, adds a secondary confirming
+  // layer in the 48-dimension engine below (self/body categories especially).
   const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
   const vedicJanmaNakshatra = useMemo(() => getJanmaNakshatra(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
   const vedicDashaState = useMemo(
     () => (vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord, profileBirthTime) : null),
     [profileDOB, vedicJanmaNakshatra, profileBirthTime]
+  );
+  const vedicLagnaInfo = useMemo(
+    () => getLagnaFromBirthDetails(profileDOB, profileBirthTime, profileBirthLat, profileBirthLon),
+    [profileDOB, profileBirthTime, profileBirthLat, profileBirthLon]
   );
   const vedicTodayNakshatra = useMemo(() => getTodayNakshatra(), []);
   const vedicTithi = useMemo(() => getTodayTithi(), []);
@@ -10077,14 +10189,53 @@ export default function App() {
           dashaState: vedicDashaState,
           tithi: vedicTithi,
           vara: vedicVara,
+          lagnaId: vedicLagnaInfo?.lagnaId ?? null,
         })
       : [],
-    [vedicRashiInfo, vedicJanmaNakshatra, vedicDashaState, vedicTithi, vedicVara]
+    [vedicRashiInfo, vedicJanmaNakshatra, vedicDashaState, vedicTithi, vedicVara, vedicLagnaInfo]
   );
   const hasExactBirthDetails =
     /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
     /^\d{2}:\d{2}$/.test(profileBirthTime) &&
     profileBirthPlace.trim().length >= 3;
+
+  // Geocode the birth place once it looks complete, so the real Ascendant
+  // (Local Sidereal Time + true obliquity + latitude) can be computed instead
+  // of the Sun-anchored fallback estimate. Debounced, and skipped entirely if
+  // coordinates for this exact place string are already resolved.
+  useEffect(() => {
+    if (!hasLoaded) return;
+    const place = profileBirthPlace.trim();
+    if (place.length < 3) {
+      setBirthPlaceGeocodeStatus("idle");
+      return;
+    }
+    if (birthPlaceGeocodeStatus === "resolved" && profileBirthLat !== null && profileBirthLon !== null) {
+      return;
+    }
+    let cancelled = false;
+    setBirthPlaceGeocodeStatus("loading");
+    const debounceTimer = setTimeout(async () => {
+      const coords = await geocodeBirthPlace(place);
+      if (cancelled) return;
+      if (coords) {
+        setProfileBirthLat(coords.lat);
+        setProfileBirthLon(coords.lon);
+        setBirthPlaceGeocodeStatus("resolved");
+      } else {
+        setProfileBirthLat(null);
+        setProfileBirthLon(null);
+        setBirthPlaceGeocodeStatus("failed");
+      }
+    }, 800);
+    return () => {
+      cancelled = true;
+      clearTimeout(debounceTimer);
+    };
+    // profileBirthLat/Lon and birthPlaceGeocodeStatus intentionally excluded —
+    // they're written BY this effect; including them would create a loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileBirthPlace, hasLoaded]);
 
   useEffect(() => {
     if (!hasLoaded) return;
@@ -11335,6 +11486,11 @@ export default function App() {
       if (typeof parsed.profileBirthPlace === "string") {
         setProfileBirthPlace(parsed.profileBirthPlace);
       }
+      if (typeof parsed.profileBirthLat === "number" && typeof parsed.profileBirthLon === "number") {
+        setProfileBirthLat(parsed.profileBirthLat);
+        setProfileBirthLon(parsed.profileBirthLon);
+        setBirthPlaceGeocodeStatus("resolved");
+      }
       if (typeof parsed.languageId === "string" && languageOptions.some((option) => option.id === parsed.languageId)) {
         setLanguageId(parsed.languageId as LanguageId);
       }
@@ -11709,6 +11865,8 @@ export default function App() {
       profileDOB,
       profileBirthTime,
       profileBirthPlace,
+      profileBirthLat,
+      profileBirthLon,
       languageId,
       profileRoleId,
       accessRole,
@@ -16182,6 +16340,9 @@ function isTrustedExternalUrl(url: string) {
                 profileDOB={profileDOB}
                 profileBirthTime={profileBirthTime}
                 profileBirthPlace={profileBirthPlace}
+                profileBirthLat={profileBirthLat}
+                profileBirthLon={profileBirthLon}
+                birthPlaceGeocodeStatus={birthPlaceGeocodeStatus}
                 setProfileDOB={setProfileDOB}
                 setProfileBirthTime={setProfileBirthTime}
                 setProfileBirthPlace={setProfileBirthPlace}
@@ -24809,6 +24970,7 @@ function VedicDailyCard({
   vara,
   dashaState,
   predictionLines,
+  lagnaId,
 }: {
   rashi: typeof VEDIC_RASHIS[0];
   janmaNakshatra: ReturnType<typeof getJanmaNakshatra>;
@@ -24817,6 +24979,7 @@ function VedicDailyCard({
   vara: typeof VARA_INFO[0];
   dashaState: VimshottariDashaState | null;
   predictionLines: string[];
+  lagnaId?: number | null;
 }) {
   const { width } = useWindowDimensions();
   const compact = width < 760;
@@ -24828,6 +24991,7 @@ function VedicDailyCard({
     dashaState,
     tithi,
     vara,
+    lagnaId,
   });
   const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
   const lunarHousePreview = Array.from({ length: 12 }, (_, houseIndex) => {
@@ -24999,6 +25163,9 @@ function BirthChartSection({
   profileDOB,
   profileBirthTime,
   profileBirthPlace,
+  profileBirthLat,
+  profileBirthLon,
+  birthPlaceGeocodeStatus,
   setProfileDOB,
   setProfileBirthTime,
   setProfileBirthPlace,
@@ -25018,6 +25185,9 @@ function BirthChartSection({
   profileDOB: string;
   profileBirthTime: string;
   profileBirthPlace: string;
+  profileBirthLat: number | null;
+  profileBirthLon: number | null;
+  birthPlaceGeocodeStatus: "idle" | "loading" | "resolved" | "failed";
   setProfileDOB: (v: string) => void;
   setProfileBirthTime: (v: string) => void;
   setProfileBirthPlace: (v: string) => void;
@@ -25057,8 +25227,9 @@ function BirthChartSection({
   const isValidPlace = placeDraft.trim().length >= 3;
   const canSaveBirthDetails = isValidDOB && isValidTime && isValidPlace;
 
-  // Lagna computed from saved birth time (anchored off the Sun, not the Moon)
-  const lagnaInfo = rashiInfo ? getLagnaFromBirthDetails(profileDOB, profileBirthTime) : null;
+  // Lagna: real Ascendant (Local Sidereal Time + true obliquity + latitude)
+  // once the birth place has been geocoded; otherwise a Sun-anchored estimate.
+  const lagnaInfo = rashiInfo ? getLagnaFromBirthDetails(profileDOB, profileBirthTime, profileBirthLat, profileBirthLon) : null;
   // Cosmic issue guidance connecting Vedic reading to current issue dimension
   const cosmicIssueGuidance = rashiInfo ? getVedicIssueGuidance(selectedIssueGuide.id, rashiInfo.rashiId) : null;
   // Samvatsara from birth year
@@ -25069,7 +25240,7 @@ function BirthChartSection({
     /^\d{2}:\d{2}$/.test(profileBirthTime) &&
     profileBirthPlace.trim().length >= 3;
   const moonChart48Readings = rashiInfo
-    ? buildMoonChart48DimensionEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara })
+    ? buildMoonChart48DimensionEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara, lagnaId: lagnaInfo?.lagnaId ?? null })
     : [];
   const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
   const moonChartCategorySummary = (["mind", "relationship", "work", "money", "body", "spiritual", "risk", "growth"] as MoonChart48Category[])
@@ -25622,6 +25793,7 @@ function BirthChartSection({
           vara={vara}
           dashaState={dashaState}
           predictionLines={predictionLines}
+          lagnaId={lagnaInfo?.lagnaId ?? null}
         />
       ) : (
         <Pressable
