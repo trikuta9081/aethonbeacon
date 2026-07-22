@@ -305,3 +305,26 @@ No password entered — cancelled.
 === upload_trikuta.command ===
 Mon Jul  6 10:43:26 IST 2026
 IPA: /Users/rajeshwerslathiia/AethonBeacon/AethonBeacon.ipa ( 14M)
+
+=== finish_profile.command ===
+Wed Jul 22 02:20:49 IST 2026
+Page check: AS_ERR -600: Safari got an error: Application isn’t running.
+Current page: Page check: AS_ERR -600: Safari got an error: Application isn’t running.
+AS_ERR -600: Safari got an error: Application isn’t running.
+Enter name: AS_ERR -600: Safari got an error: Application isn’t running.
+Click Generate: AS_ERR -600: Safari got an error: Application isn’t running.
+Click Download: AS_ERR -600: Safari got an error: Application isn’t running.
+
+R_NAME=Enter name: AS_ERR -600: Safari got an error: Application isn’t running.
+AS_ERR -600: Safari got an error: Application isn’t running.
+R_GEN=Click Generate: AS_ERR -600: Safari got an error: Application isn’t running.
+AS_ERR -600: Safari got an error: Application isn’t running.
+R_DL=Click Download: AS_ERR -600: Safari got an error: Application isn’t running.
+AS_ERR -600: Safari got an error: Application isn’t running.
+Profile downloaded: /Users/rajeshwerslathiia/Downloads/AethonBeacon_AppStore_Distribution.mobileprovision
+UUID: c679049a-4e38-4064-8cbe-701320ff43a7
+Profile installed to /Users/rajeshwerslathiia/Library/MobileDevice/Provisioning Profiles/c679049a-4e38-4064-8cbe-701320ff43a7.mobileprovision
+Profile Name: AethonBeacon AppStore Distribution
+exportOptions.plist written with profile: AethonBeacon AppStore Distribution
+
+=== xcodebuild archive ===
