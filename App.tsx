@@ -2477,6 +2477,7 @@ async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOp
   } else if (isIso || isGamma) {
     // ── Isochronic / gamma pulsed ─────────────────────────────────────────
     const ISO_PARAMS: Record<string, [number, number]> = {
+      "iso-1": [200, 1], "iso-2": [200, 2], "iso-3": [200, 3],
       "iso-4": [200, 4], "iso-6": [200, 6], "iso-8": [220, 8], "iso-10": [220, 10],
       "reset-gamma": [220, 40],
     };
@@ -3929,11 +3930,11 @@ function buildPrivateIntakeReport(
     ? "SOS / Help"
     : emotionalHigh
       ? "Reset"
-        : practicalHigh
+      : practicalHigh
         ? "Path"
-          : supportHigh
-            ? "Guidance"
-            : "Guidance";
+        : supportHigh
+          ? "Guidance"
+          : "Explore";
   const emotionalRead = emotionalHigh
     ? "The emotional load looks high and deserves a calm, slower first step."
     : draft.currentFeeling.trim().length > 0
@@ -4291,7 +4292,7 @@ const identityProfiles: Array<{
     id: "retired",
     label: "Retired",
     meta: "Daily rhythm, purpose, and a calmer pace",
-    mark: "R",
+    mark: "I",
     help: "Keeps the day anchored with meaning, routine, and reflection."
   },
   {
@@ -7878,6 +7879,19 @@ const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 // accuracy — previously birth time was collected from the user but never
 // used in any Moon-longitude calculation, always defaulting to noon UTC
 // regardless of the real birth time.
+// Validates a calendar day against the actual days-in-month for the given
+// year (accounting for leap years), instead of a blanket 1-31 range. Without
+// this, JS's Date.UTC silently rolls invalid dates like Feb 30 or Apr 31 into
+// the next month, shifting the Moon longitude / Nakshatra / Rashi / Dasha /
+// Lagna calculations without any indication to the user that their entered
+// birth date was reinterpreted.
+function isValidCalendarDate(year: number, month: number, day: number): boolean {
+  if (month < 1 || month > 12 || day < 1) return false;
+  const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  const daysInMonth = [31, isLeapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return day <= daysInMonth[month - 1];
+}
+
 function parseVedicBirthMoment(dob: string, birthTime?: string | null): Date | null {
   if (!dob || dob.length < 10) return null;
   const dateMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(dob.trim());
@@ -7885,7 +7899,7 @@ function parseVedicBirthMoment(dob: string, birthTime?: string | null): Date | n
   const year = Number(dateMatch[1]);
   const month = Number(dateMatch[2]);
   const day = Number(dateMatch[3]);
-  if (!year || month < 1 || month > 12 || day < 1 || day > 31) return null;
+  if (!year || !isValidCalendarDate(year, month, day)) return null;
 
   const timeMatch = birthTime && /^\d{2}:\d{2}$/.test(birthTime) ? birthTime : null;
   if (!timeMatch) {
@@ -7912,7 +7926,7 @@ function parseVedicDateAtNoonUtc(value: string): Date | null {
     const year = Number(match[1]);
     const month = Number(match[2]);
     const day = Number(match[3]);
-    if (!year || month < 1 || month > 12 || day < 1 || day > 31) return null;
+    if (!year || !isValidCalendarDate(year, month, day)) return null;
     const parsed = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
     return isNaN(parsed.getTime()) ? null : parsed;
   }
@@ -9033,12 +9047,11 @@ function generateDailyVisitReport(
   // Journal
   const journalWritten = events.some(e => e.type === "journal_written");
 
-  // Mood from today's entries
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const todayEntries = entries.filter(e => {
-    // entries is CheckInEntry[], filter by today
-    return true; // all passed-in entries are today's
-  });
+  // Mood from today's entries. Callers are expected to pre-filter `entries`
+  // down to today's check-ins before calling this function (both call sites
+  // do this via createdAt); this function trusts that contract rather than
+  // re-filtering, since its parameter type doesn't carry a date field.
+  const todayEntries = entries;
   const avgScore = todayEntries.length > 0
     ? Math.round(todayEntries.reduce((s, e) => s + e.score, 0) / todayEntries.length)
     : null;
@@ -12039,6 +12052,12 @@ export default function App() {
     profileEmailVerified,
     profileLocation,
     profileGender,
+    profileDOB,
+    profileBirthTime,
+    profileBirthPlace,
+    profileBirthLat,
+    profileBirthLon,
+    themePreference,
     languageId,
     profileRoleId,
     accessRole,
@@ -12955,7 +12974,7 @@ export default function App() {
 
         const nextPhoneVerified = channel === "phone" ? true : profilePhoneVerified;
         const nextEmailVerified = channel === "email" ? true : profileEmailVerified;
-        if (nextPhoneVerified && nextEmailVerified && accessRole !== "admin") {
+        if ((nextPhoneVerified || nextEmailVerified) && accessRole !== "admin") {
           setAccessRole("verified");
         }
         setProfileVerificationNotice("Verification complete. Chat and messaging are now unlocked.");
@@ -13032,7 +13051,7 @@ export default function App() {
 
     const nextPhoneVerified = channel === "phone" ? true : profilePhoneVerified;
     const nextEmailVerified = channel === "email" ? true : profileEmailVerified;
-    if (nextPhoneVerified && nextEmailVerified && accessRole !== "admin") {
+    if ((nextPhoneVerified || nextEmailVerified) && accessRole !== "admin") {
       setAccessRole("verified");
     }
     setProfileVerificationNotice("Local verification complete. Chat and messaging are now unlocked.");
@@ -13387,7 +13406,6 @@ export default function App() {
 
   function getAIHelpOpenTabLabel(route: AIHelpRoute): string {
     if (route === "redress" || route === "urgent") return "Help";
-    if (route === "professional") return "Guidance";
     return "Path";
   }
 
@@ -15020,17 +15038,13 @@ async function fetchGeminiAIHelp(
     ];
   }
 
+const ISSUE_ID_VALUES: readonly IssueId[] = [
+  "general", "anger", "anxiety", "fear", "overconfidence", "stigma", "burnout",
+  "loneliness", "grief", "identity", "health", "financial", "relationship",
+  "parenting", "trauma", "academic", "addiction"
+];
 function isIssueId(value: string): value is IssueId {
-    return (
-      value === "general" ||
-      value === "anger" ||
-      value === "anxiety" ||
-      value === "fear" ||
-      value === "overconfidence" ||
-      value === "stigma" ||
-      value === "burnout" ||
-      value === "loneliness"
-    );
+    return (ISSUE_ID_VALUES as readonly string[]).includes(value);
   }
 
 function isIssueReminderMode(value: string): value is IssueReminderMode {
@@ -15150,7 +15164,11 @@ function isTrustedExternalUrl(url: string) {
     <AppErrorBoundary>
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
-        <StatusBar barStyle="light-content" backgroundColor="#050D10" translucent={false} />
+        <StatusBar
+          barStyle={activeColorScheme === "light" ? "dark-content" : "light-content"}
+          backgroundColor={theme.bgDeepest}
+          translucent={false}
+        />
         <ScrollView
           key={scrollBootstrapKey}
           ref={scrollViewRef}
@@ -15783,7 +15801,12 @@ function isTrustedExternalUrl(url: string) {
                     <Text style={{ color: "#E2EAF0", fontSize: 14, fontWeight: "700", marginTop: 2 }}>Your weekly & monthly prediction is ready</Text>
                     <Text style={{ color: "#64748B", fontSize: 12, marginTop: 2 }}>Tap to see your Rashi reading, Nakshatra, and what this week holds</Text>
                   </View>
-                  <Pressable onPress={(e) => { e.stopPropagation?.(); setShowWeeklyVedicBanner(false); }} hitSlop={10}>
+                  <Pressable
+                    onPress={(e) => { e.stopPropagation?.(); setShowWeeklyVedicBanner(false); }}
+                    hitSlop={10}
+                    accessibilityRole="button"
+                    accessibilityLabel="Dismiss weekly guidance banner"
+                  >
                     <Text style={{ color: "#475569", fontSize: 16 }}>✕</Text>
                   </Pressable>
                 </Pressable>
@@ -15867,7 +15890,13 @@ function isTrustedExternalUrl(url: string) {
                         Life pulls hard sometimes. You don't need a perfect streak — just one honest moment today is enough to keep the path alive.
                       </Text>
                     </View>
-                    <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "empathy"])} hitSlop={8} style={{ marginLeft: 8 }}>
+                    <Pressable
+                      onPress={() => setDismissedHintTabs((p) => [...p, "empathy"])}
+                      hitSlop={8}
+                      style={{ marginLeft: 8 }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Dismiss this message"
+                    >
                       <Text style={{ color: "#475569", fontSize: 13 }}>✕</Text>
                     </Pressable>
                   </View>
@@ -15891,7 +15920,13 @@ function isTrustedExternalUrl(url: string) {
                   >
                     <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "700" }}>{postCheckInSuggest.cta}</Text>
                   </Pressable>
-                  <Pressable onPress={() => setPostCheckInSuggest(null)} hitSlop={8} style={{ marginLeft: 6 }}>
+                  <Pressable
+                    onPress={() => setPostCheckInSuggest(null)}
+                    hitSlop={8}
+                    style={{ marginLeft: 6 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Dismiss suggestion"
+                  >
                     <Text style={{ color: "#475569", fontSize: 13 }}>✕</Text>
                   </Pressable>
                 </View>
@@ -15950,7 +15985,13 @@ function isTrustedExternalUrl(url: string) {
                     <Text style={{ color: "#63DED0", fontSize: 10, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>Beacon insight</Text>
                   </View>
                   <Text style={{ color: "#CBD5E1", fontSize: 13, lineHeight: 20 }}>{geminiJournalInsight}</Text>
-                  <Pressable onPress={() => setGeminiJournalInsight(null)} hitSlop={8} style={{ position: "absolute", top: 10, right: 12 }}>
+                  <Pressable
+                    onPress={() => setGeminiJournalInsight(null)}
+                    hitSlop={8}
+                    style={{ position: "absolute", top: 10, right: 12 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Dismiss insight"
+                  >
                     <Text style={{ color: "#475569", fontSize: 13 }}>✕</Text>
                   </Pressable>
                 </View>
@@ -15969,7 +16010,7 @@ function isTrustedExternalUrl(url: string) {
                     <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "700", letterSpacing: 1, flex: 1 }}>
                       🗺️  YOUR JOURNEY  ·  {journeyProgress.done}/{journeyProgress.total}
                     </Text>
-                    <Pressable onPress={() => setJourneyCardDismissed(true)} hitSlop={8} accessibilityLabel="Dismiss journey card">
+                    <Pressable onPress={() => setJourneyCardDismissed(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss journey card">
                       <Text style={{ color: "#475569", fontSize: 13 }}>✕</Text>
                     </Pressable>
                   </View>
@@ -16016,7 +16057,13 @@ function isTrustedExternalUrl(url: string) {
                       Beyond check-ins, Aethon has guided practices 🎯, breath-and-body calming 🌿, healing sound tones 🎵 and guided meditations 🪷. Most people miss these. Tap Pages to explore.
                     </Text>
                   </View>
-                  <Pressable onPress={() => setFeatureNudgeDismissed(true)} hitSlop={8} style={{ marginLeft: 8 }}>
+                  <Pressable
+                    onPress={() => setFeatureNudgeDismissed(true)}
+                    hitSlop={8}
+                    style={{ marginLeft: 8 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Dismiss tip"
+                  >
                     <Text style={{ color: "#475569", fontSize: 13 }}>✕</Text>
                   </Pressable>
                 </View>
@@ -16147,7 +16194,7 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#132030", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center" }}>
                   <Text style={{ fontSize: 18, marginRight: 10 }}>💡</Text>
                   <Text style={{ color: "#94A3B8", fontSize: 12, flex: 1, lineHeight: 18 }}>Your journal entries fuel your pattern analysis. More detail = better insights.</Text>
-                  <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "journal"])} hitSlop={8} accessibilityLabel="Dismiss hint">
+                  <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "journal"])} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss hint">
                     <Text style={{ color: "#475569", fontSize: 14, marginLeft: 8 }}>✕</Text>
                   </Pressable>
                 </View>
@@ -16688,7 +16735,7 @@ function isTrustedExternalUrl(url: string) {
                       ? `Log ${5 - entries.length} more check-in${5 - entries.length === 1 ? "" : "s"} to unlock your full pattern dashboard.`
                       : "Your mood patterns are ready. Explore your emotional trends and insights below."}
                   </Text>
-                  <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "aihelp"])} hitSlop={8} accessibilityLabel="Dismiss hint">
+                  <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "aihelp"])} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss hint">
                     <Text style={{ color: "#475569", fontSize: 14, marginLeft: 8 }}>✕</Text>
                   </Pressable>
                 </View>
@@ -18725,7 +18772,7 @@ function FocusSection({
                   onPress={() => setRoutineId(routine.id)}
                   style={[
                     styles.routineButton,
-                    isSelected && { borderColor: routine.accent, backgroundColor: "#FFFDFC" }
+                    isSelected && { borderColor: routine.accent, backgroundColor: "#102A2D" }
                   ]}
                 >
                   <View style={[styles.routineRail, { backgroundColor: routine.accent }]} />
@@ -20609,7 +20656,7 @@ function CommunitySection({
                         onReportCommunityItem(
                           "chat",
                           message.id,
-                          message.role === "user" ? "other" : "harassment",
+                          "other",
                           message.text
                         )
                       }
@@ -22754,6 +22801,23 @@ function HealthDirectoryCard({
   );
 }
 
+// Shared safe-dial helper for emergency/helpline numbers: tries to open the
+// phone dialer and, if the device can't (e.g. web, or no telephony), shows an
+// alert with the number instead of failing silently — matching the pattern
+// already used by handleRouteCall below, but reusable for the SOS banner and
+// the state officer directory's emergency/women helpline buttons.
+function dialEmergencyNumber(number: string, label: string) {
+  const uri = `tel:${number}`;
+  Linking.canOpenURL(uri)
+    .then((canOpen) => {
+      if (canOpen) return Linking.openURL(uri);
+      Alert.alert(label, `Your device could not open the phone app. Please dial ${number}.`);
+    })
+    .catch(() => {
+      Alert.alert(label, `Your device could not open the phone app. Please dial ${number}.`);
+    });
+}
+
 // State officer directory card — user picks their state, gets one-tap links
 // to the OFFICIAL police portal / e-FIR / DC directory / cyber cell /
 // women helpline for that state. We intentionally do NOT store individual
@@ -22855,17 +22919,19 @@ function StateOfficerDirectoryCard({
           {/* State-level helplines row */}
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
             <Pressable
-              onPress={() => void Linking.openURL(`tel:${selected.emergency}`)}
+              onPress={() => dialEmergencyNumber(selected.emergency, "Emergency")}
               style={{ backgroundColor: "#7F1D1D", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#EF4444" }}
               accessibilityRole="button"
+              accessibilityLabel={`Call emergency number ${selected.emergency}`}
             >
               <Text style={{ color: "#FCA5A5", fontSize: 11, fontWeight: "900" }}>🚨 Emergency {selected.emergency}</Text>
             </Pressable>
             {selected.women && (
               <Pressable
-                onPress={() => void Linking.openURL(`tel:${selected.women}`)}
+                onPress={() => dialEmergencyNumber(selected.women!, "Women's helpline")}
                 style={{ backgroundColor: "#831843", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#F472B6" }}
                 accessibilityRole="button"
+                accessibilityLabel={`Call women's helpline ${selected.women}`}
               >
                 <Text style={{ color: "#FBCFE8", fontSize: 11, fontWeight: "900" }}>👩 Women {selected.women}</Text>
               </Pressable>
@@ -23151,7 +23217,8 @@ function RedressSection({
             <View style={{ flexDirection: "row", gap: 8 }}>
               <Pressable
                 accessibilityRole="button"
-                onPress={() => void Linking.openURL("tel:112")}
+                accessibilityLabel="Call police at 112"
+                onPress={() => dialEmergencyNumber("112", "Police")}
                 style={{ flex: 1, backgroundColor: "#EF4444", borderRadius: 10, paddingVertical: 10, alignItems: "center" }}
               >
                 <Text style={{ color: "#fff", fontWeight: "800", fontSize: 14 }}>📞 112 — Police</Text>
@@ -23159,7 +23226,8 @@ function RedressSection({
               {isDomesticRoute && (
                 <Pressable
                   accessibilityRole="button"
-                  onPress={() => void Linking.openURL("tel:181")}
+                  accessibilityLabel="Call women's helpline at 181"
+                  onPress={() => dialEmergencyNumber("181", "Women's helpline")}
                   style={{ flex: 1, backgroundColor: "#9B1C1C", borderRadius: 10, paddingVertical: 10, alignItems: "center" }}
                 >
                   <Text style={{ color: "#fff", fontWeight: "800", fontSize: 14 }}>📞 181 — Women</Text>
@@ -25407,8 +25475,16 @@ function BirthChartSection({
   const refPlace = React.useRef<any>(null);
 
   const hasReading = !!rashiInfo && !!predictionLines;
-  const isValidDOB = /^\d{4}-\d{2}-\d{2}$/.test(dobDraft);
-  const isValidTime = /^\d{2}:\d{2}$/.test(timeDraft);
+  const dobDraftMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dobDraft);
+  const isValidDOB = !!dobDraftMatch && isValidCalendarDate(
+    Number(dobDraftMatch[1]),
+    Number(dobDraftMatch[2]),
+    Number(dobDraftMatch[3])
+  );
+  const timeDraftMatch = /^(\d{2}):(\d{2})$/.exec(timeDraft);
+  const isValidTime = !!timeDraftMatch &&
+    Number(timeDraftMatch[1]) <= 23 &&
+    Number(timeDraftMatch[2]) <= 59;
   const isValidPlace = placeDraft.trim().length >= 3;
   const canSaveBirthDetails = isValidDOB && isValidTime && isValidPlace;
 
@@ -28870,7 +28946,10 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
   }
 
   // ── 7. Vedic / spiritual / daily guidance — for direction, loss, loneliness ──
-  if (has("direction") || has("loneliness") || has("grief") || issueId === "identity") {
+  if (
+    (has("direction") || has("loneliness") || has("grief") || issueId === "identity") &&
+    !steps.some((step) => step.tabId === "vedic")
+  ) {
     steps.push({
       tabId: "vedic",
       label: "Daily cosmic guidance",
@@ -28944,6 +29023,20 @@ function CounselingChatModal({
   const [synthText, setSynthText] = React.useState("");
   const [journeySteps, setJourneySteps] = React.useState<JourneyStep[]>([]);
   const scrollRef = React.useRef<ScrollView>(null);
+  // Tracks the pending "speak after a short delay" timeout so it can be
+  // cancelled if the modal closes or resets before it fires — without this,
+  // speakText() would still play after the user has already dismissed the
+  // chat (e.g. closing within 400ms of the opening message, or re-opening
+  // with a new issue while a previous speak was still queued).
+  const speakTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isStartingVoiceInputRef = React.useRef(false);
+  const scheduleSpeak = React.useCallback((text: string, delay: number) => {
+    if (speakTimeoutRef.current) clearTimeout(speakTimeoutRef.current);
+    speakTimeoutRef.current = setTimeout(() => {
+      speakTimeoutRef.current = null;
+      speakText(text);
+    }, delay);
+  }, [speakText]);
 
   useSpeechRecognitionEvent("start", () => {
     if (!visible) return;
@@ -29008,8 +29101,14 @@ function CounselingChatModal({
     setJourneySteps([]);
 
     // Speak the opening message
-    setTimeout(() => speakText(openingMsg), 400);
-  }, [visible, initialIssue]);
+    scheduleSpeak(openingMsg, 400);
+    return () => {
+      if (speakTimeoutRef.current) {
+        clearTimeout(speakTimeoutRef.current);
+        speakTimeoutRef.current = null;
+      }
+    };
+  }, [visible, initialIssue, scheduleSpeak]);
 
   React.useEffect(() => {
     if (visible) return;
@@ -29063,7 +29162,7 @@ function CounselingChatModal({
       setSynthText(synthesis);
       setJourneySteps(steps);
       setDraft("");
-      setTimeout(() => speakText(synthesis), 200);
+      scheduleSpeak(synthesis, 200);
     } else {
       // Ask next adaptive question using updated merged themes
       const nextQ = buildCounselingQuestions(mergedThemes, newQuestionIndex, allUserText);
@@ -29077,11 +29176,17 @@ function CounselingChatModal({
       };
       setSession(updatedSession);
       setDraft("");
-      setTimeout(() => speakText(nextQ), 200);
+      scheduleSpeak(nextQ, 200);
     }
   }
 
   async function startVoiceInput() {
+    // Guards against a rapid double-tap starting two overlapping recognition
+    // sessions: isListening only flips to true after the permission request
+    // resolves, so without this a second tap during that await could call
+    // .start() again before the first session registers as active.
+    if (isStartingVoiceInputRef.current || isListening) return;
+    isStartingVoiceInputRef.current = true;
     stopSpeech();
     setSpeechInputNotice("");
     try {
@@ -29115,6 +29220,8 @@ function CounselingChatModal({
     } catch {
       setIsListening(false);
       setSpeechInputNotice("Voice input could not start on this device.");
+    } finally {
+      isStartingVoiceInputRef.current = false;
     }
   }
 
@@ -29157,14 +29264,14 @@ function CounselingChatModal({
       <View style={{ flex: 1, backgroundColor: "#050D14" }}>
         {/* Header */}
         <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Platform.OS === "ios" ? 54 : 40, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#0E1E2A", backgroundColor: "#071220" }}>
-          <Pressable onPress={onClose} hitSlop={12} accessibilityLabel="Close">
+          <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
             <Text style={{ color: "#63DED0", fontSize: 22 }}>←</Text>
           </Pressable>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "800" }}>Your guide is listening</Text>
             <Text style={{ color: "#475569", fontSize: 12 }}>Private · Nothing leaves this device</Text>
           </View>
-          <Pressable onPress={skipToRoute} hitSlop={12} accessibilityLabel="Skip to route">
+          <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
             <Text style={{ color: "#475569", fontSize: 13 }}>Skip →</Text>
           </Pressable>
         </View>
@@ -29217,12 +29324,16 @@ function CounselingChatModal({
               )}
               <Pressable
                 onPress={handleStartJourney}
+                accessibilityRole="button"
+                accessibilityLabel="Start my journey"
                 style={({ pressed }) => ({ backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 14, padding: 16, alignItems: "center", marginTop: 8 })}
               >
                 <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "900" }}>Start my journey  →</Text>
               </Pressable>
               <Pressable
                 onPress={onClose}
+                accessibilityRole="button"
+                accessibilityLabel="Not right now"
                 style={({ pressed }) => ({ padding: 12, alignItems: "center", opacity: pressed ? 0.6 : 1 })}
               >
                 <Text style={{ color: "#475569", fontSize: 13 }}>Not right now</Text>
@@ -29254,12 +29365,15 @@ function CounselingChatModal({
             <Pressable
               onPress={isListening ? stopVoiceInput : startVoiceInput}
               style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+              accessibilityRole="button"
               accessibilityLabel={isListening ? "Stop voice input" : "Start voice input"}
             >
               <Text style={{ fontSize: 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
             </Pressable>
             <Pressable
               onPress={handleSend}
+              accessibilityRole="button"
+              accessibilityLabel="Send message"
               style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() ? "#0E6F69" : "#0E1E2A", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
             >
               <Text style={{ color: "#FFFFFF", fontSize: 20 }}>↑</Text>
@@ -29493,7 +29607,7 @@ function DynamicHeroCard({
         <Text style={{ color: "#63DED0", fontSize: 14, fontWeight: "700" }}>Talk it through with your guide</Text>
       </Pressable>
       <Text style={{ color: "#475569", fontSize: 11, textAlign: "center", marginTop: 6 }}>
-        Listens deeply, asks up to 7 questions across every dimension, then builds your personalised path
+        Listens deeply, asks up to 6 questions across every dimension, then builds your personalised path
       </Text>
 
       {/* Route preview */}
@@ -32266,7 +32380,7 @@ const styles = StyleSheet.create({
   },
   communityHeroPreviewMessage: {
     borderRadius: 8,
-    backgroundColor: "#0D1F22",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: "#E1E4FF",
     padding: 8,
@@ -36561,7 +36675,7 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     overflow: "hidden",
     color: "#E8F4F0",
-    backgroundColor: "#E6EFEA",
+    backgroundColor: "#102A2D",
     textAlign: "center",
     lineHeight: 22,
     fontSize: 11,
@@ -37308,7 +37422,7 @@ const styles = StyleSheet.create({
     lineHeight: 13
   },
   verificationStatusChipLabelActive: {
-    color: "#E8F4F0"
+    color: "#0E6F69"
   },
   verificationBlock: {
     gap: 8
