@@ -24,6 +24,7 @@ import {
   Text,
   TextInput,
   Share,
+  useColorScheme,
   useWindowDimensions,
   View
 } from "react-native";
@@ -248,6 +249,7 @@ type PersistedAppState = {
   profileBirthPlace: string;
   profileBirthLat: number | null;
   profileBirthLon: number | null;
+  themePreference: "system" | "light" | "dark";
   languageId: LanguageId;
   profileRoleId: IdentityId;
   accessRole: AccessRole;
@@ -1793,7 +1795,7 @@ function getDailyPrompt(): string {
 // scoped to the tab bar for now as the first surface migrated onto tokens --
 // a full sweep of every inline hex color across the file is future work, but
 // this establishes the pattern so later passes have somewhere to land.
-const COLORS = {
+const DARK_COLORS = {
   bgDeep: "#0D1F22",
   bgDarker: "#091A1D",
   bgDeepest: "#050D10",
@@ -1810,6 +1812,41 @@ const COLORS = {
   warning: "#FCD34D",
   danger: "#F87171",
 } as const;
+
+// Light counterpart to DARK_COLORS, same token keys so any code reading
+// `theme.xxx` gets a coherent palette either way. Reinstates the dark/light
+// toggle that existed before the earlier hard-reset -- currently wired up on
+// the splash screen, tab bar, and Home hero (the surfaces already migrated
+// onto tokens); the rest of the app's colors are still hardcoded dark and
+// won't flip yet -- that's a larger follow-up.
+const LIGHT_COLORS = {
+  bgDeep: "#F4F8F7",
+  bgDarker: "#E7EFED",
+  bgDeepest: "#FFFFFF",
+  surfaceAlt: "#E1EEEC",
+  textPrimary: "#0D1F22",
+  textOnDark: "#0D1F22",
+  textMuted: "rgba(13,31,34,0.6)",
+  textFaint: "#64748B",
+  accentCyan: "#0891B2",
+  accentTeal: "#0E9488",
+  accentTealDeep: "#0E6F69",
+  accentGold: "#B45309",
+  success: "#059669",
+  warning: "#B45309",
+  danger: "#DC2626",
+} as const;
+
+// Static default used by the single StyleSheet.create below (which evaluates
+// once at module load and can't react to runtime theme state). Screens that
+// need genuine live theme switching layer `theme.xxx` overrides on top of
+// these at render time -- see the `theme` value computed inside App().
+const COLORS = DARK_COLORS;
+
+// Widened shape shared by DARK_COLORS and LIGHT_COLORS (each field just
+// "a string", not the literal hex from one specific palette) so a single
+// `theme` value/prop can hold either palette interchangeably.
+type ThemeColors = { [K in keyof typeof DARK_COLORS]: string };
 
 const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof Ionicons.glyphMap }> = [
   { id: "today", label: "Home", mark: "🏠", icon: "home" },
@@ -9420,6 +9457,17 @@ export default function App() {
   const [profileBirthLat, setProfileBirthLat] = useState<number | null>(null);
   const [profileBirthLon, setProfileBirthLon] = useState<number | null>(null);
   const [birthPlaceGeocodeStatus, setBirthPlaceGeocodeStatus] = useState<"idle" | "loading" | "resolved" | "failed">("idle");
+  // Theme: "system" follows the device's light/dark setting (via useColorScheme
+  // below); "light"/"dark" force it regardless of device setting. Reinstates
+  // the dark-mode toggle that existed early on but didn't survive a later
+  // hard-reset to an older baseline -- scoped for now to the surfaces already
+  // migrated onto COLORS tokens (splash, tab bar, Home hero) rather than a
+  // full app-wide theme sweep, which remains future work.
+  const [themePreference, setThemePreference] = useState<"system" | "light" | "dark">("system");
+  const systemColorScheme = useColorScheme();
+  const activeColorScheme: "light" | "dark" =
+    themePreference === "system" ? (systemColorScheme === "light" ? "light" : "dark") : themePreference;
+  const theme: ThemeColors = activeColorScheme === "light" ? LIGHT_COLORS : DARK_COLORS;
   const [languageId, setLanguageId] = useState<LanguageId>("english");
   const [profileRoleId, setProfileRoleId] = useState<IdentityId>("other");
   const [accessRole, setAccessRole] = useState<AccessRole>("guest");
@@ -11531,6 +11579,13 @@ export default function App() {
         setProfileBirthLon(parsed.profileBirthLon);
         setBirthPlaceGeocodeStatus("resolved");
       }
+      if (
+        parsed.themePreference === "system" ||
+        parsed.themePreference === "light" ||
+        parsed.themePreference === "dark"
+      ) {
+        setThemePreference(parsed.themePreference);
+      }
       if (typeof parsed.languageId === "string" && languageOptions.some((option) => option.id === parsed.languageId)) {
         setLanguageId(parsed.languageId as LanguageId);
       }
@@ -11907,6 +11962,7 @@ export default function App() {
       profileBirthPlace,
       profileBirthLat,
       profileBirthLon,
+      themePreference,
       languageId,
       profileRoleId,
       accessRole,
@@ -15054,26 +15110,35 @@ function isTrustedExternalUrl(url: string) {
   // ── Loading splash — shown while AsyncStorage hydrates ──────────────────────
   if (!hasLoaded) {
     return (
-      <View style={{ flex: 1, backgroundColor: "#050D10", alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, backgroundColor: theme.bgDeepest, alignItems: "center", justifyContent: "center" }}>
         <View style={{ alignItems: "center" }}>
           {/* Vibrant animated logo mark */}
           <View style={{
             width: 88, height: 88, borderRadius: 24,
-            backgroundColor: "#0F2A3A",
+            backgroundColor: activeColorScheme === "light" ? "#DCEEFB" : "#0F2A3A",
             alignItems: "center", justifyContent: "center",
             shadowColor: "#38BDF8", shadowOpacity: 0.5, shadowRadius: 24, shadowOffset: { width: 0, height: 0 },
-            borderWidth: 1.5, borderColor: "#1E4D6B",
+            borderWidth: 1.5, borderColor: activeColorScheme === "light" ? "#93C5FD" : "#1E4D6B",
             marginBottom: 20
           }}>
             <Text style={{ fontSize: 44, lineHeight: 52 }}>🔱</Text>
           </View>
-          <Text style={{ color: "#38BDF8", fontSize: 22, fontWeight: "700", letterSpacing: 3, marginBottom: 4 }}>
+          <Text
+            style={{
+              color: "#38BDF8",
+              fontSize: 22,
+              fontWeight: fontsLoaded ? "400" : "700",
+              fontFamily: fontsLoaded ? "PlayfairDisplay_700Bold" : undefined,
+              letterSpacing: 3,
+              marginBottom: 4
+            }}
+          >
             AETHON BEACON
           </Text>
-          <Text style={{ color: "#475569", fontSize: 12, letterSpacing: 1.5 }}>Your clarity. Your next step.</Text>
+          <Text style={{ color: theme.textFaint, fontSize: 12, letterSpacing: 1.5 }}>Your clarity. Your next step.</Text>
           <View style={{ marginTop: 32, flexDirection: "row", gap: 6 }}>
             {[0, 1, 2].map((i) => (
-              <View key={i} style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: i === 0 ? "#38BDF8" : "#1E3A4A" }} />
+              <View key={i} style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: i === 0 ? "#38BDF8" : (activeColorScheme === "light" ? "#CBD5E1" : "#1E3A4A") }} />
             ))}
           </View>
         </View>
@@ -15218,7 +15283,7 @@ function isTrustedExternalUrl(url: string) {
             </>
           )}
           {/* End home-only chrome. Tab rail below stays visible on every page. */}
-            <View style={styles.topTabRail}>
+            <View style={[styles.topTabRail, { backgroundColor: theme.bgDarker }]}>
               {isCompact ? (
                 <ScrollView
                   horizontal
@@ -15236,18 +15301,19 @@ function isTrustedExternalUrl(url: string) {
                         onPress={() => handleTabPress(tab.id)}
                         style={({ pressed }) => [
                           styles.topTabButton,
-                          isActive && styles.topTabButtonActive,
+                          { backgroundColor: theme.bgDeep },
+                          isActive && [styles.topTabButtonActive, { backgroundColor: theme.surfaceAlt, borderColor: theme.accentGold }],
                           pressed && styles.pressed
                         ]}
                       >
                         <Ionicons
                           name={tab.icon}
                           size={16}
-                          color={isActive ? COLORS.accentGold : COLORS.textMuted}
+                          color={isActive ? theme.accentGold : theme.textMuted}
                           style={{ marginBottom: 1 }}
                         />
                         <Text
-                          style={[styles.topTabLabel, isActive && styles.topTabTextActive]}
+                          style={[styles.topTabLabel, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
                           numberOfLines={1}
                         >
                           {tab.label}
@@ -15259,10 +15325,15 @@ function isTrustedExternalUrl(url: string) {
                     accessibilityRole="button"
                     accessibilityLabel="Open all pages"
                     onPress={() => setShowSectionSwitcher(true)}
-                    style={({ pressed }) => [styles.topTabButton, styles.topTabButtonMore, pressed && styles.pressed]}
+                    style={({ pressed }) => [
+                      styles.topTabButton,
+                      { backgroundColor: theme.bgDeep },
+                      styles.topTabButtonMore,
+                      pressed && styles.pressed
+                    ]}
                   >
-                    <Text style={styles.topTabMark}>+</Text>
-                    <Text style={styles.topTabLabel} numberOfLines={1}>More</Text>
+                    <Text style={[styles.topTabMark, { color: theme.textMuted }]}>+</Text>
+                    <Text style={[styles.topTabLabel, { color: theme.textMuted }]} numberOfLines={1}>More</Text>
                   </Pressable>
                 </ScrollView>
               ) : (
@@ -15278,18 +15349,19 @@ function isTrustedExternalUrl(url: string) {
                         onPress={() => handleTabPress(tab.id)}
                         style={({ pressed }) => [
                           styles.topTabButton,
-                          isActive && styles.topTabButtonActive,
+                          { backgroundColor: theme.bgDeep },
+                          isActive && [styles.topTabButtonActive, { backgroundColor: theme.surfaceAlt, borderColor: theme.accentGold }],
                           pressed && styles.pressed
                         ]}
                       >
                         <Ionicons
                           name={tab.icon}
                           size={16}
-                          color={isActive ? COLORS.accentGold : COLORS.textMuted}
+                          color={isActive ? theme.accentGold : theme.textMuted}
                           style={{ marginBottom: 1 }}
                         />
                         <Text
-                          style={[styles.topTabLabel, isActive && styles.topTabTextActive]}
+                          style={[styles.topTabLabel, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
                           numberOfLines={1}
                         >
                           {tab.label}
@@ -15301,10 +15373,15 @@ function isTrustedExternalUrl(url: string) {
                     accessibilityRole="button"
                     accessibilityLabel="Open all pages"
                     onPress={() => setShowSectionSwitcher(true)}
-                    style={({ pressed }) => [styles.topTabButton, styles.topTabButtonMore, pressed && styles.pressed]}
+                    style={({ pressed }) => [
+                      styles.topTabButton,
+                      { backgroundColor: theme.bgDeep },
+                      styles.topTabButtonMore,
+                      pressed && styles.pressed
+                    ]}
                   >
-                    <Text style={styles.topTabMark}>+</Text>
-                    <Text style={styles.topTabLabel} numberOfLines={1}>More</Text>
+                    <Text style={[styles.topTabMark, { color: theme.textMuted }]}>+</Text>
+                    <Text style={[styles.topTabLabel, { color: theme.textMuted }]} numberOfLines={1}>More</Text>
                   </Pressable>
                 </View>
               )}
@@ -15437,11 +15514,11 @@ function isTrustedExternalUrl(url: string) {
               onRequestClose={() => setShowSectionSwitcher(false)}
             >
               <View style={styles.sectionSwitcherModalBackdrop}>
-                <View style={styles.sectionSwitcherModalSheet}>
+                <View style={[styles.sectionSwitcherModalSheet, { backgroundColor: theme.bgDarker }]}>
                   <View style={styles.sectionSwitcherModalHeader}>
                     <View style={{ flex: 1, gap: 4 }}>
-                      <Text style={styles.sectionSwitcherPanelTitle}>Open a page</Text>
-                      <Text style={styles.sectionSwitcherPanelMeta}>
+                      <Text style={[styles.sectionSwitcherPanelTitle, { color: theme.textPrimary }]}>Open a page</Text>
+                      <Text style={[styles.sectionSwitcherPanelMeta, { color: theme.textMuted }]}>
                         Tap a page to go there directly.
                       </Text>
                     </View>
@@ -15449,9 +15526,9 @@ function isTrustedExternalUrl(url: string) {
                       accessibilityRole="button"
                       accessibilityLabel="Close section chooser"
                       onPress={() => setShowSectionSwitcher(false)}
-                      style={({ pressed }) => [styles.sectionSwitcherPanelClose, pressed && styles.pressed]}
+                      style={({ pressed }) => [styles.sectionSwitcherPanelClose, { backgroundColor: theme.bgDeep }, pressed && styles.pressed]}
                     >
-                      <Text style={styles.sectionSwitcherPanelCloseLabel}>Close</Text>
+                      <Text style={[styles.sectionSwitcherPanelCloseLabel, { color: theme.textMuted }]}>Close</Text>
                     </Pressable>
                   </View>
                   <View style={styles.sectionSwitcherGrid}>
@@ -15462,6 +15539,7 @@ function isTrustedExternalUrl(url: string) {
                         isActive={activeTab === tab.id}
                         isCompact={true}
                         onPress={handleTabPress}
+                        theme={theme}
                       />
                     ))}
                   </View>
@@ -17045,6 +17123,9 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               <SettingsSection
+                themePreference={themePreference}
+                setThemePreference={setThemePreference}
+                theme={theme}
                 localOnly={localOnly}
                 setLocalOnly={setLocalOnly}
                 softPrompts={softPrompts}
@@ -24119,10 +24200,16 @@ function SettingsSection({
   reviewContact,
   setReviewContact,
   onSubmitReview,
-  onShowPrivacyPolicy
+  onShowPrivacyPolicy,
+  themePreference,
+  setThemePreference,
+  theme
 }: {
   localOnly: boolean;
   setLocalOnly: (value: boolean) => void;
+  themePreference: "system" | "light" | "dark";
+  setThemePreference: (value: "system" | "light" | "dark") => void;
+  theme: ThemeColors;
   softPrompts: boolean;
   setSoftPrompts: (value: boolean) => void;
   reminderEnabled: boolean;
@@ -24462,6 +24549,44 @@ function SettingsSection({
         value={voiceAssistEnabled}
         onValueChange={setVoiceAssistEnabled}
       />
+      {/* ── Appearance: theme picker ──
+          Currently changes the splash, tab bar, and section switcher live;
+          the rest of the app's colors are still fixed-dark and don't flip
+          yet -- a full light-mode pass across every screen is future work. */}
+      <View style={[styles.settingsBlock, { backgroundColor: theme.bgDeep, borderRadius: 12, padding: 14 }]}>
+        <Text style={[styles.settingsTitle, { color: theme.textPrimary }]}>Appearance</Text>
+        <Text style={[styles.promptText, { color: theme.textMuted, marginBottom: 10 }]}>
+          System follows your device. Light/Dark force a theme regardless of device setting.
+        </Text>
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          {(["system", "light", "dark"] as const).map((option) => {
+            const isSelected = themePreference === option;
+            return (
+              <Pressable
+                key={option}
+                accessibilityRole="button"
+                accessibilityLabel={`${option} theme`}
+                accessibilityState={{ selected: isSelected }}
+                onPress={() => setThemePreference(option)}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  paddingVertical: 10,
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: isSelected ? theme.accentGold : "rgba(148,163,184,0.3)",
+                  backgroundColor: isSelected ? theme.surfaceAlt : "transparent",
+                  alignItems: "center",
+                  opacity: pressed ? 0.7 : 1
+                })}
+              >
+                <Text style={{ color: isSelected ? theme.accentGold : theme.textMuted, fontSize: 12, fontWeight: "800", textTransform: "capitalize" }}>
+                  {option}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
       {/* ── Voice gender + humanized speech settings ── */}
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>Voice character</Text>
@@ -29457,12 +29582,14 @@ function TabButton({
   tab,
   isActive,
   isCompact,
-  onPress
+  onPress,
+  theme = DARK_COLORS
 }: {
-  tab: { id: TabId; label: string; mark: string };
+  tab: { id: TabId; label: string; mark: string; icon?: keyof typeof Ionicons.glyphMap };
   isActive: boolean;
   isCompact: boolean;
   onPress: (id: TabId) => void;
+  theme?: ThemeColors;
 }) {
   return (
     <Pressable
@@ -29472,27 +29599,25 @@ function TabButton({
       onPress={() => onPress(tab.id)}
       style={[
         styles.tabButton,
+        { backgroundColor: theme.bgDeep, borderColor: theme.textFaint },
         isCompact && styles.tabButtonCompact,
-        isActive && styles.tabButtonActive
+        isActive && [styles.tabButtonActive, { borderColor: theme.accentGold, backgroundColor: theme.surfaceAlt }]
       ]}
     >
-      {tab.mark ? (
-        <Text
-          style={[
-            styles.tabMark,
-            isCompact && styles.tabMarkCompact,
-            isActive && styles.tabTextActive
-          ]}
-          numberOfLines={1}
-        >
-          {tab.mark}
-        </Text>
+      {tab.icon ? (
+        <Ionicons
+          name={tab.icon}
+          size={isCompact ? 15 : 18}
+          color={isActive ? theme.accentGold : theme.textMuted}
+          style={{ marginBottom: 1 }}
+        />
       ) : null}
       <Text
         style={[
           styles.tabLabel,
           isCompact && styles.tabLabelCompact,
-          isActive && styles.tabTextActive
+          { color: theme.textMuted },
+          isActive && { color: theme.accentGold }
         ]}
         numberOfLines={1}
       >
