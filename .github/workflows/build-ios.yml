@@ -61,15 +61,26 @@ jobs:
           if [ -n "${APPSTORE_API_KEY_ID:-}" ] && [ -n "${APPSTORE_API_KEY_P8:-}" ]; then
             mkdir -p "$HOME/.appstoreconnect/private_keys"
             KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8"
+            # Diagnostics that don't leak the secret itself: length + whether
+            # it looks like it already has a PEM header. Helps tell "secret is
+            # empty/truncated" apart from "secret needs normalization".
+            echo "APPSTORE_API_KEY_P8 length: ${#APPSTORE_API_KEY_P8} chars"
+            case "$APPSTORE_API_KEY_P8" in
+              *BEGIN*PRIVATE\ KEY*) echo "Contains a BEGIN PRIVATE KEY header: yes" ;;
+              *) echo "Contains a BEGIN PRIVATE KEY header: no" ;;
+            esac
             # Normalize the pasted secret to a valid PEM regardless of
             # whether the user pasted (a) proper PEM with newlines,
             # (b) all-on-one-line PEM (GitHub textarea can strip newlines),
             # (c) escaped newline sequences, or
             # (d) just the bare base64 body without BEGIN/END lines.
-            python3 "$GITHUB_WORKSPACE/.github/scripts/normalize_asc_key.py" > "$KEY_PATH"
+            if ! python3 "$GITHUB_WORKSPACE/.github/scripts/normalize_asc_key.py" > "$KEY_PATH" 2>/tmp/normalize_err.txt; then
+              echo "::error::normalize_asc_key.py failed: $(cat /tmp/normalize_err.txt)"
+              exit 1
+            fi
             chmod 600 "$KEY_PATH"
-            if ! openssl pkey -in "$KEY_PATH" -noout >/dev/null 2>&1; then
-              echo "::error::Normalized App Store Connect key is not a valid PEM document. Re-check the APPSTORE_API_KEY_P8 secret."
+            if ! openssl pkey -in "$KEY_PATH" -noout >/dev/null 2>/tmp/openssl_err.txt; then
+              echo "::error::Normalized App Store Connect key is not a valid PEM document: $(cat /tmp/openssl_err.txt | tr '\n' ' '). Re-check the APPSTORE_API_KEY_P8 secret."
               exit 1
             fi
             echo "APPSTORE_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
