@@ -32583,7 +32583,7 @@ const styles = StyleSheet.create({
     minHeight: 40,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     paddingHorizontal: 8,
     paddingVertical: 6,
@@ -32661,7 +32661,7 @@ const styles = StyleSheet.create({
   footerMiniRow: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E5ECF7",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     padding: 9,
     flexDirection: "row",
@@ -32904,7 +32904,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#CFC4B8",
+    borderColor: "rgba(14,111,105,0.3)",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,
@@ -33126,7 +33126,7 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 1,
-    borderColor: "#CFC4B8",
+    borderColor: "rgba(14,111,105,0.3)",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,
@@ -33172,7 +33172,7 @@ const styles = StyleSheet.create({
   },
   aiHelpInput: {
     minHeight: 92,
-    borderColor: "#C7D8F4",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22"
   },
   searchInput: {
@@ -33266,7 +33266,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#102A2D"
   },
   aiHelpBubble: {
-    borderColor: "#C7D8F4",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22"
   },
   communityChatAuthor: {
@@ -34065,7 +34065,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#DDD3C2",
+    borderColor: "rgba(14,111,105,0.3)",
     paddingHorizontal: 9,
     paddingVertical: 7,
     gap: 2,
@@ -34270,7 +34270,7 @@ const styles = StyleSheet.create({
     minHeight: 48,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D6E0F4",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -34378,7 +34378,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#D6E0F4",
+    borderColor: "rgba(14,111,105,0.3)",
     padding: 12,
     gap: 10
   },
@@ -34849,7 +34849,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#091A1D",
     borderWidth: 1,
-    borderColor: "#D9CDBD",
+    borderColor: "rgba(14,111,105,0.3)",
     ...shadow
   },
   privateIntakeSheet: {
@@ -34881,7 +34881,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#091A1D",
     borderWidth: 1,
-    borderColor: "#D9CDBD",
+    borderColor: "rgba(14,111,105,0.3)",
     ...shadow
   },
   profileSheetCompact: {
@@ -34995,7 +34995,7 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     borderWidth: 1,
-    borderColor: "#D9CDBD",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     alignItems: "center",
     justifyContent: "center"
@@ -35016,7 +35016,7 @@ const styles = StyleSheet.create({
     minHeight: 34,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D9CDBD",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     paddingHorizontal: 12,
     paddingVertical: 7,
@@ -35143,7 +35143,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#0D1F22",
     borderWidth: 1,
-    borderColor: "#D9CDBD",
+    borderColor: "rgba(14,111,105,0.3)",
     paddingHorizontal: 16,
     alignItems: "center",
     justifyContent: "center"
@@ -35177,7 +35177,7 @@ const styles = StyleSheet.create({
     minHeight: 64,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#DDD3C2",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -35761,7 +35761,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#CFC4B8",
+    borderColor: "rgba(14,111,105,0.3)",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#091A1D",
@@ -35813,7 +35813,7 @@ const styles = StyleSheet.create({
     minHeight: 78,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D9CDBD",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     padding: 12,
     gap: 4
@@ -36239,7 +36239,7 @@ const styles = StyleSheet.create({
   calmSituationBand: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D8E3DB",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     padding: 12,
     gap: 10
@@ -36323,7 +36323,7 @@ const styles = StyleSheet.create({
   calmVoiceBand: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D8E3DB",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     padding: 12,
     gap: 8
@@ -37068,7 +37068,7 @@ const styles = StyleSheet.create({
     gap: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D8E3DB",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     paddingHorizontal: 10,
     paddingVertical: 8
@@ -37134,7 +37134,7 @@ const styles = StyleSheet.create({
     flexBasis: 96,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D8E3DB",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -37486,7 +37486,7 @@ const styles = StyleSheet.create({
     minHeight: 42,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#CFC4B8",
+    borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#0D1F22",
     paddingHorizontal: 12,
     paddingVertical: 9,
