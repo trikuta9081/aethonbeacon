@@ -44,6 +44,13 @@ import * as Speech from "expo-speech";
 import * as Astronomy from "astronomy-engine";
 import Notifications, { notificationsAvailable } from "./notifications";
 import { supabaseConfigured, pushToSupabase, pullFromSupabase } from "./supabaseSync";
+import * as Haptics from "expo-haptics";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  useFonts,
+  PlayfairDisplay_700Bold,
+  PlayfairDisplay_600SemiBold,
+} from "@expo-google-fonts/playfair-display";
 import {
   communityRealtimeConfigured,
   fetchRealtimeCommunityMessages,
@@ -1780,22 +1787,46 @@ function getDailyPrompt(): string {
   return DAILY_PROMPTS[dayOfYear % DAILY_PROMPTS.length];
 }
 
-const tabs: Array<{ id: TabId; label: string; mark: string }> = [
-  { id: "today", label: "Home", mark: "🏠" },
-  { id: "guide", label: "Path", mark: "🧭" },
-  { id: "aihelp", label: "Insights", mark: "✨" },
-  { id: "community", label: "Chat", mark: "💬" },
-  { id: "journal", label: "Journal", mark: "📓" },
-  { id: "focus", label: "Calm", mark: "🌿" },
-  { id: "tones", label: "Tones", mark: "🎵" },
-  { id: "meditation", label: "Meditation", mark: "🪷" },
-  { id: "vedic", label: "Birth Chart", mark: "🪐" },
-  { id: "redress", label: "Help", mark: "🛡️" },
-  { id: "insights", label: "Patterns", mark: "📊" },
-  { id: "search", label: "Explore", mark: "🔍" },
-  { id: "play", label: "Practice", mark: "🎯" },
-  { id: "language", label: "Language", mark: "🌐" },
-  { id: "admin", label: "Control", mark: "⚙️" }
+// ── Shared color tokens ──────────────────────────────────────────────────────
+// Foundational palette pulled from the most-used raw hex values across the
+// app (tab bar, dark surfaces, accent teal/cyan/gold, status colors). This is
+// scoped to the tab bar for now as the first surface migrated onto tokens --
+// a full sweep of every inline hex color across the file is future work, but
+// this establishes the pattern so later passes have somewhere to land.
+const COLORS = {
+  bgDeep: "#0D1F22",
+  bgDarker: "#091A1D",
+  bgDeepest: "#050D10",
+  surfaceAlt: "#102A2D",
+  textPrimary: "#E8F4F0",
+  textOnDark: "#F0F9FF",
+  textMuted: "rgba(255,255,255,0.75)",
+  textFaint: "#475569",
+  accentCyan: "#22D3EE",
+  accentTeal: "#63DED0",
+  accentTealDeep: "#0E6F69",
+  accentGold: "#F6D46B",
+  success: "#34D399",
+  warning: "#FCD34D",
+  danger: "#F87171",
+} as const;
+
+const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof Ionicons.glyphMap }> = [
+  { id: "today", label: "Home", mark: "🏠", icon: "home" },
+  { id: "guide", label: "Path", mark: "🧭", icon: "compass" },
+  { id: "aihelp", label: "Insights", mark: "✨", icon: "sparkles" },
+  { id: "community", label: "Chat", mark: "💬", icon: "chatbubbles" },
+  { id: "journal", label: "Journal", mark: "📓", icon: "book" },
+  { id: "focus", label: "Calm", mark: "🌿", icon: "leaf" },
+  { id: "tones", label: "Tones", mark: "🎵", icon: "musical-notes" },
+  { id: "meditation", label: "Meditation", mark: "🪷", icon: "flower" },
+  { id: "vedic", label: "Birth Chart", mark: "🪐", icon: "planet" },
+  { id: "redress", label: "Help", mark: "🛡️", icon: "shield-checkmark" },
+  { id: "insights", label: "Patterns", mark: "📊", icon: "stats-chart" },
+  { id: "search", label: "Explore", mark: "🔍", icon: "search" },
+  { id: "play", label: "Practice", mark: "🎯", icon: "footsteps" },
+  { id: "language", label: "Language", mark: "🌐", icon: "language" },
+  { id: "admin", label: "Control", mark: "⚙️", icon: "settings" }
 ];
 
 const launchNeeds: Array<{
@@ -9439,6 +9470,15 @@ export default function App() {
   const [languagePageNonce, setLanguagePageNonce] = useState(0);
   const [entries, setEntries] = useState<CheckInEntry[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
+  // Real display typeface (Playfair Display) for the splash brand mark and the
+  // Home hero greeting -- the app previously never set fontFamily anywhere and
+  // fell back to the system default everywhere. Gated behind the same loading
+  // splash used for AsyncStorage hydration below, so there's no separate
+  // flash-of-unstyled-text moment.
+  const [fontsLoaded] = useFonts({
+    PlayfairDisplay_700Bold,
+    PlayfairDisplay_600SemiBold,
+  });
   const [scrollBootstrapKey, setScrollBootstrapKey] = useState(0);
   const [tabHistory, setTabHistory] = useState<TabId[]>([]);
   const [sectionOffsets, setSectionOffsets] = useState<Partial<Record<TabId, number>>>({});
@@ -12385,6 +12425,7 @@ export default function App() {
       setVisitReports((current) => [dayReport, stepReport, ...current].slice(0, 40));
     }
     void scheduleRetentionReminder("check-in");
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert("Report generated", reportNotice);
     setJournal(defaultDraft);
     setSessionActive(false);
@@ -13928,6 +13969,7 @@ async function fetchGeminiAIHelp(
     };
     setAstroChatMessages((prev) => [astroMsg, userMsg, ...prev].slice(0, 40));
     setAstroChatDraft("");
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 
   function queueVedicEngineIssue(rawText: string, issue: IssueGuide, source: VedicEngineSource) {
@@ -14331,6 +14373,9 @@ async function fetchGeminiAIHelp(
   }
 
   function handleTabPress(tabId: TabId, options?: { recordHistory?: boolean }) {
+    if (tabId !== activeTab) {
+      void Haptics.selectionAsync();
+    }
     setShowSectionSwitcher(false);
     if (tabId !== activeTab && options?.recordHistory !== false) {
       setTabHistory((current) => {
@@ -15195,9 +15240,12 @@ function isTrustedExternalUrl(url: string) {
                           pressed && styles.pressed
                         ]}
                       >
-                        <Text style={[styles.topTabMark, isActive && styles.topTabTextActive]}>
-                          {tab.mark}
-                        </Text>
+                        <Ionicons
+                          name={tab.icon}
+                          size={16}
+                          color={isActive ? COLORS.accentGold : COLORS.textMuted}
+                          style={{ marginBottom: 1 }}
+                        />
                         <Text
                           style={[styles.topTabLabel, isActive && styles.topTabTextActive]}
                           numberOfLines={1}
@@ -15234,9 +15282,12 @@ function isTrustedExternalUrl(url: string) {
                           pressed && styles.pressed
                         ]}
                       >
-                        <Text style={[styles.topTabMark, isActive && styles.topTabTextActive]}>
-                          {tab.mark}
-                        </Text>
+                        <Ionicons
+                          name={tab.icon}
+                          size={16}
+                          color={isActive ? COLORS.accentGold : COLORS.textMuted}
+                          style={{ marginBottom: 1 }}
+                        />
                         <Text
                           style={[styles.topTabLabel, isActive && styles.topTabTextActive]}
                           numberOfLines={1}
@@ -15474,7 +15525,16 @@ function isTrustedExternalUrl(url: string) {
                       {/* Row 2: name + clarity orb */}
                       <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 10 }}>
                         <View style={{ flex: 1, marginRight: 12 }}>
-                          <Text style={{ color: "#F0F9FF", fontSize: 26, fontWeight: "900", letterSpacing: -0.5 }} numberOfLines={1}>
+                          <Text
+                            style={{
+                              color: COLORS.textOnDark,
+                              fontSize: 27,
+                              fontWeight: fontsLoaded ? "400" : "900",
+                              fontFamily: fontsLoaded ? "PlayfairDisplay_700Bold" : undefined,
+                              letterSpacing: -0.5
+                            }}
+                            numberOfLines={1}
+                          >
                             {profileDisplayName || "Welcome back"}
                           </Text>
                           <Text style={{ color: "#334155", fontSize: 12, marginTop: 3, fontStyle: "italic" }} numberOfLines={1}>
@@ -25272,6 +25332,7 @@ function BirthChartSection({
     setProfileBirthTime(timeDraft.trim());
     setProfileBirthPlace(placeDraft.trim());
     setSaved(true);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setTimeout(() => setSaved(false), 2000);
   }
 
@@ -28845,6 +28906,7 @@ function CounselingChatModal({
     const text = draft.trim();
     if (!text) return;
     stopSpeech();
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     const userTurn: CounselingTurn = { role: "user", message: text };
     const newTurns = [...session.turns, userTurn];
@@ -30858,7 +30920,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.10)",
-    backgroundColor: "#0D1F22",
+    backgroundColor: COLORS.bgDeep,
     paddingHorizontal: 10,
     paddingVertical: 8,
     flexDirection: "row",
@@ -30867,14 +30929,14 @@ const styles = StyleSheet.create({
     gap: 4
   },
   topTabButtonActive: {
-    borderColor: "#F6D46B",
-    backgroundColor: "#102A2D"
+    borderColor: COLORS.accentGold,
+    backgroundColor: COLORS.surfaceAlt
   },
   topTabButtonMore: {
     borderColor: "rgba(14,204,184,0.28)"
   },
   topTabMark: {
-    color: "rgba(255,255,255,0.75)",
+    color: COLORS.textMuted,
     fontSize: 13,
     lineHeight: 16,
     fontWeight: "900"
@@ -30886,7 +30948,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   topTabTextActive: {
-    color: "#F6D46B"
+    color: COLORS.accentGold
   },
   topStatusChip: {
     flexGrow: 0,
