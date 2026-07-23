@@ -8469,6 +8469,29 @@ function getTodayTithi(): { number: number; name: string; type: string; paksha: 
   };
 }
 
+// Next Ekadashi (11th lunar day of either paksha) from today, using the same
+// Moon-Sun elongation formula as getTodayTithi. Ekadashi falls roughly every
+// 14-15 days, so a 20-day forward scan always finds the next one -- reuses
+// the existing tropical-longitude helpers rather than adding a new
+// astronomy dependency.
+function getNextEkadashi(): { date: Date; paksha: "Shukla" | "Krishna"; daysAway: number } | null {
+  for (let daysAhead = 0; daysAhead <= 20; daysAhead++) {
+    const candidate = new Date();
+    candidate.setDate(candidate.getDate() + daysAhead);
+    candidate.setHours(12, 0, 0, 0); // noon local -- avoids tithi boundary flicker near midnight
+    const elongation = normalizeDegrees(getApproxTropicalMoonLongitude(candidate) - getApproxTropicalSunLongitude(candidate));
+    const tithiNum = Math.min(29, Math.floor(elongation / 12));
+    if (tithiNum === 10 || tithiNum === 25) {
+      return {
+        date: candidate,
+        paksha: tithiNum === 10 ? "Shukla" : "Krishna",
+        daysAway: daysAhead
+      };
+    }
+  }
+  return null;
+}
+
 // Generate the daily prediction text for a given rashi
 function getVedicDailyPrediction(
   rashiId: number,
@@ -10195,6 +10218,31 @@ export default function App() {
   const trend = useMemo(() => getSevenDayTrend(entries), [entries]);
   const monthTrend = useMemo(() => getThirtyDayTrend(entries), [entries]);
   const topRoutine = useMemo(() => getTopRoutine(entries), [entries]);
+
+  // Weekly recap -- blends mood trend + check-in count + today's horoscope
+  // highlight into one "your week" moment, instead of the user having to
+  // piece it together from separate cards/tabs.
+  const weeklyCheckInCount = useMemo(() => {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return entries.filter((entry) => new Date(entry.createdAt).getTime() >= cutoff).length;
+  }, [entries]);
+  const weeklyMoodAverage = useMemo(() => {
+    const activeDays = trend.filter((day) => day.value > 0);
+    if (activeDays.length === 0) return null;
+    return Math.round(activeDays.reduce((sum, day) => sum + day.value, 0) / activeDays.length);
+  }, [trend]);
+  const weeklyMoodDirection = useMemo(() => {
+    const activeDays = trend.filter((day) => day.value > 0);
+    if (activeDays.length < 2) return null;
+    const firstHalf = activeDays.slice(0, Math.ceil(activeDays.length / 2));
+    const secondHalf = activeDays.slice(Math.ceil(activeDays.length / 2));
+    if (secondHalf.length === 0) return null;
+    const firstAvg = firstHalf.reduce((sum, day) => sum + day.value, 0) / firstHalf.length;
+    const secondAvg = secondHalf.reduce((sum, day) => sum + day.value, 0) / secondHalf.length;
+    if (secondAvg > firstAvg + 3) return "up";
+    if (secondAvg < firstAvg - 3) return "down";
+    return "steady";
+  }, [trend]);
 
   const todaySignal = useMemo(() => {
     if (clarityScore >= 80) return "Clear & grounded";
@@ -12195,6 +12243,8 @@ export default function App() {
       milestone14: "aethon-streak-milestone-14",
       milestone30: "aethon-streak-milestone-30",
       milestone60: "aethon-streak-milestone-60",
+      antardashaChange: "aethon-antardasha-change",
+      ekadashi: "aethon-ekadashi",
       followUp: (i: number) => `aethon-followup-${i}`,
     };
     const cancelOwnNotifications = async () => {
@@ -12204,6 +12254,8 @@ export default function App() {
         NOTIF_IDS.vedic,
         NOTIF_IDS.vedicEvening,
         NOTIF_IDS.vedicWeekly,
+        NOTIF_IDS.antardashaChange,
+        NOTIF_IDS.ekadashi,
         NOTIF_IDS.reengage,
         NOTIF_IDS.wellbeingMorning,
         NOTIF_IDS.wellbeingAfternoon,
@@ -12356,6 +12408,58 @@ export default function App() {
         }).catch(() => undefined);
       }
 
+      // ── Antardasha change — one-time notification for the real transition
+      // date, tied to the user's actual Vimshottari Dasha state, instead of
+      // only generic recurring astro reminders. Only scheduled when the
+      // transition is still in the future and within a reasonable horizon
+      // (2 years) so we don't schedule something decades out.
+      if (notifVedicEnabled && vedicDashaState) {
+        const antardashaEndDate = new Date(vedicDashaState.antardashaEndsAtIso);
+        const msUntilChange = antardashaEndDate.getTime() - Date.now();
+        const twoYearsMs = 2 * 365 * 24 * 60 * 60 * 1000;
+        if (msUntilChange > 0 && msUntilChange < twoYearsMs) {
+          await Notifications.scheduleNotificationAsync({
+            identifier: NOTIF_IDS.antardashaChange,
+            content: {
+              title: "🪐 Your Antardasha is shifting",
+              body: `Your ${vedicDashaState.currentAntardasha} Antardasha ends today, moving into ${vedicDashaState.nextAntardasha} within your ${vedicDashaState.currentMahadasha} Mahadasha. Open Aethon Beacon to see what this phase means.`,
+              data: { tab: "vedic" },
+              ...reminderNotificationContentOptions()
+            },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.DATE,
+              date: antardashaEndDate
+            }
+          }).catch(() => undefined);
+        }
+      }
+
+      // ── Next Ekadashi — one-time notification the morning of the actual
+      // fasting day, computed from today's real lunar elongation rather than
+      // a fixed recurring schedule.
+      if (notifVedicEnabled) {
+        const nextEkadashi = getNextEkadashi();
+        if (nextEkadashi && nextEkadashi.daysAway > 0) {
+          const notifyAt = new Date(nextEkadashi.date);
+          notifyAt.setHours(7, 0, 0, 0);
+          if (notifyAt.getTime() > Date.now()) {
+            await Notifications.scheduleNotificationAsync({
+              identifier: NOTIF_IDS.ekadashi,
+              content: {
+                title: `🙏 ${nextEkadashi.paksha} Ekadashi today`,
+                body: "Today is Ekadashi — a traditional day for fasting and spiritual focus. Open Aethon Beacon for guidance.",
+                data: { tab: "vedic" },
+                ...reminderNotificationContentOptions()
+              },
+              trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DATE,
+                date: notifyAt
+              }
+            }).catch(() => undefined);
+          }
+        }
+      }
+
       // ── Wellbeing check — 3x daily (gated by notifWellbeingEnabled) ─────────
       if (notifWellbeingEnabled) {
         const issueLabel = selectedIssueGuide.id !== "general" ? selectedIssueGuide.label : "your wellbeing";
@@ -12465,7 +12569,7 @@ export default function App() {
     return () => {
       mounted = false;
     };
-  }, [hasLoaded, reminderChoice.hour, reminderChoice.minute, reminderEnabled, reminderMode, followUpMode, notifStreakEnabled, notifVedicEnabled, notifReengageEnabled, notifWellbeingEnabled, checkInStreak, vedicRashiInfo, profileDisplayName, hasExactBirthDetails, selectedIssueGuide.id]);
+  }, [hasLoaded, reminderChoice.hour, reminderChoice.minute, reminderEnabled, reminderMode, followUpMode, notifStreakEnabled, notifVedicEnabled, notifReengageEnabled, notifWellbeingEnabled, checkInStreak, vedicRashiInfo, vedicDashaState, profileDisplayName, hasExactBirthDetails, selectedIssueGuide.id]);
 
   function saveCheckIn() {
     const note = journal.trim();
@@ -15919,6 +16023,51 @@ function isTrustedExternalUrl(url: string) {
                     ) : null}
                     <Text style={styles.streakHint}>Keep logging daily to grow your streak</Text>
                   </View>
+                </View>
+              )}
+
+              {/* ── Weekly Recap Card ── */}
+              {(weeklyCheckInCount > 0 || vedicRashiInfo) && (
+                <View style={{
+                  marginHorizontal: 16, marginBottom: 12,
+                  backgroundColor: "#0D1A24", borderRadius: 16, padding: 16,
+                  borderWidth: 1, borderColor: "rgba(99,222,208,0.18)", gap: 10
+                }}>
+                  <Text style={{ color: "#63DED0", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                    Your Week
+                  </Text>
+                  <View style={{ flexDirection: "row", gap: 10 }}>
+                    <View style={{ flex: 1, backgroundColor: "#0A2535", borderRadius: 10, padding: 10 }}>
+                      <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Mood</Text>
+                      <Text style={{ color: "#E8F4F0", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
+                        {weeklyMoodAverage !== null ? `${weeklyMoodAverage}/100` : "No entries yet"}
+                      </Text>
+                      {weeklyMoodDirection && (
+                        <Text style={{ color: weeklyMoodDirection === "up" ? "#4ADE80" : weeklyMoodDirection === "down" ? "#FBBF24" : "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 2 }}>
+                          {weeklyMoodDirection === "up" ? "↑ trending up" : weeklyMoodDirection === "down" ? "↓ dipped this week" : "→ holding steady"}
+                        </Text>
+                      )}
+                    </View>
+                    <View style={{ flex: 1, backgroundColor: "#0A2535", borderRadius: 10, padding: 10 }}>
+                      <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Check-ins</Text>
+                      <Text style={{ color: "#E8F4F0", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
+                        {weeklyCheckInCount} this week
+                      </Text>
+                      <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 2 }}>
+                        {weeklyCheckInCount >= 5 ? "Great consistency" : weeklyCheckInCount >= 2 ? "Good start — keep going" : "Log a note to build momentum"}
+                      </Text>
+                    </View>
+                  </View>
+                  {vedicRashiInfo && vedicPredictionLines?.[0] && (
+                    <View style={{ backgroundColor: "#0A2535", borderRadius: 10, padding: 10 }}>
+                      <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>
+                        {vedicRashiInfo.rashi.name} highlight
+                      </Text>
+                      <Text style={{ color: "#E8F4F0", fontSize: 13, marginTop: 2, lineHeight: 18 }} numberOfLines={2}>
+                        {vedicPredictionLines[0]}
+                      </Text>
+                    </View>
+                  )}
                 </View>
               )}
 
