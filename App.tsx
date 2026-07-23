@@ -2900,11 +2900,33 @@ const calmIssueIds = new Set<IssueId>([
   "addiction",
 ]);
 
+// Canonical urgent-safety keyword detector — the single source of truth for
+// "does this text describe an immediate safety risk" (self-harm, suicide,
+// assault, abuse, violence, emergency). Previously this lived as two
+// separately-maintained regexes (one in detectAIHelpRouteFromText, one in
+// buildPrivateIntakeReport's hasSafetyCue) that had quietly drifted apart --
+// e.g. one had "dangerous" and "crisis"/"panic", the other didn't; one had
+// "rape"/"assaulted" phrasing, the other didn't. A future edit to one would
+// not have propagated to the other, silently reintroducing a gap.
+//
+// This consolidated pattern is the UNION of every keyword either of the two
+// original regexes matched, so merging them cannot reduce detection
+// sensitivity anywhere it's used -- only keep it the same or catch more.
+// Callers should lowercase their input before testing (matching prior
+// behavior at both call sites); the /i flag is added defensively in case a
+// future caller forgets.
+const URGENT_SAFETY_SIGNAL_PATTERN =
+  /(emergency|unsafe|danger|dangerous|suicid|self[-\s]?harm|kill myself|hurt myself|end my life|end it all|don't want to live|don't want to be here|assault|assaulted|rape|sexual assault|being abused|abuse|abused|physical violence|violence|threat|threat to my life|being threatened|threatened|crisis|panic|112|911|999)/i;
+
+function isUrgentSafetySignal(text: string): boolean {
+  return URGENT_SAFETY_SIGNAL_PATTERN.test(text);
+}
+
 function detectAIHelpRouteFromText(text: string): AIHelpRoute {
   const n = text.toLowerCase();
 
   // ── 1. URGENT — immediate safety risk ──────────────────────────────────────
-  if (/(emergency|unsafe|danger|suicid|self[-\s]?harm|kill myself|hurt myself|end my life|end it all|don't want to live|don't want to be here|assault|rape|sexual assault|being abused|physical violence|threat to my life|being threatened|112|911|999)/.test(n)) {
+  if (isUrgentSafetySignal(n)) {
     return "urgent";
   }
 
