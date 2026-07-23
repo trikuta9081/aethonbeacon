@@ -1925,7 +1925,7 @@ const launchNeeds: Array<{
 async function playRelaxingToneCue(tone: RelaxingToneMode) {
   const targetVolume = tone.id === "reset-gamma" ? 0.85 : tone.id.startsWith("binaural") ? 0.78 : 0.72;
   try {
-    const sound = await ensureRelaxingToneSoundLoaded();
+    const sound = await ensureRelaxingToneSoundLoaded(tone.id);
     if (sound) {
       sound.volume = targetVolume;
       try {
@@ -2148,16 +2148,84 @@ type AethonContinuousNodes = {
   stopTimer?: ReturnType<typeof setTimeout>;
 };
 
+// Per-tone bundled native audio. Metro/Expo requires static require() calls
+// (no dynamic template paths), so every tone with a real, precisely-specified
+// sound (binaural beat pairs, solfeggio/AUM sustained tones, procedural noise
+// colors, bilateral pulses, isochronic pulses) gets its own explicit require()
+// here, rendered by scripts/generate-tone-assets.py from the exact same
+// frequency tables and envelopes as the Web Audio implementation above --
+// this is native finally matching what the web build has always produced,
+// not new sound design. Tones without an entry here (ambient-*, asmr-*,
+// reset-quiet, trend-*) fall back to the generic ambient file, same as web's
+// own "else" branch does for those categories -- that is honest parity, not
+// a gap, since web has no distinct synthesis for them either.
+const NATIVE_TONE_ASSETS: Partial<Record<string, ReturnType<typeof require>>> = {
+  "binaural-delta-1": require("./assets/tones/binaural-delta-1.mp3"),
+  "binaural-delta-2": require("./assets/tones/binaural-delta-2.mp3"),
+  "binaural-theta-4": require("./assets/tones/binaural-theta-4.mp3"),
+  "binaural-theta-5": require("./assets/tones/binaural-theta-5.mp3"),
+  "binaural-alpha-6": require("./assets/tones/binaural-alpha-6.mp3"),
+  "binaural-alpha-7": require("./assets/tones/binaural-alpha-7.mp3"),
+  "binaural-alpha-8": require("./assets/tones/binaural-alpha-8.mp3"),
+  "binaural-alpha-10": require("./assets/tones/binaural-alpha-10.mp3"),
+  "binaural-alpha-12": require("./assets/tones/binaural-alpha-12.mp3"),
+  "binaural-reset-14": require("./assets/tones/binaural-reset-14.mp3"),
+  "binaural-release-16": require("./assets/tones/binaural-release-16.mp3"),
+  "binaural-gamma-40": require("./assets/tones/binaural-gamma-40.mp3"),
+  "sol-396": require("./assets/tones/sol-396.mp3"),
+  "sol-417": require("./assets/tones/sol-417.mp3"),
+  "sol-432": require("./assets/tones/sol-432.mp3"),
+  "sol-528": require("./assets/tones/sol-528.mp3"),
+  "sol-639": require("./assets/tones/sol-639.mp3"),
+  "sol-741": require("./assets/tones/sol-741.mp3"),
+  "sol-852": require("./assets/tones/sol-852.mp3"),
+  "sol-963": require("./assets/tones/sol-963.mp3"),
+  "aum-136": require("./assets/tones/aum-136.mp3"),
+  "noise-brown": require("./assets/tones/noise-brown.mp3"),
+  "noise-pink": require("./assets/tones/noise-pink.mp3"),
+  "noise-white": require("./assets/tones/noise-white.mp3"),
+  "bilateral-soft-1": require("./assets/tones/bilateral-soft-1.mp3"),
+  "bilateral-soft-2": require("./assets/tones/bilateral-soft-2.mp3"),
+  "bilateral-soft-3": require("./assets/tones/bilateral-soft-3.mp3"),
+  "iso-1": require("./assets/tones/iso-1.mp3"),
+  "iso-2": require("./assets/tones/iso-2.mp3"),
+  "iso-3": require("./assets/tones/iso-3.mp3"),
+  "iso-4": require("./assets/tones/iso-4.mp3"),
+  "iso-6": require("./assets/tones/iso-6.mp3"),
+  "iso-8": require("./assets/tones/iso-8.mp3"),
+  "iso-10": require("./assets/tones/iso-10.mp3"),
+  "reset-gamma": require("./assets/tones/reset-gamma.mp3"),
+};
+const NATIVE_TONE_FALLBACK_ASSET = require("./assets/aethon-pristine-tone.wav");
+
+function getNativeToneAsset(toneId: string) {
+  return NATIVE_TONE_ASSETS[toneId] ?? NATIVE_TONE_FALLBACK_ASSET;
+}
+
 let nativeContinuousToneSoundInstance: AudioPlayer | null = null;
+let nativeContinuousToneLoadedAssetId: string | null = null;
 let nativeContinuousToneStopTimer: ReturnType<typeof setTimeout> | null = null;
 
-async function ensureNativeContinuousToneSoundLoaded() {
+async function ensureNativeContinuousToneSoundLoaded(toneId: string) {
   if (Platform.OS === "web") return null;
+  // Swap the loaded player whenever the requested tone maps to a different
+  // bundled asset than what's currently loaded (this used to always load
+  // the exact same file regardless of toneId, so every tone sounded
+  // identical on Android/iOS).
+  if (nativeContinuousToneSoundInstance && nativeContinuousToneLoadedAssetId !== toneId) {
+    try {
+      nativeContinuousToneSoundInstance.remove();
+    } catch {
+      // Ignore unload failures during swap.
+    }
+    nativeContinuousToneSoundInstance = null;
+  }
   if (!nativeContinuousToneSoundInstance) {
-    nativeContinuousToneSoundInstance = createAudioPlayer(require("./assets/aethon-pristine-tone.wav"), {
+    nativeContinuousToneSoundInstance = createAudioPlayer(getNativeToneAsset(toneId), {
       downloadFirst: true,
       keepAudioSessionActive: true
     });
+    nativeContinuousToneLoadedAssetId = toneId;
   }
   return nativeContinuousToneSoundInstance;
 }
@@ -2238,7 +2306,7 @@ async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOp
   if (Platform.OS !== "web" || !_aethonContinuousWindow) {
     await stopContinuousTone(140);
     try {
-      const nativeSound = await ensureNativeContinuousToneSoundLoaded();
+      const nativeSound = await ensureNativeContinuousToneSoundLoaded(tone.id);
       if (nativeSound) {
         nativeSound.loop = true;
         nativeSound.volume = targetGain;
@@ -7391,20 +7459,35 @@ const trustedContactTemplate = (index: number): TrustedContact => ({
 
 let relaxingToneSoundInstance: AudioPlayer | null = null;
 let relaxingToneSoundLoadPromise: Promise<AudioPlayer> | null = null;
+let relaxingToneSoundLoadedAssetId: string | null = null;
 
-async function ensureRelaxingToneSoundLoaded() {
+// Same per-tone asset map as the sustained-loop path above: the short "▶"
+// preview cue used to always play the one generic ambient file regardless of
+// which tone was tapped, same underlying gap as startContinuousTone had.
+async function ensureRelaxingToneSoundLoaded(toneId?: string) {
   if (Platform.OS === "web") return null;
+  const resolvedId = toneId ?? "__default__";
+  if (relaxingToneSoundInstance && relaxingToneSoundLoadedAssetId !== resolvedId) {
+    try {
+      relaxingToneSoundInstance.remove();
+    } catch {
+      // Ignore unload failures during swap.
+    }
+    relaxingToneSoundInstance = null;
+    relaxingToneSoundLoadPromise = null;
+  }
   if (relaxingToneSoundInstance) {
     return relaxingToneSoundInstance;
   }
   if (!relaxingToneSoundLoadPromise) {
     relaxingToneSoundLoadPromise = Promise.resolve(
-      createAudioPlayer(require("./assets/aethon-pristine-tone.wav"), {
+      createAudioPlayer(toneId ? getNativeToneAsset(toneId) : NATIVE_TONE_FALLBACK_ASSET, {
         downloadFirst: true
       })
     )
       .then((sound) => {
         relaxingToneSoundInstance = sound;
+        relaxingToneSoundLoadedAssetId = resolvedId;
         return sound;
       })
       .catch((error) => {
@@ -7419,6 +7502,7 @@ async function releaseRelaxingToneSound() {
   const sound = relaxingToneSoundInstance;
   relaxingToneSoundInstance = null;
   relaxingToneSoundLoadPromise = null;
+  relaxingToneSoundLoadedAssetId = null;
   if (sound) {
     try {
       sound.remove();
@@ -7729,6 +7813,22 @@ function rashiCategoryLens(cat: AstroChatCategory, rashiId: number): string {
   return `${r} energy is ${lenses[cat][rashiId] ?? lenses[cat][0]}.`;
 }
 
+// Maps each astro-chat question category onto the 48-dimension Moon Chart
+// categories most relevant to it, mirroring COUNSELING_THEME_TO_MOON48_CATEGORIES
+// above so the two-way chart chat draws on the same 48D engine the rest of the
+// Vedic tab uses, instead of only Rashi/Dasha/Panchang.
+const ASTRO_CHAT_CATEGORY_TO_MOON48: Record<AstroChatCategory, MoonChart48Category[]> = {
+  career: ["work", "growth", "money"],
+  relationship: ["relationship", "family", "self"],
+  health: ["body", "mind", "risk"],
+  money: ["money", "work", "risk"],
+  family: ["family", "relationship", "self"],
+  spiritual: ["spiritual", "mind", "growth"],
+  timing: ["growth", "risk", "mind"],
+  identity: ["self", "mind", "growth"],
+  general: ["mind", "growth"],
+};
+
 function nextAstroChatReply(question: string, ctx: {
   moonRashiId: number | null;
   moonRashiName: string;
@@ -7743,6 +7843,7 @@ function nextAstroChatReply(question: string, ctx: {
   currentAntardashaEndsAtIso: string | null;
   todayTithi: string;
   todayVara: string;
+  moonChart48Readings?: MoonChart48Reading[];
 }): { category: AstroChatCategory; reply: string; remedy: string } {
   const cat = classifyAstroQuestion(question);
   const lines: string[] = [];
@@ -7822,6 +7923,26 @@ function nextAstroChatReply(question: string, ctx: {
 
   // 5. Today's Panchang lens
   lines.push(`Today’s Panchang: ${ctx.todayVara}, ${ctx.todayTithi}. If the decision can wait, use this window to observe once more before forcing the outcome.`);
+
+  // 6. 48-dimension Moon Chart lens — same explainable-score engine used
+  // elsewhere in the Vedic tab, filtered to the dimensions relevant to this
+  // question's category so the chat draws on the full engine, not just
+  // Rashi/Dasha/Panchang.
+  const moon48 = ctx.moonChart48Readings ?? [];
+  if (moon48.length > 0) {
+    const relevantCategories = ASTRO_CHAT_CATEGORY_TO_MOON48[cat];
+    const relevant = moon48.filter((reading) => relevantCategories.includes(reading.category));
+    const pool = relevant.length > 0 ? relevant : moon48;
+    const strongest = [...pool].sort((a, b) => b.score - a.score).slice(0, 2);
+    const careful = [...pool].sort((a, b) => a.score - b.score).slice(0, 2);
+    const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
+    lines.push(
+      `48-dimension Moon Chart lens (${average}/100 average on the dimensions tied to this question): supported — ${strongest.map((item) => `${item.label} ${item.score}/100`).join(", ")}; needs care — ${careful.map((item) => `${item.label} ${item.score}/100`).join(", ")}. Lean on the supported dimensions while you act, and go gently on the ones that need care.`
+    );
+  } else {
+    lines.push(`Add your exact birth time and place for a 48-dimension Moon Chart lens on top of this reply.`);
+  }
+
   lines.push(`If you want, ask the same thing in a narrower way and I will go one layer deeper into the same phase.`);
 
   // 4. Remedy from the Rashi remedy pack
@@ -14200,6 +14321,7 @@ async function fetchGeminiAIHelp(
       currentAntardashaEndsAtIso: dasha?.antardashaEndsAtIso ?? null,
       todayTithi: vedicTithi?.name ?? "today's Tithi",
       todayVara: vedicVara?.name ?? "today",
+      moonChart48Readings: vedicMoonChart48Readings,
     });
     const astroMsg = {
       id: `a-${Date.now()}`,
@@ -14209,7 +14331,14 @@ async function fetchGeminiAIHelp(
       category: result.category,
       ts: new Date().toISOString(),
     };
-    setAstroChatMessages((prev) => [astroMsg, userMsg, ...prev].slice(0, 40));
+    // Appended to the END (oldest-first) so the transcript reads naturally
+    // top-to-bottom -- question, then its answer, then the next question.
+    // This used to prepend [astroMsg, userMsg, ...prev], which put every
+    // reply visually ABOVE the question that produced it and pushed the
+    // newest exchange to the top instead of the bottom, making the
+    // back-and-forth look scrambled/non-corresponding even though the
+    // underlying question/answer pairing was always correct.
+    setAstroChatMessages((prev) => [...prev, userMsg, astroMsg].slice(-40));
     setAstroChatDraft("");
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
@@ -29269,6 +29398,20 @@ function CounselingChatModal({
       speakText(text);
     }, delay);
   }, [speakText]);
+  // scheduleSpeak's identity changes whenever the parent re-renders, because
+  // the speakText prop it closes over is a brand-new inline arrow function on
+  // every App render (not memoized upstream). The app re-renders constantly
+  // in the background (30s presence heartbeat, etc.), so if scheduleSpeak
+  // were a dependency of the "reset conversation" effect below, that effect
+  // would re-fire every few seconds while this chat is open and silently
+  // wipe the whole conversation back to just the opening line -- which is
+  // exactly the "no two-way reply ever happens" bug reported by testers.
+  // Routing calls through a ref lets the effect call the *latest* speak
+  // function without needing it in its own dependency array.
+  const scheduleSpeakRef = React.useRef(scheduleSpeak);
+  React.useEffect(() => {
+    scheduleSpeakRef.current = scheduleSpeak;
+  }, [scheduleSpeak]);
 
   useSpeechRecognitionEvent("start", () => {
     if (!visible) return;
@@ -29333,14 +29476,19 @@ function CounselingChatModal({
     setJourneySteps([]);
 
     // Speak the opening message
-    scheduleSpeak(openingMsg, 400);
+    scheduleSpeakRef.current(openingMsg, 400);
     return () => {
       if (speakTimeoutRef.current) {
         clearTimeout(speakTimeoutRef.current);
         speakTimeoutRef.current = null;
       }
     };
-  }, [visible, initialIssue, scheduleSpeak]);
+    // Intentionally NOT depending on scheduleSpeak here (see the ref comment
+    // above) -- this effect must only reset the conversation when the modal
+    // actually opens or the issue text changes, not on every unrelated
+    // re-render of the parent app.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, initialIssue]);
 
   React.useEffect(() => {
     if (visible) return;

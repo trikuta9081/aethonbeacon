@@ -25,6 +25,10 @@ jobs:
       APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
       APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
       APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
+      # Same reasoning as build-android.yml: Expo inlines EXPO_PUBLIC_* at JS
+      # bundle time, so without this here the TestFlight build ships with fake
+      # local OTP and disabled Gemini cards too.
+      EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://aethon-beacon-verification.onrender.com"
 
     steps:
       - name: Checkout
