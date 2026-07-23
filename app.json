@@ -45,7 +45,7 @@
         "backgroundColor": "#0A0F1E"
       },
       "package": "com.aethonbeacon.app",
-      "versionCode": 20,
+      "versionCode": 21,
       "permissions": [
         "RECORD_AUDIO",
         "RECEIVE_BOOT_COMPLETED",
