@@ -57,7 +57,8 @@ import {
   fetchRealtimeCommunityMessages,
   sendRealtimeCommunityChatMessage,
   sendRealtimeCommunityFeedMessage,
-  subscribeRealtimeCommunityMessages
+  subscribeRealtimeCommunityMessages,
+  submitRealtimeCommunityReport
 } from "./realtimeCommunity";
 
 const TextWithDefaults = Text as unknown as { defaultProps?: Record<string, unknown> };
@@ -9561,7 +9562,7 @@ export default function App() {
   const [communityChatDraft, setCommunityChatDraft] = useState("");
   const [communityChatPersona, setCommunityChatPersona] = useState<CommunityChatPersonaId>("mentor");
   const [communityRealtimeStatus, setCommunityRealtimeStatus] = useState(
-    communityRealtimeConfigured ? "Connecting realtime…" : "Local fallback"
+    communityRealtimeConfigured ? "Connecting…" : "Offline mode — posts stay on this device"
   );
   const [privateSpaceThreads, setPrivateSpaceThreads] = useState<PrivateSpaceThread[]>(privateSpaceSeedThreads);
   const [privateSpaceSelectedThreadId, setPrivateSpaceSelectedThreadId] = useState<string | null>(
@@ -9775,22 +9776,27 @@ export default function App() {
 
   useEffect(() => {
     if (!communityVerifiedAccess) {
-      setCommunityRealtimeStatus(communityRealtimeConfigured ? "Verify to connect realtime" : "Local fallback");
+      setCommunityRealtimeStatus(
+        communityRealtimeConfigured ? "Verify to connect realtime" : "Offline mode — posts stay on this device"
+      );
       return;
     }
     if (!communityRealtimeConfigured) {
-      setCommunityRealtimeStatus("Local fallback");
+      setCommunityRealtimeStatus("Offline mode — posts stay on this device");
       return;
     }
 
     let cancelled = false;
-    setCommunityRealtimeStatus("Connecting realtime…");
+    setCommunityRealtimeStatus("Connecting…");
 
     fetchRealtimeCommunityMessages()
       .then((result) => {
         if (cancelled) return;
         if (!result.ok) {
-          setCommunityRealtimeStatus(`Realtime unavailable: ${result.error ?? "check Supabase table"}`);
+          // result.error is a raw Supabase/Postgres message meant for developers --
+          // log it for debugging but never surface it verbatim to a member.
+          if (__DEV__) console.warn(`[community realtime] fetch failed: ${result.error ?? "unknown error"}`);
+          setCommunityRealtimeStatus("Couldn't reach the live feed — showing what's saved on this device.");
           return;
         }
         if (result.feed.length > 0) {
@@ -9799,13 +9805,14 @@ export default function App() {
         if (result.chat.length > 0) {
           setCommunityChatMessages((current) => mergeCommunityChatMessages(current, result.chat));
         }
-        setCommunityRealtimeStatus("Realtime connected");
+        setCommunityRealtimeStatus("Live — connected");
       })
       .catch((error) => {
         if (!cancelled) {
-          setCommunityRealtimeStatus(
-            `Realtime unavailable: ${error instanceof Error ? error.message : "check Supabase"}`
-          );
+          if (__DEV__) {
+            console.warn(`[community realtime] fetch threw: ${error instanceof Error ? error.message : "unknown"}`);
+          }
+          setCommunityRealtimeStatus("Couldn't reach the live feed — showing what's saved on this device.");
         }
       });
 
@@ -9825,15 +9832,25 @@ export default function App() {
       onStatus: (status) => {
         if (cancelled) return;
         if (status === "SUBSCRIBED") {
-          setCommunityRealtimeStatus("Realtime connected");
+          setCommunityRealtimeStatus("Live — connected");
+        } else if (status === "local") {
+          setCommunityRealtimeStatus("Offline mode — posts stay on this device");
         } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
-          setCommunityRealtimeStatus(`Realtime ${status.toLowerCase()}`);
+          // Raw Supabase channel states aren't meaningful to a member — this is
+          // always a transient reconnect, so say that instead of leaking
+          // "channel_error"/"timed_out"/"closed" into the UI.
+          if (__DEV__) console.warn(`[community realtime] channel status: ${status}`);
+          setCommunityRealtimeStatus("Reconnecting…");
         } else {
-          setCommunityRealtimeStatus(`Realtime ${status.toLowerCase()}`);
+          setCommunityRealtimeStatus("Connecting…");
         }
       },
       onError: (message) => {
-        if (!cancelled) setCommunityRealtimeStatus(`Realtime error: ${message}`);
+        // Supabase error text (e.g. raw Postgres/RLS messages) is for developers,
+        // not members -- log it for debugging but keep the on-screen copy plain
+        // and reassuring, since posting still works locally while this resolves.
+        if (__DEV__) console.warn(`[community realtime] error: ${message}`);
+        if (!cancelled) setCommunityRealtimeStatus("Having trouble syncing live — you can still post, it'll catch up.");
       }
     });
 
@@ -14033,9 +14050,10 @@ async function fetchGeminiAIHelp(
       const result = await sendRealtimeCommunityFeedMessage(userMessage);
       if (!result.ok) {
         communityLocallySentMessageIdsRef.current.delete(userMessage.id);
-        setCommunityRealtimeStatus(`Realtime send failed: ${result.error ?? "check Supabase"}`);
+        if (__DEV__) console.warn(`[community realtime] send failed: ${result.error ?? "unknown error"}`);
+        setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device, it'll retry.");
       } else {
-        setCommunityRealtimeStatus("Realtime connected");
+        setCommunityRealtimeStatus("Live — connected");
       }
       return;
     }
@@ -14146,9 +14164,10 @@ async function fetchGeminiAIHelp(
       const result = await sendRealtimeCommunityChatMessage(userMessage);
       if (!result.ok) {
         communityLocallySentMessageIdsRef.current.delete(userMessage.id);
-        setCommunityRealtimeStatus(`Realtime send failed: ${result.error ?? "check Supabase"}`);
+        if (__DEV__) console.warn(`[community realtime] send failed: ${result.error ?? "unknown error"}`);
+        setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device, it'll retry.");
       } else {
-        setCommunityRealtimeStatus("Realtime connected");
+        setCommunityRealtimeStatus("Live — connected");
       }
       return;
     }
@@ -14687,7 +14706,26 @@ async function fetchGeminiAIHelp(
     } else {
       setHiddenCommunityChatIds((current) => (current.includes(targetId) ? current : [targetId, ...current]));
     }
-    Alert.alert("Community moderation", "The item was reported and hidden from view.");
+    // Also send the report to Supabase (best-effort, silent on failure) so it
+    // reaches whoever actually operates the app, not just this device's own
+    // local report list -- see submitRealtimeCommunityReport's comment for
+    // why this table is write-only from the client's side.
+    if (communityRealtimeConfigured) {
+      void submitRealtimeCommunityReport({
+        id: report.id,
+        target,
+        targetId,
+        reason,
+        snippet: report.snippet,
+        reporterClientId: presenceSessionId
+      }).catch(() => undefined);
+    }
+    Alert.alert(
+      "Community moderation",
+      communityRealtimeConfigured
+        ? "Reported to the team and hidden from your view."
+        : "The item was reported and hidden from your view."
+    );
   }
 
   function toggleSavedCommunityItem(target: CommunityReportTarget, targetId: string) {
@@ -26645,7 +26683,7 @@ function AdminSection({
         <View style={styles.adminQuickActions}>
           <Pressable accessibilityRole="button" onPress={() => setCommunityPostingLocked(!communityPostingLocked)} style={styles.adminQuickAction}>
             <Text style={styles.adminQuickActionLabel}>{communityPostingLocked ? "Resume community" : "Pause community"}</Text>
-            <Text style={styles.adminQuickActionMeta}>Posting / replies</Text>
+            <Text style={styles.adminQuickActionMeta}>This device only — not a global mute</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={() => setSensitivePreviewsLocked(!sensitivePreviewsLocked)} style={styles.adminQuickAction}>
             <Text style={styles.adminQuickActionLabel}>{sensitivePreviewsLocked ? "Show previews" : "Hide previews"}</Text>
@@ -26868,7 +26906,7 @@ function AdminSection({
           <Text style={styles.launchSummaryItem}>Unsafe attempts blocked: {communitySafetyBlockedCount}</Text>
           <Text style={styles.launchSummaryItem}>Strike count: {communitySafetyStrikeCount}</Text>
           <Text style={styles.launchSummaryItem}>
-            Auto-pause status: {communityPostingLocked ? (communitySafetyLockReason ?? "Posting paused") : "Open"}
+            Auto-pause status (this device): {communityPostingLocked ? (communitySafetyLockReason ?? "Posting paused") : "Open"}
           </Text>
         </View>
       </View>
@@ -26905,7 +26943,11 @@ function AdminSection({
         <Text style={styles.settingsTitle}>Safety controls</Text>
         <PreferenceRow
           label="Pause community posting"
-          meta={communityPostingLocked ? "Community posting is paused" : "Community can post and chat"}
+          meta={
+            communityPostingLocked
+              ? "Paused on this device only — other members elsewhere can still post"
+              : "This device can post and chat. Scoped to this device, not a global switch"
+          }
           value={communityPostingLocked}
           onValueChange={setCommunityPostingLocked}
         />
@@ -31001,7 +31043,14 @@ function normalizeCommunityMessage(value: unknown): CommunityMessage | null {
   if (!value || typeof value !== "object") return null;
   const message = value as Partial<CommunityMessage>;
   const text = typeof message.text === "string" ? message.text.trim() : "";
-  if (!text || adultContentPattern.test(text)) return null;
+  if (
+    !text ||
+    adultContentPattern.test(text) ||
+    offensiveLanguagePattern.test(text) ||
+    violentThreatPattern.test(text) ||
+    maliciousThreatPattern.test(text)
+  )
+    return null;
 
   const role = message.role === "verified" || message.role === "moderator" ? message.role : "user";
   const author = typeof message.author === "string" && message.author.trim().length > 0 ? message.author.trim() : role === "user" ? "Community member" : "Verified contributor";
@@ -31058,7 +31107,14 @@ function normalizeCommunityChatMessage(value: unknown): CommunityChatMessage | n
   if (!value || typeof value !== "object") return null;
   const message = value as Partial<CommunityChatMessage>;
   const text = typeof message.text === "string" ? message.text.trim() : "";
-  if (!text || adultContentPattern.test(text)) return null;
+  if (
+    !text ||
+    adultContentPattern.test(text) ||
+    offensiveLanguagePattern.test(text) ||
+    violentThreatPattern.test(text) ||
+    maliciousThreatPattern.test(text)
+  )
+    return null;
   const role = message.role === "verified" || message.role === "moderator" ? message.role : "user";
   const persona =
     message.persona === "moderator" || message.persona === "mentor" || message.persona === "support"

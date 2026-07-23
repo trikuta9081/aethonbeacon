@@ -188,6 +188,38 @@ export async function sendRealtimeCommunityChatMessage(
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
+// Reports used to only ever live in the reporting device's own AsyncStorage
+// (App.tsx's communityReports state) -- meaning if a regular member reported
+// something, that report never reached the person actually operating the
+// app; it only ever showed up in an "admin" session running on that exact
+// same device. Now that Community is backed by a real project, reports get
+// written to a separate table too, so they land somewhere the operator can
+// actually see them (via the Supabase dashboard's Table Editor -- this
+// table is intentionally insert-only for the anon key, see
+// supabase_community_reports_schema.sql, so random members can't browse
+// each other's reports, only submit their own).
+export async function submitRealtimeCommunityReport(report: {
+  id: string;
+  target: "feed" | "chat";
+  targetId: string;
+  reason: string;
+  snippet: string;
+  reporterClientId?: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  const supabase = getClient();
+  if (!supabase) return { ok: false, error: "Supabase not configured" };
+  const { error } = await supabase.from("aethon_community_reports").insert({
+    id: report.id,
+    created_at: new Date().toISOString(),
+    target: report.target,
+    target_id: report.targetId,
+    reason: report.reason,
+    snippet: report.snippet.slice(0, 200),
+    reporter_client_id: report.reporterClientId ?? null
+  });
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
 export function subscribeRealtimeCommunityMessages({
   onFeedMessage,
   onChatMessage,
