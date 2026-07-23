@@ -98,18 +98,43 @@ jobs:
           python3 - <<'PY'
           import json, os, sys
 
-          raw = os.environ["GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"].strip().strip('"').strip("'")
-          raw = raw.replace("\\r\\n", "\n").replace("\\n", "\n").replace("\\r", "\r")
+          raw = os.environ["GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"].strip()
 
           if not raw:
-              print("ERROR: GOOGLE_PLAY_SERVICE_ACCOUNT_JSON is empty after normalization.", file=sys.stderr)
+              print("ERROR: GOOGLE_PLAY_SERVICE_ACCOUNT_JSON is empty.", file=sys.stderr)
               sys.exit(1)
 
-          try:
-              data = json.loads(raw)
-          except Exception as exc:
+          # A correctly pasted service-account JSON file is already valid
+          # JSON -- its private_key field contains proper "\n" escape
+          # sequences, which must NOT be turned into real newlines before
+          # parsing (that would break the JSON syntax). Try parsing the
+          # raw value first, and only fall back to normalizing common
+          # paste mistakes (wrapping quotes, double-escaped backslashes)
+          # if the raw value doesn't parse on its own.
+          candidates = [raw]
+
+          stripped = raw.strip('"').strip("'")
+          if stripped != raw:
+              candidates.append(stripped)
+
+          normalized = stripped.replace("\\r\\n", "\n").replace("\\n", "\n").replace("\\r", "\r")
+          if normalized != stripped:
+              candidates.append(normalized)
+
+          data = None
+          last_exc = None
+          for candidate in candidates:
+              if not candidate:
+                  continue
+              try:
+                  data = json.loads(candidate)
+                  break
+              except Exception as exc:
+                  last_exc = exc
+
+          if data is None:
               print("ERROR: GOOGLE_PLAY_SERVICE_ACCOUNT_JSON is not valid JSON.", file=sys.stderr)
-              print(f"Detail: {exc}", file=sys.stderr)
+              print(f"Detail: {last_exc}", file=sys.stderr)
               sys.exit(1)
 
           required = {"type", "project_id", "private_key_id", "private_key", "client_email"}
