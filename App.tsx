@@ -8010,6 +8010,15 @@ async function geocodeBirthPlace(place: string): Promise<{ lat: number; lon: num
 // and universally used in professional astrology software). Falls back to
 // null when lat/lon aren't available yet (caller should use the Sun-anchored
 // approximation instead).
+//
+// NOTE: the (y, x) signs below are intentionally the mirror of the naive
+// textbook write-up of this formula. The un-mirrored version computes the
+// DESCENDANT (180 deg opposite the true rising sign), not the Ascendant --
+// confirmed by cross-checking against the Midheaven (a valid Ascendant sits
+// ~90 deg from the MC; the un-mirrored formula was landing ~268 deg from
+// it) and against a real reference chart (10 Aug 1977, 10:45 IST, Jammu:
+// true Lagna is Kanya/Virgo, sidereal ~175 deg; the un-mirrored formula
+// produced Meena/Pisces, sidereal ~355 deg -- exactly 180 deg off).
 function getPreciseAscendantSiderealDegrees(date: Date, latDeg: number, lonDeg: number): number {
   const gastDeg = getGreenwichSiderealTimeDegrees(date);
   const lstDeg = normalizeDegrees(gastDeg + lonDeg); // east longitude positive
@@ -8019,8 +8028,8 @@ function getPreciseAscendantSiderealDegrees(date: Date, latDeg: number, lonDeg: 
   const phi = degToRad(latDeg);
   const epsRad = degToRad(eps);
 
-  const y = -Math.cos(theta);
-  const x = Math.sin(epsRad) * Math.tan(phi) + Math.cos(epsRad) * Math.sin(theta);
+  const y = Math.cos(theta);
+  const x = -(Math.sin(epsRad) * Math.tan(phi) + Math.cos(epsRad) * Math.sin(theta));
   const ascTropical = normalizeDegrees(radToDeg(Math.atan2(y, x)));
 
   const ayanamsa = lahiriAyanamsaDegrees(julianDay(date));
