@@ -130,7 +130,7 @@ function testerRequestEmailBody(payload) {
     `Source: ${payload.source}`,
     `User agent: ${payload.userAgent || "(not captured)"}`,
     "",
-    "Android: join the Google Group aethon-beacon-android-testers@googlegroups.com, then use the Play opt-in link.",
+    "Android: manually add this Gmail to a Play Console tester email list (Aethon Beacon Android Testers / Aethon Beacon Testers / Aethon Beacon Internal Testers), then reply to the tester once added.",
     "iOS: add Apple ID email to TestFlight / App Store Connect beta group."
   ].join("\n");
 }
@@ -232,6 +232,15 @@ async function getGoogleAccessToken() {
   return tokenData.access_token;
 }
 
+// NOTE (2026-07-23): Play Console's closed-testing tester allowlist for this
+// app now uses "Email lists" instead of a Google Group. The Android
+// Publisher API has no endpoint to add/remove members from those Play
+// Console email lists, so there is no way to grant Play Store access
+// automatically from this server. Adding someone to the community Google
+// Group below (if GOOGLE_GROUP_SERVICE_ACCOUNT_JSON is configured) is kept as
+// a harmless best-effort side action, but it does NOT grant Play Store
+// access by itself anymore -- every new Gmail must be added to a Play
+// Console email list by hand. See autoProvisionTester() below.
 async function addAndroidTesterToGoogleGroup(email) {
   if (!googleTesterGroupEmail || !googleGroupServiceAccountJson) {
     return { attempted: false, success: false, reason: "google_group_not_configured" };
@@ -333,7 +342,16 @@ async function addIosTesterToTestFlight(payload) {
 async function autoProvisionTester(payload) {
   const platform = payload.platform.toLowerCase();
   if (platform.includes("android")) {
-    return { android: await addAndroidTesterToGoogleGroup(payload.email) };
+    // Best-effort community Group add (see note above) -- never treated as
+    // equivalent to Play Store access.
+    const group = await addAndroidTesterToGoogleGroup(payload.email);
+    return {
+      android: {
+        ...group,
+        playConsoleAccess: "manual_add_required",
+        note: "Play Console tester email lists must be updated by hand in Play Console; this request has been logged and emailed for manual addition."
+      }
+    };
   }
   if (platform.includes("ios") || platform.includes("testflight")) {
     return { ios: await addIosTesterToTestFlight(payload) };
@@ -402,14 +420,17 @@ async function handleTesterRequest(req, res) {
       console.error("tester request email failed", error);
       emailResult = { sent: false, reason: "email_failed" };
     }
+    const isAndroid = payload.platform.toLowerCase().includes("android");
     json(res, 200, {
       ok: true,
       id: payload.id,
       emailSent: emailResult.sent,
       provisioning,
-      message: emailResult.sent
-        ? "Request received and emailed."
-        : "Request received. If email does not open, use the fallback copy shown on the page.",
+      message: isAndroid
+        ? "Request received. Your Gmail will be added to the Aethon Beacon Play Console tester list by hand, usually within 24 hours -- then use the opt-in link."
+        : emailResult.sent
+          ? "Request received and emailed."
+          : "Request received. If email does not open, use the fallback copy shown on the page.",
       mailto: `mailto:${testerRequestNotifyEmail}?subject=${encodeURIComponent(`Aethon Beacon ${payload.platform} access/testify request`)}&body=${encodeURIComponent(testerRequestEmailBody(payload))}`
     });
   } catch (error) {
