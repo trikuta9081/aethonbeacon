@@ -3929,9 +3929,7 @@ function buildPrivateIntakeReport(
     .map((value) => value.trim().toLowerCase())
     .join(" ");
   const hasSafetyCue =
-    /(unsafe|danger|dangerous|self[-\s]?harm|hurt myself|kill myself|suicide|threat|violence|abuse|assault|emergency|crisis|panic)/.test(
-      normalizedText
-    ) || draft.safetyNote.trim().length > 0;
+    isUrgentSafetySignal(normalizedText) || draft.safetyNote.trim().length > 0;
   const emotionalHigh =
     /(overwhelming|panic|panic attack|very high|severe|can'?t cope|cannot cope|terrified|hopeless|ashamed|numb|breakdown)/.test(
       `${draft.currentFeeling} ${draft.emotionIntensity} ${draft.triggerContext} ${draft.bodySignal}`.toLowerCase()
