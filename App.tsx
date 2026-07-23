@@ -10227,6 +10227,13 @@ export default function App() {
     () => entries.filter((entry) => isToday(entry.createdAt)),
     [entries]
   );
+  // Hours left until local midnight -- used for loss-aversion streak framing
+  // ("your streak ends in X hours") instead of only showing the plain count.
+  const hoursLeftInDay = useMemo(() => {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    return Math.max(0, Math.round((midnight.getTime() - now.getTime()) / (60 * 60 * 1000)));
+  }, []);
   const needsPresentMoodCheck = !hasTodayCheckIn;
   const profileDisplayName = getRespectfulAddressLabel(
     accessName,
@@ -11339,6 +11346,34 @@ export default function App() {
         ? "A follow-up reminder is set for tomorrow."
         : "A follow-up reminder is set for next week."
     );
+  }
+
+  // Automatic safety-net check-in scheduled ~36 hours after an "urgent" route
+  // is detected -- independent of whether the user opts into the general
+  // "remind me tomorrow" flow. This closes the gap between an urgent
+  // conversation and the existing 3/4-month follow-up cadence, which is far
+  // too long a silence after a hard moment. Best-effort: does not alert or
+  // interrupt the user if notification permission isn't already granted, and
+  // reuses a fixed identifier so a new urgent flag simply replaces the timer
+  // instead of stacking duplicate check-ins.
+  async function scheduleUrgentSafetyCheckIn(issueLabel: string) {
+    if (!notificationsAvailable) return;
+    const currentPermissions = await Notifications.getPermissionsAsync().catch(() => null);
+    if (!currentPermissions?.granted) return;
+    const triggerDate = new Date(Date.now() + 36 * 60 * 60 * 1000);
+    await Notifications.scheduleNotificationAsync({
+      identifier: "aethon-urgent-safety-checkin",
+      content: {
+        title: "Checking in on you",
+        body: `You reached out about ${issueLabel} recently. How are you doing now? Tap to talk or find support again.`,
+        data: { tab: "aihelp" },
+        ...reminderNotificationContentOptions()
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: triggerDate
+      }
+    }).catch(() => undefined);
   }
 
   async function previewRetentionAlert() {
@@ -14125,6 +14160,9 @@ async function fetchGeminiAIHelp(
     } else {
       applyAIHelpRoute(text, route);
     }
+    if (route === "urgent") {
+      void scheduleUrgentSafetyCheckIn(issueFocus.label);
+    }
     setPendingTabFocusAnchor({ tab: pendingRouteTab, key: focusAnchorKey });
     handleTabPress("aihelp");
     const createdAt = new Date().toISOString();
@@ -14686,6 +14724,9 @@ async function fetchGeminiAIHelp(
       route,
       redressRouteId
     });
+    if (route === "urgent") {
+      void scheduleUrgentSafetyCheckIn(issueDisplayLabel);
+    }
     showRouteNotice("Choose next step", "Pick the route that fits best before the app moves forward.");
   }
 
@@ -15855,7 +15896,7 @@ function isTrustedExternalUrl(url: string) {
                 <View style={styles.streakProtectionBanner}>
                   <Text style={styles.streakProtectionEmoji}>⚠️</Text>
                   <View style={styles.streakProtectionText}>
-                    <Text style={styles.streakProtectionTitle}>Don't break your {checkInStreak}-day streak!</Text>
+                    <Text style={styles.streakProtectionTitle}>Your {checkInStreak}-day streak ends in {hoursLeftInDay} hour{hoursLeftInDay === 1 ? "" : "s"}!</Text>
                     <Text style={styles.streakProtectionSub}>Log one note today to keep it alive.</Text>
                   </View>
                   <Pressable onPress={() => handleTabPress("journal")} style={styles.streakProtectionCTA}>
@@ -25795,7 +25836,7 @@ function BirthChartSection({
               { label: "Birth Time", value: profileBirthTime },
               { label: "Birth Place", value: profileBirthPlace },
               { label: "Janma Rashi (Moon sign)", value: rashiInfo ? `${rashiInfo.rashi.name} (${rashiInfo.rashi.en})` : "—" },
-              { label: "Lagna / Ascendant", value: lagnaInfo ? `${lagnaInfo.lagna.name} (${lagnaInfo.lagna.en})` : "Enter birth time" },
+              { label: "Lagna / Ascendant", value: lagnaInfo ? `${lagnaInfo.lagna.name} (${lagnaInfo.lagna.en})${lagnaInfo.precise ? " · Precise" : " · Estimated"}` : "Enter birth time" },
               { label: "Janma Nakshatra", value: janmaNakshatra ? `${janmaNakshatra.name} · ${janmaNakshatra.lord}` : "—" },
               { label: "Vimshottari Phase", value: dashaState ? `${dashaState.currentMahadasha} / ${dashaState.currentAntardasha}` : "Enter birth date" },
               { label: "Samvatsara (60-yr cycle)", value: samvatsaraInfo ? `${samvatsaraInfo.name} (#${samvatsaraInfo.index + 1})` : "Enter date of birth" },
@@ -25816,8 +25857,21 @@ function BirthChartSection({
                 The Lagna shows how you project yourself to the world and how you approach life's challenges.
                 Element: {lagnaInfo.lagna.element}. Nature: {lagnaInfo.lagna.nature}.
               </Text>
+              {lagnaInfo.precise ? (
+                <Text style={{ color: "#4ADE80", fontSize: 11, marginTop: 6, fontWeight: "700" }}>
+                  ✓ Precise: calculated from your birth place's real coordinates (Local Sidereal Time + latitude), not an estimate.
+                </Text>
+              ) : (
+                <Text style={{ color: "#FBBF24", fontSize: 11, marginTop: 6, fontWeight: "700" }}>
+                  ⚠ Estimated: {birthPlaceGeocodeStatus === "failed"
+                    ? "we could not locate your birth place — try adding city, state, and country (e.g. \"Jammu, Jammu and Kashmir, India\") for a precise Lagna."
+                    : birthPlaceGeocodeStatus === "loading"
+                      ? "locating your birth place to compute the precise Lagna — this updates automatically in a moment."
+                      : "add your exact birth place above for a precise, coordinate-based Lagna instead of this estimate."}
+                </Text>
+              )}
               <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
-                Note: This is an approximate Lagna based on birth time. For exact Lagna, consult a certified Jyotishi with your precise birth coordinates.
+                Note: even the precise calculation is an approximation of professional-grade software. For life-decision use, consult a certified Jyotishi with your birth certificate coordinates.
               </Text>
             </View>
           )}
