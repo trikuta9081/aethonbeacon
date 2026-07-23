@@ -66,6 +66,31 @@ jobs:
           fi
           echo "Release keystore written and validated."
 
+      - name: Set unique Android versionCode
+        working-directory: android
+        run: |
+          # Play Console permanently rejects any versionCode it has seen
+          # before, even from a failed/draft upload -- it does not have to
+          # succeed for the number to be "used up." Manually bumping the
+          # number in build.gradle by hand does not scale: every commit that
+          # doesn't happen to bump it (which is most commits -- versionCode
+          # has nothing to do with app code changes) collides with whatever
+          # the last successful publish used, and the whole CI run fails at
+          # the very last step after ~13 minutes of building.
+          #
+          # github.run_number is a GitHub-guaranteed, monotonically
+          # increasing integer, unique per workflow file, that only ever
+          # goes up. Using it directly as the versionCode means every run
+          # -- whether or not the app code changed -- gets a versionCode
+          # strictly greater than every prior run, so this exact failure
+          # class becomes structurally impossible from here on. The
+          # human-readable app.json/build.gradle value stays as a
+          # cosmetic baseline; this step overwrites it for the actual build.
+          NEW_VERSION_CODE="${{ github.run_number }}"
+          echo "Setting versionCode to $NEW_VERSION_CODE (GitHub run number)"
+          sed -i -E "s/versionCode [0-9]+/versionCode ${NEW_VERSION_CODE}/" app/build.gradle
+          grep -n "versionCode" app/build.gradle
+
       - name: Build release APK
         working-directory: android
         run: ./gradlew assembleRelease --no-daemon
