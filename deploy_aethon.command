@@ -14,6 +14,8 @@ echo "    All old bundles deleted. Building fresh from source."
 echo ""
 echo "==> Step 2: Rebuilding web bundle from clean slate..."
 export EXPO_PUBLIC_VERIFICATION_API_BASE_URL=https://aethon-beacon-verification.onrender.com
+export EXPO_PUBLIC_SUPABASE_URL=https://isfkxmrathirqkrwfagg.supabase.co
+export EXPO_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_x2hdByZdsmU26qPDuy5pZA_1PztSSwv
 npm run export:web
 
 echo ""
@@ -30,7 +32,12 @@ git commit -m "fix: counseling synthesis closing line + replay-aloud in journey 
 - 20-dim lens strips on all major tabs; tab banners + issue hint chips everywhere
 - TypeScript: zero errors" || echo "Nothing to commit"
 git push origin master
-git push render master
+# Render's "aethon-beacon-web" service watches the "main" branch on the
+# "render" remote (github.com/trikuta9081/AETHON-beacon-, a DIFFERENT repo
+# from "origin"). Pushing plain "master" here creates/updates a master
+# branch nobody watches -- it silently never triggers a deploy. Push to
+# main explicitly so Render's auto-deploy (on-commit) actually fires.
+git push render master:main
 
 echo ""
 echo "Done! Live in ~30 seconds."

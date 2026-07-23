@@ -29,6 +29,11 @@ jobs:
       # bundle time, so without this here the TestFlight build ships with fake
       # local OTP and disabled Gemini cards too.
       EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://aethon-beacon-verification.onrender.com"
+      # Community feed/chat realtime sync -- see build-android.yml for why the
+      # anon/publishable key is safe to hardcode here (RLS-protected, not a
+      # secret key).
+      EXPO_PUBLIC_SUPABASE_URL: "https://isfkxmrathirqkrwfagg.supabase.co"
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_x2hdByZdsmU26qPDuy5pZA_1PztSSwv"
 
     steps:
       - name: Checkout

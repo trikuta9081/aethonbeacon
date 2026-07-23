@@ -20,6 +20,13 @@ jobs:
       # card on every Android build this workflow produces -- which is exactly
       # what testers have been running.
       EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://aethon-beacon-verification.onrender.com"
+      # Community feed/chat realtime sync. The anon/publishable key is meant
+      # to be public (Supabase's own design -- access is controlled by RLS
+      # policies on the aethon_community_messages table, not by hiding this
+      # key), so it's safe to bake into CI the same way as the verification
+      # URL above.
+      EXPO_PUBLIC_SUPABASE_URL: "https://isfkxmrathirqkrwfagg.supabase.co"
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_x2hdByZdsmU26qPDuy5pZA_1PztSSwv"
 
     steps:
       - name: Checkout
