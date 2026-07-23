@@ -44,11 +44,11 @@
   <section class="hero">
     <div class="eyebrow">Fresh Android + iPhone tester link · July 15, 2026</div>
     <h1>Join Aethon Beacon testing</h1>
-    <p>This is the current tester page for Android and iPhone. If an older page appeared before, this fresh page replaces it. Android access starts with the Aethon Beacon Google Group. iPhone access starts by submitting the Apple ID email used for TestFlight. If automatic email delivery is not configured, this page opens a ready-to-send email draft so the request is not lost.</p>
+    <p>This is the current tester page for Android and iPhone. If an older page appeared before, this fresh page replaces it. Android access is granted through a Play Console tester email list — submit your Gmail below and it will be added by hand, usually within 24 hours. iPhone access starts by submitting the Apple ID email used for TestFlight. If automatic email delivery is not configured, this page opens a ready-to-send email draft so the request is not lost.</p>
     <div id="deviceHint" class="detected"></div>
     <div class="actions">
-      <a class="btn android" href="https://groups.google.com/g/aethon-beacon-android-testers">Android step 1: Join Google Group</a>
-      <a class="btn android" href="https://play.google.com/apps/testing/com.aethonbeacon.app">Android step 2: Join closed test</a>
+      <a class="btn android" href="#iosAccess" onclick="document.getElementById('testerPlatform').value='Android closed test';document.getElementById('testerEmail').focus();">Android: Request access (Gmail)</a>
+      <a class="btn android" href="https://play.google.com/apps/testing/com.aethonbeacon.app">Android: Join closed test</a>
       <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.aethonbeacon.app">Android: Install app</a>
       <a class="btn ios" href="https://aethonbeacon.com/?v=ios-web-20260715">iPhone: Open web app now</a>
       <a class="btn ios" href="https://apps.apple.com/app/testflight/id899247664">iPhone: Install TestFlight</a>
@@ -58,10 +58,10 @@
       <div class="card">
         <h2>Android testers</h2>
         <ol>
-          <li>Sign in with the same Gmail you use on Google Play.</li>
-          <li>Tap <strong>Join Google Group</strong> and join <code>aethon-beacon-android-testers@googlegroups.com</code>.</li>
-          <li>After joining the group, return here and tap <strong>Android step 2: Join closed test</strong>.</li>
-          <li>If Play still says “only invited people can download,” confirm you joined the Google Group with the same Gmail used on Google Play, then retry the opt-in link or submit your Gmail below.</li>
+          <li>Tap <strong>Request access</strong> and submit the same Gmail you use on Google Play.</li>
+          <li>Your Gmail is added by hand to a Play Console tester email list — usually within 24 hours.</li>
+          <li>Once you get confirmation, tap <strong>Join closed test</strong> above.</li>
+          <li>If Play still says “only invited people can download,” your Gmail hasn't been added yet — wait for confirmation, or resubmit the request below.</li>
           <li>After opt-in, install from Google Play and keep testing active for 14 days.</li>
         </ol>
         <div class="actions">
@@ -120,7 +120,7 @@
         <div id="requestCopy" class="copy-box"></div>
       </div>
     </div>
-    <div class="notice"><strong>Android closed test note:</strong> Google Play access now uses the Aethon Beacon Google Group: <code>aethon-beacon-android-testers@googlegroups.com</code>. Use the same Gmail for Google Groups and Google Play. If Play says “only invited people can download,” join the group first with the same Gmail, then retry the opt-in link.</div>
+    <div class="notice"><strong>Android closed test note:</strong> Google Play access is granted through a Play Console tester email list, not a Google Group. There's no instant self-serve add yet — submit your Gmail above or below and it will be added by hand, usually within 24 hours. If Play says “only invited people can download,” your Gmail hasn't been added yet.</div>
     <div class="notice"><strong>iOS TestFlight note:</strong> Native iPhone beta access requires either an invited Apple ID email or a public TestFlight link from App Store Connect. Until App Store Connect login/API access is active, iPhone testers can open the live web app now and submit their Apple ID email here so the native invite request is captured.</div>
     <div class="notice"><strong>Testify / feedback:</strong> After installing, testers should send one short report: platform, device, what worked, what failed, and one optional short testimony. This helps prove the test is active and collect release feedback.</div>
     <div class="notice"><strong>Request delivery:</strong> If server email is not configured, the form will open a prepared email draft after recording the request. Testers should tap <strong>Send</strong> so the access/testify request reaches the app owner.</div>
@@ -165,7 +165,7 @@
       const result = await response.json().catch(() => ({}));
       if (response.ok && result.ok) {
         const provisioning = result.provisioning ? `\n\nAuto-add status: ${JSON.stringify(result.provisioning)}` : '';
-        copyBox.textContent = `${result.message || 'Request received.'}\n\nRequest ID: ${result.id || '(created)'}${provisioning}\n\nImportant: Android testers should join the Aethon Beacon Google Group first, then use the Play opt-in link. iOS auto-add still requires App Store Connect beta group setup; if not configured yet, the request is still recorded for manual add.`;
+        copyBox.textContent = `${result.message || 'Request received.'}\n\nRequest ID: ${result.id || '(created)'}${provisioning}\n\nImportant: Android access is added by hand to a Play Console tester email list (usually within 24 hours) -- then use the Play opt-in link. iOS auto-add still requires App Store Connect beta group setup; if not configured yet, the request is still recorded for manual add.`;
         if (result.mailto && result.emailSent !== true) {
           copyBox.textContent += `\n\nIf you do not receive confirmation, tap here to email manually:\n${result.mailto}`;
         }
@@ -181,7 +181,7 @@
 
   const hint = document.getElementById('deviceHint');
   const ua = navigator.userAgent || '';
-  if (/Android/i.test(ua)) { hint.style.display='block'; hint.textContent='Android detected — join the Google Group first, then use the Play closed test link.'; }
+  if (/Android/i.test(ua)) { hint.style.display='block'; hint.textContent='Android detected — submit your Gmail for access below, then use the Play closed test link once confirmed.'; }
   else if (/iPhone|iPad|iPod/i.test(ua)) { hint.style.display='block'; hint.textContent='iPhone detected — you can open the web app now, then submit your Apple ID email for the native TestFlight invite.'; }
 </script>
 </body>
