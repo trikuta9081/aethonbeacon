@@ -7897,6 +7897,44 @@ const ASTRO_CHAT_CATEGORY_TO_MOON48: Record<AstroChatCategory, MoonChart48Catego
   general: ["mind", "growth"],
 };
 
+// Maps each chat category onto the PhaseDomain(s) most relevant to it, so the
+// domain outlook shown in a reply only covers what was actually asked about
+// instead of unconditionally dumping all seven life domains every time.
+const ASTRO_CHAT_CATEGORY_TO_PHASE_DOMAIN: Record<AstroChatCategory, PhaseDomain[]> = {
+  career: ["job", "wealth"],
+  relationship: ["relationships", "peace"],
+  health: ["health"],
+  money: ["wealth"],
+  family: ["home", "relationships"],
+  spiritual: ["peace"],
+  timing: ["tension", "job"],
+  identity: ["peace", "job"],
+  general: ["peace", "tension"],
+};
+
+// Turns a 0-100 score into a plain-language verdict word so the reply can
+// give a direct, calculated answer up front instead of only a wall of
+// context the user has to interpret themselves.
+function verdictPhraseFromScore(score: number): string {
+  if (score >= 78) return "Favourable";
+  if (score >= 62) return "Mildly favourable";
+  if (score >= 48) return "Mixed";
+  if (score >= 32) return "Needs care";
+  return "Difficult right now";
+}
+
+// Reads the shape of the question (yes/no, why, when, or open-ended) so the
+// reply's opening sentence matches how the question was actually phrased
+// instead of using identical framing for every question in a category.
+type AstroQuestionTone = "yesno" | "why" | "when" | "open";
+function detectQuestionTone(text: string): AstroQuestionTone {
+  const t = text.trim().toLowerCase();
+  if (/^(will|can|should|is|are|do|does|did|am i|has|have)\b/.test(t)) return "yesno";
+  if (/^why\b/.test(t)) return "why";
+  if (/^(when|what time|kab)\b/.test(t)) return "when";
+  return "open";
+}
+
 function nextAstroChatReply(question: string, ctx: {
   moonRashiId: number | null;
   moonRashiName: string;
@@ -7951,27 +7989,70 @@ function nextAstroChatReply(question: string, ctx: {
       ? `Antardasha started around ${formatApproxDate(ctx.currentAntardashaStartedAtIso)} and ends around ${formatApproxDate(ctx.currentAntardashaEndsAtIso)}`
       : null,
   ].filter(Boolean).join(" • ");
-  const domainOutlook = buildPhaseDomainOutlook(
+  const domainOutlookFull = buildPhaseDomainOutlook(
     ctx.currentDasha && ctx.currentAntardasha
       ? { currentMahadasha: ctx.currentDasha, currentAntardasha: ctx.currentAntardasha }
       : null
   );
+  // Only the domains that match what was actually asked, not all seven.
+  const relevantDomains = ASTRO_CHAT_CATEGORY_TO_PHASE_DOMAIN[cat];
+  const domainOutlook = domainOutlookFull.filter((item) =>
+    relevantDomains.includes(item.domain.toLowerCase() as PhaseDomain)
+  );
 
-  // 1. Rashi lens
-  lines.push(`What is happening for ${ctx.moonRashiName}: ${rashiCategoryLens(cat, ctx.moonRashiId)}`);
+  // 48-dimension Moon Chart lens — same explainable-score engine used
+  // elsewhere in the Vedic tab, filtered to the dimensions relevant to this
+  // question's category. Computed FIRST so the reply can open with a real,
+  // calculated verdict for this specific question instead of a canned line.
+  const moon48 = ctx.moonChart48Readings ?? [];
+  const primaryMoonCategory = ASTRO_CHAT_CATEGORY_TO_MOON48[cat][0];
+  let moon48Verdict: { average: number; verdictWord: string; anchor: MoonChart48Reading; careful: MoonChart48Reading } | null = null;
+  if (moon48.length > 0) {
+    const relevantCategories = ASTRO_CHAT_CATEGORY_TO_MOON48[cat];
+    const relevant = moon48.filter((reading) => relevantCategories.includes(reading.category));
+    const pool = relevant.length > 0 ? relevant : moon48;
+    const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
+    const anchor = [...pool].sort((a, b) => b.score - a.score)[0];
+    const careful = [...pool].sort((a, b) => a.score - b.score)[0];
+    moon48Verdict = { average, verdictWord: verdictPhraseFromScore(average), anchor, careful };
+  }
+  const tone = detectQuestionTone(question);
 
-  // 2. Dasha lens
+  // 1. Calculated, question-specific opener. This is what actually changes
+  // between two different questions in the same category (e.g. "will I get
+  // the job" vs "should I quit") because it is derived from the live 48D
+  // score for the dimensions tied to THIS question, not a fixed template.
+  if (moon48Verdict) {
+    const leadIn =
+      tone === "yesno" ? `Short answer first: ${moon48Verdict.verdictWord.toLowerCase()} right now. `
+      : tone === "why" ? `Here is what the chart is actually doing: `
+      : tone === "when" ? `On timing specifically: `
+      : "";
+    lines.push(
+      `${leadIn}${moonChartCategoryLabel(primaryMoonCategory)} is reading ${moon48Verdict.average}/100 (${moon48Verdict.verdictWord}) — this tracks ${moonChartCategoryMeaning(primaryMoonCategory)}. The clearest signal is "${moon48Verdict.anchor.label}" at ${moon48Verdict.anchor.score}/100: ${moon48Verdict.anchor.interpretation}`
+    );
+    if (moon48Verdict.careful.id !== moon48Verdict.anchor.id && moon48Verdict.careful.score < 55) {
+      lines.push(`Go gently here: "${moon48Verdict.careful.label}" is at ${moon48Verdict.careful.score}/100 — ${moon48Verdict.careful.scoreReason}`);
+    }
+  } else {
+    lines.push(`Add your exact birth time and place for a calculated 48-dimension reading on this question — for now this leans on Rashi and Dasha only.`);
+  }
+
+  // 2. Rashi lens — supporting context now, not the headline
+  lines.push(`Underlying pattern for ${ctx.moonRashiName}: ${rashiCategoryLens(cat, ctx.moonRashiId)}`);
+
+  // 3. Dasha lens
   if (ctx.currentDasha && ctx.currentAntardasha) {
     lines.push(
-      `How it is happening: ${ctx.currentDasha} Mahadasha is the broad life lesson and ${ctx.currentAntardasha} Antardasha is the active sub-pattern. ${ctx.currentDasha} brings ${currentDashaQuality.toLowerCase()}, while ${ctx.currentAntardasha} adds ${currentAntardashaQuality.toLowerCase()}; that blend is what the chart is expressing right now.`
+      `Why: ${ctx.currentDasha} Mahadasha is the broad life lesson and ${ctx.currentAntardasha} Antardasha is the active sub-pattern. ${ctx.currentDasha} brings ${currentDashaQuality.toLowerCase()}, while ${ctx.currentAntardasha} adds ${currentAntardashaQuality.toLowerCase()}; that blend is what the chart is expressing right now.`
     );
   } else if (ctx.currentDasha) {
     lines.push(
-      `How it is happening: you are in ${ctx.currentDasha} Mahadasha (${currentDashaQuality.toLowerCase()}). It is shaping the larger current and deciding which efforts can actually stick.`
+      `Why: you are in ${ctx.currentDasha} Mahadasha (${currentDashaQuality.toLowerCase()}). It is shaping the larger current and deciding which efforts can actually stick.`
     );
   }
 
-  // 3. Timing lens
+  // 4. Timing lens
   if (dashaTiming.length > 0) {
     lines.push(`How long this phase lasts: ${dashaTiming}. These timings are approximate because they are derived from the birth date here; an exact birth time and location will sharpen the result.`);
   }
@@ -7979,41 +8060,23 @@ function nextAstroChatReply(question: string, ctx: {
     lines.push(`When it started and ends: ${phaseWindow}.`);
   }
 
+  // 5. Domain outlook — only the domains tied to this question's category.
   if (domainOutlook.length > 0) {
-    lines.push(`Domain outlook from the same phase:`);
+    lines.push(`Where this shows up practically:`);
     domainOutlook.forEach((item) => {
       lines.push(`${item.domain}: ${item.verdict} — ${item.note}`);
     });
   }
 
-  // 4. Practical action lens
+  // 6. Practical action lens
   lines.push(`What to do now: ${categoryActions[cat]}.`);
 
-  // 5. Today's Panchang lens
+  // 7. Today's Panchang lens
   lines.push(`Today’s Panchang: ${ctx.todayVara}, ${ctx.todayTithi}. If the decision can wait, use this window to observe once more before forcing the outcome.`);
-
-  // 6. 48-dimension Moon Chart lens — same explainable-score engine used
-  // elsewhere in the Vedic tab, filtered to the dimensions relevant to this
-  // question's category so the chat draws on the full engine, not just
-  // Rashi/Dasha/Panchang.
-  const moon48 = ctx.moonChart48Readings ?? [];
-  if (moon48.length > 0) {
-    const relevantCategories = ASTRO_CHAT_CATEGORY_TO_MOON48[cat];
-    const relevant = moon48.filter((reading) => relevantCategories.includes(reading.category));
-    const pool = relevant.length > 0 ? relevant : moon48;
-    const strongest = [...pool].sort((a, b) => b.score - a.score).slice(0, 2);
-    const careful = [...pool].sort((a, b) => a.score - b.score).slice(0, 2);
-    const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
-    lines.push(
-      `48-dimension Moon Chart lens (${average}/100 average on the dimensions tied to this question): supported — ${strongest.map((item) => `${item.label} ${item.score}/100`).join(", ")}; needs care — ${careful.map((item) => `${item.label} ${item.score}/100`).join(", ")}. Lean on the supported dimensions while you act, and go gently on the ones that need care.`
-    );
-  } else {
-    lines.push(`Add your exact birth time and place for a 48-dimension Moon Chart lens on top of this reply.`);
-  }
 
   lines.push(`If you want, ask the same thing in a narrower way and I will go one layer deeper into the same phase.`);
 
-  // 4. Remedy from the Rashi remedy pack
+  // Remedy from the Rashi remedy pack
   const R = RASHI_REMEDIES[ctx.moonRashiId] ?? RASHI_REMEDIES[0];
   const lalKitabRemedies = buildLalKitabRemedies(ctx.currentDasha, ctx.currentAntardasha, cat);
   const remedy = [
@@ -17023,17 +17086,17 @@ function isTrustedExternalUrl(url: string) {
                         }}>
                           {m.role === "user" ? "You asked" : `Chart reply · ${m.category ?? "general"}`}
                         </Text>
-                        <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 19, whiteSpace: "pre-wrap" } as any}>
+                        <Text style={{ color: m.role === "user" ? "#FFFFFF" : "#0D1F22", fontSize: 13, lineHeight: 19, whiteSpace: "pre-wrap" } as any}>
                           {m.text}
                         </Text>
                         {m.remedy && (
                           <View style={{
-                            marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(252,211,77,0.15)"
+                            marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(180,83,9,0.2)"
                           }}>
                             <Text style={{ color: "#B45309", fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
                               Vedic + Lal Kitab remedies
                             </Text>
-                            <Text style={{ color: "rgba(240,249,255,0.85)", fontSize: 12, lineHeight: 17, whiteSpace: "pre-wrap" } as any}>
+                            <Text style={{ color: "rgba(13,31,34,0.78)", fontSize: 12, lineHeight: 17, whiteSpace: "pre-wrap" } as any}>
                               {m.remedy}
                             </Text>
                           </View>
