@@ -14667,9 +14667,11 @@ async function fetchGeminiAIHelp(
     if (!cleanText) return;
     if (!voiceAssistEnabled) return;
 
-    // Humanized params — female: warmer pitch, slightly faster; male: deeper, calm
+    // Humanized params — female: warmer pitch, slightly faster; male: deeper, calm.
+    // Rates sit a touch above natural device default so the readout keeps pace
+    // with reading speed instead of dragging.
     const isFemale  = voiceGender === "female";
-    const speakRate  = isFemale ? 0.87 : 0.84;
+    const speakRate  = isFemale ? 1.05 : 1.0;
     const speakPitch = isFemale ? 1.08 : 0.88;
 
     const speechApi = (globalThis as typeof globalThis & {
