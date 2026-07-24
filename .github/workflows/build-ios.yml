@@ -99,6 +99,30 @@ jobs:
         working-directory: ios
         run: pod install --repo-update
 
+      - name: Set unique iOS build number
+        working-directory: ios
+        run: |
+          # App Store Connect permanently rejects any CFBundleVersion it has
+          # already seen for this app -- even from a build that later got
+          # superseded -- so a hand-bumped, static CURRENT_PROJECT_VERSION in
+          # the checked-in project.pbxproj works exactly once. Every commit
+          # after that bump (which is most commits -- this number has nothing
+          # to do with app code changes) reuses the same value and the whole
+          # 30-40 minute CI run fails at the very last step with
+          # "ENTITY_ERROR.ATTRIBUTE.INVALID.DUPLICATE" on cfBundleVersion.
+          #
+          # github.run_number is a GitHub-guaranteed, monotonically
+          # increasing integer, unique per workflow file, that only ever goes
+          # up. Using it as CURRENT_PROJECT_VERSION means every run gets a
+          # build number strictly greater than every prior run of this
+          # workflow, so this exact failure class becomes structurally
+          # impossible from here on -- same fix already applied to the
+          # Android versionCode in build-android.yml.
+          NEW_BUILD_NUMBER="${{ github.run_number }}"
+          echo "Setting CURRENT_PROJECT_VERSION to $NEW_BUILD_NUMBER (GitHub run number)"
+          sed -i '' -E "s/CURRENT_PROJECT_VERSION = [0-9]+;/CURRENT_PROJECT_VERSION = ${NEW_BUILD_NUMBER};/" AethonBeacon.xcodeproj/project.pbxproj
+          grep -n "CURRENT_PROJECT_VERSION" AethonBeacon.xcodeproj/project.pbxproj
+
       - name: Write App Store Connect API key file (normalize to PEM)
         run: |
           if [ -n "${APPSTORE_API_KEY_ID:-}" ] && [ -n "${APPSTORE_API_KEY_P8:-}" ]; then
