@@ -4431,6 +4431,59 @@ const languageOptions: Array<{
   { id: "dogri", label: "Dogri", meta: "डोगरी support for guidance", speechLang: "doi-IN" }
 ];
 
+// Navigation-label translations for the languages that already have full UI copy
+// support (see localizedUiCopyByLanguage below). Other languages fall back to the
+// English label — same graceful-degradation pattern used everywhere else in the
+// language system, rather than guessing at translations we can't vouch for.
+const navLabelTranslations: Partial<Record<LanguageId, Record<string, string>>> = {
+  hindi: {
+    Home: "होम", Today: "आज", Path: "मार्ग", Insights: "जानकारी", Chat: "चैट",
+    Community: "समुदाय", Journal: "डायरी", Calm: "शांति", Tones: "ध्वनि",
+    Meditation: "ध्यान", Wellness: "स्वास्थ्य", "Birth Chart": "कुंडली",
+    Help: "सहायता", Patterns: "पैटर्न", Explore: "खोजें", Practice: "अभ्यास",
+    Language: "भाषा", Control: "नियंत्रण", Profile: "प्रोफ़ाइल", More: "और"
+  },
+  punjabi: {
+    Home: "ਹੋਮ", Today: "ਅੱਜ", Path: "ਰਾਹ", Insights: "ਜਾਣਕਾਰੀ", Chat: "ਚੈਟ",
+    Community: "ਭਾਈਚਾਰਾ", Journal: "ਡਾਇਰੀ", Calm: "ਸ਼ਾਂਤੀ", Tones: "ਧੁਨੀ",
+    Meditation: "ਧਿਆਨ", Wellness: "ਤੰਦਰੁਸਤੀ", "Birth Chart": "ਕੁੰਡਲੀ",
+    Help: "ਮਦਦ", Patterns: "ਪੈਟਰਨ", Explore: "ਖੋਜੋ", Practice: "ਅਭਿਆਸ",
+    Language: "ਭਾਸ਼ਾ", Control: "ਕੰਟਰੋਲ", Profile: "ਪ੍ਰੋਫ਼ਾਈਲ", More: "ਹੋਰ"
+  },
+  marathi: {
+    Home: "होम", Today: "आज", Path: "मार्ग", Insights: "अंतर्दृष्टी", Chat: "चॅट",
+    Community: "समुदाय", Journal: "डायरी", Calm: "शांतता", Tones: "स्वर",
+    Meditation: "ध्यान", Wellness: "आरोग्य", "Birth Chart": "कुंडली",
+    Help: "मदत", Patterns: "नमुने", Explore: "एक्सप्लोर करा", Practice: "सराव",
+    Language: "भाषा", Control: "नियंत्रण", Profile: "प्रोफाइल", More: "आणखी"
+  },
+  telugu: {
+    Home: "హోమ్", Today: "ఈరోజు", Path: "మార్గం", Insights: "అంతర్దృష్టులు", Chat: "చాట్",
+    Community: "సమాజం", Journal: "డైరీ", Calm: "ప్రశాంతత", Tones: "శబ్దాలు",
+    Meditation: "ధ్యానం", Wellness: "ఆరోగ్యం", "Birth Chart": "జాతకం",
+    Help: "సహాయం", Patterns: "నమూనాలు", Explore: "అన్వేషించండి", Practice: "అభ్యాసం",
+    Language: "భాష", Control: "నియంత్రణ", Profile: "ప్రొఫైల్", More: "మరిన్ని"
+  },
+  tamil: {
+    Home: "முகப்பு", Today: "இன்று", Path: "பாதை", Insights: "நுண்ணறிவு", Chat: "அரட்டை",
+    Community: "சமூகம்", Journal: "நாட்குறிப்பு", Calm: "அமைதி", Tones: "ஒலிகள்",
+    Meditation: "தியானம்", Wellness: "நலம்", "Birth Chart": "ஜாதகம்",
+    Help: "உதவி", Patterns: "வடிவங்கள்", Explore: "ஆராயுங்கள்", Practice: "பயிற்சி",
+    Language: "மொழி", Control: "கட்டுப்பாடு", Profile: "சுயவிவரம்", More: "மேலும்"
+  },
+  urdu: {
+    Home: "ہوم", Today: "آج", Path: "راستہ", Insights: "بصیرت", Chat: "چیٹ",
+    Community: "برادری", Journal: "ڈائری", Calm: "سکون", Tones: "آوازیں",
+    Meditation: "مراقبہ", Wellness: "تندرستی", "Birth Chart": "زائچہ",
+    Help: "مدد", Patterns: "نمونے", Explore: "دریافت کریں", Practice: "مشق",
+    Language: "زبان", Control: "کنٹرول", Profile: "پروفائل", More: "مزید"
+  }
+};
+
+function translateNavLabel(languageId: LanguageId, label: string): string {
+  return navLabelTranslations[languageId]?.[label] ?? label;
+}
+
 type UiCopy = {
   homeEyebrow: string;
   homeTitle: string;
@@ -9747,8 +9800,11 @@ export default function App() {
     [languageId]
   );
   const visibleTabs = useMemo(
-    () => tabs.filter((tab) => tab.id !== "admin" || accessRole === "admin"),
-    [accessRole]
+    () =>
+      tabs
+        .filter((tab) => tab.id !== "admin" || accessRole === "admin")
+        .map((tab) => ({ ...tab, label: translateNavLabel(languageId, tab.label) })),
+    [accessRole, languageId]
   );
   const activeTabLabel = useMemo(
     () => visibleTabs.find((tab) => tab.id === activeTab)?.label ?? "Home",
@@ -17550,7 +17606,9 @@ function isTrustedExternalUrl(url: string) {
                       style={({ pressed }) => [styles.profileFeatureChip, pressed && styles.pressed]}
                     >
                       <Text style={styles.profileFeatureChipIcon}>{item.icon}</Text>
-                      <Text style={styles.profileFeatureChipLabel}>{item.label}</Text>
+                      <Text style={styles.profileFeatureChipLabel}>
+                        {translateNavLabel(languageId, item.label)}
+                      </Text>
                     </Pressable>
                   ))}
                 </View>
@@ -17657,6 +17715,7 @@ function isTrustedExternalUrl(url: string) {
           isCompact={isCompact}
           vedicBadge={vedicTabHasBadge}
           insightsBadge={insightsTabHasBadge}
+          languageId={languageId}
         />
       ) : null}
 
@@ -25549,35 +25608,6 @@ function LanguageSection({
             );
           })}
         </View>
-        {showFullLanguages ? (
-          <View style={styles.languageGrid}>
-            {languageOptions.slice(4).map((option) => {
-              const isSelected = option.id === languageId;
-              return (
-                <Pressable
-                  key={option.id}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: isSelected }}
-                  onPress={() => setLanguageId(option.id)}
-                  style={[styles.languageButton, isSelected && styles.languageButtonActive]}
-                >
-                  <Text
-                    style={[styles.languageButtonLabel, isSelected && styles.segmentLabelActive]}
-                    numberOfLines={1}
-                  >
-                    {option.label}
-                  </Text>
-                  <Text
-                    style={[styles.languageButtonMeta, isSelected && styles.segmentLabelActive]}
-                    numberOfLines={2}
-                  >
-                    {option.meta}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : null}
       </View>
 
       <View style={styles.settingsBlock}>
@@ -30052,7 +30082,8 @@ function BottomNavBar({
   onMorePress,
   isCompact,
   vedicBadge = false,
-  insightsBadge = false
+  insightsBadge = false,
+  languageId = "english"
 }: {
   activeTab: TabId;
   onTabPress: (id: TabId) => void;
@@ -30060,6 +30091,7 @@ function BottomNavBar({
   isCompact: boolean;
   vedicBadge?: boolean;
   insightsBadge?: boolean;
+  languageId?: LanguageId;
 }) {
   const primaryIds = PRIMARY_NAV_TABS.map(t => t.id as string);
   const secondaryTabActive = !primaryIds.includes(activeTab) && activeTab !== "settings";
@@ -30067,6 +30099,7 @@ function BottomNavBar({
   return (
     <View style={[styles.bottomNav, Platform.OS === "ios" && { paddingBottom: 28 }]}>
       {PRIMARY_NAV_TABS.map((item) => {
+        const label = translateNavLabel(languageId, item.label);
         const isActive =
           item.id === "settings"
             ? activeTab === "settings" || secondaryTabActive
@@ -30077,7 +30110,7 @@ function BottomNavBar({
           <Pressable
             key={item.id}
             accessibilityRole="button"
-            accessibilityLabel={item.label}
+            accessibilityLabel={label}
             accessibilityState={{ selected: isActive }}
             onPress={() => onTabPress(item.id as TabId)}
             style={({ pressed }) => [
@@ -30105,7 +30138,7 @@ function BottomNavBar({
               ]}
               numberOfLines={1}
             >
-              {item.label}
+              {label}
             </Text>
           </Pressable>
         );
