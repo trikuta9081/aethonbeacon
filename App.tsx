@@ -266,6 +266,7 @@ type PersistedAppState = {
   sensitivePreviewsLocked: boolean;
   voiceAssistEnabled: boolean;
   voiceGender: "female" | "male";
+  voiceRate: number;
   userReviews: UserReview[];
   appLaunchCount: number;
   appFirstOpenedAt: string | null;
@@ -1864,6 +1865,7 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   { id: "search", label: "Explore", mark: "🔍", icon: "search" },
   { id: "play", label: "Practice", mark: "🎯", icon: "footsteps" },
   { id: "language", label: "Language", mark: "🌐", icon: "language" },
+  { id: "settings", label: "Settings", mark: "⚙️", icon: "settings" },
   { id: "admin", label: "Control", mark: "⚙️", icon: "settings" }
 ];
 
@@ -4441,47 +4443,54 @@ const navLabelTranslations: Partial<Record<LanguageId, Record<string, string>>> 
     Community: "समुदाय", Journal: "डायरी", Calm: "शांति", Tones: "ध्वनि",
     Meditation: "ध्यान", Wellness: "स्वास्थ्य", "Birth Chart": "कुंडली",
     Help: "सहायता", Patterns: "पैटर्न", Explore: "खोजें", Practice: "अभ्यास",
-    Language: "भाषा", Control: "नियंत्रण", Profile: "प्रोफ़ाइल", More: "और"
+    Language: "भाषा", Control: "नियंत्रण", Profile: "प्रोफ़ाइल", More: "और", Settings: "सेटिंग्स"
   },
   punjabi: {
     Home: "ਹੋਮ", Today: "ਅੱਜ", Path: "ਰਾਹ", Insights: "ਜਾਣਕਾਰੀ", Chat: "ਚੈਟ",
     Community: "ਭਾਈਚਾਰਾ", Journal: "ਡਾਇਰੀ", Calm: "ਸ਼ਾਂਤੀ", Tones: "ਧੁਨੀ",
     Meditation: "ਧਿਆਨ", Wellness: "ਤੰਦਰੁਸਤੀ", "Birth Chart": "ਕੁੰਡਲੀ",
     Help: "ਮਦਦ", Patterns: "ਪੈਟਰਨ", Explore: "ਖੋਜੋ", Practice: "ਅਭਿਆਸ",
-    Language: "ਭਾਸ਼ਾ", Control: "ਕੰਟਰੋਲ", Profile: "ਪ੍ਰੋਫ਼ਾਈਲ", More: "ਹੋਰ"
+    Language: "ਭਾਸ਼ਾ", Control: "ਕੰਟਰੋਲ", Profile: "ਪ੍ਰੋਫ਼ਾਈਲ", More: "ਹੋਰ", Settings: "ਸੈਟਿੰਗਾਂ"
   },
   marathi: {
     Home: "होम", Today: "आज", Path: "मार्ग", Insights: "अंतर्दृष्टी", Chat: "चॅट",
     Community: "समुदाय", Journal: "डायरी", Calm: "शांतता", Tones: "स्वर",
     Meditation: "ध्यान", Wellness: "आरोग्य", "Birth Chart": "कुंडली",
     Help: "मदत", Patterns: "नमुने", Explore: "एक्सप्लोर करा", Practice: "सराव",
-    Language: "भाषा", Control: "नियंत्रण", Profile: "प्रोफाइल", More: "आणखी"
+    Language: "भाषा", Control: "नियंत्रण", Profile: "प्रोफाइल", More: "आणखी", Settings: "सेटिंग्ज"
   },
   telugu: {
     Home: "హోమ్", Today: "ఈరోజు", Path: "మార్గం", Insights: "అంతర్దృష్టులు", Chat: "చాట్",
     Community: "సమాజం", Journal: "డైరీ", Calm: "ప్రశాంతత", Tones: "శబ్దాలు",
     Meditation: "ధ్యానం", Wellness: "ఆరోగ్యం", "Birth Chart": "జాతకం",
     Help: "సహాయం", Patterns: "నమూనాలు", Explore: "అన్వేషించండి", Practice: "అభ్యాసం",
-    Language: "భాష", Control: "నియంత్రణ", Profile: "ప్రొఫైల్", More: "మరిన్ని"
+    Language: "భాష", Control: "నియంత్రణ", Profile: "ప్రొఫైల్", More: "మరిన్ని", Settings: "సెట్టింగ్‌లు"
   },
   tamil: {
     Home: "முகப்பு", Today: "இன்று", Path: "பாதை", Insights: "நுண்ணறிவு", Chat: "அரட்டை",
     Community: "சமூகம்", Journal: "நாட்குறிப்பு", Calm: "அமைதி", Tones: "ஒலிகள்",
     Meditation: "தியானம்", Wellness: "நலம்", "Birth Chart": "ஜாதகம்",
     Help: "உதவி", Patterns: "வடிவங்கள்", Explore: "ஆராயுங்கள்", Practice: "பயிற்சி",
-    Language: "மொழி", Control: "கட்டுப்பாடு", Profile: "சுயவிவரம்", More: "மேலும்"
+    Language: "மொழி", Control: "கட்டுப்பாடு", Profile: "சுயவிவரம்", More: "மேலும்", Settings: "அமைப்புகள்"
   },
   urdu: {
     Home: "ہوم", Today: "آج", Path: "راستہ", Insights: "بصیرت", Chat: "چیٹ",
     Community: "برادری", Journal: "ڈائری", Calm: "سکون", Tones: "آوازیں",
     Meditation: "مراقبہ", Wellness: "تندرستی", "Birth Chart": "زائچہ",
     Help: "مدد", Patterns: "نمونے", Explore: "دریافت کریں", Practice: "مشق",
-    Language: "زبان", Control: "کنٹرول", Profile: "پروفائل", More: "مزید"
+    Language: "زبان", Control: "کنٹرول", Profile: "پروفائل", More: "مزید", Settings: "ترتیبات"
   }
 };
 
 function translateNavLabel(languageId: LanguageId, label: string): string {
   return navLabelTranslations[languageId]?.[label] ?? label;
+}
+
+// User-adjustable base speech rate for the voice assistant readout. Kept in a
+// modest band so the audio stays intelligible at either extreme.
+function clampVoiceRate(value: number): number {
+  if (!Number.isFinite(value)) return 1.0;
+  return Math.min(1.35, Math.max(0.75, value));
 }
 
 type UiCopy = {
@@ -9724,6 +9733,7 @@ export default function App() {
   const [sensitivePreviewsLocked, setSensitivePreviewsLocked] = useState(false);
   const [voiceAssistEnabled, setVoiceAssistEnabled] = useState(true);
   const [voiceGender, setVoiceGender] = useState<"female" | "male">("female");
+  const [voiceRate, setVoiceRate] = useState(1.0);
   const [voiceAssistStatus, setVoiceAssistStatus] = useState("Ready");
   const [userReviews, setUserReviews] = useState<UserReview[]>([]);
   const [appLaunchCount, setAppLaunchCount] = useState(0);
@@ -11960,6 +11970,9 @@ export default function App() {
       if (parsed.voiceGender === "female" || parsed.voiceGender === "male") {
         setVoiceGender(parsed.voiceGender);
       }
+      if (typeof parsed.voiceRate === "number" && Number.isFinite(parsed.voiceRate)) {
+        setVoiceRate(clampVoiceRate(parsed.voiceRate));
+      }
       if (Array.isArray(parsed.userReviews)) {
         setUserReviews(normalizeUserReviews(parsed.userReviews).slice(0, 20));
       }
@@ -12297,6 +12310,7 @@ export default function App() {
       sensitivePreviewsLocked,
       voiceAssistEnabled,
       voiceGender,
+      voiceRate,
       userReviews: userReviews.slice(0, 20),
       appLaunchCount,
       appFirstOpenedAt,
@@ -12379,6 +12393,7 @@ export default function App() {
     sensitivePreviewsLocked,
     voiceAssistEnabled,
     voiceGender,
+    voiceRate,
     userReviews,
     appLaunchCount,
     appFirstOpenedAt,
@@ -14668,10 +14683,11 @@ async function fetchGeminiAIHelp(
     if (!voiceAssistEnabled) return;
 
     // Humanized params — female: warmer pitch, slightly faster; male: deeper, calm.
-    // Rates sit a touch above natural device default so the readout keeps pace
-    // with reading speed instead of dragging.
+    // Base rate comes from the user's speed slider (Settings > Voice character);
+    // female keeps a small relative bump on top of whatever base the user picks.
     const isFemale  = voiceGender === "female";
-    const speakRate  = isFemale ? 1.05 : 1.0;
+    const baseRate   = clampVoiceRate(voiceRate);
+    const speakRate  = isFemale ? clampVoiceRate(baseRate + 0.05) : baseRate;
     const speakPitch = isFemale ? 1.08 : 0.88;
 
     const speechApi = (globalThis as typeof globalThis & {
@@ -17672,6 +17688,8 @@ function isTrustedExternalUrl(url: string) {
                 setVoiceAssistEnabled={setVoiceAssistEnabled}
                 voiceGender={voiceGender}
                 setVoiceGender={setVoiceGender}
+                voiceRate={voiceRate}
+                setVoiceRate={setVoiceRate}
                 voiceAssistStatus={voiceAssistStatus}
                 onReadGuidance={() => {
                   void speakGuidance(voiceGuidanceText);
@@ -24704,6 +24722,8 @@ function SettingsSection({
   setVoiceAssistEnabled,
   voiceGender,
   setVoiceGender,
+  voiceRate,
+  setVoiceRate,
   voiceAssistStatus,
   onReadGuidance,
   onStopVoice,
@@ -24776,6 +24796,8 @@ function SettingsSection({
   setVoiceAssistEnabled: (value: boolean) => void;
   voiceGender: "female" | "male";
   setVoiceGender: (value: "female" | "male") => void;
+  voiceRate: number;
+  setVoiceRate: (value: number | ((current: number) => number)) => void;
   voiceAssistStatus: string;
   onReadGuidance: () => void;
   onStopVoice: () => void;
@@ -25137,8 +25159,44 @@ function SettingsSection({
             );
           })}
         </View>
+        <View style={{ marginTop: 14 }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <Text style={{ color: "#94A3B8", fontSize: 12, fontWeight: "700" }}>Speaking speed</Text>
+            <Text style={{ color: "#67E8F9", fontSize: 11, fontWeight: "900" }}>
+              {Math.round(clampVoiceRate(voiceRate) * 100)}%
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Slower"
+              onPress={() => setVoiceRate((v) => clampVoiceRate(v - 0.05))}
+              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#0A1520", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+            >
+              <Text style={{ color: "#94A3B8", fontSize: 16, fontWeight: "900" }}>–</Text>
+            </Pressable>
+            <View style={{ flex: 1, height: 8, borderRadius: 999, backgroundColor: "#0A1520", overflow: "hidden" }}>
+              <View
+                style={{
+                  height: 8,
+                  borderRadius: 999,
+                  backgroundColor: "#22D3EE",
+                  width: `${Math.round(((clampVoiceRate(voiceRate) - 0.75) / (1.35 - 0.75)) * 100)}%` as unknown as number
+                }}
+              />
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Faster"
+              onPress={() => setVoiceRate((v) => clampVoiceRate(v + 0.05))}
+              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#0A1520", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+            >
+              <Text style={{ color: "#94A3B8", fontSize: 16, fontWeight: "900" }}>+</Text>
+            </Pressable>
+          </View>
+        </View>
         <Text style={[styles.promptText, { marginTop: 8, color: "#374151" }]}>
-          Pitch and speed are automatically tuned for a human-sounding readout. Available voices depend on your device.
+          Pitch is tuned automatically per voice character; speed is yours to set. Available voices depend on your device.
         </Text>
       </View>
       <View style={styles.settingsBlock}>
