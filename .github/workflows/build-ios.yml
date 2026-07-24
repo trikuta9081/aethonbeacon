@@ -1,14 +1,45 @@
 name: Build iOS → TestFlight (App Store Connect API)
 
-# Builds a signed iOS .ipa on a macOS runner and uploads to TestFlight,
-# using ONLY an App Store Connect API key — no Apple ID / 2FA / password
-# needed at runtime, no .p12 certificate export, no manual provisioning
-# profile management.
+# Builds a signed iOS .ipa on a macOS runner and uploads to TestFlight.
+#
+# Signing: this workflow imports ONE fixed, already-existing Apple
+# Distribution certificate + provisioning profile on every run, instead of
+# asking Xcode to auto-create a new certificate each time
+# (-allowProvisioningUpdates). That auto-create-per-run approach is what
+# exhausted the Apple Developer account's certificate quota after enough CI
+# runs ("Choose a certificate to revoke. Your account has reached the
+# maximum number of certificates.") -- every run failed identically from
+# that point on, since Apple refused to issue yet another certificate.
+# Reusing one certificate can never hit that ceiling again.
+#
+# The App Store Connect API key is still used, but only for the final
+# TestFlight upload step (altool), which doesn't consume certificate quota.
 #
 # Required GitHub repo secrets (Settings → Secrets and variables → Actions):
-#   APPSTORE_API_KEY_ID     = 4Y6H9428FJ
-#   APPSTORE_API_ISSUER_ID  = 987583dc-d087-45b3-ad8a-550f59621e8d
-#   APPSTORE_API_KEY_P8     = full contents of the AuthKey_<KEYID>.p8 file
+#   APPSTORE_API_KEY_ID        = 4Y6H9428FJ
+#   APPSTORE_API_ISSUER_ID     = 987583dc-d087-45b3-ad8a-550f59621e8d
+#   APPSTORE_API_KEY_P8        = full contents of the AuthKey_<KEYID>.p8 file
+#   IOS_DIST_CERT_P12_BASE64   = `base64 -i YourCert.p12 | pbcopy` output of an
+#                                EXISTING Apple Distribution certificate + key
+#                                exported from Keychain Access on a Mac that
+#                                has already signed a build for this app --
+#                                do NOT create a brand-new certificate, the
+#                                account is at its limit.
+#   IOS_DIST_CERT_PASSWORD     = the password you set during that .p12 export
+#   IOS_PROVISIONING_PROFILE_BASE64 = `base64 -i YourProfile.mobileprovision | pbcopy`
+#                                output of an "App Store" distribution
+#                                provisioning profile for com.aethonbeacon.app,
+#                                built against that same certificate
+#                                (developer.apple.com → Profiles). Profiles
+#                                are a separate, much less restrictive quota
+#                                from certificates, so creating a fresh one
+#                                is fine even while the certificate quota is
+#                                maxed out.
+#
+# If the three IOS_* secrets above aren't set yet, this workflow falls back
+# to the old automatic/ASC-managed signing path so it doesn't hard-fail --
+# but that path is exactly what caused the certificate exhaustion, so it
+# will eventually fail again the same way.
 
 on:
   push:
@@ -25,6 +56,9 @@ jobs:
       APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
       APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
       APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
+      IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+      IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+      IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
       # Same reasoning as build-android.yml: Expo inlines EXPO_PUBLIC_* at JS
       # bundle time, so without this here the TestFlight build ships with fake
       # local OTP and disabled Gemini cards too.
@@ -106,6 +140,68 @@ jobs:
             echo "HAS_ASC_KEY=false" >> "$GITHUB_ENV"
           fi
 
+      - name: Debug secret lengths (temporary — remove after diagnosis)
+        run: |
+          echo "IOS_DIST_CERT_P12_BASE64 length: ${#IOS_DIST_CERT_P12_BASE64}"
+          echo "IOS_DIST_CERT_PASSWORD length: ${#IOS_DIST_CERT_PASSWORD}"
+          echo "IOS_PROVISIONING_PROFILE_BASE64 length: ${#IOS_PROVISIONING_PROFILE_BASE64}"
+
+      - name: Import signing certificate (reuse existing, never mint a new one)
+        if: env.IOS_DIST_CERT_P12_BASE64 != '' && env.IOS_PROVISIONING_PROFILE_BASE64 != ''
+        run: |
+          KEYCHAIN_PATH="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(openssl rand -base64 24)"
+
+          echo "$IOS_DIST_CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          if ! security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN_PATH" -P "$IOS_DIST_CERT_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security 2>/tmp/import_err.txt; then
+            echo "::error::Failed to import IOS_DIST_CERT_P12_BASE64 into keychain: $(cat /tmp/import_err.txt | tr '\n' ' '). Re-check the .p12 contents/password secrets."
+            exit 1
+          fi
+
+          security list-keychain -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | sed 's/"//g')
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          IDENTITY_COUNT=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep -c "Apple Distribution\|iPhone Distribution" || true)
+          echo "Signing identities found in imported keychain: $IDENTITY_COUNT"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
+          if [ "$IDENTITY_COUNT" = "0" ]; then
+            echo "::error::No Apple Distribution / iPhone Distribution identity found in the imported .p12. Export the correct certificate (with its private key) from Keychain Access."
+            exit 1
+          fi
+
+          echo "HAS_MANUAL_CERT=true" >> "$GITHUB_ENV"
+
+      - name: Install provisioning profile
+        if: env.IOS_DIST_CERT_P12_BASE64 != '' && env.IOS_PROVISIONING_PROFILE_BASE64 != ''
+        run: |
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/profile.mobileprovision"
+
+          if ! security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist" 2>/tmp/profile_err.txt; then
+            echo "::error::Couldn't read IOS_PROVISIONING_PROFILE_BASE64 as a provisioning profile: $(cat /tmp/profile_err.txt | tr '\n' ' ')."
+            exit 1
+          fi
+
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$RUNNER_TEMP/profile.plist")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" "$RUNNER_TEMP/profile.plist")
+          PROFILE_APP_ID=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" "$RUNNER_TEMP/profile.plist" 2>/dev/null || echo "unknown")
+
+          cp "$RUNNER_TEMP/profile.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
+
+          echo "Installed provisioning profile: $PROFILE_NAME ($PROFILE_UUID)"
+          echo "Profile application identifier: $PROFILE_APP_ID"
+          case "$PROFILE_APP_ID" in
+            *com.aethonbeacon.app) ;;
+            *) echo "::warning::Profile's application-identifier ('$PROFILE_APP_ID') doesn't end in com.aethonbeacon.app -- double-check this is the right profile." ;;
+          esac
+
+          echo "PROVISIONING_PROFILE_SPECIFIER=$PROFILE_NAME" >> "$GITHUB_ENV"
+
       - name: Warm up CocoaPods Swift modules (clean-checkout race workaround)
         working-directory: ios
         run: |
@@ -133,7 +229,27 @@ jobs:
       - name: Archive iOS
         working-directory: ios
         run: |
-          if [ "${HAS_ASC_KEY:-false}" = "true" ]; then
+          if [ "${HAS_MANUAL_CERT:-false}" = "true" ]; then
+            # Preferred path: sign with the one imported, reused certificate --
+            # never asks Apple for a new one, so it can't hit the certificate
+            # quota that broke every build from run #97 onward.
+            xcodebuild \
+              -workspace AethonBeacon.xcworkspace \
+              -scheme AethonBeacon \
+              -configuration Release \
+              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
+              -destination "generic/platform=iOS" \
+              CODE_SIGN_STYLE=Manual \
+              CODE_SIGN_IDENTITY="Apple Distribution" \
+              "PROVISIONING_PROFILE_SPECIFIER=$PROVISIONING_PROFILE_SPECIFIER" \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+              archive 2>&1 | tee archive.log | tail -300
+            ARCHIVE_STATUS=${PIPESTATUS[0]}
+          elif [ "${HAS_ASC_KEY:-false}" = "true" ]; then
+            # Fallback: old auto-provisioning path. Works, but each run may
+            # ask Apple to mint a certificate -- this is what exhausted the
+            # account's quota before. Only used when the IOS_DIST_CERT_*
+            # secrets above aren't set yet.
             xcodebuild \
               -workspace AethonBeacon.xcworkspace \
               -scheme AethonBeacon \
@@ -179,7 +295,34 @@ jobs:
       - name: Export .ipa
         working-directory: ios
         run: |
-          cat > ExportOptions.plist <<EOF
+          if [ "${HAS_MANUAL_CERT:-false}" = "true" ]; then
+            cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>${APPLE_TEAM_ID}</string>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.aethonbeacon.app</key>
+              <string>${PROVISIONING_PROFILE_SPECIFIER}</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
+          else
+            cat > ExportOptions.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
@@ -197,7 +340,14 @@ jobs:
           </dict>
           </plist>
           EOF
-          if [ "${HAS_ASC_KEY:-false}" = "true" ]; then
+          fi
+          if [ "${HAS_MANUAL_CERT:-false}" = "true" ]; then
+            xcodebuild \
+              -exportArchive \
+              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
+              -exportOptionsPlist ExportOptions.plist \
+              -exportPath "$PWD/build"
+          elif [ "${HAS_ASC_KEY:-false}" = "true" ]; then
             xcodebuild \
               -exportArchive \
               -archivePath "$PWD/build/AethonBeacon.xcarchive" \
