@@ -14492,99 +14492,37 @@ async function fetchGeminiAIHelp(
     const issueFocus = findAIHelpIssue(text);
     queueVedicEngineIssue(text, issueFocus, "aihelp");
     const redressFocus: RedressRouteId = abuseDetection ? abuseDetection.routeId : findAIHelpRedressRoute(text);
-    const routeTab = getAIHelpOpenTab(route);
-    const pendingRouteTab: "guide" | "redress" = routeTab === "redress" ? "redress" : "guide";
-    const focusAnchorKey =
-      routeTab === "redress" ? `redress:${redressFocus}` : `guide:${issueFocus.id}`;
+
     if (abuseDetection) {
       // Direct-set the redress route so the Help tab pre-lands on the correct
-      // grievance platform when the user follows through.
+      // grievance platform when the user follows through. Urgent safety
+      // situations always take the fast, direct path — never the
+      // conversational engine — so help is never delayed behind questions.
       setRedressRouteId(abuseDetection.routeId);
-    } else {
-      applyAIHelpRoute(text, route);
-    }
-    if (route === "urgent") {
       void scheduleUrgentSafetyCheckIn(issueFocus.label);
+      setAIHelpDraft("");
+      openRedressTab(redressFocus);
+      return;
     }
-    setPendingTabFocusAnchor({ tab: pendingRouteTab, key: focusAnchorKey });
-    handleTabPress("aihelp");
-    const createdAt = new Date().toISOString();
-    const pendingAssistantId = `ai-help-pending-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-    const userMessage: AIHelpMessage = {
-      id: `ai-user-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
-      createdAt,
-      author: "You",
-      role: "user",
-      text,
-      route
-    };
-    const pendingMessage: AIHelpMessage = {
-      id: pendingAssistantId,
-      createdAt: new Date().toISOString(),
-      author: "Beacon Guide",
-      role: "assistant",
-      text: "Working out the next step...",
-      route
-    };
+    if (route === "redress") {
+      // Non-urgent grievance/redress reports also skip straight to the Help
+      // tab — reporting/legal routes, not conversation, are what's needed.
+      applyAIHelpRoute(text, route);
+      setAIHelpDraft("");
+      openRedressTab(redressFocus);
+      return;
+    }
 
-    setAIHelpLoading(true);
-    if (abuseDetection) {
-      // Abuse guidance goes IN FRONT of the pending generic reply so the user
-      // sees rights + first action immediately, not after the network round-trip.
-      const abuseMsg = buildAbuseGuidanceMessage(abuseDetection, createdAt);
-      setAIHelpMessages((current) => [pendingMessage, abuseMsg, userMessage, ...current].slice(0, 50));
-    } else {
-      setAIHelpMessages((current) => [pendingMessage, userMessage, ...current].slice(0, 50));
-    }
+    // Everything else — the vast majority of what people type here — now goes
+    // through the single real two-way 48D counselling engine instead of a
+    // shallow one-shot canned reply. That old path often ignored what was
+    // actually typed; the adaptive chat modal below is now the ONE
+    // issue-resolution surface in the app, so every non-emergency message
+    // gets a real back-and-forth that gets to the core of the issue first.
+    setIssueGuideId(issueFocus.id);
+    setCounselingInitialText(text);
     setAIHelpDraft("");
-    try {
-      const geminiReply = await fetchGeminiAIHelp(text, route, profileDisplayName, issueGuide);
-      setAIHelpProvider(geminiReply?.source === "gemini" ? "gemini" : "local");
-      const replyMessage: AIHelpMessage = {
-        id: pendingAssistantId,
-        createdAt: new Date().toISOString(),
-        author: "Beacon Guide",
-        role: "assistant",
-        text: formatAIHelpReply(text, route, geminiReply?.text),
-        route
-      };
-
-      setAIHelpMessages((current) =>
-        current.some((message) => message.id === pendingAssistantId)
-          ? current.map((message) => (message.id === pendingAssistantId ? replyMessage : message))
-          : [replyMessage, userMessage, ...current].slice(0, 50)
-      );
-    } catch {
-      setAIHelpProvider("local");
-      const replyMessage: AIHelpMessage = {
-        id: pendingAssistantId,
-        createdAt: new Date().toISOString(),
-      author: "Beacon Guide",
-        role: "assistant",
-        text: formatAIHelpReply(text, route),
-        route
-      };
-
-      setAIHelpMessages((current) =>
-        current.some((message) => message.id === pendingAssistantId)
-          ? current.map((message) => (message.id === pendingAssistantId ? replyMessage : message))
-          : [replyMessage, userMessage, ...current].slice(0, 50)
-      );
-    } finally {
-      setAIHelpLoading(false);
-      if (route === "redress" || route === "urgent") {
-        openRedressTab(redressFocus);
-        return;
-      }
-      if (!privateIntakeSavedAt) {
-        showRouteNotice(
-          "Next step ready",
-          "The guidance stays here. Open intake only if you want the fuller questionnaire."
-        );
-        return;
-      }
-      openGuideTab(issueFocus.id);
-    }
+    setShowCounselingChat(true);
   }
 
   function postAIHelpMessage() {
@@ -15331,9 +15269,10 @@ async function fetchGeminiAIHelp(
       return;
     }
     // Any typed life issue should be heard first, then routed through the app.
-    const shouldCounselFirst =
-      text.length > 0 &&
-      (route === "professional" || issue.id !== "general" || detectedDimensions.length > 0);
+    // The two-way 48D counselling engine is now the single issue-resolution
+    // surface, so any non-empty typed text opens it — not just the subset the
+    // keyword classifier happened to recognize as "professional" or themed.
+    const shouldCounselFirst = text.length > 0;
     if (shouldCounselFirst) {
       setCounselingInitialText(routeText);
       setTimeout(() => {
@@ -29759,6 +29698,34 @@ function CounselingChatModal({
     onJourneyReady(finalSession);
   }
 
+  // Explicit end-of-conversation choice — after the engine has actually heard
+  // and resolved the core issue, the user (not the app) decides what happens
+  // next: meditation, chakra work, a calming practice, redressal guidance, or
+  // nothing further right now.
+  function chooseJourneyNext(choice: "meditation" | "chakra" | "calmness" | "redress" | "none") {
+    if (choice === "none") {
+      onClose();
+      return;
+    }
+    const tabId: TabId = choice === "calmness" ? "focus" : choice === "redress" ? "redress" : "meditation";
+    const label =
+      choice === "meditation" ? "Meditation" :
+      choice === "chakra" ? "Chakra work" :
+      choice === "calmness" ? "Calm Focus" : "Redressal guidance";
+    const emoji = choice === "meditation" ? "🧘" : choice === "chakra" ? "🌀" : choice === "calmness" ? "🌿" : "🧭";
+    const chosenStep: JourneyStep = {
+      tabId, label, emoji,
+      reason: "Chosen by you at the end of the conversation.",
+      completed: false, skipped: false,
+    };
+    const finalSession: CounselingSession = {
+      ...session,
+      stage: "done",
+      journeySteps: [chosenStep, ...journeySteps.filter((s) => s.tabId !== tabId)],
+    };
+    onJourneyReady(finalSession);
+  }
+
   const showJourneyOptions = session.stage === "synthesizing" && journeySteps.length > 0;
 
   return (
@@ -29834,16 +29801,41 @@ function CounselingChatModal({
                   <Text style={{ color: "#63DED0", fontSize: 13, fontWeight: "700" }}>Replay guide summary aloud</Text>
                 </Pressable>
               )}
+              <Text style={{ color: "#E2EAF0", fontSize: 14, fontWeight: "800", marginTop: 12, marginBottom: 2 }}>
+                What would help most right now?
+              </Text>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                {[
+                  { choice: "meditation" as const, emoji: "🧘", label: "Meditation" },
+                  { choice: "chakra" as const, emoji: "🌀", label: "Chakra work" },
+                  { choice: "calmness" as const, emoji: "🌿", label: "Calmness" },
+                  { choice: "redress" as const, emoji: "🧭", label: "Redressal guidance" },
+                ].map((option) => (
+                  <Pressable
+                    key={option.choice}
+                    onPress={() => chooseJourneyNext(option.choice)}
+                    accessibilityRole="button"
+                    accessibilityLabel={option.label}
+                    style={({ pressed }) => ({
+                      flexGrow: 1,
+                      minWidth: "46%",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                      backgroundColor: pressed ? "#0E4A46" : "#0E6F69",
+                      borderRadius: 14,
+                      paddingVertical: 14,
+                      paddingHorizontal: 10,
+                    })}
+                  >
+                    <Text style={{ fontSize: 18 }}>{option.emoji}</Text>
+                    <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>{option.label}</Text>
+                  </Pressable>
+                ))}
+              </View>
               <Pressable
-                onPress={handleStartJourney}
-                accessibilityRole="button"
-                accessibilityLabel="Start my journey"
-                style={({ pressed }) => ({ backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 14, padding: 16, alignItems: "center", marginTop: 8 })}
-              >
-                <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "900" }}>Start my journey  →</Text>
-              </Pressable>
-              <Pressable
-                onPress={onClose}
+                onPress={() => chooseJourneyNext("none")}
                 accessibilityRole="button"
                 accessibilityLabel="Not right now"
                 style={({ pressed }) => ({ padding: 12, alignItems: "center", opacity: pressed ? 0.6 : 1 })}
