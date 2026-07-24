@@ -9542,7 +9542,7 @@ function ExitReportModal({
                 borderRadius: 14, padding: 16, alignItems: "center",
               })}
             >
-              <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800" }}>📤  Share Report</Text>
+              <Text style={{ color: "#FFFFFF", fontSize: 15, fontWeight: "800" }}>📤  Share Report</Text>
             </Pressable>
             <Pressable
               onPress={onClose}
@@ -16248,7 +16248,7 @@ function isTrustedExternalUrl(url: string) {
                   </Text>
                   <View style={{ flexDirection: "row", gap: 10 }}>
                     <View style={{ flex: 1, backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Mood</Text>
+                      <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Mood</Text>
                       <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
                         {weeklyMoodAverage !== null ? `${weeklyMoodAverage}/100` : "No entries yet"}
                       </Text>
@@ -16259,18 +16259,18 @@ function isTrustedExternalUrl(url: string) {
                       )}
                     </View>
                     <View style={{ flex: 1, backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Check-ins</Text>
+                      <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Check-ins</Text>
                       <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
                         {weeklyCheckInCount} this week
                       </Text>
-                      <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 2 }}>
+                      <Text style={{ color: "rgba(13,31,34,0.55)", fontSize: 11, marginTop: 2 }}>
                         {weeklyCheckInCount >= 5 ? "Great consistency" : weeklyCheckInCount >= 2 ? "Good start — keep going" : "Log a note to build momentum"}
                       </Text>
                     </View>
                   </View>
                   {vedicRashiInfo && vedicPredictionLines?.[0] && (
                     <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>
+                      <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>
                         {vedicRashiInfo.rashi.name} highlight
                       </Text>
                       <Text style={{ color: "#0D1F22", fontSize: 13, marginTop: 2, lineHeight: 18 }} numberOfLines={2}>
@@ -16961,7 +16961,7 @@ function isTrustedExternalUrl(url: string) {
                     <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
                       Two-way astro guidance
                     </Text>
-                    <Text style={{ color: "rgba(240,249,255,0.65)", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
+                    <Text style={{ color: "rgba(13,31,34,0.65)", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
                       Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha, current Antardasha, and today's Panchang, then explains what is happening, why it is happening, how long it may last, and what to do next.
                     </Text>
                   </View>
@@ -16976,7 +16976,7 @@ function isTrustedExternalUrl(url: string) {
                     value={astroChatDraft}
                     onChangeText={setAstroChatDraft}
                     placeholder={hasExactBirthDetails ? "e.g. Will I get this job? Should I marry now? Why am I always tired?" : "Enter exact birth details above to unlock chart questions"}
-                    placeholderTextColor="rgba(255,255,255,0.35)"
+                    placeholderTextColor="rgba(13,31,34,0.4)"
                     multiline
                     editable={hasExactBirthDetails}
                     style={{
@@ -18018,7 +18018,7 @@ function TodaySection({
           >
             Current tester page · July 15 update
           </Text>
-          <Text style={{ color: "#FFFFFF", fontSize: compact ? 19 : 23, fontWeight: "900", marginBottom: 8 }}>
+          <Text style={{ color: "#0D1F22", fontSize: compact ? 19 : 23, fontWeight: "900", marginBottom: 8 }}>
             Android + iPhone testing link is live
           </Text>
           <Text style={{ color: "#265692", fontSize: compact ? 13 : 15, lineHeight: compact ? 19 : 22, marginBottom: 14 }}>
@@ -18055,15 +18055,15 @@ function TodaySection({
                   alignItems: "center",
                   justifyContent: "center",
                   paddingHorizontal: 16,
-                  backgroundColor: "rgba(255,255,255,0.10)",
+                  backgroundColor: "rgba(13,31,34,0.06)",
                   borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.18)",
+                  borderColor: "rgba(13,31,34,0.22)",
                   flex: compact ? undefined : 1
                 },
                 pressed && styles.pressed
               ]}
             >
-              <Text style={{ color: "#FFFFFF", fontWeight: "900", fontSize: 14 }}>Android opt-in</Text>
+              <Text style={{ color: "#0D1F22", fontWeight: "900", fontSize: 14 }}>Android opt-in</Text>
             </Pressable>
           </View>
         </View>
@@ -20524,7 +20524,7 @@ function AIHelpSection({
             <Text style={{ color: useBirthChart ? "#0891B2" : "#465871", fontSize: 13, fontWeight: "800" }}>
               🪐 Include my birth chart in this session
             </Text>
-            <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, marginTop: 2 }}>
+            <Text style={{ color: "rgba(13,31,34,0.45)", fontSize: 11, marginTop: 2 }}>
               {`Janma Rashi: ${birthChartRashiInfo.rashi.name}${birthChartNakshatra ? ` · Nakshatra: ${birthChartNakshatra.name}` : ""}${birthChartDashaState ? ` · Mahadasha: ${birthChartDashaState.currentMahadasha} · Antardasha: ${birthChartDashaState.currentAntardasha}` : ""}`}
             </Text>
           </View>
@@ -26004,7 +26004,7 @@ function BirthChartSection({
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             {/* Day */}
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>DAY</Text>
+              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>DAY</Text>
               <TextInput
                 value={dobDD}
                 onChangeText={(v) => {
@@ -26025,10 +26025,10 @@ function BirthChartSection({
                 }}
               />
             </View>
-            <Text style={{ color: "rgba(255,255,255,0.3)", fontSize: 22, marginTop: 16 }}>/</Text>
+            <Text style={{ color: "rgba(13,31,34,0.3)", fontSize: 22, marginTop: 16 }}>/</Text>
             {/* Month */}
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>MONTH</Text>
+              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>MONTH</Text>
               <TextInput
                 ref={refDobMM}
                 value={dobMM}
@@ -26050,10 +26050,10 @@ function BirthChartSection({
                 }}
               />
             </View>
-            <Text style={{ color: "rgba(255,255,255,0.3)", fontSize: 22, marginTop: 16 }}>/</Text>
+            <Text style={{ color: "rgba(13,31,34,0.3)", fontSize: 22, marginTop: 16 }}>/</Text>
             {/* Year */}
             <View style={{ flex: 2, alignItems: "center" }}>
-              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>YEAR</Text>
+              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>YEAR</Text>
               <TextInput
                 ref={refDobYYYY}
                 value={dobYYYY}
@@ -26090,7 +26090,7 @@ function BirthChartSection({
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>HOUR (00–23)</Text>
+              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>HOUR (00–23)</Text>
               <TextInput
                 value={timeHH}
                 onChangeText={(v) => {
@@ -26111,9 +26111,9 @@ function BirthChartSection({
                 }}
               />
             </View>
-            <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 28, marginTop: 18, fontWeight: "900" }}>:</Text>
+            <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 28, marginTop: 18, fontWeight: "900" }}>:</Text>
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>MINUTE (00–59)</Text>
+              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>MINUTE (00–59)</Text>
               <TextInput
                 ref={refTimeMM}
                 value={timeMM}
@@ -26217,7 +26217,7 @@ function BirthChartSection({
               { label: "Samvatsara (60-yr cycle)", value: samvatsaraInfo ? `${samvatsaraInfo.name} (#${samvatsaraInfo.index + 1})` : "Enter date of birth" },
             ].map((item) => (
               <View key={item.label} style={{ backgroundColor: "#E1EEEC", borderRadius: 8, padding: 10, minWidth: 90, flex: 1 }}>
-                <Text style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, fontWeight: "800", textTransform: "uppercase" }}>{item.label}</Text>
+                <Text style={{ color: "rgba(13,31,34,0.65)", fontSize: 10, fontWeight: "800", textTransform: "uppercase" }}>{item.label}</Text>
                 <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "800", marginTop: 2 }} numberOfLines={2}>{item.value}</Text>
               </View>
             ))}
@@ -26245,7 +26245,7 @@ function BirthChartSection({
                       : "add your exact birth place above for a precise, coordinate-based Lagna instead of this estimate."}
                 </Text>
               )}
-              <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
+              <Text style={{ color: "rgba(13,31,34,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
                 Note: even the precise calculation is an approximation of professional-grade software. For life-decision use, consult a certified Jyotishi with your birth certificate coordinates.
               </Text>
             </View>
@@ -26263,7 +26263,7 @@ function BirthChartSection({
                 The Samvatsara is the Vedic 60-year Jupiter cycle — each year has a unique cosmic name and life-theme inscribed at birth.{"\n"}
                 <Text style={{ fontWeight: "900", color: "#0E9488" }}>Your birth-year theme: </Text>{samvatsaraInfo.theme}.
               </Text>
-              <Text style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
+              <Text style={{ color: "rgba(13,31,34,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
                 This Samvatsara shapes your core life-script and soul-purpose tendencies as recorded in Jyotish.
               </Text>
             </View>
@@ -26281,7 +26281,7 @@ function BirthChartSection({
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 }}>
                   <View style={{ backgroundColor: "rgba(192,132,252,0.15)", borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: "rgba(192,132,252,0.4)" }}>
                     <Text style={{ color: dashaColor, fontSize: 20, fontWeight: "900" }}>{dasha.currentMahadasha}</Text>
-                    <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textAlign: "center" }}>Mahadasha</Text>
+                    <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 10, textAlign: "center" }}>Mahadasha</Text>
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700" }}>
@@ -26308,11 +26308,11 @@ function BirthChartSection({
                   <Text style={{ color: "#2600B8", fontSize: 12, marginTop: 3, lineHeight: 18 }}>
                     {summarizePlanetQuality(dasha.currentAntardasha)}. About {formatPhaseSpan(dasha.antardashaYearsLeft)} remain in this sub-period, then {dasha.nextAntardasha} starts.
                   </Text>
-                  <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 2, lineHeight: 16 }}>
+                  <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 11, marginTop: 2, lineHeight: 16 }}>
                     Started ~{formatApproxDate(dasha.antardashaStartedAtIso)} · Ends ~{formatApproxDate(dasha.antardashaEndsAtIso)}
                   </Text>
                 </View>
-                <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, fontStyle: "italic" }}>
+                <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontStyle: "italic" }}>
                   Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods, exact birth time, and true Antardasha timing.
                 </Text>
               </View>
@@ -26336,7 +26336,7 @@ function BirthChartSection({
                     { label: "Lord", value: janmaNakshatra.lord },
                   ].map((item) => (
                     <View key={item.label} style={{ backgroundColor: "#E1EEEC", borderRadius: 8, padding: 8, minWidth: 80 }}>
-                      <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 9, fontWeight: "900", textTransform: "uppercase" }}>{item.label}</Text>
+                      <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 9, fontWeight: "900", textTransform: "uppercase" }}>{item.label}</Text>
                       <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "800", marginTop: 2 }}>{item.value}</Text>
                     </View>
                   ))}
@@ -26380,9 +26380,9 @@ function BirthChartSection({
           </View>
 
           <View style={{ flexDirection: isWide ? "row" : "column", gap: 12 }}>
-            <View style={{ flex: 1.05, borderRadius: 20, backgroundColor: "rgba(15,23,42,0.82)", borderWidth: 1, borderColor: "rgba(103,232,249,0.2)", padding: 12, transform: [{ perspective: 900 }, { rotateX: isWide ? "3deg" : "0deg" }] }}>
+            <View style={{ flex: 1.05, borderRadius: 20, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: "rgba(103,232,249,0.4)", padding: 12, transform: [{ perspective: 900 }, { rotateX: isWide ? "3deg" : "0deg" }] }}>
               <Text style={{ color: "#00A2B8", fontSize: 10, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>2D/3D Moon-house visual map</Text>
-              <View style={{ alignSelf: "center", width: isWide ? 250 : 220, height: isWide ? 250 : 220, borderRadius: isWide ? 125 : 110, borderWidth: 1, borderColor: "rgba(103,232,249,0.36)", backgroundColor: "rgba(2,6,23,0.72)", alignItems: "center", justifyContent: "center", shadowColor: "#00A2B8", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.3, shadowRadius: 24 }}>
+              <View style={{ alignSelf: "center", width: isWide ? 250 : 220, height: isWide ? 250 : 220, borderRadius: isWide ? 125 : 110, borderWidth: 1, borderColor: "rgba(103,232,249,0.5)", backgroundColor: "#EAF6FA", alignItems: "center", justifyContent: "center", shadowColor: "#00A2B8", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.3, shadowRadius: 24 }}>
                 <View style={{ position: "absolute", width: isWide ? 202 : 178, height: isWide ? 202 : 178, borderRadius: isWide ? 101 : 89, borderWidth: 1, borderColor: "rgba(196,181,253,0.28)" }} />
                 <View style={{ position: "absolute", width: isWide ? 152 : 132, height: isWide ? 152 : 132, borderRadius: isWide ? 76 : 66, borderWidth: 1, borderColor: "rgba(252,211,77,0.24)" }} />
                 <View style={{ position: "absolute", width: isWide ? 84 : 74, height: isWide ? 84 : 74, borderRadius: isWide ? 42 : 37, backgroundColor: "rgba(99,222,208,0.1)", borderWidth: 1, borderColor: "rgba(99,222,208,0.42)", alignItems: "center", justifyContent: "center" }}>
@@ -26425,10 +26425,10 @@ function BirthChartSection({
             </View>
           </View>
 
-          <View style={{ backgroundColor: "rgba(15,23,42,0.78)", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,211,77,0.18)" }}>
+          <View style={{ backgroundColor: "#F1EFDF", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,211,77,0.35)" }}>
             <Text style={{ color: "#B45309", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Strongest lunar supports · with explanation</Text>
             {moonChart48Summary.top.map((item) => (
-              <View key={`top-${item.id}`} style={{ borderRadius: 13, backgroundColor: "rgba(2,6,23,0.44)", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}38`, padding: 10, gap: 5 }}>
+              <View key={`top-${item.id}`} style={{ borderRadius: 13, backgroundColor: "#FBFAF2", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, padding: 10, gap: 5 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                   <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
                   <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}/100</Text>
@@ -26439,7 +26439,7 @@ function BirthChartSection({
             ))}
           </View>
 
-          <View style={{ backgroundColor: "rgba(30,41,59,0.72)", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,165,165,0.2)" }}>
+          <View style={{ backgroundColor: "#FEECEC", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,165,165,0.4)" }}>
             <Text style={{ color: "#B80000", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Care points · remedies made practical</Text>
             {moonChart48Summary.careful.map((item) => (
               <View key={`care-${item.id}`} style={{ gap: 6, borderRadius: 13, padding: 10, backgroundColor: "rgba(127,29,29,0.12)", borderWidth: 1, borderColor: "rgba(252,165,165,0.22)" }}>
@@ -26456,7 +26456,7 @@ function BirthChartSection({
           <View style={{ gap: 8 }}>
             <Text style={{ color: "#0E9488", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>All 48 calculated dimensions · full trace</Text>
             {moonChart48Readings.map((item) => (
-              <View key={item.id} style={{ backgroundColor: "rgba(2,6,23,0.5)", borderRadius: 14, padding: 11, borderWidth: 1, borderColor: `${moonChartVisualColor(item)}2E`, gap: 5, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 8, transform: [{ perspective: 700 }, { translateY: item.verdict === "Excellent" ? -1 : 0 }] }}>
+              <View key={item.id} style={{ backgroundColor: "#F4F8F7", borderRadius: 14, padding: 11, borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, gap: 5, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 8, transform: [{ perspective: 700 }, { translateY: item.verdict === "Excellent" ? -1 : 0 }] }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                   <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
                   <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}</Text>
@@ -26464,8 +26464,8 @@ function BirthChartSection({
                 <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 18 }}>{item.prediction}</Text>
                 <Text style={{ color: "#006EB8", fontSize: 12, lineHeight: 17 }}>{item.interpretation}</Text>
                 <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{item.remedyTitle}: </Text>{item.remedySteps.join(" ")}</Text>
-                <Text style={{ color: "rgba(147,197,253,0.78)", fontSize: 10, lineHeight: 15 }}>Score trace: {item.scoreReason}</Text>
-                <Text style={{ color: "rgba(148,163,184,0.75)", fontSize: 10, lineHeight: 15 }}>{item.calculationBasis}</Text>
+                <Text style={{ color: "rgba(0,82,184,0.78)", fontSize: 10, lineHeight: 15 }}>Score trace: {item.scoreReason}</Text>
+                <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, lineHeight: 15 }}>{item.calculationBasis}</Text>
               </View>
             ))}
           </View>
@@ -29757,7 +29757,7 @@ function CounselingChatModal({
             <Text style={{ color: "#0E9488", fontSize: 22 }}>←</Text>
           </Pressable>
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "800" }}>Your guide is listening</Text>
+            <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800" }}>Your guide is listening</Text>
             <Text style={{ color: "#64748B", fontSize: 12 }}>Private · Nothing leaves this device</Text>
           </View>
           <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
@@ -29890,7 +29890,7 @@ function CounselingChatModal({
               accessibilityLabel="Send message"
               style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() ? "#0E6F69" : "#E1EEEC", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 20 }}>↑</Text>
+              <Text style={{ color: draft.trim() ? "#FFFFFF" : "#465871", fontSize: 20 }}>↑</Text>
             </Pressable>
           </View>
         )}
@@ -30076,7 +30076,7 @@ function DynamicHeroCard({
         value={homeIssueDraft}
         onChangeText={setHomeIssueDraft}
         placeholder={homeIssueDraft.length === 0 ? SMART_HINTS[hintIdx] : "Describe the issue in one sentence"}
-        placeholderTextColor="rgba(255,255,255,0.35)"
+        placeholderTextColor="rgba(13,31,34,0.4)"
         style={styles.heroRouteInput}
         returnKeyType="go"
         onSubmitEditing={routeHomeIssue}
@@ -31712,7 +31712,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   topTabLabel: {
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(13,31,34,0.72)",
     fontSize: 12,
     lineHeight: 15,
     fontWeight: "900"
@@ -31998,7 +31998,7 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   routePreviewDetail: {
-    color: "rgba(255,255,255,0.82)",
+    color: "rgba(13,31,34,0.82)",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
@@ -32251,7 +32251,7 @@ const styles = StyleSheet.create({
     color: "#B88600"
   },
   homeToneLoopStatus: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 9,
     lineHeight: 12,
     fontWeight: "800",
@@ -32546,7 +32546,7 @@ const styles = StyleSheet.create({
   toneTimerBadgeLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "rgba(255,255,255,0.65)"
+    color: "rgba(13,31,34,0.65)"
   },
   toneSessionRow: {
     flexDirection: "row",
@@ -32956,7 +32956,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   supportMeta: {
-    color: "rgba(255,255,255,0.74)",
+    color: "rgba(13,31,34,0.74)",
     fontSize: 13,
     lineHeight: 19
   },
@@ -33152,7 +33152,7 @@ const styles = StyleSheet.create({
     lineHeight: 12
   },
   footerQuickActionMeta: {
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(13,31,34,0.72)",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "700"
@@ -33356,7 +33356,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22"
   },
   issueChipMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -33446,12 +33446,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   issueStepCheckText: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.6)",
     fontSize: 12,
     fontWeight: "900"
   },
   issueStepCheckTextActive: {
-    color: "#0D1F22"
+    color: "#FFFFFF"
   },
   issueStepCopy: {
     flex: 1
@@ -33513,7 +33513,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   issueCalloutText: {
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(13,31,34,0.72)",
     fontSize: 14,
     lineHeight: 21
   },
@@ -33619,7 +33619,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   playCardMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -33668,12 +33668,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   playStepCheckText: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.6)",
     fontSize: 11,
     fontWeight: "900"
   },
   playStepCheckTextActive: {
-    color: "#0D1F22"
+    color: "#FFFFFF"
   },
   playStepText: {
     flex: 1,
@@ -33815,7 +33815,7 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   communityChatTextVerified: {
-    color: "rgba(255,255,255,0.82)"
+    color: "rgba(13,31,34,0.82)"
   },
   communityChatTextUser: {
     color: "#0D1F22"
@@ -33883,7 +33883,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   communityMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -33988,7 +33988,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69"
   },
   privateRoomMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 11,
     lineHeight: 15,
     fontWeight: "700"
@@ -34084,10 +34084,10 @@ const styles = StyleSheet.create({
     color: "#1E2F4D"
   },
   privateRoomMessageTextMember: {
-    color: "rgba(255,255,255,0.82)"
+    color: "rgba(13,31,34,0.82)"
   },
   privateRoomMessageMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "700"
@@ -34116,7 +34116,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   searchCardMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -34163,7 +34163,7 @@ const styles = StyleSheet.create({
     gap: 10
   },
   searchEmptyText: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 14,
     lineHeight: 20
   },
@@ -34324,7 +34324,7 @@ const styles = StyleSheet.create({
     opacity: 0.48
   },
   helpButtonLabel: {
-    color: "#0D1F22",
+    color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "800"
   },
@@ -34511,7 +34511,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   storyPreviewTitle: {
-    color: "#0D1F22",
+    color: "#FFFFFF",
     fontSize: 17,
     lineHeight: 22,
     fontWeight: "900"
@@ -34520,7 +34520,7 @@ const styles = StyleSheet.create({
     gap: 10
   },
   storyPreviewMessage: {
-    color: "#0D1F22",
+    color: "#FFFFFF",
     fontSize: 18,
     lineHeight: 24,
     fontWeight: "900",
@@ -34540,7 +34540,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6
   },
   storyPreviewChipText: {
-    color: "#0D1F22",
+    color: "#FFFFFF",
     fontSize: 10,
     fontWeight: "900",
     textTransform: "uppercase"
@@ -34569,7 +34569,7 @@ const styles = StyleSheet.create({
     gap: 2
   },
   heroArtifactEyebrow: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 9,
     fontWeight: "800",
     textTransform: "uppercase",
@@ -34640,7 +34640,7 @@ const styles = StyleSheet.create({
     paddingTop: 6
   },
   heroArtifactFooterText: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 9,
     fontWeight: "800",
     textTransform: "uppercase",
@@ -34967,7 +34967,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   aiHelpSummaryValue: {
-    color: "rgba(255,255,255,0.78)",
+    color: "rgba(13,31,34,0.78)",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -35195,7 +35195,7 @@ const styles = StyleSheet.create({
     gap: 10
   },
   beaconXWisdomLead: {
-    color: "rgba(255,255,255,0.76)",
+    color: "rgba(13,31,34,0.76)",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "600"
@@ -35261,7 +35261,7 @@ const styles = StyleSheet.create({
     color: "#B45309"
   },
   beaconXWisdomMeta: {
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(13,31,34,0.72)",
     fontSize: 12,
     lineHeight: 16,
     flexShrink: 1,
@@ -35295,7 +35295,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   beaconXRouteMeta: {
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(13,31,34,0.72)",
     fontSize: 13,
     lineHeight: 18,
     fontWeight: "700"
@@ -35324,7 +35324,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   beaconXRouteCardDetail: {
-    color: "rgba(255,255,255,0.76)",
+    color: "rgba(13,31,34,0.76)",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700",
@@ -35587,7 +35587,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     backgroundColor: "#0E6F69",
-    color: "#0D1F22",
+    color: "#FFFFFF",
     textAlign: "center",
     textAlignVertical: "center",
     fontSize: 13,
@@ -35604,7 +35604,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   onboardingScrollHintMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.6)",
     fontSize: 9,
     lineHeight: 12
   },
@@ -35762,7 +35762,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   metricCaption: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 13,
     lineHeight: 18
   },
@@ -36048,7 +36048,7 @@ const styles = StyleSheet.create({
     gap: 10
   },
   accessSummaryLabel: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 12,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -36127,7 +36127,7 @@ const styles = StyleSheet.create({
   adminAuthAttemptsLabel: {
     flex: 1,
     fontSize: 11,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.6)",
     fontWeight: "600"
   },
   adminLockoutBanner: {
@@ -36212,7 +36212,7 @@ const styles = StyleSheet.create({
   },
   adminAuthFooter: {
     fontSize: 10,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     textAlign: "center",
     fontStyle: "italic",
     lineHeight: 15
@@ -36303,12 +36303,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   launchChecklistMarkText: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.6)",
     fontSize: 11,
     fontWeight: "900"
   },
   launchChecklistMarkTextDone: {
-    color: "#0D1F22"
+    color: "#FFFFFF"
   },
   launchChecklistCopy: {
     flex: 1,
@@ -36355,7 +36355,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   adminQuickActionMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 12,
     lineHeight: 16
   },
@@ -36371,7 +36371,7 @@ const styles = StyleSheet.create({
     gap: 4
   },
   adminReportMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 11,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -36465,7 +36465,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   toneLabel: {
-    color: "rgba(255,255,255,0.82)",
+    color: "rgba(13,31,34,0.82)",
     fontSize: 12,
     lineHeight: 15,
     fontWeight: "800"
@@ -36511,12 +36511,12 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   preferenceMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 13,
     fontWeight: "700"
   },
   promptText: {
-    color: "rgba(255,255,255,0.82)",
+    color: "rgba(13,31,34,0.82)",
     fontSize: 15,
     lineHeight: 23,
     flexShrink: 1,
@@ -36606,7 +36606,7 @@ const styles = StyleSheet.create({
   journalWordCountLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "rgba(255,255,255,0.65)"
+    color: "rgba(13,31,34,0.65)"
   },
   journalMoodRow: {
     flexDirection: "row",
@@ -36760,7 +36760,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   calmWisdomIntro: {
-    color: "rgba(255,255,255,0.76)",
+    color: "rgba(13,31,34,0.76)",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700",
@@ -36838,7 +36838,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   calmSituationCardDetail: {
-    color: "rgba(255,255,255,0.76)",
+    color: "rgba(13,31,34,0.76)",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700",
@@ -36846,7 +36846,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmSituationCardMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "800"
@@ -36937,7 +36937,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmTeachingRef: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 9,
     lineHeight: 12,
     fontWeight: "800"
@@ -37001,7 +37001,7 @@ const styles = StyleSheet.create({
     color: "#0891B2"
   },
   calmLensChipMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -37072,7 +37072,7 @@ const styles = StyleSheet.create({
   },
   calmPracticeIndexDone: {
     backgroundColor: "#0E6F69",
-    color: "#0D1F22"
+    color: "#FFFFFF"
   },
   calmPracticeCopy: {
     flex: 1,
@@ -37088,7 +37088,7 @@ const styles = StyleSheet.create({
     color: "#274341"
   },
   calmPracticeMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.6)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -37151,7 +37151,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   routineMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 13,
     fontWeight: "600"
   },
@@ -37287,7 +37287,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   emptyText: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 14,
     lineHeight: 21
   },
@@ -37350,7 +37350,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   trendLabel: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.6)",
     fontSize: 12,
     fontWeight: "900"
   },
@@ -37362,7 +37362,7 @@ const styles = StyleSheet.create({
     gap: 4
   },
   signalLabel: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.6)",
     fontSize: 12,
     fontWeight: "900",
     textTransform: "uppercase"
@@ -37429,7 +37429,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDF4EC"
   },
   legalTrustText: {
-    color: "rgba(255,255,255,0.76)",
+    color: "rgba(13,31,34,0.76)",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "700"
@@ -37614,7 +37614,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     backgroundColor: "#0E6F69",
-    color: "#0D1F22",
+    color: "#FFFFFF",
     textAlign: "center",
     textAlignVertical: "center",
     fontSize: 12,
@@ -37687,7 +37687,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   accessFlowPillMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -37722,7 +37722,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   govHelpAudience: {
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(13,31,34,0.72)",
     fontSize: 13,
     fontWeight: "700"
   },
@@ -37732,7 +37732,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   govHelpDescription: {
-    color: "rgba(255,255,255,0.76)",
+    color: "rgba(13,31,34,0.76)",
     fontSize: 13,
     lineHeight: 19
   },
@@ -37764,7 +37764,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   contactMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 12,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -37783,7 +37783,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   contactButtonLabel: {
-    color: "#0D1F22",
+    color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "900"
   },
@@ -37915,7 +37915,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22"
   },
   identityMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 10,
     lineHeight: 14
   },
@@ -38066,7 +38066,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   languageButtonMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "700",
@@ -38102,7 +38102,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   segmentMeta: {
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "700"
@@ -38162,12 +38162,12 @@ const styles = StyleSheet.create({
     gap: 10
   },
   commandButtonPrimary: {
-    backgroundColor: "#F37B64"
+    backgroundColor: "#D9432A"
   },
   commandButtonSecondary: {
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.28)",
-    backgroundColor: "rgba(255, 255, 255, 0.12)"
+    borderColor: "rgba(13,31,34,0.22)",
+    backgroundColor: "rgba(13,31,34,0.06)"
   },
   commandButtonMark: {
     fontWeight: "900",
@@ -38305,18 +38305,18 @@ const styles = StyleSheet.create({
   heroRouteQuestion: {
     fontSize: 22,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: "#0D1F22",
     letterSpacing: -0.3,
   },
   heroRouteInput: {
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "rgba(13,31,34,0.05)",
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
-    color: "#FFFFFF",
+    color: "#0D1F22",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.18)",
+    borderColor: "rgba(13,31,34,0.18)",
   },
   heroRouteButton: {
     backgroundColor: "#C4A35A",
@@ -38331,7 +38331,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   heroRoutePreview: {
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(13,31,34,0.05)",
     borderRadius: 8,
     padding: 10,
     gap: 4,
@@ -38339,12 +38339,12 @@ const styles = StyleSheet.create({
   heroRoutePreviewLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#C4A35A",
+    color: "#8A6D1E",
     letterSpacing: 0.3,
   },
   heroRoutePreviewDetail: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(13,31,34,0.72)",
     lineHeight: 17,
   },
   // ── Dynamic Hero Card ──────────────────────────────────────────────────────
@@ -38393,7 +38393,7 @@ const styles = StyleSheet.create({
   },
   dynamicHeroGreeting: {
     fontSize: 13,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     fontWeight: "500",
     marginBottom: 2,
     marginTop: 14,
@@ -38440,7 +38440,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   heroRouteDailyChipLabel: {
-    color: "#C4A35A",
+    color: "#8A6D1E",
     fontSize: 12,
     fontWeight: "600",
   },
@@ -38521,7 +38521,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 25,
     fontWeight: "900",
-    color: "#FFFFFF",
+    color: "#0D1F22",
     letterSpacing: 0.3,
   },
   tabBannerSub: {
@@ -38533,7 +38533,7 @@ const styles = StyleSheet.create({
   },
   tabBannerDate: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     textAlign: "right",
   },
   // ── Community crisis notice ──
@@ -38575,7 +38575,7 @@ const styles = StyleSheet.create({
   smartBriefNudge: {
     fontSize: 15,
     fontWeight: "600",
-    color: "rgba(255,255,255,0.88)",
+    color: "rgba(13,31,34,0.88)",
     lineHeight: 22
   },
   smartBriefAction: {
@@ -38757,7 +38757,7 @@ const styles = StyleSheet.create({
   },
   vedicChipSub: {
     fontSize: 9,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     textAlign: "center"
   },
   vedicPredSection: {
@@ -38785,7 +38785,7 @@ const styles = StyleSheet.create({
   vedicPredLine: {
     flex: 1,
     fontSize: 13,
-    color: "rgba(255,255,255,0.82)",
+    color: "rgba(13,31,34,0.82)",
     lineHeight: 19,
     fontWeight: "500"
   },
@@ -38876,7 +38876,7 @@ const styles = StyleSheet.create({
   },
   vedicDisclaimer: {
     fontSize: 10,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(13,31,34,0.65)",
     textAlign: "center",
     fontStyle: "italic",
     lineHeight: 15
@@ -38999,7 +38999,7 @@ const styles = StyleSheet.create({
   birthChartIntroText: {
     fontSize: 12,
     lineHeight: 18,
-    color: "rgba(255,255,255,0.72)"
+    color: "rgba(13,31,34,0.72)"
   },
   birthChartIntroMetaRow: {
     flexDirection: "row",
@@ -39146,7 +39146,7 @@ const styles = StyleSheet.create({
     overflow: "hidden"
   },
   birthChartGeminiText: {
-    color: "rgba(255,255,255,0.82)",
+    color: "rgba(13,31,34,0.82)",
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700"
