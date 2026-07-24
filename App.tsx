@@ -9189,7 +9189,7 @@ class TabErrorBoundary extends React.Component<
           </Text>
           <Pressable
             onPress={() => this.setState({ hasError: false })}
-            style={{ marginTop: 20, backgroundColor: "#0F3D5E", borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 }}
+            style={{ marginTop: 20, backgroundColor: "#DEEAF2", borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 }}
             accessibilityRole="button"
           >
             <Text style={{ color: "#0E9488", fontSize: 13, fontWeight: "700" }}>Try again</Text>
@@ -9488,7 +9488,7 @@ function ExitReportModal({
           )}
 
           {/* Strengths */}
-          <View style={{ backgroundColor: "#0A1C0F", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(34,197,94,0.2)", marginBottom: 14 }}>
+          <View style={{ backgroundColor: "#E0F0E5", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(34,197,94,0.2)", marginBottom: 14 }}>
             <Text style={{ color: "#4ADE80", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
               💪 Today's Strengths
             </Text>
@@ -9501,7 +9501,7 @@ function ExitReportModal({
           </View>
 
           {/* Tomorrow's Focus */}
-          <View style={{ backgroundColor: "#1A0C2E", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(167,139,250,0.25)", marginBottom: 14 }}>
+          <View style={{ backgroundColor: "#E6DFF1", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(167,139,250,0.25)", marginBottom: 14 }}>
             <Text style={{ color: "#A78BFA", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
               🌅 Tomorrow's Focus
             </Text>
@@ -15959,7 +15959,7 @@ function isTrustedExternalUrl(url: string) {
                 const hour = new Date().getHours();
                 const greeting = hour < 5 ? "Still awake?" : hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : hour < 21 ? "Good evening" : "Good night";
                 const greetEmoji = hour < 5 ? "🌌" : hour < 12 ? "☀️" : hour < 17 ? "🌤" : hour < 21 ? "🌙" : "⭐";
-                const bgGrad = hour < 12 ? "#05101A" : hour < 17 ? "#06100F" : "#060818";
+                const bgGrad = hour < 12 ? "#F4F8F7" : hour < 17 ? "#EFF3EC" : "#EDEFF6";
                 const issueActive = selectedIssueGuide.id !== "general";
                 const scoreColor = clarityScore >= 75 ? "#059669" : clarityScore >= 55 ? "#B45309" : "#DC2626";
                 const scoreLabel = clarityScore >= 75 ? "Strong" : clarityScore >= 55 ? "Growing" : "Building";
@@ -16115,7 +16115,7 @@ function isTrustedExternalUrl(url: string) {
                 style={({ pressed }) => ({
                   marginHorizontal: 16,
                   marginBottom: 12,
-                  backgroundColor: pressed ? "#241438" : "#160D27",
+                  backgroundColor: pressed ? "#D2C8E4" : "#E6E0F0",
                   borderRadius: 16,
                   borderWidth: 1,
                   borderColor: hasExactBirthDetails ? "rgba(252,211,77,0.42)" : "rgba(148,163,184,0.22)",
@@ -16157,7 +16157,7 @@ function isTrustedExternalUrl(url: string) {
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => { setShowWeeklyVedicBanner(false); handleTabPress("vedic"); }}
-                  style={({ pressed }) => ({ marginHorizontal: 16, marginBottom: 12, backgroundColor: "#1A0F2A", borderRadius: 14, padding: 16, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "rgba(180,120,255,0.3)", opacity: pressed ? 0.8 : 1 })}
+                  style={({ pressed }) => ({ marginHorizontal: 16, marginBottom: 12, backgroundColor: "#E7E0F0", borderRadius: 14, padding: 16, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "rgba(180,120,255,0.3)", opacity: pressed ? 0.8 : 1 })}
                 >
                   <Text style={{ fontSize: 28 }}>🪐</Text>
                   <View style={{ flex: 1 }}>
@@ -16240,7 +16240,7 @@ function isTrustedExternalUrl(url: string) {
               {(weeklyCheckInCount > 0 || vedicRashiInfo) && (
                 <View style={{
                   marginHorizontal: 16, marginBottom: 12,
-                  backgroundColor: "#0D1A24", borderRadius: 16, padding: 16,
+                  backgroundColor: "#E1E9F0", borderRadius: 16, padding: 16,
                   borderWidth: 1, borderColor: "rgba(99,222,208,0.18)", gap: 10
                 }}>
                   <Text style={{ color: "#0E9488", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
@@ -16324,7 +16324,7 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ color: "#465871", fontSize: 13, flex: 1, lineHeight: 18 }}>{postCheckInSuggest.text}</Text>
                   <Pressable
                     onPress={() => { setPostCheckInSuggest(null); handleTabPress(postCheckInSuggest.tab); }}
-                    style={{ backgroundColor: "#1E3A50", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, marginLeft: 8 }}
+                    style={{ backgroundColor: "#E1E9EF", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, marginLeft: 8 }}
                     accessibilityRole="button"
                   >
                     <Text style={{ color: "#0E9488", fontSize: 11, fontWeight: "700" }}>{postCheckInSuggest.cta}</Text>
@@ -16364,7 +16364,7 @@ function isTrustedExternalUrl(url: string) {
                   }}
                   style={({ pressed }) => ({
                     marginHorizontal: 16, marginBottom: 10,
-                    backgroundColor: pressed ? "#0C2A3A" : "#0A1E2E",
+                    backgroundColor: pressed ? "#C4D8E9" : "#DEE9F2",
                     borderRadius: 14, borderWidth: 1,
                     borderColor: "rgba(34,211,238,0.25)",
                     padding: 13, flexDirection: "row", alignItems: "center", gap: 10,
@@ -16385,7 +16385,7 @@ function isTrustedExternalUrl(url: string) {
               {geminiJournalInsight && (
                 <View style={{
                   marginHorizontal: 16, marginBottom: 10,
-                  backgroundColor: "#0B1F30", borderRadius: 14,
+                  backgroundColor: "#DEE9F2", borderRadius: 14,
                   borderWidth: 1, borderColor: "#1A3A55",
                   padding: 14
                 }}>
@@ -16455,7 +16455,7 @@ function isTrustedExternalUrl(url: string) {
               {!featureNudgeDismissed && (
                 <View style={{
                   marginHorizontal: 16, marginBottom: 10,
-                  backgroundColor: "#0A1E2E", borderRadius: 16,
+                  backgroundColor: "#DEE9F2", borderRadius: 16,
                   borderWidth: 1, borderColor: "#1A3A50",
                   padding: 14, flexDirection: "row", alignItems: "flex-start"
                 }}>
@@ -16480,7 +16480,7 @@ function isTrustedExternalUrl(url: string) {
 
               {/* ── Notification priming card ── */}
               {!reminderEnabled && entries.length >= 1 && (
-                <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#0A1A2E", borderRadius: 16, borderWidth: 1, borderColor: "#1A3050", padding: 14, flexDirection: "row", alignItems: "flex-start" }}>
+                <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#DEE7F2", borderRadius: 16, borderWidth: 1, borderColor: "#1A3050", padding: 14, flexDirection: "row", alignItems: "flex-start" }}>
                   <Text style={{ fontSize: 20, marginRight: 10, marginTop: 2 }}>🔔</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700", marginBottom: 4 }}>Never miss a check-in</Text>
@@ -16489,7 +16489,7 @@ function isTrustedExternalUrl(url: string) {
                     </Text>
                     <Pressable
                       onPress={() => handleTabPress("settings" as TabId)}
-                      style={{ alignSelf: "flex-start", backgroundColor: "#1A4A7A", borderRadius: 8, paddingHorizontal: 14, paddingVertical: 7 }}
+                      style={{ alignSelf: "flex-start", backgroundColor: "#DEE8F2", borderRadius: 8, paddingHorizontal: 14, paddingVertical: 7 }}
                     >
                       <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>Enable reminders →</Text>
                     </Pressable>
@@ -16521,7 +16521,7 @@ function isTrustedExternalUrl(url: string) {
                     <Pressable
                       accessibilityRole="button"
                       onPress={() => setShowCounselingChat(true)}
-                      style={({ pressed }) => ({ backgroundColor: pressed ? "#0E2A40" : "#0F3460", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
+                      style={({ pressed }) => ({ backgroundColor: pressed ? "#C4D5E9" : "#DEE7F2", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
                     >
                       <Text style={{ fontSize: 14 }}>💬</Text>
                       <Text style={{ color: "#0079B8", fontSize: 12, fontWeight: "800" }}>Counselling</Text>
@@ -16529,14 +16529,14 @@ function isTrustedExternalUrl(url: string) {
                     <Pressable
                       accessibilityRole="button"
                       onPress={() => handleTabPress("redress")}
-                      style={({ pressed }) => ({ backgroundColor: pressed ? "#1E0A30" : "#2D1B4E", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
+                      style={({ pressed }) => ({ backgroundColor: pressed ? "#D2C8E4" : "#E6E0F0", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
                     >
                       <Text style={{ fontSize: 14 }}>⚖️</Text>
                       <Text style={{ color: "#5700B8", fontSize: 12, fontWeight: "800" }}>File Complaint</Text>
                     </Pressable>
                   </View>
                 </View>
-                <View style={{ backgroundColor: "#120808", paddingHorizontal: 16, paddingVertical: 8, flexDirection: "row", gap: 6, alignItems: "center" }}>
+                <View style={{ backgroundColor: "#EEE2E2", paddingHorizontal: 16, paddingVertical: 8, flexDirection: "row", gap: 6, alignItems: "center" }}>
                   <Text style={{ color: "#EF4444", fontSize: 10, fontWeight: "900", letterSpacing: 0.8 }}>QUICK LINKS →</Text>
                   <Pressable onPress={() => handleTabPress("redress")} style={{ flex: 1 }}>
                     <Text style={{ color: "#64748B", fontSize: 11 }} numberOfLines={1}>
@@ -16609,7 +16609,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               )}
               {/* ── Journal tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#1A2E1A" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#E4EDE4" }]}>
                 <Text style={styles.tabBannerEmoji}>✍️</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Your Journal</Text>
@@ -16618,7 +16618,7 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={styles.tabBannerDate}>{getLiveDateLabel()}</Text>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#132230", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1E8EF", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
                   <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "journal")}</Text></Text>
                 </View>
@@ -16655,7 +16655,7 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Calm">
             <View onLayout={captureSectionLayout("focus")}>
               {/* ── Calm tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#0D1E2A" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#E0EAF1" }]}>
                 <Text style={styles.tabBannerEmoji}>🧘</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Reset & Calm</Text>
@@ -16705,7 +16705,7 @@ function isTrustedExternalUrl(url: string) {
           {activeTab === "tones" && (
             <View onLayout={captureSectionLayout("tones")}>
               {/* ── Tones tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#0D1F2A" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#E0EAF1" }]}>
                 <Text style={styles.tabBannerEmoji}>🎵</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Mind Rest Tones</Text>
@@ -16791,7 +16791,7 @@ function isTrustedExternalUrl(url: string) {
           {activeTab === "meditation" && (
             <View onLayout={captureSectionLayout("meditation")}>
               {/* ── Wellness tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#2B1A2E" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#EBE4ED" }]}>
                 <Text style={styles.tabBannerEmoji}>🪷</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Wellness</Text>
@@ -16799,7 +16799,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#1C0F20", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#EBE2EE", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
                   <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "meditation")}</Text></Text>
                 </View>
@@ -16843,7 +16843,7 @@ function isTrustedExternalUrl(url: string) {
                 return (
                   <View style={{
                     marginHorizontal: 16, marginBottom: 12,
-                    backgroundColor: "#1A1030", borderRadius: 16,
+                    backgroundColor: "#E5E0F0", borderRadius: 16,
                     borderWidth: 1, borderColor: rec.color + "45", padding: 14
                   }}>
                     <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
@@ -16948,7 +16948,7 @@ function isTrustedExternalUrl(url: string) {
               {/* ── Astro two-way chat — ask anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy ── */}
               <View style={{
                 marginHorizontal: 16, marginTop: 16, marginBottom: 12,
-                backgroundColor: "#1A0F2E", borderRadius: 18,
+                backgroundColor: "#E6E0F0", borderRadius: 18,
                 borderWidth: 1, borderColor: "rgba(252,211,77,0.35)",
                 padding: 16, gap: 12
               }}>
@@ -17051,7 +17051,7 @@ function isTrustedExternalUrl(url: string) {
               <>
                 <View onLayout={captureSectionLayout("play")}>
                   {/* ── Practice tab banner ── */}
-                  <View style={[styles.tabBannerCard, { backgroundColor: "#1A2A14" }]}>
+                  <View style={[styles.tabBannerCard, { backgroundColor: "#E5EEE2" }]}>
                     <Text style={styles.tabBannerEmoji}>🎯</Text>
                     <View style={styles.tabBannerText}>
                       <Text style={styles.tabBannerTitle}>Practice</Text>
@@ -17059,7 +17059,7 @@ function isTrustedExternalUrl(url: string) {
                     </View>
                   </View>
                   {selectedIssueGuide.id !== "general" && (
-                    <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#111F0D", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E4EFE1", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
                       <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
                       <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "play")}</Text></Text>
                     </View>
@@ -17092,7 +17092,7 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Explore">
             <View onLayout={captureSectionLayout("search")}>
               {/* ── Wisdom tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#1A1A3A" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#E2E2EE" }]}>
                 <Text style={styles.tabBannerEmoji}>📖</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Wisdom</Text>
@@ -17100,7 +17100,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#10102A", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1E1EF", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
                   <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "wisdom")}</Text></Text>
                 </View>
@@ -17190,7 +17190,7 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Community">
             <View onLayout={captureSectionLayout("community")}>
               {/* ── Community tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#1A2E2E" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#E4EDED" }]}>
                 <Text style={styles.tabBannerEmoji}>🤝</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Community</Text>
@@ -17305,7 +17305,7 @@ function isTrustedExternalUrl(url: string) {
           {activeTab === "guide" && (
             <View onLayout={captureSectionLayout("guide")}>
               {/* ── Path tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#131E30" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#E1E6EF" }]}>
                 <Text style={styles.tabBannerEmoji}>🧭</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Your Path</Text>
@@ -17359,7 +17359,7 @@ function isTrustedExternalUrl(url: string) {
           {activeTab === "redress" && (
             <View onLayout={captureSectionLayout("redress")}>
               {/* ── Help tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#1A1020" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#E9E3ED" }]}>
                 <Text style={styles.tabBannerEmoji}>🛡️</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Help & Redress</Text>
@@ -17367,7 +17367,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#130D1A", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E8E3ED", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
                   <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "redress")}</Text></Text>
                 </View>
@@ -17405,7 +17405,7 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Patterns">
             <View onLayout={captureSectionLayout("insights")}>
               {/* ── Patterns tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#1A2A1A" }]}>
+              <View style={[styles.tabBannerCard, { backgroundColor: "#E4ECE4" }]}>
                 <Text style={styles.tabBannerEmoji}>📊</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Patterns</Text>
@@ -17414,7 +17414,7 @@ function isTrustedExternalUrl(url: string) {
               </View>
               {/* ── Active issue hint chip ── */}
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#0A1E10", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)", flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#E0F0E5", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)", flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ color: "#059669", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>Tracking</Text>
                   <Text style={{ color: "#465871", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "journal")}</Text>
                 </View>
@@ -17998,7 +17998,7 @@ function TodaySection({
             borderRadius: 20,
             borderWidth: 1,
             borderColor: "rgba(250,204,107,0.45)",
-            backgroundColor: "#0D2344",
+            backgroundColor: "#DEE6F2",
             padding: compact ? 14 : 18,
             shadowColor: "#000",
             shadowOpacity: 0.18,
@@ -19552,7 +19552,7 @@ function ToneLibrarySection({
         </View>
         {/* Breathing guide — shows during active program */}
         {loopEnabled && activeProgram && breathSteps.length > 0 && (
-          <View style={{ backgroundColor: "#040E1A", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(34,211,238,0.1)" }}>
+          <View style={{ backgroundColor: "#DEE7F2", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(34,211,238,0.1)" }}>
             <Text style={{ color: "#64748B", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
               🫁 Breathing guide — {activeProgram.breathPattern}
             </Text>
@@ -19567,7 +19567,7 @@ function ToneLibrarySection({
         )}
         {/* Issue purpose — shows during program */}
         {loopEnabled && activeProgram && (
-          <View style={{ backgroundColor: "#03080F", paddingHorizontal: 18, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
+          <View style={{ backgroundColor: "#DEE6F2", paddingHorizontal: 18, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
             <Text style={{ color: "#64748B", fontSize: 11, lineHeight: 16 }}>
               <Text style={{ color: activeProgram.dimColor, fontWeight: "800" }}>{activeProgram.dim}: </Text>
               {activeProgram.purpose}
@@ -19579,14 +19579,14 @@ function ToneLibrarySection({
           <Pressable
             accessibilityRole="button"
             onPress={() => { setLoopEnabled(false); setTonePaused(false); void playRelaxingToneCue(selectedTone); }}
-            style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: pressed ? "#0A3A34" : "#0E4A44", alignItems: "center", justifyContent: "center" })}
+            style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: pressed ? "#C4E9E5" : "#DEF2F0", alignItems: "center", justifyContent: "center" })}
           >
             <Text style={{ color: "#059669", fontSize: 14, fontWeight: "900" }}>▶ Play once</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => { setTonePaused(false); setLoopEnabled((v) => !v); if (loopEnabled) setActiveProgram(null); }}
-            style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: loopEnabled ? (pressed ? "#7F1D1D" : "#991B1B") : (pressed ? "#0E2A40" : "#0F3460"), alignItems: "center", justifyContent: "center" })}
+            style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: loopEnabled ? (pressed ? "#7F1D1D" : "#991B1B") : (pressed ? "#C4D5E9" : "#DEE7F2"), alignItems: "center", justifyContent: "center" })}
           >
             <Text style={{ color: loopEnabled ? "#FEE2E2" : "#0052B8", fontSize: 14, fontWeight: "900" }}>{loopEnabled ? "⏹ Stop" : "🔁 Loop"}</Text>
           </Pressable>
@@ -19594,14 +19594,14 @@ function ToneLibrarySection({
             <Pressable
               accessibilityRole="button"
               onPress={() => setTonePaused((v) => !v)}
-              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 12, backgroundColor: pressed ? "#2D2810" : "#1C1A08", borderWidth: 1, borderColor: "#B45309", alignItems: "center", justifyContent: "center" })}
+              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 12, backgroundColor: pressed ? "#E6E3C6" : "#F1EFDF", borderWidth: 1, borderColor: "#B45309", alignItems: "center", justifyContent: "center" })}
             >
               <Text style={{ color: "#B45309", fontSize: 16 }}>{tonePaused ? "▶" : "⏸"}</Text>
             </Pressable>
           )}
         </View>
         {/* Pristine engine controls */}
-        <View style={{ marginHorizontal: 14, marginBottom: 12, borderRadius: 16, backgroundColor: "#03111D", borderWidth: 1, borderColor: "rgba(34,211,238,0.18)", padding: 12 }}>
+        <View style={{ marginHorizontal: 14, marginBottom: 12, borderRadius: 16, backgroundColor: "#DEE9F2", borderWidth: 1, borderColor: "rgba(34,211,238,0.18)", padding: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: "#00A2B8", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
@@ -19704,7 +19704,7 @@ function ToneLibrarySection({
         if (!rec) return null;
         return (
           <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#E1EEEC", borderRadius: 16, borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden" }}>
-            <View style={{ backgroundColor: "#071C2E", paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(34,211,238,0.1)" }}>
+            <View style={{ backgroundColor: "#DEE9F2", paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(34,211,238,0.1)" }}>
               <Text style={{ color: "#0891B2", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
                 48-Dimension Tone Map · {selectedIssueGuide.label}
               </Text>
@@ -19817,7 +19817,7 @@ function ToneLibrarySection({
                   </View>
                 </Pressable>
                 {isOpen && (
-                  <View style={{ backgroundColor: "#030A12", padding: 10, gap: 6 }}>
+                  <View style={{ backgroundColor: "#DEE7F2", padding: 10, gap: 6 }}>
                     {catTones.map((toneMode) => {
                       const isActive = toneMode.id === selectedTone.id;
                       return (
@@ -19844,7 +19844,7 @@ function ToneLibrarySection({
                                   );
                                 }}
                                 accessibilityLabel={toneMode.externalLabel ?? "Open external link"}
-                                style={{ backgroundColor: "#4C1D95", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                                style={{ backgroundColor: "#E6DEF2", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                               >
                                 <Text style={{ color: "#2600B8", fontSize: 11, fontWeight: "900" }}>↗</Text>
                               </Pressable>
@@ -19852,13 +19852,13 @@ function ToneLibrarySection({
                               <>
                                 <Pressable
                                   onPress={() => { setSelectedToneId(toneMode.id); setLoopEnabled(false); void playRelaxingToneCue(toneMode); }}
-                                  style={{ backgroundColor: "#0E4A44", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                                  style={{ backgroundColor: "#DEF2F0", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
                                   <Text style={{ color: "#059669", fontSize: 11, fontWeight: "900" }}>▶</Text>
                                 </Pressable>
                                 <Pressable
                                   onPress={() => { setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
-                                  style={{ backgroundColor: "#0F3460", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                                  style={{ backgroundColor: "#DEE7F2", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
                                   <Text style={{ color: "#0052B8", fontSize: 11, fontWeight: "900" }}>🔁</Text>
                                 </Pressable>
@@ -19879,7 +19879,7 @@ function ToneLibrarySection({
       {/* ── Quick links ── */}
       <View style={{ flexDirection: "row", gap: 8, marginHorizontal: 16, marginTop: 16 }}>
         {[{ label: "Meditation", tab: "meditation" as TabId }, { label: "Path", tab: "guide" as TabId }, { label: "Journal", tab: "journal" as TabId }].map((item) => (
-          <Pressable key={item.tab} onPress={() => onOpenTab(item.tab)} style={({ pressed }) => ({ flex: 1, backgroundColor: pressed ? "#0A1A2E" : "#070F1E", borderRadius: 10, paddingVertical: 10, alignItems: "center", borderWidth: 1, borderColor: "rgba(99,222,208,0.12)" })}>
+          <Pressable key={item.tab} onPress={() => onOpenTab(item.tab)} style={({ pressed }) => ({ flex: 1, backgroundColor: pressed ? "#C4D1E8" : "#DEE5F2", borderRadius: 10, paddingVertical: 10, alignItems: "center", borderWidth: 1, borderColor: "rgba(99,222,208,0.12)" })}>
             <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{item.label}</Text>
           </Pressable>
         ))}
@@ -20766,14 +20766,14 @@ function CommunitySection({
           {/* ── Demo community posts preview ── */}
           <View style={{ gap: 10, marginBottom: 16 }}>
             {demoPosts.map((post, i) => (
-              <View key={i} style={{ backgroundColor: "#0F1E2C", borderRadius: 12, padding: 14, borderWidth: 1, borderColor: "#1E3A4A" }}>
+              <View key={i} style={{ backgroundColor: "#E0E8F0", borderRadius: 12, padding: 14, borderWidth: 1, borderColor: "#1E3A4A" }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 }}>
                   <Text style={{ fontSize: 18 }}>{post.emoji}</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{post.role}</Text>
                     <Text style={{ color: "#64748B", fontSize: 11 }}>{post.time}</Text>
                   </View>
-                  <View style={{ backgroundColor: "#1E3A4A", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
+                  <View style={{ backgroundColor: "#E1EAEF", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
                     <Text style={{ color: "#0E9488", fontSize: 10, fontWeight: "600" }}>✓ Verified</Text>
                   </View>
                 </View>
@@ -22774,7 +22774,7 @@ function FreeLegalAidCard({
   return (
     <View style={{
       marginBottom: 14, borderRadius: 14,
-      backgroundColor: "#0A1F1A", borderWidth: 1, borderColor: "rgba(52,211,153,0.35)", overflow: "hidden"
+      backgroundColor: "#E0F0EC", borderWidth: 1, borderColor: "rgba(52,211,153,0.35)", overflow: "hidden"
     }}>
       <Pressable
         accessibilityRole="button"
@@ -23134,7 +23134,7 @@ function HealthDirectoryCard({
   return (
     <View style={{
       marginBottom: 14, borderRadius: 14,
-      backgroundColor: "#0F1B24", borderWidth: 1, borderColor: "rgba(34,197,94,0.35)", overflow: "hidden"
+      backgroundColor: "#E1E9EF", borderWidth: 1, borderColor: "rgba(34,197,94,0.35)", overflow: "hidden"
     }}>
       <View style={{ paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "rgba(34,197,94,0.15)" }}>
         <Text style={{ color: "#10A76B", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
@@ -23334,7 +23334,7 @@ function StateOfficerDirectoryCard({
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
             <Pressable
               onPress={() => dialEmergencyNumber(selected.emergency, "Emergency")}
-              style={{ backgroundColor: "#7F1D1D", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#EF4444" }}
+              style={{ backgroundColor: "#F2DEDE", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#EF4444" }}
               accessibilityRole="button"
               accessibilityLabel={`Call emergency number ${selected.emergency}`}
             >
@@ -23343,7 +23343,7 @@ function StateOfficerDirectoryCard({
             {selected.women && (
               <Pressable
                 onPress={() => dialEmergencyNumber(selected.women!, "Women's helpline")}
-                style={{ backgroundColor: "#831843", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#F472B6" }}
+                style={{ backgroundColor: "#F2DEE6", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#F472B6" }}
                 accessibilityRole="button"
                 accessibilityLabel={`Call women's helpline ${selected.women}`}
               >
@@ -23642,7 +23642,7 @@ function RedressSection({
                   accessibilityRole="button"
                   accessibilityLabel="Call women's helpline at 181"
                   onPress={() => dialEmergencyNumber("181", "Women's helpline")}
-                  style={{ flex: 1, backgroundColor: "#9B1C1C", borderRadius: 10, paddingVertical: 10, alignItems: "center" }}
+                  style={{ flex: 1, backgroundColor: "#F2DEDE", borderRadius: 10, paddingVertical: 10, alignItems: "center" }}
                 >
                   <Text style={{ color: "#fff", fontWeight: "800", fontSize: 14 }}>📞 181 — Women</Text>
                 </Pressable>
@@ -23661,7 +23661,7 @@ function RedressSection({
         <Text style={styles.promptText}>{selectedRedressRoute.summary}</Text>
 
         {/* ── URGENT NOTE ── */}
-        <View style={{ marginBottom: 12, backgroundColor: "#0F1A0A", borderRadius: 12, padding: 12, borderLeftWidth: 3, borderLeftColor: "#EF4444" }}>
+        <View style={{ marginBottom: 12, backgroundColor: "#E5EFE1", borderRadius: 12, padding: 12, borderLeftWidth: 3, borderLeftColor: "#EF4444" }}>
           <Text style={{ color: "#EF4444", fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>⚡ When to escalate immediately</Text>
           <Text style={{ color: "#B80000", fontSize: 12, lineHeight: 18 }}>{selectedRedressRoute.urgentNote}</Text>
         </View>
@@ -24372,7 +24372,7 @@ function InsightsSection({
               accessibilityRole="button"
               onPress={() => onOpenTab("journal")}
               style={({ pressed }) => ({
-                backgroundColor: pressed ? "#1e4a7a" : "#1A3A5C",
+                backgroundColor: pressed ? "#C6D6E6" : "#DFE8F1",
                 paddingVertical: 13,
                 paddingHorizontal: 28,
                 borderRadius: 12,
@@ -24541,7 +24541,7 @@ function InsightsSection({
                   accessibilityRole="button"
                   accessibilityLabel="Share progress report"
                   onPress={() => void onShareDailyReport()}
-                  style={({ pressed }) => ({ backgroundColor: pressed ? "#0E2A20" : "#0F3A28", borderRadius: 10, paddingVertical: 11, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 })}
+                  style={({ pressed }) => ({ backgroundColor: pressed ? "#C5E7D9" : "#DFF2EA", borderRadius: 10, paddingVertical: 11, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 })}
                 >
                   <Text style={{ fontSize: 16 }}>📤</Text>
                   <Text style={{ color: "#059669", fontSize: 13, fontWeight: "800" }}>Export full progress report</Text>
@@ -24807,7 +24807,7 @@ function SettingsSection({
       {/* ─── FREE ACCESS BANNER ────────────────────────────────────── */}
       <View style={{
         marginHorizontal: 16, marginBottom: 16, borderRadius: 16,
-        backgroundColor: "#0A1E2A", borderWidth: 1, borderColor: "#0E4A3A",
+        backgroundColor: "#DEEBF2", borderWidth: 1, borderColor: "#0E4A3A",
         padding: 16, flexDirection: "row", alignItems: "center"
       }}>
         <Text style={{ fontSize: 28, marginRight: 14 }}>🎁</Text>
@@ -25695,15 +25695,15 @@ function VedicDailyCard({
       </View>
 
       {/* Pristine 2D/3D lunar map */}
-      <View style={{ borderRadius: 22, backgroundColor: "#060B1B", borderWidth: 1, borderColor: "rgba(103,232,249,0.28)", padding: 14, overflow: "hidden", shadowColor: "#0891B2", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.28, shadowRadius: 26, elevation: 14 }}>
+      <View style={{ borderRadius: 22, backgroundColor: "#DEE3F2", borderWidth: 1, borderColor: "rgba(103,232,249,0.28)", padding: 14, overflow: "hidden", shadowColor: "#0891B2", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.28, shadowRadius: 26, elevation: 14 }}>
         <View pointerEvents="none" style={{ position: "absolute", left: -42, top: -46, width: 160, height: 160, borderRadius: 80, backgroundColor: "rgba(99,102,241,0.18)" }} />
         <View pointerEvents="none" style={{ position: "absolute", right: -34, bottom: -48, width: 150, height: 150, borderRadius: 75, backgroundColor: "rgba(34,211,238,0.15)" }} />
         <View style={{ flexDirection: compact ? "column" : "row", gap: 14, alignItems: "stretch" }}>
-          <View style={{ flex: 1, minHeight: 230, borderRadius: 20, backgroundColor: "rgba(15,23,42,0.72)", borderWidth: 1, borderColor: "rgba(148,163,184,0.16)", padding: 12, transform: [{ perspective: 900 }, { rotateX: "2deg" }] }}>
+          <View style={{ flex: 1, minHeight: 230, borderRadius: 20, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: "rgba(148,163,184,0.28)", padding: 12, transform: [{ perspective: 900 }, { rotateX: "2deg" }] }}>
             <Text style={{ color: "#00A2B8", fontSize: 10, fontWeight: "900", letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 10 }}>
               Pristine 2D/3D lunar chart map
             </Text>
-            <View style={{ alignSelf: "center", width: 190, height: 190, borderRadius: 95, borderWidth: 1, borderColor: "rgba(103,232,249,0.32)", backgroundColor: "rgba(2,6,23,0.7)", alignItems: "center", justifyContent: "center", shadowColor: "#00A2B8", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 20 }}>
+            <View style={{ alignSelf: "center", width: 190, height: 190, borderRadius: 95, borderWidth: 1, borderColor: "rgba(103,232,249,0.45)", backgroundColor: "#EAF6FA", alignItems: "center", justifyContent: "center", shadowColor: "#00A2B8", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 20 }}>
               <View style={{ position: "absolute", width: 148, height: 148, borderRadius: 74, borderWidth: 1, borderColor: "rgba(196,181,253,0.32)" }} />
               <View style={{ position: "absolute", width: 104, height: 104, borderRadius: 52, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)" }} />
               <Text style={{ fontSize: 34, lineHeight: 40 }}>{rashi.symbol}</Text>
@@ -25802,7 +25802,7 @@ function VedicDailyCard({
         <Text style={styles.vedicPredTitle}>48-Dimension Moon Chart Engine · Explainable Score {moonChart48Summary.average}/100</Text>
         <Text style={[styles.vedicDisclaimer, { marginTop: 0, marginBottom: 8 }]}>Calculated from Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara only — lunar-chart prediction only.</Text>
         {moonChart48Summary.top.slice(0, 4).map((item) => (
-          <View key={item.id} style={{ borderRadius: 14, backgroundColor: "rgba(15,23,42,0.72)", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}44`, padding: 11, gap: 6 }}>
+          <View key={item.id} style={{ borderRadius: 14, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}44`, padding: 11, gap: 6 }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <Text style={{ fontSize: 17 }}>{item.score >= 82 ? "🌟" : "🌙"}</Text>
               <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
@@ -25974,7 +25974,7 @@ function BirthChartSection({
       </View>
 
       {issueContext && (
-        <View style={{ backgroundColor: "#160D27", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)", gap: 5 }}>
+        <View style={{ backgroundColor: "#E6E0F0", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)", gap: 5 }}>
           <Text style={{ color: "#B45309", fontSize: 10, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
             Active chart question · {issueContext.issueLabel}
           </Text>
@@ -26274,7 +26274,7 @@ function BirthChartSection({
             if (!dasha) return null;
             const dashaColor = "#5C00B8";
             return (
-              <View style={{ backgroundColor: "#150D2E", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(192,132,252,0.3)" }}>
+              <View style={{ backgroundColor: "#E3DFF1", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(192,132,252,0.3)" }}>
                 <Text style={{ color: dashaColor, fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
                   🌀 Vimshottari Mahadasha — Current Planetary Period
                 </Text>
@@ -26347,7 +26347,7 @@ function BirthChartSection({
           })()}
           {/* Cosmic Issue Guidance — connects current issue to Vedic reading */}
           {cosmicIssueGuidance && (
-            <View style={{ backgroundColor: "#16082B", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(126,111,214,0.3)" }}>
+            <View style={{ backgroundColor: "#E6DEF2", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(126,111,214,0.3)" }}>
               <Text style={{ color: "#A78BFA", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
                 🪐 Cosmic guidance for {selectedIssueGuide.label}
               </Text>
@@ -26358,7 +26358,7 @@ function BirthChartSection({
       )}
 
       {hasReading && moonChart48Readings.length === 48 && (
-        <View style={{ backgroundColor: "#030B16", borderRadius: 22, padding: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.34)", gap: 12, overflow: "hidden", shadowColor: "#0891B2", shadowOffset: { width: 0, height: 14 }, shadowOpacity: 0.24, shadowRadius: 28, elevation: 16 }}>
+        <View style={{ backgroundColor: "#DEE6F2", borderRadius: 22, padding: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.34)", gap: 12, overflow: "hidden", shadowColor: "#0891B2", shadowOffset: { width: 0, height: 14 }, shadowOpacity: 0.24, shadowRadius: 28, elevation: 16 }}>
           <View pointerEvents="none" style={{ position: "absolute", left: -50, top: -70, width: 190, height: 190, borderRadius: 95, backgroundColor: "rgba(99,102,241,0.16)" }} />
           <View pointerEvents="none" style={{ position: "absolute", right: -55, top: 80, width: 175, height: 175, borderRadius: 88, backgroundColor: "rgba(34,211,238,0.12)" }} />
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
@@ -27836,7 +27836,7 @@ function OnboardingOverlay({
           // Explains the 3-step flow so nothing feels arbitrary.
           <View style={{
             marginHorizontal: 12, marginBottom: 14,
-            backgroundColor: "#0F2540", borderRadius: 16,
+            backgroundColor: "#DEE7F2", borderRadius: 16,
             borderWidth: 1, borderColor: "rgba(56,189,248,0.35)", padding: 16, gap: 10
           }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
@@ -27942,7 +27942,7 @@ function OnboardingOverlay({
                   { icon: "🌿", text: "Calm practices, tones, and guided meditations for hard moments" },
                   { icon: "🤝", text: "Verified peer community — real people, moderated and safe" },
                 ].map((item) => (
-                  <View key={item.icon} style={{ flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#0A1628", borderRadius: 10, padding: 12 }}>
+                  <View key={item.icon} style={{ flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#DEE6F2", borderRadius: 10, padding: 12 }}>
                     <Text style={{ fontSize: 20 }}>{item.icon}</Text>
                     <Text style={[styles.onboardingText, { marginTop: 0, flex: 1, fontSize: 13, lineHeight: 19 }]}>{item.text}</Text>
                   </View>
@@ -29771,7 +29771,7 @@ function CounselingChatModal({
             <View key={i} style={{ alignItems: turn.role === "friend" ? "flex-start" : "flex-end" }}>
               {turn.role === "friend" && (
                 <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, maxWidth: "88%" }}>
-                  <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#0E3040", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Text style={{ fontSize: 16 }}>🌟</Text>
                   </View>
                   <View style={{ backgroundColor: "#E1EEEC", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, flex: 1 }}>
@@ -29780,7 +29780,7 @@ function CounselingChatModal({
                 </View>
               )}
               {turn.role === "user" && (
-                <View style={{ backgroundColor: "#0E3A3A", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, maxWidth: "80%" }}>
+                <View style={{ backgroundColor: "#DEF2F2", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, maxWidth: "80%" }}>
                   <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
                 </View>
               )}
@@ -29925,7 +29925,7 @@ function GuidedJourneyBar({
   const progress = steps.length > 0 ? completedCount / steps.length : 0;
 
   return (
-    <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#071828", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#0E3040" }}>
+    <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#DEE8F2", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#0E3040" }}>
       {/* Progress bar */}
       <View style={{ height: 3, backgroundColor: "#E1EEEC", borderRadius: 2, marginBottom: 10 }}>
         <View style={{ height: 3, borderRadius: 2, backgroundColor: "#0E9488", width: `${Math.round(progress * 100)}%` as any }} />
@@ -30921,7 +30921,7 @@ function GeminiInsightsCard({
   return (
     <View style={{
       marginHorizontal: 16, marginTop: 16, marginBottom: 4,
-      backgroundColor: "#081828", borderRadius: 18,
+      backgroundColor: "#DEE8F2", borderRadius: 18,
       borderWidth: 1, borderColor: "#1A3A55",
       padding: 18, overflow: "hidden"
     }}>
@@ -30959,7 +30959,7 @@ function GeminiInsightsCard({
               accessibilityRole="button"
               style={({ pressed }) => ({
                 alignSelf: "flex-start",
-                backgroundColor: pressed ? "#0E4A6A" : "#0F3D5E",
+                backgroundColor: pressed ? "#C4D9E9" : "#DEEAF2",
                 borderRadius: 10,
                 paddingHorizontal: 16,
                 paddingVertical: 9,
@@ -31558,7 +31558,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: "rgba(255,255,255,0.5)",
-    backgroundColor: "#0B4F4A",
+    backgroundColor: "#DEF2F1",
     shadowColor: "#C4A35A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -31666,7 +31666,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(246,212,107,0.18)",
-    backgroundColor: "#071A1E",
+    backgroundColor: "#DEEFF2",
     paddingHorizontal: 8,
     paddingVertical: 8
   },
@@ -32236,7 +32236,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   homeToneBandButtonSecondaryActive: {
-    backgroundColor: "#1C5D58",
+    backgroundColor: "#DFF1EF",
     borderColor: "#1C5D58"
   },
   homeToneBandButtonSecondaryLabel: {
@@ -32279,7 +32279,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
-    backgroundColor: "#071618",
+    backgroundColor: "#DFEFF1",
     paddingHorizontal: 6,
     paddingVertical: 4
   },
@@ -32519,7 +32519,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   toneLoopButtonActive: {
-    backgroundColor: "#1C5D58",
+    backgroundColor: "#DFF1EF",
     borderColor: "#1C5D58"
   },
   toneLoopButtonActiveLabel: {
@@ -32604,7 +32604,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#9A391E",
-    backgroundColor: "#1B0F12",
+    backgroundColor: "#EDE3E6",
     padding: 10,
     gap: 8
   },
@@ -33133,11 +33133,11 @@ const styles = StyleSheet.create({
   },
   footerQuickActionComplaint: {
     borderColor: "#8B2F2A",
-    backgroundColor: "#231013"
+    backgroundColor: "#EEE2E4"
   },
   footerQuickActionSecondary: {
     borderColor: "#5C2A2E",
-    backgroundColor: "#140B0D"
+    backgroundColor: "#EDE3E5"
   },
   footerQuickActionLabel: {
     color: "#0D1F22",
@@ -33502,7 +33502,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "rgba(243,123,100,0.42)",
-    backgroundColor: "#1D1110",
+    backgroundColor: "#EDE4E3",
     padding: 14,
     gap: 8
   },
@@ -34060,7 +34060,7 @@ const styles = StyleSheet.create({
   },
   privateRoomMessageBubbleYou: {
     borderColor: "rgba(46,125,154,0.34)",
-    backgroundColor: "#0A2230"
+    backgroundColor: "#DEEBF2"
   },
   privateRoomMessageBubbleMember: {
     borderColor: "rgba(14,204,184,0.3)",
@@ -34403,7 +34403,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 8,
     borderColor: "rgba(246, 212, 107, 0.42)",
-    backgroundColor: "#07111D",
+    backgroundColor: "#DEE7F2",
     minHeight: 390
   },
   frontFeatureBand: {
@@ -34857,7 +34857,7 @@ const styles = StyleSheet.create({
   },
   visionGuidanceBox: {
     borderRadius: 12,
-    backgroundColor: "#0F1E14",
+    backgroundColor: "#E3EDE6",
     borderWidth: 1,
     borderColor: "rgba(196,163,90,0.3)",
     paddingHorizontal: 10,
@@ -35240,7 +35240,7 @@ const styles = StyleSheet.create({
   },
   beaconXWisdomChipCalm: {
     borderColor: "#B45309",
-    backgroundColor: "#1B2114",
+    backgroundColor: "#E8ECE4",
     ...Platform.select({
       ios: {
         shadowColor: "#B45309",
@@ -36023,7 +36023,7 @@ const styles = StyleSheet.create({
   panel: {
     flex: 1,
     borderRadius: 16,
-    backgroundColor: "#08181D",
+    backgroundColor: "#DFEDF1",
     borderWidth: 1,
     borderColor: "rgba(6,182,212,0.22)",
     padding: 20,
@@ -36063,7 +36063,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1.5,
     borderColor: "rgba(196,163,90,0.4)",
-    backgroundColor: "#0D1A1E",
+    backgroundColor: "#E2EBEE",
     padding: 20,
     gap: 16,
     marginBottom: 12,
@@ -36193,7 +36193,7 @@ const styles = StyleSheet.create({
   },
   adminAuthButton: {
     borderRadius: 14,
-    backgroundColor: "#1A3A2A",
+    backgroundColor: "#E2EEE8",
     borderWidth: 1.5,
     borderColor: "#2E7D52",
     paddingVertical: 15,
@@ -36659,7 +36659,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(14,199,189,0.2)",
-    backgroundColor: "#091C20",
+    backgroundColor: "#DFEEF1",
     padding: 12,
     flexDirection: "row",
     alignItems: "flex-start",
@@ -36751,7 +36751,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 1,
     borderColor: "#2A00B8",
-    backgroundColor: "#141D2E",
+    backgroundColor: "#E2E6EE",
     paddingHorizontal: 8,
     paddingVertical: 4,
     fontSize: 9,
@@ -37034,7 +37034,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: "rgba(139,92,246,0.25)",
-    backgroundColor: "#0A071C",
+    backgroundColor: "#E1DEF2",
     padding: 14,
     gap: 10
   },
@@ -37046,7 +37046,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "rgba(139,92,246,0.2)",
-    backgroundColor: "#0D0A1A",
+    backgroundColor: "#E4E1EF",
     paddingHorizontal: 10,
     paddingVertical: 9,
     flexDirection: "row",
@@ -38195,7 +38195,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    backgroundColor: "#060E15",
+    backgroundColor: "#DFE9F1",
     borderTopWidth: 1,
     borderTopColor: "rgba(34,211,238,0.22)",
     paddingTop: 8,
@@ -38256,7 +38256,7 @@ const styles = StyleSheet.create({
   // ── Hero Route Card (Codex-style "What's happening?" ── */
   heroRouteCard: {
     borderRadius: 22,
-    backgroundColor: "#061820",
+    backgroundColor: "#DEECF2",
     padding: 22,
     gap: 14,
     marginBottom: 10,
@@ -38350,7 +38350,7 @@ const styles = StyleSheet.create({
   // ── Dynamic Hero Card ──────────────────────────────────────────────────────
   dynamicHeroCard: {
     borderRadius: 24,
-    backgroundColor: "#071C20",
+    backgroundColor: "#DEEFF2",
     padding: 22,
     marginBottom: 14,
     overflow: "hidden",
@@ -38552,7 +38552,7 @@ const styles = StyleSheet.create({
   },
   smartBriefCard: {
     borderRadius: 20,
-    backgroundColor: "#071C16",
+    backgroundColor: "#DEF2EC",
     borderWidth: 1,
     borderColor: "rgba(16,185,129,0.35)",
     borderLeftWidth: 4,
@@ -38642,7 +38642,7 @@ const styles = StyleSheet.create({
   // ── Vedic Daily Prediction Card ────────────────────────────────────────────
   vedicCard: {
     borderRadius: 20,
-    backgroundColor: "#0A0D1A",
+    backgroundColor: "#E1E4EF",
     borderWidth: 1.5,
     borderColor: "rgba(139,92,246,0.45)",
     padding: 18,
@@ -38919,7 +38919,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 6,
     gap: 6,
-    backgroundColor: "#0F1326",
+    backgroundColor: "#E1E4EF",
     borderColor: "rgba(168,85,247,0.32)"
   },
   birthChartPromptCardCompact: {
@@ -38987,7 +38987,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "rgba(139,92,246,0.25)",
-    backgroundColor: "#11152A",
+    backgroundColor: "#E1E3EF",
     padding: 14,
     gap: 10
   },
@@ -39195,7 +39195,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     borderRadius: 14,
-    backgroundColor: "#1A0A00",
+    backgroundColor: "#F2E6DE",
     borderWidth: 1.5,
     borderColor: "rgba(255,160,50,0.65)",
     padding: 12,
@@ -39241,7 +39241,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     borderRadius: 20,
-    backgroundColor: "#120C00",
+    backgroundColor: "#F2EBDE",
     borderWidth: 1.5,
     borderColor: "rgba(251,191,36,0.55)",
     padding: 18,
