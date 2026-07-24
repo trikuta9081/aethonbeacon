@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.aethonbeacon.app",
-      "buildNumber": "45",
+      "buildNumber": "53",
       "requireFullScreen": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Aethon Beacon does not use your camera.",
