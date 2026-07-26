@@ -17682,6 +17682,18 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Today">
             <View onLayout={captureSectionLayout("today")}>
 
+              <View style={styles.homeVisionIntroCard}>
+          <Text style={styles.homeVisionEyebrow}>What Aethon Beacon does</Text>
+          <Text style={styles.homeVisionTitle}>Guidance, protection, redress, calm sound, community, and Moon-chart Vedic insight in one place.</Text>
+          <Text style={styles.homeVisionText}>Tell the app what is happening. It routes you to the right help path, reads guidance aloud, stores private notes, opens emergency/redress channels, supports testers, runs the 48-dimension counselling engine, and gives calculated Moon-chart predictions with remedies.</Text>
+          <View style={styles.homeVisionPillRow}>
+            {["Help + SOS", "Calm sounds", "Community", "Daily report", "Moon chart"].map((label) => (
+              <View key={label} style={styles.homeVisionPill}>
+                <Text style={styles.homeVisionPillText}>{label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
               {/* ── LANDING HEADER — Premium redesign ── */}
               {(() => {
                 const hour = new Date().getHours();
@@ -19678,6 +19690,21 @@ function TodaySection({
       mindRelaxingToneModes[0],
     [selectedRelaxingToneId]
   );
+  const frontToneCategorySummaries = useMemo(() =>
+    TONE_CATEGORIES.map((category) => {
+      const tones = mindRelaxingToneModes.filter((toneMode) => category.ids.includes(toneMode.id));
+      return {
+        id: category.id,
+        label: category.label,
+        desc: category.desc,
+        color: category.color,
+        count: tones.length,
+        examples: tones.slice(0, 3).map((toneMode) => toneMode.label).join(" · ")
+      };
+    }).filter((category) => category.count > 0),
+    []
+  );
+  const frontToneTotal = mindRelaxingToneModes.length;
   useEffect(() => {
     if (!mindRestLoopEnabled) {
       void stopContinuousTone();
@@ -19720,29 +19747,30 @@ function TodaySection({
   return (
     <View style={styles.grid}>
       <View style={styles.panel}>
-        <View style={styles.homeVisionIntroCard}>
-          <Text style={styles.homeVisionEyebrow}>What Aethon Beacon does</Text>
-          <Text style={styles.homeVisionTitle}>Guidance, protection, redress, calm sound, community, and Moon-chart Vedic insight in one place.</Text>
-          <Text style={styles.homeVisionText}>Tell the app what is happening. It routes you to the right help path, reads guidance aloud, stores private notes, opens emergency/redress channels, supports testers, runs the 48-dimension counselling engine, and gives calculated Moon-chart predictions with remedies.</Text>
-          <View style={styles.homeVisionPillRow}>
-            {["Help + SOS", "Calm sounds", "Community", "Daily report", "Moon chart"].map((label) => (
-              <View key={label} style={styles.homeVisionPill}>
-                <Text style={styles.homeVisionPillText}>{label}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
         <View style={styles.homeSafetyStrip}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={[styles.eyebrow, { color: "#F37B64" }]}>Help & Redress · Quick Exit</Text>
-              <Text style={[styles.sectionTitleSmall, { color: "#B82200" }]}>Emergency, complaint, official help</Text>
+              <Text style={[styles.eyebrow, { color: "#B82200" }]}>Help & Redress · Quick Exit</Text>
+              <Text style={[styles.sectionTitleSmall, { color: "#6B1E17" }]}>One safety hub: emergency, legal aid, complaint route, evidence</Text>
             </View>
-            <Text style={styles.smallMeta}>First safety section</Text>
+            <Text style={styles.smallMeta}>Top priority</Text>
           </View>
-          <Text style={[styles.promptText, { color: "#6B1E17", fontWeight: "800" }]} numberOfLines={3}>
-            SOS, complaint route, official portals, evidence checklist, and voice read-out are merged here so users do not hunt through repeated links.
+          <Text style={[styles.promptText, { color: "#6B1E17", fontWeight: "900" }]} numberOfLines={4}>
+            No overlap, no duplicate hunt: call 112 for immediate danger, open Help & Redress for the exact route, institution type, portals, evidence checklist, templates, timelines, and read-aloud guidance.
           </Text>
+          <View style={styles.homeRedressInfoGrid}>
+            {[
+              { label: "112", text: "Police · fire · ambulance immediate danger" },
+              { label: "181 / 1098", text: "Women and child protection routes" },
+              { label: "1930", text: "Cyber-fraud golden-hour reporting" },
+              { label: "Legal aid", text: "NALSA/DLSA, complaint drafts, evidence trail" }
+            ].map((item) => (
+              <View key={item.label} style={styles.homeRedressInfoCard}>
+                <Text style={styles.homeRedressInfoTitle}>{item.label}</Text>
+                <Text style={styles.homeRedressInfoText}>{item.text}</Text>
+              </View>
+            ))}
+          </View>
           <View style={styles.homeSafetyActions}>
             <Pressable
               accessibilityRole="button"
@@ -19753,8 +19781,8 @@ function TodaySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={styles.footerQuickActionLabel}>{uiCopy.sos}</Text>
-              <Text style={styles.footerQuickActionMeta}>Emergency help</Text>
+              <Text style={styles.footerQuickActionLabel}>SOS 112</Text>
+              <Text style={styles.footerQuickActionMeta}>Immediate danger</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -19765,19 +19793,8 @@ function TodaySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={styles.footerQuickActionLabel}>{uiCopy.complaint}</Text>
-              <Text style={styles.footerQuickActionMeta}>Redress route</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => onOpenTab("search")}
-              style={({ pressed }) => [
-                styles.footerQuickAction,
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={styles.footerQuickActionLabel}>{uiCopy.help}</Text>
-              <Text style={styles.footerQuickActionMeta}>Official help</Text>
+              <Text style={styles.footerQuickActionLabel}>Open Help & Redress</Text>
+              <Text style={styles.footerQuickActionMeta}>Routes, portals, templates</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -19788,8 +19805,8 @@ function TodaySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={styles.footerQuickActionLabel}>{uiCopy.read}</Text>
-              <Text style={styles.footerQuickActionMeta}>Voice guide</Text>
+              <Text style={styles.footerQuickActionLabel}>Read aloud</Text>
+              <Text style={styles.footerQuickActionMeta}>Voice guidance</Text>
             </Pressable>
           </View>
         </View>
@@ -19799,9 +19816,9 @@ function TodaySection({
               <Text style={styles.eyebrow}>Calm sound</Text>
               <Text
                 style={[styles.sectionTitleSmall, compact && styles.sectionTitleSmallCompact]}
-                numberOfLines={compact ? 2 : 1}
+                numberOfLines={compact ? 4 : 3}
               >
-                Mind relaxing beeps / tones
+                {frontToneTotal}+ real sound tools: binaural, solfeggio, nature, isochronic, bilateral reset
               </Text>
             </View>
             <View style={styles.homeToneHeaderActions}>
@@ -19847,9 +19864,18 @@ function TodaySection({
               </Pressable>
             </View>
           </View>
-          <Text style={[styles.homeToneBandIntro, compact && styles.homeToneBandIntroCompact]} numberOfLines={4}>
-            Front door to the full sound library: binaural beats, solfeggio Hz, nature ambience, isochronic pulses, bilateral/EMDR-style taps, sacred frequency sets, session presets, loop timer, and safe-volume tone cues.
+          <Text style={[styles.homeToneBandIntro, compact && styles.homeToneBandIntroCompact]} numberOfLines={5}>
+            This is not one old beep. It contains {frontToneTotal} tone modes across {frontToneCategorySummaries.length} libraries, with safe-volume cues, loop timer, presets, brain-reset 40 Hz, nature ambience, binaural beats, isochronic pulses, and bilateral/EMDR-style reset options.
           </Text>
+          <View style={styles.homeToneLibraryPreviewGrid}>
+            {frontToneCategorySummaries.map((category) => (
+              <View key={category.id} style={[styles.homeToneLibraryPreviewCard, { borderColor: category.color }]}>
+                <Text style={[styles.homeToneLibraryPreviewTitle, { color: category.color }]}>{category.label}</Text>
+                <Text style={styles.homeToneLibraryPreviewMeta}>{category.count} sounds · {category.desc}</Text>
+                <Text style={styles.homeToneLibraryPreviewExamples} numberOfLines={2}>{category.examples}</Text>
+              </View>
+            ))}
+          </View>
           {/* Session timer display */}
           {mindRestLoopEnabled && (
             <View style={styles.toneSessionRow}>
@@ -19903,19 +19929,29 @@ function TodaySection({
         {/* Beacon Guide / Vision card removed */}
         <View style={[styles.homeOverviewGrid, compact && styles.homeOverviewGridCompact]}>
           <View style={[styles.homeOverviewCard, styles.homeOverviewCardCommunity, compact && styles.homeOverviewCardCompact]}>
-            <Text style={styles.homeOverviewEyebrow}>{uiCopy.communityEyebrow}</Text>
-            <Text style={styles.homeOverviewTitle}>{uiCopy.communityTitle}</Text>
-            <Text style={styles.homeOverviewText}>{uiCopy.communityCopy}</Text>
-            <Text style={styles.homeOverviewMeta}>
-              {communityVerifiedCount} verified voices / {privateSpaceCount} private rooms
-            </Text>
+            <Text style={styles.homeOverviewEyebrow}>Community / Messages</Text>
+            <Text style={styles.homeOverviewTitle}>Feed, private support rooms, reactions, reporting, and safe verified chat</Text>
+            <Text style={styles.homeOverviewText}>Inside: public community notes, named private rooms, mentor/moderator style replies, realtime sync when available, offline saved posts, emoji reactions, saved messages, report/hide controls, verification-gated rooms, and safety blocking for harmful content.</Text>
+            <View style={styles.homeCommunityFeatureGrid}>
+              {[
+                { label: "Feed", text: `${communityVerifiedCount} verified voices visible` },
+                { label: "Rooms", text: `${privateSpaceCount} private support rooms` },
+                { label: "Safety", text: "Report · hide · harmful-content lock" },
+                { label: "Sync", text: canUseCommunityFeatures ? "Live / offline fallback ready" : "Verify to unlock full chat" }
+              ].map((item) => (
+                <View key={item.label} style={styles.homeCommunityFeatureCard}>
+                  <Text style={styles.homeCommunityFeatureTitle}>{item.label}</Text>
+                  <Text style={styles.homeCommunityFeatureText}>{item.text}</Text>
+                </View>
+              ))}
+            </View>
             <View style={styles.homeOverviewActions}>
               <Pressable
                 accessibilityRole="button"
                 onPress={() => onOpenTab("community")}
                 style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
               >
-                <Text style={styles.homeOverviewButtonLabel}>{uiCopy.openCommunity}</Text>
+                <Text style={styles.homeOverviewButtonLabel}>Open Community</Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
@@ -19923,7 +19959,7 @@ function TodaySection({
                 style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
               >
                 <Text style={styles.homeOverviewButtonSecondaryLabel}>
-                  {canUseCommunityFeatures ? uiCopy.seeRooms : uiCopy.unlockChat}
+                  {canUseCommunityFeatures ? "Open private rooms" : "Verify / unlock chat"}
                 </Text>
               </Pressable>
             </View>
@@ -34463,13 +34499,14 @@ const styles = StyleSheet.create({
     lineHeight: 17
   },
   homeVisionIntroCard: {
+    marginHorizontal: 16,
+    marginBottom: 12,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.36)",
     backgroundColor: "#F4F8F7",
     padding: 16,
     gap: 10,
-    marginBottom: 12,
     shadowColor: "#0E6F69",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.22,
@@ -34611,6 +34648,33 @@ const styles = StyleSheet.create({
   homeOverviewCardCommunity: {
     backgroundColor: "#E1EEEC",
     borderColor: "rgba(30,80,200,0.3)"
+  },
+  homeCommunityFeatureGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8
+  },
+  homeCommunityFeatureCard: {
+    flexGrow: 1,
+    flexBasis: 150,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(30,80,200,0.22)",
+    backgroundColor: "#F5F7FF",
+    padding: 10,
+    gap: 4
+  },
+  homeCommunityFeatureTitle: {
+    color: "#24306F",
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "900"
+  },
+  homeCommunityFeatureText: {
+    color: "#3D4B86",
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "800"
   },
   homeOverviewCardVoice: {
     backgroundColor: "#E1EEEC",
@@ -34779,6 +34843,37 @@ const styles = StyleSheet.create({
   homeToneBandIntroCompact: {
     fontSize: 12,
     lineHeight: 16
+  },
+  homeToneLibraryPreviewGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8
+  },
+  homeToneLibraryPreviewCard: {
+    flexGrow: 1,
+    flexBasis: 164,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    backgroundColor: "#F8FAFC",
+    padding: 10,
+    gap: 4
+  },
+  homeToneLibraryPreviewTitle: {
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "900"
+  },
+  homeToneLibraryPreviewMeta: {
+    color: "#24384A",
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "800"
+  },
+  homeToneLibraryPreviewExamples: {
+    color: "#0D1F22",
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "900"
   },
   homeToneQuickStrip: {
     flexDirection: "row",
@@ -35122,6 +35217,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
+  },
+  homeRedressInfoGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8
+  },
+  homeRedressInfoCard: {
+    flexGrow: 1,
+    flexBasis: 148,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(199,63,51,0.26)",
+    backgroundColor: "#FFF7F5",
+    padding: 10,
+    gap: 4
+  },
+  homeRedressInfoTitle: {
+    color: "#B82200",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900"
+  },
+  homeRedressInfoText: {
+    color: "#6B1E17",
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "800"
   },
   heroMainActionMark: {
     color: "#0D1F22",

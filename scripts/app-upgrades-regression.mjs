@@ -61,21 +61,32 @@ assert(directoriesHub < routeChips, 'Directories hub must appear before route ch
 
 // Front UI order: vision first, merged Help/Redress + Quick Exit above other sections,
 // Calm Sound above Community, Community above Daily/report, tester page at the bottom.
-const todayStart = indexOf('function TodaySection({');
+const todayStart = indexOf('{activeTab === "today" && (');
 const frontVision = indexOf('What Aethon Beacon does');
 const mergedHelp = indexOf('Help & Redress · Quick Exit');
-const calmSound = indexOf('Front door to the full sound library');
+const calmSound = indexOf('This is not one old beep');
 const communityFront = indexOf('styles.homeOverviewCard, styles.homeOverviewCardCommunity');
 const dailyReportFront = indexOf('uiCopy.reportTitle');
 const testerFront = indexOf('Current tester page · July 15 update');
-assert(todayStart < frontVision, 'Front vision block must live inside TodaySection');
+assert(todayStart < frontVision, 'Front vision block must be first inside the Today/front UI');
+assert(frontVision < indexOf('{/* ── LANDING HEADER — Premium redesign ── */}'), 'Vision lines must appear above the old landing header');
 assert(frontVision < mergedHelp, 'Vision block must appear before merged Help & Redress');
 assert(mergedHelp < calmSound, 'Merged Help & Redress / Quick Exit must appear above Calm Sound');
 assert(calmSound < communityFront, 'Calm Sound must appear above Community/message section');
 assert(communityFront < dailyReportFront, 'Community/message must appear above Daily Snapshot/report');
 assert(dailyReportFront < testerFront, 'Current tester page must be placed at the bottom of the front UI');
-indexOf('Emergency, complaint, official help');
-indexOf('binaural beats, solfeggio Hz, nature ambience, isochronic pulses');
+indexOf('One safety hub: emergency, legal aid, complaint route, evidence');
+indexOf('This is not one old beep');
+indexOf('homeRedressInfoGrid');
+indexOf('Verify / unlock chat');
+indexOf('homeCommunityFeatureGrid');
+indexOf('Feed, private support rooms, reactions, reporting');
+indexOf('Community / Messages');
+indexOf('homeToneLibraryPreviewGrid');
+indexOf('tone modes across');
+indexOf('This is not one old beep');
+indexOf('No overlap, no duplicate hunt');
+indexOf('One safety hub: emergency, legal aid, complaint route, evidence');
 
 // Concrete Help & Redress upgrade markers from the July 26 batch.
 [
