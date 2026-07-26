@@ -18698,6 +18698,7 @@ function isTrustedExternalUrl(url: string) {
           moonChart48Readings={vedicMoonChart48Readings}
           voiceAssistEnabled={voiceAssistEnabled}
           onToggleVoiceAssist={() => setVoiceAssistEnabled((prev) => !prev)}
+          onFetchGuideEnrichment={fetchGeminiAIHelp}
         />
 
         {/* ── Exit / Visit Report Modal ── */}
@@ -30569,6 +30570,7 @@ function CounselingChatModal({
   moonChart48Readings,
   voiceAssistEnabled,
   onToggleVoiceAssist,
+  onFetchGuideEnrichment,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -30587,6 +30589,21 @@ function CounselingChatModal({
   // button below to that same app-wide switch.
   voiceAssistEnabled: boolean;
   onToggleVoiceAssist: () => void;
+  // Optional cloud-AI enrichment on top of the offline synthesis. This reuses
+  // App()'s existing fetchGeminiAIHelp (already wired to a real, deployed
+  // /ai/help route on the verification backend, complete with a graceful
+  // offline fallback server-side) -- it was written months ago for an older
+  // one-shot AIHelp flow that has since been replaced by this two-way chat,
+  // and was never actually called from anywhere. The offline synthesis below
+  // remains the safety-critical baseline and is never blocked or replaced by
+  // this; when it's not configured (or the network call fails) the card
+  // this powers simply never appears.
+  onFetchGuideEnrichment?: (
+    text: string,
+    route: AIHelpRoute,
+    profileAddressLabel: string,
+    issueGuide: IssueGuide
+  ) => Promise<{ text: string; source: string } | null>;
 }) {
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
@@ -30597,6 +30614,8 @@ function CounselingChatModal({
     journeySteps: [],
   }));
   const [draft, setDraft] = React.useState("");
+  const [geminiEnrichment, setGeminiEnrichment] = React.useState<string | null>(null);
+  const [geminiEnrichmentLoading, setGeminiEnrichmentLoading] = React.useState(false);
   const [isListening, setIsListening] = React.useState(false);
   const [speechInputNotice, setSpeechInputNotice] = React.useState("");
   const [synthText, setSynthText] = React.useState("");
@@ -30692,6 +30711,8 @@ function CounselingChatModal({
     setSynthText("");
     setSpeechInputNotice("");
     setJourneySteps([]);
+    setGeminiEnrichment(null);
+    setGeminiEnrichmentLoading(false);
 
     // Speak the opening message
     scheduleSpeakRef.current(openingMsg, 400);
@@ -30761,6 +30782,24 @@ function CounselingChatModal({
       setJourneySteps(steps);
       setDraft("");
       scheduleSpeak(synthesis, 200);
+
+      // Optional cloud-AI enrichment layered on top of the offline synthesis
+      // above, which has already fully completed and is never blocked or
+      // delayed by this. Self-guards: onFetchGuideEnrichment resolves to
+      // null immediately server-side when Gemini isn't configured, and any
+      // network failure is swallowed the same way GeminiInsightsCard does
+      // elsewhere in the app -- the card this powers just never appears.
+      if (onFetchGuideEnrichment) {
+        setGeminiEnrichment(null);
+        setGeminiEnrichmentLoading(true);
+        const enrichmentIssueGuide = issueGuides.find((guide) => guide.id === issueId) ?? issueGuides[0];
+        onFetchGuideEnrichment(session.originalIssue + " " + allUserText, route, identityLabel, enrichmentIssueGuide)
+          .then((result) => {
+            if (result && result.text.trim().length > 0) setGeminiEnrichment(result.text.trim());
+          })
+          .catch(() => undefined)
+          .finally(() => setGeminiEnrichmentLoading(false));
+      }
     } else {
       // Ask next adaptive question using updated merged themes
       const nextQ = buildCounselingQuestions(mergedThemes, newQuestionIndex, allUserText);
@@ -30952,6 +30991,18 @@ function CounselingChatModal({
           {/* Journey options */}
           {showJourneyOptions && (
             <View style={{ marginTop: 8, gap: 8 }}>
+              {/* Optional cloud-AI enrichment -- purely additive on top of the
+                  offline synthesis above, which is already fully complete by
+                  the time this ever appears. Renders nothing at all while
+                  loading (no spinner clutter) and nothing at all if Gemini
+                  isn't configured or the call fails -- only ever appears once
+                  there's real text to show. */}
+              {geminiEnrichment && geminiEnrichment.trim().length > 0 && (
+                <View style={{ backgroundColor: "#F2F1E8", borderRadius: 12, padding: 14, borderLeftWidth: 3, borderLeftColor: "#B45309", marginBottom: 4 }}>
+                  <Text style={{ color: "#B45309", fontSize: 11, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>A closer look</Text>
+                  <Text style={{ color: "#3A617D", fontSize: 13, lineHeight: 20 }}>{geminiEnrichment}</Text>
+                </View>
+              )}
               <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Your recommended journey</Text>
               {journeySteps.map((step, i) => (
                 <View key={step.tabId} style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", gap: 12, borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
