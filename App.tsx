@@ -428,6 +428,12 @@ type RedressRoute = {
   urgentNote: string;
 };
 
+type InstitutionPortal = {
+  label: string;
+  url: string;
+  use: string;
+};
+
 type InstitutionSector = {
   id: InstitutionSectorId;
   label: string;
@@ -437,6 +443,14 @@ type InstitutionSector = {
   portal: string;
   portalLabel: string;
   evidence: string;
+  immediateAction: string;
+  offices: string[];
+  portals: InstitutionPortal[];
+  documents: string[];
+  timeline: string;
+  complaintLine: string;
+  caution: string;
+  keywords: string[];
 };
 
 type PlayChallenge = {
@@ -6668,101 +6682,215 @@ const institutionSectors: InstitutionSector[] = [
   {
     id: "university",
     label: "Universities / premier colleges",
-    subtitle: "UGC-recognised institutions, including many premier colleges",
-    firstOffice: "Student grievance cell, department office, registrar, dean, or principal/director.",
+    subtitle: "UGC-recognised colleges, central/state/private universities, deemed universities, hostels, exams, marks, fees, discrimination, delay, or academic grievance.",
+    firstOffice: "Class mentor/tutor → department office or HOD → student grievance redressal committee (SGRC) → registrar/dean/principal/director.",
     escalation:
-      "If the issue is unresolved, move to the affiliating university, UGC e-Samadhan, or CPGRAMS for public institutions.",
-    portal: "https://ugc.gov.in/",
-    portalLabel: "UGC / e-Samadhan",
-    evidence: "Admission proof, emails, attendance, marksheets, complaint receipt, screenshots, and witnesses."
+      "If there is no written acknowledgement or no action, escalate to the affiliating university, UGC e-Samadhan, and CPGRAMS for public/central institutions.",
+    portal: "https://samadhaan.ugc.ac.in/",
+    portalLabel: "UGC e-Samadhan",
+    evidence: "Admission/roll proof, ID card, fee receipts, attendance, marksheets, screenshots, emails, notices, names, dates, witnesses, and acknowledgement numbers.",
+    immediateAction: "Write one dated complaint asking for one exact remedy. Submit it by email and at the office counter; demand a stamped/emailed acknowledgement.",
+    offices: [
+      "Class mentor / tutor / course coordinator",
+      "HOD or department office",
+      "Student Grievance Redressal Committee (SGRC)",
+      "Dean Students Welfare / Registrar / Principal / Director",
+      "Affiliating university grievance cell"
+    ],
+    portals: [
+      { label: "UGC e-Samadhan", url: "https://samadhaan.ugc.ac.in/", use: "Use for UGC-recognised higher-education grievances after institutional route is started." },
+      { label: "CPGRAMS", url: "https://pgportal.gov.in/", use: "Use for central/public institutions, ministries, or stalled public authority matters." },
+      { label: "Anti-ragging", url: "https://www.antiragging.in/", use: "Use immediately for ragging, intimidation, hostel harassment, or threats." }
+    ],
+    documents: ["Student ID / admission proof", "Course, semester, section, roll number", "Complaint email PDF/screenshots", "Fee/marks/attendance records", "Acknowledgement or diary number"],
+    timeline: "Same day for safety/ragging; 7 days for acknowledgement; 15–30 days for institutional decision; escalate if silence continues.",
+    complaintLine: "I request written acknowledgement of this complaint and a reasoned decision on the specific remedy requested below within the prescribed grievance timeline.",
+    caution: "Do not rely only on verbal assurances. Keep one chronological paper trail and escalate only with the previous complaint number.",
+    keywords: ["SGRC", "registrar", "UGC", "e-Samadhan", "affiliating university"]
   },
   {
     id: "iit",
     label: "IITs / NITs / technical institutes",
-    subtitle: "Central technical institutions and engineering colleges",
-    firstOffice: "Institute grievance cell, dean, hostel office, or principal/director.",
+    subtitle: "IIT, NIT, IIIT, engineering college, polytechnic, AICTE-linked technical course, hostel, lab, placement, stipend, attendance, or examination grievance.",
+    firstOffice: "Faculty advisor/course coordinator → HOD → Dean Academic/Dean Students → institute grievance cell/ombudsman → Director office.",
     escalation:
-      "Escalate to the institute ombudsman or grievance committee, then to the affiliating body, AICTE where applicable, or CPGRAMS.",
-    portal: "https://aicte-india.org/",
-    portalLabel: "AICTE / institute grievance",
-    evidence: "Roll number, hostel or department details, notice, email chain, screenshot, and the complaint number."
+      "Escalate to the institute appellate/ombudsman route, AICTE for approved technical institutions, MoE/CPGRAMS for central institutions, and police/anti-ragging for danger.",
+    portal: "https://www.aicte-india.org/grievance",
+    portalLabel: "AICTE grievance",
+    evidence: "Roll number, institute ID, lab/hostel details, attendance or grade record, placement emails, screenshots, notices, complaint number, and witnesses.",
+    immediateAction: "Map the issue to academic, hostel, placement, fee, discrimination, or safety first; then send it to the exact dean/HOD route in writing.",
+    offices: ["Faculty advisor / course coordinator", "HOD / department grievance contact", "Dean Academics / Dean Students", "Institute grievance cell or ombudsman", "Director / Registrar office"],
+    portals: [
+      { label: "AICTE grievance", url: "https://www.aicte-india.org/grievance", use: "For AICTE-approved technical institutions and engineering colleges." },
+      { label: "CPGRAMS", url: "https://pgportal.gov.in/", use: "For IIT/NIT/central institute matters linked to Ministry of Education." },
+      { label: "Anti-ragging", url: "https://www.antiragging.in/", use: "For ragging, hostel threats, forced tasks, intimidation, or violence." }
+    ],
+    documents: ["Roll number and institute ID", "Course/hostel/lab details", "Email trail and screenshots", "Grade/attendance/stipend records", "Names, dates, locations, witnesses"],
+    timeline: "24 hours for threat/ragging; 7 days for acknowledgement; 15 days for HOD/dean response; 30 days before outside escalation unless urgent.",
+    complaintLine: "Please treat this as a formal technical-institute grievance and route it to the competent dean/committee with a written action report.",
+    caution: "Placement, hostel, and lab issues often move through different offices; choose the matching office first to avoid bouncing.",
+    keywords: ["Dean Academics", "Dean Students", "AICTE", "MoE", "ombudsman"]
   },
   {
     id: "medical",
     label: "Medical colleges",
-    subtitle: "MBBS, PG, and other medical education institutions",
-    firstOffice: "College grievance cell, dean, principal, anti-ragging committee, or student welfare office.",
+    subtitle: "MBBS, PG, nursing, dental, allied health, clinical posting, duty roster, hostel, ragging, stipend, internship, or patient-safety linked issue.",
+    firstOffice: "Batch coordinator/HOD → Dean/Principal/Medical Superintendent → anti-ragging or student welfare committee → university grievance cell.",
     escalation:
-      "Escalate to the institution, the affiliating university, NMC, and CPGRAMS if the college is public or the matter still stalls.",
+      "Escalate to the affiliating health university, National Medical Commission where applicable, state medical council/university, CPGRAMS for public bodies, and police for violence.",
     portal: "https://nmc.org.in/",
-    portalLabel: "NMC / CPGRAMS",
-    evidence: "Batch, department, hospital posting, messages, duty roster, and complaint receipt."
+    portalLabel: "NMC / medical grievance",
+    evidence: "Batch, roll number, department, hospital posting, duty roster, messages, attendance/stipend proof, patient-safety note if relevant, and complaint receipt.",
+    immediateAction: "Separate education grievance from clinical emergency. If patient/physical safety is involved, notify duty authority immediately before portal escalation.",
+    offices: ["Batch coordinator / unit in-charge", "HOD / department office", "Dean / Principal", "Medical Superintendent for hospital-duty issues", "Anti-ragging / student welfare / ICC where relevant"],
+    portals: [
+      { label: "NMC", url: "https://nmc.org.in/", use: "Use for medical education standards and recognised medical-college matters." },
+      { label: "Anti-ragging", url: "https://www.antiragging.in/", use: "Use immediately for ragging or hostel intimidation." },
+      { label: "CPGRAMS", url: "https://pgportal.gov.in/", use: "Use for central/public hospital or ministry-linked grievances." }
+    ],
+    documents: ["College ID and batch", "Department/posting/roster details", "Messages, notices, emails", "Attendance/stipend/internship records", "Written complaint and acknowledgement"],
+    timeline: "Same day for safety, ragging, or patient-risk; 3–7 days for acknowledgement; 15–30 days for education-route decision.",
+    complaintLine: "Please acknowledge this medical-education grievance and confirm the responsible committee/authority handling it, with the expected decision date.",
+    caution: "Do not post patient-identifying medical information in screenshots or public notes; redact confidential clinical details.",
+    keywords: ["Dean", "Medical Superintendent", "NMC", "health university", "anti-ragging"]
   },
   {
     id: "law",
     label: "NLUs / law colleges",
-    subtitle: "Law schools and centres of legal education",
-    firstOffice: "Law college grievance cell, dean, principal, or SGRC committee.",
+    subtitle: "NLU, law faculty, law college, moot/attendance/exam/hostel grievance, legal education issue, clinic, internship, or campus conduct matter.",
+    firstOffice: "Class coordinator/faculty mentor → Dean/HOD → SGRC/student welfare/ICC/anti-ragging committee → Registrar/Vice-Chancellor.",
     escalation:
-      "Escalate to the affiliating university, BCI student grievance system where applicable, or CPGRAMS for public institutions.",
-    portal: "https://www.barcouncilofindia.org/info/complaints-against-advocates",
-    portalLabel: "BCI / SGRC",
-    evidence: "Enrollment details, class or hostel details, messages, and written complaint record."
+      "Escalate to the university grievance route, UGC e-Samadhan for recognised higher education, BCI legal education contact where applicable, or CPGRAMS for public universities.",
+    portal: "https://samadhaan.ugc.ac.in/",
+    portalLabel: "UGC e-Samadhan / university route",
+    evidence: "Enrollment/roll details, subject/semester, attendance/marks, emails, notices, internship/moot communication, hostel records, and complaint acknowledgement.",
+    immediateAction: "State the legal-education harm precisely: grade, attendance, harassment, facilities, hostel, internship, fee, or discrimination — then name the remedy.",
+    offices: ["Class coordinator / faculty mentor", "Dean / HOD", "Student grievance cell / ICC / anti-ragging committee", "Registrar / Controller of Examinations", "Vice-Chancellor or university grievance authority"],
+    portals: [
+      { label: "UGC e-Samadhan", url: "https://samadhaan.ugc.ac.in/", use: "For recognised higher-education grievance after the college/university route begins." },
+      { label: "BCI", url: "https://www.barcouncilofindia.org/", use: "For legal-education regulatory references and college-recognition issues." },
+      { label: "CPGRAMS", url: "https://pgportal.gov.in/", use: "For central/state public university authority escalation." }
+    ],
+    documents: ["Enrollment/roll proof", "Subject/semester and attendance/marks", "Written complaint", "Screenshots/emails/notices", "Acknowledgement number"],
+    timeline: "7 days for acknowledgement; 15–30 days for college/university handling; faster for harassment, ragging, exams, or approaching deadlines.",
+    complaintLine: "Please place this before the competent legal-education grievance authority and preserve my academic position until a reasoned decision is issued.",
+    caution: "A complaint against an advocate is different from a law-college/student grievance; choose BCI only when the matter is regulatory/professional.",
+    keywords: ["NLU", "Dean", "SGRC", "UGC", "BCI"]
   },
   {
     id: "school",
     label: "Schools",
-    subtitle: "CBSE, state board, government, or private schools",
-    firstOffice: "Principal, school grievance cell, or management office.",
+    subtitle: "CBSE, state board, government, private, residential school, fees, marks, transfer certificate, bullying, safety, child rights, or parent communication.",
+    firstOffice: "Class teacher → coordinator/section head → principal → school management/committee → board or district education office.",
     escalation:
-      "Escalate to the education board, CBSE for affiliated schools, the CVO for relevant government schools, state education department, or CPGRAMS if public.",
+      "Escalate to CBSE/state board, District Education Officer, state education department, NCPCR/SCPCR for child-rights harm, or police/112 for immediate danger.",
     portal: "https://www.cbse.gov.in/",
-    portalLabel: "CBSE / board",
-    evidence: "Admission number, class, section, fee receipts, circulars, screenshots, and parent communication."
+    portalLabel: "CBSE / education board",
+    evidence: "Admission number, class/section, fee receipts, circulars, report cards, screenshots, medical/safety notes, parent emails, and diary/acknowledgement.",
+    immediateAction: "Send a parent/guardian complaint with student details, exact incident/date, requested remedy, and a demand for written acknowledgement.",
+    offices: ["Class teacher", "Academic coordinator / section head", "Principal", "School management / grievance committee", "District Education Officer / board"],
+    portals: [
+      { label: "CBSE", url: "https://www.cbse.gov.in/", use: "For CBSE-affiliated school board information and routes." },
+      { label: "NCPCR", url: "https://ncpcr.gov.in/", use: "For child-rights, abuse, denial, trafficking, POCSO-linked or serious school-safety issues." },
+      { label: "CPGRAMS", url: "https://pgportal.gov.in/", use: "For public/government school authority escalation where applicable." }
+    ],
+    documents: ["Student ID/admission number", "Class, section, campus", "Fee receipts/circulars/report cards", "Parent emails or screenshots", "Medical/safety evidence if any"],
+    timeline: "Immediate for child safety; 3–7 days for school acknowledgement; 15 days for board/DEO escalation when unresolved.",
+    complaintLine: "I request a written acknowledgement and child-safe remedial action without retaliation against the student.",
+    caution: "For abuse, threat, sexual harassment, or POCSO risk, call 112/1098 and do not wait for school-level processing.",
+    keywords: ["Principal", "DEO", "CBSE", "NCPCR", "child safety"]
   },
   {
     id: "banking",
     label: "Banks / NBFCs / finance",
-    subtitle: "Banking and regulated financial entities",
-    firstOffice: "Branch manager, customer service, grievance cell, or nodal officer.",
+    subtitle: "Bank account, UPI, card, loan, NBFC, credit report, unauthorised transaction, frozen funds, service failure, recovery agent, or mis-selling.",
+    firstOffice: "Branch/customer care → bank/NBFC grievance officer → nodal officer/principal nodal officer → RBI CMS/Ombudsman after internal route.",
     escalation:
-      "Escalate to the RBI Complaint Management System, the Integrated Ombudsman Scheme, or the nearest RBI office if the complaint stays unresolved.",
-    portal: "https://systemhealth.rbi.org.in/cms.rbi.org.in/cms/indexpage.html",
+      "Use RBI CMS/Ombudsman if unresolved after 30 days or rejected unsatisfactorily; report cyber fraud immediately at 1930 and cybercrime.gov.in.",
+    portal: "https://cms.rbi.org.in/",
     portalLabel: "RBI CMS / Ombudsman",
-    evidence: "Account details, transaction IDs, SMS/email proofs, complaint number, and any bank reply."
+    evidence: "Account/loan masked details, transaction IDs, UTR/RRN, SMS/email proofs, complaint number, bank reply, statement extract, and screenshots.",
+    immediateAction: "For fraud, call 1930 first and ask the bank to freeze/block immediately; for service dispute, file bank complaint and note the ticket number.",
+    offices: ["Branch manager / customer care", "Bank grievance officer", "Nodal officer / principal nodal officer", "RBI CMS / Integrated Ombudsman", "Cybercrime helpline 1930 for fraud"],
+    portals: [
+      { label: "RBI CMS", url: "https://cms.rbi.org.in/", use: "For bank/NBFC/payment system complaints after the regulated entity route." },
+      { label: "Cybercrime", url: "https://cybercrime.gov.in/", use: "For online financial fraud, UPI/card fraud, wallet fraud, phishing, or account takeover." },
+      { label: "Consumer helpline", url: "https://consumerhelpline.gov.in/", use: "For service deficiency or mis-selling when consumer route fits." }
+    ],
+    documents: ["Complaint/ticket number", "Masked account/loan/card details", "UTR/RRN/transaction ID", "Bank/NBFC reply", "Screenshots/SMS/email proof"],
+    timeline: "Fraud: call 1930 immediately; service dispute: give bank/NBFC up to 30 days before RBI CMS unless urgent blocking is required.",
+    complaintLine: "Please treat this as a formal regulated-entity complaint and provide a written resolution or final reply suitable for RBI CMS escalation.",
+    caution: "Never share OTP, full card number, CVV, PIN, passwords, or net-banking credentials in a complaint attachment.",
+    keywords: ["RBI CMS", "Ombudsman", "1930", "UTR", "nodal officer"]
   },
   {
     id: "government",
     label: "Government offices / semi-govt",
-    subtitle: "Departments, PSUs, boards, and public authorities",
-    firstOffice: "Department grievance cell, public grievance officer, or head of office.",
+    subtitle: "Departments, municipal bodies, boards, PSUs, public universities/hospitals, schemes, certificate delay, pension, subsidy, licence, or public service failure.",
+    firstOffice: "Service counter/office section → designated grievance officer → head of office → department nodal officer/public grievance officer.",
     escalation:
-      "Move to CPGRAMS, the parent ministry, or the administrative head if the office is a PSU or semi-government entity.",
+      "Move to CPGRAMS/state grievance portal, parent department/ministry, appellate authority, RTI route for records, or Lokayukta/vigilance for corruption where applicable.",
     portal: "https://pgportal.gov.in/",
     portalLabel: "CPGRAMS",
-    evidence: "Service request number, office name, dates, letters, and supporting documents."
+    evidence: "Application/service request number, office name, dates, receipts, letters, screenshots, officer names, and previous representations.",
+    immediateAction: "Identify the exact public service, office, application number, and legal/administrative remedy sought before escalating.",
+    offices: ["Service counter / dealing assistant", "Designated grievance officer", "Head of office", "Department public grievance officer", "Parent ministry / state portal / CPGRAMS"],
+    portals: [
+      { label: "CPGRAMS", url: "https://pgportal.gov.in/", use: "For central government and many public authority grievances." },
+      { label: "RTI Online", url: "https://rtionline.gov.in/", use: "For records/status information, not as a substitute for grievance redressal." },
+      { label: "Consumer helpline", url: "https://consumerhelpline.gov.in/", use: "For public utility/service consumer issues where applicable." }
+    ],
+    documents: ["Application/service number", "Receipts and letters", "Office/department details", "Timeline of visits/calls", "Previous complaint numbers"],
+    timeline: "7 days for acknowledgement; 15–30 days for department reply; use RTI for missing records and CPGRAMS/state portal if stalled.",
+    complaintLine: "Please register this public grievance, provide an acknowledgement number, and specify the officer responsible for disposal.",
+    caution: "CPGRAMS may transfer matters; track the transferred department and file follow-up only with the latest registration number.",
+    keywords: ["CPGRAMS", "RTI", "public grievance", "PSU", "department"]
   },
   {
     id: "private",
     label: "Private firms / companies",
-    subtitle: "Private limited firms, service companies, and corporate offices",
-    firstOffice: "HR, compliance, grievance desk, ombudsman, or management office listed by the company.",
+    subtitle: "Private employer, service company, corporate office, ecommerce/service provider, HR issue, unpaid salary, contract, refund, harassment, or customer grievance.",
+    firstOffice: "Support/HR/reporting manager → grievance/compliance officer → senior management/legal/compliance → regulator/labour/consumer/police route based on issue.",
     escalation:
-      "Escalate to senior management, owner/board, customer grievance channel, labour authority if employment related, consumer forum if service related, or police if criminal.",
-    portal: "https://pgportal.gov.in/",
-    portalLabel: "Company grievance / CPGRAMS if public-linked",
-    evidence: "Appointment letter, offer letter, contract, invoice, emails, chat logs, and complaint number."
+      "Use labour authority for employment/wage issues, consumer commission/helpline for goods/services, ICC/police for harassment/crime, sector regulator for regulated industries.",
+    portal: "https://consumerhelpline.gov.in/",
+    portalLabel: "Consumer helpline / labour route",
+    evidence: "Offer/appointment/contract/invoice, salary slips, payment proofs, emails/chats, service tickets, company replies, and timeline.",
+    immediateAction: "Classify the complaint as employee, customer, harassment, contract, payment, refund, data/privacy, or criminal before choosing the authority.",
+    offices: ["Customer support / HR / reporting manager", "Company grievance/compliance officer", "Nodal/ombudsman contact if listed", "Senior management/legal", "Labour officer / consumer forum / sector regulator"],
+    portals: [
+      { label: "Consumer helpline", url: "https://consumerhelpline.gov.in/", use: "For product/service/refund/deficiency complaints as a consumer." },
+      { label: "e-Shram / labour", url: "https://eshram.gov.in/", use: "For labour-welfare route discovery and worker identity support." },
+      { label: "Cybercrime", url: "https://cybercrime.gov.in/", use: "For online fraud, impersonation, extortion, hacking, or digital abuse." }
+    ],
+    documents: ["Contract/offer/invoice", "Payment/salary/transaction proof", "Emails/chats/tickets", "Company policy or reply", "Timeline and requested remedy"],
+    timeline: "7 days for company acknowledgement; 15 days for urgent wage/service issues; 30 days before consumer/labour escalation unless safety/crime exists.",
+    complaintLine: "Please register this formal complaint and provide a written resolution, refund/payment/action decision, or final reply for statutory escalation.",
+    caution: "Private-company issues split into different legal routes; avoid sending every issue to CPGRAMS unless a public authority/regulator is involved.",
+    keywords: ["HR", "consumer", "labour", "refund", "compliance"]
   },
   {
     id: "factory",
     label: "Factories / plants / sites",
-    subtitle: "Industrial workplaces and worksites",
-    firstOffice: "Plant manager, HR, safety officer, works committee, or internal complaints route.",
+    subtitle: "Industrial workplace, factory, construction site, plant, contractor labour, safety, accident, wages, overtime, PF/ESI, harassment, or dangerous condition.",
+    firstOffice: "Supervisor/site in-charge → safety officer/HR → plant manager/occupier → works committee/ICC → labour/factory inspectorate.",
     escalation:
-      "Escalate to the labour department, occupational safety authority, local inspectorate, company management, or police when the issue is dangerous or criminal.",
+      "Escalate to labour department, factories inspectorate, EPFO/ESIC for PF/medical benefits, pollution/safety authority if relevant, or police/112 for danger or violence.",
     portal: "https://pgportal.gov.in/",
-    portalLabel: "Labour / CPGRAMS where relevant",
-    evidence: "Shift details, PPE or safety records, accident notes, witness names, and complaint history."
+    portalLabel: "Labour / factory inspectorate route",
+    evidence: "Shift/contractor details, employee ID, wage slips, PPE/safety record, accident note, photos, witness names, medical record, and complaint history.",
+    immediateAction: "For live safety risk, stop exposure and call emergency/site safety first. For wages/PF/ESI, collect employer/contractor details before filing.",
+    offices: ["Supervisor / site in-charge", "Safety officer / HR", "Plant manager / occupier", "Works committee / ICC", "Labour officer / factories inspector / EPFO / ESIC"],
+    portals: [
+      { label: "EPFO", url: "https://www.epfindia.gov.in/", use: "For provident fund, UAN, employer contribution, and PF withdrawal issues." },
+      { label: "ESIC", url: "https://www.esic.gov.in/", use: "For insured-person medical benefit and employer ESI issues." },
+      { label: "CPGRAMS", url: "https://pgportal.gov.in/", use: "For central/public authority routing or when department escalation is needed." }
+    ],
+    documents: ["Employee/contractor ID", "Shift/date/site/location", "Wage/PF/ESI records", "Safety photos/medical papers", "Witness names and complaint copy"],
+    timeline: "Immediate for danger/accident; 3–7 days for site acknowledgement; 15–30 days for labour/inspectorate follow-up.",
+    complaintLine: "Please record this workplace/site grievance, prevent retaliation, and issue a written safety/wage/compliance action note.",
+    caution: "Do not enter unsafe zones to gather proof. Take photos only from safety and preserve medical and attendance records.",
+    keywords: ["safety officer", "labour", "factory inspector", "EPFO", "ESIC"]
   }
 ];
 
@@ -21313,14 +21441,14 @@ function ToneLibrarySection({
                   </View>
                   <View style={{ flex: 1 }}>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                      <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "900" }}>{prog.name}</Text>
+                      <Text style={{ color: "#F8FAFC", fontSize: 14, fontWeight: "900" }}>{prog.name}</Text>
                       <View style={{ backgroundColor: prog.dimColor + "20", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}>
                         <Text style={{ color: prog.dimColor, fontSize: 11, fontWeight: "900" }}>{prog.dim}</Text>
                       </View>
-                      <Text style={{ color: "#3F4B5F", fontSize: 11 }}>{prog.duration}m</Text>
+                      <Text style={{ color: "#D6E4F0", fontSize: 11, fontWeight: "800" }}>{prog.duration}m</Text>
                     </View>
-                    <Text style={{ color: "#3F4B5F", fontSize: 12, lineHeight: 16 }}>{prog.purpose}</Text>
-                    <Text style={{ color: "#334155", fontSize: 11, marginTop: 3 }}>🫁 {prog.breathPattern} breathing</Text>
+                    <Text style={{ color: "#EAF2F8", fontSize: 12, lineHeight: 16, fontWeight: "700" }}>{prog.purpose}</Text>
+                    <Text style={{ color: "#FDE68A", fontSize: 11, lineHeight: 15, marginTop: 3, fontWeight: "800" }}>🫁 {prog.breathPattern} breathing</Text>
                   </View>
                   <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: isRunning ? "#991B1B" : prog.dimColor + "20", borderWidth: 1, borderColor: isRunning ? "#DC2626" : prog.dimColor + "50", alignItems: "center", justifyContent: "center" }}>
                     <Text style={{ color: isRunning ? "#DC2626" : prog.dimColor, fontSize: 14 }}>{isRunning ? "⏹" : "▶"}</Text>
@@ -21357,11 +21485,11 @@ function ToneLibrarySection({
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: cat.color, fontSize: 13, fontWeight: "900" }}>{cat.label}</Text>
-                    <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 2 }}>{cat.desc}</Text>
+                    <Text style={{ color: "#D6E4F0", fontSize: 11, lineHeight: 15, marginTop: 2, fontWeight: "700" }}>{cat.desc}</Text>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     {hasActive && <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#0891B2" }} />}
-                    <Text style={{ color: "#3F4B5F", fontSize: 13 }}>{isOpen ? "▲" : "▼"}</Text>
+                    <Text style={{ color: "#D6E4F0", fontSize: 13, fontWeight: "900" }}>{isOpen ? "▲" : "▼"}</Text>
                   </View>
                 </Pressable>
                 {isOpen && (
@@ -25384,6 +25512,7 @@ function RedressSection({
                 key={sector.id}
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
+                accessibilityLabel={`${sector.label}. ${sector.subtitle}. ${isSelected ? "Selected" : "Tap to select"}.`}
                 onPress={() => setInstitutionSectorId(sector.id)}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
@@ -25392,6 +25521,67 @@ function RedressSection({
               </Pressable>
             );
           })}
+        </View>
+
+        <View style={styles.institutionDetailCard}>
+          <View style={styles.institutionDetailHeader}>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={styles.institutionDetailEyebrow}>Recommended path now</Text>
+              <Text style={styles.institutionDetailTitle}>{selectedInstitutionSector.label}</Text>
+            </View>
+            <View style={styles.institutionKeywordPill}>
+              <Text style={styles.institutionKeywordPillText}>{selectedInstitutionSector.keywords[0]}</Text>
+            </View>
+          </View>
+
+          <Text style={styles.institutionDetailBody}>{selectedInstitutionSector.immediateAction}</Text>
+
+          <View style={styles.institutionMiniGrid}>
+            <View style={styles.institutionMiniPanel}>
+              <Text style={styles.institutionMiniTitle}>First offices to select</Text>
+              {selectedInstitutionSector.offices.slice(0, 5).map((office, index) => (
+                <Text key={`${selectedInstitutionSector.id}-office-${index}`} style={styles.institutionMiniText}>
+                  {index + 1}. {office}
+                </Text>
+              ))}
+            </View>
+            <View style={styles.institutionMiniPanel}>
+              <Text style={styles.institutionMiniTitle}>Keep ready</Text>
+              {selectedInstitutionSector.documents.slice(0, 5).map((doc, index) => (
+                <Text key={`${selectedInstitutionSector.id}-doc-${index}`} style={styles.institutionMiniText}>
+                  • {doc}
+                </Text>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.institutionTimelineBox}>
+            <Text style={styles.institutionMiniTitle}>Timeline and escalation</Text>
+            <Text style={styles.institutionDetailBody}>{selectedInstitutionSector.timeline}</Text>
+            <Text style={styles.institutionCautionText}>⚠ {selectedInstitutionSector.caution}</Text>
+          </View>
+
+          <View style={styles.institutionPortalList}>
+            {selectedInstitutionSector.portals.map((portal) => (
+              <Pressable
+                key={`${selectedInstitutionSector.id}-${portal.label}`}
+                accessibilityRole="button"
+                onPress={() => openWebsite(portal.url, portal.label)}
+                style={({ pressed }) => [styles.institutionPortalCard, pressed && styles.pressed]}
+              >
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={styles.institutionPortalTitle}>{portal.label}</Text>
+                  <Text style={styles.institutionPortalUse}>{portal.use}</Text>
+                </View>
+                <Text style={styles.institutionPortalArrow}>↗</Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <View style={styles.institutionComplaintBox}>
+            <Text style={styles.institutionMiniTitle}>Suggested wording</Text>
+            <Text style={styles.institutionComplaintText}>{selectedInstitutionSector.complaintLine}</Text>
+          </View>
         </View>
       </View>
 
@@ -34492,9 +34682,9 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   homeToneBandButtonLabel: {
-    color: "#0891B2",
+    color: "#075985",
     fontSize: 10,
-    lineHeight: 9,
+    lineHeight: 13,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
@@ -34522,9 +34712,9 @@ const styles = StyleSheet.create({
     borderColor: "#1C5D58"
   },
   homeToneBandButtonSecondaryLabel: {
-    color: "#B45309",
+    color: "#9A3412",
     fontSize: 10,
-    lineHeight: 9,
+    lineHeight: 13,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
@@ -34552,7 +34742,7 @@ const styles = StyleSheet.create({
   },
   homeToneBandIntroCompact: {
     fontSize: 10,
-    lineHeight: 9
+    lineHeight: 13
   },
   homeToneQuickStrip: {
     flexDirection: "row",
@@ -34660,7 +34850,7 @@ const styles = StyleSheet.create({
     lineHeight: 13
   },
   homeToneFeaturedUse: {
-    color: "rgba(255,255,255,0.78)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "800"
@@ -34741,7 +34931,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF"
   },
   homeToneChipLabel: {
-    color: "rgba(255,255,255,0.85)",
+    color: "#0D1F22",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "900"
@@ -35648,6 +35838,143 @@ const styles = StyleSheet.create({
   },
   issueChipMetaActive: {
     color: "#457359"
+  },
+  institutionDetailCard: {
+    marginTop: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.36)",
+    backgroundColor: "#F4F8F7",
+    padding: 12,
+    gap: 12
+  },
+  institutionDetailHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 10
+  },
+  institutionDetailEyebrow: {
+    color: "#0E6F69",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "900",
+    textTransform: "uppercase",
+    letterSpacing: 1
+  },
+  institutionDetailTitle: {
+    color: "#0D1F22",
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: "900"
+  },
+  institutionKeywordPill: {
+    borderRadius: 999,
+    backgroundColor: "#0E6F69",
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    maxWidth: 132
+  },
+  institutionKeywordPillText: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: "900"
+  },
+  institutionDetailBody: {
+    color: "#24384A",
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "700"
+  },
+  institutionMiniGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10
+  },
+  institutionMiniPanel: {
+    flexGrow: 1,
+    flexBasis: 180,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.26)",
+    backgroundColor: "#FFFFFF",
+    padding: 10,
+    gap: 5
+  },
+  institutionMiniTitle: {
+    color: "#0891B2",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "900",
+    textTransform: "uppercase",
+    letterSpacing: 0.7
+  },
+  institutionMiniText: {
+    color: "#24384A",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700"
+  },
+  institutionTimelineBox: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(180,83,9,0.24)",
+    backgroundColor: "#FFF7ED",
+    padding: 10,
+    gap: 5
+  },
+  institutionCautionText: {
+    color: "#9A3412",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "800"
+  },
+  institutionPortalList: {
+    gap: 8
+  },
+  institutionPortalCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(8,145,178,0.28)",
+    backgroundColor: "#E6F6FA",
+    padding: 10
+  },
+  institutionPortalTitle: {
+    color: "#075985",
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "900"
+  },
+  institutionPortalUse: {
+    color: "#31546A",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700",
+    marginTop: 2
+  },
+  institutionPortalArrow: {
+    color: "#075985",
+    fontSize: 18,
+    lineHeight: 22,
+    fontWeight: "900"
+  },
+  institutionComplaintBox: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(5,150,105,0.3)",
+    backgroundColor: "#ECFDF5",
+    padding: 10,
+    gap: 5
+  },
+  institutionComplaintText: {
+    color: "#1F3F35",
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "800"
   },
   issueLensList: {
     gap: 10

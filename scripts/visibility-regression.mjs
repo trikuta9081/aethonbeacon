@@ -51,6 +51,10 @@ function mustNotMatch(pattern, message) {
   'color: "#3F4B5F", fontSize: 12',
   'communityBadgeTextVerified: {\n    color: "#FFFFFF"',
   'adminStatusPillTextActive: {\n    color: "#FFFFFF"',
+  'color: "#F8FAFC", fontSize: 14, fontWeight: "900" }}>{prog.name}',
+  'color: "#EAF2F8", fontSize: 12, lineHeight: 16, fontWeight: "700" }}>{prog.purpose}',
+  'homeToneChipLabel: {\n    color: "#0D1F22"',
+  'homeToneFeaturedUse: {\n    color: "#24384A"',
 ].forEach((marker) => mustInclude(marker));
 
 console.log('Visibility regression passed: app text avoids known low-contrast colors, 1-digit font sizes, tiny portal labels, and black-on-dark action/badge text.');
