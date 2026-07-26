@@ -30,7 +30,8 @@ function mustNotMatch(pattern, message) {
 
 [
   /color:\s*["']rgba\((?:13,31,34|226,232,240|240,249,255|241,245,249|196,163,90|252,211,77)[^)]*0\.[0-6][^)]*\)["']/g,
-  /fontSize:\s*[0-9]\b/g,
+  /fontSize:\s*(?:[0-9]|10|11)\b/g,
+  /lineHeight:\s*(?:[0-9]|10|11|12|13|14|15)\b/g,
   /#(?:64748B|818CF8|A78BFA|F472B6)/g,
   /homeToneFeaturedMarkText:\s*\{\s*color:\s*["']#0D1F22["']/g,
   /communityBadgeTextVerified:\s*\{\s*color:\s*["']#0D1F22["']/g,
@@ -55,6 +56,8 @@ function mustNotMatch(pattern, message) {
   'color: "#EAF2F8", fontSize: 12, lineHeight: 16, fontWeight: "700" }}>{prog.purpose}',
   'homeToneChipLabel: {\n    color: "#0D1F22"',
   'homeToneFeaturedUse: {\n    color: "#24384A"',
+  'homeVisionIntroCard',
+  'homeSafetyStrip: {\n    marginTop: 0,',
 ].forEach((marker) => mustInclude(marker));
 
-console.log('Visibility regression passed: app text avoids known low-contrast colors, 1-digit font sizes, tiny portal labels, and black-on-dark action/badge text.');
+console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, and black-on-dark action/badge text.');
