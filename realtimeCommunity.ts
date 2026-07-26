@@ -220,6 +220,224 @@ export async function submitRealtimeCommunityReport(report: {
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
+// ── Reactions ────────────────────────────────────────────────────────────────
+// Backed by a real table (aethon_community_reactions) since, unlike typing,
+// reactions need to persist and show accurate counts to members who join or
+// refresh later. See supabase_community_reactions_schema.sql for the table,
+// RLS policies, and an explicit note on why DELETE is left open to anyone
+// (no real per-user auth in this app -- same trust model as the rest of
+// Community, moderated out-of-band, nothing sensitive stored here).
+export const REALTIME_COMMUNITY_REACTION_EMOJIS = ["❤️", "🙏", "💪", "😢", "👏", "🤝"] as const;
+export type RealtimeCommunityReactionEmoji = (typeof REALTIME_COMMUNITY_REACTION_EMOJIS)[number];
+
+export type RealtimeCommunityReaction = {
+  id: string;
+  messageId: string;
+  emoji: RealtimeCommunityReactionEmoji;
+  reactorClientId: string;
+  createdAt: string;
+};
+
+type ReactionRow = {
+  id: string;
+  message_id: string;
+  emoji: string;
+  reactor_client_id: string;
+  created_at: string;
+};
+
+function isReactionEmoji(value: unknown): value is RealtimeCommunityReactionEmoji {
+  return (
+    typeof value === "string" &&
+    (REALTIME_COMMUNITY_REACTION_EMOJIS as readonly string[]).includes(value)
+  );
+}
+
+function rowToReaction(row: Partial<ReactionRow> | null | undefined): RealtimeCommunityReaction | null {
+  if (!row) return null;
+  if (
+    typeof row.id !== "string" ||
+    typeof row.message_id !== "string" ||
+    typeof row.reactor_client_id !== "string" ||
+    !isReactionEmoji(row.emoji)
+  ) {
+    return null;
+  }
+  return {
+    id: row.id,
+    messageId: row.message_id,
+    emoji: row.emoji,
+    reactorClientId: row.reactor_client_id,
+    createdAt: cleanText(row.created_at, new Date().toISOString())
+  };
+}
+
+export async function fetchRealtimeCommunityReactions(): Promise<{
+  ok: boolean;
+  reactions: RealtimeCommunityReaction[];
+  error?: string;
+}> {
+  const supabase = getClient();
+  if (!supabase) return { ok: false, reactions: [], error: "Supabase not configured" };
+  const { data, error } = await supabase
+    .from("aethon_community_reactions")
+    .select("id, message_id, emoji, reactor_client_id, created_at")
+    .limit(4000);
+  if (error) return { ok: false, reactions: [], error: error.message };
+  const rows = (data ?? []) as ReactionRow[];
+  return {
+    ok: true,
+    reactions: rows.map(rowToReaction).filter((item): item is RealtimeCommunityReaction => item !== null)
+  };
+}
+
+export async function addRealtimeCommunityReaction(reaction: {
+  messageId: string;
+  emoji: RealtimeCommunityReactionEmoji;
+  reactorClientId: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  const supabase = getClient();
+  if (!supabase) return { ok: false, error: "Supabase not configured" };
+  const { error } = await supabase.from("aethon_community_reactions").insert({
+    id: `reaction-${reaction.messageId}-${reaction.emoji}-${reaction.reactorClientId}`,
+    message_id: reaction.messageId,
+    emoji: reaction.emoji,
+    reactor_client_id: reaction.reactorClientId
+  });
+  // A duplicate tap (same message/emoji/device) hits the table's unique
+  // constraint -- from the UI's point of view that's not really an error,
+  // the reaction already exists and is already showing, so treat it as ok.
+  if (error && !/duplicate key/i.test(error.message)) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+export async function removeRealtimeCommunityReaction(reaction: {
+  messageId: string;
+  emoji: RealtimeCommunityReactionEmoji;
+  reactorClientId: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  const supabase = getClient();
+  if (!supabase) return { ok: false, error: "Supabase not configured" };
+  const { error } = await supabase
+    .from("aethon_community_reactions")
+    .delete()
+    .eq("message_id", reaction.messageId)
+    .eq("emoji", reaction.emoji)
+    .eq("reactor_client_id", reaction.reactorClientId);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+export function subscribeRealtimeCommunityReactions({
+  onInsert,
+  onDelete
+}: {
+  onInsert: (reaction: RealtimeCommunityReaction) => void;
+  onDelete: (reaction: { messageId: string; emoji: RealtimeCommunityReactionEmoji; reactorClientId: string }) => void;
+}): { unsubscribe: () => void } {
+  const supabase = getClient();
+  if (!supabase) return { unsubscribe: () => undefined };
+
+  let channel: RealtimeChannel | null = supabase
+    .channel("aethon-community-reactions")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "aethon_community_reactions" },
+      (payload) => {
+        const reaction = rowToReaction(payload.new as Partial<ReactionRow>);
+        if (reaction) onInsert(reaction);
+      }
+    )
+    .on(
+      "postgres_changes",
+      { event: "DELETE", schema: "public", table: "aethon_community_reactions" },
+      (payload) => {
+        // Requires REPLICA IDENTITY FULL on the table (set in
+        // supabase_community_reactions_schema.sql) -- otherwise payload.old
+        // only carries the primary key and this would never match.
+        const reaction = rowToReaction(payload.old as Partial<ReactionRow>);
+        if (reaction) {
+          onDelete({ messageId: reaction.messageId, emoji: reaction.emoji, reactorClientId: reaction.reactorClientId });
+        }
+      }
+    )
+    .subscribe();
+
+  return {
+    unsubscribe: () => {
+      if (channel) {
+        supabase.removeChannel(channel).catch(() => undefined);
+        channel = null;
+      }
+    }
+  };
+}
+
+// ── Typing indicators ────────────────────────────────────────────────────────
+// Deliberately NOT backed by a table -- typing state is high-frequency and
+// throwaway, so it uses a Supabase Realtime *broadcast* channel instead of
+// postgres_changes. Broadcasts never touch the database (no RLS, no rows, no
+// aethon_community_messages growth from every keystroke), and there is
+// nothing here to moderate since it's never persisted anywhere.
+export type RealtimeCommunityTypingKind = "feed" | "chat";
+
+export type RealtimeCommunityTypingEvent = {
+  clientId: string;
+  displayName: string;
+  kind: RealtimeCommunityTypingKind;
+};
+
+let typingChannel: RealtimeChannel | null = null;
+const typingListeners = new Set<(event: RealtimeCommunityTypingEvent) => void>();
+
+function ensureTypingChannel(supabase: SupabaseClient): RealtimeChannel {
+  if (!typingChannel) {
+    // The broadcast listener must be registered with .on() before .subscribe()
+    // is called, per the Realtime client's contract -- doing both together
+    // here (once, lazily, module-scoped) means it never matters which of
+    // subscribeRealtimeCommunityTyping / sendRealtimeCommunityTyping runs first.
+    typingChannel = supabase
+      .channel("aethon-community-typing", { config: { broadcast: { self: false } } })
+      .on("broadcast", { event: "typing" }, (payload) => {
+        const data = (payload.payload ?? {}) as Partial<RealtimeCommunityTypingEvent>;
+        if (
+          typeof data.clientId === "string" &&
+          typeof data.displayName === "string" &&
+          (data.kind === "feed" || data.kind === "chat")
+        ) {
+          const event: RealtimeCommunityTypingEvent = {
+            clientId: data.clientId,
+            displayName: data.displayName,
+            kind: data.kind
+          };
+          typingListeners.forEach((listener) => listener(event));
+        }
+      });
+    typingChannel.subscribe();
+  }
+  return typingChannel;
+}
+
+export function subscribeRealtimeCommunityTyping(
+  onTyping: (event: RealtimeCommunityTypingEvent) => void
+): { unsubscribe: () => void } {
+  const supabase = getClient();
+  if (!supabase) return { unsubscribe: () => undefined };
+  ensureTypingChannel(supabase);
+  typingListeners.add(onTyping);
+  return {
+    unsubscribe: () => {
+      typingListeners.delete(onTyping);
+    }
+  };
+}
+
+export function sendRealtimeCommunityTyping(event: RealtimeCommunityTypingEvent): void {
+  const supabase = getClient();
+  if (!supabase) return;
+  const channel = ensureTypingChannel(supabase);
+  channel.send({ type: "broadcast", event: "typing", payload: event }).catch(() => undefined);
+}
+
 export function subscribeRealtimeCommunityMessages({
   onFeedMessage,
   onChatMessage,

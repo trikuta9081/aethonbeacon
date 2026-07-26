@@ -1,7 +1,7 @@
 // build: 2026-07-04-v2
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Animated,
@@ -53,12 +53,22 @@ import {
   PlayfairDisplay_600SemiBold,
 } from "@expo-google-fonts/playfair-display";
 import {
+  addRealtimeCommunityReaction,
   communityRealtimeConfigured,
   fetchRealtimeCommunityMessages,
+  fetchRealtimeCommunityReactions,
+  REALTIME_COMMUNITY_REACTION_EMOJIS,
+  removeRealtimeCommunityReaction,
   sendRealtimeCommunityChatMessage,
   sendRealtimeCommunityFeedMessage,
+  sendRealtimeCommunityTyping,
   subscribeRealtimeCommunityMessages,
-  submitRealtimeCommunityReport
+  subscribeRealtimeCommunityReactions,
+  subscribeRealtimeCommunityTyping,
+  submitRealtimeCommunityReport,
+  type RealtimeCommunityReaction,
+  type RealtimeCommunityReactionEmoji,
+  type RealtimeCommunityTypingEvent
 } from "./realtimeCommunity";
 
 const TextWithDefaults = Text as unknown as { defaultProps?: Record<string, unknown> };
@@ -376,10 +386,12 @@ type IssueGuide = {
   urgentNote: string;
 };
 
+// Deliberately non-denominational: this feeds the same underlying wisdom
+// that used to be attributed by name to specific scriptures/traditions, but
+// presents it as universal guidance (a theme + a teaching + a practice)
+// rather than teaching from any one religion or faith.
 type CalmTeaching = {
   id: string;
-  source: string;
-  reference: string;
   theme: string;
   teaching: string;
   practice: string;
@@ -1899,100 +1911,76 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
 
 const calmTeachings: CalmTeaching[] = [
   {
-    id: "gita-action",
-    source: "Bhagavad Gita",
-    reference: "2.47, paraphrased",
+    id: "right-action",
     theme: "Right action",
     teaching: "Do the right action within your control; loosen the grip on every result.",
     practice: "Choose one clean next step for this issue and do only that for five minutes."
   },
   {
-    id: "gita-balance",
-    source: "Bhagavad Gita",
-    reference: "2.48, paraphrased",
+    id: "equanimity",
     theme: "Equanimity",
     teaching: "Steady conduct matters in success and failure; balance keeps judgment clear.",
     practice: "Say: I will respond with steadiness, not panic, pride, or revenge."
   },
   {
-    id: "ashtavakra-witness",
-    source: "Ashtavakra Gita",
-    reference: "Witness teaching, paraphrased",
+    id: "witness-mind",
     theme: "Witness mind",
     teaching: "You are not every wave of thought. Watch the mind, then let the wave pass.",
     practice: "Name the feeling once, breathe out longer, and return to the present body."
   },
   {
-    id: "ashtavakra-freedom",
-    source: "Ashtavakra Gita",
-    reference: "Inner freedom, paraphrased",
+    id: "release",
     theme: "Release",
     teaching: "Freedom begins when you stop treating every fear as a command.",
     practice: "Ask: is this a fact, a fear, or a habit? Act only on the fact."
   },
   {
-    id: "buddha-mind",
-    source: "Buddhist teaching",
-    reference: "Mind training, paraphrased",
+    id: "calm-attention",
     theme: "Calm attention",
     teaching: "A trained mind becomes shelter; a scattered mind makes pain heavier.",
     practice: "Take five slow breaths and place attention on sound, body, and ground."
   },
   {
-    id: "upanishad-light",
-    source: "Upanishadic wisdom",
-    reference: "Inner light, paraphrased",
+    id: "inner-steadiness",
     theme: "Inner steadiness",
     teaching: "Return to the quiet witness inside before deciding what to do outside.",
     practice: "Put one hand on the heart and choose truth with dignity."
   },
   {
-    id: "quran-patience",
-    source: "Quran",
-    reference: "Patience and restraint, paraphrased",
+    id: "patient-strength",
     theme: "Patient strength",
     teaching:
       "Patience can protect the heart from rushing into harm and can keep the response anchored.",
     practice: "Pause, breathe, and wait for one calm moment before speaking or deciding."
   },
   {
-    id: "bible-gentleness",
-    source: "Bible",
-    reference: "Gentle speech, paraphrased",
+    id: "soft-answer",
     theme: "Soft answer",
     teaching:
       "A gentle answer lowers heat and keeps the door open for truth without humiliation.",
     practice: "Shorten the reply, soften the tone, and keep the goal clear."
   },
   {
-    id: "gurbani-naam",
-    source: "Guru Granth Sahib",
-    reference: "Naam-centered steadiness, paraphrased",
+    id: "inner-remembrance",
     theme: "Inner remembrance",
-    teaching: "Keep the mind anchored in remembrance, truth, and humility so pressure does not fully carry you away.",
-    practice: "Pause, name one blessing, and take the next honest step."
+    teaching: "Keep the mind anchored in truth and humility so pressure does not fully carry you away.",
+    practice: "Pause, name one thing you are grateful for, and take the next honest step."
   },
   {
-    id: "gurbani-seva",
-    source: "Guru Granth Sahib",
-    reference: "Seva and humility, paraphrased",
+    id: "service-and-release",
     theme: "Service and release",
-    teaching: "Humility and service soften pride, reduce heat, and make hard conversations less sharp.",
+    teaching: "Humility and quiet service soften pride, reduce heat, and make hard conversations less sharp.",
     practice: "Do one quiet helpful act before you reply or decide."
   },
   {
-    id: "jain-ahimsa",
-    source: "Jain wisdom",
-    reference: "Ahimsa and self-restraint, paraphrased",
+    id: "non-harm",
     theme: "Non-harm",
     teaching:
       "Let non-harm guide speech, action, and even the tone of correction so the cure does not become another wound.",
     practice: "Choose the least harmful truthful response."
   },
   {
-    id: "science-regulation",
-    source: "Modern science",
-    reference: "Stress regulation, paraphrased",
+    id: "body-and-mind",
     theme: "Body and mind",
     teaching:
       "Slower breathing, better sleep, movement, and naming the feeling all reduce stress load and improve clarity.",
@@ -2298,7 +2286,12 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   { id: "guide", label: "Path", mark: "🧭", icon: "compass" },
   { id: "aihelp", label: "Insights", mark: "✨", icon: "sparkles" },
   { id: "journal", label: "Journal", mark: "📓", icon: "book" },
-  { id: "focus", label: "Calm", mark: "🌿", icon: "leaf" },
+  // "focus" (formerly its own "Calm" nav entry) no longer has a standalone
+  // tab body — its content now renders inside the Meditation tab (see the
+  // merged activeTab === "meditation" || activeTab === "focus" block below),
+  // so only one nav entry is needed here. The "focus" TabId itself is kept
+  // alive internally (journeys, low-mood nudges, etc. still route to it,
+  // and it still resolves to the merged Meditation screen).
   { id: "meditation", label: "Meditation", mark: "🪷", icon: "flower" },
   // ── Ordered block: chart first, then the surfaces that read from it ──
   // Birth Chart → Messages → Tones → Help & Redress. Kept adjacent so the
@@ -6186,6 +6179,41 @@ const issueGuides: IssueGuide[] = [
   }
 ];
 
+// ── Cross-section shared signal ──────────────────────────────────────────────
+// Every section used to only know about the *manually selected* issue guide,
+// threaded down as one more prop. That only captures what the user tapped,
+// not what they've actually said or done. This context adds a second,
+// *inferred* signal -- built from Path's real 48-dimension counselling engine
+// (detectedThemes, a genuine SupportDimensionId[] output, not a guess) and
+// recent mood check-ins -- so sections can react to real user behavior
+// instead of only the explicit issue chip. It's provided once, near the top
+// of the app, and read via useCrossSectionSignal() wherever it's needed,
+// instead of drilling yet another prop through every intermediate layer.
+type CrossSectionSignal = {
+  issueGuide: IssueGuide;
+  // Real, not simulated: these are the exact themes Path's own free-text
+  // classifier (detectThemes) has surfaced this session, most-recent-first.
+  // Empty until the person has actually had a Path/guide conversation.
+  detectedThemes: SupportDimensionId[];
+  recentMoodScore: number | null;
+  recentMoodTrend: "improving" | "steady" | "declining" | null;
+};
+
+const CrossSectionContext = createContext<CrossSectionSignal | null>(null);
+
+function useCrossSectionSignal(): CrossSectionSignal {
+  const ctx = useContext(CrossSectionContext);
+  if (ctx) return ctx;
+  // No provider mounted (shouldn't happen in the real app tree, but keeps
+  // any isolated render from crashing) -- degrade to a neutral signal.
+  return {
+    issueGuide: issueGuides.find((guide) => guide.id === "general") ?? issueGuides[0],
+    detectedThemes: [],
+    recentMoodScore: null,
+    recentMoodTrend: null
+  };
+}
+
 const governmentHelplines: Array<{
   id: string;
   category: string;
@@ -7288,15 +7316,19 @@ const beaconXPillars = [
   }
 ];
 
+// Deliberately non-denominational: each mode names the underlying human
+// quality it draws on (steadiness, duty, release, restraint, care...)
+// rather than the religion or tradition it happens to trace back to, so
+// this reads as universal guidance rather than teaching from one faith.
 const beaconXWisdomModes = [
   { label: "Universal Beacon", meta: "Balanced support for any situation." },
-  { label: "Guru Granth Sahib", meta: "Naam, humility, seva, and steady remembrance." },
-  { label: "Krishna", meta: "Duty, courage, and right action." },
-  { label: "Buddha", meta: "Mindfulness, compassion, and release." },
-  { label: "Stoic", meta: "What is in your control right now." },
-  { label: "Quran", meta: "Patience, mercy, and restraint." },
-  { label: "Bible", meta: "Gentleness, humility, and care." },
-  { label: "Jain", meta: "Ahimsa, self-restraint, and clarity." },
+  { label: "Steady Devotion", meta: "Humility, service, and steady remembrance." },
+  { label: "Duty & Courage", meta: "Duty, courage, and right action." },
+  { label: "Mindful Release", meta: "Mindfulness, compassion, and release." },
+  { label: "Inner Control", meta: "What is in your control right now." },
+  { label: "Patient Mercy", meta: "Patience, mercy, and restraint." },
+  { label: "Gentle Care", meta: "Gentleness, humility, and care." },
+  { label: "Nonviolence & Clarity", meta: "Nonviolence, self-restraint, and clarity." },
   { label: "Science", meta: "Breath, sleep, movement, and recovery." },
   { label: "Resolve", meta: "Path, help, verified support." },
   { label: "Action", meta: "One clean move after calm." }
@@ -7405,29 +7437,29 @@ function getSituationRouteCards(issue: IssueGuide, identityLabel: string): Situa
 }
 
 function getAdaptiveBeaconXModes(issueId: IssueId) {
-  // Each dimension gets wisdom modes matched to what it needs most
+  // Each dimension gets guidance modes matched to what it needs most
   const labels: string[] =
     issueId === "anger" || issueId === "fear" || issueId === "overconfidence"
-      ? ["Guru Granth Sahib", "Krishna", "Stoic", "Jain", "Science", "Action"]
+      ? ["Steady Devotion", "Duty & Courage", "Inner Control", "Nonviolence & Clarity", "Science", "Action"]
     : issueId === "anxiety" || issueId === "burnout" || issueId === "academic"
-      ? ["Guru Granth Sahib", "Buddha", "Science", "Krishna", "Resolve", "Action"]
+      ? ["Steady Devotion", "Mindful Release", "Science", "Duty & Courage", "Resolve", "Action"]
     : issueId === "stigma" || issueId === "loneliness" || issueId === "identity"
-      ? ["Guru Granth Sahib", "Buddha", "Bible", "Jain", "Resolve", "Action"]
+      ? ["Steady Devotion", "Mindful Release", "Gentle Care", "Nonviolence & Clarity", "Resolve", "Action"]
     : issueId === "grief"
-      ? ["Guru Granth Sahib", "Bible", "Quran", "Buddha", "Science", "Resolve"]
+      ? ["Steady Devotion", "Gentle Care", "Patient Mercy", "Mindful Release", "Science", "Resolve"]
     : issueId === "trauma"
-      ? ["Guru Granth Sahib", "Buddha", "Science", "Bible", "Resolve", "Action"]
+      ? ["Steady Devotion", "Mindful Release", "Science", "Gentle Care", "Resolve", "Action"]
     : issueId === "relationship"
-      ? ["Guru Granth Sahib", "Krishna", "Bible", "Jain", "Resolve", "Action"]
+      ? ["Steady Devotion", "Duty & Courage", "Gentle Care", "Nonviolence & Clarity", "Resolve", "Action"]
     : issueId === "parenting"
-      ? ["Guru Granth Sahib", "Bible", "Krishna", "Science", "Resolve", "Action"]
+      ? ["Steady Devotion", "Gentle Care", "Duty & Courage", "Science", "Resolve", "Action"]
     : issueId === "health"
-      ? ["Science", "Guru Granth Sahib", "Buddha", "Quran", "Resolve", "Action"]
+      ? ["Science", "Steady Devotion", "Mindful Release", "Patient Mercy", "Resolve", "Action"]
     : issueId === "financial"
-      ? ["Stoic", "Guru Granth Sahib", "Quran", "Science", "Resolve", "Action"]
+      ? ["Inner Control", "Steady Devotion", "Patient Mercy", "Science", "Resolve", "Action"]
     : issueId === "addiction"
-      ? ["Guru Granth Sahib", "Buddha", "Science", "Bible", "Resolve", "Action"]
-    : ["Universal Beacon", "Guru Granth Sahib", "Krishna", "Buddha", "Science", "Resolve", "Action"];
+      ? ["Steady Devotion", "Mindful Release", "Science", "Gentle Care", "Resolve", "Action"]
+    : ["Universal Beacon", "Steady Devotion", "Duty & Courage", "Mindful Release", "Science", "Resolve", "Action"];
 
   return beaconXWisdomModes.filter((mode) => labels.includes(mode.label));
 }
@@ -7643,8 +7675,10 @@ function buildAIHelpSeedReply() {
  * Returns a smart, dimension-specific hint for each tab context strip.
  * Tab: "journal" | "tones" | "meditation" | "wisdom" | "community"
  */
-function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditation" | "wisdom" | "community" | "focus" | "play" | "guide" | "redress"): string {
-  const hints: Record<IssueId, Record<"journal" | "tones" | "meditation" | "wisdom" | "community" | "focus" | "play" | "guide" | "redress", string>> = {
+type TabIssueHintTab = "journal" | "tones" | "meditation" | "wisdom" | "community" | "focus" | "play" | "guide" | "redress" | "today" | "aihelp" | "insights";
+
+function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
+  const hints: Record<IssueId, Record<TabIssueHintTab, string>> = {
     general: {
       journal: "write what is on your mind without filtering",
       tones: "try a grounding tone to settle the day",
@@ -7655,6 +7689,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "pick one small action challenge and complete all 3 steps today",
       guide: "pick the issue closest to what you are feeling right now",
       redress: "use the official route if a system or person has caused harm",
+      today: "check in honestly before the day gets away from you",
+      aihelp: "ask a specific question and get a next step, not just sympathy",
+      insights: "watch this space for a pattern once you have a few check-ins logged",
     },
     anger: {
       journal: "write the trigger, the feeling, and what you actually needed",
@@ -7666,6 +7703,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "try the 'pause before responding' challenge — 3 steps, one moment at a time",
       guide: "the anger route gives you practical, emotional, and cultural next steps together",
       redress: "if the anger is about injustice, use the redress route to act rather than react",
+      today: "notice what set you off today before it builds into something bigger",
+      aihelp: "ask what usually triggers this for you — the pattern matters more than the moment",
+      insights: "watch for the time of day or situation where this keeps recurring",
     },
     anxiety: {
       journal: "write the worst-case scenario, then the most realistic one",
@@ -7677,6 +7717,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the anxiety route challenge breaks the freeze cycle with one micro-action at a time",
       guide: "this path maps your anxiety to a calm route with 3 concrete next steps",
       redress: "if anxiety has a specific cause — workplace, institution — the redress route can help act",
+      today: "name the one real decision in front of you before the worry spirals wider",
+      aihelp: "ask about the specific worry, not anxiety in general — specifics get better answers",
+      insights: "watch whether your anxiety clusters around mornings, evenings, or specific triggers",
     },
     fear: {
       journal: "write what you are afraid of, then one fact that challenges that fear",
@@ -7688,6 +7731,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "one small brave action is all the practice asks — not courage, just one step",
       guide: "the fear path gives you a grounded, stepwise route through — not around — the fear",
       redress: "if the fear is caused by threats or coercion, the redress route provides legal steps",
+      today: "name what you are avoiding today because of this fear",
+      aihelp: "ask for one small, specific step through the fear, not a plan to eliminate it",
+      insights: "watch whether this fear is getting louder, quieter, or staying the same",
     },
     overconfidence: {
       journal: "write one assumption you made recently and what evidence supports or challenges it",
@@ -7699,6 +7745,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the overconfidence challenge tests assumptions with real-world feedback steps",
       guide: "this path helps calibrate ambition with evidence, emotion, and peer perspective",
       redress: "if overconfidence led to a conflict or injustice, the redress route helps correct it",
+      today: "check one assumption before you act on it today",
+      aihelp: "ask what could go wrong with the plan, not just why it will work",
+      insights: "watch whether your confidence tracks with actual outcomes or just with mood",
     },
     stigma: {
       journal: "write about yourself as a friend would — not as a critic",
@@ -7710,6 +7759,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the stigma challenge rebuilds self-respect through small, private acts of dignity",
       guide: "this path separates who you are from what you are carrying — issue ≠ identity",
       redress: "if stigma is being imposed by a system or institution, the redress route applies",
+      today: "do one thing today that treats yourself with the dignity you'd give a friend",
+      aihelp: "ask how to separate the shame from the situation — they are not the same thing",
+      insights: "watch whether the shame gets louder around specific people or settings",
     },
     burnout: {
       journal: "write what you can remove or delay today — not what you need to add",
@@ -7721,6 +7773,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the burnout challenge is gentle: rest is the first step, not the reward",
       guide: "this path maps burnout back to sustainable pace with 3 evidence-based steps",
       redress: "if burnout is caused by workplace exploitation, the redress route has a labour route",
+      today: "protect one real rest block today instead of squeezing in one more task",
+      aihelp: "ask for the smallest sustainable change, not a full life overhaul",
+      insights: "watch whether your energy dips are tied to specific days, tasks, or people",
     },
     loneliness: {
       journal: "write about one connection — past or present — where you felt genuinely seen",
@@ -7732,6 +7787,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the loneliness challenge starts with one outreach — message, call, or small kindness",
       guide: "this path finds the nearest step back toward connection without forcing it",
       redress: "if isolation was caused by discrimination or exclusion, the redress route is relevant",
+      today: "reach out to one person today, even with something small",
+      aihelp: "ask for one low-pressure way to reconnect with someone you've drifted from",
+      insights: "watch whether loneliness spikes on specific days — weekends, evenings, after certain events",
     },
     grief: {
       journal: "write a memory of the person or thing you lost — not the pain, the memory",
@@ -7743,6 +7801,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "grief needs ritual: one small act of remembrance counts as the full practice today",
       guide: "this path holds space for grief while pointing toward the smallest next step",
       redress: "if the loss involved negligence or injustice, the redress route is available when ready",
+      today: "let today be gentle — grief does not run on a schedule",
+      aihelp: "ask for support handling one practical task grief is making harder right now",
+      insights: "watch how grief shows up differently on ordinary days versus anniversaries",
     },
     identity: {
       journal: "write who you were at 10, who you are now, and what you would tell your younger self",
@@ -7754,6 +7815,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the identity challenge: do one thing today that is true to who you are becoming",
       guide: "this path separates inherited identity from chosen identity — both matter",
       redress: "if identity has been suppressed by a system or relationship, the redress route can help",
+      today: "do one small thing today that is genuinely, unmistakably you",
+      aihelp: "ask what the next honest step looks like, not the final destination",
+      insights: "watch which choices this week felt authentic and which felt performed",
     },
     health: {
       journal: "write your symptoms, your fears, and one concrete next step toward clarity",
@@ -7765,6 +7829,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the health challenge uses micro-actions: one sleep improvement, one food swap, one walk",
       guide: "this path links physical symptoms to emotional, social, and practical next steps",
       redress: "if health harm was caused by a hospital, employer, or product, the redress route applies",
+      today: "give your body one specific thing it needs today — rest, water, movement, or care",
+      aihelp: "ask which symptom to prioritise first and what questions to bring to a doctor",
+      insights: "watch how sleep, mood, and symptoms move together over the week",
     },
     financial: {
       journal: "write the one financial number that worries you most — naming it makes it smaller",
@@ -7776,6 +7843,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the financial challenge starts with one small concrete action: a call, a list, a question",
       guide: "this path breaks financial overwhelm into one visible next step at a time",
       redress: "if financial harm involved fraud, illegal deduction, or exploitation, the redress route applies",
+      today: "make the one financial call or check you've been putting off",
+      aihelp: "ask for the single next step, not a full financial plan",
+      insights: "watch whether financial stress spikes around specific dates or expenses",
     },
     relationship: {
       journal: "write exactly what you need from this relationship right now — as specifically as possible",
@@ -7787,6 +7857,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the relationship challenge: one honest, specific conversation or one boundary set",
       guide: "this path maps the relationship dynamic to practical, emotional, and cultural steps",
       redress: "if the relationship involves abuse, coercion, or harassment, the redress route is urgent",
+      today: "say the one honest thing you've been holding back, calmly",
+      aihelp: "ask how to phrase the specific conversation you're avoiding",
+      insights: "watch which situations with this person keep repeating the same pattern",
     },
     parenting: {
       journal: "write about your child's behaviour and your own emotional response to it separately",
@@ -7798,6 +7871,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the parenting challenge: one moment of full presence with your child, no screen, no task",
       guide: "this path gives a grounded route through parenting stress with age-appropriate steps",
       redress: "if a school, institution, or system has harmed your child, the redress route protects them",
+      today: "give one moment of full, undistracted presence to your child today",
+      aihelp: "ask for one age-appropriate response to the specific behaviour you're seeing",
+      insights: "watch whether difficult moments cluster around a time of day or transition",
     },
     trauma: {
       journal: "write about what safety feels like for you — not the event, but what safety is",
@@ -7809,6 +7885,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "trauma needs safety first: the challenge today is one grounding practice, nothing more",
       guide: "this path moves at your pace — safety, then steadiness, then steps",
       redress: "if the trauma involved a crime or institutional failure, the redress route preserves your rights",
+      today: "prioritise feeling safe today over feeling productive",
+      aihelp: "ask for one grounding technique, not an explanation of what happened to you",
+      insights: "watch what situations or dates tend to bring symptoms back up",
     },
     academic: {
       journal: "write what you know well, what you are unsure about, and what you need to let go of worrying about",
@@ -7820,6 +7899,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the academic challenge: 25 minutes of focused work, then a proper 5-minute break",
       guide: "this path breaks academic overwhelm into one study block, one boundary, one conversation",
       redress: "if academic harm involves unfair grading, harassment, or discrimination, use the redress route",
+      today: "commit to one focused study block today instead of a vague plan to 'study more'",
+      aihelp: "ask for one clarifying question to bring to a teacher or mentor",
+      insights: "watch whether focus is better at a specific time of day worth protecting",
     },
     addiction: {
       journal: "write what the urge feels like, what triggered it, and what you actually need underneath it",
@@ -7831,6 +7913,9 @@ function getTabIssueHint(issueId: IssueId, tab: "journal" | "tones" | "meditatio
       play: "the addiction challenge: one urge surfed, one substitute action taken, one connection made",
       guide: "this path maps the addiction cycle to a recovery route with psychological and social steps",
       redress: "if exploitation or a system enabled the addiction, the redress route can address accountability",
+      today: "remove one easy access point to the urge before it shows up today",
+      aihelp: "ask for one recovery contact or resource to reach out to today",
+      insights: "watch which times, places, or people tend to precede the urge",
     },
   };
 
@@ -9994,12 +10079,15 @@ function ExitReportModal({
 
           {/* Strengths */}
           <View style={{ backgroundColor: "#E0F0E5", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(34,197,94,0.2)", marginBottom: 14 }}>
-            <Text style={{ color: "#4ADE80", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+            {/* #4ADE80 (a light green meant for a dark card) was ~1.5:1 on
+                this light mint background -- swapped to a dark green (5.6:1)
+                for both the heading and the checkmark below. */}
+            <Text style={{ color: "#0D6B36", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
               💪 Today's Strengths
             </Text>
             {report.strengths.map((s, i) => (
               <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 6 }}>
-                <Text style={{ color: "#4ADE80", fontSize: 12, marginRight: 8, marginTop: 2 }}>✓</Text>
+                <Text style={{ color: "#0D6B36", fontSize: 12, marginRight: 8, marginTop: 2 }}>✓</Text>
                 <Text style={{ color: "#3F5978", fontSize: 14, flex: 1, lineHeight: 20 }}>{s}</Text>
               </View>
             ))}
@@ -10084,6 +10172,12 @@ export default function App() {
     [isCompact, isTablet, isDesktop]
   );
   const [activeTab, setActiveTab] = useState<TabId>("today");
+  // "focus" still exists as an internal TabId (journeys, low-mood nudges,
+  // and situation cards route to it directly) but its content now renders
+  // inside the merged Meditation tab and it no longer has its own nav pill.
+  // Any tab-rail/nav highlighting should treat "focus" as "meditation" so
+  // navigating there doesn't leave every pill looking unselected.
+  const navActiveTab: TabId = activeTab === "focus" ? "meditation" : activeTab;
   const [selectedTone, setSelectedTone] = useState<Tone>(tones[3]);
   const [journal, setJournal] = useState(defaultDraft);
   const [sessionActive, setSessionActive] = useState(false);
@@ -10116,6 +10210,16 @@ export default function App() {
   // ─────────────────────────────────────────────────────────────────────────
   const [emergencyNumber, setEmergencyNumber] = useState(defaultEmergencyNumber);
   const [identityId, setIdentityId] = useState<IdentityId>("other");
+  // Hoisted above its original spot (was ~line 11289): the Community typing-
+  // indicator handlers below reference selectedIdentity.label in their
+  // useCallback dependency arrays, which run every render -- declaring this
+  // later than that usage is a genuine TDZ violation (TS2454), not just a
+  // style nit. identityProfiles is a module-level constant, so this only
+  // depends on identityId, which is already in scope here.
+  const selectedIdentity = useMemo(
+    () => identityProfiles.find((profile) => profile.id === identityId) ?? identityProfiles[identityProfiles.length - 1],
+    [identityId]
+  );
   const [issueGuideId, setIssueGuideId] = useState<IssueId>("general");
   const [issueProgress, setIssueProgress] = useState<Partial<Record<IssueId, [boolean, boolean, boolean]>>>({});
   const [issueReminderMode, setIssueReminderMode] = useState<IssueReminderMode | null>(null);
@@ -10136,6 +10240,17 @@ export default function App() {
   const [communityRealtimeStatus, setCommunityRealtimeStatus] = useState(
     communityRealtimeConfigured ? "Connecting…" : "Offline mode — posts stay on this device"
   );
+  // ── Typing indicators (feed + chat composers) ─────────────────────────────
+  // Keyed by the other member's clientId so multiple people typing at once
+  // are tracked independently; each entry expires on its own after a few
+  // seconds of silence so a dropped connection can never leave a stale
+  // "X is typing…" stuck on screen.
+  const [communityTypingFeed, setCommunityTypingFeed] = useState<
+    Record<string, { displayName: string; expiresAt: number }>
+  >({});
+  const [communityTypingChat, setCommunityTypingChat] = useState<
+    Record<string, { displayName: string; expiresAt: number }>
+  >({});
   const [privateSpaceThreads, setPrivateSpaceThreads] = useState<PrivateSpaceThread[]>(privateSpaceSeedThreads);
   const [privateSpaceSelectedThreadId, setPrivateSpaceSelectedThreadId] = useState<string | null>(
     privateSpaceSeedThreads[0]?.id ?? null
@@ -10332,8 +10447,11 @@ export default function App() {
     [accessRole, languageId]
   );
   const activeTabLabel = useMemo(
-    () => visibleTabs.find((tab) => tab.id === activeTab)?.label ?? "Home",
-    [activeTab, visibleTabs]
+    // "focus" has no entry of its own in `tabs` anymore (merged into
+    // "meditation" — see navActiveTab above), so look it up under its
+    // merged id instead of falling through to the "Home" default.
+    () => visibleTabs.find((tab) => tab.id === navActiveTab)?.label ?? "Home",
+    [navActiveTab, visibleTabs]
   );
   const headerNavTabs = useMemo(() => {
     const orderedIds: TabId[] = [
@@ -10343,7 +10461,8 @@ export default function App() {
       "redress",
       "search",
       "journal",
-      "focus",
+      // "focus" merged into "meditation" (see PRIMARY_NAV_TABS comment above)
+      "meditation",
       "vedic",
       "settings"
     ];
@@ -10440,6 +10559,181 @@ export default function App() {
       subscription.unsubscribe();
     };
   }, [communityVerifiedAccess]);
+
+  useEffect(() => {
+    const TYPING_TTL_MS = 4000;
+    const typingSubscription = subscribeRealtimeCommunityTyping((event) => {
+      if (event.clientId === presenceSessionId) return;
+      const expiresAt = Date.now() + TYPING_TTL_MS;
+      if (event.kind === "feed") {
+        setCommunityTypingFeed((current) => ({
+          ...current,
+          [event.clientId]: { displayName: event.displayName, expiresAt }
+        }));
+      } else {
+        setCommunityTypingChat((current) => ({
+          ...current,
+          [event.clientId]: { displayName: event.displayName, expiresAt }
+        }));
+      }
+    });
+    const pruneInterval = setInterval(() => {
+      const now = Date.now();
+      setCommunityTypingFeed((current) => pruneExpiredTyping(current, now));
+      setCommunityTypingChat((current) => pruneExpiredTyping(current, now));
+    }, 1000);
+    return () => {
+      typingSubscription.unsubscribe();
+      clearInterval(pruneInterval);
+    };
+  }, [presenceSessionId]);
+
+  const communityFeedTypingSentAtRef = useRef(0);
+  const communityChatTypingSentAtRef = useRef(0);
+
+  const handleCommunityDraftChange = useCallback(
+    (value: string) => {
+      setCommunityDraft(value);
+      if (!communityRealtimeConfigured || !value.trim()) return;
+      const now = Date.now();
+      if (now - communityFeedTypingSentAtRef.current < 2500) return;
+      communityFeedTypingSentAtRef.current = now;
+      sendRealtimeCommunityTyping({
+        clientId: presenceSessionId,
+        displayName: `${selectedIdentity.label} member`,
+        kind: "feed"
+      });
+    },
+    [presenceSessionId, selectedIdentity.label]
+  );
+
+  const handleCommunityChatDraftChange = useCallback(
+    (value: string) => {
+      setCommunityChatDraft(value);
+      if (!communityRealtimeConfigured || !value.trim()) return;
+      const now = Date.now();
+      if (now - communityChatTypingSentAtRef.current < 2500) return;
+      communityChatTypingSentAtRef.current = now;
+      sendRealtimeCommunityTyping({
+        clientId: presenceSessionId,
+        displayName: `${selectedIdentity.label} member`,
+        kind: "chat"
+      });
+    },
+    [presenceSessionId, selectedIdentity.label]
+  );
+
+  const communityFeedTypingLabel = useMemo(() => {
+    const names = Object.values(communityTypingFeed).map((entry) => entry.displayName);
+    if (names.length === 0) return null;
+    if (names.length === 1) return `${names[0]} is typing…`;
+    if (names.length === 2) return `${names[0]} and ${names[1]} are typing…`;
+    return `${names.length} people are typing…`;
+  }, [communityTypingFeed]);
+
+  const communityChatTypingLabel = useMemo(() => {
+    const names = Object.values(communityTypingChat).map((entry) => entry.displayName);
+    if (names.length === 0) return null;
+    if (names.length === 1) return `${names[0]} is typing…`;
+    if (names.length === 2) return `${names[0]} and ${names[1]} are typing…`;
+    return `${names.length} people are typing…`;
+  }, [communityTypingChat]);
+
+  // ── Reactions ──────────────────────────────────────────────────────────────
+  const [communityReactions, setCommunityReactions] = useState<RealtimeCommunityReaction[]>([]);
+
+  useEffect(() => {
+    if (!communityRealtimeConfigured) return;
+    let cancelled = false;
+
+    fetchRealtimeCommunityReactions().then((result) => {
+      if (!cancelled && result.ok) setCommunityReactions(result.reactions);
+    });
+
+    const subscription = subscribeRealtimeCommunityReactions({
+      onInsert: (reaction) => {
+        if (cancelled) return;
+        setCommunityReactions((current) =>
+          current.some((item) => item.id === reaction.id) ? current : [...current, reaction]
+        );
+      },
+      onDelete: (info) => {
+        if (cancelled) return;
+        setCommunityReactions((current) =>
+          current.filter(
+            (item) =>
+              !(
+                item.messageId === info.messageId &&
+                item.emoji === info.emoji &&
+                item.reactorClientId === info.reactorClientId
+              )
+          )
+        );
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const communityReactionsByMessageId = useMemo(() => {
+    const summary: Record<
+      string,
+      Partial<Record<RealtimeCommunityReactionEmoji, { count: number; reactedByMe: boolean }>>
+    > = {};
+    for (const reaction of communityReactions) {
+      const forMessage = summary[reaction.messageId] ?? (summary[reaction.messageId] = {});
+      const entry = forMessage[reaction.emoji] ?? (forMessage[reaction.emoji] = { count: 0, reactedByMe: false });
+      entry.count += 1;
+      if (reaction.reactorClientId === presenceSessionId) entry.reactedByMe = true;
+    }
+    return summary;
+  }, [communityReactions, presenceSessionId]);
+
+  const toggleCommunityReaction = useCallback(
+    async (messageId: string, emoji: RealtimeCommunityReactionEmoji) => {
+      if (!communityRealtimeConfigured) {
+        Alert.alert("Reactions", "Reactions need a live connection, which isn't configured on this build.");
+        return;
+      }
+      const existing = communityReactions.find(
+        (item) => item.messageId === messageId && item.emoji === emoji && item.reactorClientId === presenceSessionId
+      );
+      if (existing) {
+        setCommunityReactions((current) => current.filter((item) => item.id !== existing.id));
+        const result = await removeRealtimeCommunityReaction({
+          messageId,
+          emoji,
+          reactorClientId: presenceSessionId
+        });
+        if (!result.ok) {
+          // Revert the optimistic removal if the server call actually failed.
+          setCommunityReactions((current) =>
+            current.some((item) => item.id === existing.id) ? current : [...current, existing]
+          );
+        }
+        return;
+      }
+
+      const optimistic: RealtimeCommunityReaction = {
+        id: `reaction-${messageId}-${emoji}-${presenceSessionId}`,
+        messageId,
+        emoji,
+        reactorClientId: presenceSessionId,
+        createdAt: new Date().toISOString()
+      };
+      setCommunityReactions((current) =>
+        current.some((item) => item.id === optimistic.id) ? current : [...current, optimistic]
+      );
+      const result = await addRealtimeCommunityReaction({ messageId, emoji, reactorClientId: presenceSessionId });
+      if (!result.ok) {
+        setCommunityReactions((current) => current.filter((item) => item.id !== optimistic.id));
+      }
+    },
+    [communityReactions, presenceSessionId]
+  );
 
   // ── Streak tracker ──────────────────────────────────────────────────────────
   const checkInStreak = useMemo(() => {
@@ -11002,10 +11296,6 @@ export default function App() {
     return "The month needs more room and less pressure.";
   }, [monthlyAverage]);
 
-  const selectedIdentity = useMemo(
-    () => identityProfiles.find((profile) => profile.id === identityId) ?? identityProfiles[identityProfiles.length - 1],
-    [identityId]
-  );
   const hasTodayCheckIn = useMemo(
     () => entries.some((entry) => isToday(entry.createdAt)),
     [entries]
@@ -11038,6 +11328,33 @@ export default function App() {
     () => issueGuides.find((guide) => guide.id === issueGuideId) ?? issueGuides[0],
     [issueGuideId]
   );
+
+  // The shared cross-section signal (see CrossSectionContext above): combines
+  // the manually selected issue with what Path's real 48-dimension engine
+  // has actually detected this session, plus a simple recent-mood trend from
+  // the last few check-ins, so sections can react to real signal instead of
+  // only the explicit issue chip.
+  const crossSectionSignal = useMemo<CrossSectionSignal>(() => {
+    const recentScored = entries
+      .filter((e) => typeof e.score === "number")
+      .slice(0, 6);
+    const recentMoodScore = recentScored.length > 0 ? recentScored[0].score : null;
+    let recentMoodTrend: CrossSectionSignal["recentMoodTrend"] = null;
+    if (recentScored.length >= 4) {
+      const half = Math.floor(recentScored.length / 2);
+      const newer = recentScored.slice(0, half).reduce((s, e) => s + e.score, 0) / half;
+      const older = recentScored.slice(half).reduce((s, e) => s + e.score, 0) / (recentScored.length - half);
+      const delta = newer - older;
+      recentMoodTrend = delta > 0.4 ? "improving" : delta < -0.4 ? "declining" : "steady";
+    }
+    return {
+      issueGuide: selectedIssueGuide,
+      detectedThemes: activeJourney?.detectedThemes ?? [],
+      recentMoodScore,
+      recentMoodTrend
+    };
+  }, [selectedIssueGuide, activeJourney, entries]);
+
   const dailyRoutinePlan = useMemo(
     () =>
       buildDailyRoutinePlan(
@@ -16083,6 +16400,11 @@ function isTrustedExternalUrl(url: string) {
 
   return (
     <AppErrorBoundary>
+    {/* Provides crossSectionSignal (real detected themes + mood trend, see
+        CrossSectionContext above) to every section rendered below, however
+        deeply nested, without threading it through each intermediate prop
+        list by hand. */}
+    <CrossSectionContext.Provider value={crossSectionSignal}>
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
         <StatusBar
@@ -16230,7 +16552,7 @@ function isTrustedExternalUrl(url: string) {
                   contentContainerStyle={styles.topTabRailContent}
                 >
                   {headerNavTabs.map((tab) => {
-                    const isActive = activeTab === tab.id;
+                    const isActive = navActiveTab === tab.id;
                     return (
                       <Pressable
                         key={tab.id}
@@ -16278,7 +16600,7 @@ function isTrustedExternalUrl(url: string) {
               ) : (
                 <View style={styles.topTabRailWrap}>
                   {headerNavTabs.map((tab) => {
-                    const isActive = activeTab === tab.id;
+                    const isActive = navActiveTab === tab.id;
                     return (
                       <Pressable
                         key={tab.id}
@@ -16591,31 +16913,38 @@ function isTrustedExternalUrl(url: string) {
                           </View>
                         )}
                       </View>
-                      {/* 48-Dimension issue-redressal snapshot — compact one-line
-                          strip. Signature of the app; stays on Home but tightened. */}
+                      {/* Real 48-dim redressal snapshot — compact one-line
+                          strip. Signature of the app; stays on Home but
+                          tightened. Was mislabeled "48-dim" over a hardcoded
+                          5-field table; now shows the top 3 of the ACTUAL
+                          48-entry supportDimensionGuides library, ranked by
+                          the same crossSectionSignal (real Path-detected
+                          themes + active issue) used everywhere else. */}
                       {issueActive && (
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                             <Text style={{ color: "#0E9488", fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
-                              48-dim redressal
+                              48-Dim redressal
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
                               <Text style={{ color: "#465871", fontSize: 9, fontWeight: "700" }}>Details →</Text>
                             </Pressable>
                           </View>
+                          <Text style={{ color: "#465871", fontSize: 10, marginBottom: 4 }}>
+                            {getTabIssueHint(selectedIssueGuide.id, "today")}
+                          </Text>
                           <View style={{ flexDirection: "row", gap: 4 }}>
-                            {([
-                              { label: "Practical", emoji: "🎯", color: "#059669" },
-                              { label: "Emotional", emoji: "💗", color: "#B80064" },
-                              { label: "Psychological", emoji: "🧠", color: "#818CF8" },
-                              { label: "Spiritual", emoji: "✨", color: "#B45309" },
-                              { label: "Cultural", emoji: "🌍", color: "#B85300" },
-                            ] as const).map((dim) => (
-                              <View key={dim.label} style={{ flex: 1, backgroundColor: dim.color + "12", borderRadius: 6, paddingVertical: 5, alignItems: "center", borderWidth: 1, borderColor: dim.color + "30", flexDirection: "row", justifyContent: "center", gap: 4 }}>
-                                <Text style={{ fontSize: 10 }}>{dim.emoji}</Text>
-                                <Text style={{ color: dim.color, fontSize: 8, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.3 }}>{dim.label.slice(0, 4)}</Text>
-                              </View>
-                            ))}
+                            {orderSupportDimensionsByRelevance(selectedIssueGuide.id, crossSectionSignal.detectedThemes)
+                              .slice(0, 3)
+                              .map((guide, i) => {
+                                const chipColors = ["#059669", "#818CF8", "#B45309"];
+                                const color = chipColors[i % chipColors.length];
+                                return (
+                                  <View key={guide.id} style={{ flex: 1, backgroundColor: color + "12", borderRadius: 6, paddingVertical: 5, alignItems: "center", borderWidth: 1, borderColor: color + "30", flexDirection: "row", justifyContent: "center", gap: 4 }}>
+                                    <Text style={{ color, fontSize: 8, fontWeight: "900", textTransform: "capitalize", letterSpacing: 0.3 }} numberOfLines={1}>{guide.label}</Text>
+                                  </View>
+                                );
+                              })}
                           </View>
                         </View>
                       )}
@@ -16810,7 +17139,12 @@ function isTrustedExternalUrl(url: string) {
                         {weeklyMoodAverage !== null ? `${weeklyMoodAverage}/100` : "No entries yet"}
                       </Text>
                       {weeklyMoodDirection && (
-                        <Text style={{ color: weeklyMoodDirection === "up" ? "#4ADE80" : weeklyMoodDirection === "down" ? "#B88400" : "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 2 }}>
+                        // All three colors here were leftover dark-theme values
+                        // (a light green, a washed-out amber, and translucent
+                        // white) sitting on this card's light background
+                        // (#E1EEEC) at 1.1-2.8:1 contrast -- effectively
+                        // unreadable. Darkened all three to 4.2:1+.
+                        <Text style={{ color: weeklyMoodDirection === "up" ? "#0D6B36" : weeklyMoodDirection === "down" ? "#8A4B00" : "#465871", fontSize: 11, marginTop: 2 }}>
                           {weeklyMoodDirection === "up" ? "↑ trending up" : weeklyMoodDirection === "down" ? "↓ dipped this week" : "→ holding steady"}
                         </Text>
                       )}
@@ -17208,57 +17542,6 @@ function isTrustedExternalUrl(url: string) {
             </TabErrorBoundary>
           )}
 
-          {activeTab === "focus" && (
-            <TabErrorBoundary tabName="Calm">
-            <View onLayout={captureSectionLayout("focus")}>
-              {/* ── Calm tab banner ── */}
-              <View style={[styles.tabBannerCard, { backgroundColor: "#E0EAF1" }]}>
-                <Text style={styles.tabBannerEmoji}>🧘</Text>
-                <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Reset & Calm</Text>
-                  <Text style={styles.tabBannerSub}>5 lenses · 3 steps · Practical · Emotional · Spiritual</Text>
-                </View>
-              </View>
-              {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "focus")}</Text></Text>
-                </View>
-              )}
-              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "focus" && (
-                <GuidedJourneyBar
-                  steps={activeJourney.journeySteps}
-                  currentStepIndex={journeyStepIndex}
-                  onContinue={() => advanceJourneyStep(false)}
-                  onSkip={() => advanceJourneyStep(true)}
-                  onEndJourney={endJourney}
-                />
-              )}
-              <FocusSection
-                key={`focus-${selectedRoutine.id}-${calmPageNonce}`}
-                selectedRoutine={selectedRoutine}
-                routineId={routineId}
-                setRoutineId={setRoutineId}
-                sessionActive={sessionActive}
-                setSessionActive={setSessionActive}
-                selectedIdentityLabel={profileDisplayName}
-                selectedIssueGuide={selectedIssueGuide}
-                onCompleteFocus={completeFocusStep}
-                onOpenTab={handleTabPress}
-                onEmergencyCall={handleEmergencyCall}
-                voiceAssistEnabled={voiceAssistEnabled}
-                voiceAssistStatus={voiceAssistStatus}
-                onReadCalm={(text) => {
-                  void speakGuidance(text);
-                }}
-                onStopVoice={stopVoiceGuidance}
-                onFocusSelectedRoutineLayout={captureFocusLayout}
-                calmPageNonce={calmPageNonce}
-              />
-            </View>
-            </TabErrorBoundary>
-          )}
-
           {activeTab === "tones" && (
             <View onLayout={captureSectionLayout("tones")}>
               {/* ── Tones tab banner ── */}
@@ -17276,55 +17559,13 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               )}
 
-              {/* ── 48-dimensional tone guide per active issue ── */}
-              {selectedIssueGuide.id !== "general" && (() => {
-                const issueTones: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
-                  anxiety:       { practical: "Alpha binaural 7–10 Hz (focus + calm)", emotional: "Rain ambience or ocean waves", psychological: "Theta binaural 4–5 Hz (subconscious reset)", spiritual: "Solfège 396 Hz (fear release)", cultural: "Nature forest ambience" },
-                  anger:         { practical: "Alpha binaural 6 Hz (self-control)", emotional: "Slow rain or soft ambient drone", psychological: "Bilateral soft tapping (nervous system)", spiritual: "Solfège 528 Hz (heart healing)", cultural: "Calm water ambience" },
-                  burnout:       { practical: "Alpha binaural 10 Hz (recovery)", emotional: "Ocean waves (parasympathetic restore)", psychological: "Reset quiet (silence protocol)", spiritual: "Solfège 174 Hz (pain + foundation)", cultural: "Ambient breath tones" },
-                  grief:         { practical: "Bilateral soft (grounding)", emotional: "Rain ambience (tears, release)", psychological: "Theta binaural 5 Hz (processing)", spiritual: "Solfège 432 Hz (universal harmony)", cultural: "Soft drone ambient" },
-                  loneliness:    { practical: "Alpha binaural 8 Hz (connection state)", emotional: "Ocean waves (belonging feeling)", psychological: "Theta binaural 4 Hz (self-compassion)", spiritual: "Isochronic 6 Hz (heart coherence)", cultural: "Nature birdsong ambient" },
-                  relationship:  { practical: "Alpha binaural 7 Hz (empathy boost)", emotional: "Soft ambient drone (safety)", psychological: "Bilateral soft (nervous system sync)", spiritual: "Solfège 528 Hz (love frequency)", cultural: "Gentle water tones" },
-                  financial:     { practical: "Alpha binaural 12 Hz (strategic thinking)", emotional: "Rain ambience (stress release)", psychological: "Binaural reset 14 Hz (clarity)", spiritual: "Solfège 432 Hz (abundance)", cultural: "Ambient forest" },
-                  trauma:        { practical: "Bilateral soft 1 (safe grounding)", emotional: "Ocean waves (nervous system safety)", psychological: "Theta binaural 4 Hz (trauma processing)", spiritual: "Solfège 396 Hz (root liberation)", cultural: "Quiet ambient breath" },
-                  identity:      { practical: "Alpha binaural 10 Hz (self-awareness)", emotional: "Ambient drone (inner stillness)", psychological: "Theta binaural 5 Hz (deep self)", spiritual: "Reset quiet (crown chakra)", cultural: "Nature sounds (grounding)" },
-                  stigma:        { practical: "Alpha binaural 8 Hz (confidence)", emotional: "Rain tones (emotional protection)", psychological: "Bilateral soft (shame release)", spiritual: "Isochronic 6 Hz (voice chakra)", cultural: "Ambient birdsong" },
-                  fear:          { practical: "Bilateral soft (root grounding)", emotional: "Rain ambience (safety cue)", psychological: "Theta binaural 4 Hz (courage)", spiritual: "Solfège 396 Hz (fear liberation)", cultural: "Forest ambient" },
-                  addiction:     { practical: "Binaural reset 14 Hz (impulse control)", emotional: "Ocean waves (craving release)", psychological: "Theta binaural 5 Hz (deep habit)", spiritual: "Solfège 528 Hz (repair)", cultural: "Ambient nature tones" },
-                  overconfidence:{ practical: "Theta binaural 4 Hz (humility + depth)", emotional: "Rain ambience (reflective calm)", psychological: "Alpha binaural 6 Hz (balanced ego)", spiritual: "Reset quiet (stillness)", cultural: "Soft ambient drone" },
-                  health:        { practical: "Alpha binaural 10 Hz (healing state)", emotional: "Ocean waves (stress hormones down)", psychological: "Bilateral soft (nervous repair)", spiritual: "Solfège 174 Hz (pain relief)", cultural: "Nature forest ambience" },
-                  academic:      { practical: "Alpha binaural 12 Hz (focus + memory)", emotional: "Rain ambience (test anxiety down)", psychological: "Theta binaural 5 Hz (deep learning)", spiritual: "Solfège 432 Hz (clarity)", cultural: "Ambient soft drone" },
-                  parenting:     { practical: "Alpha binaural 7 Hz (patience)", emotional: "Ocean waves (calm reset)", psychological: "Bilateral soft (regulation model)", spiritual: "Solfège 528 Hz (love frequency)", cultural: "Nature birdsong" },
-                };
-                const rec = issueTones[selectedIssueGuide.id];
-                if (!rec) return null;
-                return (
-                  <View style={{ marginHorizontal: 16, marginBottom: 12, backgroundColor: "#E1EEEC", borderRadius: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.18)", overflow: "hidden" }}>
-                    <View style={{ backgroundColor: "#E1EEEC", paddingHorizontal: 14, paddingVertical: 10 }}>
-                      <Text style={{ color: "#0891B2", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                        🎵 48-Dimension tone guide — {selectedIssueGuide.label}
-                      </Text>
-                    </View>
-                    <View style={{ padding: 12, gap: 8 }}>
-                      {([
-                        { label: "Practical", text: rec.practical, color: "#059669" },
-                        { label: "Emotional", text: rec.emotional, color: "#B80064" },
-                        { label: "Psychological", text: rec.psychological, color: "#818CF8" },
-                        { label: "Spiritual", text: rec.spiritual, color: "#B45309" },
-                        { label: "Cultural", text: rec.cultural, color: "#B85300" },
-                      ] as const).map((dim) => (
-                        <View key={dim.label} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start" }}>
-                          <View style={{ width: 3, borderRadius: 2, backgroundColor: dim.color, alignSelf: "stretch", minHeight: 14 }} />
-                          <View style={{ flex: 1 }}>
-                            <Text style={{ color: dim.color, fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>{dim.label}</Text>
-                            <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17, marginTop: 1 }}>{dim.text}</Text>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                );
-              })()}
+              {/* Real 48-axis library, not a 5-field table pretending to be
+                  one -- see SupportDimensionLibraryPanel. */}
+              <SupportDimensionLibraryPanel
+                eyebrow="🎵 Tone guide"
+                actionLabel="Try"
+                accentColor="#0891B2"
+              />
 
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "tones" && (
                 <GuidedJourneyBar
@@ -17345,14 +17586,19 @@ function isTrustedExternalUrl(url: string) {
             </View>
           )}
 
-          {activeTab === "meditation" && (
+          {(activeTab === "meditation" || activeTab === "focus") && (
+            <TabErrorBoundary tabName="Meditation">
             <View onLayout={captureSectionLayout("meditation")}>
               {/* ── Wellness tab banner ── */}
+              {/* Meditation is the single entry point for calm now: Reset's
+                  timer, situation map, guidance paths, and wisdom teachings
+                  (formerly their own "Calm" tab) live further down this same
+                  page instead of behind a separate tab switch. */}
               <View style={[styles.tabBannerCard, { backgroundColor: "#EBE4ED" }]}>
                 <Text style={styles.tabBannerEmoji}>🪷</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Wellness</Text>
-                  <Text style={styles.tabBannerSub}>Chakra · Breath · Emotion · Calm</Text>
+                  <Text style={styles.tabBannerTitle}>Meditation & Calm</Text>
+                  <Text style={styles.tabBannerSub}>Chakra · Breath · Reset · Wisdom</Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -17456,7 +17702,52 @@ function isTrustedExternalUrl(url: string) {
                 voiceAssistStatus={voiceAssistStatus}
                 isWide={isWide}
               />
+
+              {/* ── Reset & Calm, imbibed here (formerly its own tab) ──
+                  Meditation is now the single trigger for calm: the guided
+                  timer, situation-matched routines, and guidance paths that
+                  used to live behind a separate "Calm" tab render right
+                  after the meditation library instead of needing a switch. */}
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#EBE2EE", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "focus")}</Text></Text>
+                </View>
+              )}
+
+              {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "focus" && (
+                <GuidedJourneyBar
+                  steps={activeJourney.journeySteps}
+                  currentStepIndex={journeyStepIndex}
+                  onContinue={() => advanceJourneyStep(false)}
+                  onSkip={() => advanceJourneyStep(true)}
+                  onEndJourney={endJourney}
+                />
+              )}
+
+              <FocusSection
+                key={`focus-${selectedRoutine.id}-${calmPageNonce}`}
+                selectedRoutine={selectedRoutine}
+                routineId={routineId}
+                setRoutineId={setRoutineId}
+                sessionActive={sessionActive}
+                setSessionActive={setSessionActive}
+                selectedIdentityLabel={profileDisplayName}
+                selectedIssueGuide={selectedIssueGuide}
+                onCompleteFocus={completeFocusStep}
+                onOpenTab={handleTabPress}
+                onEmergencyCall={handleEmergencyCall}
+                voiceAssistEnabled={voiceAssistEnabled}
+                voiceAssistStatus={voiceAssistStatus}
+                onReadCalm={(text) => {
+                  void speakGuidance(text);
+                }}
+                onStopVoice={stopVoiceGuidance}
+                onFocusSelectedRoutineLayout={captureFocusLayout}
+                calmPageNonce={calmPageNonce}
+              />
             </View>
+            </TabErrorBoundary>
           )}
 
           {activeTab === "vedic" && (
@@ -17621,6 +17912,20 @@ function isTrustedExternalUrl(url: string) {
                       <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "play")}</Text></Text>
                     </View>
                   )}
+                  {/* Practice was the one tab excluded from the guided-journey
+                      stepper despite already receiving the issue guide and
+                      its own hint text above -- buildJourneySteps now pushes
+                      a "play" step for most conversations, so this needs the
+                      same GuidedJourneyBar gate every other journey stop has. */}
+                  {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "play" && (
+                    <GuidedJourneyBar
+                      steps={activeJourney.journeySteps}
+                      currentStepIndex={journeyStepIndex}
+                      onContinue={() => advanceJourneyStep(false)}
+                      onSkip={() => advanceJourneyStep(true)}
+                      onEndJourney={endJourney}
+                    />
+                  )}
                   <PlaySection
                     playChallenges={playChallenges}
                     featuredPlayChallenge={featuredPlayChallenge}
@@ -17692,6 +17997,12 @@ function isTrustedExternalUrl(url: string) {
 
           {activeTab === "aihelp" && (
             <View onLayout={captureSectionLayout("aihelp")}>
+              {selectedIssueGuide.id !== "general" && (
+                <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
+                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#465871", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "aihelp")}</Text></Text>
+                </View>
+              )}
               {/* ── First-visit hint ── */}
               {!dismissedHintTabs.includes("aihelp") && (
                 <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#E1EEEC", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center" }}>
@@ -17802,7 +18113,8 @@ function isTrustedExternalUrl(url: string) {
                 communityTopicFilter={communityTopicFilter}
                 setCommunityTopicFilter={setCommunityTopicFilter}
                 communityDraft={communityDraft}
-                setCommunityDraft={setCommunityDraft}
+                setCommunityDraft={handleCommunityDraftChange}
+                communityTypingLabel={communityFeedTypingLabel}
                 onPostCommunityMessage={postCommunityMessage}
                 onClearCommunityMessages={clearCommunityMessages}
                 onClearCommunityFilters={clearCommunityFilters}
@@ -17810,7 +18122,10 @@ function isTrustedExternalUrl(url: string) {
                 communityChatPersona={communityChatPersona}
                 setCommunityChatPersona={setCommunityChatPersona}
                 communityChatDraft={communityChatDraft}
-                setCommunityChatDraft={setCommunityChatDraft}
+                setCommunityChatDraft={handleCommunityChatDraftChange}
+                communityChatTypingLabel={communityChatTypingLabel}
+                communityReactionsByMessageId={communityReactionsByMessageId}
+                onToggleCommunityReaction={toggleCommunityReaction}
                 onPostCommunityChat={postCommunityChatMessage}
                 onClearCommunityChat={clearCommunityChat}
                 privateSpaceThreads={privateSpaceThreads}
@@ -17974,7 +18289,7 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#E0F0E5", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)", flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ color: "#059669", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>Tracking</Text>
-                  <Text style={{ color: "#465871", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "journal")}</Text>
+                  <Text style={{ color: "#465871", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "insights")}</Text>
                 </View>
               )}
               {/* ── Personal Pattern Summary ── */}
@@ -18405,6 +18720,7 @@ function isTrustedExternalUrl(url: string) {
         />
       </SafeAreaView>
     </SafeAreaProvider>
+    </CrossSectionContext.Provider>
     </AppErrorBoundary>
   );
 }
@@ -18989,48 +19305,12 @@ function JournalSection({
           <Text style={styles.textButtonLabel}>{uiCopy.clearHistory}</Text>
         </Pressable>
       </View>
-{/* ── 48-DIMENSION JOURNAL LENS BAND ── */}
-      {selectedIssueGuide.id !== "general" && (() => {
-        const JOURNAL_DIM_COLORS = { practical: "#0891B2", emotional: "#F472B6", psychological: "#818CF8", spiritual: "#B45309", cultural: "#059669" };
-        const JOURNAL_DIM_PROMPTS: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
-          anxiety:      { practical: "Write the one concrete step you can take to reduce the source of anxiety today.", emotional: "Describe the feeling in your chest or stomach. What does it need most?", psychological: "What pattern keeps repeating here? What do you want to break?", spiritual: "What does your faith, intuition, or deeper self say about this worry?", cultural: "Is there a community belief or expectation contributing to this anxiety?" },
-          anger:        { practical: "What specific thing happened? Write the facts without judgment.", emotional: "What is the anger protecting underneath — hurt, fear, or injustice?", psychological: "What triggered this? Has it happened before in a similar form?", spiritual: "What would a peaceful resolution look like in your ideal world?", cultural: "Did social or family expectations play a role in this anger?" },
-          grief:        { practical: "Write one thing you need to handle today that grief is making harder.", emotional: "Describe the loss in one paragraph. What do you miss most?", psychological: "What does grief keep repeating in your thoughts or dreams?", spiritual: "Is there a belief, hope, or ritual that brings any comfort right now?", cultural: "How has your family or community shaped how you grieve?" },
-          burnout:      { practical: "List three things you can remove or defer from this week's schedule.", emotional: "What emotion shows up most when you think about your workload?", psychological: "When did you last feel genuinely rested? What was different?", spiritual: "What originally gave you a sense of meaning in this work?", cultural: "Are you carrying responsibility that belongs to others, due to role or expectation?" },
-          trauma:       { practical: "Write one grounding step that helps you feel safer today.", emotional: "What emotion comes up when you think about what happened?", psychological: "Notice any recurring thought or image. Write it without judgment.", spiritual: "What would healing look like for you — in your own words?", cultural: "Are there community or family dynamics that made the trauma harder to process?" },
-          loneliness:   { practical: "Write one action to connect with one person or community this week.", emotional: "Describe the loneliness. Is it isolation, invisibility, or disconnection?", psychological: "When do you feel most alone? Is there a pattern?", spiritual: "What would a sense of belonging feel like in your body?", cultural: "Is there a cultural community or practice that once gave you belonging?" },
-          relationship: { practical: "Write what you need the other person to understand, clearly and calmly.", emotional: "What are you feeling toward this person right now — and what do you need?", psychological: "What old pattern from your past is being activated in this relationship?", spiritual: "What values are at stake here for you? What matters most?", cultural: "Are family or community expectations shaping how this conflict plays out?" },
-          financial:    { practical: "Write the exact number or situation causing stress — facts, not fear.", emotional: "What emotion does money stress trigger most strongly in you?", psychological: "What money story from childhood is running here?", spiritual: "What does security or abundance mean to you beyond money?", cultural: "How did your family or community shape your relationship with money?" },
-          identity:     { practical: "Write one concrete way you are living in alignment with who you want to be.", emotional: "What emotion comes up when you think about who you truly are?", psychological: "What version of yourself are you most afraid others will reject?", spiritual: "What does your core self or soul want that the world hasn't yet seen?", cultural: "How has your community shaped — or constrained — your sense of self?" },
-        };
-        const rec = JOURNAL_DIM_PROMPTS[selectedIssueGuide.id];
-        if (!rec) return null;
-        const dims = [
-          { key: "practical",     label: "🎯 Practical",     text: rec.practical },
-          { key: "emotional",     label: "💗 Emotional",     text: rec.emotional },
-          { key: "psychological", label: "🧠 Psychological", text: rec.psychological },
-          { key: "spiritual",     label: "✨ Spiritual",     text: rec.spiritual },
-          { key: "cultural",      label: "🌍 Cultural",      text: rec.cultural },
-        ];
-        return (
-          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
-            <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text style={{ color: "#0891B2", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>48-Dimension Journal Prompts</Text>
-              <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
-            </View>
-            <Text style={{ color: "#6A8899", fontSize: 11, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Use any of these lens prompts to deepen your entry.</Text>
-            {dims.map((dim) => (
-              <View key={dim.key} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 7, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
-                <View style={{ width: 3, borderRadius: 2, backgroundColor: JOURNAL_DIM_COLORS[dim.key as keyof typeof JOURNAL_DIM_COLORS], alignSelf: "stretch", marginRight: 10, marginTop: 1 }} />
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: JOURNAL_DIM_COLORS[dim.key as keyof typeof JOURNAL_DIM_COLORS], fontSize: 10, fontWeight: "700", marginBottom: 2 }}>{dim.label}</Text>
-                  <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }} numberOfLines={2}>{dim.text}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        );
-      })()}
+      {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+      <SupportDimensionLibraryPanel
+        eyebrow="📝 Journal prompts"
+        actionLabel="Write about"
+        accentColor="#0891B2"
+      />
       <View style={styles.homeOverviewActions}>
         <Pressable
           accessibilityRole="button"
@@ -19382,16 +19662,17 @@ function FocusSection({
         <View style={styles.calmWisdomBand}>
           <View style={styles.calmWisdomHeader}>
             <View style={styles.calmWisdomHeaderCopy}>
-              <Text style={styles.eyebrow}>Wisdom layer</Text>
+              <Text style={styles.eyebrow}>Wisdom</Text>
               <Text style={styles.calmWisdomTitle} numberOfLines={2}>
-                HOLY BOOKS TEACHINGS
+                TIMELESS WISDOM
               </Text>
             </View>
             <Text style={styles.calmWisdomBadge}>Paraphrased</Text>
           </View>
           <Text style={styles.calmWisdomIntro}>
-            These teachings are compact and paraphrased. They support breath, restraint, witness
-            mind, courage, and dignity for {selectedIdentityLabel}.
+            These are compact, paraphrased ideas drawn from many traditions and distilled into
+            plain guidance. They support breath, restraint, a witnessing mind, courage, and
+            dignity for {selectedIdentityLabel}.
           </Text>
           <View style={styles.calmVoiceBand}>
             <View style={styles.calmVoiceHeader}>
@@ -19497,19 +19778,18 @@ function FocusSection({
                 {calmTeachings.map((item) => (
                   <View key={item.id} style={styles.calmTeachingCard}>
                     <View style={styles.calmTeachingTop}>
-                      <Text style={styles.calmTeachingSource}>{item.source}</Text>
                       <Text style={styles.calmTeachingTheme}>{item.theme}</Text>
                     </View>
                     <Text style={styles.calmTeachingText}>{item.teaching}</Text>
                     <Text style={styles.calmTeachingPractice}>{item.practice}</Text>
                     <View style={styles.wisdomShareRow}>
-                      <Text style={styles.calmTeachingRef}>{item.reference}</Text>
+                      <Text style={styles.calmTeachingRef}>Paraphrased</Text>
                       <Pressable
                         accessibilityRole="button"
-                        accessibilityLabel={`Share wisdom from ${item.source}`}
+                        accessibilityLabel={`Share this wisdom: ${item.theme}`}
                         onPress={() => {
                           void Share.share({
-                            message: `"${item.teaching}"\n\n— ${item.source} (${item.reference})\n\nShared from Aethon Beacon`,
+                            message: `"${item.teaching}"\n\n— ${item.practice}\n\nShared from Aethon Beacon`,
                             title: `Wisdom: ${item.theme}`
                           });
                         }}
@@ -19730,17 +20010,6 @@ function FocusSection({
       ) : null}
       {isCalmMode && showCalmDetails ? (
         <>
-          <View style={styles.careLensGrid}>
-            {careLenses.map((lens) => (
-              <View key={lens.id} style={styles.careLensChip}>
-                <View style={[styles.careLensDot, { backgroundColor: lens.accent }]} />
-                <View style={styles.careLensCopy}>
-                  <Text style={styles.careLensLabel}>{lens.label}</Text>
-                  <Text style={styles.careLensMeta}>{lens.meta}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
           <View style={styles.routineList}>
             {routines.map((routine) => {
               const isSelected = routine.id === routineId;
@@ -20251,46 +20520,12 @@ function ToneLibrarySection({
         </View>
       </View>
 
-      {/* ── 48-DIMENSION TONE GUIDE ── */}
-      {selectedIssueGuide.id !== "general" && (() => {
-        const TONE_DIM_GUIDE: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
-          anxiety:      { practical: "🧠 Binaural alpha 7–10 Hz · calms cognitive overload", emotional: "🌊 Rain / ocean ambience · lowers cortisol", psychological: "🔄 Bilateral tapping · resets nervous system", spiritual: "🔔 396 Hz Solfège · releases fear at root", cultural: "🌿 Forest birds / bansuri · nature-culture grounding" },
-          anger:        { practical: "🧠 Binaural alpha 6 Hz · slows reactive thinking", emotional: "🌊 Ocean waves · parasympathetic rhythm reset", psychological: "🔄 Bilateral soft · discharges stored tension", spiritual: "🔔 417 Hz · facilitates energetic change", cultural: "🎵 Isochronic 6 Hz · cross-cultural regulation" },
-          grief:        { practical: "⏱ Theta 4–5 Hz · processing mode activation", emotional: "🌊 Rain on tent · safe container for feeling", psychological: "🔄 Bilateral tones · integrates fragmented memory", spiritual: "🔔 528 Hz miracle · heart restoration", cultural: "🎻 432 Hz guitar / bansuri · ancestral comfort" },
-          burnout:      { practical: "🧠 Alpha 10 Hz · cognitive reserve replenishment", emotional: "🌊 Ocean / nature · parasympathetic full reset", psychological: "⚡ Delta drone · cellular-level recovery", spiritual: "🔔 963 Hz · pineal restoration + higher awareness", cultural: "☕ Cafe ambience · gentle social reconnection cue" },
-          trauma:       { practical: "🔄 EMDR bilateral · nervous system processing", emotional: "🌊 Ocean safety tone · reduces hypervigilance", psychological: "🧠 Theta 4–5 Hz · sub-conscious integration", spiritual: "OM AUM 136 Hz · primordial safety feeling", cultural: "🌟 Tibetan bowls · cross-cultural somatic healing" },
-          loneliness:   { practical: "🧠 Alpha 8 Hz · social empathy circuit activation", emotional: "🌊 Vast nature sounds · reduce felt isolation", psychological: "🎵 Isochronic 6 Hz · present-moment grounding", spiritual: "🔔 639 Hz · reconnection and heart opening", cultural: "🎸 432 Hz guitar · musical belonging signal" },
-          relationship: { practical: "🧠 Alpha 7 Hz · mirror neuron activation", emotional: "🌊 Soft drone · heart-field coherence", psychological: "🔄 Bilateral sync · nervous system co-regulation", spiritual: "🔔 528 Hz love · DNA and bond healing", cultural: "🪘 Tibetan bowls · shared ritual and resonance" },
-          financial:    { practical: "🧠 Alpha 12 Hz · sharp analytical thinking", emotional: "🌊 Rain · dissolves financial anxiety", psychological: "🧠 Beta-edge 14 Hz · decision clarity", spiritual: "🔔 741 Hz · awakening intuition and solutions", cultural: "☕ Cafe ambience · productive focus environment" },
-          identity:     { practical: "🧠 Alpha 10 Hz · metacognitive self-awareness", emotional: "🌊 Ambient drone · continuity and self-sense", psychological: "⚡ Silence protocol · hear authentic inner voice", spiritual: "OM Schumann 7.83 Hz · Earth alignment", cultural: "🎵 Bansuri / om chant · cultural identity anchor" },
-        };
-        const rec = TONE_DIM_GUIDE[selectedIssueGuide.id];
-        if (!rec) return null;
-        return (
-          <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#E1EEEC", borderRadius: 16, borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden" }}>
-            <View style={{ backgroundColor: "#DEE9F2", paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(34,211,238,0.1)" }}>
-              <Text style={{ color: "#0891B2", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
-                48-Dimension Tone Map · {selectedIssueGuide.label}
-              </Text>
-            </View>
-            {([
-              { label: "Practical", text: rec.practical, color: "#059669" },
-              { label: "Emotional", text: rec.emotional, color: "#B80064" },
-              { label: "Psychological", text: rec.psychological, color: "#818CF8" },
-              { label: "Spiritual", text: rec.spiritual, color: "#B45309" },
-              { label: "Cultural", text: rec.cultural, color: "#B85300" },
-            ] as const).map((dim, i) => (
-              <View key={dim.label} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 9, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
-                <View style={{ width: 3, borderRadius: 2, backgroundColor: dim.color, alignSelf: "stretch", minHeight: 14 }} />
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: dim.color, fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>{dim.label}</Text>
-                  <Text style={{ color: "#465871", fontSize: 12, lineHeight: 17, marginTop: 1 }}>{dim.text}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        );
-      })()}
+      {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+      <SupportDimensionLibraryPanel
+        eyebrow="🎵 Tone map"
+        actionLabel="Try"
+        accentColor="#0891B2"
+      />
 
       {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
       <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
@@ -20520,40 +20755,12 @@ function MeditationSection({
         </Text>
       </View>
 
-      {/* ── 48-DIMENSION LENS STRIP ── */}
-      {(() => {
-        const MEDITATION_DIM_COLORS: Record<string, string> = {
-          practical:     "#0891B2",
-          emotional:     "#F472B6",
-          psychological: "#818CF8",
-          spiritual:     "#B45309",
-          cultural:      "#059669",
-        };
-        const dims = [
-          { key: "practical",     label: "🎯 Practical",     text: selectedIssueGuide.logicalLens },
-          { key: "emotional",     label: "💗 Emotional",     text: selectedIssueGuide.emotionalLens },
-          { key: "psychological", label: "🧠 Psychological", text: selectedIssueGuide.theoreticalLens },
-          { key: "spiritual",     label: "✨ Spiritual",     text: selectedIssueGuide.spiritualLens },
-          { key: "cultural",     label: "🌍 Cultural",      text: selectedIssueGuide.culturalLens },
-        ];
-        return (
-          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
-            <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text style={{ color: "#0891B2", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>48-Dimension Meditation Frame</Text>
-              <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
-            </View>
-            {dims.map((dim) => (
-              <View key={dim.key} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 7, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
-                <View style={{ width: 3, borderRadius: 2, backgroundColor: MEDITATION_DIM_COLORS[dim.key], alignSelf: "stretch", marginRight: 10, marginTop: 1 }} />
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: MEDITATION_DIM_COLORS[dim.key], fontSize: 10, fontWeight: "700", marginBottom: 2 }}>{dim.label}</Text>
-                  <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }} numberOfLines={2}>{dim.text}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        );
-      })()}
+      {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+      <SupportDimensionLibraryPanel
+        eyebrow="🪷 Meditation frame"
+        actionLabel="Try"
+        accentColor="#818CF8"
+      />
 
       <Text style={styles.promptText}>
         Recommended start: {recommendedChakra.label} for {selectedIdentityLabel} dealing with {selectedIssueGuide.label.toLowerCase()}.
@@ -21168,6 +21375,7 @@ function CommunitySection({
   setCommunityTopicFilter,
   communityDraft,
   setCommunityDraft,
+  communityTypingLabel,
   onPostCommunityMessage,
   onClearCommunityMessages,
   onClearCommunityFilters,
@@ -21176,6 +21384,9 @@ function CommunitySection({
   setCommunityChatPersona,
   communityChatDraft,
   setCommunityChatDraft,
+  communityChatTypingLabel,
+  communityReactionsByMessageId,
+  onToggleCommunityReaction,
   onPostCommunityChat,
   onClearCommunityChat,
   privateSpaceThreads,
@@ -21229,6 +21440,7 @@ function CommunitySection({
   setCommunityTopicFilter: (value: CommunityTopicFilterId) => void;
   communityDraft: string;
   setCommunityDraft: (value: string) => void;
+  communityTypingLabel: string | null;
   onPostCommunityMessage: () => void;
   onClearCommunityMessages: () => void;
   onClearCommunityFilters: () => void;
@@ -21237,6 +21449,12 @@ function CommunitySection({
   setCommunityChatPersona: (value: CommunityChatPersonaId) => void;
   communityChatDraft: string;
   setCommunityChatDraft: (value: string) => void;
+  communityChatTypingLabel: string | null;
+  communityReactionsByMessageId: Record<
+    string,
+    Partial<Record<RealtimeCommunityReactionEmoji, { count: number; reactedByMe: boolean }>>
+  >;
+  onToggleCommunityReaction: (messageId: string, emoji: RealtimeCommunityReactionEmoji) => void;
   onPostCommunityChat: () => void;
   onClearCommunityChat: () => void;
   privateSpaceThreads: PrivateSpaceThread[];
@@ -21296,6 +21514,126 @@ function CommunitySection({
   useEffect(() => {
     setShowFullCommunity(false);
   }, [selectedIdentity.id, canUseCommunityFeatures, isPrivateIntakeOpen]);
+
+  // ── Unread indicator: "N new" pills for the feed and chat ──────────────────
+  // Tracks the id of the newest message the member has explicitly acknowledged
+  // (by tapping the pill), persisted on-device so it survives leaving and
+  // returning to this tab. First-ever visit seeds this to the current top
+  // message so existing/seed content is never wrongly flagged as unread.
+  const [feedLastSeenId, setFeedLastSeenId] = useState<string | null>(null);
+  const [chatLastSeenId, setChatLastSeenId] = useState<string | null>(null);
+  const [communitySeenStateLoaded, setCommunitySeenStateLoaded] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const [storedFeedId, storedChatId] = await Promise.all([
+          AsyncStorage.getItem("aethon-beacon:community:feedLastSeenId"),
+          AsyncStorage.getItem("aethon-beacon:community:chatLastSeenId")
+        ]);
+        if (!mounted) return;
+        setFeedLastSeenId(storedFeedId ?? communityMessages[0]?.id ?? null);
+        setChatLastSeenId(storedChatId ?? communityChatMessages[0]?.id ?? null);
+      } catch {
+        // On-device only convenience feature — if storage isn't available,
+        // simply skip unread tracking rather than blocking the section.
+      } finally {
+        if (mounted) setCommunitySeenStateLoaded(true);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const newFeedCount = useMemo(() => {
+    if (!communitySeenStateLoaded || !feedLastSeenId) return 0;
+    const idx = communityMessages.findIndex((message) => message.id === feedLastSeenId);
+    return idx === -1 ? 0 : idx;
+  }, [communityMessages, feedLastSeenId, communitySeenStateLoaded]);
+
+  const newChatCount = useMemo(() => {
+    if (!communitySeenStateLoaded || !chatLastSeenId) return 0;
+    const idx = communityChatMessages.findIndex((message) => message.id === chatLastSeenId);
+    return idx === -1 ? 0 : idx;
+  }, [communityChatMessages, chatLastSeenId, communitySeenStateLoaded]);
+
+  const markFeedSeen = useCallback(() => {
+    const topId = communityMessages[0]?.id ?? null;
+    setFeedLastSeenId(topId);
+    if (topId) AsyncStorage.setItem("aethon-beacon:community:feedLastSeenId", topId).catch(() => undefined);
+  }, [communityMessages]);
+
+  const markChatSeen = useCallback(() => {
+    const topId = communityChatMessages[0]?.id ?? null;
+    setChatLastSeenId(topId);
+    if (topId) AsyncStorage.setItem("aethon-beacon:community:chatLastSeenId", topId).catch(() => undefined);
+  }, [communityChatMessages]);
+
+  const communitySyncTone = useMemo((): "live" | "connecting" | "offline" | "error" => {
+    const status = communityRealtimeStatus.toLowerCase();
+    if (status.includes("live")) return "live";
+    if (status.includes("offline")) return "offline";
+    if (status.includes("trouble") || status.includes("couldn't reach") || status.includes("error")) {
+      return "error";
+    }
+    return "connecting";
+  }, [communityRealtimeStatus]);
+  const communitySyncDotColor: Record<"live" | "connecting" | "offline" | "error", string> = {
+    live: "#1D9A6C",
+    connecting: "#B8860B",
+    offline: "#6B7280",
+    error: "#B3261E"
+  };
+  const communitySyncToneLabel: Record<"live" | "connecting" | "offline" | "error", string> = {
+    live: "Live",
+    connecting: "Connecting",
+    offline: "Offline",
+    error: "Sync issue"
+  };
+
+  const renderCommunityReactionRow = (messageId: string) => {
+    if (!communityRealtimeConfigured) return null;
+    const summary = communityReactionsByMessageId[messageId];
+    return (
+      <View style={styles.communityReactionRow}>
+        {REALTIME_COMMUNITY_REACTION_EMOJIS.map((emoji) => {
+          const entry = summary?.[emoji];
+          const count = entry?.count ?? 0;
+          const reactedByMe = entry?.reactedByMe ?? false;
+          return (
+            <Pressable
+              key={emoji}
+              accessibilityRole="button"
+              accessibilityLabel={`React with ${emoji}${count > 0 ? `, ${count} so far` : ""}`}
+              accessibilityHint={reactedByMe ? "Removes your reaction" : "Adds your reaction to this message"}
+              accessibilityState={{ selected: reactedByMe }}
+              onPress={() => onToggleCommunityReaction(messageId, emoji)}
+              style={({ pressed }) => [
+                styles.communityReactionChip,
+                reactedByMe && styles.communityReactionChipActive,
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={styles.communityReactionChipEmoji}>{emoji}</Text>
+              {count > 0 ? (
+                <Text
+                  style={[
+                    styles.communityReactionChipCount,
+                    reactedByMe && styles.communityReactionChipCountActive
+                  ]}
+                >
+                  {count}
+                </Text>
+              ) : null}
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  };
 
   const visibleCommunityChatMessages = showFullCommunity
     ? communityChatMessages
@@ -21369,6 +21707,8 @@ function CommunitySection({
           <View style={styles.communityActions}>
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel="Verify your identity to join the community"
+              accessibilityHint="Opens verification so you can post, chat, and open private rooms"
               onPress={onOpenProfileVerification}
               style={({ pressed }) => [styles.helpButton, pressed && styles.pressed]}
             >
@@ -21398,7 +21738,14 @@ function CommunitySection({
             {communityVerifiedCount} verified voices / {communityReports.length} reports
           </Text>
         </View>
-        <Text style={styles.smallMeta}>{communityRealtimeStatus}</Text>
+        <View
+          style={styles.communitySyncRow}
+          accessibilityRole="text"
+          accessibilityLabel={`Sync status: ${communitySyncToneLabel[communitySyncTone]}. ${communityRealtimeStatus}`}
+        >
+          <View style={[styles.communitySyncDot, { backgroundColor: communitySyncDotColor[communitySyncTone] }]} />
+          <Text style={styles.smallMeta}>{communityRealtimeStatus}</Text>
+        </View>
         {/* ── How to use this section ── */}
         <View style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
           <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, marginBottom: 6 }}>HOW TO USE COMMUNITY</Text>
@@ -21449,6 +21796,12 @@ function CommunitySection({
           <View style={styles.homeOverviewActions}>
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel={showFullCommunity ? "Show compact view" : "Show full community view"}
+              accessibilityHint={
+                showFullCommunity
+                  ? "Collapses chat, feed, private rooms, and saved lines back to a short preview"
+                  : "Expands chat, feed, private rooms, and saved lines to show everything"
+              }
               onPress={() => setShowFullCommunity((value) => !value)}
               style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
             >
@@ -21477,6 +21830,7 @@ function CommunitySection({
               <Pressable
                 key={item.id}
                 accessibilityRole="button"
+                accessibilityLabel={`Filter feed by ${item.label}`}
                 accessibilityState={{ selected: isSelected }}
                 onPress={() => setCommunityFilter(item.id as CommunityFilterId)}
                 style={[styles.segmentButton, isSelected && styles.segmentButtonActive]}
@@ -21516,6 +21870,7 @@ function CommunitySection({
               <Pressable
                 key={item.id}
                 accessibilityRole="button"
+                accessibilityLabel={`Filter by topic: ${item.label}`}
                 accessibilityState={{ selected: isSelected }}
                 onPress={() => setCommunityTopicFilter(item.id as CommunityTopicFilterId)}
                 style={[
@@ -21561,6 +21916,8 @@ function CommunitySection({
               <Pressable
                 key={option.id}
                 accessibilityRole="button"
+                accessibilityLabel={`Chat as ${option.label}`}
+                accessibilityHint={option.meta}
                 accessibilityState={{ selected: isSelected }}
                 onPress={() => setCommunityChatPersona(option.id)}
                 style={[styles.segmentButton, isSelected && styles.segmentButtonActive]}
@@ -21575,6 +21932,19 @@ function CommunitySection({
             );
           })}
         </View>
+        {newChatCount > 0 ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${newChatCount} new chat message${newChatCount === 1 ? "" : "s"}`}
+            accessibilityHint="Marks the new chat messages as seen"
+            onPress={markChatSeen}
+            style={({ pressed }) => [styles.communityUnreadPill, pressed && styles.pressed]}
+          >
+            <Text style={styles.communityUnreadPillLabel}>
+              {newChatCount} new message{newChatCount === 1 ? "" : "s"}
+            </Text>
+          </Pressable>
+        ) : null}
         <View style={styles.communityChatList}>
           {visibleCommunityChatMessages.map((message) => {
             const isUser = message.author === "You" || message.clientId === communityClientId;
@@ -21618,9 +21988,16 @@ function CommunitySection({
                     {formatDate(message.createdAt)} /{" "}
                     {isVerified ? "Verified" : "Member"}
                   </Text>
+                  {renderCommunityReactionRow(message.id)}
                   <View style={styles.communityChatActions}>
                     <Pressable
                       accessibilityRole="button"
+                      accessibilityLabel={
+                        savedCommunityChat.some((item) => item.id === message.id)
+                          ? `Saved. Unsave chat message from ${message.author}`
+                          : `Save chat message from ${message.author}`
+                      }
+                      accessibilityHint="Toggles whether this chat message is kept in your saved lines"
                       onPress={() => onToggleSavedCommunityItem("chat", message.id)}
                       style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                     >
@@ -21630,6 +22007,8 @@ function CommunitySection({
                     </Pressable>
                     <Pressable
                       accessibilityRole="button"
+                      accessibilityLabel={`Report chat message from ${message.author}`}
+                      accessibilityHint="Flags this message for moderator review"
                       onPress={() =>
                         onReportCommunityItem(
                           "chat",
@@ -21648,6 +22027,11 @@ function CommunitySection({
             );
           })}
         </View>
+        {communityChatTypingLabel ? (
+          <Text style={styles.communityTypingHint} accessibilityLiveRegion="polite">
+            {communityChatTypingLabel}
+          </Text>
+        ) : null}
           <TextInput
             multiline
             value={communityChatDraft}
@@ -21655,6 +22039,8 @@ function CommunitySection({
             placeholder="Type a verified chat message."
             placeholderTextColor="#9A8F82"
             editable={!postingLocked && !interactionLocked}
+            accessibilityLabel="Chat message input"
+            accessibilityHint="Type a message to send to the verified chat"
             style={[
               styles.communityInput,
               (postingLocked || interactionLocked) && styles.communityInputDisabled
@@ -21664,6 +22050,11 @@ function CommunitySection({
         <View style={styles.communityActions}>
           <Pressable
               accessibilityRole="button"
+              accessibilityLabel={
+                postingLocked ? "Posting paused" : interactionLocked ? "Chat locked while intake is open" : "Send chat message"
+              }
+              accessibilityHint="Posts your draft message to the verified chat"
+              accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={onPostCommunityChat}
               disabled={postingLocked || interactionLocked}
               style={({ pressed }) => [
@@ -21678,6 +22069,8 @@ function CommunitySection({
             </Pressable>
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel="Reset chat thread"
+              accessibilityHint="Clears your local chat conversation. This cannot be undone."
               onPress={onClearCommunityChat}
               disabled={interactionLocked}
               style={({ pressed }) => [
@@ -21713,6 +22106,7 @@ function CommunitySection({
                 <Pressable
                   key={item.id}
                   accessibilityRole="button"
+                  accessibilityLabel={`Set room type to ${item.label}`}
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => setPrivateSpaceKindDraft(item.id as PrivateSpaceKind)}
                   style={[styles.segmentButton, isSelected && styles.segmentButtonActive]}
@@ -21730,6 +22124,8 @@ function CommunitySection({
             placeholder="Name this chat room"
             placeholderTextColor="#9A8F82"
             editable={!interactionLocked}
+            accessibilityLabel="Room title"
+            accessibilityHint="Enter a name for the new private room"
             style={styles.settingsInput}
           />
           <TextInput
@@ -21738,6 +22134,8 @@ function CommunitySection({
             placeholder="Add members or roles, separated by commas"
             placeholderTextColor="#9A8F82"
             editable={!interactionLocked}
+            accessibilityLabel="Room members"
+            accessibilityHint="Enter member names or roles, separated by commas"
             style={styles.settingsInput}
           />
           <TextInput
@@ -21747,6 +22145,8 @@ function CommunitySection({
             placeholder="Add a first message, or leave this blank."
             placeholderTextColor="#9A8F82"
             editable={!postingLocked && !interactionLocked}
+            accessibilityLabel="First message for new room"
+            accessibilityHint="Optional message to send as soon as the room is created"
             style={[
               styles.communityInput,
               (postingLocked || interactionLocked) && styles.communityInputDisabled
@@ -21756,6 +22156,9 @@ function CommunitySection({
           <View style={styles.communityActions}>
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel={postingLocked ? "Posting paused" : interactionLocked ? "Room creation locked while intake is open" : "Create private room"}
+              accessibilityHint="Creates a new private room with the title and members you entered"
+              accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={onCreatePrivateSpaceRoom}
               disabled={postingLocked || interactionLocked}
               style={({ pressed }) => [
@@ -21770,6 +22173,9 @@ function CommunitySection({
             </Pressable>
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel="Send message to selected private room"
+              accessibilityHint="Sends your draft message to the currently selected room"
+              accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={onSendPrivateSpaceMessage}
               disabled={postingLocked || interactionLocked}
               style={({ pressed }) => [
@@ -21782,6 +22188,9 @@ function CommunitySection({
             </Pressable>
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel="Clear private room draft"
+              accessibilityHint="Erases the message you were about to send, without sending it"
+              accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={() => setPrivateSpaceDraft("")}
               disabled={postingLocked || interactionLocked}
               style={({ pressed }) => [
@@ -21800,6 +22209,8 @@ function CommunitySection({
                 <Pressable
                   key={thread.id}
                   accessibilityRole="button"
+                  accessibilityLabel={`Open room ${thread.title}`}
+                  accessibilityHint={`${thread.kind === "group" ? "Group room" : "Direct chat"} with ${thread.members.length} member${thread.members.length === 1 ? "" : "s"}`}
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => setPrivateSpaceSelectedThreadId(thread.id)}
                   style={[
@@ -21839,6 +22250,8 @@ function CommunitySection({
                   </View>
                   <Pressable
                     accessibilityRole="button"
+                    accessibilityLabel={`Clear all messages in ${selectedPrivateRoom.title}`}
+                    accessibilityHint="Deletes every message in this room from this device. This cannot be undone."
                     onPress={() => onClearPrivateSpaceRoom(selectedPrivateRoom.id)}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
@@ -21923,6 +22336,11 @@ function CommunitySection({
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
+        {communityTypingLabel ? (
+          <Text style={styles.communityTypingHint} accessibilityLiveRegion="polite">
+            {communityTypingLabel}
+          </Text>
+        ) : null}
         <TextInput
           multiline
           value={communityDraft}
@@ -21930,12 +22348,17 @@ function CommunitySection({
           placeholder="Write one useful question, experience, or idea."
           placeholderTextColor="#9A8F82"
           editable={!postingLocked}
+          accessibilityLabel="Community feed post input"
+          accessibilityHint="Write a question, experience, or idea to share with the community"
           style={[styles.communityInput, postingLocked && styles.communityInputDisabled]}
           textAlignVertical="top"
         />
         <View style={styles.communityActions}>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={postingLocked ? "Posting paused" : "Post message to shared feed"}
+            accessibilityHint="Publishes your message to the community feed"
+            accessibilityState={{ disabled: postingLocked }}
             onPress={onPostCommunityMessage}
             disabled={postingLocked}
             style={({ pressed }) => [
@@ -21950,6 +22373,8 @@ function CommunitySection({
           </Pressable>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel="Reset feed"
+            accessibilityHint="Clears the community feed on this device. This cannot be undone."
             onPress={onClearCommunityMessages}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
@@ -21957,6 +22382,8 @@ function CommunitySection({
           </Pressable>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel="Clear feed filters"
+            accessibilityHint="Resets the feed and topic filters back to All"
             onPress={onClearCommunityFilters}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
@@ -21971,6 +22398,19 @@ function CommunitySection({
           </View>
           <Text style={styles.smallMeta}>{communityMessages.length} visible</Text>
         </View>
+        {newFeedCount > 0 ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${newFeedCount} new feed post${newFeedCount === 1 ? "" : "s"}`}
+            accessibilityHint="Marks the new feed posts as seen"
+            onPress={markFeedSeen}
+            style={({ pressed }) => [styles.communityUnreadPill, pressed && styles.pressed]}
+          >
+            <Text style={styles.communityUnreadPillLabel}>
+              {newFeedCount} new post{newFeedCount === 1 ? "" : "s"}
+            </Text>
+          </Pressable>
+        ) : null}
         <View style={styles.communityList}>
           {visibleCommunityMessages.length === 0 ? (
             <View style={styles.emptyStateLarge}>
@@ -22012,9 +22452,16 @@ function CommunitySection({
                   </View>
                 </View>
                 <Text style={styles.communityText}>{message.text}</Text>
+                {renderCommunityReactionRow(message.id)}
                 <View style={styles.communityFeedActions}>
                   <Pressable
                     accessibilityRole="button"
+                    accessibilityLabel={
+                      savedCommunityFeed.some((item) => item.id === message.id)
+                        ? `Saved. Unsave post from ${message.author}`
+                        : `Save post from ${message.author}`
+                    }
+                    accessibilityHint="Toggles whether this post is kept in your saved lines"
                     onPress={() => onToggleSavedCommunityItem("feed", message.id)}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
@@ -22024,6 +22471,8 @@ function CommunitySection({
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
+                    accessibilityLabel={`Report post from ${message.author}`}
+                    accessibilityHint="Flags this post for moderator review"
                     onPress={() =>
                       onReportCommunityItem(
                         "feed",
@@ -22058,6 +22507,8 @@ function CommunitySection({
         <View style={styles.communityActions}>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel="Clear all saved lines"
+            accessibilityHint="Removes every saved feed post and chat message. This cannot be undone."
             onPress={onClearSavedCommunityItems}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
@@ -22099,6 +22550,8 @@ function CommunitySection({
                 <View style={styles.communityFeedActions}>
                   <Pressable
                     accessibilityRole="button"
+                    accessibilityLabel={`Remove saved post from ${message.author}`}
+                    accessibilityHint="Removes this post from your saved lines"
                     onPress={() => onToggleSavedCommunityItem("feed", message.id)}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
@@ -22131,6 +22584,8 @@ function CommunitySection({
                   <View style={styles.communityFeedActions}>
                     <Pressable
                       accessibilityRole="button"
+                      accessibilityLabel={`Remove saved chat message from ${message.author}`}
+                      accessibilityHint="Removes this chat message from your saved lines"
                       onPress={() => onToggleSavedCommunityItem("chat", message.id)}
                       style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                     >
@@ -22360,48 +22815,16 @@ function SearchSection({
             { label: "Community", onPress: onOpenCommunity }
           ]}
         />
-        {/* ── 48-DIMENSION ISSUE LENS PANEL ── */}
-        {selectedIssueGuide.id !== "general" && (() => {
-          const SEARCH_DIM_COLORS: Record<string, string> = { practical: "#0891B2", emotional: "#F472B6", psychological: "#818CF8", spiritual: "#B45309", cultural: "#059669" };
-          const SEARCH_DIM_ROUTES: Record<string, { practical: string; emotional: string; psychological: string; spiritual: string; cultural: string }> = {
-            anxiety:      { practical: "Find a structured plan, therapist registry, or breathing technique guide", emotional: "Search for peer support groups or online communities for anxiety", psychological: "Look up CBT workbooks or trauma-informed counselling directories", spiritual: "Explore meditative or prayer-based anxiety relief resources", cultural: "Find culturally-appropriate local support for anxiety and worry" },
-            anger:        { practical: "Find anger management programmes or conflict resolution workshops", emotional: "Search peer support for processing anger without acting out", psychological: "Look up psychoeducation on anger triggers and impulse control", spiritual: "Find forgiveness-based or contemplative anger cooling resources", cultural: "Explore community-led justice and reconciliation routes" },
-            grief:        { practical: "Find bereavement counselling or legal estate-support contacts", emotional: "Search grief support groups and community companions", psychological: "Look up stages-of-grief guides and trauma integration resources", spiritual: "Find prayer, ritual, or spiritual grief companions near you", cultural: "Search culturally specific mourning and memorial support" },
-            burnout:      { practical: "Find occupational health, HR support, or legal employment guidance", emotional: "Search burnout recovery communities and peer support", psychological: "Look up mental fatigue education and recovery schedules", spiritual: "Find rest-and-restoration spiritual retreat resources", cultural: "Explore community balance and family role negotiation guides" },
-            trauma:       { practical: "Find EMDR or trauma-focused therapists and survivor helplines", emotional: "Search trauma survivor peer networks and safe spaces", psychological: "Look up PTSD education, somatic therapy, and grounding tools", spiritual: "Find spiritual healing and ancestral healing practice guides", cultural: "Search culturally sensitive trauma support and advocacy groups" },
-            loneliness:   { practical: "Find community centres, social clubs, or volunteering opportunities", emotional: "Search loneliness support communities and befriending services", psychological: "Look up attachment theory education and social skill-building resources", spiritual: "Find spiritual community, sangha, or congregational connection paths", cultural: "Explore cultural reunion events, diaspora groups, or festivals" },
-            relationship: { practical: "Find mediation services, couples counselling, and legal guidance", emotional: "Search relationship support groups and communication skill resources", psychological: "Look up attachment styles, conflict dynamics, and couples therapy guides", spiritual: "Find faith-based or values-aligned relationship mentoring resources", cultural: "Explore culturally specific family mediation and relationship guides" },
-            financial:    { practical: "Find debt counselling, government benefits, and financial planning tools", emotional: "Search financial stress support communities and peer forums", psychological: "Look up money mindset education and financial anxiety resources", spiritual: "Find values-based financial ethics and generosity guidance", cultural: "Explore community lending schemes and cultural financial support networks" },
-            identity:     { practical: "Find legal name-change support, career guidance, and rights resources", emotional: "Search identity and self-esteem support communities", psychological: "Look up self-concept theory and identity integration resources", spiritual: "Find purpose-finding retreats or spiritual direction services", cultural: "Explore heritage, diaspora, and cultural identity support groups" },
-          };
-          const rec = SEARCH_DIM_ROUTES[selectedIssueGuide.id];
-          if (!rec) return null;
-          const dims = [
-            { key: "practical",     label: "🎯 Practical",     text: rec.practical },
-            { key: "emotional",     label: "💗 Emotional",     text: rec.emotional },
-            { key: "psychological", label: "🧠 Psychological", text: rec.psychological },
-            { key: "spiritual",     label: "✨ Spiritual",     text: rec.spiritual },
-            { key: "cultural",      label: "🌍 Cultural",      text: rec.cultural },
-          ];
-          return (
-            <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(34,211,238,0.15)", overflow: "hidden" }}>
-              <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                <Text style={{ color: "#0891B2", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>48-Dimension Search Guide</Text>
-                <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{selectedIssueGuide.label}</Text>
-              </View>
-              <Text style={{ color: "#6A8899", fontSize: 11, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Each dimension suggests where to search for the best match to your situation.</Text>
-              {dims.map((dim) => (
-                <View key={dim.key} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 7, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
-                  <View style={{ width: 3, borderRadius: 2, backgroundColor: SEARCH_DIM_COLORS[dim.key], alignSelf: "stretch", marginRight: 10, marginTop: 1 }} />
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: SEARCH_DIM_COLORS[dim.key], fontSize: 10, fontWeight: "700", marginBottom: 2 }}>{dim.label}</Text>
-                    <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }} numberOfLines={2}>{dim.text}</Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          );
-        })()}
+        {/* Real 48-axis library, not a 5-field table pretending to be one.
+            Also closes Explore's biggest gap: it previously had zero
+            adaptive logic beyond this one static lookup -- this panel now
+            reacts to Path's actually-detected themes too, not just the
+            manually tapped issue chip. */}
+        <SupportDimensionLibraryPanel
+          eyebrow="🔍 Where to look"
+          actionLabel="Search for"
+          accentColor="#0891B2"
+        />
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -22693,27 +23116,12 @@ function PlaySection({
               : "The practice loop starts with a few useful cards only."}
           </Text>
         </View>
-        {/* 48-dimension issue lens strip for Practice */}
-        <View style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, gap: 10, borderWidth: 1, borderColor: "rgba(99,222,208,0.15)" }}>
-          <Text style={{ color: "#0891B2", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            {selectedIssueGuide.label} — 5 dimensions
-          </Text>
-          {[
-            { label: "Practical", text: selectedIssueGuide.logicalLens, color: "#059669" },
-            { label: "Emotional", text: selectedIssueGuide.emotionalLens, color: "#B80064" },
-            { label: "Psychological", text: selectedIssueGuide.theoreticalLens, color: "#818CF8" },
-            { label: "Spiritual", text: selectedIssueGuide.spiritualLens, color: "#B45309" },
-            { label: "Cultural", text: selectedIssueGuide.culturalLens, color: "#B85300" },
-          ].map((dim) => (
-            <View key={dim.label} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start" }}>
-              <View style={{ width: 3, borderRadius: 2, backgroundColor: dim.color, alignSelf: "stretch", minHeight: 14 }} />
-              <View style={{ flex: 1 }}>
-                <Text style={{ color: dim.color, fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>{dim.label}</Text>
-                <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17, marginTop: 1 }}>{dim.text}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
+        {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+        <SupportDimensionLibraryPanel
+          eyebrow="🎯 Practice focus"
+          actionLabel="Try"
+          accentColor="#059669"
+        />
         <Text style={styles.smallMeta}>Current issue: {selectedIssueGuide.label}</Text>
         <Text style={styles.smallMeta}>
           Profile lens: {selectedIdentity.label} / {practiceCritique.priorityIds.length} practical loops
@@ -22993,47 +23401,6 @@ function IssueGuideSection({
               <Text style={styles.profileSummaryLabel}>{l("Escalate when", { hindi: "कब आगे बढ़ाएँ", punjabi: "ਕਦੋਂ ਅੱਗੇ ਵਧਾਓ", marathi: "कधी escalate करायचे", telugu: "ఎప్పుడు escalate చేయాలి", tamil: "எப்போது escalate செய்ய வேண்டும்", urdu: "کب escalate کریں" })}</Text>
               <Text style={styles.profileSummaryValue}>{selectedIssueGuide.urgentNote}</Text>
             </View>
-          </View>
-        </View>
-        <View style={styles.issueCompassBand}>
-          <View style={[styles.sectionHeader, !isWide && styles.sectionHeaderCompact]}>
-            <View>
-              <Text style={styles.eyebrow}>{l("Path", { hindi: "पथ", punjabi: "ਰਾਹ", marathi: "मार्ग", telugu: "మార్గం", tamil: "பாதை", urdu: "راستہ" })}</Text>
-              <Text
-                style={[
-                  styles.sectionTitleSmall,
-                  !isWide && styles.sectionTitleSmallCompact
-                ]}
-                numberOfLines={2}
-              >
-                {l("Practical route", { hindi: "व्यावहारिक route", punjabi: "ਵਿਹਾਰਕ ਰਾਹ", marathi: "व्यावहारिक route", telugu: "ప్రాక్టికల్ route", tamil: "நடைமுறை பாதை", urdu: "عملی راستہ" })}
-              </Text>
-          </View>
-          <Text style={styles.smallMeta}>{l("science + wisdom", { hindi: "विज्ञान + wisdom", punjabi: "ਵਿਗਿਆਨ + wisdom", marathi: "विज्ञान + wisdom", telugu: "science + wisdom", tamil: "அறிவு + அறிவியல்", urdu: "علم + حکمت" })}</Text>
-        </View>
-        <Text style={styles.promptText}>
-            {l(
-              "Begin with facts, then move to the calmest useful step. The path keeps emotional naming, pattern-checking, spiritual reflection, and cultural awareness in one place.",
-              {
-                hindi: "तथ्यों से शुरू करें, फिर सबसे शांत उपयोगी कदम पर जाएँ। यह path emotional naming, pattern-checking, spiritual reflection, और cultural awareness को एक जगह रखता है।",
-                punjabi: "ਤੱਥਾਂ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋ, ਫਿਰ ਸਭ ਤੋਂ ਸ਼ਾਂਤ ਤੇ ਲਾਭਦਾਇਕ ਕਦਮ ਵੱਲ ਵਧੋ। ਇਹ path emotional naming, pattern-checking, spiritual reflection, ਅਤੇ cultural awareness ਨੂੰ ਇੱਕ ਥਾਂ ਰੱਖਦਾ ਹੈ।",
-                marathi: "तथ्यांपासून सुरू करा, मग सर्वात शांत आणि उपयुक्त पावलाकडे जा. हा path emotional naming, pattern-checking, spiritual reflection, आणि cultural awareness एकाच ठिकाणी ठेवतो.",
-                telugu: "వాస్తవాలతో ప్రారంభించి, తర్వాత అత్యంత శాంతమైన ఉపయోగకరమైన అడుగుకు వెళ్లండి. ఈ path emotional naming, pattern-checking, spiritual reflection, మరియు cultural awareness ను ఒకచోట ఉంచుతుంది.",
-                tamil: "உண்மைகளுடன் தொடங்கி, பிறகு மிக அமைதியான பயனுள்ள படிக்கு செல்லுங்கள். இந்த பாதை emotional naming, pattern-checking, spiritual reflection, மற்றும் cultural awareness-ஐ ஒரே இடத்தில் வைத்திருக்கிறது.",
-                urdu: "حقائق سے شروع کریں، پھر سب سے پرسکون مفید قدم کی طرف بڑھیں۔ یہ path emotional naming، pattern-checking، spiritual reflection، اور cultural awareness کو ایک جگہ رکھتا ہے۔"
-              }
-            )}
-          </Text>
-          <View style={styles.careLensGrid}>
-            {careLenses.map((lens) => (
-              <View key={lens.id} style={styles.careLensChip}>
-                <View style={[styles.careLensDot, { backgroundColor: lens.accent }]} />
-                <View style={styles.careLensCopy}>
-                  <Text style={styles.careLensLabel}>{lens.label}</Text>
-                  <Text style={styles.careLensMeta}>{lens.meta}</Text>
-                </View>
-              </View>
-            ))}
           </View>
         </View>
         <View style={styles.issueChipGrid}>
@@ -24813,7 +25180,8 @@ function RouteDecisionOverlay({
             borderWidth: 1,
             borderColor: "rgba(255,255,255,0.06)"
           }}>
-            <Text style={{ color: "#298F7F", fontSize: 10, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            {/* #298F7F was 3.3:1 on this card's background -- darkened. */}
+            <Text style={{ color: "#0A5C58", fontSize: 10, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
               Analysis
             </Text>
             <Text style={{ color: "#3A577D", fontSize: 14, lineHeight: 20 }}>
@@ -25193,27 +25561,12 @@ function InsightsSection({
         <SignalRow label="Weak spot" value={patternCritique.warning} />
         <SignalRow label="Next test" value={patternCritique.next} />
         <SignalRow label="Support lens" value={supportiveLens} />
-        {/* ── 48-dimension lens breakdown ── */}
-        <View style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, gap: 10, borderWidth: 1, borderColor: "rgba(99,222,208,0.15)", marginTop: 10, marginBottom: 4 }}>
-          <Text style={{ color: "#0891B2", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            {selectedIssueGuide.label} — 5 dimensions
-          </Text>
-          {[
-            { label: "Practical", text: selectedIssueGuide.logicalLens, color: "#059669" },
-            { label: "Emotional", text: selectedIssueGuide.emotionalLens, color: "#B80064" },
-            { label: "Psychological", text: selectedIssueGuide.theoreticalLens, color: "#818CF8" },
-            { label: "Spiritual", text: selectedIssueGuide.spiritualLens, color: "#B45309" },
-            { label: "Cultural", text: selectedIssueGuide.culturalLens, color: "#B85300" },
-          ].map((dim) => (
-            <View key={dim.label} style={{ flexDirection: "row", gap: 10, alignItems: "flex-start" }}>
-              <View style={{ width: 3, borderRadius: 2, backgroundColor: dim.color, alignSelf: "stretch", minHeight: 14 }} />
-              <View style={{ flex: 1 }}>
-                <Text style={{ color: dim.color, fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>{dim.label}</Text>
-                <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17, marginTop: 1 }}>{dim.text}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
+        {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+        <SupportDimensionLibraryPanel
+          eyebrow="📊 Watch for"
+          actionLabel="Signal"
+          accentColor="#818CF8"
+        />
         <View style={styles.issueCalloutActions}>
           <Pressable
             accessibilityRole="button"
@@ -26874,11 +27227,14 @@ function BirthChartSection({
                 Element: {lagnaInfo.lagna.element}. Nature: {lagnaInfo.lagna.nature}.
               </Text>
               {lagnaInfo.precise ? (
-                <Text style={{ color: "#4ADE80", fontSize: 11, marginTop: 6, fontWeight: "700" }}>
+                // Both branches here used leftover dark-theme colors
+                // (#4ADE80, #B88400) at ~1.5-2.8:1 against this card's light
+                // background (#E1EEEC) -- darkened to 5.6/5.7:1.
+                <Text style={{ color: "#0D6B36", fontSize: 11, marginTop: 6, fontWeight: "700" }}>
                   ✓ Precise: calculated from your birth place's real coordinates (Local Sidereal Time + latitude), not an estimate.
                 </Text>
               ) : (
-                <Text style={{ color: "#B88400", fontSize: 11, marginTop: 6, fontWeight: "700" }}>
+                <Text style={{ color: "#8A4B00", fontSize: 11, marginTop: 6, fontWeight: "700" }}>
                   ⚠ Estimated: {birthPlaceGeocodeStatus === "failed"
                     ? "we could not locate your birth place — try adding city, state, and country (e.g. \"Jammu, Jammu and Kashmir, India\") for a precise Lagna."
                     : birthPlaceGeocodeStatus === "loading"
@@ -28942,14 +29298,17 @@ function PrivateIntakeOverlay({
 
 // ── Persistent Bottom Navigation Bar ──────────────────────────────────────────
 // 5 primary tabs always visible. "More" opens the section switcher modal.
-// Primary nav: Today / Journal / Calm / Patterns / Profile
+// Primary nav: Today / Journal / Meditation / Patterns / Profile
 // Community, Explore, Birth Chart, Practice, Tones accessible via Pages
+// "Calm" (the old standalone Reset tab) is gone from primary nav — Meditation
+// is now the single always-visible entry point for calm, and its tab body
+// includes the former Calm/Reset timer, guidance paths, and wisdom content.
 const PRIMARY_NAV_TABS: Array<{ id: TabId | "more"; label: string; icon: string }> = [
-  { id: "today",    label: "Today",    icon: "🏠" },
-  { id: "journal",  label: "Journal",  icon: "✍️" },
-  { id: "focus",    label: "Calm",     icon: "🌿" },
-  { id: "insights", label: "Patterns", icon: "📊" },
-  { id: "settings", label: "Profile",  icon: "👤" },
+  { id: "today",      label: "Today",      icon: "🏠" },
+  { id: "journal",    label: "Journal",    icon: "✍️" },
+  { id: "meditation", label: "Meditation", icon: "🪷" },
+  { id: "insights",   label: "Patterns",   icon: "📊" },
+  { id: "settings",   label: "Profile",    icon: "👤" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -29545,6 +29904,95 @@ function formatSupportDimensionLabels(guides: SupportDimensionGuide[]) {
     .join(", ");
 }
 
+// ── Real 48-axis reference panel, reused across every section ──────────────
+// Several sections used to show a "48-Dimension" title over a hardcoded
+// 5-field (practical/emotional/psychological/spiritual/cultural) lookup
+// table -- 5 items pretending to be 48. This renders the ACTUAL 48-entry
+// supportDimensionGuides dataset instead, the same real data that already
+// powers Path's counselling engine. Entries the user has actually surfaced
+// this session (activeJourney.detectedThemes, a real classifier output) or
+// that belong to their active issue sort to the top; the rest remain
+// browsable underneath as a genuine, complete 48-item library.
+function orderSupportDimensionsByRelevance(
+  issueId: IssueId,
+  detectedThemes: SupportDimensionId[]
+): SupportDimensionGuide[] {
+  const detectedSet = new Set(detectedThemes);
+  const relevanceScore = (guide: SupportDimensionGuide) =>
+    (detectedSet.has(guide.id) ? 2 : 0) + (guide.issueId === issueId ? 1 : 0);
+  return Object.values(supportDimensionGuides).sort(
+    (a, b) => relevanceScore(b) - relevanceScore(a)
+  );
+}
+
+function SupportDimensionLibraryPanel({
+  eyebrow,
+  actionLabel,
+  accentColor = "#0891B2"
+}: {
+  eyebrow: string;
+  actionLabel: string;
+  accentColor?: string;
+}) {
+  const { issueGuide, detectedThemes } = useCrossSectionSignal();
+  const [expanded, setExpanded] = useState(false);
+  const ordered = useMemo(
+    () => orderSupportDimensionsByRelevance(issueGuide.id, detectedThemes),
+    [issueGuide.id, detectedThemes]
+  );
+  const isRelevant = (guide: SupportDimensionGuide) =>
+    guide.issueId === issueGuide.id || detectedThemes.includes(guide.id);
+  const relevantCount = ordered.filter(isRelevant).length;
+  const visible = expanded ? ordered : ordered.slice(0, 6);
+
+  return (
+    <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#E1EEEC", borderRadius: 16, borderWidth: 1, borderColor: accentColor + "33", overflow: "hidden" }}>
+      <View style={{ backgroundColor: accentColor + "14", paddingHorizontal: 14, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <Text style={{ color: accentColor, fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
+          {eyebrow} · all 48 dimensions
+        </Text>
+        <Text style={{ color: "#5B7A8A", fontSize: 10 }}>{issueGuide.label}</Text>
+      </View>
+      <Text style={{ color: "#6A8899", fontSize: 11, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4, lineHeight: 16 }}>
+        {relevantCount > 0
+          ? `${relevantCount} of the 48 support dimensions match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} — shown first.`
+          : "The full 48-dimension support library, the same real data used by Path's counselling engine."}
+      </Text>
+      {visible.map((guide, i) => {
+        const relevant = isRelevant(guide);
+        return (
+          <View
+            key={guide.id}
+            style={{
+              flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 8,
+              borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(255,255,255,0.05)",
+              backgroundColor: relevant ? accentColor + "0C" : "transparent"
+            }}
+          >
+            <View style={{ width: 3, borderRadius: 2, alignSelf: "stretch", marginRight: 10, marginTop: 1, backgroundColor: relevant ? accentColor : "rgba(100,116,139,0.25)" }} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: relevant ? accentColor : "#5B7A8A", fontSize: 10, fontWeight: "800", textTransform: "capitalize", marginBottom: 2 }}>
+                {guide.label}
+              </Text>
+              <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }}>{actionLabel}: {guide.firstAction}</Text>
+            </View>
+          </View>
+        );
+      })}
+      <Pressable
+        onPress={() => setExpanded((value) => !value)}
+        accessibilityRole="button"
+        accessibilityLabel={expanded ? "Show fewer dimensions" : "Show all 48 dimensions"}
+        style={{ paddingVertical: 10, alignItems: "center", borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.06)" }}
+      >
+        <Text style={{ color: accentColor, fontSize: 11, fontWeight: "800" }}>
+          {expanded ? "Show fewer ↑" : `Show all 48 dimensions ↓ (${ordered.length - visible.length} more)`}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function buildSupportDimensionQuestionBank(theme: SupportDimensionId): string[] {
   const guide = supportDimensionGuides[theme] ?? supportDimensionGuides.direction;
   const label = guide.label;
@@ -30083,6 +30531,15 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
     });
   }
 
+  // ── 8.5. Practice — turn insight into a concrete small action ──────────────────
+  steps.push({
+    tabId: "play",
+    label: "Turn it into action",
+    emoji: "🎯",
+    reason: "A small, specific challenge translates what you've named into something you actually do today.",
+    completed: false, skipped: false
+  });
+
   // ── 9. Insights — always last ─────────────────────────────────────────────────
   steps.push({
     tabId: "insights",
@@ -30455,9 +30912,15 @@ function CounselingChatModal({
             accessibilityRole="button"
             accessibilityLabel={voiceAssistEnabled ? "Mute spoken replies" : "Unmute spoken replies"}
             accessibilityState={{ selected: !voiceAssistEnabled }}
-            style={{ marginRight: 14 }}
+            style={{ marginRight: 14, flexDirection: "row", alignItems: "center", gap: 4 }}
           >
             <Text style={{ fontSize: 19 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
+            {/* Icon-only was ambiguous (mute vs. unmute isn't obvious from the
+                glyph alone) -- a short label next to it makes the tap target
+                self-explanatory without the person needing to guess. */}
+            <Text style={{ color: "#64748B", fontSize: 11, fontWeight: "700" }}>
+              {voiceAssistEnabled ? "Stop speaker" : "Unmute speaker"}
+            </Text>
           </Pressable>
           <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
             <Text style={{ color: "#64748B", fontSize: 13 }}>Skip →</Text>
@@ -30854,8 +31317,15 @@ function BottomNavBar({
   insightsBadge?: boolean;
   languageId?: LanguageId;
 }) {
+  // "focus" no longer has its own primary-nav pill (it renders inside the
+  // Meditation tab now), but internal code still navigates to it directly
+  // in ~20 places (journeys, low-mood nudges, situation cards). Without this
+  // normalization, landing on "focus" would fail to highlight Meditation
+  // AND incorrectly light up the Profile pill (since "focus" would no
+  // longer match any primary id, tripping the secondaryTabActive fallback).
+  const navActiveTab: TabId = activeTab === "focus" ? "meditation" : activeTab;
   const primaryIds = PRIMARY_NAV_TABS.map(t => t.id as string);
-  const secondaryTabActive = !primaryIds.includes(activeTab) && activeTab !== "settings";
+  const secondaryTabActive = !primaryIds.includes(navActiveTab) && navActiveTab !== "settings";
 
   return (
     <View style={[styles.bottomNav, Platform.OS === "ios" && { paddingBottom: 28 }]}>
@@ -30863,8 +31333,8 @@ function BottomNavBar({
         const label = translateNavLabel(languageId, item.label);
         const isActive =
           item.id === "settings"
-            ? activeTab === "settings" || secondaryTabActive
-            : activeTab === item.id;
+            ? navActiveTab === "settings" || secondaryTabActive
+            : navActiveTab === item.id;
         const hasBadge =
           (item.id === "insights" && insightsBadge && !isActive);
         return (
@@ -31821,6 +32291,22 @@ function normalizeCommunityMessages(value: unknown): CommunityMessage[] {
     .slice(0, 60);
 }
 
+function pruneExpiredTyping(
+  current: Record<string, { displayName: string; expiresAt: number }>,
+  now: number
+): Record<string, { displayName: string; expiresAt: number }> {
+  let changed = false;
+  const next: Record<string, { displayName: string; expiresAt: number }> = {};
+  for (const [key, value] of Object.entries(current)) {
+    if (value.expiresAt > now) {
+      next[key] = value;
+    } else {
+      changed = true;
+    }
+  }
+  return changed ? next : current;
+}
+
 function mergeCommunityMessages(current: CommunityMessage[], incoming: CommunityMessage | CommunityMessage[]) {
   const incomingList = Array.isArray(incoming) ? incoming : [incoming];
   const byId = new Map<string, CommunityMessage>();
@@ -32604,7 +33090,8 @@ const styles = StyleSheet.create({
     gap: 3
   },
   routeFollowUpEyebrow: {
-    color: "#00B8A4",
+    // #00B8A4 was 2.1:1 on this card's #E1EEEC background -- darkened.
+    color: "#0A5C58",
     fontSize: 10,
     lineHeight: 12,
     fontWeight: "900",
@@ -32618,7 +33105,9 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   routeFollowUpText: {
-    color: "rgba(241,245,249,0.68)",
+    // Translucent near-white (a dark-theme leftover) was ~1.1:1 on this
+    // card's light background -- effectively invisible body copy.
+    color: "#446573",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -32629,7 +33118,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(14, 204, 184, 0.30)",
     backgroundColor: "#E1EEEC",
-    color: "#298F7F",
+    // #298F7F was 3.3:1 on this pill's own background -- darkened.
+    color: "#0A5C58",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "900",
@@ -33154,7 +33644,8 @@ const styles = StyleSheet.create({
   },
   homeToneChipMarkActive: {
     backgroundColor: "#0E6F69",
-    color: "#0D1F22"
+    // Near-black text on this dark teal was 2.8:1 -- flipped to white (7:1+).
+    color: "#FFFFFF"
   },
   homeToneChipLabel: {
     color: "rgba(255,255,255,0.85)",
@@ -33417,7 +33908,9 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     backgroundColor: "#B45309",
-    color: "#1A2A10",
+    // Near-black text on this dark amber was 3:1, below AA even for this
+    // bold single-character mark -- flipped to white (5:1).
+    color: "#FFFFFF",
     fontSize: 11,
     lineHeight: 24,
     textAlign: "center",
@@ -36852,7 +37345,11 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "rgba(196,163,90,0.35)",
     backgroundColor: "rgba(196,163,90,0.06)",
-    color: "#AF8709",
+    // #AF8709 (washed-out amber) on this near-transparent field -- which
+    // sits on the admin card's #E2EBEE background -- was 2.8:1. This is the
+    // actual typed admin ID/code, not a placeholder, so it needs to be
+    // clearly legible: switched to the app's standard dark text (14:1).
+    color: "#0D1F22",
     fontSize: 15,
     fontWeight: "600",
     paddingHorizontal: 16,
@@ -36911,7 +37408,11 @@ const styles = StyleSheet.create({
   adminAuthButtonLabel: {
     fontSize: 15,
     fontWeight: "800",
-    color: "#4ADE80",
+    // #4ADE80 (a bright, light green meant for a dark button) on this
+    // button's light mint background (#E2EEE8) was ~1.5:1 contrast --
+    // effectively invisible on the admin login screen's main CTA. Swapped
+    // to a dark green matching the button's own border color for 8:1.
+    color: "#0F4F30",
     letterSpacing: 0.4
   },
   adminAuthFooter: {
@@ -37191,6 +37692,72 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     flexShrink: 1,
     minWidth: 0
+  },
+  communitySyncRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    marginBottom: 12
+  },
+  communitySyncDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4
+  },
+  communityUnreadPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    gap: 6,
+    backgroundColor: "#0E9488",
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 10
+  },
+  communityUnreadPillLabel: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "700"
+  },
+  communityTypingHint: {
+    color: "#0E9488",
+    fontSize: 12,
+    fontWeight: "700",
+    fontStyle: "italic",
+    marginBottom: 6
+  },
+  communityReactionRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    marginTop: 8
+  },
+  communityReactionChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#E1EEEC",
+    borderRadius: 14,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: "transparent"
+  },
+  communityReactionChipActive: {
+    backgroundColor: "#0E9488",
+    borderColor: "#0A5C58"
+  },
+  communityReactionChipEmoji: {
+    fontSize: 13
+  },
+  communityReactionChipCount: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#0A5C58"
+  },
+  communityReactionChipCountActive: {
+    color: "#FFFFFF"
   },
   preferenceRow: {
     minHeight: 64,
@@ -37917,17 +38484,34 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   focusStepIndexActive: {
-    backgroundColor: "#B45309"
+    backgroundColor: "#B45309",
+    // The default focusStepIndex text color (#0D1F22, near-black) was left
+    // over from before the active-step number switched to this dark amber
+    // circle -- 3.4:1 contrast, fails WCAG AA even for large bold text.
+    // White reads cleanly against #B45309 (5:1).
+    color: "#FFFFFF"
   },
   focusStepText: {
     flex: 1,
-    color: "#7F6D39",
+    // #7F6D39 on this row's near-white background (focusStepRow is an 8%
+    // white tint over the #E1EEEC card) measured ~4.3:1 -- a hair below the
+    // 4.5:1 AA floor for 13px bold text, which is why it read as washed out.
+    // Darkened to #5F4E22, ~6.85:1, while staying in the same olive family.
+    color: "#5F4E22",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "700"
   },
   focusStepTextActive: {
-    color: "#FFFFFF"
+    // Leftover from a dark-theme version of this card: white text made
+    // sense when focusStepRowActive sat on a dark background. The card is
+    // now the light #E1EEEC surface everywhere, and focusStepRowActive is
+    // only a 10%-opacity gold tint over it -- so white text here was
+    // landing at ~1.2:1 contrast, effectively invisible while a session is
+    // running. Swapped to a dark amber that reads clearly (8:1+) and still
+    // reads as "active" against the gold-tinted row.
+    color: "#5C3D00",
+    fontWeight: "800"
   },
   insightBand: {
     borderRadius: 8,
@@ -39507,7 +40091,10 @@ const styles = StyleSheet.create({
   },
   vedicRashiMetaItem: {
     fontSize: 11,
-    color: "rgba(196,181,253,0.7)",
+    // Light lavender at 70% opacity on this chip's near-white tinted
+    // background (~1.3:1 contrast, effectively invisible) -- a leftover
+    // dark-theme value. Solid dark purple reads at 8:1+ here.
+    color: "#4C1D95",
     fontWeight: "600",
     backgroundColor: "rgba(139,92,246,0.08)",
     borderRadius: 8,
@@ -39553,7 +40140,9 @@ const styles = StyleSheet.create({
   },
   vedicLuckyLabel: {
     fontSize: 10,
-    color: "rgba(196,181,253,0.6)",
+    // Same leftover light-lavender-on-light-card issue as the other Vedic
+    // purple text fixed above.
+    color: "#4C1D95",
     fontWeight: "600"
   },
   vedicMantraBox: {
@@ -39582,7 +40171,7 @@ const styles = StyleSheet.create({
   },
   vedicMantraHint: {
     fontSize: 10,
-    color: "rgba(196,181,253,0.55)",
+    color: "#4C1D95",
     textAlign: "center"
   },
   vedicDisclaimer: {
@@ -39618,7 +40207,10 @@ const styles = StyleSheet.create({
   },
   vedicSetupSub: {
     fontSize: 12,
-    color: "rgba(196,181,253,0.7)",
+    // Light lavender at 70% opacity on this chip's near-white tinted
+    // background (~1.3:1 contrast, effectively invisible) -- a leftover
+    // dark-theme value. Solid dark purple reads at 8:1+ here.
+    color: "#4C1D95",
     lineHeight: 17
   },
   vedicSetupArrow: {
@@ -39787,7 +40379,11 @@ const styles = StyleSheet.create({
   birthChartExactBadge: {
     fontSize: 10,
     fontWeight: "900",
-    color: "#0891B2",
+    // #0891B2 reads fine on a solid light card, but this badge's own tinted
+    // pill background (16% teal over the card) darkens the effective
+    // backdrop enough to drop it to ~2.5:1. A darker teal keeps the "exact"
+    // badge legible (5:1+) without changing the pill's color scheme.
+    color: "#0A5C58",
     backgroundColor: "rgba(14,111,105,0.16)",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.25)",
