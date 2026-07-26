@@ -21,7 +21,8 @@ import {
   StatusBar,
   StyleSheet,
   Switch,
-  Text,
+  Text as RNText,
+  type TextProps,
   TextInput,
   Share,
   useColorScheme,
@@ -71,7 +72,16 @@ import {
   type RealtimeCommunityTypingEvent
 } from "./realtimeCommunity";
 
-const TextWithDefaults = Text as unknown as { defaultProps?: Record<string, unknown> };
+const APP_TEXT_WRAP_GUARD = {
+  maxWidth: "100%" as const,
+  flexShrink: 1 as const,
+};
+
+function Text({ style, ...props }: TextProps) {
+  return <RNText {...props} style={[APP_TEXT_WRAP_GUARD, style]} />;
+}
+
+const TextWithDefaults = RNText as unknown as { defaultProps?: Record<string, unknown> };
 const TextInputWithDefaults = TextInput as unknown as { defaultProps?: Record<string, unknown> };
 
 TextWithDefaults.defaultProps = {
@@ -33975,6 +33985,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "100%",
+    minWidth: 0,
     maxWidth: 1180,
     alignSelf: "center",
     paddingHorizontal: 14,
@@ -34199,6 +34210,8 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   topTabLabel: {
+    minWidth: 0,
+    flexShrink: 1,
     color: "rgba(13,31,34,0.72)",
     fontSize: 12,
     lineHeight: 16,
@@ -34499,6 +34512,8 @@ const styles = StyleSheet.create({
     lineHeight: 17
   },
   homeVisionIntroCard: {
+    maxWidth: "100%",
+    overflow: "hidden",
     marginHorizontal: 16,
     marginBottom: 12,
     borderRadius: 18,
@@ -34539,6 +34554,9 @@ const styles = StyleSheet.create({
     gap: 8
   },
   homeVisionPill: {
+    maxWidth: "100%",
+    minWidth: 0,
+    flexShrink: 1,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: "rgba(8,145,178,0.28)",
@@ -34576,7 +34594,9 @@ const styles = StyleSheet.create({
   },
   visitReportCard: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 170,
+    minWidth: 0,
     minHeight: 84,
     borderRadius: 9,
     borderWidth: 1,
@@ -34656,7 +34676,9 @@ const styles = StyleSheet.create({
   },
   homeCommunityFeatureCard: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 150,
+    minWidth: 0,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(30,80,200,0.22)",
@@ -34713,6 +34735,11 @@ const styles = StyleSheet.create({
     marginTop: 2
   },
   homeOverviewButton: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 120,
+    minWidth: 0,
+    maxWidth: "100%",
     minHeight: 42,
     borderRadius: 8,
     backgroundColor: "#E1EEEC",
@@ -34730,6 +34757,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   homeOverviewButtonSecondary: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 120,
+    minWidth: 0,
+    maxWidth: "100%",
     minHeight: 42,
     borderRadius: 8,
     borderWidth: 1,
@@ -34749,6 +34781,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   homeToneBand: {
+    maxWidth: "100%",
+    overflow: "hidden",
     marginTop: 10,
     borderRadius: 8,
     borderWidth: 1,
@@ -34771,7 +34805,12 @@ const styles = StyleSheet.create({
     gap: 4
   },
   homeToneBandButton: {
-    minHeight: 24,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 112,
+    minWidth: 0,
+    maxWidth: "100%",
+    minHeight: 32,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#0E6F69",
@@ -34797,7 +34836,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start"
   },
   homeToneBandButtonSecondary: {
-    minHeight: 24,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 112,
+    minWidth: 0,
+    maxWidth: "100%",
+    minHeight: 32,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#A57B12",
@@ -34851,7 +34895,9 @@ const styles = StyleSheet.create({
   },
   homeToneLibraryPreviewCard: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 164,
+    minWidth: 0,
     borderRadius: 12,
     borderWidth: 1.5,
     backgroundColor: "#F8FAFC",
@@ -34877,8 +34923,9 @@ const styles = StyleSheet.create({
   },
   homeToneQuickStrip: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "flex-start",
-    gap: 4,
+    gap: 6,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
@@ -34904,13 +34951,15 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   homeToneQuickNote: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 150,
     minWidth: 0,
     color: "#24384A",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
-    textAlign: "right"
+    textAlign: "left"
   },
   homeToneFeaturedCard: {
     borderRadius: 14,
@@ -35181,7 +35230,7 @@ const styles = StyleSheet.create({
   tonePresetRow: {
     flexDirection: "row",
     gap: 4,
-    flexWrap: "nowrap"
+    flexWrap: "wrap"
   },
   tonePresetChip: {
     borderRadius: 16,
@@ -35204,6 +35253,8 @@ const styles = StyleSheet.create({
     color: "#00B8A4"
   },
   homeSafetyStrip: {
+    maxWidth: "100%",
+    overflow: "hidden",
     marginTop: 0,
     marginBottom: 12,
     borderRadius: 16,
@@ -35225,7 +35276,9 @@ const styles = StyleSheet.create({
   },
   homeRedressInfoCard: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 148,
+    minWidth: 0,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(199,63,51,0.26)",
@@ -35333,8 +35386,8 @@ const styles = StyleSheet.create({
     gap: 8
   },
   heroModeChipCompact: {
-    flexBasis: "48%",
-    maxWidth: "48%",
+    flexBasis: "100%",
+    maxWidth: "100%",
     justifyContent: "flex-start"
   },
   heroModeChipCalm: {
@@ -35359,6 +35412,8 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   heroModeChipCopy: {
+    flex: 1,
+    minWidth: 0,
     gap: 1
   },
   heroModeChipLabel: {
@@ -35390,6 +35445,7 @@ const styles = StyleSheet.create({
   },
   emergencyCopy: {
     flex: 1,
+    minWidth: 0,
     gap: 2
   },
   emergencyEyebrow: {
@@ -35411,7 +35467,8 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   emergencyButton: {
-    minWidth: 88,
+    flexShrink: 0,
+    minWidth: 72,
     minHeight: 40,
     borderRadius: 8,
     backgroundColor: "#C73F33",
@@ -35461,6 +35518,7 @@ const styles = StyleSheet.create({
   },
   communityHeroCopy: {
     flex: 1,
+    minWidth: 0,
     gap: 2
   },
   communityHeroEyebrow: {
@@ -35693,6 +35751,7 @@ const styles = StyleSheet.create({
   },
   footerBrandCopy: {
     flex: 1,
+    minWidth: 0,
     gap: 2
   },
   footerBrandTitle: {
@@ -35744,7 +35803,9 @@ const styles = StyleSheet.create({
   },
   footerQuickAction: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 118,
+    minWidth: 0,
     minHeight: 52,
     borderRadius: 8,
     borderWidth: 1,
@@ -35839,6 +35900,7 @@ const styles = StyleSheet.create({
   },
   footerMiniCopy: {
     flex: 1,
+    minWidth: 0,
     gap: 2
   },
   footerMiniLabel: {
@@ -35928,7 +35990,9 @@ const styles = StyleSheet.create({
   },
   legalFooterButton: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 150,
+    minWidth: 0,
     minHeight: 48,
     borderRadius: 8,
     backgroundColor: "#F4F8F7",
@@ -35966,7 +36030,9 @@ const styles = StyleSheet.create({
   },
   issueChip: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 170,
+    minWidth: 0,
     minHeight: 72,
     borderRadius: 8,
     borderWidth: 1,
@@ -36009,6 +36075,7 @@ const styles = StyleSheet.create({
   },
   institutionDetailHeader: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "flex-start",
     justifyContent: "space-between",
     gap: 10
@@ -36028,6 +36095,8 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   institutionKeywordPill: {
+    flexShrink: 1,
+    minWidth: 0,
     borderRadius: 999,
     backgroundColor: "#0E6F69",
     paddingHorizontal: 9,
@@ -36053,7 +36122,9 @@ const styles = StyleSheet.create({
   },
   institutionMiniPanel: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 180,
+    minWidth: 0,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.26)",
@@ -36094,6 +36165,7 @@ const styles = StyleSheet.create({
   },
   institutionPortalCard: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
     gap: 10,
     borderRadius: 12,
@@ -36225,7 +36297,8 @@ const styles = StyleSheet.create({
     color: "#FFFFFF"
   },
   issueStepCopy: {
-    flex: 1
+    flex: 1,
+    minWidth: 0
   },
   issueStepText: {
     color: "#0D1F22",
@@ -36247,7 +36320,9 @@ const styles = StyleSheet.create({
   },
   issueSupportButton: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 160,
+    minWidth: 0,
     minHeight: 64,
     borderRadius: 8,
     borderWidth: 1,
@@ -37925,7 +38000,9 @@ const styles = StyleSheet.create({
   },
   beaconXPillarCard: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 150,
+    minWidth: 0,
     minHeight: 62,
     borderRadius: 8,
     borderWidth: 1,
@@ -37945,6 +38022,7 @@ const styles = StyleSheet.create({
   },
   beaconXPillarCopy: {
     flex: 1,
+    minWidth: 0,
     gap: 2
   },
   beaconXPillarLabel: {
@@ -37991,7 +38069,9 @@ const styles = StyleSheet.create({
   },
   beaconXWisdomChip: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 145,
+    minWidth: 0,
     minHeight: 56,
     borderRadius: 8,
     borderWidth: 1,
@@ -38078,7 +38158,9 @@ const styles = StyleSheet.create({
   },
   beaconXRouteCard: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 160,
+    minWidth: 0,
     minHeight: 82,
     borderRadius: 8,
     borderWidth: 1,
@@ -38111,7 +38193,9 @@ const styles = StyleSheet.create({
   },
   careLensChip: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 150,
+    minWidth: 0,
     minHeight: 52,
     borderRadius: 8,
     backgroundColor: "#F4F8F7",
@@ -38744,7 +38828,9 @@ const styles = StyleSheet.create({
   },
   tabButton: {
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 116,
+    minWidth: 0,
     minHeight: 52,
     borderRadius: 12,
     paddingHorizontal: 10,
@@ -41083,6 +41169,7 @@ const styles = StyleSheet.create({
   },
   bottomNavItem: {
     flex: 1,
+    minWidth: 0,
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
@@ -41114,7 +41201,10 @@ const styles = StyleSheet.create({
     // glow from the pill handles active state
   },
   bottomNavLabel: {
+    width: "100%",
+    maxWidth: "100%",
     fontSize: 12,
+    lineHeight: 16,
     fontWeight: "800",
     color: "#24384A",
     textAlign: "center",

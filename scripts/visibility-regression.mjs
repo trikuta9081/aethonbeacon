@@ -57,7 +57,26 @@ function mustNotMatch(pattern, message) {
   'homeToneChipLabel: {\n    color: "#0D1F22"',
   'homeToneFeaturedUse: {\n    color: "#24384A"',
   'homeVisionIntroCard',
-  'homeSafetyStrip: {\n    marginTop: 0,',
+  `homeSafetyStrip: {\n    maxWidth: "100%",\n    overflow: "hidden",\n    marginTop: 0,`,
 ].forEach((marker) => mustInclude(marker));
+
+
+[
+  'const APP_TEXT_WRAP_GUARD = {',
+  'function Text({ style, ...props }: TextProps)',
+  `topTabLabel: {
+    minWidth: 0,
+    flexShrink: 1,`,
+  `homeToneQuickStrip: {
+    flexDirection: "row",
+    flexWrap: "wrap",`,
+  `tonePresetRow: {
+    flexDirection: "row",
+    gap: 4,
+    flexWrap: "wrap"`,
+  `bottomNavItem: {
+    flex: 1,
+    minWidth: 0,`
+].forEach((marker) => mustInclude(marker, `Expected mobile overflow guard missing: ${marker}`));
 
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, and black-on-dark action/badge text.');
