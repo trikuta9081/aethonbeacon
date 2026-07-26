@@ -23,14 +23,18 @@ echo "==> Step 3: Committing and pushing..."
 rm -f .git/HEAD.lock .git/index.lock
 git add -A
 git add -f dist/
-git commit -m "fix: counseling synthesis closing line + replay-aloud in journey panel
+git commit -m "chore: rebuild web bundle — startup/admin/Help & Redress/voice-mute batch
 
-- buildCounselingSynthesis: complete closing sentence (no more dangling colon)
-- CounselingChatModal: Replay guide summary aloud button added in journey panel
-- Voice: female/male toggle in Settings (persisted), humanized pitch+rate per gender
-- Redress: 11 routes, emergency triage, 4-step flow, evidence checklist, templates
-- 20-dim lens strips on all major tabs; tab banners + issue hint chips everywhere
-- TypeScript: zero errors" || echo "Nothing to commit"
+Web export of the batch already on master:
+- Fixed duplicate first-launch prompt (Onboarding + Account overlays firing
+  at once) and rebuilt Admin Control Centre with a reachable login gate.
+- Help & Redress: fixed unreadable state-name buttons, fixed the domain
+  allowlist so state police/DC links actually open, hardened the 3 panels
+  against blank-space stretch, added the 4 missing draft complaint
+  templates, merged a Quick Exit bar (SOS + read-aloud) into the top panel.
+- Counselling chat: added a 🔊/🔇 mute button in the header, wired to the
+  app-wide voice-assistance switch, so the automatic spoken reply can be
+  silenced without leaving the conversation." || echo "Nothing to commit"
 git push origin master
 # Render's "aethon-beacon-web" service watches the "main" branch on the
 # "render" remote (github.com/trikuta9081/AETHON-beacon-, a DIFFERENT repo
