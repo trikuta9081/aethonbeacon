@@ -48,6 +48,22 @@ assert(source.includes('Score trace:'), 'All-dimensions score trace UI is missin
 assert(source.includes('Care points · remedies made practical'), 'Practical remedy panel is missing');
 assert(source.includes('No Sun-chart prediction is shown'), 'Moon-only no-Sun-chart assurance text is missing');
 
+assert(source.includes('getNavagrahaLongitudes'), 'Advanced Vedic engine must compute all 9 graha longitudes');
+assert(source.includes('buildNavamsaEntries'), 'D9 Navamsa calculation layer is missing');
+assert(source.includes('detectClassicalYogas'), 'Classical Yoga detection layer is missing');
+assert(source.includes('buildAshtakavarga'), 'Ashtakavarga calculation layer is missing');
+assert(source.includes('computeShadbala'), 'Shadbala calculation layer is missing');
+assert(source.includes('Advanced Vedic Engine — D9 Navamsa · Yogas · Ashtakavarga · Shadbala'), 'Advanced Vedic Engine panel is missing');
+assert(source.includes('D1 Rashi Chart — Lagna and all 9 grahas'), 'D1 Rashi chart wheel panel is missing');
+assert(source.includes('D9 Navamsa Chart'), 'D9 Navamsa chart wheel panel is missing');
+assert(source.includes('Rashi → Navamsa detail'), 'Rashi-to-Navamsa detail list is missing');
+assert(source.includes('★ Vargottama'), 'Vargottama flag UI is missing');
+assert(source.includes('South Indian style: signs are fixed to position'), 'South Indian fixed-sign chart explanation is missing');
+assert(source.includes('askTheChartPanel={'), 'Ask-the-chart panel must be passed into BirthChartSection for correct placement');
+assert(source.includes('{askTheChartPanel}'), 'Ask-the-chart panel is not rendered inside BirthChartSection');
+assert(source.includes('return pairs.reverse().flat();'), 'Ask-the-chart history must render newest exchange first while preserving question→reply pairing');
+assert(source.includes("Kala Bala's day/night components, Drik (aspect) Bala, and the full six-divisional-chart Vimshopak Bala are deferred"), 'Partial Shadbala limitations must remain disclosed until fully implemented');
+
 function antardashaDurations(mahadasha) {
   return dashaOrder.map((planet, index) => ({
     planet,
@@ -65,4 +81,4 @@ const sampleNakshatraElapsed = 0.25;
 const expectedBalance = dashaYears[sampleBirthLord] * (1 - sampleNakshatraElapsed);
 assert(expectedBalance === 7.5, `Sample Chandra balance should be 7.5 years; got ${expectedBalance}`);
 
-console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, antardasha totals, and no sun-chart user-facing text.');
+console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, and no sun-chart user-facing text.');
