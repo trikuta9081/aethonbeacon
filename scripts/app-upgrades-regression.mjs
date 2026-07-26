@@ -38,6 +38,12 @@ assertBefore(
   '{ id: "settings", label: "Settings"',
   'Help & Redress must be ordered before Settings/Profile in the page switcher'
 );
+assertBefore(
+  '{ id: "redress",    label: "Help"',
+  '{ id: "settings",   label: "Profile"',
+  'Help must be visible in the primary bottom nav before Profile/other-general access'
+);
+indexOf('safety, SOS, complaint route, and Quick Exit must be one tap away');
 
 // Help & Redress realignment: the former Quick Exit strip must be folded into
 // the Help & Redress panel, before the general route chips, so emergency action

@@ -30293,9 +30293,12 @@ function PrivateIntakeOverlay({
 }
 
 // ── Persistent Bottom Navigation Bar ──────────────────────────────────────────
-// 5 primary tabs always visible. "More" opens the section switcher modal.
-// Primary nav: Today / Journal / Meditation / Patterns / Profile
-// Community, Explore, Birth Chart, Practice, Tones accessible via Pages
+// 5 primary tabs always visible.
+// Primary nav: Today / Journal / Meditation / Help / Profile
+// Help & Redress is intentionally surfaced here (not buried in Pages) because
+// safety, SOS, complaint route, and Quick Exit must be one tap away and visibly
+// above the lower-priority "other/general" surfaces. Patterns, Community,
+// Explore, Birth Chart, Practice, and Tones remain accessible via Pages.
 // "Calm" (the old standalone Reset tab) is gone from primary nav — Meditation
 // is now the single always-visible entry point for calm, and its tab body
 // includes the former Calm/Reset timer, guidance paths, and wisdom content.
@@ -30303,7 +30306,7 @@ const PRIMARY_NAV_TABS: Array<{ id: TabId | "more"; label: string; icon: string 
   { id: "today",      label: "Today",      icon: "🏠" },
   { id: "journal",    label: "Journal",    icon: "✍️" },
   { id: "meditation", label: "Meditation", icon: "🪷" },
-  { id: "insights",   label: "Patterns",   icon: "📊" },
+  { id: "redress",    label: "Help",       icon: "🛡️" },
   { id: "settings",   label: "Profile",    icon: "👤" },
 ];
 
