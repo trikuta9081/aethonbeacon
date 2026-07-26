@@ -41,7 +41,14 @@ git push origin master
 # from "origin"). Pushing plain "master" here creates/updates a master
 # branch nobody watches -- it silently never triggers a deploy. Push to
 # main explicitly so Render's auto-deploy (on-commit) actually fires.
-git push render master:main
+#
+# --force is deliberate and safe here: this remote only ever receives
+# pushes from this script (Render just watches and builds from it, it
+# never pushes back), and local master's history has been rewritten more
+# than once in this project (e.g. the mid-project hard reset), which makes
+# it a non-fast-forward from whatever main last looked like. There's
+# nothing on this mirror worth preserving independently of master.
+git push render master:main --force
 
 echo ""
 echo "Done! Live in ~30 seconds."
