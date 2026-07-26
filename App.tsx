@@ -646,7 +646,6 @@ const LEGACY_STORAGE_KEY =
   [109, 105, 110, 100].map((code) => String.fromCharCode(code)).join("") +
   ":" +
   "v2";
-const DEFAULT_ADMIN_CODE = "9374";
 const ADMIN_LOCKOUT_THRESHOLD = 3;
 const ADMIN_LOCKOUT_MS = 15 * 60 * 1000; // 15 min lockout after 3 failures
 
@@ -1456,6 +1455,445 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     mark: "OM3",
     externalUrl: "https://www.youtube.com/results?search_query=om+mani+padme+hum+chant+with+lyrics",
     externalLabel: "Open mantra with lyrics"
+  },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // TRENDING · SLEEP & NERVOUS-SYSTEM DOWNSHIFT
+  // Curated from the audio categories that consistently top sleep, study and
+  // anxiety communities. These open externally: they are produced recordings
+  // the on-device tone generator cannot reproduce honestly.
+  // ───────────────────────────────────────────────────────────────────────────
+  {
+    id: "social-weightless",
+    label: "Weightless — Marconi Union",
+    category: "Social trending",
+    pattern: "8-minute ambient piece built with sound therapists; tempo falls 60 → 50 bpm to lead the heart rate down.",
+    use: "Pre-sleep, panic wind-down, before a hard conversation.",
+    safety: "Do not play while driving — it is designed to reduce alertness.",
+    accent: "#6366F1",
+    mark: "WL",
+    intent: "Downshift",
+    brainState: "Parasympathetic",
+    bestTime: "Night",
+    durationMin: 8,
+    qualityGrade: "External",
+    tags: ["sleep", "anxiety", "ambient", "viral"],
+    contraindication: "Not while driving or operating machinery.",
+    externalUrl: "https://www.youtube.com/results?search_query=marconi+union+weightless+official",
+    externalLabel: "Open Weightless"
+  },
+  {
+    id: "social-brown-noise",
+    label: "Brown noise — deep masking",
+    category: "Social trending",
+    pattern: "Low-frequency-weighted noise. Deeper and rounder than white noise, with the harsh top end rolled off.",
+    use: "ADHD focus, tinnitus masking, blocking traffic and voices. The most-shared focus sound of recent years.",
+    safety: "Keep below 60% volume for long sessions to protect hearing.",
+    accent: "#92400E",
+    mark: "BN",
+    intent: "Mask",
+    brainState: "Sustained attention",
+    bestTime: "Anytime",
+    durationMin: 60,
+    qualityGrade: "External",
+    tags: ["adhd", "focus", "sleep", "noise", "viral"],
+    externalUrl: "https://www.youtube.com/results?search_query=brown+noise+10+hours+focus+sleep",
+    externalLabel: "Open brown noise"
+  },
+  {
+    id: "social-green-noise",
+    label: "Green noise — mid-band calm",
+    category: "Social trending",
+    pattern: "Noise weighted around 500 Hz — close to the sound of steady rainfall or a distant river.",
+    use: "Falling asleep when brown noise feels too heavy and white noise too sharp.",
+    safety: "Safe for extended use at low volume.",
+    accent: "#15803D",
+    mark: "GN",
+    intent: "Downshift",
+    brainState: "Parasympathetic",
+    bestTime: "Night",
+    durationMin: 45,
+    qualityGrade: "External",
+    tags: ["sleep", "noise", "nature"],
+    externalUrl: "https://www.youtube.com/results?search_query=green+noise+sleep+8+hours",
+    externalLabel: "Open green noise"
+  },
+  {
+    id: "social-thunderstorm",
+    label: "Thunderstorm & heavy rain",
+    category: "Social trending",
+    pattern: "Distant rolling thunder over sustained rainfall, no sudden peaks.",
+    use: "Sleep onset, deep work, masking an unpredictable environment.",
+    safety: "Skip if storms are a trauma trigger for you.",
+    accent: "#334155",
+    mark: "TS",
+    intent: "Mask",
+    brainState: "Parasympathetic",
+    bestTime: "Night",
+    durationMin: 60,
+    qualityGrade: "External",
+    tags: ["sleep", "nature", "rain"],
+    contraindication: "Avoid if thunder is distressing for you.",
+    externalUrl: "https://www.youtube.com/results?search_query=thunderstorm+rain+sounds+sleep+8+hours",
+    externalLabel: "Open thunderstorm"
+  },
+  {
+    id: "social-ocean-waves",
+    label: "Ocean waves — slow shore break",
+    category: "Social trending",
+    pattern: "Long-period waves at roughly 10–12 per minute — close to a resting breath rhythm.",
+    use: "Breath pacing, grief, overwhelm, post-shift decompression.",
+    safety: "Safe for extended use.",
+    accent: "#0891B2",
+    mark: "OW",
+    intent: "Downshift",
+    brainState: "Parasympathetic",
+    bestTime: "Evening",
+    durationMin: 30,
+    qualityGrade: "External",
+    tags: ["sleep", "nature", "grief", "breath"],
+    externalUrl: "https://www.youtube.com/results?search_query=ocean+waves+sleep+sounds+8+hours",
+    externalLabel: "Open ocean waves"
+  },
+  {
+    id: "social-yoga-nidra",
+    label: "Yoga Nidra — guided body scan",
+    category: "Social trending",
+    pattern: "Spoken 20–40 minute rotation of awareness through the body, held at the edge of sleep.",
+    use: "Recovery when you cannot nap. Widely used for insomnia and burnout.",
+    safety: "Lie down somewhere safe. Not while driving.",
+    accent: "#7C3AED",
+    mark: "YN",
+    intent: "Restore",
+    brainState: "Theta",
+    bestTime: "Afternoon",
+    durationMin: 30,
+    qualityGrade: "External",
+    tags: ["sleep", "burnout", "guided", "restore"],
+    contraindication: "Not while driving or operating machinery.",
+    externalUrl: "https://www.youtube.com/results?search_query=yoga+nidra+guided+40+minutes",
+    externalLabel: "Open Yoga Nidra"
+  },
+  {
+    id: "social-nsdr",
+    label: "NSDR — non-sleep deep rest",
+    category: "Social trending",
+    pattern: "10–20 minute protocol of long exhales and body awareness; popularised as a daytime recovery reset.",
+    use: "Mid-afternoon reset, post-study consolidation, short recovery between shifts.",
+    safety: "Sit or lie somewhere safe.",
+    accent: "#0D9488",
+    mark: "NS",
+    intent: "Restore",
+    brainState: "Alpha–Theta",
+    bestTime: "Afternoon",
+    durationMin: 15,
+    qualityGrade: "External",
+    tags: ["focus", "restore", "guided", "viral"],
+    contraindication: "Not while driving.",
+    externalUrl: "https://www.youtube.com/results?search_query=NSDR+non+sleep+deep+rest+20+minutes",
+    externalLabel: "Open NSDR"
+  },
+
+  // ── TRENDING · STUDY, FOCUS & AMBIENCE ────────────────────────────────────
+  {
+    id: "social-library-ambience",
+    label: "Library & bookstore ambience",
+    category: "Social trending",
+    pattern: "Distant page turns, soft footsteps, muted room tone. No music, no speech.",
+    use: "Study sessions where music pulls attention but silence feels too empty.",
+    safety: "Safe for extended use.",
+    accent: "#78350F",
+    mark: "LB",
+    intent: "Focus",
+    brainState: "Sustained attention",
+    bestTime: "Daytime",
+    durationMin: 60,
+    qualityGrade: "External",
+    tags: ["study", "focus", "ambience"],
+    externalUrl: "https://www.youtube.com/results?search_query=library+bookstore+ambience+study+asmr",
+    externalLabel: "Open library ambience"
+  },
+  {
+    id: "social-jazz-cafe",
+    label: "Slow jazz café",
+    category: "Social trending",
+    pattern: "Brushed drums, upright bass, soft piano at roughly 70–90 bpm with low café room tone.",
+    use: "Long writing or admin sessions. Warm without demanding attention.",
+    safety: "Safe for extended use.",
+    accent: "#B45309",
+    mark: "JZ",
+    intent: "Focus",
+    brainState: "Relaxed alert",
+    bestTime: "Daytime",
+    durationMin: 60,
+    qualityGrade: "External",
+    tags: ["study", "focus", "music", "cafe"],
+    externalUrl: "https://www.youtube.com/results?search_query=slow+jazz+cafe+music+work+study",
+    externalLabel: "Open jazz café"
+  },
+  {
+    id: "social-8d-audio",
+    label: "8D audio — rotating field",
+    category: "Social trending",
+    pattern: "Stereo panning that moves the source around the head. Strongly headphone-dependent.",
+    use: "Novel sensory reset when ordinary tracks stop landing.",
+    safety: "Headphones required. Stop if it causes dizziness or nausea.",
+    accent: "#DB2777",
+    mark: "8D",
+    intent: "Reset",
+    brainState: "Novel-stimulus",
+    bestTime: "Anytime",
+    durationMin: 15,
+    requiresHeadphones: true,
+    qualityGrade: "External",
+    tags: ["viral", "headphones", "novelty"],
+    contraindication: "Stop if you feel dizzy or nauseated. Avoid with vestibular conditions.",
+    externalUrl: "https://www.youtube.com/results?search_query=8d+audio+relaxing+use+headphones",
+    externalLabel: "Open 8D audio"
+  },
+  {
+    id: "social-piano-ambient",
+    label: "Ambient piano — slow neoclassical",
+    category: "Social trending",
+    pattern: "Sparse solo piano with long decay and heavy reverb. No percussion.",
+    use: "Journaling, grief, quiet evenings.",
+    safety: "Safe for extended use.",
+    accent: "#475569",
+    mark: "PN",
+    intent: "Downshift",
+    brainState: "Reflective",
+    bestTime: "Evening",
+    durationMin: 45,
+    qualityGrade: "External",
+    tags: ["grief", "journal", "music", "ambient"],
+    externalUrl: "https://www.youtube.com/results?search_query=ambient+neoclassical+piano+relaxing",
+    externalLabel: "Open ambient piano"
+  },
+
+  // ── TRENDING · INDIAN & DEVOTIONAL ────────────────────────────────────────
+  {
+    id: "social-gayatri",
+    label: "Gayatri Mantra — 108 repetitions",
+    category: "Social trending",
+    pattern: "Full 108-count recitation of the Gayatri Mantra, steady tempo.",
+    use: "Morning practice, clarity, pre-exam steadiness.",
+    safety: "Safe for all.",
+    accent: "#D97706",
+    mark: "GY",
+    intent: "Steady",
+    brainState: "Focused devotional",
+    bestTime: "Morning",
+    durationMin: 30,
+    qualityGrade: "External",
+    tags: ["devotional", "mantra", "morning", "india"],
+    externalUrl: "https://www.youtube.com/results?search_query=gayatri+mantra+108+times",
+    externalLabel: "Open Gayatri Mantra"
+  },
+  {
+    id: "social-hanuman-chalisa",
+    label: "Hanuman Chalisa",
+    category: "Social trending",
+    pattern: "Forty-verse devotional recitation, roughly 9 minutes per cycle.",
+    use: "Courage before a confrontation, fear, night anxiety.",
+    safety: "Safe for all.",
+    accent: "#DC2626",
+    mark: "HC",
+    intent: "Courage",
+    brainState: "Focused devotional",
+    bestTime: "Morning or night",
+    durationMin: 10,
+    qualityGrade: "External",
+    tags: ["devotional", "fear", "courage", "india"],
+    externalUrl: "https://www.youtube.com/results?search_query=hanuman+chalisa+full",
+    externalLabel: "Open Hanuman Chalisa"
+  },
+  {
+    id: "social-sufi-qawwali",
+    label: "Sufi qawwali — slow devotional",
+    category: "Social trending",
+    pattern: "Harmonium and tabla under call-and-response vocals, building slowly.",
+    use: "Emotional release, longing, grief that will not move.",
+    safety: "Lyric-heavy — skip if you need wordless sound.",
+    accent: "#0F766E",
+    mark: "QW",
+    intent: "Release",
+    brainState: "Cathartic",
+    bestTime: "Evening",
+    durationMin: 30,
+    qualityGrade: "External",
+    tags: ["devotional", "grief", "music", "india"],
+    externalUrl: "https://www.youtube.com/results?search_query=sufi+qawwali+slow+soulful",
+    externalLabel: "Open qawwali"
+  },
+  {
+    id: "social-bollywood-lofi",
+    label: "Bollywood lo-fi — slowed + reverb",
+    category: "Social trending",
+    pattern: "Familiar Hindi melodies slowed with added reverb and a soft lo-fi drum bed.",
+    use: "Study, homesickness, low-effort comfort listening.",
+    safety: "Lyric-heavy — may pull focus during deep work.",
+    accent: "#BE185D",
+    mark: "BL",
+    intent: "Comfort",
+    brainState: "Relaxed alert",
+    bestTime: "Evening",
+    durationMin: 60,
+    qualityGrade: "External",
+    tags: ["study", "comfort", "music", "india", "viral"],
+    externalUrl: "https://www.youtube.com/results?search_query=bollywood+lofi+slowed+reverb+mix",
+    externalLabel: "Open Bollywood lo-fi"
+  },
+  {
+    id: "social-carnatic-flute",
+    label: "Carnatic flute — morning ragas",
+    category: "Social trending",
+    pattern: "Bamboo flute in morning ragas, unhurried, largely without percussion.",
+    use: "Waking up slowly, meditation, steady background for reading.",
+    safety: "Safe for extended use.",
+    accent: "#CA8A04",
+    mark: "CF",
+    intent: "Steady",
+    brainState: "Relaxed alert",
+    bestTime: "Morning",
+    durationMin: 45,
+    qualityGrade: "External",
+    tags: ["music", "morning", "india", "meditation"],
+    externalUrl: "https://www.youtube.com/results?search_query=carnatic+bamboo+flute+morning+raga",
+    externalLabel: "Open flute ragas"
+  },
+  {
+    id: "social-tibetan-monks",
+    label: "Tibetan monks — overtone chanting",
+    category: "Social trending",
+    pattern: "Deep multiphonic throat chanting with bowls and long horns.",
+    use: "Grounding when thoughts are racing; strong physical resonance.",
+    safety: "Keep volume moderate — heavy low-frequency content.",
+    accent: "#7C2D12",
+    mark: "TM",
+    intent: "Ground",
+    brainState: "Deep-resonance",
+    bestTime: "Evening",
+    durationMin: 30,
+    qualityGrade: "External",
+    tags: ["devotional", "grounding", "meditation"],
+    externalUrl: "https://www.youtube.com/results?search_query=tibetan+monks+overtone+chanting",
+    externalLabel: "Open monk chanting"
+  },
+  {
+    id: "social-hooponopono",
+    label: "Ho'oponopono — forgiveness practice",
+    category: "Social trending",
+    pattern: "Repetition of four lines: I'm sorry, please forgive me, thank you, I love you.",
+    use: "Guilt, self-blame, repairing after conflict.",
+    safety: "Supportive practice, not a substitute for repair with the actual person.",
+    accent: "#0EA5E9",
+    mark: "HO",
+    intent: "Repair",
+    brainState: "Reflective",
+    bestTime: "Evening",
+    durationMin: 20,
+    qualityGrade: "External",
+    tags: ["guilt", "repair", "mantra", "viral"],
+    externalUrl: "https://www.youtube.com/results?search_query=hooponopono+chant+meditation",
+    externalLabel: "Open Ho'oponopono"
+  },
+
+  // ── TRENDING · BREATH & REGULATION ────────────────────────────────────────
+  {
+    id: "social-physiological-sigh",
+    label: "Physiological sigh — 5 minutes",
+    category: "Social trending",
+    pattern: "Double inhale through the nose, long slow exhale through the mouth. Fastest known voluntary way to lower arousal.",
+    use: "Acute anxiety, anger spikes, panic onset.",
+    safety: "Stop if you feel light-headed. Sit down first.",
+    accent: "#059669",
+    mark: "PS",
+    intent: "Rescue",
+    brainState: "Parasympathetic",
+    bestTime: "Anytime",
+    durationMin: 5,
+    qualityGrade: "External",
+    tags: ["anxiety", "anger", "breath", "rescue", "viral"],
+    contraindication: "Stop if light-headed. Sit before starting.",
+    externalUrl: "https://www.youtube.com/results?search_query=physiological+sigh+breathing+exercise",
+    externalLabel: "Open physiological sigh"
+  },
+  {
+    id: "social-478-breath",
+    label: "4-7-8 breathing — guided",
+    category: "Social trending",
+    pattern: "Inhale 4, hold 7, exhale 8. Guided count with soft cues.",
+    use: "Falling asleep, pre-sleep rumination.",
+    safety: "Skip the hold if you are pregnant or have a respiratory condition.",
+    accent: "#4F46E5",
+    mark: "478",
+    intent: "Downshift",
+    brainState: "Parasympathetic",
+    bestTime: "Night",
+    durationMin: 10,
+    qualityGrade: "External",
+    tags: ["sleep", "anxiety", "breath"],
+    contraindication: "Shorten or skip the breath-hold during pregnancy or with respiratory conditions.",
+    externalUrl: "https://www.youtube.com/results?search_query=4-7-8+breathing+guided+sleep",
+    externalLabel: "Open 4-7-8 breathing"
+  },
+  {
+    id: "social-box-breath",
+    label: "Box breathing 4-4-4-4",
+    category: "Social trending",
+    pattern: "Equal four-count inhale, hold, exhale, hold. Used in high-pressure professions.",
+    use: "Steadying before an exam, interview, or difficult conversation.",
+    safety: "Reduce the count if holding feels strained.",
+    accent: "#1D4ED8",
+    mark: "BX",
+    intent: "Steady",
+    brainState: "Regulated",
+    bestTime: "Before pressure",
+    durationMin: 8,
+    qualityGrade: "External",
+    tags: ["focus", "anxiety", "breath", "performance"],
+    externalUrl: "https://www.youtube.com/results?search_query=box+breathing+4+4+4+4+guided",
+    externalLabel: "Open box breathing"
+  },
+
+  // ── TRENDING · SOLFEGGIO GAPS ─────────────────────────────────────────────
+  {
+    id: "social-sol-174",
+    label: "174 Hz — pain and foundation",
+    category: "Social trending",
+    pattern: "Sustained 174 Hz drone, the lowest of the Solfeggio set.",
+    use: "Physical discomfort, feeling unsafe, grounding after a hard day.",
+    safety: "A comfort practice, not pain treatment. Keep seeing your clinician.",
+    accent: "#7E22CE",
+    mark: "174",
+    intent: "Ground",
+    brainState: "Low-arousal",
+    bestTime: "Evening",
+    durationMin: 30,
+    qualityGrade: "External",
+    tags: ["pain", "grounding", "solfeggio"],
+    contraindication: "Not a treatment for pain or illness.",
+    externalUrl: "https://www.youtube.com/results?search_query=174+hz+solfeggio+pain+relief",
+    externalLabel: "Open 174 Hz"
+  },
+  {
+    id: "social-sol-285",
+    label: "285 Hz — repair and recovery",
+    category: "Social trending",
+    pattern: "Sustained 285 Hz drone.",
+    use: "Recovery days, rest after illness, gentle background.",
+    safety: "A comfort practice, not medical treatment.",
+    accent: "#9333EA",
+    mark: "285",
+    intent: "Restore",
+    brainState: "Low-arousal",
+    bestTime: "Anytime",
+    durationMin: 30,
+    qualityGrade: "External",
+    tags: ["recovery", "solfeggio"],
+    contraindication: "Not a treatment for illness or injury.",
+    externalUrl: "https://www.youtube.com/results?search_query=285+hz+solfeggio+healing",
+    externalLabel: "Open 285 Hz"
   }
 ];
 
@@ -1859,13 +2297,17 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   { id: "today", label: "Home", mark: "🏠", icon: "home" },
   { id: "guide", label: "Path", mark: "🧭", icon: "compass" },
   { id: "aihelp", label: "Insights", mark: "✨", icon: "sparkles" },
-  { id: "community", label: "Chat", mark: "💬", icon: "chatbubbles" },
   { id: "journal", label: "Journal", mark: "📓", icon: "book" },
   { id: "focus", label: "Calm", mark: "🌿", icon: "leaf" },
-  { id: "tones", label: "Tones", mark: "🎵", icon: "musical-notes" },
   { id: "meditation", label: "Meditation", mark: "🪷", icon: "flower" },
+  // ── Ordered block: chart first, then the surfaces that read from it ──
+  // Birth Chart → Messages → Tones → Help & Redress. Kept adjacent so the
+  // chart, the people you talk to about it, the tones it prescribes, and the
+  // redress routes it may surface all sit together in the nav.
   { id: "vedic", label: "Birth Chart", mark: "🪐", icon: "planet" },
-  { id: "redress", label: "Help", mark: "🛡️", icon: "shield-checkmark" },
+  { id: "community", label: "Messages", mark: "💬", icon: "chatbubbles" },
+  { id: "tones", label: "Tones", mark: "🎵", icon: "musical-notes" },
+  { id: "redress", label: "Help & Redress", mark: "🛡️", icon: "shield-checkmark" },
   { id: "insights", label: "Patterns", mark: "📊", icon: "stats-chart" },
   { id: "search", label: "Explore", mark: "🔍", icon: "search" },
   { id: "play", label: "Practice", mark: "🎯", icon: "footsteps" },
@@ -9795,7 +10237,7 @@ export default function App() {
   const [accessRole, setAccessRole] = useState<AccessRole>("guest");
   const [accessName, setAccessName] = useState("");
   const [adminAccessName, setAdminAccessName] = useState("");
-  const [adminAccessCode, setAdminAccessCode] = useState(DEFAULT_ADMIN_CODE);
+  const [adminAccessCode, setAdminAccessCode] = useState("");
   const [adminAccessAttempt, setAdminAccessAttempt] = useState("");
   const [adminAccessNameAttempt, setAdminAccessNameAttempt] = useState("");
   const [adminUnlockFailures, setAdminUnlockFailures] = useState(0);
@@ -12136,7 +12578,13 @@ export default function App() {
   }, [hasLoaded]);
 
   useEffect(() => {
-    if (!hasLoaded || hasOpenedStartupAccessPromptRef.current) return;
+    // Sequenced with the onboarding overlay above: that overlay owns the
+    // very first screen a new user sees (identity + need). This prompt must
+    // never open while onboarding is still in progress, or the user sees two
+    // full-screen prompts stacked on top of each other on first launch. Only
+    // once onboarding is complete do we check whether profile/account
+    // details or channel verification are still missing.
+    if (!hasLoaded || hasOpenedStartupAccessPromptRef.current || !onboardingCompleted) return;
     const profileSelection = hasMeaningfulProfileSelection({
       identityId,
       profileRoleId,
@@ -12149,7 +12597,7 @@ export default function App() {
       trustedContacts
     });
     const hasVerifiedChannel = profilePhoneVerified || profileEmailVerified;
-    const needsStartupPrompt = !onboardingCompleted || !profileSelection || !hasVerifiedChannel;
+    const needsStartupPrompt = !profileSelection || !hasVerifiedChannel;
     if (!needsStartupPrompt) return;
 
     hasOpenedStartupAccessPromptRef.current = true;
@@ -15526,20 +15974,66 @@ const trustedExternalDomains = [
   "facility.abdm.gov.in",
   "bhashini.esanjeevani.in",
   "systemhealth.rbi.org.in",
+  "rbi.org.in",
+  "nch.org.in",
   "pgportal.gov.in",
   "barcouncilofindia.org",
   "cbse.gov.in",
   "aicte-india.org",
   "nmc.org.in",
   "antiragging.in",
-  "mha.gov.in"
+  "mha.gov.in",
+  // ── Added: the app links out to well over a hundred distinct official
+  // sources across the state officer directory, legal-aid, and health
+  // directories (every state police portal, DC directory, e-FIR portal,
+  // cyber cell, hospital and NGO helpline). Most of those domains were
+  // never added here, so isTrustedExternalUrl silently blocked them —
+  // "Link blocked" instead of opening. Rather than hand-maintain a list of
+  // 150+ individual gov.in/nic.in subdomains (and re-break every time a
+  // state changes its portal), trust the two Indian namespaces that are
+  // themselves registration-restricted to genuine government bodies via
+  // NIXI — see the suffix check below — and explicitly allow the smaller,
+  // fixed set of NGO / hospital / professional-body domains referenced in
+  // this file that don't fall under gov.in or nic.in.
+  "aagsoindia.org",
+  "ccimindia.org",
+  "coojmentalhealthfoundation.org",
+  "iacpindia.com",
+  "icallhelpline.org",
+  "indianpsychiatricsociety.org",
+  "nimhans.ac.in",
+  "openstreetmap.org",
+  "gstsystem.in",
+  "snehaindia.org",
+  "aasra.info",
+  "aiims.edu",
+  "cdc.gov",
+  "childlineindia.org",
+  "fortishealthcare.com",
+  "nddtcaiims.org",
+  "nih.gov",
+  "practo.com",
+  "vandrevalafoundation.com",
+  "who.int"
 ];
+
+// India's government (.gov.in) and National Informatics Centre (.nic.in)
+// namespaces are registration-restricted to bona fide central/state
+// government bodies — unlike .com/.org, a private party cannot simply buy
+// one. Every state police portal, e-FIR system, and district collector
+// directory in STATE_OFFICER_DIRECTORY lives under one of these two
+// suffixes, so trusting the suffix (rather than hand-listing every
+// subdomain) is both safe and the only maintainable option here.
+const trustedExternalSuffixes = ["gov.in", "nic.in"];
 
 function isTrustedExternalUrl(url: string) {
   try {
     const parsed = new URL(url);
     if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return false;
     const hostname = parsed.hostname.toLowerCase();
+    if (trustedExternalSuffixes.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`))) {
+      return true;
+    }
     return trustedExternalDomains.some(
       (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
     );
@@ -17458,6 +17952,7 @@ function isTrustedExternalUrl(url: string) {
                 onEmergencyCall={handleEmergencyCall}
                 onExportRedressPlan={handleExportRedressPlan}
                 onOpenGuide={() => handleTabPress("guide")}
+                onReadRouteAloud={(text) => void speakGuidance(text)}
                 onFocusSelectedRedressLayout={captureFocusLayout}
                 isWide={isWide}
               />
@@ -17607,13 +18102,16 @@ function isTrustedExternalUrl(url: string) {
             </View>
           )}
           {activeTab === "admin" && !isAdmin && (
-            <View onLayout={captureSectionLayout("admin")} style={styles.panel}>
-              <Text style={styles.eyebrow}>Access required</Text>
-              <Text style={styles.sectionTitle}>Admin panel is locked</Text>
-              <Text style={styles.promptText}>
-                Use the Access button to unlock the admin panel. Regular users stay on the public
-                experience.
-              </Text>
+            <View onLayout={captureSectionLayout("admin")}>
+              <AdminLoginGate
+                adminAccessNameAttempt={adminAccessNameAttempt}
+                setAdminAccessNameAttempt={setAdminAccessNameAttempt}
+                adminAccessAttempt={adminAccessAttempt}
+                setAdminAccessAttempt={setAdminAccessAttempt}
+                adminUnlockFailures={adminUnlockFailures}
+                adminLockedUntilAt={adminLockedUntilAt}
+                onUnlockAdmin={unlockAdminAccess}
+              />
             </View>
           )}
 
@@ -17674,6 +18172,7 @@ function isTrustedExternalUrl(url: string) {
                 onExportBackup={handleExportData}
                 onRestartOnboarding={restartOnboarding}
                 onOpenAccessPanel={openProfileAccessPanel}
+                onOpenAdminLogin={() => handleTabPress("admin")}
                 onPreviewRetentionAlert={previewRetentionAlert}
                 notifStreakEnabled={notifStreakEnabled}
                 setNotifStreakEnabled={setNotifStreakEnabled}
@@ -17882,6 +18381,8 @@ function isTrustedExternalUrl(url: string) {
           stopSpeech={stopVoiceGuidance}
           speechLocale={selectedLanguage.speechLang}
           moonChart48Readings={vedicMoonChart48Readings}
+          voiceAssistEnabled={voiceAssistEnabled}
+          onToggleVoiceAssist={() => setVoiceAssistEnabled((prev) => !prev)}
         />
 
         {/* ── Exit / Visit Report Modal ── */}
@@ -23348,13 +23849,14 @@ function StateOfficerDirectoryCard({
                   key={s.code}
                   onPress={() => setSelectedCode(s.code)}
                   accessibilityRole="button"
+                  accessibilityState={{ selected: isActive }}
                   style={({ pressed }) => ({
-                    backgroundColor: isActive ? "#1E40AF" : pressed ? "rgba(96,165,250,0.15)" : "#0F1B33",
+                    backgroundColor: isActive ? "#1E40AF" : pressed ? "#D9E7F5" : "#FFFFFF",
                     borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6,
-                    borderWidth: 1, borderColor: isActive ? "#0052B8" : "rgba(96,165,250,0.2)"
+                    borderWidth: 1, borderColor: isActive ? "#1E40AF" : "#8FAFD6"
                   })}
                 >
-                  <Text style={{ color: isActive ? "#0D1F22" : "#465871", fontSize: 11, fontWeight: isActive ? "800" : "600" }}>
+                  <Text style={{ color: isActive ? "#FFFFFF" : "#0D1F22", fontSize: 11, fontWeight: isActive ? "800" : "600" }}>
                     {s.name}
                   </Text>
                 </Pressable>
@@ -23437,6 +23939,7 @@ function RedressSection({
   onEmergencyCall,
   onExportRedressPlan,
   onOpenGuide,
+  onReadRouteAloud,
   onFocusSelectedRedressLayout,
   isWide
 }: {
@@ -23453,6 +23956,7 @@ function RedressSection({
   onEmergencyCall: () => Promise<void>;
   onExportRedressPlan: () => Promise<void>;
   onOpenGuide: () => void;
+  onReadRouteAloud?: (text: string) => void;
   onFocusSelectedRedressLayout?: (routeId: RedressRouteId) => (event: { nativeEvent: { layout: { y: number } } }) => void;
   isWide: boolean;
 }) {
@@ -23484,6 +23988,10 @@ function RedressSection({
     cybercrime: `To,\nThe In-charge,\nCyber Crime Cell,\n[Police Station / District]\n\nSubject: Complaint of Cybercrime — [type: financial fraud / online harassment / morphed image / stalking]\n\nDear Sir/Madam,\n\nI, [Your Name], residing at [Address], wish to report a cybercrime incident.\n\nNature of offence: [describe clearly]\nDate & time of incident: [Date and Time]\nPlatform / website / app involved: [Name and URL if available]\nPerpetrator details (if known): [username / phone / account ID]\n\nAmount lost (if financial fraud): ₹[Amount]\nTransaction ID(s): [IDs]\n\nEvidence: [screenshots attached, URLs, message logs]\n\nI have already reported on cybercrime.gov.in. Complaint Number: [if available]\n\nI request:\n1. Immediate freezing of the fraudulent account\n2. Investigation and FIR\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
     consumer: `To,\nThe Grievance Officer,\n[Company / Brand Name]\n[Official Address / Email]\n\nSubject: Consumer Complaint — [Product / Service Name] — Invoice No. [XXXX]\n\nDear Sir/Madam,\n\nI, [Your Name], purchased [Product/Service] on [Date] for ₹[Amount]. Invoice No. [Number].\n\nNature of complaint: [defect / billing error / non-delivery / misleading claim]\nDescription: [Describe clearly what happened]\n\nImpact: [how it affected you — financial loss, health, inconvenience]\n\nRemedy sought:\n1. [Full refund / replacement / repair]\n2. Compensation of ₹[amount] for losses\n3. Written acknowledgement\n\nIf not resolved within 15 days, I will file a complaint with the National Consumer Helpline (1915) and the District Consumer Commission.\n\nEvidence attached: [invoice, photos, chat transcript]\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
     workplace: `To,\n[HR Manager / Labour Commissioner],\n[Organisation / District Labour Office]\n\nSubject: Formal Grievance — [salary denial / wrongful termination / PF issue / discrimination]\n\nDear Sir/Madam,\n\nI, [Your Name], Employee ID [ID], was employed as [Designation] at [Company Name] from [Start Date] to [End Date / present].\n\nNature of grievance: [describe clearly — what was denied, when, by whom]\n\nDespite verbal requests on [dates], the matter has not been resolved.\n\nRelief sought:\n1. [Payment of dues / Reinstatement / PF settlement]\n2. Written response within 15 working days\n\nDocuments attached: [appointment letter, payslips, emails]\n\nIf unresolved, I will escalate to the District Labour Commissioner / EPFO / Labour Court.\n\nYours sincerely,\n[Your Name]\n[Employee ID]\n[Contact]\n[Date]`,
+    crime: `To,\nThe Station House Officer,\n[Police Station Name], [District]\n\nSubject: Complaint for Registration of FIR — [describe offence in one line]\n\nDear Sir/Madam,\n\nI, [Your Name], residing at [Address], wish to report the following offence and request registration of an FIR under Section 173 of the Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023.\n\nDate, time and place of incident: [Date, Time, Location]\n\nDescription of the offence: [Describe clearly — what happened, who was involved, any weapons/threats used]\n\nAccused (if known): [Name(s) / description]\n\nWitnesses (if any): [Name(s) and contact]\n\nEvidence: [list — photos, medical report, CCTV, messages]\n\nIf you decline to register this FIR, I am aware I may approach the Superintendent of Police under BNSS Section 173(4), or move a private complaint before the jurisdictional Magistrate under BNSS Section 175(3).\n\nI request a copy of the FIR and the name and contact of the Investigating Officer.\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
+    ragging: `To,\nThe Convenor,\nAnti-Ragging Committee,\n[Institution Name]\n\nSubject: Complaint of Ragging under the UGC Anti-Ragging Regulations, 2009\n\nDear Sir/Madam,\n\nI, [Your Name], [Roll No / Student ID], student of [Course/Department], wish to report an incident of ragging.\n\nI have registered this on the National Anti-Ragging Helpline (antiragging.in / 1800-180-5522). Registration/complaint number: [if available].\n\nThe incident(s) occurred on [Date(s)] at [Location — hostel/campus]. The person(s) involved: [Name(s), batch/year if known].\n\nDescription of incident: [Describe clearly what was said or done, and how it affected you]\n\nI request:\n1. Immediate action under the institution's anti-ragging policy\n2. Protection from retaliation and confidentiality of my identity where possible\n3. Written acknowledgement with a case number\n\nEvidence attached: [messages, witnesses, medical report if any]\n\nUnder the UGC Regulations, ragging is a criminal offence and the institution is required to act within 24 hours of receiving this complaint.\n\nYours sincerely,\n[Your Name]\n[Roll No / Student ID]\n[Contact]\n[Date]`,
+    public: `To,\nThe Grievance Officer / Public Information Officer,\n[Department / Ministry / Public Authority Name]\n\nSubject: Grievance under CPGRAMS — [describe issue in one line]\n\nDear Sir/Madam,\n\nI, [Your Name], residing at [Address], wish to raise the following grievance regarding [name of department/service].\n\nNature of grievance: [describe clearly — what service was denied, delayed, or mishandled, and when]\n\nPrevious correspondence (if any): [reference numbers, dates]\n\nI have registered / am registering this grievance on the Centralised Public Grievance Redress and Monitoring System (CPGRAMS, pgportal.gov.in). Registration number: [once available].\n\nRelief sought: [describe the specific outcome you want]\n\nI request written acknowledgement, the name and designation of the officer handling this, and resolution within the prescribed timeline (typically 30–60 days under CPGRAMS).\n\nDocuments attached: [list]\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
+    private: `To,\nThe Grievance / Compliance Officer,\n[Institution / Organisation Name]\n\nSubject: Formal Complaint — [describe issue in one line]\n\nDear Sir/Madam,\n\nI, [Your Name], [admission/membership/customer ID], wish to formally complain about the following.\n\nNature of complaint: [describe clearly, with dates and names of people/departments involved]\n\nImpact on me: [financial loss, distress, denial of service, etc.]\n\nRelief sought: [state the specific outcome you want — refund, correction, apology, disciplinary action]\n\nPer your organisation's own grievance redressal policy, I request a written acknowledgement with a reference number and the expected resolution timeline.\n\nIf this is not resolved satisfactorily, I am aware I can escalate to the relevant sector regulator or consumer forum.\n\nEvidence attached: [list]\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
   };
 
   // First call/visit script
@@ -23554,7 +24062,12 @@ function RedressSection({
     <View style={[styles.grid, isWide && styles.gridWide]}>
 
       {/* ── PANEL 1: ROUTE SELECTOR ── */}
-      <View style={styles.panel}>
+      {/* flex:0 in single-column mode: styles.panel's flex:1 is meant for the
+          wide 3-column row layout (equal widths). Forcing it off here when
+          stacked in a single column guarantees each panel is exactly as
+          tall as its own content, with no possibility of stretching to
+          match a taller sibling and leaving a blank tail behind it. */}
+      <View style={[styles.panel, !isWide && { flex: 0 }]}>
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.eyebrow}>Help & Redress</Text>
@@ -23566,6 +24079,44 @@ function RedressSection({
           Select the route that fits your situation. Each route gives you a specific first office, exact first action, and escalation path — no guessing.
         </Text>
 
+        {/* ── QUICK EXIT ── */}
+        {/* Folded in from the Home tab's quick-exit strip, minus anything this
+            tab already covers (the numbers strip below and the route chips
+            are the "complaint"/"help" half of that strip). Kept to the two
+            actions that add something new here: an instant SOS call, and a
+            spoken read-out of the currently selected route so it can be
+            heard rather than read under stress. */}
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FBEAE7", borderWidth: 1, borderColor: "rgba(239,68,68,0.35)", padding: 12 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <Text style={{ color: "#B82200", fontSize: 12, fontWeight: "800" }}>{l("Quick exit")}</Text>
+            <Text style={{ color: "#8A5147", fontSize: 10 }}>Fast route</Text>
+          </View>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Call emergency number 112 now"
+              onPress={() => void onEmergencyCall()}
+              style={({ pressed }) => [{ flex: 1, backgroundColor: pressed ? "#D62E00" : "#EF4444", borderRadius: 10, paddingVertical: 10, alignItems: "center" }]}
+            >
+              <Text style={{ color: "#fff", fontWeight: "800", fontSize: 13 }}>🚨 SOS — 112</Text>
+            </Pressable>
+            {onReadRouteAloud && (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Have this route read aloud"
+                onPress={() =>
+                  onReadRouteAloud(
+                    `${selectedRedressRoute.label}. ${selectedRedressRoute.summary} First office: ${selectedRedressRoute.firstOffice} First action: ${selectedRedressRoute.firstAction} Escalation: ${selectedRedressRoute.escalation}`
+                  )
+                }
+                style={({ pressed }) => [{ flex: 1, backgroundColor: pressed ? "#8A5147" : "#F2DEDE", borderRadius: 10, paddingVertical: 10, alignItems: "center" }]}
+              >
+                <Text style={{ color: "#B82200", fontWeight: "800", fontSize: 13 }}>🔊 Read this route aloud</Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+
         {/* ── QUICK HELP NUMBERS STRIP ── */}
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(239,68,68,0.3)", overflow: "hidden" }}>
           <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 6, flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -23573,12 +24124,23 @@ function RedressSection({
             <Text style={{ color: "#6B7280", fontSize: 10, flex: 1, textAlign: "right" }}>Always available</Text>
           </View>
           {[
-            { label: "Emergency / Police", number: "112", color: "#EF4444", desc: "Any immediate danger, assault, or threat" },
-            { label: "Women's Helpline", number: "181", color: "#F472B6", desc: "Domestic violence, harassment, abuse" },
-            { label: "Child Helpline", number: "1098", color: "#0052B8", desc: "Child in danger, abuse, trafficking" },
-            { label: "Cybercrime / Fraud", number: "1930", color: "#818CF8", desc: "Online fraud — call within 24 hrs to freeze funds" },
-            { label: "Consumer Helpline", number: "1915", color: "#059669", desc: "Product/service complaints" },
-            { label: "Anti-Ragging", number: "1800-180-5522", color: "#B45309", desc: "Ragging, hostel intimidation" },
+            // ── Immediate danger ──
+            { label: "Emergency / Police", number: "112", color: "#EF4444", desc: "Any immediate danger, assault, or threat. Single number for police, fire, and ambulance." },
+            { label: "Ambulance / Medical", number: "108", color: "#DC2626", desc: "Medical emergency, accident, or someone unconscious" },
+            { label: "Fire", number: "101", color: "#EA580C", desc: "Fire, gas leak, or rescue from a building" },
+            // ── Mental health ──
+            { label: "Tele-MANAS (mental health)", number: "14416", color: "#0D9488", desc: "Government 24×7 mental health support in 20+ languages. Free." },
+            { label: "KIRAN (mental health)", number: "1800-599-0019", color: "#14B8A6", desc: "24×7 national helpline for distress, anxiety, and suicidal thoughts. Free." },
+            // ── Abuse & protection ──
+            { label: "Women's Helpline", number: "181", color: "#F472B6", desc: "Domestic violence, harassment, abuse — connects to One Stop Centre support" },
+            { label: "Women in Distress (Police)", number: "1091", color: "#EC4899", desc: "Direct police response line for women facing immediate threat" },
+            { label: "Child Helpline", number: "1098", color: "#0052B8", desc: "Child in danger, abuse, trafficking, or child labour" },
+            { label: "Elderline (senior citizens)", number: "14567", color: "#7C3AED", desc: "Elder abuse, neglect, pension and property distress" },
+            // ── Fraud & consumer ──
+            { label: "Cybercrime / Fraud", number: "1930", color: "#818CF8", desc: "Online fraud — call within 24 hrs to freeze funds. Do not delete messages." },
+            { label: "Consumer Helpline", number: "1915", color: "#059669", desc: "Product, service, refund, and warranty complaints" },
+            // ── Institutional ──
+            { label: "Anti-Ragging", number: "1800-180-5522", color: "#B45309", desc: "Ragging, hostel intimidation — UGC 24×7 line, complaint auto-registers" },
           ].map((item) => (
             <Pressable
               key={item.number}
@@ -23645,7 +24207,7 @@ function RedressSection({
       </View>
 
       {/* ── PANEL 2: INSTITUTION TYPE ── */}
-      <View style={styles.panel}>
+      <View style={[styles.panel, !isWide && { flex: 0 }]}>
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.eyebrow}>Institution type</Text>
@@ -23677,7 +24239,7 @@ function RedressSection({
 
       {/* ── PANEL 3: ACTIVE ROUTE DETAIL ── */}
       <View
-        style={styles.panel}
+        style={[styles.panel, !isWide && { flex: 0 }]}
         onLayout={onFocusSelectedRedressLayout ? onFocusSelectedRedressLayout(selectedRedressRoute.id) : undefined}
       >
         {/* Emergency triage for crime/domestic routes */}
@@ -24708,6 +25270,7 @@ function SettingsSection({
   onExportBackup,
   onRestartOnboarding,
   onOpenAccessPanel,
+  onOpenAdminLogin,
   onPreviewRetentionAlert,
   notifStreakEnabled,
   setNotifStreakEnabled,
@@ -24790,6 +25353,7 @@ function SettingsSection({
   onExportBackup: () => void;
   onRestartOnboarding: () => void;
   onOpenAccessPanel: () => void;
+  onOpenAdminLogin: () => void;
   onPreviewRetentionAlert: () => Promise<void>;
   verificationDeliveryMode: "remote" | "local";
   accessName: string;
@@ -25563,6 +26127,20 @@ function SettingsSection({
         </View>
         <Pressable accessibilityRole="button" onPress={clearEntries} style={styles.dangerButton}>
           <Text style={styles.dangerButtonLabel}>Clear local entries</Text>
+        </Pressable>
+      </View>
+      <View style={styles.settingsBlock}>
+        <Text style={styles.settingsTitle}>Owner access</Text>
+        <Text style={styles.promptText}>
+          Manages the app's community safety switches and usage snapshot. Requires the admin login
+          ID and code configured on the backend — everyday accounts stay unaffected.
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenAdminLogin}
+          style={[styles.dangerButton, { backgroundColor: "#F4F0FB", borderWidth: 1, borderColor: "#5B4B8A" }]}
+        >
+          <Text style={[styles.dangerButtonLabel, { color: "#5B4B8A" }]}>🛡️ Admin sign-in</Text>
         </Pressable>
       </View>
     </View>
@@ -26598,6 +27176,148 @@ function BirthChartSection({
   );
 }
 
+// Standalone admin sign-in screen. This is the ONLY place a device can ever
+// become admin — it must render before accessRole is "admin", never after.
+// (Previously this exact login card lived inside AdminSection, which itself
+// only rendered once accessRole was already "admin" — a dead end where the
+// one form that grants admin access could never be reached by anyone who
+// didn't already have it. Pulling it out here so the "admin panel is locked"
+// screen actually contains a way in.)
+function AdminLoginGate({
+  adminAccessNameAttempt,
+  setAdminAccessNameAttempt,
+  adminAccessAttempt,
+  setAdminAccessAttempt,
+  adminUnlockFailures,
+  adminLockedUntilAt,
+  onUnlockAdmin
+}: {
+  adminAccessNameAttempt: string;
+  setAdminAccessNameAttempt: (value: string) => void;
+  adminAccessAttempt: string;
+  setAdminAccessAttempt: (value: string) => void;
+  adminUnlockFailures: number;
+  adminLockedUntilAt: number | null;
+  onUnlockAdmin: () => void;
+}) {
+  const adminLockedRemainingMinutes =
+    adminLockedUntilAt !== null && adminLockedUntilAt > Date.now()
+      ? Math.max(1, Math.ceil((adminLockedUntilAt - Date.now()) / 60000))
+      : 0;
+
+  return (
+    <View style={styles.panel}>
+      <Text style={styles.eyebrow}>Access required</Text>
+      <Text style={styles.sectionTitle}>Admin panel is locked</Text>
+      <Text style={styles.promptText}>
+        Sign in with the admin login ID and code to unlock the control center. Regular users stay
+        on the public experience.
+      </Text>
+      <View style={styles.adminAuthCard}>
+        {/* Shield header */}
+        <View style={styles.adminAuthShieldRow}>
+          <View style={styles.adminAuthShieldCircle}>
+            <Text style={styles.adminAuthShieldIcon}>🛡️</Text>
+          </View>
+          <View style={styles.adminAuthShieldText}>
+            <Text style={styles.adminAuthShieldTitle}>Secure Admin Access</Text>
+            <Text style={styles.adminAuthShieldSub}>Protected zone — authorised personnel only</Text>
+          </View>
+        </View>
+
+        {/* Attempt indicators */}
+        <View style={styles.adminAuthDots}>
+          {[0, 1, 2].map((i) => (
+            <View
+              key={i}
+              style={[
+                styles.adminAuthDot,
+                adminUnlockFailures > i && styles.adminAuthDotFailed
+              ]}
+            />
+          ))}
+          <Text style={styles.adminAuthAttemptsLabel}>
+            {adminLockedRemainingMinutes > 0
+              ? `🔒 Locked — ${adminLockedRemainingMinutes}m remaining`
+              : adminUnlockFailures > 0
+              ? `${3 - adminUnlockFailures} attempt${3 - adminUnlockFailures === 1 ? "" : "s"} remaining`
+              : "3 attempts before lockout"}
+          </Text>
+        </View>
+
+        {adminLockedRemainingMinutes > 0 ? (
+          <View style={styles.adminLockoutBanner}>
+            <Text style={styles.adminLockoutBannerText}>
+              ⚠️ Access temporarily suspended after repeated failures. Auto-unlocks in {adminLockedRemainingMinutes} minute{adminLockedRemainingMinutes === 1 ? "" : "s"}.
+            </Text>
+          </View>
+        ) : (
+          <>
+            <TextInput
+              value={adminAccessNameAttempt}
+              onChangeText={setAdminAccessNameAttempt}
+              placeholder="Admin name or email"
+              placeholderTextColor="rgba(196,163,90,0.55)"
+              autoCapitalize="none"
+              autoComplete="email"
+              textContentType="emailAddress"
+              style={styles.adminAuthInput}
+            />
+            <TextInput
+              value={adminAccessAttempt}
+              onChangeText={setAdminAccessAttempt}
+              placeholder="Admin code"
+              placeholderTextColor="rgba(196,163,90,0.55)"
+              secureTextEntry
+              keyboardType="numeric"
+              maxLength={12}
+              style={styles.adminAuthInput}
+            />
+
+            {/* PIN pad */}
+            <View style={styles.adminPinPad}>
+              {["1","2","3","4","5","6","7","8","9","","0","⌫"].map((k) => (
+                <Pressable
+                  key={k}
+                  style={({ pressed }) => [
+                    styles.adminPinKey,
+                    k === "" && styles.adminPinKeyEmpty,
+                    k === "⌫" && styles.adminPinKeyDel,
+                    pressed && k !== "" && styles.adminPinKeyPressed
+                  ]}
+                  onPress={() => {
+                    if (k === "") return;
+                    if (k === "⌫") {
+                      setAdminAccessAttempt(adminAccessAttempt.slice(0, -1));
+                    } else {
+                      setAdminAccessAttempt(adminAccessAttempt + k);
+                    }
+                  }}
+                  accessibilityLabel={k === "⌫" ? "Delete" : k}
+                >
+                  <Text style={[styles.adminPinKeyLabel, k === "⌫" && styles.adminPinKeyDelLabel]}>{k}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={onUnlockAdmin}
+              style={styles.adminAuthButton}
+            >
+              <Text style={styles.adminAuthButtonLabel}>🔓 Authenticate & Enter</Text>
+            </Pressable>
+          </>
+        )}
+
+        <Text style={styles.adminAuthFooter}>
+          Access is logged and monitored. Unauthorised attempts trigger automatic lockout.
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 function AdminSection({
   accessRole,
   accessName,
@@ -26734,10 +27454,6 @@ function AdminSection({
   const appHasEverOpened = appLaunchCount > 0 || appFirstOpenedAt !== null;
   const backendPresenceFresh =
     backendPresenceFetchedAt !== null && Date.now() - Date.parse(backendPresenceFetchedAt) < 90_000;
-  const adminLockedRemainingMinutes =
-    adminLockedUntilAt !== null && adminLockedUntilAt > Date.now()
-      ? Math.max(1, Math.ceil((adminLockedUntilAt - Date.now()) / 60000))
-      : 0;
   const verificationHealthLabel = profilePhoneVerified || profileEmailVerified ? "Verified channel ready" : "OTP still needed";
   const appIssueLabel = appIssueCount > 0 ? `${appIssueCount} issue${appIssueCount === 1 ? "" : "s"} seen` : "No issues captured";
 
@@ -26886,110 +27602,6 @@ function AdminSection({
         ) : null}
       </View>
 
-      {accessRole === "admin" ? null : (
-        <View style={styles.adminAuthCard}>
-          {/* Shield header */}
-          <View style={styles.adminAuthShieldRow}>
-            <View style={styles.adminAuthShieldCircle}>
-              <Text style={styles.adminAuthShieldIcon}>🛡️</Text>
-            </View>
-            <View style={styles.adminAuthShieldText}>
-              <Text style={styles.adminAuthShieldTitle}>Secure Admin Access</Text>
-              <Text style={styles.adminAuthShieldSub}>Protected zone — authorised personnel only</Text>
-            </View>
-          </View>
-
-          {/* Attempt indicators */}
-          <View style={styles.adminAuthDots}>
-            {[0, 1, 2].map((i) => (
-              <View
-                key={i}
-                style={[
-                  styles.adminAuthDot,
-                  adminUnlockFailures > i && styles.adminAuthDotFailed
-                ]}
-              />
-            ))}
-            <Text style={styles.adminAuthAttemptsLabel}>
-              {adminLockedRemainingMinutes > 0
-                ? `🔒 Locked — ${adminLockedRemainingMinutes}m remaining`
-                : adminUnlockFailures > 0
-                ? `${3 - adminUnlockFailures} attempt${3 - adminUnlockFailures === 1 ? "" : "s"} remaining`
-                : "3 attempts before lockout"}
-            </Text>
-          </View>
-
-          {adminLockedRemainingMinutes > 0 ? (
-            <View style={styles.adminLockoutBanner}>
-              <Text style={styles.adminLockoutBannerText}>
-                ⚠️ Access temporarily suspended after repeated failures. Auto-unlocks in {adminLockedRemainingMinutes} minute{adminLockedRemainingMinutes === 1 ? "" : "s"}.
-              </Text>
-            </View>
-          ) : (
-            <>
-              <TextInput
-                value={adminAccessNameAttempt}
-                onChangeText={setAdminAccessNameAttempt}
-                placeholder="Admin name or email"
-                placeholderTextColor="rgba(196,163,90,0.55)"
-                autoCapitalize="none"
-                autoComplete="email"
-                textContentType="emailAddress"
-                style={styles.adminAuthInput}
-              />
-              <TextInput
-                value={adminAccessAttempt}
-                onChangeText={setAdminAccessAttempt}
-                placeholder="Admin code"
-                placeholderTextColor="rgba(196,163,90,0.55)"
-                secureTextEntry
-                keyboardType="numeric"
-                maxLength={12}
-                style={styles.adminAuthInput}
-              />
-
-              {/* PIN pad */}
-              <View style={styles.adminPinPad}>
-                {["1","2","3","4","5","6","7","8","9","","0","⌫"].map((k) => (
-                  <Pressable
-                    key={k}
-                    style={({ pressed }) => [
-                      styles.adminPinKey,
-                      k === "" && styles.adminPinKeyEmpty,
-                      k === "⌫" && styles.adminPinKeyDel,
-                      pressed && k !== "" && styles.adminPinKeyPressed
-                    ]}
-                    onPress={() => {
-                      if (k === "") return;
-                      if (k === "⌫") {
-                        setAdminAccessAttempt(adminAccessAttempt.slice(0, -1));
-                      } else {
-                        setAdminAccessAttempt(adminAccessAttempt + k);
-                      }
-                    }}
-                    accessibilityLabel={k === "⌫" ? "Delete" : k}
-                  >
-                    <Text style={[styles.adminPinKeyLabel, k === "⌫" && styles.adminPinKeyDelLabel]}>{k}</Text>
-                  </Pressable>
-                ))}
-              </View>
-
-              <Pressable
-                accessibilityRole="button"
-                onPress={onUnlockAdmin}
-                style={styles.adminAuthButton}
-              >
-                <Text style={styles.adminAuthButtonLabel}>🔓 Authenticate & Enter</Text>
-              </Pressable>
-            </>
-          )}
-
-          <Text style={styles.adminAuthFooter}>
-            Access is logged and monitored. Unauthorised attempts trigger automatic lockout.
-          </Text>
-        </View>
-      )}
-
       <View style={[styles.adminStatsGrid, isWide && styles.adminStatsGridWide]}>
         <Metric label="Reports" value={communityReports.length} caption="community reports" accent="#F37B64" />
         <Metric label="Hidden feed" value={hiddenCommunityMessageIds.length} caption="feed items" accent="#AD850B" />
@@ -27014,26 +27626,20 @@ function AdminSection({
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Admin profile</Text>
+        <Text style={styles.settingsTitle}>Admin login</Text>
         <Text style={styles.promptText}>
-          Set a dedicated admin name or email plus a code. Production auth still needs a backend.
+          Admin access is verified by the backend on every login — there is no password stored in
+          the app itself, so nothing sensitive ships inside the app bundle. The login ID and code
+          are configured as server secrets and can only be changed there.
         </Text>
         <TextInput
           value={adminAccessName}
           onChangeText={setAdminAccessName}
-          placeholder="Admin name or email"
+          placeholder="Remembered login name or email (optional, this device only)"
           placeholderTextColor="#9A8F82"
           autoCapitalize="none"
           autoComplete="email"
           textContentType="emailAddress"
-          style={styles.settingsInput}
-        />
-        <TextInput
-          value={adminAccessCode}
-          onChangeText={setAdminAccessCode}
-          placeholder="Set a secure admin code"
-          placeholderTextColor="#9A8F82"
-          secureTextEntry
           style={styles.settingsInput}
         />
         <Text style={styles.promptText}>
@@ -27313,7 +27919,7 @@ function AccessOverlay({
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.profileSheetTopRow, compactStartup && styles.profileSheetTopRowCompact]}>
+        <View style={[styles.profileSheetTopRow, styles.profileSheetTopRowNoFloat, compactStartup && styles.profileSheetTopRowCompact]}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Exit profile details"
@@ -27335,30 +27941,12 @@ function AccessOverlay({
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Open verification section"
+            accessibilityLabel="Jump to verification section"
             hitSlop={12}
             onPress={jumpToVerification}
             style={({ pressed }) => [styles.profileSheetJumpButton, pressed && styles.pressed]}
           >
             <Text style={styles.profileSheetJumpButtonLabel}>Verification</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Close verification page"
-            hitSlop={12}
-            onPress={() => {
-              if (!canDismiss) return;
-              onClose();
-            }}
-            accessibilityState={{ disabled: !canDismiss }}
-            style={({ pressed }) => [
-              styles.sheetCloseIconButton,
-              styles.profileSheetCloseButtonFloating,
-              { opacity: canDismiss ? 1 : 0.45 },
-              pressed && canDismiss && styles.pressed
-            ]}
-          >
-          <Text style={[styles.sheetCloseIconButtonLabel, compactStartup && styles.sheetCloseIconButtonLabelCompact]}>✕</Text>
           </Pressable>
         </View>
         <View style={[styles.onboardingHeader, compactStartup && styles.onboardingHeaderCompact]}>
@@ -27410,25 +27998,45 @@ function AccessOverlay({
             Complete your profile, add a contact method, then verify to unlock community chat and private spaces.
           </Text>
           <View style={[styles.accessFlowPills, compactStartup && styles.accessFlowPillsCompact]}>
-            <View style={styles.accessFlowPill}>
-              <Text style={[styles.accessFlowPillLabel, compactStartup && styles.accessFlowPillLabelCompact]}>Profile</Text>
-              <Text style={[styles.accessFlowPillMeta, compactStartup && styles.accessFlowPillMetaCompact]}>Role and name</Text>
-            </View>
-            <View style={styles.accessFlowPill}>
-              <Text style={[styles.accessFlowPillLabel, compactStartup && styles.accessFlowPillLabelCompact]}>Contact</Text>
-              <Text style={[styles.accessFlowPillMeta, compactStartup && styles.accessFlowPillMetaCompact]}>Phone or email</Text>
-            </View>
-            <View style={styles.accessFlowPill}>
-              <Text style={[styles.accessFlowPillLabel, compactStartup && styles.accessFlowPillLabelCompact]}>Chat</Text>
-              <Text style={[styles.accessFlowPillMeta, compactStartup && styles.accessFlowPillMetaCompact]}>Needs one OTP when opened</Text>
-            </View>
+            {[
+              { id: "profile", label: "Profile", meta: "Role and name", done: name.trim().length > 0 },
+              {
+                id: "contact",
+                label: "Contact",
+                meta: "Phone or email",
+                done: profilePhone.trim().length > 0 || profileEmail.trim().length > 0
+              },
+              { id: "chat", label: "Chat", meta: "One OTP unlocks it", done: verificationReady }
+            ].map((step) => (
+              <View
+                key={step.id}
+                style={[
+                  styles.accessFlowPill,
+                  compactStartup && styles.accessFlowPillCompact,
+                  step.done && styles.accessFlowPillDone
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.accessFlowPillLabel,
+                    compactStartup && styles.accessFlowPillLabelCompact,
+                    step.done && styles.accessFlowPillLabelDone
+                  ]}
+                >
+                  {step.done ? "✓ " : ""}{step.label}
+                </Text>
+                <Text style={[styles.accessFlowPillMeta, compactStartup && styles.accessFlowPillMetaCompact]}>
+                  {step.done ? "Done" : step.meta}
+                </Text>
+              </View>
+            ))}
           </View>
         </View>
 
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
-          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Profile type</Text>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Account access level</Text>
           <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-            Tap one row. The selected profile stays highlighted so you can continue without guesswork.
+            This controls what you can do in the app — not who you are. Verified unlocks chat and private rooms once you confirm a phone or email.
           </Text>
           <View style={[styles.identityStack, compactStartup && styles.identityStackCompact]}>
             {[
@@ -29502,6 +30110,8 @@ function CounselingChatModal({
   stopSpeech,
   speechLocale,
   moonChart48Readings,
+  voiceAssistEnabled,
+  onToggleVoiceAssist,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -29513,6 +30123,13 @@ function CounselingChatModal({
   stopSpeech: () => void;
   speechLocale: string;
   moonChart48Readings: MoonChart48Reading[];
+  // Every friend/guide turn is spoken aloud automatically as it arrives
+  // (see scheduleSpeak below) -- there was previously no way to silence
+  // that from inside the chat itself short of leaving to find the Settings
+  // toggle. voiceAssistEnabled/onToggleVoiceAssist wire the header mute
+  // button below to that same app-wide switch.
+  voiceAssistEnabled: boolean;
+  onToggleVoiceAssist: () => void;
 }) {
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
@@ -29821,8 +30438,27 @@ function CounselingChatModal({
           </Pressable>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800" }}>Your guide is listening</Text>
-            <Text style={{ color: "#64748B", fontSize: 12 }}>Private · Nothing leaves this device</Text>
+            <Text style={{ color: "#64748B", fontSize: 12 }}>
+              {voiceAssistEnabled ? "Private · Replies are read aloud" : "Private · Voice reply is muted"}
+            </Text>
           </View>
+          {/* Mutes the automatic spoken reply right where it happens, instead
+              of forcing the person to leave this chat and dig through
+              Settings > Voice assistance to stop it. Also stops whatever is
+              speaking right now, not just future turns. */}
+          <Pressable
+            onPress={() => {
+              stopSpeech();
+              onToggleVoiceAssist();
+            }}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel={voiceAssistEnabled ? "Mute spoken replies" : "Unmute spoken replies"}
+            accessibilityState={{ selected: !voiceAssistEnabled }}
+            style={{ marginRight: 14 }}
+          >
+            <Text style={{ fontSize: 19 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
+          </Pressable>
           <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
             <Text style={{ color: "#64748B", fontSize: 13 }}>Skip →</Text>
           </Pressable>
@@ -35504,6 +36140,11 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingRight: 42
   },
+  profileSheetTopRowNoFloat: {
+    // No floating close icon in this row anymore (it duplicated the "Exit"
+    // button below and overlapped it) — one clear exit affordance instead.
+    paddingRight: 0
+  },
   profileSheetTopRowCompact: {
     gap: 6,
     paddingRight: 38
@@ -37739,6 +38380,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 7
   },
+  accessFlowPillDone: {
+    borderColor: "#3F785D",
+    backgroundColor: "#EAF6F0"
+  },
   accessFlowPillLabelCompact: {
     fontSize: 11,
     lineHeight: 13
@@ -37748,6 +38393,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 15,
     fontWeight: "900"
+  },
+  accessFlowPillLabelDone: {
+    color: "#0A5C58"
   },
   accessFlowPillMeta: {
     color: "rgba(13,31,34,0.65)",
