@@ -20,6 +20,7 @@
     "run:android": "node scripts/with-build-id.mjs expo run:android",
     "run:ios": "node scripts/with-build-id.mjs expo run:ios",
     "test:upgrades": "node scripts/app-upgrades-regression.mjs",
+    "test:visibility": "node scripts/visibility-regression.mjs",
     "test:vedic": "node scripts/vedic-engine-regression.mjs",
     "test:tone": "node scripts/tone-engine-regression.mjs"
   },

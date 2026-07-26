@@ -24422,6 +24422,34 @@ function IssueGuideSection({
 // vulnerable category — woman, child, SC/ST, disabled, in custody, mass
 // disaster victim, industrial workman, victim of trafficking) gets FREE
 // legal representation. This card exposes it.
+const HIGH_CONTRAST_ACCENTS: Record<string, string> = {
+  "#F472B6": "#BE185D",
+  "#FB7185": "#BE123C",
+  "#EC4899": "#BE185D",
+  "#818CF8": "#3730A3",
+  "#A78BFA": "#5B21B6",
+  "#14B8A6": "#0F766E",
+  "#10A76B": "#047857",
+  "#11A648": "#047857",
+  "#0BAD45": "#047857",
+  "#0891B2": "#0E7490",
+};
+
+function highContrastAccent(color: string): string {
+  return HIGH_CONTRAST_ACCENTS[color.toUpperCase()] ?? color;
+}
+
+function textOnAccent(color: string): "#FFFFFF" | "#0D1F22" {
+  const hex = color.replace("#", "");
+  if (hex.length !== 6) return "#FFFFFF";
+  const r = parseInt(hex.slice(0, 2), 16) / 255;
+  const g = parseInt(hex.slice(2, 4), 16) / 255;
+  const b = parseInt(hex.slice(4, 6), 16) / 255;
+  const linear = [r, g, b].map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  const luminance = 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+  return luminance < 0.45 ? "#FFFFFF" : "#0D1F22";
+}
+
 function FreeLegalAidCard({
   openWebsite,
 }: {
@@ -24474,41 +24502,44 @@ function FreeLegalAidCard({
 
       {expanded && (
         <View style={{ padding: 10, gap: 8, borderTopWidth: 1, borderTopColor: "rgba(52,211,153,0.15)" }}>
-          {NATIONAL_HELPLINES.map((h) => (
+          {NATIONAL_HELPLINES.map((h) => {
+            const accent = highContrastAccent(h.color);
+            const pillTextColor = textOnAccent(accent);
+            return (
             <View key={h.label} style={{
-              flexDirection: "row", alignItems: "center", gap: 8,
-              backgroundColor: h.color + "10", borderRadius: 10, padding: 10,
-              borderWidth: 1, borderColor: h.color + "30"
+              flexDirection: "row", alignItems: "flex-start", gap: 10,
+              backgroundColor: h.color + "10", borderRadius: 12, padding: 11,
+              borderWidth: 1.5, borderColor: accent + "45"
             }}>
-              <View style={{ width: 4, backgroundColor: h.color, alignSelf: "stretch", borderRadius: 2 }} />
+              <View style={{ width: 4, backgroundColor: accent, alignSelf: "stretch", borderRadius: 2 }} />
               <View style={{ flex: 1 }}>
-                <Text style={{ color: h.color, fontSize: 12, fontWeight: "800" }}>{h.label}</Text>
-                <Text style={{ color: "#465871", fontSize: 11, lineHeight: 15, marginTop: 2 }}>{h.note}</Text>
+                <Text style={{ color: accent, fontSize: 13, fontWeight: "900", lineHeight: 17 }}>{h.label}</Text>
+                <Text style={{ color: "#24384A", fontSize: 12, lineHeight: 17, marginTop: 3, fontWeight: "600" }}>{h.note}</Text>
               </View>
-              <View style={{ flexDirection: "column", gap: 4 }}>
+              <View style={{ flexDirection: "column", gap: 6, minWidth: 112 }}>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={`Call ${h.label}`}
                   onPress={() => callNumber(h.number, h.label)}
-                  style={{ backgroundColor: h.color, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, minWidth: 78, alignItems: "center" }}
+                  style={{ backgroundColor: accent, borderRadius: 9, paddingHorizontal: 10, paddingVertical: 7, minWidth: 104, alignItems: "center" }}
                 >
-                  <Text style={{ color: "#000", fontSize: 11, fontWeight: "900" }}>📞 {h.number}</Text>
+                  <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "900" }}>📞 {h.number}</Text>
                 </Pressable>
                 {h.url ? (
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => void openWebsite(h.url!, h.label)}
-                    style={{ backgroundColor: h.color + "25", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, minWidth: 78, alignItems: "center", borderWidth: 1, borderColor: h.color + "50" }}
+                    style={{ backgroundColor: "#FFFFFF", borderRadius: 9, paddingHorizontal: 10, paddingVertical: 6, minWidth: 104, alignItems: "center", borderWidth: 1.5, borderColor: accent }}
                   >
-                    <Text style={{ color: h.color, fontSize: 10, fontWeight: "800" }}>Portal ↗</Text>
+                    <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>Portal ↗</Text>
                   </Pressable>
                 ) : null}
               </View>
             </View>
-          ))}
-          <View style={{ backgroundColor: "rgba(52,211,153,0.08)", borderRadius: 10, padding: 10, borderLeftWidth: 3, borderLeftColor: "#059669", marginTop: 4 }}>
-            <Text style={{ color: "#10A76B", fontSize: 10, fontWeight: "900", letterSpacing: 1 }}>💡 KNOW YOUR RIGHT</Text>
-            <Text style={{ color: "rgba(110,231,183,0.85)", fontSize: 11, lineHeight: 16, marginTop: 3 }}>
+          )})}
+          <View style={{ backgroundColor: "#E7F6EF", borderRadius: 12, padding: 12, borderLeftWidth: 4, borderLeftColor: "#047857", marginTop: 4, borderWidth: 1, borderColor: "rgba(4,120,87,0.25)" }}>
+            <Text style={{ color: "#047857", fontSize: 12, fontWeight: "900", letterSpacing: 1 }}>💡 KNOW YOUR RIGHT</Text>
+            <Text style={{ color: "#1F3F35", fontSize: 12, lineHeight: 18, marginTop: 5, fontWeight: "600" }}>
               Under the Legal Services Authorities Act 1987, free legal aid is a fundamental right (Article 39A) for: women, children, SC/ST, disabled, victims of trafficking / mass disaster / industrial disaster, persons in custody, and anyone with income below the state threshold. Walk into any DLSA (District Legal Services Authority — every district court complex has one). No fees. Your own lawyer. Court fees waived.
             </Text>
           </View>
@@ -24615,6 +24646,8 @@ function GovtGrievanceCellsCard({
       </View>
       {SECTIONS.map((section) => {
         const isOpen = openSection === section.title;
+        const accent = highContrastAccent(section.color);
+        const pillTextColor = textOnAccent(accent);
         return (
           <View key={section.title}>
             <Pressable
@@ -24627,44 +24660,44 @@ function GovtGrievanceCellsCard({
               }]}
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
-                <View style={{ width: 4, height: 18, backgroundColor: section.color, borderRadius: 2 }} />
-                <Text style={{ color: section.color, fontSize: 12, fontWeight: "800" }}>{section.title}</Text>
-                <View style={{ backgroundColor: section.color + "20", borderRadius: 999, paddingHorizontal: 6, paddingVertical: 1 }}>
-                  <Text style={{ color: section.color, fontSize: 10, fontWeight: "800" }}>{section.cells.length}</Text>
+                <View style={{ width: 4, height: 20, backgroundColor: accent, borderRadius: 2 }} />
+                <Text style={{ color: accent, fontSize: 13, fontWeight: "900", lineHeight: 17 }}>{section.title}</Text>
+                <View style={{ backgroundColor: accent + "18", borderRadius: 999, paddingHorizontal: 7, paddingVertical: 2, borderWidth: 1, borderColor: accent + "35" }}>
+                  <Text style={{ color: accent, fontSize: 11, fontWeight: "900" }}>{section.cells.length}</Text>
                 </View>
               </View>
-              <Text style={{ color: section.color, fontSize: 11 }}>{isOpen ? "▲" : "▼"}</Text>
+              <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{isOpen ? "▲" : "▼"}</Text>
             </Pressable>
             {isOpen && (
               <View style={{ backgroundColor: "#E1EEEC", padding: 10, gap: 8 }}>
                 {section.cells.map((cell) => (
                   <View key={cell.label} style={{
-                    flexDirection: "row", alignItems: "center", gap: 8,
+                    flexDirection: "row", alignItems: "flex-start", gap: 10,
                     backgroundColor: section.color + "10", borderRadius: 10, padding: 10,
-                    borderWidth: 1, borderColor: section.color + "28"
+                    borderWidth: 1.5, borderColor: accent + "40"
                   }}>
                     <View style={{ flex: 1 }}>
-                      <Text style={{ color: section.color, fontSize: 12, fontWeight: "800" }}>{cell.label}</Text>
-                      <Text style={{ color: "#465871", fontSize: 11, lineHeight: 15, marginTop: 2 }}>{cell.note}</Text>
+                      <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "900" }}>{cell.label}</Text>
+                      <Text style={{ color: "#24384A", fontSize: 12, lineHeight: 17, marginTop: 3, fontWeight: "600" }}>{cell.note}</Text>
                     </View>
-                    <View style={{ flexDirection: "column", gap: 4 }}>
+                    <View style={{ flexDirection: "column", gap: 6, minWidth: 104 }}>
                       {cell.number ? (
                         <Pressable
                           accessibilityRole="button"
                           accessibilityLabel={`Call ${cell.label}`}
                           onPress={() => callNumber(cell.number!, cell.label)}
-                          style={{ backgroundColor: section.color, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5, minWidth: 80, alignItems: "center" }}
+                          style={{ backgroundColor: accent, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 7, minWidth: 104, alignItems: "center" }}
                         >
-                          <Text style={{ color: "#000", fontSize: 10, fontWeight: "900" }}>📞 {cell.number}</Text>
+                          <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "900" }}>📞 {cell.number}</Text>
                         </Pressable>
                       ) : null}
                       {cell.url ? (
                         <Pressable
                           accessibilityRole="button"
                           onPress={() => void openWebsite(cell.url!, cell.label)}
-                          style={{ backgroundColor: section.color + "25", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4, minWidth: 80, alignItems: "center", borderWidth: 1, borderColor: section.color + "50" }}
+                          style={{ backgroundColor: "#FFFFFF", borderRadius: 9, paddingHorizontal: 9, paddingVertical: 6, minWidth: 104, alignItems: "center", borderWidth: 1.5, borderColor: accent }}
                         >
-                          <Text style={{ color: section.color, fontSize: 10, fontWeight: "800" }}>Portal ↗</Text>
+                          <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>Portal ↗</Text>
                         </Pressable>
                       ) : null}
                     </View>
@@ -24826,6 +24859,8 @@ function HealthDirectoryCard({
       </View>
       {SECTIONS.map((section) => {
         const isOpen = openSection === section.title;
+        const accent = highContrastAccent(section.color);
+        const pillTextColor = textOnAccent(accent);
         return (
           <View key={section.title}>
             <Pressable
@@ -24838,44 +24873,44 @@ function HealthDirectoryCard({
               }]}
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
-                <View style={{ width: 4, height: 18, backgroundColor: section.color, borderRadius: 2 }} />
-                <Text style={{ color: section.color, fontSize: 12, fontWeight: "800", flexShrink: 1 }}>{section.title}</Text>
-                <View style={{ backgroundColor: section.color + "20", borderRadius: 999, paddingHorizontal: 6, paddingVertical: 1 }}>
-                  <Text style={{ color: section.color, fontSize: 10, fontWeight: "800" }}>{section.rows.length}</Text>
+                <View style={{ width: 4, height: 20, backgroundColor: accent, borderRadius: 2 }} />
+                <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "900", flexShrink: 1 }}>{section.title}</Text>
+                <View style={{ backgroundColor: accent + "18", borderRadius: 999, paddingHorizontal: 7, paddingVertical: 2, borderWidth: 1, borderColor: accent + "35" }}>
+                  <Text style={{ color: accent, fontSize: 11, fontWeight: "900" }}>{section.rows.length}</Text>
                 </View>
               </View>
-              <Text style={{ color: section.color, fontSize: 11 }}>{isOpen ? "▲" : "▼"}</Text>
+              <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{isOpen ? "▲" : "▼"}</Text>
             </Pressable>
             {isOpen && (
               <View style={{ backgroundColor: "#E1EEEC", padding: 10, gap: 8 }}>
                 {section.rows.map((row) => (
                   <View key={row.label} style={{
-                    flexDirection: "row", alignItems: "center", gap: 8,
+                    flexDirection: "row", alignItems: "flex-start", gap: 10,
                     backgroundColor: section.color + "10", borderRadius: 10, padding: 10,
-                    borderWidth: 1, borderColor: section.color + "28"
+                    borderWidth: 1.5, borderColor: accent + "40"
                   }}>
                     <View style={{ flex: 1 }}>
-                      <Text style={{ color: section.color, fontSize: 12, fontWeight: "800" }}>{row.label}</Text>
-                      <Text style={{ color: "#465871", fontSize: 11, lineHeight: 15, marginTop: 2 }}>{row.note}</Text>
+                      <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "900" }}>{row.label}</Text>
+                      <Text style={{ color: "#24384A", fontSize: 12, lineHeight: 17, marginTop: 3, fontWeight: "600" }}>{row.note}</Text>
                     </View>
-                    <View style={{ flexDirection: "column", gap: 4 }}>
+                    <View style={{ flexDirection: "column", gap: 6, minWidth: 112 }}>
                       {row.number ? (
                         <Pressable
                           accessibilityRole="button"
                           accessibilityLabel={`Call ${row.label}`}
                           onPress={() => callNumber(row.number!, row.label)}
-                          style={{ backgroundColor: section.color, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5, minWidth: 96, alignItems: "center" }}
+                          style={{ backgroundColor: accent, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 7, minWidth: 112, alignItems: "center" }}
                         >
-                          <Text style={{ color: "#000", fontSize: 10, fontWeight: "900" }}>📞 {row.number}</Text>
+                          <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "900" }}>📞 {row.number}</Text>
                         </Pressable>
                       ) : null}
                       {row.url ? (
                         <Pressable
                           accessibilityRole="button"
                           onPress={() => void openWebsite(row.url!, row.label)}
-                          style={{ backgroundColor: section.color + "25", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4, minWidth: 96, alignItems: "center", borderWidth: 1, borderColor: section.color + "50" }}
+                          style={{ backgroundColor: "#FFFFFF", borderRadius: 9, paddingHorizontal: 9, paddingVertical: 6, minWidth: 112, alignItems: "center", borderWidth: 1.5, borderColor: accent }}
                         >
-                          <Text style={{ color: section.color, fontSize: 10, fontWeight: "800" }}>Portal ↗</Text>
+                          <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>Portal ↗</Text>
                         </Pressable>
                       ) : null}
                     </View>
@@ -24992,6 +25027,7 @@ function StateOfficerDirectoryCard({
             selected.dgp ? { label: "DGP / senior officers", url: selected.dgp, note: "Direct escalation to senior police leadership", color: "#B45309" } : null,
           ].filter(Boolean).map((row) => {
             const r = row as { label: string; url: string; note: string; color: string };
+            const accent = highContrastAccent(r.color);
             return (
               <Pressable
                 key={r.label}
@@ -25000,14 +25036,14 @@ function StateOfficerDirectoryCard({
                 style={({ pressed }) => [{
                   flexDirection: "row", alignItems: "flex-start", gap: 10, padding: 10, borderRadius: 10,
                   backgroundColor: pressed ? r.color + "18" : r.color + "08",
-                  borderWidth: 1, borderColor: r.color + "35"
+                  borderWidth: 1.5, borderColor: accent + "45"
                 }]}
               >
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: r.color, fontSize: 12, fontWeight: "800" }}>{r.label}</Text>
-                  <Text style={{ color: "#465871", fontSize: 11, lineHeight: 15, marginTop: 2 }}>{r.note}</Text>
+                  <Text style={{ color: accent, fontSize: 13, fontWeight: "900", lineHeight: 17 }}>{r.label}</Text>
+                  <Text style={{ color: "#24384A", fontSize: 12, lineHeight: 17, marginTop: 3, fontWeight: "600" }}>{r.note}</Text>
                 </View>
-                <Text style={{ color: r.color, fontSize: 14, fontWeight: "800" }}>↗</Text>
+                <Text style={{ color: accent, fontSize: 16, fontWeight: "900" }}>↗</Text>
               </Pressable>
             );
           })}
@@ -25258,31 +25294,37 @@ function RedressSection({
             // ── Institutional ──
             { label: "Anti-Ragging", number: "1800-180-5522", color: "#B45309", desc: "Ragging, hostel intimidation — UGC 24×7 line, complaint auto-registers" },
           ].map((item) => (
-            <Pressable
-              key={item.number}
-              accessibilityRole="button"
-              accessibilityLabel={`Call ${item.label}: ${item.number}`}
-              onPress={() => {
-                const uri = `tel:${item.number.replace(/-/g, "")}`;
-                void Linking.openURL(uri).catch(() =>
-                  Alert.alert(item.label, `Please dial ${item.number}`)
-                );
-              }}
-              style={({ pressed }) => [{
-                flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 9,
-                borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)",
-                backgroundColor: pressed ? "rgba(255,255,255,0.04)" : "transparent"
-              }]}
-            >
-              <View style={{ width: 3, borderRadius: 2, backgroundColor: item.color, alignSelf: "stretch", marginRight: 10 }} />
-              <View style={{ flex: 1 }}>
-                <Text style={{ color: item.color, fontSize: 11, fontWeight: "700" }}>{item.label}</Text>
-                <Text style={{ color: "#515967", fontSize: 11, lineHeight: 16 }}>{item.desc}</Text>
-              </View>
-              <View style={{ backgroundColor: item.color, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 }}>
-                <Text style={{ color: "#000", fontSize: 13, fontWeight: "800" }}>{item.number}</Text>
-              </View>
-            </Pressable>
+            (() => {
+              const accent = highContrastAccent(item.color);
+              const pillTextColor = textOnAccent(accent);
+              return (
+                <Pressable
+                  key={item.number}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Call ${item.label}: ${item.number}`}
+                  onPress={() => {
+                    const uri = `tel:${item.number.replace(/-/g, "")}`;
+                    void Linking.openURL(uri).catch(() =>
+                      Alert.alert(item.label, `Please dial ${item.number}`)
+                    );
+                  }}
+                  style={({ pressed }) => [{
+                    flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 11,
+                    borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.12)",
+                    backgroundColor: pressed ? accent + "10" : "transparent"
+                  }]}
+                >
+                  <View style={{ width: 4, borderRadius: 2, backgroundColor: accent, alignSelf: "stretch", marginRight: 10 }} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "900" }}>{item.label}</Text>
+                    <Text style={{ color: "#24384A", fontSize: 12, lineHeight: 17, fontWeight: "600" }}>{item.desc}</Text>
+                  </View>
+                  <View style={{ backgroundColor: accent, borderRadius: 9, paddingHorizontal: 10, paddingVertical: 6, minWidth: 94, alignItems: "center" }}>
+                    <Text style={{ color: pillTextColor, fontSize: 13, fontWeight: "900" }}>{item.number}</Text>
+                  </View>
+                </Pressable>
+              );
+            })()
           ))}
         </View>
 
@@ -26245,17 +26287,19 @@ function InsightsSection({
                   { label: "Consistency streak", score: consistencyScore, color: "#0052B8" },
                   { label: "Score average", score: progressScore, color: "#B45309" },
                   { label: "Reports filed", score: reportsScore, color: "#B80064" },
-                ].map((item) => (
+                ].map((item) => {
+                  const accent = highContrastAccent(item.color);
+                  return (
                   <View key={item.label}>
                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
-                      <Text style={{ color: "#465871", fontSize: 11, fontWeight: "700" }}>{item.label}</Text>
-                      <Text style={{ color: item.color, fontSize: 11, fontWeight: "900" }}>{item.score}%</Text>
+                      <Text style={{ color: "#24384A", fontSize: 12, fontWeight: "800" }}>{item.label}</Text>
+                      <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{item.score}%</Text>
                     </View>
-                    <View style={{ height: 6, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
-                      <View style={{ height: 6, width: `${item.score}%` as unknown as number, backgroundColor: item.color, borderRadius: 3 }} />
+                    <View style={{ height: 7, backgroundColor: "rgba(36,56,74,0.12)", borderRadius: 4, overflow: "hidden" }}>
+                      <View style={{ height: 7, width: `${item.score}%` as unknown as number, backgroundColor: accent, borderRadius: 4 }} />
                     </View>
                   </View>
-                ))}
+                )})}
               </View>
               {/* Insight + action */}
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, gap: 10 }}>
