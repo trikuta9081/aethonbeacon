@@ -8774,6 +8774,727 @@ function getGreenwichSiderealTimeDegrees(date: Date): number {
   return normalizeDegrees(Astronomy.SiderealTime(date) * 15);
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// FULL NAVAGRAHA EPHEMERIS — Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu
+// ════════════════════════════════════════════════════════════════════════════
+// Sun and Moon already have dedicated, established-model longitude functions
+// above (VSOP87 solar theory / ELP2000-82B lunar theory via astronomy-engine).
+// Everything below this Vedic engine had built so far -- Rashi, Nakshatra,
+// Dasha, Panchang, the real geocoded Ascendant -- only ever needed those two
+// bodies. Divisional charts, Yoga detection, Ashtakavarga, and Shadbala all
+// need the other five classical grahas too, which the app never computed.
+//
+// GrahaId is the canonical 9-graha (navagraha) set used everywhere below.
+type GrahaId = "sun" | "moon" | "mars" | "mercury" | "jupiter" | "venus" | "saturn" | "rahu" | "ketu";
+
+const NAVAGRAHA_IDS: GrahaId[] = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu"];
+
+const GRAHA_LABELS: Record<GrahaId, string> = {
+  sun: "Surya (Sun)",
+  moon: "Chandra (Moon)",
+  mars: "Mangal (Mars)",
+  mercury: "Budha (Mercury)",
+  jupiter: "Guru (Jupiter)",
+  venus: "Shukra (Venus)",
+  saturn: "Shani (Saturn)",
+  rahu: "Rahu",
+  ketu: "Ketu",
+};
+
+// Two-letter abbreviations for compact chart-wheel cells (standard Jyotish
+// software convention: Su/Mo/Ma/Me/Ju/Ve/Sa/Ra/Ke).
+const GRAHA_SHORT_LABELS: Record<GrahaId, string> = {
+  sun: "Su",
+  moon: "Mo",
+  mars: "Ma",
+  mercury: "Me",
+  jupiter: "Ju",
+  venus: "Ve",
+  saturn: "Sa",
+  rahu: "Ra",
+  ketu: "Ke",
+};
+
+// Geocentric apparent ecliptic-of-date longitude for a physical planet, via
+// astronomy-engine's general planetary theory (VSOP87-derived). GeoVector
+// gives a light-time- and aberration-corrected J2000-equatorial position;
+// Ecliptic() converts that to TRUE ECLIPTIC OF DATE -- the same frame
+// SunPosition()/EclipticGeoMoon() already return above, so the exact same
+// ayanamsa subtraction below is valid for every graha, not just Sun/Moon.
+function getApproxTropicalPlanetLongitude(body: Astronomy.Body, date: Date): number {
+  const vector = Astronomy.GeoVector(body, date, true);
+  const ecliptic = Astronomy.Ecliptic(vector);
+  return normalizeDegrees(ecliptic.elon);
+}
+
+// Mean lunar ascending node (Mean Rahu) -- Meeus, "Astronomical Algorithms",
+// ch. 47 -- the same reference already cited above for the Ascendant formula,
+// and the standard most Vedic ephemerides/panchangs use for Rahu/Ketu (as
+// opposed to the oscillating "true node", which requires an iterative search
+// and is the less common convention in classical Parashara-system software).
+// Ketu (the descending node) is always exactly 180 degrees opposite Rahu.
+function getMeanLunarNodeTropicalLongitude(date: Date): number {
+  const jd = julianDay(date);
+  const T = (jd - 2451545.0) / 36525;
+  const omega =
+    125.0445479 -
+    1934.1362891 * T +
+    0.0020754 * T * T +
+    (T * T * T) / 467441 -
+    (T * T * T * T) / 60616000;
+  return normalizeDegrees(omega);
+}
+
+// Sidereal (Lahiri) longitude for any of the 9 grahas at a given moment --
+// the single entry point every downstream Vedic calculation (Navamsa, Yogas,
+// Ashtakavarga, Shadbala) should use, so ayanamsa handling stays in one place.
+function getSiderealGrahaLongitude(grahaId: GrahaId, date: Date): number {
+  const ayanamsa = lahiriAyanamsaDegrees(julianDay(date));
+  let tropical: number;
+  switch (grahaId) {
+    case "sun":
+      tropical = getApproxTropicalSunLongitude(date);
+      break;
+    case "moon":
+      tropical = getApproxTropicalMoonLongitude(date);
+      break;
+    case "mars":
+      tropical = getApproxTropicalPlanetLongitude(Astronomy.Body.Mars, date);
+      break;
+    case "mercury":
+      tropical = getApproxTropicalPlanetLongitude(Astronomy.Body.Mercury, date);
+      break;
+    case "jupiter":
+      tropical = getApproxTropicalPlanetLongitude(Astronomy.Body.Jupiter, date);
+      break;
+    case "venus":
+      tropical = getApproxTropicalPlanetLongitude(Astronomy.Body.Venus, date);
+      break;
+    case "saturn":
+      tropical = getApproxTropicalPlanetLongitude(Astronomy.Body.Saturn, date);
+      break;
+    case "rahu":
+      tropical = getMeanLunarNodeTropicalLongitude(date);
+      break;
+    case "ketu":
+      tropical = normalizeDegrees(getMeanLunarNodeTropicalLongitude(date) + 180);
+      break;
+  }
+  return normalizeDegrees(tropical - ayanamsa);
+}
+
+type NavagrahaLongitudes = Record<GrahaId, number>; // sidereal degrees, [0, 360)
+
+// All 9 real sidereal graha longitudes at one moment -- the shared input for
+// every classical system built on top (Navamsa, Yogas, Ashtakavarga, Shadbala).
+function getNavagrahaLongitudes(date: Date): NavagrahaLongitudes {
+  const result = {} as NavagrahaLongitudes;
+  for (const id of NAVAGRAHA_IDS) {
+    result[id] = getSiderealGrahaLongitude(id, date);
+  }
+  return result;
+}
+
+function rashiIndexFromLongitude(siderealLongitude: number): number {
+  return Math.min(11, Math.floor(normalizeDegrees(siderealLongitude) / 30));
+}
+
+// D9 Navamsa sign index from a sidereal longitude. Each 30° Rashi splits into
+// 9 navamsas of 3°20' each (108 total across the zodiac); continuously
+// numbering all 108 from Aries 0° and wrapping mod 12 is mathematically
+// identical to the classical modality rule (movable signs' navamsa 1 starts
+// in the same sign, fixed signs' in the 9th sign from it, dual signs' in the
+// 5th) -- verified against all three modalities before using this shortcut.
+function navamsaSignIndex(siderealLongitude: number): number {
+  const totalNavamsaCount = Math.floor(normalizeDegrees(siderealLongitude) / (30 / 9));
+  return totalNavamsaCount % 12;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// BIRTH CHART CORE — shared input for Navamsa, Yoga detection, Ashtakavarga,
+// and Shadbala. Computed once per birth-detail change; every classical system
+// built on top reads from this instead of recomputing ephemeris separately.
+// ════════════════════════════════════════════════════════════════════════════
+type BirthChartCore = {
+  birthMoment: Date;
+  // true only once we have an exact birth time AND geocoded coordinates --
+  // the real spherical-astronomy Ascendant formula needs both. Without them
+  // ascendantSidereal is null and house-dependent systems (Yogas that check
+  // kendra/trikona from Lagna, Ashtakavarga, Dig Bala in Shadbala) fall back
+  // to Moon-chart-only analysis rather than guessing a house placement.
+  precise: boolean;
+  ascendantSidereal: number | null;
+  navagraha: NavagrahaLongitudes;
+};
+
+function computeBirthChartCore(
+  dob: string,
+  birthTime: string | null,
+  birthLat: number | null,
+  birthLon: number | null
+): BirthChartCore | null {
+  const birthMoment = parseVedicBirthMoment(dob, birthTime);
+  if (!birthMoment) return null;
+  const precise = !!(
+    birthTime &&
+    /^\d{2}:\d{2}$/.test(birthTime) &&
+    typeof birthLat === "number" &&
+    typeof birthLon === "number" &&
+    !isNaN(birthLat) &&
+    !isNaN(birthLon)
+  );
+  const ascendantSidereal = precise
+    ? getPreciseAscendantSiderealDegrees(birthMoment, birthLat as number, birthLon as number)
+    : null;
+  const navagraha = getNavagrahaLongitudes(birthMoment);
+  return { birthMoment, precise, ascendantSidereal, navagraha };
+}
+
+// ── D9 Navamsa ───────────────────────────────────────────────────────────────
+type NavamsaEntry = {
+  id: GrahaId | "lagna";
+  label: string;
+  rashiIndex: number;
+  navamsaIndex: number;
+  // Vargottama: same sign in Rashi (D1) and Navamsa (D9) -- classical texts
+  // treat this as a significant strength booster for that graha/Lagna.
+  vargottama: boolean;
+};
+
+function buildNavamsaEntries(core: BirthChartCore): NavamsaEntry[] {
+  const entries: NavamsaEntry[] = [];
+  if (core.ascendantSidereal !== null) {
+    const rashiIndex = rashiIndexFromLongitude(core.ascendantSidereal);
+    const navamsaIndex = navamsaSignIndex(core.ascendantSidereal);
+    entries.push({ id: "lagna", label: "Lagna (Ascendant)", rashiIndex, navamsaIndex, vargottama: rashiIndex === navamsaIndex });
+  }
+  for (const id of NAVAGRAHA_IDS) {
+    const longitude = core.navagraha[id];
+    const rashiIndex = rashiIndexFromLongitude(longitude);
+    const navamsaIndex = navamsaSignIndex(longitude);
+    entries.push({ id, label: GRAHA_LABELS[id], rashiIndex, navamsaIndex, vargottama: rashiIndex === navamsaIndex });
+  }
+  return entries;
+}
+
+// ── Classical reference tables (Brihat Parashara Hora Shastra) ─────────────
+// Own-sign and exaltation-sign rulerships are fixed, undisputed classical
+// facts -- every Jyotish text and every piece of professional software uses
+// the same tables. Exaltation is sign-level (Parashara defines it as "exalted
+// anywhere within this whole rashi"), not a single degree point.
+const OWN_SIGN_INDICES: Partial<Record<GrahaId, number[]>> = {
+  sun: [4], // Leo
+  moon: [3], // Cancer
+  mars: [0, 7], // Aries, Scorpio
+  mercury: [2, 5], // Gemini, Virgo
+  jupiter: [8, 11], // Sagittarius, Pisces
+  venus: [1, 6], // Taurus, Libra
+  saturn: [9, 10], // Capricorn, Aquarius
+};
+
+const EXALTATION_SIGN_INDEX: Partial<Record<GrahaId, number>> = {
+  sun: 0, // Aries
+  moon: 1, // Taurus
+  mars: 9, // Capricorn
+  mercury: 5, // Virgo
+  jupiter: 3, // Cancer
+  venus: 11, // Pisces
+  saturn: 6, // Libra
+};
+
+// Classical sign rulerships (Rahu/Ketu are shadow points, not signs, so they
+// never rule a sign and never carry a house-lordship in the yogas below).
+const SIGN_LORD: GrahaId[] = [
+  "mars", // 0 Aries
+  "venus", // 1 Taurus
+  "mercury", // 2 Gemini
+  "moon", // 3 Cancer
+  "sun", // 4 Leo
+  "mercury", // 5 Virgo
+  "venus", // 6 Libra
+  "mars", // 7 Scorpio
+  "jupiter", // 8 Sagittarius
+  "saturn", // 9 Capricorn
+  "saturn", // 10 Aquarius
+  "jupiter", // 11 Pisces
+];
+
+function houseFromLagna(rashiIndex: number, lagnaRashiIndex: number): number {
+  return ((rashiIndex - lagnaRashiIndex + 12) % 12) + 1; // 1-12
+}
+
+// ── Yoga detection ───────────────────────────────────────────────────────────
+// Scoped deliberately: every yoga below is checked by CONJUNCTION (same sign)
+// or a fixed angular relationship, not full classical graha drishti (planetary
+// aspect), which varies in type and strength per planet across texts and would
+// add real interpretive ambiguity. This is a curated, unambiguous subset of
+// Parashara-system yogas, not an exhaustive list -- being explicit about the
+// method here matters more than appearing more complete than it is.
+type DetectedYoga = {
+  id: string;
+  name: string;
+  grahasInvolved: (GrahaId | "lagna")[];
+  meaning: string;
+};
+
+function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
+  const yogas: DetectedYoga[] = [];
+  const rashiOf = (id: GrahaId) => rashiIndexFromLongitude(core.navagraha[id]);
+
+  // Gaja Kesari Yoga -- Moon and Jupiter in mutual kendra (0, 3, 6, or 9 signs apart).
+  {
+    const diff = Math.abs(rashiOf("moon") - rashiOf("jupiter")) % 12;
+    if ([0, 3, 6, 9].includes(Math.min(diff, 12 - diff))) {
+      yogas.push({
+        id: "gaja-kesari",
+        name: "Gaja Kesari Yoga",
+        grahasInvolved: ["moon", "jupiter"],
+        meaning:
+          "Moon and Jupiter support each other from angular houses -- classically linked to steady reputation, sound judgement, and resilience under pressure.",
+      });
+    }
+  }
+
+  // Budhaditya Yoga -- Sun and Mercury conjunct.
+  if (rashiOf("sun") === rashiOf("mercury")) {
+    yogas.push({
+      id: "budhaditya",
+      name: "Budhaditya Yoga",
+      grahasInvolved: ["sun", "mercury"],
+      meaning: "Sun and Mercury share a sign -- linked to sharp intellect, communication skill, and analytical confidence.",
+    });
+  }
+
+  // Chandra-Mangal Yoga -- Moon and Mars conjunct.
+  if (rashiOf("moon") === rashiOf("mars")) {
+    yogas.push({
+      id: "chandra-mangal",
+      name: "Chandra-Mangal Yoga",
+      grahasInvolved: ["moon", "mars"],
+      meaning: "Moon and Mars share a sign -- classically a wealth-and-drive combination, though it can also run emotionally intense.",
+    });
+  }
+
+  // Everything below needs a real Lagna (house positions), so it only runs
+  // once birth time + geocoded place give a precise Ascendant.
+  if (core.ascendantSidereal !== null) {
+    const lagnaRashi = rashiIndexFromLongitude(core.ascendantSidereal);
+
+    // Pancha Mahapurusha Yogas -- Mars/Mercury/Jupiter/Venus/Saturn in its own
+    // or exalted sign, angular (kendra: house 1, 4, 7, or 10) from Lagna.
+    const mahapurushaChecks: Array<{ id: GrahaId; name: string; theme: string }> = [
+      { id: "mars", name: "Ruchaka Yoga", theme: "bold, disciplined action" },
+      { id: "mercury", name: "Bhadra Yoga", theme: "sharp analytical skill" },
+      { id: "jupiter", name: "Hamsa Yoga", theme: "wisdom and ethical clarity" },
+      { id: "venus", name: "Malavya Yoga", theme: "charm, aesthetics, and comfort" },
+      { id: "saturn", name: "Shasha Yoga", theme: "discipline and long-term endurance" },
+    ];
+    for (const check of mahapurushaChecks) {
+      const sign = rashiOf(check.id);
+      const house = houseFromLagna(sign, lagnaRashi);
+      const isOwn = (OWN_SIGN_INDICES[check.id] ?? []).includes(sign);
+      const isExalted = EXALTATION_SIGN_INDEX[check.id] === sign;
+      if ((isOwn || isExalted) && [1, 4, 7, 10].includes(house)) {
+        yogas.push({
+          id: `mahapurusha-${check.id}`,
+          name: check.name,
+          grahasInvolved: [check.id],
+          meaning: `${GRAHA_LABELS[check.id]} is strong in its own or exalted sign, angular from the Ascendant -- one of the five classical Mahapurusha combinations, linked to ${check.theme}.`,
+        });
+      }
+    }
+
+    // Raja Yoga (a kendra-house lord and a trikona-house lord sharing a sign)
+    // and Dhana Yoga (2nd-house lord and 11th-house lord sharing a sign).
+    const houseSignIndex = (house: number) => (lagnaRashi + house - 1) % 12;
+    const lordOfHouse = (house: number): GrahaId => SIGN_LORD[houseSignIndex(house)];
+    const kendraLords = Array.from(new Set([1, 4, 7, 10].map(lordOfHouse)));
+    const trikonaLords = Array.from(new Set([1, 5, 9].map(lordOfHouse)));
+    const seenRajaPairs = new Set<string>();
+    for (const kLord of kendraLords) {
+      for (const tLord of trikonaLords) {
+        if (kLord === tLord) continue; // one planet ruling both isn't a combination of two lords
+        const pairId = [kLord, tLord].sort().join("-");
+        if (seenRajaPairs.has(pairId) || rashiOf(kLord) !== rashiOf(tLord)) continue;
+        seenRajaPairs.add(pairId);
+        yogas.push({
+          id: `raja-${pairId}`,
+          name: "Raja Yoga",
+          grahasInvolved: [kLord, tLord],
+          meaning: `${GRAHA_LABELS[kLord]} (an angular-house lord) and ${GRAHA_LABELS[tLord]} (a trine-house lord) share a sign -- a classical status-and-authority combination.`,
+        });
+      }
+    }
+    const lord2 = lordOfHouse(2);
+    const lord11 = lordOfHouse(11);
+    if (lord2 !== lord11 && rashiOf(lord2) === rashiOf(lord11)) {
+      yogas.push({
+        id: "dhana-2-11",
+        name: "Dhana Yoga",
+        grahasInvolved: [lord2, lord11],
+        meaning: `${GRAHA_LABELS[lord2]} (2nd-house lord, saved wealth) and ${GRAHA_LABELS[lord11]} (11th-house lord, gains) share a sign -- a classical wealth-accumulation combination.`,
+      });
+    }
+  }
+
+  return yogas;
+}
+
+// ── Ashtakavarga (Bhinnashtakavarga + Sarvashtakavarga) ─────────────────────
+// B.V. Raman, "Ashtakavarga System of Prediction," Ch. II. Eight classical
+// contributors -- the 7 non-shadow planets plus Lagna (Rahu/Ketu are shadow
+// points and never contribute or receive bindus in this system) -- each mark
+// a fixed set of houses, counted from their OWN sign, as benefic ("bindu")
+// places for each of the 7 target planets. These benefic-place tables are
+// FIXED and identical in every horoscope; only which sign each house-offset
+// lands in changes per chart. Verified against the classical invariant
+// per-planet totals that must hold in every correctly-built chart: Sun=48,
+// Moon=49, Mars=39, Mercury=54, Jupiter=56, Venus=52, Saturn=39 (grand total
+// 337 across all seven, and 337 again for the summed Sarvashtakavarga).
+type AshtakavargaPlanet = "sun" | "moon" | "mars" | "mercury" | "jupiter" | "venus" | "saturn";
+type AshtakavargaContributor = AshtakavargaPlanet | "lagna";
+const ASHTAKAVARGA_TARGETS: AshtakavargaPlanet[] = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"];
+const ASHTAKAVARGA_CONTRIBUTORS: AshtakavargaContributor[] = [
+  "sun",
+  "moon",
+  "mars",
+  "mercury",
+  "jupiter",
+  "venus",
+  "saturn",
+  "lagna",
+];
+
+const ASHTAKAVARGA_BENEFIC_PLACES: Record<AshtakavargaPlanet, Record<AshtakavargaContributor, number[]>> = {
+  sun: {
+    sun: [1, 2, 4, 7, 8, 9, 10, 11],
+    moon: [3, 6, 10, 11],
+    mars: [1, 2, 4, 7, 8, 9, 10, 11],
+    mercury: [3, 5, 6, 9, 10, 11, 12],
+    jupiter: [5, 6, 9, 11],
+    venus: [6, 7, 12],
+    saturn: [1, 2, 4, 7, 8, 9, 10, 11],
+    lagna: [3, 4, 6, 10, 11, 12],
+  },
+  moon: {
+    sun: [3, 6, 7, 8, 10, 11],
+    moon: [1, 3, 6, 7, 10, 11],
+    mars: [2, 3, 5, 6, 9, 10, 11],
+    mercury: [1, 3, 4, 5, 7, 8, 10, 11],
+    jupiter: [1, 4, 7, 8, 10, 11, 12],
+    venus: [3, 4, 5, 7, 9, 10, 11],
+    saturn: [3, 5, 6, 11],
+    lagna: [3, 6, 10, 11],
+  },
+  mars: {
+    sun: [3, 5, 6, 10, 11],
+    moon: [3, 6, 11],
+    mars: [1, 2, 4, 7, 8, 10, 11],
+    mercury: [3, 5, 6, 11],
+    jupiter: [6, 10, 11, 12],
+    venus: [6, 8, 11, 12],
+    saturn: [1, 4, 7, 8, 9, 10, 11],
+    lagna: [1, 3, 6, 10, 11],
+  },
+  mercury: {
+    sun: [5, 6, 9, 11, 12],
+    moon: [2, 4, 6, 8, 10, 11],
+    mars: [1, 2, 4, 7, 8, 9, 10, 11],
+    mercury: [1, 3, 5, 6, 9, 10, 11, 12],
+    jupiter: [6, 8, 11, 12],
+    venus: [1, 2, 3, 4, 5, 8, 9, 11],
+    saturn: [1, 2, 4, 7, 8, 9, 10, 11],
+    lagna: [1, 2, 4, 6, 8, 10, 11],
+  },
+  jupiter: {
+    sun: [1, 2, 3, 4, 7, 8, 9, 10, 11],
+    moon: [2, 5, 7, 9, 11],
+    mars: [1, 2, 4, 7, 8, 10, 11],
+    mercury: [1, 2, 4, 5, 6, 9, 10, 11],
+    jupiter: [1, 2, 3, 4, 7, 8, 10, 11],
+    venus: [2, 5, 6, 9, 10, 11],
+    saturn: [3, 5, 6, 12],
+    lagna: [1, 2, 4, 5, 6, 7, 9, 10, 11],
+  },
+  venus: {
+    sun: [8, 11, 12],
+    moon: [1, 2, 3, 4, 5, 8, 9, 11, 12],
+    mars: [3, 5, 6, 9, 11, 12],
+    mercury: [3, 5, 6, 9, 11],
+    jupiter: [5, 8, 9, 10, 11],
+    venus: [1, 2, 3, 4, 5, 8, 9, 10, 11],
+    saturn: [3, 4, 5, 8, 9, 10, 11],
+    lagna: [1, 2, 3, 4, 5, 8, 9, 11],
+  },
+  saturn: {
+    sun: [1, 2, 4, 7, 8, 10, 11],
+    moon: [3, 6, 11],
+    mars: [3, 5, 6, 10, 11, 12],
+    mercury: [6, 8, 9, 10, 11, 12],
+    jupiter: [5, 6, 11, 12],
+    venus: [6, 11, 12],
+    saturn: [3, 5, 6, 11],
+    lagna: [1, 3, 4, 6, 10, 11],
+  },
+};
+
+type BhinnashtakavargaChart = {
+  target: AshtakavargaPlanet;
+  label: string;
+  bindus: number[]; // length 12, index 0 = Aries ... 11 = Pisces
+  total: number; // always equals the classical fixed constant for this planet
+};
+
+type AshtakavargaResult = {
+  charts: BhinnashtakavargaChart[];
+  // Sarvashtakavarga -- sum of all seven Bhinnashtakavarga charts (Lagna
+  // contributes bindus to each planet's chart but, per classical convention,
+  // never gets its own separate chart summed into this total).
+  sarva: number[];
+  sarvaTotal: number; // classical invariant: always 337
+};
+
+// Builds all seven Bhinnashtakavarga charts plus the combined Sarvashtakavarga.
+// Requires a precise Lagna (birth time + geocoded place) because Lagna is one
+// of the eight classical contributors -- without it the fixed per-planet
+// totals (48/49/39/54/56/52/39) can never be reached, so this deliberately
+// returns null rather than silently producing an incomplete, non-classical
+// chart.
+function buildAshtakavarga(core: BirthChartCore): AshtakavargaResult | null {
+  if (core.ascendantSidereal === null) return null;
+  const contributorRashi: Record<AshtakavargaContributor, number> = {
+    sun: rashiIndexFromLongitude(core.navagraha.sun),
+    moon: rashiIndexFromLongitude(core.navagraha.moon),
+    mars: rashiIndexFromLongitude(core.navagraha.mars),
+    mercury: rashiIndexFromLongitude(core.navagraha.mercury),
+    jupiter: rashiIndexFromLongitude(core.navagraha.jupiter),
+    venus: rashiIndexFromLongitude(core.navagraha.venus),
+    saturn: rashiIndexFromLongitude(core.navagraha.saturn),
+    lagna: rashiIndexFromLongitude(core.ascendantSidereal),
+  };
+
+  const charts: BhinnashtakavargaChart[] = ASHTAKAVARGA_TARGETS.map((target) => {
+    const bindus = new Array(12).fill(0);
+    const beneficByContributor = ASHTAKAVARGA_BENEFIC_PLACES[target];
+    for (const contributor of ASHTAKAVARGA_CONTRIBUTORS) {
+      const fromSign = contributorRashi[contributor];
+      for (const houseOffset of beneficByContributor[contributor]) {
+        const sign = (fromSign + houseOffset - 1) % 12;
+        bindus[sign] += 1;
+      }
+    }
+    const total = bindus.reduce((a: number, b: number) => a + b, 0);
+    return { target, label: GRAHA_LABELS[target], bindus, total };
+  });
+
+  const sarva = new Array(12).fill(0);
+  for (const chart of charts) {
+    for (let sign = 0; sign < 12; sign++) sarva[sign] += chart.bindus[sign];
+  }
+  const sarvaTotal = sarva.reduce((a: number, b: number) => a + b, 0);
+
+  return { charts, sarva, sarvaTotal };
+}
+
+// ── Shadbala (six-fold planetary strength) ──────────────────────────────────
+// Classical source: Brihat Parashara Hora Shastra, Ch. 27. Full BPHS Shadbala
+// sums SIX categories: Sthana Bala, Dig Bala, Kala Bala, Chesta Bala,
+// Naisargika Bala, and Drik Bala. Three of the sub-formulas need machinery
+// this app does not have yet and are DELIBERATELY OMITTED rather than
+// approximated with guessed numbers:
+//   - Saptavargaja Bala and Drekkana Bala (two of Sthana Bala's five parts)
+//     need the D2, D3, D7, D12, and D30 divisional charts -- only D1 (Rashi)
+//     and D9 (Navamsa) exist in this app so far.
+//   - Kala Bala's day/night-based parts (Nathonnatha, Tribhaga, Ayana Bala)
+//     need precise local sunrise/sunset and a ghati-based sinusoidal formula
+//     that no source we could verify gave in exact, checkable form.
+//   - Drik Bala (aspectual strength) needs a degree-weighted graha-drishti
+//     falloff table that varies across texts and software.
+// What IS included below is fully classical and verifiable: Uchcha Bala,
+// Ojayugmarasyamsa Bala, and Kendradi Bala (3 of Sthana Bala's 5 parts), the
+// full Dig Bala, the full fixed Naisargika Bala, and a Chesta Bala PROXY
+// (real BPHS Chesta Bala uses each planet's Seeghrocha/mean-Sun conjunction
+// angle, which needs orbital-element machinery this app doesn't have; the
+// proxy below uses actual vs. mean daily motion, which tracks the same
+// underlying idea -- slow/retrograde = strong, fast direct = weak -- but is
+// not the literal classical formula). Sun and Moon never get Chesta Bala in
+// any classical system since they never move retrograde.
+type ShadbalaPlanet = AshtakavargaPlanet; // sun..saturn, the 7 classical grahas
+
+// Fixed, source-verified (B.V. Raman / standard BPHS tables), identical in
+// every horoscope -- total 240 virupas (4 rupas) across all seven.
+const NAISARGIKA_BALA: Record<ShadbalaPlanet, number> = {
+  sun: 60,
+  moon: 51.43,
+  venus: 42.85,
+  jupiter: 34.28,
+  mercury: 25.7,
+  mars: 17.14,
+  saturn: 8.57,
+};
+
+// Classical minimum Shadbala (in Rupas) each planet needs to be considered
+// "strong enough" to deliver its full significations -- also a fixed,
+// per-planet constant, not something that varies by chart.
+const SHADBALA_MINIMUM_RUPAS: Record<ShadbalaPlanet, number> = {
+  sun: 6.5,
+  moon: 6.0,
+  mars: 5.0,
+  mercury: 7.0,
+  jupiter: 6.5,
+  venus: 5.5,
+  saturn: 5.0,
+};
+
+// Exact classical deep-exaltation degree for each planet, as an absolute
+// sidereal longitude (sign-start + degree-within-sign). Used by Uchcha Bala.
+const DEEP_EXALTATION_DEGREE: Record<ShadbalaPlanet, number> = {
+  sun: 10, // 10° Aries
+  moon: 33, // 3° Taurus
+  mars: 298, // 28° Capricorn
+  mercury: 165, // 15° Virgo
+  jupiter: 95, // 5° Cancer
+  venus: 357, // 27° Pisces
+  saturn: 200, // 20° Libra
+};
+
+// Dig Bala: the single house (counted from Lagna) where each planet is
+// classically at its directional strongest -- full 60 virupas at that house's
+// exact cusp degree, tapering to 0 at the opposite cusp.
+const DIG_BALA_STRONG_HOUSE: Record<ShadbalaPlanet, number> = {
+  jupiter: 1,
+  mercury: 1,
+  moon: 4,
+  venus: 4,
+  saturn: 7,
+  sun: 10,
+  mars: 10,
+};
+
+// Ojayugmarasyamsa Bala: "odd/even sign" strength. Sun/Mars/Jupiter/Saturn
+// (classically treated as masculine) are strong in odd signs (Aries=1,
+// Gemini=3, ... i.e. 0-indexed EVEN sign positions); Moon/Venus (feminine)
+// are strong in even signs (0-indexed ODD positions). Mercury (neuter) is
+// always strong regardless of sign. Checked separately for Rashi (D1) and
+// Navamsa (D9) -- 15 virupas each, so max 30.
+const OJA_YUGMA_PREFERENCE: Record<ShadbalaPlanet, "odd" | "even" | "always"> = {
+  sun: "odd",
+  mars: "odd",
+  jupiter: "odd",
+  saturn: "odd",
+  moon: "even",
+  venus: "even",
+  mercury: "always",
+};
+
+// Classical mean daily motion (degrees/day) -- used only as the reference
+// point for the Chesta Bala proxy described above, not for ephemeris math
+// (the real position always comes from astronomy-engine).
+const MEAN_DAILY_MOTION: Partial<Record<ShadbalaPlanet, number>> = {
+  mars: 0.524,
+  mercury: 4.092,
+  jupiter: 0.083,
+  venus: 1.6,
+  saturn: 0.033,
+};
+
+function angularSeparationDegrees(a: number, b: number): number {
+  const diff = Math.abs(normalizeDegrees(a) - normalizeDegrees(b)) % 360;
+  return diff > 180 ? 360 - diff : diff;
+}
+
+type ShadbalaComponents = {
+  sthanaBalaPartial: number; // Uchcha + Ojayugmarasyamsa + Kendradi only -- see module comment
+  digBala: number;
+  chestaBala: number | null; // null for Sun/Moon -- never applicable classically
+  naisargikaBala: number;
+  totalVirupas: number; // sum of the components above (partial Shadbala, not full six-fold total)
+  totalRupas: number;
+  minimumRequiredRupas: number;
+  meetsClassicalMinimum: boolean;
+};
+
+type ShadbalaResult = {
+  planets: Record<ShadbalaPlanet, ShadbalaComponents>;
+};
+
+// Requires a precise Lagna (birth time + geocoded place): Kendradi Bala and
+// Dig Bala are both house-position-dependent and meaningless without a real
+// Ascendant, so this deliberately returns null rather than a misleading
+// partial result.
+function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
+  if (core.ascendantSidereal === null) return null;
+  const lagnaRashi = rashiIndexFromLongitude(core.ascendantSidereal);
+  const targets: ShadbalaPlanet[] = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"];
+
+  const planets = {} as Record<ShadbalaPlanet, ShadbalaComponents>;
+  for (const planet of targets) {
+    const longitude = core.navagraha[planet];
+    const rashiIndex = rashiIndexFromLongitude(longitude);
+    const navamsaIndex = navamsaSignIndex(longitude);
+
+    // Uchcha Bala
+    const exaltDiff = angularSeparationDegrees(longitude, DEEP_EXALTATION_DEGREE[planet]);
+    const uchchaBala = (180 - exaltDiff) / 3;
+
+    // Ojayugmarasyamsa Bala
+    const preference = OJA_YUGMA_PREFERENCE[planet];
+    const rashiIsOdd = rashiIndex % 2 === 0; // 0-indexed even = classical odd sign (1,3,5,...)
+    const navamsaIsOdd = navamsaIndex % 2 === 0;
+    const rashiMatches = preference === "always" || (preference === "odd") === rashiIsOdd;
+    const navamsaMatches = preference === "always" || (preference === "odd") === navamsaIsOdd;
+    const ojaYugmaBala = (rashiMatches ? 15 : 0) + (navamsaMatches ? 15 : 0);
+
+    // Kendradi Bala
+    const houseFromAsc = houseFromLagna(rashiIndex, lagnaRashi);
+    const kendradiBala = [1, 4, 7, 10].includes(houseFromAsc) ? 60 : [2, 5, 8, 11].includes(houseFromAsc) ? 30 : 15;
+
+    const sthanaBalaPartial = uchchaBala + ojaYugmaBala + kendradiBala;
+
+    // Dig Bala
+    const strongHouse = DIG_BALA_STRONG_HOUSE[planet];
+    const strongCuspLongitude = normalizeDegrees(core.ascendantSidereal + (strongHouse - 1) * 30);
+    const digDiff = angularSeparationDegrees(longitude, strongCuspLongitude);
+    const digBala = (180 - digDiff) / 3;
+
+    // Chesta Bala proxy (Mars/Mercury/Jupiter/Venus/Saturn only)
+    let chestaBala: number | null = null;
+    const meanMotion = MEAN_DAILY_MOTION[planet];
+    if (meanMotion) {
+      const dayMs = 24 * 60 * 60 * 1000;
+      const before = getSiderealGrahaLongitude(planet, new Date(core.birthMoment.getTime() - dayMs / 2));
+      const after = getSiderealGrahaLongitude(planet, new Date(core.birthMoment.getTime() + dayMs / 2));
+      let dailyMotion = after - before;
+      if (dailyMotion > 180) dailyMotion -= 360;
+      if (dailyMotion < -180) dailyMotion += 360;
+      if (dailyMotion < 0) {
+        chestaBala = 60; // retrograde -- classical maximum
+      } else {
+        const fraction = 1 - dailyMotion / (2 * meanMotion);
+        chestaBala = Math.max(0, Math.min(60, 60 * fraction));
+      }
+    }
+
+    const naisargikaBala = NAISARGIKA_BALA[planet];
+    const totalVirupas = sthanaBalaPartial + digBala + (chestaBala ?? 0) + naisargikaBala;
+    const totalRupas = totalVirupas / 60;
+    const minimumRequiredRupas = SHADBALA_MINIMUM_RUPAS[planet];
+
+    planets[planet] = {
+      sthanaBalaPartial,
+      digBala,
+      chestaBala,
+      naisargikaBala,
+      totalVirupas,
+      totalRupas,
+      minimumRequiredRupas,
+      meetsClassicalMinimum: totalRupas >= minimumRequiredRupas,
+    };
+  }
+
+  return { planets };
+}
+
 // Geocodes a free-text birth place into {lat, lon} using OpenStreetMap
 // Nominatim — a free, established, no-API-key-required geocoding service.
 // Only the place text is sent, never the person's name or birth date/time.
@@ -17791,15 +18512,19 @@ function isTrustedExternalUrl(url: string) {
                 onOpenHome={() => handleTabPress("today")}
                 selectedIssueGuide={selectedIssueGuide}
                 issueContext={vedicEngineIssueContext}
-              />
-
-              {/* ── Astro two-way chat — ask anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy ── */}
-              <View style={{
-                marginHorizontal: 16, marginTop: 16, marginBottom: 12,
-                backgroundColor: "#E6E0F0", borderRadius: 18,
-                borderWidth: 1, borderColor: "rgba(252,211,77,0.35)",
-                padding: 16, gap: 12
-              }}>
+                // "Ask the chart" is passed in as a prop (rather than
+                // rendered as a sibling below) so BirthChartSection can
+                // place it immediately next to the visual chart map instead
+                // of after every detail panel -- see askTheChartPanel usage
+                // inside BirthChartSection for exactly where it lands.
+                askTheChartPanel={
+                  /* ── Astro two-way chat — ask anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy ── */
+                  <View style={{
+                    marginHorizontal: 16, marginTop: 16, marginBottom: 12,
+                    backgroundColor: "#E6E0F0", borderRadius: 18,
+                    borderWidth: 1, borderColor: "rgba(252,211,77,0.35)",
+                    padding: 16, gap: 12
+                  }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
                   <Text style={{ fontSize: 22 }}>🔮</Text>
                   <View style={{ flex: 1 }}>
@@ -17856,10 +18581,31 @@ function isTrustedExternalUrl(url: string) {
                   </Pressable>
                 )}
 
-                {/* Conversation history */}
+                {/* Conversation history -- newest exchange first, directly under
+                    the composer. This list lives inside the page's own
+                    ScrollView (not its own auto-scrolling chat view), so
+                    appending new messages to the end of a chronological list
+                    meant every new answer landed below the entire growing
+                    history -- you had to scroll past old exchanges to reach
+                    the one you just asked for. Reversing the render order
+                    means the most recent question and reply are always the
+                    first thing visible, with older exchanges further down. */}
                 {astroChatMessages.length > 0 && (
                   <View style={{ gap: 10 }}>
-                    {astroChatMessages.map((m) => (
+                    {/* Messages are always appended as [user, astro] pairs
+                        (see submitAstroQuestion below), so this chunks them
+                        back into pairs, reverses the PAIR order (newest
+                        exchange first), then flattens -- keeping each
+                        question directly above its own reply. A flat
+                        .reverse() would have flipped that too, putting every
+                        reply above its own question. */}
+                    {(() => {
+                      const pairs: (typeof astroChatMessages)[] = [];
+                      for (let i = 0; i < astroChatMessages.length; i += 2) {
+                        pairs.push(astroChatMessages.slice(i, i + 2));
+                      }
+                      return pairs.reverse().flat();
+                    })().map((m) => (
                       <View key={m.id} style={{
                         backgroundColor: m.role === "user" ? "#0F1E38" : "#F3E8FF",
                         borderRadius: 12, padding: 12,
@@ -17890,7 +18636,9 @@ function isTrustedExternalUrl(url: string) {
                     ))}
                   </View>
                 )}
-              </View>
+                  </View>
+                }
+              />
             </View>
           )}
 
@@ -26845,6 +27593,7 @@ function BirthChartSection({
   onOpenHome,
   selectedIssueGuide,
   issueContext,
+  askTheChartPanel,
 }: {
   rashiInfo: ReturnType<typeof getMoonRashiFromDOB> | null;
   predictionLines: string[] | null;
@@ -26867,6 +27616,11 @@ function BirthChartSection({
   onOpenHome: () => void;
   selectedIssueGuide: IssueGuide;
   issueContext: VedicEngineIssueContext | null;
+  // Rendered by the caller (App()) right next to the visual chart map below
+  // -- kept as a prop instead of living inside this component because its
+  // state (astroChatDraft, astroChatMessages, submitAstroQuestion) is owned
+  // by App(), not by BirthChartSection.
+  askTheChartPanel?: React.ReactNode;
 }) {
   const { width } = useWindowDimensions();
   const isWide = width >= 760;
@@ -26940,6 +27694,104 @@ function BirthChartSection({
     const anchor = items.sort((a, b) => b.score - a.score)[0];
     return { house, average, carefulCount, anchor };
   });
+
+  // Advanced Vedic engine (D9 Navamsa, classical Yogas, Ashtakavarga,
+  // Shadbala) -- all four read from one shared BirthChartCore so the real
+  // navagraha ephemeris and precise Ascendant are computed once, not per
+  // system. Recomputes only when the underlying birth details change.
+  const birthChartCore = useMemo(
+    () => computeBirthChartCore(profileDOB, profileBirthTime, profileBirthLat, profileBirthLon),
+    [profileDOB, profileBirthTime, profileBirthLat, profileBirthLon]
+  );
+  const navamsaEntries = useMemo(() => (birthChartCore ? buildNavamsaEntries(birthChartCore) : []), [birthChartCore]);
+  const detectedYogas = useMemo(() => (birthChartCore ? detectClassicalYogas(birthChartCore) : []), [birthChartCore]);
+  const ashtakavargaResult = useMemo(() => (birthChartCore ? buildAshtakavarga(birthChartCore) : null), [birthChartCore]);
+  const shadbalaResult = useMemo(() => (birthChartCore ? computeShadbala(birthChartCore) : null), [birthChartCore]);
+
+  // Occupant lists (by sign, index 0 = Aries .. 11 = Pisces) for the two
+  // chart-wheel visuals below: D1 Rashi (Lagna + all 9 grahas by their real
+  // sidereal sign) and D9 Navamsa (same set, by navamsa sign).
+  const rashiWheelOccupants = useMemo(() => {
+    const occupants: string[][] = Array.from({ length: 12 }, () => []);
+    if (!birthChartCore) return occupants;
+    if (birthChartCore.ascendantSidereal !== null) {
+      occupants[rashiIndexFromLongitude(birthChartCore.ascendantSidereal)].push("Asc");
+    }
+    for (const id of NAVAGRAHA_IDS) {
+      occupants[rashiIndexFromLongitude(birthChartCore.navagraha[id])].push(GRAHA_SHORT_LABELS[id]);
+    }
+    return occupants;
+  }, [birthChartCore]);
+
+  const navamsaWheelOccupants = useMemo(() => {
+    const occupants: string[][] = Array.from({ length: 12 }, () => []);
+    for (const entry of navamsaEntries) {
+      occupants[entry.navamsaIndex].push(entry.id === "lagna" ? "Asc" : GRAHA_SHORT_LABELS[entry.id]);
+    }
+    return occupants;
+  }, [navamsaEntries]);
+
+  // Renders a classical South Indian style chart wheel entirely with plain
+  // Views/Text -- signs are FIXED to position (Aries is always top row,
+  // second cell; the ring runs clockwise from there) and only the
+  // occupant list per sign changes between charts. Chosen over a North
+  // Indian diamond layout because a fixed 4x4 grid needs no SVG or custom
+  // path math, and over the app's existing Moon-anchored radial map
+  // because this one is Lagna-anchored, matching how D1/D9 are actually
+  // read in classical practice.
+  function renderVedicChartWheel(occupants: string[][], accent: string, centerLabel: string) {
+    const GRID: (number | null)[][] = [
+      [11, 0, 1, 2],
+      [10, null, null, 3],
+      [9, null, null, 4],
+      [8, 7, 6, 5],
+    ];
+    return (
+      <View style={{ position: "relative", borderWidth: 1.5, borderColor: accent, borderRadius: 12, overflow: "hidden", aspectRatio: 1, maxWidth: 300, width: "100%", alignSelf: "center", backgroundColor: "#FBFAF2" }}>
+        {GRID.map((row, rowIndex) => (
+          <View key={`wheel-row-${rowIndex}`} style={{ flex: 1, flexDirection: "row" }}>
+            {row.map((signIndex, colIndex) => {
+              if (signIndex === null) {
+                return <View key={`wheel-cell-${rowIndex}-${colIndex}`} style={{ flex: 1 }} />;
+              }
+              const sign = VEDIC_RASHIS[signIndex];
+              const inhabitants = occupants[signIndex] ?? [];
+              const isLagnaSign = inhabitants.includes("Asc");
+              // Cap how many abbreviations render directly -- a real chart can
+              // occasionally stack 3-4+ grahas in one sign, and letting that
+              // overflow the cell (clipped by the wheel's overflow:hidden)
+              // would silently hide a planet instead of just looking busy.
+              // A capped list + "+N" is always legible at this cell size.
+              const MAX_VISIBLE_OCCUPANTS = 3;
+              const visibleOccupants = inhabitants.slice(0, MAX_VISIBLE_OCCUPANTS);
+              const hiddenCount = inhabitants.length - visibleOccupants.length;
+              return (
+                <View
+                  key={`wheel-cell-${rowIndex}-${colIndex}`}
+                  style={{
+                    flex: 1, borderWidth: 0.5, borderColor: `${accent}33`, padding: 3,
+                    alignItems: "center", justifyContent: "center",
+                    backgroundColor: isLagnaSign ? `${accent}1F` : "transparent",
+                  }}
+                >
+                  <Text style={{ fontSize: 12 }}>{sign.symbol}</Text>
+                  <Text style={{ color: "rgba(13,31,34,0.62)", fontSize: 8, fontWeight: "800" }} numberOfLines={1}>{sign.en}</Text>
+                  {inhabitants.length > 0 && (
+                    <Text style={{ color: accent, fontSize: 9, fontWeight: "900", textAlign: "center", marginTop: 1 }} numberOfLines={2}>
+                      {visibleOccupants.join(" ")}{hiddenCount > 0 ? ` +${hiddenCount}` : ""}
+                    </Text>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        ))}
+        <View pointerEvents="none" style={{ position: "absolute", top: "25%", left: "25%", width: "50%", height: "50%", alignItems: "center", justifyContent: "center" }}>
+          <Text style={{ color: accent, fontSize: 11, fontWeight: "900", textAlign: "center" }}>{centerLabel}</Text>
+        </View>
+      </View>
+    );
+  }
 
   function handleSave() {
     if (!canSaveBirthDetails) {
@@ -27355,6 +28207,14 @@ function BirthChartSection({
         </View>
       )}
 
+      {/* "Ask the chart" rendered here -- directly above the visual chart
+          map below, not scrolled below every detail panel (Lagna,
+          Samvatsara, Dasha, Nakshatra, Advanced Vedic Engine, Gemini
+          analysis) -- so a question about what you're looking at is always
+          right next to the chart itself, and it stays visible even before
+          hasReading is true (same as before this reposition). */}
+      {askTheChartPanel}
+
       {hasReading && moonChart48Readings.length === 48 && (
         <View style={{ backgroundColor: "#DEE6F2", borderRadius: 22, padding: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.34)", gap: 12, overflow: "hidden", shadowColor: "#0891B2", shadowOffset: { width: 0, height: 14 }, shadowOpacity: 0.24, shadowRadius: 28, elevation: 16 }}>
           <View pointerEvents="none" style={{ position: "absolute", left: -50, top: -70, width: 190, height: 190, borderRadius: 95, backgroundColor: "rgba(99,102,241,0.16)" }} />
@@ -27466,6 +28326,141 @@ function BirthChartSection({
                 <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, lineHeight: 15 }}>{item.calculationBasis}</Text>
               </View>
             ))}
+          </View>
+        </View>
+      )}
+
+      {birthChartCore && (
+        <View style={{ backgroundColor: "#EDEAF7", borderRadius: 22, padding: 14, borderWidth: 1, borderColor: "rgba(124,58,237,0.28)", gap: 12 }}>
+          <View>
+            <Text style={{ color: "#5B21B6", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+              🕉️ Advanced Vedic Engine — D9 Navamsa · Yogas · Ashtakavarga · Shadbala
+            </Text>
+            <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
+              Built from a real navagraha ephemeris (all nine grahas, not just Sun and Moon) and{" "}
+              {birthChartCore.precise
+                ? "your precise, coordinate-based Ascendant."
+                : "an estimated Ascendant — add your exact birth time and place above to unlock the house-dependent sections below (Kendradi/Dig Bala, Ashtakavarga, and the Lagna-based Yogas)."}
+            </Text>
+          </View>
+
+          {/* D1 Rashi chart wheel -- Lagna-anchored birth chart, distinct from
+              the Moon-anchored radial map in the 48-Dimension engine above. */}
+          <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 10 }}>
+            <Text style={{ color: "#6D28D9", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>D1 Rashi Chart — Lagna and all 9 grahas</Text>
+            {renderVedicChartWheel(rashiWheelOccupants, "#6D28D9", "RASHI")}
+            <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 10, fontStyle: "italic", textAlign: "center" }}>
+              South Indian style: signs are fixed to position (Aries, Taurus, Gemini across the top, then clockwise). The shaded sign is your Lagna (Ascendant).
+            </Text>
+          </View>
+
+          {/* D9 Navamsa */}
+          <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
+            <Text style={{ color: "#6D28D9", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>D9 Navamsa Chart</Text>
+            {renderVedicChartWheel(navamsaWheelOccupants, "#B45309", "NAVAMSA")}
+            <Text style={{ color: "#6D28D9", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>Rashi → Navamsa detail</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+              {navamsaEntries.map((entry) => (
+                <View
+                  key={`navamsa-${entry.id}`}
+                  style={{
+                    backgroundColor: entry.vargottama ? "rgba(217,119,6,0.14)" : "#FBFAF2",
+                    borderRadius: 10, padding: 8, minWidth: 96,
+                    borderWidth: 1, borderColor: entry.vargottama ? "rgba(217,119,6,0.4)" : "rgba(124,58,237,0.15)",
+                  }}
+                >
+                  <Text style={{ color: "#0D1F22", fontSize: 11, fontWeight: "900" }}>{entry.label}</Text>
+                  <Text style={{ color: "#3F5978", fontSize: 11, marginTop: 2 }}>
+                    {VEDIC_RASHIS[entry.rashiIndex].name} → {VEDIC_RASHIS[entry.navamsaIndex].name}
+                  </Text>
+                  {entry.vargottama && <Text style={{ color: "#B45309", fontSize: 10, fontWeight: "900", marginTop: 2 }}>★ Vargottama</Text>}
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* Classical Yogas */}
+          <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
+            <Text style={{ color: "#6D28D9", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Classical Yogas detected</Text>
+            {detectedYogas.length > 0 ? (
+              detectedYogas.map((yoga) => (
+                <View key={yoga.id} style={{ backgroundColor: "#FBFAF2", borderRadius: 10, padding: 10, borderWidth: 1, borderColor: "rgba(124,58,237,0.15)", gap: 3 }}>
+                  <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900" }}>{yoga.name}</Text>
+                  <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17 }}>{yoga.meaning}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17 }}>No classical yogas from this curated set were detected in this chart.</Text>
+            )}
+            <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 10, fontStyle: "italic" }}>
+              Scoped to conjunction and fixed-angle yogas (Gaja Kesari, Budhaditya, Chandra-Mangal, the five Pancha Mahapurusha yogas, Raja Yoga, Dhana Yoga) — not full classical graha drishti (planetary aspect), which varies by text.
+            </Text>
+          </View>
+
+          {/* Ashtakavarga */}
+          <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
+            <Text style={{ color: "#6D28D9", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Sarvashtakavarga — total bindus per sign</Text>
+            {ashtakavargaResult ? (
+              <>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                  {ashtakavargaResult.sarva.map((count, signIndex) => (
+                    <View
+                      key={`sarva-${signIndex}`}
+                      style={{
+                        backgroundColor: count >= 30 ? "rgba(5,150,105,0.14)" : count < 25 ? "rgba(220,38,38,0.1)" : "#FBFAF2",
+                        borderRadius: 10, padding: 8, width: 78, alignItems: "center",
+                        borderWidth: 1, borderColor: count >= 30 ? "rgba(5,150,105,0.4)" : count < 25 ? "rgba(220,38,38,0.3)" : "rgba(124,58,237,0.15)",
+                      }}
+                    >
+                      <Text style={{ fontSize: 16 }}>{VEDIC_RASHIS[signIndex].symbol}</Text>
+                      <Text style={{ color: "#0D1F22", fontSize: 10, fontWeight: "800" }}>{VEDIC_RASHIS[signIndex].name}</Text>
+                      <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "900" }}>{count}</Text>
+                    </View>
+                  ))}
+                </View>
+                <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17 }}>
+                  Total {ashtakavargaResult.sarvaTotal} bindus across all 12 signs (classical invariant: always 337). 30+ bindus = very strong for transits through that sign; below 25 = weaker.
+                </Text>
+              </>
+            ) : (
+              <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17 }}>Needs a precise Ascendant (exact birth time + geocoded place) — Lagna is one of Ashtakavarga's eight classical contributors.</Text>
+            )}
+          </View>
+
+          {/* Shadbala */}
+          <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
+            <Text style={{ color: "#6D28D9", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Shadbala — planetary strength (Rupas)</Text>
+            {shadbalaResult ? (
+              <>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                  {(["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const).map((planet) => {
+                    const s = shadbalaResult.planets[planet];
+                    return (
+                      <View
+                        key={`shadbala-${planet}`}
+                        style={{
+                          backgroundColor: s.meetsClassicalMinimum ? "rgba(5,150,105,0.14)" : "rgba(220,38,38,0.1)",
+                          borderRadius: 10, padding: 8, minWidth: 92,
+                          borderWidth: 1, borderColor: s.meetsClassicalMinimum ? "rgba(5,150,105,0.4)" : "rgba(220,38,38,0.3)",
+                        }}
+                      >
+                        <Text style={{ color: "#0D1F22", fontSize: 11, fontWeight: "900", textTransform: "capitalize" }}>{planet}</Text>
+                        <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "900" }}>{s.totalRupas.toFixed(2)}</Text>
+                        <Text style={{ color: "#3F5978", fontSize: 10 }}>needs {s.minimumRequiredRupas}</Text>
+                        <Text style={{ color: s.meetsClassicalMinimum ? "#0D6B36" : "#B80000", fontSize: 10, fontWeight: "800" }}>
+                          {s.meetsClassicalMinimum ? "Strong" : "Below min"}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+                <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 10, fontStyle: "italic", lineHeight: 15 }}>
+                  Includes Uchcha, Ojayugmarasyamsa and Kendradi Bala (three of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, and a motion-based Chesta Bala proxy. Kala Bala's day/night components, Drik (aspect) Bala, and the full six-divisional-chart Vimshopak Bala are deferred — they need machinery (precise local sunrise/sunset, several more divisional charts) this build doesn't have yet.
+                </Text>
+              </>
+            ) : (
+              <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17 }}>Needs a precise Ascendant (exact birth time + geocoded place) — Kendradi and Dig Bala are both house-position-dependent.</Text>
+            )}
           </View>
         </View>
       )}
