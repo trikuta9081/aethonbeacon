@@ -1355,7 +1355,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "24/7 lofi hip-hop radio streams. Chillhop / Lofi Girl / ChilledCow style.",
     use: "Study, focus, coding, writing. #1 category on YouTube for background work music.",
     safety: "Safe. Use at moderate volume; may include ads on external platform.",
-    accent: "#F472B6",
+    accent: "#BE185D",
     mark: "LO",
     externalUrl: "https://www.youtube.com/results?search_query=lofi+hip+hop+radio+beats+to+relax+study",
     externalLabel: "Open lo-fi live streams"
@@ -2258,7 +2258,7 @@ const LIGHT_COLORS = {
   textPrimary: "#0D1F22",
   textOnDark: "#0D1F22",
   textMuted: "rgba(13,31,34,0.6)",
-  textFaint: "#64748B",
+  textFaint: "#3F4B5F",
   accentCyan: "#0891B2",
   accentTeal: "#0E9488",
   accentTealDeep: "#0E6F69",
@@ -10462,7 +10462,7 @@ class AppErrorBoundary extends React.Component<
           <Text style={{ color: "#465871", fontSize: 14, textAlign: "center", marginBottom: 24, lineHeight: 20 }}>
             Aethon Beacon hit an unexpected error. Your data is safe — restart the app to continue.
           </Text>
-          <Text style={{ color: "#64748B", fontSize: 11, textAlign: "center", fontFamily: "monospace" }}>
+          <Text style={{ color: "#3F4B5F", fontSize: 11, textAlign: "center", fontFamily: "monospace" }}>
             {this.state.errorMessage}
           </Text>
         </View>
@@ -10716,7 +10716,7 @@ function ExitReportModal({
             <Text style={{ color: "#0D1F22", fontSize: 18, fontWeight: "900", marginTop: 2 }}>
               {report.userName || "Your Day with Aethon"}
             </Text>
-            <Text style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>{report.generatedAt}</Text>
+            <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 2 }}>{report.generatedAt}</Text>
           </View>
           <Pressable
             onPress={onClose}
@@ -10763,7 +10763,7 @@ function ExitReportModal({
               }}>
                 <Text style={{ fontSize: 20, marginBottom: 4 }}>{stat.icon}</Text>
                 <Text style={{ color: stat.color ?? "#0D1F22", fontSize: 16, fontWeight: "900" }}>{stat.value}</Text>
-                <Text style={{ color: "#64748B", fontSize: 10, marginTop: 2 }}>{stat.label}</Text>
+                <Text style={{ color: "#3F4B5F", fontSize: 12, marginTop: 2 }}>{stat.label}</Text>
               </View>
             ))}
           </View>
@@ -10816,12 +10816,12 @@ function ExitReportModal({
 
           {/* Tomorrow's Focus */}
           <View style={{ backgroundColor: "#E6DFF1", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(167,139,250,0.25)", marginBottom: 14 }}>
-            <Text style={{ color: "#A78BFA", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+            <Text style={{ color: "#5B21B6", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
               🌅 Tomorrow's Focus
             </Text>
             {report.tomorrowRecommendations.map((rec, i) => (
               <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 8 }}>
-                <Text style={{ color: "#A78BFA", fontSize: 13, marginRight: 8, marginTop: 1 }}>{i + 1}.</Text>
+                <Text style={{ color: "#5B21B6", fontSize: 13, marginRight: 8, marginTop: 1 }}>{i + 1}.</Text>
                 <Text style={{ color: "#3F5978", fontSize: 13, flex: 1, lineHeight: 20 }}>{rec}</Text>
               </View>
             ))}
@@ -10830,7 +10830,7 @@ function ExitReportModal({
           {/* Sections Explored */}
           {report.tabsVisited.length > 0 && (
             <View style={{ backgroundColor: "#E1EEEC", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(34,211,238,0.1)", marginBottom: 20 }}>
-              <Text style={{ color: "#64748B", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+              <Text style={{ color: "#3F4B5F", fontSize: 11, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
                 🗺 Sections Explored
               </Text>
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -10866,7 +10866,7 @@ function ExitReportModal({
                 borderWidth: 1, borderColor: "rgba(34,211,238,0.2)",
               })}
             >
-              <Text style={{ color: "#64748B", fontSize: 14, fontWeight: "700" }}>Close</Text>
+              <Text style={{ color: "#3F4B5F", fontSize: 14, fontWeight: "700" }}>Close</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -17576,7 +17576,7 @@ function isTrustedExternalUrl(url: string) {
                       {/* Row 1: greeting label */}
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
                         <Text style={{ fontSize: 13 }}>{greetEmoji}</Text>
-                        <Text style={{ color: "#64748B", fontSize: 10, fontWeight: "900", letterSpacing: 1.4, textTransform: "uppercase" }}>{greeting}</Text>
+                        <Text style={{ color: "#3F4B5F", fontSize: 10, fontWeight: "900", letterSpacing: 1.4, textTransform: "uppercase" }}>{greeting}</Text>
                         <View style={{ flex: 1 }} />
                         <Text style={{ color: "#1E3A5A", fontSize: 10, fontWeight: "700" }}>
                           {new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
@@ -17605,9 +17605,9 @@ function isTrustedExternalUrl(url: string) {
                         <View style={{ alignItems: "center" }}>
                           <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: scoreColor + "12", borderWidth: 2, borderColor: scoreColor, alignItems: "center", justifyContent: "center" }}>
                             <Text style={{ color: scoreColor, fontSize: 18, fontWeight: "900", lineHeight: 22 }}>{clarityScore}</Text>
-                            <Text style={{ color: scoreColor, fontSize: 7, fontWeight: "900", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
+                            <Text style={{ color: scoreColor, fontSize: 10, fontWeight: "900", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
                           </View>
-                          <Text style={{ color: scoreColor, fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{scoreLabel}</Text>
+                          <Text style={{ color: scoreColor, fontSize: 11, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{scoreLabel}</Text>
                         </View>
                       </View>
                       {/* Row 3: active issue + streak badges */}
@@ -17619,7 +17619,7 @@ function isTrustedExternalUrl(url: string) {
                           </View>
                         ) : (
                           <View style={{ backgroundColor: "rgba(71,85,105,0.2)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(71,85,105,0.3)" }}>
-                            <Text style={{ color: "#64748B", fontSize: 11, fontWeight: "700" }}>No active focus</Text>
+                            <Text style={{ color: "#3F4B5F", fontSize: 11, fontWeight: "700" }}>No active focus</Text>
                           </View>
                         )}
                         {checkInStreak > 0 && (
@@ -17630,7 +17630,7 @@ function isTrustedExternalUrl(url: string) {
                         )}
                         {visitReports.length > 0 && (
                           <View style={{ backgroundColor: "rgba(129,140,248,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(129,140,248,0.25)" }}>
-                            <Text style={{ color: "#818CF8", fontSize: 11, fontWeight: "700" }}>{visitReports.length} session{visitReports.length !== 1 ? "s" : ""}</Text>
+                            <Text style={{ color: "#3730A3", fontSize: 11, fontWeight: "700" }}>{visitReports.length} session{visitReports.length !== 1 ? "s" : ""}</Text>
                           </View>
                         )}
                       </View>
@@ -17644,11 +17644,11 @@ function isTrustedExternalUrl(url: string) {
                       {issueActive && (
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                            <Text style={{ color: "#0E9488", fontSize: 9, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
+                            <Text style={{ color: "#0E9488", fontSize: 11, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
                               48-Dim redressal
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
-                              <Text style={{ color: "#465871", fontSize: 9, fontWeight: "700" }}>Details →</Text>
+                              <Text style={{ color: "#465871", fontSize: 11, fontWeight: "700" }}>Details →</Text>
                             </Pressable>
                           </View>
                           <Text style={{ color: "#465871", fontSize: 10, marginBottom: 4 }}>
@@ -17658,11 +17658,11 @@ function isTrustedExternalUrl(url: string) {
                             {orderSupportDimensionsByRelevance(selectedIssueGuide.id, crossSectionSignal.detectedThemes)
                               .slice(0, 3)
                               .map((guide, i) => {
-                                const chipColors = ["#059669", "#818CF8", "#B45309"];
+                                const chipColors = ["#059669", "#3730A3", "#B45309"];
                                 const color = chipColors[i % chipColors.length];
                                 return (
                                   <View key={guide.id} style={{ flex: 1, backgroundColor: color + "12", borderRadius: 6, paddingVertical: 5, alignItems: "center", borderWidth: 1, borderColor: color + "30", flexDirection: "row", justifyContent: "center", gap: 4 }}>
-                                    <Text style={{ color, fontSize: 8, fontWeight: "900", textTransform: "capitalize", letterSpacing: 0.3 }} numberOfLines={1}>{guide.label}</Text>
+                                    <Text style={{ color, fontSize: 10, fontWeight: "900", textTransform: "capitalize", letterSpacing: 0.3 }} numberOfLines={1}>{guide.label}</Text>
                                   </View>
                                 );
                               })}
@@ -17742,7 +17742,7 @@ function isTrustedExternalUrl(url: string) {
                       Premium Vedic engine
                     </Text>
                     <View style={{ backgroundColor: hasExactBirthDetails ? "rgba(52,211,153,0.12)" : "rgba(148,163,184,0.1)", borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 }}>
-                      <Text style={{ color: hasExactBirthDetails ? "#059669" : "#465871", fontSize: 9, fontWeight: "900" }}>
+                      <Text style={{ color: hasExactBirthDetails ? "#059669" : "#465871", fontSize: 11, fontWeight: "900" }}>
                         {hasExactBirthDetails ? "READY" : "DETAILS NEEDED"}
                       </Text>
                     </View>
@@ -17770,7 +17770,7 @@ function isTrustedExternalUrl(url: string) {
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#4200B8", fontSize: 11, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>Weekly cosmic guidance</Text>
                     <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "700", marginTop: 2 }}>Your weekly & monthly prediction is ready</Text>
-                    <Text style={{ color: "#64748B", fontSize: 12, marginTop: 2 }}>Tap to see your Rashi reading, Nakshatra, and what this week holds</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 12, marginTop: 2 }}>Tap to see your Rashi reading, Nakshatra, and what this week holds</Text>
                   </View>
                   <Pressable
                     onPress={(e) => { e.stopPropagation?.(); setShowWeeklyVedicBanner(false); }}
@@ -17778,7 +17778,7 @@ function isTrustedExternalUrl(url: string) {
                     accessibilityRole="button"
                     accessibilityLabel="Dismiss weekly guidance banner"
                   >
-                    <Text style={{ color: "#64748B", fontSize: 16 }}>✕</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 16 }}>✕</Text>
                   </Pressable>
                 </Pressable>
               )}
@@ -17788,7 +17788,7 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
                   <Text style={[styles.smartBriefGreeting, { opacity: 0.55, fontSize: 10, letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }]}>Daily Snapshot</Text>
                   {geminiDailyBrief && (
-                    <Text style={{ color: "#0E9488", fontSize: 9, opacity: 0.7, letterSpacing: 0.5 }}>✦ PERSONAL</Text>
+                    <Text style={{ color: "#0E9488", fontSize: 11, opacity: 0.7, letterSpacing: 0.5 }}>✦ PERSONAL</Text>
                   )}
                 </View>
                 <Text style={styles.smartBriefGreeting}>{smartBrief.greeting}</Text>
@@ -17855,7 +17855,7 @@ function isTrustedExternalUrl(url: string) {
                   </Text>
                   <View style={{ flexDirection: "row", gap: 10 }}>
                     <View style={{ flex: 1, backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Mood</Text>
+                      <Text style={{ color: "#24384A", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Mood</Text>
                       <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
                         {weeklyMoodAverage !== null ? `${weeklyMoodAverage}/100` : "No entries yet"}
                       </Text>
@@ -17871,18 +17871,18 @@ function isTrustedExternalUrl(url: string) {
                       )}
                     </View>
                     <View style={{ flex: 1, backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Check-ins</Text>
+                      <Text style={{ color: "#24384A", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>Check-ins</Text>
                       <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
                         {weeklyCheckInCount} this week
                       </Text>
-                      <Text style={{ color: "rgba(13,31,34,0.55)", fontSize: 11, marginTop: 2 }}>
+                      <Text style={{ color: "#2F4358", fontSize: 11, marginTop: 2 }}>
                         {weeklyCheckInCount >= 5 ? "Great consistency" : weeklyCheckInCount >= 2 ? "Good start — keep going" : "Log a note to build momentum"}
                       </Text>
                     </View>
                   </View>
                   {vedicRashiInfo && vedicPredictionLines?.[0] && (
                     <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>
+                      <Text style={{ color: "#24384A", fontSize: 10, fontWeight: "700", textTransform: "uppercase" }}>
                         {vedicRashiInfo.rashi.name} highlight
                       </Text>
                       <Text style={{ color: "#0D1F22", fontSize: 13, marginTop: 2, lineHeight: 18 }} numberOfLines={2}>
@@ -17918,7 +17918,7 @@ function isTrustedExternalUrl(url: string) {
                       accessibilityRole="button"
                       accessibilityLabel="Dismiss this message"
                     >
-                      <Text style={{ color: "#64748B", fontSize: 13 }}>✕</Text>
+                      <Text style={{ color: "#3F4B5F", fontSize: 13 }}>✕</Text>
                     </Pressable>
                   </View>
                 </View>
@@ -17948,7 +17948,7 @@ function isTrustedExternalUrl(url: string) {
                     accessibilityRole="button"
                     accessibilityLabel="Dismiss suggestion"
                   >
-                    <Text style={{ color: "#64748B", fontSize: 13 }}>✕</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 13 }}>✕</Text>
                   </Pressable>
                 </View>
               )}
@@ -17987,7 +17987,7 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ fontSize: 20 }}>📋</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#0891B2", fontSize: 13, fontWeight: "700" }}>View Today's Visit Report</Text>
-                    <Text style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>Session summary · issues · guidance · tomorrow's focus</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 2 }}>Session summary · issues · guidance · tomorrow's focus</Text>
                   </View>
                   <Text style={{ color: "#0891B2", fontSize: 14 }}>›</Text>
                 </Pressable>
@@ -18013,7 +18013,7 @@ function isTrustedExternalUrl(url: string) {
                     accessibilityRole="button"
                     accessibilityLabel="Dismiss insight"
                   >
-                    <Text style={{ color: "#64748B", fontSize: 13 }}>✕</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 13 }}>✕</Text>
                   </Pressable>
                 </View>
               )}
@@ -18032,7 +18032,7 @@ function isTrustedExternalUrl(url: string) {
                       🗺️  YOUR JOURNEY  ·  {journeyProgress.done}/{journeyProgress.total}
                     </Text>
                     <Pressable onPress={() => setJourneyCardDismissed(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss journey card">
-                      <Text style={{ color: "#64748B", fontSize: 13 }}>✕</Text>
+                      <Text style={{ color: "#3F4B5F", fontSize: 13 }}>✕</Text>
                     </Pressable>
                   </View>
                   <View style={{ height: 4, backgroundColor: "#E1EEEC", borderRadius: 2, marginBottom: 12 }}>
@@ -18042,7 +18042,7 @@ function isTrustedExternalUrl(url: string) {
                   {journeyMilestones.filter((m) => m.done).slice(-2).map((m) => (
                     <View key={m.id} style={{ flexDirection: "row", alignItems: "center", marginBottom: 4 }}>
                       <Text style={{ color: "#10B981", fontSize: 12, marginRight: 6 }}>✅</Text>
-                      <Text style={{ color: "#64748B", fontSize: 12 }}>{m.label}</Text>
+                      <Text style={{ color: "#3F4B5F", fontSize: 12 }}>{m.label}</Text>
                     </View>
                   ))}
                   {/* Next step */}
@@ -18085,7 +18085,7 @@ function isTrustedExternalUrl(url: string) {
                     accessibilityRole="button"
                     accessibilityLabel="Dismiss tip"
                   >
-                    <Text style={{ color: "#64748B", fontSize: 13 }}>✕</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 13 }}>✕</Text>
                   </Pressable>
                 </View>
               )}
@@ -18151,7 +18151,7 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ backgroundColor: "#EEE2E2", paddingHorizontal: 16, paddingVertical: 8, flexDirection: "row", gap: 6, alignItems: "center" }}>
                   <Text style={{ color: "#EF4444", fontSize: 10, fontWeight: "900", letterSpacing: 0.8 }}>QUICK LINKS →</Text>
                   <Pressable onPress={() => handleTabPress("redress")} style={{ flex: 1 }}>
-                    <Text style={{ color: "#64748B", fontSize: 11 }} numberOfLines={1}>
+                    <Text style={{ color: "#3F4B5F", fontSize: 11 }} numberOfLines={1}>
                       Rights · Escalation · Safe channels · Official routes
                     </Text>
                   </Pressable>
@@ -18216,7 +18216,7 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ fontSize: 18, marginRight: 10 }}>💡</Text>
                   <Text style={{ color: "#465871", fontSize: 12, flex: 1, lineHeight: 18 }}>Your journal entries fuel your pattern analysis. More detail = better insights.</Text>
                   <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "journal"])} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss hint">
-                    <Text style={{ color: "#64748B", fontSize: 14, marginLeft: 8 }}>✕</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 14, marginLeft: 8 }}>✕</Text>
                   </Pressable>
                 </View>
               )}
@@ -18349,10 +18349,10 @@ function isTrustedExternalUrl(url: string) {
                   anger:        { emoji: "🌧️", title: "Rain-bed cool-down", body: "Ambient rain + box breath (4-4-4-4). Discharge without acting.", toneId: "ambient-rain", breath: "4-4-4-4 box", color: "#0052B8" },
                   fear:         { emoji: "🛡️", title: "Ground + Hanuman Chalisa", body: "Solfeggio 396 Hz for release + repeat the courage line 3×.", toneId: "sol-396", breath: "Slow diaphragm", color: "#B45309" },
                   burnout:      { emoji: "💆", title: "432 Hz restoration", body: "432 Hz ambient + long exhale (4-in, 8-out). Rest without guilt.", toneId: "sol-432", breath: "4-in / 8-out", color: "#059669" },
-                  loneliness:   { emoji: "🎵", title: "Krishna flute + heart open", body: "Bansuri melody + one message to one trusted person after.", toneId: "trend-krishna-flute", breath: "Natural", color: "#F472B6" },
+                  loneliness:   { emoji: "🎵", title: "Krishna flute + heart open", body: "Bansuri melody + one message to one trusted person after.", toneId: "trend-krishna-flute", breath: "Natural", color: "#BE185D" },
                   grief:        { emoji: "🕯️", title: "Om chant + release", body: "Group Om chant. Let the sound carry weight for you.", toneId: "trend-om-chant", breath: "In-through-nose, out-through-mouth", color: "#5C00B8" },
                   addiction:    { emoji: "⚡", title: "40 Hz gamma focus", body: "40 Hz reset + urge surfing: watch the wave for 10 min, don't act.", toneId: "reset-gamma", breath: "Steady 5 sec each", color: "#A855F7" },
-                  overconfidence: { emoji: "🧭", title: "Quiet close reset", body: "Very soft close pulse + 5 slow breaths. Cool the heat before deciding.", toneId: "reset-quiet", breath: "5 slow", color: "#818CF8" },
+                  overconfidence: { emoji: "🧭", title: "Quiet close reset", body: "Very soft close pulse + 5 slow breaths. Cool the heat before deciding.", toneId: "reset-quiet", breath: "5 slow", color: "#3730A3" },
                   trauma:       { emoji: "🌱", title: "Bilateral soft + safety cue", body: "Soft bilateral tapping 1 Hz + name 5 things you see in the room.", toneId: "bilateral-soft-1", breath: "Grounding count", color: "#10A76B" },
                   stigma:       { emoji: "🌟", title: "528 Hz heart + acceptance", body: "528 Hz + self-compassion phrase: 'this belongs to my humanity too'.", toneId: "sol-528", breath: "Natural", color: "#9C00B8" },
                   health:       { emoji: "🫁", title: "Iso 6 Hz + body scan", body: "Isochronic 6 Hz + slow head-to-toe scan. Note without fixing.", toneId: "iso-6", breath: "Body-scan pace", color: "#007FB8" },
@@ -18534,7 +18534,7 @@ function isTrustedExternalUrl(url: string) {
                     <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
                       Two-way astro guidance
                     </Text>
-                    <Text style={{ color: "rgba(13,31,34,0.65)", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
+                    <Text style={{ color: "#24384A", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
                       Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha, current Antardasha, and today's Panchang, then explains what is happening, why it is happening, how long it may last, and what to do next.
                     </Text>
                   </View>
@@ -18761,7 +18761,7 @@ function isTrustedExternalUrl(url: string) {
                       : "Your mood patterns are ready. Explore your emotional trends and insights below."}
                   </Text>
                   <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "aihelp"])} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss hint">
-                    <Text style={{ color: "#64748B", fontSize: 14, marginLeft: 8 }}>✕</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 14, marginLeft: 8 }}>✕</Text>
                   </Pressable>
                 </View>
               )}
@@ -18837,7 +18837,7 @@ function isTrustedExternalUrl(url: string) {
               }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ fontSize: 18 }}>🌱</Text>
-                  <Text style={{ color: "#10A76B", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
+                  <Text style={{ color: "#047857", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
                     Safe-space rules
                   </Text>
                 </View>
@@ -19393,7 +19393,7 @@ function isTrustedExternalUrl(url: string) {
               </View>
               <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
                 <Text style={{ color: "#0E9488", fontSize: 11, letterSpacing: 1.2, fontWeight: "700", marginBottom: 4 }}>AETHON BEACON — PRIVACY POLICY</Text>
-                <Text style={{ color: "#64748B", fontSize: 11, marginBottom: 20 }}>Last updated: June 2026</Text>
+                <Text style={{ color: "#3F4B5F", fontSize: 11, marginBottom: 20 }}>Last updated: June 2026</Text>
 
                 {[
                   { heading: "1. Data we collect", body: "Aethon Beacon is local-first. Mood check-ins, journal entries, birth chart details, trusted contacts, SOS configuration, and notification preferences are stored on your device only. No data is transmitted to any server unless you explicitly trigger an export." },
@@ -19411,7 +19411,7 @@ function isTrustedExternalUrl(url: string) {
                 ))}
 
                 <View style={{ borderTopWidth: 1, borderTopColor: "#E1EEEC", paddingTop: 20, marginTop: 4 }}>
-                  <Text style={{ color: "#64748B", fontSize: 11, textAlign: "center" }}>
+                  <Text style={{ color: "#3F4B5F", fontSize: 11, textAlign: "center" }}>
                     Aethon Beacon respects your privacy.{"\n"}Your wellness data belongs to you.
                   </Text>
                 </View>
@@ -20952,15 +20952,15 @@ function getPristineToneBadges(tone: RelaxingToneMode): string[] {
 
 // Issue-specific healing session programs
 const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number; toneId: RelaxingToneMode["id"]; dim: string; dimColor: string; purpose: string; breathPattern: string }>> = {
-  anxiety:      [{ name: "Panic Reset", duration: 5, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#818CF8", purpose: "Grounds flight-or-fight via bilateral nervous system reset", breathPattern: "4-4-4-4 Box" },{ name: "Alpha Calm", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Shifts brainwaves from beta anxiety to alpha calm", breathPattern: "4-7-8 Exhale" },{ name: "Root Safety", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Nature sounds lower cortisol and signal safety", breathPattern: "Slow 5-5" }],
-  anger:        [{ name: "Cool-down", duration: 5, toneId: "binaural-alpha-6", dim: "Psychological", dimColor: "#818CF8", purpose: "Alpha waves inhibit amygdala reactivity", breathPattern: "4-7-8 Exhale" },{ name: "Heart Reset", duration: 10, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Ocean rhythms regulate heart rate variability", breathPattern: "Slow 6-6" },{ name: "Stillness", duration: 15, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#B45309", purpose: "Silence protocol for ego dissolution", breathPattern: "Natural breath" }],
-  grief:        [{ name: "Gentle Hold", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Rain tones allow grief processing without words", breathPattern: "Slow 5-5" },{ name: "Deep Process", duration: 15, toneId: "binaural-theta-4", dim: "Psychological", dimColor: "#818CF8", purpose: "Theta unlocks subconscious emotion integration", breathPattern: "4-4-4-4 Box" },{ name: "Reconnect", duration: 10, toneId: "ambient-softdrone", dim: "Spiritual", dimColor: "#B45309", purpose: "Drone tones restore sense of continuity", breathPattern: "Natural breath" }],
+  anxiety:      [{ name: "Panic Reset", duration: 5, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Grounds flight-or-fight via bilateral nervous system reset", breathPattern: "4-4-4-4 Box" },{ name: "Alpha Calm", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Shifts brainwaves from beta anxiety to alpha calm", breathPattern: "4-7-8 Exhale" },{ name: "Root Safety", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Nature sounds lower cortisol and signal safety", breathPattern: "Slow 5-5" }],
+  anger:        [{ name: "Cool-down", duration: 5, toneId: "binaural-alpha-6", dim: "Psychological", dimColor: "#3730A3", purpose: "Alpha waves inhibit amygdala reactivity", breathPattern: "4-7-8 Exhale" },{ name: "Heart Reset", duration: 10, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Ocean rhythms regulate heart rate variability", breathPattern: "Slow 6-6" },{ name: "Stillness", duration: 15, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#B45309", purpose: "Silence protocol for ego dissolution", breathPattern: "Natural breath" }],
+  grief:        [{ name: "Gentle Hold", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Rain tones allow grief processing without words", breathPattern: "Slow 5-5" },{ name: "Deep Process", duration: 15, toneId: "binaural-theta-4", dim: "Psychological", dimColor: "#3730A3", purpose: "Theta unlocks subconscious emotion integration", breathPattern: "4-4-4-4 Box" },{ name: "Reconnect", duration: 10, toneId: "ambient-softdrone", dim: "Spiritual", dimColor: "#B45309", purpose: "Drone tones restore sense of continuity", breathPattern: "Natural breath" }],
   burnout:      [{ name: "Recovery", duration: 15, toneId: "binaural-alpha-10", dim: "Practical", dimColor: "#059669", purpose: "Alpha 10 Hz restores depleted cognitive reserves", breathPattern: "Slow 6-6" },{ name: "System Reset", duration: 20, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Parasympathetic restoration via ocean rhythm", breathPattern: "4-7-8 Exhale" },{ name: "Deep Rest", duration: 10, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#B45309", purpose: "Conscious silence to rebuild internal resource", breathPattern: "Natural breath" }],
-  trauma:       [{ name: "Safe Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#818CF8", purpose: "Bilateral tapping mimics EMDR for trauma processing", breathPattern: "4-4-4-4 Box" },{ name: "Safety Cue", duration: 15, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Ocean tones reduce trauma hypervigilance", breathPattern: "Slow 5-5" },{ name: "Integration", duration: 10, toneId: "binaural-theta-5", dim: "Spiritual", dimColor: "#B45309", purpose: "Theta integrates fragmented memory safely", breathPattern: "Natural breath" }],
+  trauma:       [{ name: "Safe Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Bilateral tapping mimics EMDR for trauma processing", breathPattern: "4-4-4-4 Box" },{ name: "Safety Cue", duration: 15, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Ocean tones reduce trauma hypervigilance", breathPattern: "Slow 5-5" },{ name: "Integration", duration: 10, toneId: "binaural-theta-5", dim: "Spiritual", dimColor: "#B45309", purpose: "Theta integrates fragmented memory safely", breathPattern: "Natural breath" }],
   loneliness:   [{ name: "Connection", duration: 10, toneId: "binaural-alpha-8", dim: "Emotional", dimColor: "#B80064", purpose: "Alpha 8 Hz enhances social empathy circuits", breathPattern: "Slow 5-5" },{ name: "Belonging", duration: 15, toneId: "ambient-ocean", dim: "Cultural", dimColor: "#B85300", purpose: "Vast natural sounds reduce felt isolation", breathPattern: "4-7-8 Exhale" },{ name: "Self-Love", duration: 10, toneId: "iso-6", dim: "Spiritual", dimColor: "#B45309", purpose: "Isochronic tones for self-compassion states", breathPattern: "Natural breath" }],
-  relationship: [{ name: "Empathy Mode", duration: 10, toneId: "binaural-alpha-7", dim: "Emotional", dimColor: "#B80064", purpose: "Alpha 7 Hz boosts mirror neuron activity", breathPattern: "Slow 6-6" },{ name: "Nervous Sync", duration: 10, toneId: "bilateral-soft-2", dim: "Psychological", dimColor: "#818CF8", purpose: "Bilateral tones synchronise two nervous systems", breathPattern: "4-4-4-4 Box" },{ name: "Heart Tone", duration: 15, toneId: "ambient-softdrone", dim: "Spiritual", dimColor: "#B45309", purpose: "Sustained drone for heart-chakra coherence", breathPattern: "Natural breath" }],
-  financial:    [{ name: "Focus Block", duration: 15, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#059669", purpose: "Alpha 12 Hz for strategic analytical thinking", breathPattern: "Slow 5-5" },{ name: "Stress Drop", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Rain dissolves financial anxiety cortisol", breathPattern: "4-7-8 Exhale" },{ name: "Clarity", duration: 10, toneId: "binaural-reset-14", dim: "Psychological", dimColor: "#818CF8", purpose: "Beta-edge reset for sharp decision-making", breathPattern: "4-4-4-4 Box" }],
-  identity:     [{ name: "Inner Mirror", duration: 10, toneId: "binaural-alpha-10", dim: "Psychological", dimColor: "#818CF8", purpose: "Alpha 10 Hz for self-awareness and metacognition", breathPattern: "Slow 6-6" },{ name: "Core Still", duration: 15, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#B45309", purpose: "Silence to hear authentic inner voice", breathPattern: "Natural breath" },{ name: "Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Cultural", dimColor: "#B85300", purpose: "Grounding via body-rhythm bilateral tones", breathPattern: "4-4-4-4 Box" }],
+  relationship: [{ name: "Empathy Mode", duration: 10, toneId: "binaural-alpha-7", dim: "Emotional", dimColor: "#B80064", purpose: "Alpha 7 Hz boosts mirror neuron activity", breathPattern: "Slow 6-6" },{ name: "Nervous Sync", duration: 10, toneId: "bilateral-soft-2", dim: "Psychological", dimColor: "#3730A3", purpose: "Bilateral tones synchronise two nervous systems", breathPattern: "4-4-4-4 Box" },{ name: "Heart Tone", duration: 15, toneId: "ambient-softdrone", dim: "Spiritual", dimColor: "#B45309", purpose: "Sustained drone for heart-chakra coherence", breathPattern: "Natural breath" }],
+  financial:    [{ name: "Focus Block", duration: 15, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#059669", purpose: "Alpha 12 Hz for strategic analytical thinking", breathPattern: "Slow 5-5" },{ name: "Stress Drop", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Rain dissolves financial anxiety cortisol", breathPattern: "4-7-8 Exhale" },{ name: "Clarity", duration: 10, toneId: "binaural-reset-14", dim: "Psychological", dimColor: "#3730A3", purpose: "Beta-edge reset for sharp decision-making", breathPattern: "4-4-4-4 Box" }],
+  identity:     [{ name: "Inner Mirror", duration: 10, toneId: "binaural-alpha-10", dim: "Psychological", dimColor: "#3730A3", purpose: "Alpha 10 Hz for self-awareness and metacognition", breathPattern: "Slow 6-6" },{ name: "Core Still", duration: 15, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#B45309", purpose: "Silence to hear authentic inner voice", breathPattern: "Natural breath" },{ name: "Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Cultural", dimColor: "#B85300", purpose: "Grounding via body-rhythm bilateral tones", breathPattern: "4-4-4-4 Box" }],
   general:      [{ name: "Morning Set", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Alpha calm-alertness for a clear-headed start", breathPattern: "Slow 5-5" },{ name: "Stress Drop", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Nature sounds for general wellbeing reset", breathPattern: "4-7-8 Exhale" },{ name: "Deep Rest", duration: 10, toneId: "binaural-theta-4", dim: "Spiritual", dimColor: "#B45309", purpose: "Theta for subconscious recharge", breathPattern: "Natural breath" }],
 };
 // Breathing pattern guide text
@@ -20973,8 +20973,8 @@ const BREATH_GUIDE: Record<string, string[]> = {
 };
 // Tone category groupings
 const TONE_CATEGORIES = [
-  { id: "trending", label: "🌟 Trending & Social", color: "#F472B6", desc: "Famous tones from YouTube, TikTok, Spotify & healing communities.", ids: ["trend-lofi","trend-tibetan-bowl","trend-schumann","trend-krishna-flute","trend-rain-tent","trend-cafe","trend-fireplace","trend-432-guitar","trend-om-chant","trend-forest-birds","trend-deep-sleep","trend-528-miracle"] },
-  { id: "binaural", label: "🧠 Binaural Beats", color: "#818CF8", desc: "Two-tone beats for brainwave entrainment. Use headphones.", ids: ["binaural-theta-4","binaural-theta-5","binaural-alpha-6","binaural-alpha-7","binaural-alpha-8","binaural-alpha-10","binaural-alpha-12","binaural-reset-14","binaural-release-16","binaural-delta-1","binaural-delta-2","binaural-gamma-40"] },
+  { id: "trending", label: "🌟 Trending & Social", color: "#BE185D", desc: "Famous tones from YouTube, TikTok, Spotify & healing communities.", ids: ["trend-lofi","trend-tibetan-bowl","trend-schumann","trend-krishna-flute","trend-rain-tent","trend-cafe","trend-fireplace","trend-432-guitar","trend-om-chant","trend-forest-birds","trend-deep-sleep","trend-528-miracle"] },
+  { id: "binaural", label: "🧠 Binaural Beats", color: "#3730A3", desc: "Two-tone beats for brainwave entrainment. Use headphones.", ids: ["binaural-theta-4","binaural-theta-5","binaural-alpha-6","binaural-alpha-7","binaural-alpha-8","binaural-alpha-10","binaural-alpha-12","binaural-reset-14","binaural-release-16","binaural-delta-1","binaural-delta-2","binaural-gamma-40"] },
   { id: "nature", label: "🌊 Nature & Ambient", color: "#059669", desc: "Natural sounds — parasympathetic restore, cortisol reduction.", ids: ["ambient-rain","ambient-ocean","ambient-wind","ambient-softdrone","ambient-breath","noise-brown","noise-pink","noise-white"] },
   { id: "solfege", label: "🔔 Solfège · Sacred Hz", color: "#B45309", desc: "Ancient sacred frequencies for emotional + spiritual healing.", ids: ["aum-136","sol-396","sol-417","sol-432","sol-528","sol-639","sol-741","sol-852","sol-963"] },
   { id: "iso", label: "🎵 Isochronic Pulses", color: "#B85300", desc: "Single-tone rhythmic pulses — effective without headphones.", ids: ["iso-1","iso-2","iso-3","iso-4","iso-6","iso-8","iso-10"] },
@@ -21110,18 +21110,18 @@ function ToneLibrarySection({
                 </Text>
                 {activeProgram && (
                   <View style={{ backgroundColor: activeProgram.dimColor + "25", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: activeProgram.dimColor + "50" }}>
-                    <Text style={{ color: activeProgram.dimColor, fontSize: 9, fontWeight: "900" }}>{activeProgram.dim}</Text>
+                    <Text style={{ color: activeProgram.dimColor, fontSize: 11, fontWeight: "900" }}>{activeProgram.dim}</Text>
                   </View>
                 )}
               </View>
               <Text style={{ color: "#0D1F22", fontSize: 17, fontWeight: "900" }} numberOfLines={1}>{selectedTone.label}</Text>
-              <Text style={{ color: "#64748B", fontSize: 12, marginTop: 2 }}>{selectedTone.category} · {selectedTone.pattern}</Text>
+              <Text style={{ color: "#3F4B5F", fontSize: 12, marginTop: 2 }}>{selectedTone.category} · {selectedTone.pattern}</Text>
             </View>
             {/* Timer */}
             {loopEnabled && (
               <View style={{ alignItems: "center" }}>
                 <Text style={{ color: tonePaused ? "#B45309" : "#0891B2", fontSize: 20, fontWeight: "900", fontVariant: ["tabular-nums"] }}>{sessionLabel}</Text>
-                {presetMinutes > 0 && <Text style={{ color: "#64748B", fontSize: 10 }}>/ {presetMinutes}m</Text>}
+                {presetMinutes > 0 && <Text style={{ color: "#3F4B5F", fontSize: 10 }}>/ {presetMinutes}m</Text>}
               </View>
             )}
           </View>
@@ -21135,13 +21135,13 @@ function ToneLibrarySection({
         {/* Breathing guide — shows during active program */}
         {loopEnabled && activeProgram && breathSteps.length > 0 && (
           <View style={{ backgroundColor: "#DEE7F2", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(34,211,238,0.1)" }}>
-            <Text style={{ color: "#64748B", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
+            <Text style={{ color: "#3F4B5F", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
               🫁 Breathing guide — {activeProgram.breathPattern}
             </Text>
             <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
               {breathSteps.map((step, i) => (
                 <View key={step} style={{ flex: 1, minWidth: 60, backgroundColor: i === breathStep % breathSteps.length ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.04)", borderRadius: 8, paddingVertical: 8, alignItems: "center", borderWidth: 1, borderColor: i === breathStep % breathSteps.length ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.06)" }}>
-                  <Text style={{ color: i === breathStep % breathSteps.length ? "#0891B2" : "#64748B", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{step}</Text>
+                  <Text style={{ color: i === breathStep % breathSteps.length ? "#0891B2" : "#3F4B5F", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{step}</Text>
                 </View>
               ))}
             </View>
@@ -21150,7 +21150,7 @@ function ToneLibrarySection({
         {/* Issue purpose — shows during program */}
         {loopEnabled && activeProgram && (
           <View style={{ backgroundColor: "#DEE6F2", paddingHorizontal: 18, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
-            <Text style={{ color: "#64748B", fontSize: 11, lineHeight: 16 }}>
+            <Text style={{ color: "#3F4B5F", fontSize: 11, lineHeight: 16 }}>
               <Text style={{ color: activeProgram.dimColor, fontWeight: "800" }}>{activeProgram.dim}: </Text>
               {activeProgram.purpose}
             </Text>
@@ -21206,7 +21206,7 @@ function ToneLibrarySection({
             ))}
           </View>
 
-          <Text style={{ color: "#64748B", fontSize: 11, lineHeight: 16, marginBottom: 10 }}>
+          <Text style={{ color: "#3F4B5F", fontSize: 11, lineHeight: 16, marginBottom: 10 }}>
             Safety: {selectedToneContraindication}
           </Text>
 
@@ -21237,7 +21237,7 @@ function ToneLibrarySection({
                   })}
                 >
                   <Text style={{ color: selected ? "#00A2B8" : "#3A577D", fontSize: 12, fontWeight: "900" }}>{preset.label}</Text>
-                  <Text style={{ color: "#64748B", fontSize: 10, lineHeight: 14, marginTop: 3 }}>{preset.intent}</Text>
+                  <Text style={{ color: "#3F4B5F", fontSize: 10, lineHeight: 14, marginTop: 3 }}>{preset.intent}</Text>
                 </Pressable>
               );
             })}
@@ -21260,10 +21260,10 @@ function ToneLibrarySection({
 
         {/* Timer presets */}
         <View style={{ flexDirection: "row", gap: 6, paddingHorizontal: 14, paddingBottom: 14, alignItems: "center" }}>
-          <Text style={{ color: "#64748B", fontSize: 11, fontWeight: "700" }}>Timer:</Text>
+          <Text style={{ color: "#3F4B5F", fontSize: 11, fontWeight: "700" }}>Timer:</Text>
           {([0, 5, 10, 15, 20, 30] as const).map((min) => (
             <Pressable key={min} onPress={() => { setPresetMinutes(min); setActiveProgram(null); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#070F1A", borderWidth: 1, borderColor: presetMinutes === min ? "#0891B2" : "rgba(255,255,255,0.08)" }}>
-              <Text style={{ color: presetMinutes === min ? "#0D1F22" : "#64748B", fontSize: 11, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
+              <Text style={{ color: presetMinutes === min ? "#0D1F22" : "#3F4B5F", fontSize: 11, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
             </Pressable>
           ))}
         </View>
@@ -21315,11 +21315,11 @@ function ToneLibrarySection({
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
                       <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "900" }}>{prog.name}</Text>
                       <View style={{ backgroundColor: prog.dimColor + "20", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}>
-                        <Text style={{ color: prog.dimColor, fontSize: 9, fontWeight: "900" }}>{prog.dim}</Text>
+                        <Text style={{ color: prog.dimColor, fontSize: 11, fontWeight: "900" }}>{prog.dim}</Text>
                       </View>
-                      <Text style={{ color: "#64748B", fontSize: 11 }}>{prog.duration}m</Text>
+                      <Text style={{ color: "#3F4B5F", fontSize: 11 }}>{prog.duration}m</Text>
                     </View>
-                    <Text style={{ color: "#64748B", fontSize: 12, lineHeight: 16 }}>{prog.purpose}</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 12, lineHeight: 16 }}>{prog.purpose}</Text>
                     <Text style={{ color: "#334155", fontSize: 11, marginTop: 3 }}>🫁 {prog.breathPattern} breathing</Text>
                   </View>
                   <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: isRunning ? "#991B1B" : prog.dimColor + "20", borderWidth: 1, borderColor: isRunning ? "#DC2626" : prog.dimColor + "50", alignItems: "center", justifyContent: "center" }}>
@@ -21357,11 +21357,11 @@ function ToneLibrarySection({
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: cat.color, fontSize: 13, fontWeight: "900" }}>{cat.label}</Text>
-                    <Text style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>{cat.desc}</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 2 }}>{cat.desc}</Text>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     {hasActive && <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#0891B2" }} />}
-                    <Text style={{ color: "#64748B", fontSize: 13 }}>{isOpen ? "▲" : "▼"}</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 13 }}>{isOpen ? "▲" : "▼"}</Text>
                   </View>
                 </Pressable>
                 {isOpen && (
@@ -21378,7 +21378,7 @@ function ToneLibrarySection({
                           <Text style={{ fontSize: 20, width: 30, textAlign: "center" }}>{toneMode.mark}</Text>
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: isActive ? cat.color : "#3A577D", fontSize: 13, fontWeight: isActive ? "900" : "700" }}>{toneMode.label}</Text>
-                            <Text style={{ color: "#64748B", fontSize: 11, marginTop: 1 }}>{toneMode.use}</Text>
+                            <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 1 }}>{toneMode.use}</Text>
                           </View>
                           <View style={{ flexDirection: "row", gap: 6 }}>
                             {toneMode.externalUrl ? (
@@ -21508,7 +21508,7 @@ function MeditationSection({
       <SupportDimensionLibraryPanel
         eyebrow="🪷 Meditation frame"
         actionLabel="Try"
-        accentColor="#818CF8"
+        accentColor="#3730A3"
       />
 
       <Text style={styles.promptText}>
@@ -21599,7 +21599,7 @@ function MeditationSection({
                       styles.smallMeta,
                       {
                         fontSize: 10,
-                        lineHeight: 12,
+                        lineHeight: 14,
                         marginTop: 4,
                         textAlign: "center",
                         color: isSelected ? "#0891B2" : "#8B9BAD"
@@ -22044,7 +22044,7 @@ function AIHelpSection({
             <Text style={{ color: useBirthChart ? "#0891B2" : "#465871", fontSize: 13, fontWeight: "800" }}>
               🪐 Include my birth chart in this session
             </Text>
-            <Text style={{ color: "rgba(13,31,34,0.45)", fontSize: 11, marginTop: 2 }}>
+            <Text style={{ color: "#465871", fontSize: 11, marginTop: 2 }}>
               {`Janma Rashi: ${birthChartRashiInfo.rashi.name}${birthChartNakshatra ? ` · Nakshatra: ${birthChartNakshatra.name}` : ""}${birthChartDashaState ? ` · Mahadasha: ${birthChartDashaState.currentMahadasha} · Antardasha: ${birthChartDashaState.currentAntardasha}` : ""}`}
             </Text>
           </View>
@@ -22422,7 +22422,7 @@ function CommunitySection({
                   <Text style={{ fontSize: 18 }}>{post.emoji}</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{post.role}</Text>
-                    <Text style={{ color: "#64748B", fontSize: 11 }}>{post.time}</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 11 }}>{post.time}</Text>
                   </View>
                   <View style={{ backgroundColor: "#E1EAEF", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
                     <Text style={{ color: "#0E9488", fontSize: 10, fontWeight: "600" }}>✓ Verified</Text>
@@ -22507,7 +22507,7 @@ function CommunitySection({
           <Text style={{ color: "#465871", fontSize: 13, lineHeight: 20, marginBottom: 4 }}>
             {"3. Open a private room — create a safe space with one or two trusted people. Only members you invite can see it."}
           </Text>
-          <Text style={{ color: "#64748B", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
+          <Text style={{ color: "#3F4B5F", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
             All content is moderated. Share only what you are comfortable making visible to verified members.
           </Text>
         </View>
@@ -24423,11 +24423,11 @@ function IssueGuideSection({
 // disaster victim, industrial workman, victim of trafficking) gets FREE
 // legal representation. This card exposes it.
 const HIGH_CONTRAST_ACCENTS: Record<string, string> = {
-  "#F472B6": "#BE185D",
+  "#BE185D": "#BE185D",
   "#FB7185": "#BE123C",
   "#EC4899": "#BE185D",
-  "#818CF8": "#3730A3",
-  "#A78BFA": "#5B21B6",
+  "#3730A3": "#3730A3",
+  "#5B21B6": "#5B21B6",
   "#14B8A6": "#0F766E",
   "#10A76B": "#047857",
   "#11A648": "#047857",
@@ -24464,14 +24464,14 @@ function FreeLegalAidCard({
 
   const NATIONAL_HELPLINES: Array<{ label: string; number: string; url?: string; note: string; color: string }> = [
     { label: "NALSA — Free legal aid (National)", number: "15100", url: "https://nalsa.gov.in/", note: "Statutory RIGHT. Every state has SLSA + every district has DLSA. Free lawyer, free court fees, in your language.", color: "#059669" },
-    { label: "Women's Helpline (National)", number: "181", url: "https://wcd.nic.in/schemes/women-helpline-scheme", note: "One-Stop Centre (Sakhi) network. Legal aid + medical + shelter + counselling.", color: "#F472B6" },
+    { label: "Women's Helpline (National)", number: "181", url: "https://wcd.nic.in/schemes/women-helpline-scheme", note: "One-Stop Centre (Sakhi) network. Legal aid + medical + shelter + counselling.", color: "#BE185D" },
     { label: "Women in Distress", number: "1091", url: "", note: "Police Women helpline. Immediate protection for any woman in distress.", color: "#EC4899" },
     { label: "Childline (National)", number: "1098", url: "https://www.childlineindia.org/", note: "24x7 for any child in need. Rescue, medical, counselling, legal — all free.", color: "#0052B8" },
     { label: "Emergency (Police / Fire / Ambulance)", number: "112", url: "", note: "Nationwide unified emergency. Fastest for immediate danger.", color: "#EF4444" },
-    { label: "Cyber Fraud Golden Hour", number: "1930", url: "https://cybercrime.gov.in/", note: "Call within 24hr of financial cyber fraud to freeze funds. Faster than filing FIR first.", color: "#818CF8" },
+    { label: "Cyber Fraud Golden Hour", number: "1930", url: "https://cybercrime.gov.in/", note: "Call within 24hr of financial cyber fraud to freeze funds. Faster than filing FIR first.", color: "#3730A3" },
     { label: "NCW (National Commission for Women)", number: "7827170170", url: "https://ncw.nic.in/", note: "WhatsApp/call. Constitutional body. Direct complaints of any women's rights violation.", color: "#FB7185" },
     { label: "NCPCR (Child Rights)", number: "011-25478250", url: "https://ncpcr.gov.in/", note: "National Commission for Protection of Child Rights. Statutory. Files POCSO complaints.", color: "#007FB8" },
-    { label: "NHRC (Human Rights)", number: "14433", url: "https://nhrc.nic.in/", note: "National Human Rights Commission. Complaints of custodial abuse, encounter, torture, etc.", color: "#A78BFA" },
+    { label: "NHRC (Human Rights)", number: "14433", url: "https://nhrc.nic.in/", note: "National Human Rights Commission. Complaints of custodial abuse, encounter, torture, etc.", color: "#5B21B6" },
     { label: "Senior Citizen Helpline", number: "14567", url: "", note: "For elder abuse, neglect, property harassment.", color: "#B88400" },
     { label: "Anti-Ragging (UGC)", number: "1800-180-5522", url: "https://www.antiragging.in/", note: "Ragging, hostel intimidation. Anonymous. Covers staff misconduct too.", color: "#B45309" },
     { label: "Mental Health (KIRAN)", number: "1800-599-0019", url: "https://www.mohfw.gov.in/", note: "24x7 free mental health support. 13 languages. Govt of India.", color: "#0BAD45" },
@@ -24490,7 +24490,7 @@ function FreeLegalAidCard({
         style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.85 : 1 }]}
       >
         <View style={{ flex: 1 }}>
-          <Text style={{ color: "#10A76B", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#047857", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
             ⚖️ Free legal aid · Women · Child · Nationwide helplines
           </Text>
           <Text style={{ color: "#465871", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
@@ -24578,12 +24578,12 @@ function GovtGrievanceCellsCard({
       { label: "IRDAI (insurance)", number: "1800-4254-732", url: "https://bimabharosa.irdai.gov.in/", note: "Any insurance claim dispute or policy grievance." },
       { label: "TRAI (telecom)", url: "https://www.tccms.gov.in/", note: "Mobile / broadband / DTH complaints. Ombudsman route via TDSAT if unresolved." },
     ]},
-    { title: "Cyber + digital", color: "#818CF8", cells: [
+    { title: "Cyber + digital", color: "#3730A3", cells: [
       { label: "Cybercrime Portal", url: "https://cybercrime.gov.in/", note: "Women/child anonymous route. All types of cybercrime. 1930 for financial fraud." },
       { label: "MeitY Grievance", url: "https://www.meity.gov.in/", note: "IT Ministry — issues with govt digital services (Aadhaar, DigiLocker, UPI infra)." },
       { label: "UIDAI Aadhaar", number: "1947", url: "https://uidai.gov.in/", note: "Aadhaar issues, update, correction, misuse." },
     ]},
-    { title: "Constitutional bodies", color: "#F472B6", cells: [
+    { title: "Constitutional bodies", color: "#BE185D", cells: [
       { label: "NCW (Women)", number: "7827170170", url: "https://ncw.nic.in/", note: "National Commission for Women. Direct complaints." },
       { label: "NCPCR (Child rights)", number: "011-25478250", url: "https://ncpcr.gov.in/", note: "POCSO + all child rights violations." },
       { label: "NHRC (Human rights)", number: "14433", url: "https://nhrc.nic.in/", note: "Custodial abuse, encounter, torture, discrimination." },
@@ -24598,7 +24598,7 @@ function GovtGrievanceCellsCard({
       { label: "Labour Ministry Portal", url: "https://labour.gov.in/", note: "Wage theft, wrongful termination, workplace safety, migrant labour." },
       { label: "SHe-Box (POSH)", url: "https://shebox.wcd.gov.in/", note: "Central portal for sexual harassment complaints across workplaces." },
     ]},
-    { title: "Tax + revenue", color: "#A78BFA", cells: [
+    { title: "Tax + revenue", color: "#5B21B6", cells: [
       { label: "Income Tax Grievance", number: "1800-103-4455", url: "https://www.incometax.gov.in/", note: "Refunds, notices, PAN issues, TDS mismatch." },
       { label: "GST Grievance", url: "https://selfservice.gstsystem.in/", note: "GST portal issues, ITC blockage, refund delays." },
       { label: "CBIC Customs / Excise", url: "https://cbec-easiest.gov.in/", note: "Customs, excise, service-tax legacy." },
@@ -24756,7 +24756,7 @@ function RedressDirectoriesHub({
               <Text style={{ color: isActive ? t.color : "#465871", fontSize: 10, fontWeight: "900", marginTop: 2, textAlign: "center" }} numberOfLines={1}>
                 {t.label}
               </Text>
-              <Text style={{ color: isActive ? t.color : "#64748B", fontSize: 9, marginTop: 1, opacity: 0.75, textAlign: "center" }} numberOfLines={1}>
+              <Text style={{ color: isActive ? t.color : "#3F4B5F", fontSize: 11, marginTop: 1, opacity: 0.75, textAlign: "center" }} numberOfLines={1}>
                 {t.sub}
               </Text>
             </Pressable>
@@ -24813,7 +24813,7 @@ function HealthDirectoryCard({
       { label: "Practo (private telemedicine platform)", url: "https://www.practo.com/", note: "Online + in-person consult. Filter by RCI/NMC verified." },
       { label: "Manas Mitra (govt digital MH)", url: "https://www.mohfw.gov.in/", note: "Mental health digital platform, MoHFW. Free digital MH counsel + resources." },
     ]},
-    { title: "Hospital empanelment + free care lookup", color: "#F472B6", rows: [
+    { title: "Hospital empanelment + free care lookup", color: "#BE185D", rows: [
       { label: "Ayushman Bharat PM-JAY hospital lookup", number: "14555", url: "https://hospitals.pmjay.gov.in/", note: "Free ₹5 lakh/yr hospitalisation for eligible families. Search empanelled hospitals in your district." },
       { label: "CGHS panel hospitals (central govt employees)", url: "https://cghs.gov.in/", note: "Cashless hospitalisation for CGHS beneficiaries." },
       { label: "ESIC network hospitals + dispensaries", number: "1800-11-2526", url: "https://www.esic.gov.in/", note: "Free care for insured workers + family. All-India network." },
@@ -24827,7 +24827,7 @@ function HealthDirectoryCard({
       { label: "Aarogya Setu → health services", url: "https://www.aarogyasetu.gov.in/", note: "Consult + health-record access." },
       { label: "ABHA (health-ID + digital records)", url: "https://healthid.ndhm.gov.in/", note: "Create Ayushman Bharat Health Account — carry your records everywhere." },
     ]},
-    { title: "District Mental Health Programme + regional centres", color: "#A78BFA", rows: [
+    { title: "District Mental Health Programme + regional centres", color: "#5B21B6", rows: [
       { label: "DMHP — District Mental Health Programme", url: "https://main.mohfw.gov.in/Organisation/departments-health-and-family-welfare/national-programmes/national-mental-health-programme", note: "EVERY district has a DMHP unit at the district hospital. Free psychiatrist / psychologist / social-worker. Ask at the district hospital reception." },
       { label: "NIMHANS (Bengaluru, national centre)", url: "https://nimhans.ac.in/", note: "National Institute of Mental Health. OPD + tele-OPD available." },
       { label: "IHBAS (Delhi, tertiary MH)", url: "https://ihbas.delhi.gov.in/", note: "Institute of Human Behaviour and Allied Sciences. Free / subsidised MH care." },
@@ -24850,7 +24850,7 @@ function HealthDirectoryCard({
       backgroundColor: "#E1E9EF", borderWidth: 1, borderColor: "rgba(34,197,94,0.35)", overflow: "hidden"
     }}>
       <View style={{ paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "rgba(34,197,94,0.15)" }}>
-        <Text style={{ color: "#10A76B", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+        <Text style={{ color: "#047857", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
           🏥 National health directory · Doctors · Psychologists · Hospitals
         </Text>
         <Text style={{ color: "#465871", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
@@ -24922,7 +24922,7 @@ function HealthDirectoryCard({
         );
       })}
       <View style={{ padding: 12, borderTopWidth: 1, borderTopColor: "rgba(34,197,94,0.15)" }}>
-        <Text style={{ color: "#64748B", fontSize: 10, lineHeight: 14, fontStyle: "italic" }}>
+        <Text style={{ color: "#3F4B5F", fontSize: 12, lineHeight: 18, fontStyle: "italic", fontWeight: "600" }}>
           The app is not a substitute for professional care. If you are in immediate danger of self-harm — dial 112 or KIRAN 1800-599-0019 right now. Verified-doctor / verified-psychologist links go to the OFFICIAL national registers (NMC, RCI) — always confirm the practitioner's registration number before starting treatment.
         </Text>
       </View>
@@ -24980,14 +24980,14 @@ function StateOfficerDirectoryCard({
         style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.85 : 1 }]}
       >
         <View style={{ flex: 1 }}>
-          <Text style={{ color: "#0052B8", fontSize: 11, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#1E40AF", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
             🏛️ Officer directory · {selected ? selected.name : "pick your state"}
           </Text>
           <Text style={{ color: "#465871", fontSize: 11, marginTop: 2, lineHeight: 15 }}>
             Direct links to your state's OFFICIAL police portal, e-FIR, DC directory & cyber cell — kept live by each state (officer names rotate).
           </Text>
         </View>
-        <Text style={{ color: "#0052B8", fontSize: 11, marginLeft: 8 }}>{showPicker ? "▲ Hide" : "▼ Pick state"}</Text>
+        <Text style={{ color: "#1E40AF", fontSize: 12, fontWeight: "900", marginLeft: 8 }}>{showPicker ? "▲ Hide" : "▼ Pick state"}</Text>
       </Pressable>
 
       {showPicker && (
@@ -25022,8 +25022,8 @@ function StateOfficerDirectoryCard({
           {[
             { label: "State police portal", url: selected.portal, note: "Search 'contact us' → DC / SSP / SHO of your district", color: "#0052B8" },
             selected.efir ? { label: "e-FIR / online complaint", url: selected.efir, note: "File FIR online where the state supports it", color: "#059669" } : null,
-            selected.collectors ? { label: "District Collector / DM directory", url: selected.collectors, note: "DC / DM contact for administrative escalation", color: "#F472B6" } : null,
-            selected.cyber ? { label: "Cyber crime cell", url: selected.cyber, note: "State cyber cell portal + officer list", color: "#818CF8" } : null,
+            selected.collectors ? { label: "District Collector / DM directory", url: selected.collectors, note: "DC / DM contact for administrative escalation", color: "#BE185D" } : null,
+            selected.cyber ? { label: "Cyber crime cell", url: selected.cyber, note: "State cyber cell portal + officer list", color: "#3730A3" } : null,
             selected.dgp ? { label: "DGP / senior officers", url: selected.dgp, note: "Direct escalation to senior police leadership", color: "#B45309" } : null,
           ].filter(Boolean).map((row) => {
             const r = row as { label: string; url: string; note: string; color: string };
@@ -25060,7 +25060,7 @@ function StateOfficerDirectoryCard({
             {selected.women && (
               <Pressable
                 onPress={() => dialEmergencyNumber(selected.women!, "Women's helpline")}
-                style={{ backgroundColor: "#F2DEE6", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#F472B6" }}
+                style={{ backgroundColor: "#F2DEE6", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: "#BE185D" }}
                 accessibilityRole="button"
                 accessibilityLabel={`Call women's helpline ${selected.women}`}
               >
@@ -25068,7 +25068,7 @@ function StateOfficerDirectoryCard({
               </Pressable>
             )}
           </View>
-          <Text style={{ color: "#64748B", fontSize: 10, marginTop: 6, fontStyle: "italic", lineHeight: 14 }}>
+          <Text style={{ color: "#3F4B5F", fontSize: 12, marginTop: 6, fontStyle: "italic", lineHeight: 18 }}>
             Note: officer names + phone numbers change every 6–24 months. These links go to each state's live directory — always dial the number YOU see there, not one you saw last month. If the portal is temporarily down, dial 112 for police assistance.
           </Text>
         </View>
@@ -25284,12 +25284,12 @@ function RedressSection({
             { label: "Tele-MANAS (mental health)", number: "14416", color: "#0D9488", desc: "Government 24×7 mental health support in 20+ languages. Free." },
             { label: "KIRAN (mental health)", number: "1800-599-0019", color: "#14B8A6", desc: "24×7 national helpline for distress, anxiety, and suicidal thoughts. Free." },
             // ── Abuse & protection ──
-            { label: "Women's Helpline", number: "181", color: "#F472B6", desc: "Domestic violence, harassment, abuse — connects to One Stop Centre support" },
+            { label: "Women's Helpline", number: "181", color: "#BE185D", desc: "Domestic violence, harassment, abuse — connects to One Stop Centre support" },
             { label: "Women in Distress (Police)", number: "1091", color: "#EC4899", desc: "Direct police response line for women facing immediate threat" },
             { label: "Child Helpline", number: "1098", color: "#0052B8", desc: "Child in danger, abuse, trafficking, or child labour" },
             { label: "Elderline (senior citizens)", number: "14567", color: "#7C3AED", desc: "Elder abuse, neglect, pension and property distress" },
             // ── Fraud & consumer ──
-            { label: "Cybercrime / Fraud", number: "1930", color: "#818CF8", desc: "Online fraud — call within 24 hrs to freeze funds. Do not delete messages." },
+            { label: "Cybercrime / Fraud", number: "1930", color: "#3730A3", desc: "Online fraud — call within 24 hrs to freeze funds. Do not delete messages." },
             { label: "Consumer Helpline", number: "1915", color: "#059669", desc: "Product, service, refund, and warranty complaints" },
             // ── Institutional ──
             { label: "Anti-Ragging", number: "1800-180-5522", color: "#B45309", desc: "Ragging, hostel intimidation — UGC 24×7 line, complaint auto-registers" },
@@ -25459,7 +25459,7 @@ function RedressSection({
             { num: "1", label: "First office", text: selectedRedressRoute.firstOffice, color: "#0891B2" },
             { num: "2", label: "First action", text: selectedRedressRoute.firstAction, color: "#059669" },
             { num: "3", label: "Escalation path", text: selectedRedressRoute.escalation, color: "#B45309" },
-            { num: "4", label: "Track & follow up", text: "Keep a copy of every acknowledgement number. Follow up every 7–15 days in writing. If stalled, use the escalation path above.", color: "#F472B6" },
+            { num: "4", label: "Track & follow up", text: "Keep a copy of every acknowledgement number. Follow up every 7–15 days in writing. If stalled, use the escalation path above.", color: "#BE185D" },
           ].map((step) => (
             <View key={step.num} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
               <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: step.color, alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1, flexShrink: 0 }}>
@@ -25549,8 +25549,8 @@ function RedressSection({
               onPress={() => setShowDraftTemplate((v) => !v)}
               style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.8 : 1 }]}
             >
-              <Text style={{ color: "#818CF8", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>📄 Complaint letter template</Text>
-              <Text style={{ color: "#818CF8", fontSize: 11 }}>{showDraftTemplate ? "▲ Hide" : "▼ Show"}</Text>
+              <Text style={{ color: "#3730A3", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>📄 Complaint letter template</Text>
+              <Text style={{ color: "#3730A3", fontSize: 11 }}>{showDraftTemplate ? "▲ Hide" : "▼ Show"}</Text>
             </Pressable>
             {showDraftTemplate && (
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
@@ -25598,7 +25598,7 @@ function RedressSection({
                     onPress={() => void Share.share({ message: draftTemplate ?? "", title: `${selectedRedressRoute.label} — complaint letter template` })}
                     style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(129,140,248,0.12)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(129,140,248,0.25)" }]}
                   >
-                    <Text style={{ color: "#818CF8", fontSize: 12, fontWeight: "800" }}>↗ Share</Text>
+                    <Text style={{ color: "#3730A3", fontSize: 12, fontWeight: "800" }}>↗ Share</Text>
                   </Pressable>
                 </View>
                 <View style={{ marginTop: 10, backgroundColor: "rgba(252,211,77,0.08)", borderRadius: 8, padding: 10, borderLeftWidth: 3, borderLeftColor: "#B45309" }}>
@@ -25615,12 +25615,12 @@ function RedressSection({
         {/* ── TIMELINE EXPECTATION ── */}
         {timeline !== undefined && (
           <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(244,114,182,0.2)", padding: 14 }}>
-            <Text style={{ color: "#F472B6", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 10 }}>⏱ What to expect — timeline</Text>
+            <Text style={{ color: "#BE185D", fontSize: 11, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 10 }}>⏱ What to expect — timeline</Text>
             <View style={{ gap: 8 }}>
               {[timeline.step1, timeline.step2, timeline.step3].map((step, i) => (
                 <View key={String(i)} style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
-                  <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: "rgba(244,114,182,0.2)", borderWidth: 1, borderColor: "#F472B6", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                    <Text style={{ color: "#F472B6", fontSize: 10, fontWeight: "800" }}>{i + 1}</Text>
+                  <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: "rgba(244,114,182,0.2)", borderWidth: 1, borderColor: "#BE185D", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                    <Text style={{ color: "#BE185D", fontSize: 10, fontWeight: "800" }}>{i + 1}</Text>
                   </View>
                   <Text style={{ color: "#446573", fontSize: 12, lineHeight: 18, flex: 1 }}>{step}</Text>
                 </View>
@@ -25948,13 +25948,13 @@ function RouteDecisionOverlay({
         }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#00B8A4", fontSize: 11, fontWeight: "900", letterSpacing: 1.6, textTransform: "uppercase" }}>
+              <Text style={{ color: "#006B64", fontSize: 12, fontWeight: "900", letterSpacing: 1.6, textTransform: "uppercase" }}>
                 Choose next step
               </Text>
-              <Text style={{ color: "#325C86", fontSize: 20, fontWeight: "900", marginTop: 4 }}>
+              <Text style={{ color: "#123A63", fontSize: 20, fontWeight: "900", marginTop: 4 }}>
                 {decision.issueLabel}
               </Text>
-              <Text style={{ color: "rgba(241,245,249,0.72)", fontSize: 13, lineHeight: 19, marginTop: 6 }}>
+              <Text style={{ color: "#24384A", fontSize: 13, lineHeight: 19, marginTop: 6 }}>
                 The app analysed your first line. Pick the route that fits best before it continues.
               </Text>
             </View>
@@ -25972,13 +25972,13 @@ function RouteDecisionOverlay({
             borderColor: "rgba(255,255,255,0.06)"
           }}>
             {/* #298F7F was 3.3:1 on this card's background -- darkened. */}
-            <Text style={{ color: "#0A5C58", fontSize: 10, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
               Analysis
             </Text>
             <Text style={{ color: "#3A577D", fontSize: 14, lineHeight: 20 }}>
               {decision.identityLabel} · {decision.route === "urgent" ? "Urgent" : decision.route === "redress" ? "Help" : decision.route === "professional" ? "Guidance" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "Talk" : calmIssueIds.has(decision.issueId) ? "Reset" : "Path"}
             </Text>
-            <Text style={{ color: "rgba(226,232,240,0.68)", fontSize: 12, lineHeight: 18 }}>
+            <Text style={{ color: "#24384A", fontSize: 12, lineHeight: 18 }}>
               {decision.rawText}
             </Text>
           </View>
@@ -26271,13 +26271,13 @@ function InsightsSection({
                 <View style={{ flex: 1 }}>
                   <Text style={{ color: "#0891B2", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Progress Report Card</Text>
                   <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800", marginTop: 2 }}>{gradeLabel}</Text>
-                  <Text style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>
+                  <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 2 }}>
                     {selectedIssueGuide.label} · {checkInStreak} day streak · {weekEntries.length}/7 this week
                   </Text>
                 </View>
                 <View style={{ alignItems: "center" }}>
                   <Text style={{ color: gradeColor, fontSize: 22, fontWeight: "900" }}>{overallPct}%</Text>
-                  <Text style={{ color: "#64748B", fontSize: 10, marginTop: 2 }}>Overall</Text>
+                  <Text style={{ color: "#3F4B5F", fontSize: 12, marginTop: 2 }}>Overall</Text>
                 </View>
               </View>
               {/* Score bars */}
@@ -26304,16 +26304,16 @@ function InsightsSection({
               {/* Insight + action */}
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, gap: 10 }}>
                 <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12 }}>
-                  <Text style={{ color: "#64748B", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>Report insight</Text>
+                  <Text style={{ color: "#3F4B5F", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>Report insight</Text>
                   <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 18 }}>{patternCritique.summary}</Text>
                   <Text style={{ color: "#465871", fontSize: 12, lineHeight: 18, marginTop: 6 }}>Next focus: {patternCritique.next}</Text>
                 </View>
                 {visitReports.length > 0 && (
                   <View style={{ gap: 6 }}>
-                    <Text style={{ color: "#64748B", fontSize: 10, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>Latest session reports</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>Latest session reports</Text>
                     {visitReports.slice(0, 2).map((report) => (
                       <View key={report.id} style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12, borderLeftWidth: 3, borderLeftColor: gradeColor }}>
-                        <Text style={{ color: "#465871", fontSize: 10, fontWeight: "700" }}>
+                        <Text style={{ color: "#3F4B5F", fontSize: 12, fontWeight: "800" }}>
                           {report.sourceLabel} · {report.entryCount} step{report.entryCount === 1 ? "" : "s"}
                         </Text>
                         <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700", marginTop: 3 }}>{report.title}</Text>
@@ -26358,7 +26358,7 @@ function InsightsSection({
         <SupportDimensionLibraryPanel
           eyebrow="📊 Watch for"
           actionLabel="Signal"
-          accentColor="#818CF8"
+          accentColor="#3730A3"
         />
         <View style={styles.issueCalloutActions}>
           <Pressable
@@ -26586,7 +26586,7 @@ function SettingsSection({
         <Text style={{ fontSize: 28, marginRight: 14 }}>🎁</Text>
         <View style={{ flex: 1 }}>
           <Text style={{ color: "#059669", fontSize: 13, fontWeight: "800", marginBottom: 3 }}>Aethon Beacon is free — no strings attached</Text>
-          <Text style={{ color: "#64748B", fontSize: 12, lineHeight: 17 }}>
+          <Text style={{ color: "#3F4B5F", fontSize: 12, lineHeight: 17 }}>
             Every feature is fully unlocked for at least one year. No trial, no paywall, no hidden limits. Just use it.
           </Text>
         </View>
@@ -26863,9 +26863,9 @@ function SettingsSection({
                 onPress={() => setVoiceGender(g)}
                 style={({ pressed }) => ({
                   flex: 1,
-                  backgroundColor: isActive ? (g === "female" ? "#F472B6" : "#0052B8") : "#E1EEEC",
+                  backgroundColor: isActive ? (g === "female" ? "#BE185D" : "#0052B8") : "#E1EEEC",
                   borderWidth: 1.5,
-                  borderColor: isActive ? (g === "female" ? "#F472B6" : "#0052B8") : "#1E3A5A",
+                  borderColor: isActive ? (g === "female" ? "#BE185D" : "#0052B8") : "#1E3A5A",
                   borderRadius: 12,
                   paddingVertical: 12,
                   alignItems: "center",
@@ -27495,11 +27495,11 @@ function VedicDailyCard({
               <View style={{ position: "absolute", width: 104, height: 104, borderRadius: 52, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)" }} />
               <Text style={{ fontSize: 34, lineHeight: 40 }}>{rashi.symbol}</Text>
               <Text style={{ color: "#325C86", fontSize: 16, fontWeight: "900", marginTop: 2 }}>{moonChart48Summary.average}/100</Text>
-              <Text style={{ color: "#465871", fontSize: 9, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Moon score</Text>
+              <Text style={{ color: "#465871", fontSize: 11, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Moon score</Text>
             </View>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
               {lunarHousePreview.map((house) => {
-                const color = house.anchor ? moonChartVisualColor(house.anchor) : "#64748B";
+                const color = house.anchor ? moonChartVisualColor(house.anchor) : "#3F4B5F";
                 return (
                   <View key={`daily-house-${house.house}`} style={{ width: "23%" as unknown as number, minWidth: 42, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 5, backgroundColor: `${color}18`, borderWidth: 1, borderColor: `${color}55`, alignItems: "center" }}>
                     <Text style={{ color, fontSize: 10, fontWeight: "900" }}>H{house.house}</Text>
@@ -27819,9 +27819,9 @@ function BirthChartSection({
                   }}
                 >
                   <Text style={{ fontSize: 12 }}>{sign.symbol}</Text>
-                  <Text style={{ color: "rgba(13,31,34,0.62)", fontSize: 8, fontWeight: "800" }} numberOfLines={1}>{sign.en}</Text>
+                  <Text style={{ color: "#24384A", fontSize: 11, fontWeight: "900" }} numberOfLines={1}>{sign.en}</Text>
                   {inhabitants.length > 0 && (
-                    <Text style={{ color: accent, fontSize: 9, fontWeight: "900", textAlign: "center", marginTop: 1 }} numberOfLines={2}>
+                    <Text style={{ color: accent, fontSize: 11, fontWeight: "900", textAlign: "center", marginTop: 1 }} numberOfLines={2}>
                       {visibleOccupants.join(" ")}{hiddenCount > 0 ? ` +${hiddenCount}` : ""}
                     </Text>
                   )}
@@ -27895,7 +27895,7 @@ function BirthChartSection({
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             {/* Day */}
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>DAY</Text>
+              <Text style={{ color: "#3F4B5F", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>DAY</Text>
               <TextInput
                 value={dobDD}
                 onChangeText={(v) => {
@@ -27916,10 +27916,10 @@ function BirthChartSection({
                 }}
               />
             </View>
-            <Text style={{ color: "rgba(13,31,34,0.3)", fontSize: 22, marginTop: 16 }}>/</Text>
+            <Text style={{ color: "#5B6575", fontSize: 22, marginTop: 16 }}>/</Text>
             {/* Month */}
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>MONTH</Text>
+              <Text style={{ color: "#3F4B5F", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>MONTH</Text>
               <TextInput
                 ref={refDobMM}
                 value={dobMM}
@@ -27941,10 +27941,10 @@ function BirthChartSection({
                 }}
               />
             </View>
-            <Text style={{ color: "rgba(13,31,34,0.3)", fontSize: 22, marginTop: 16 }}>/</Text>
+            <Text style={{ color: "#5B6575", fontSize: 22, marginTop: 16 }}>/</Text>
             {/* Year */}
             <View style={{ flex: 2, alignItems: "center" }}>
-              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>YEAR</Text>
+              <Text style={{ color: "#3F4B5F", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>YEAR</Text>
               <TextInput
                 ref={refDobYYYY}
                 value={dobYYYY}
@@ -27981,7 +27981,7 @@ function BirthChartSection({
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>HOUR (00–23)</Text>
+              <Text style={{ color: "#3F4B5F", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>HOUR (00–23)</Text>
               <TextInput
                 value={timeHH}
                 onChangeText={(v) => {
@@ -28002,9 +28002,9 @@ function BirthChartSection({
                 }}
               />
             </View>
-            <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 28, marginTop: 18, fontWeight: "900" }}>:</Text>
+            <Text style={{ color: "#3F4B5F", fontSize: 28, marginTop: 18, fontWeight: "900" }}>:</Text>
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontWeight: "700", marginBottom: 4 }}>MINUTE (00–59)</Text>
+              <Text style={{ color: "#3F4B5F", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>MINUTE (00–59)</Text>
               <TextInput
                 ref={refTimeMM}
                 value={timeMM}
@@ -28108,7 +28108,7 @@ function BirthChartSection({
               { label: "Samvatsara (60-yr cycle)", value: samvatsaraInfo ? `${samvatsaraInfo.name} (#${samvatsaraInfo.index + 1})` : "Enter date of birth" },
             ].map((item) => (
               <View key={item.label} style={{ backgroundColor: "#E1EEEC", borderRadius: 8, padding: 10, minWidth: 90, flex: 1 }}>
-                <Text style={{ color: "rgba(13,31,34,0.65)", fontSize: 10, fontWeight: "800", textTransform: "uppercase" }}>{item.label}</Text>
+                <Text style={{ color: "#24384A", fontSize: 10, fontWeight: "800", textTransform: "uppercase" }}>{item.label}</Text>
                 <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "800", marginTop: 2 }} numberOfLines={2}>{item.value}</Text>
               </View>
             ))}
@@ -28139,7 +28139,7 @@ function BirthChartSection({
                       : "add your exact birth place above for a precise, coordinate-based Lagna instead of this estimate."}
                 </Text>
               )}
-              <Text style={{ color: "rgba(13,31,34,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
+              <Text style={{ color: "#2F4358", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
                 Note: even the precise calculation is an approximation of professional-grade software. For life-decision use, consult a certified Jyotishi with your birth certificate coordinates.
               </Text>
             </View>
@@ -28157,7 +28157,7 @@ function BirthChartSection({
                 The Samvatsara is the Vedic 60-year Jupiter cycle — each year has a unique cosmic name and life-theme inscribed at birth.{"\n"}
                 <Text style={{ fontWeight: "900", color: "#0E9488" }}>Your birth-year theme: </Text>{samvatsaraInfo.theme}.
               </Text>
-              <Text style={{ color: "rgba(13,31,34,0.55)", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
+              <Text style={{ color: "#2F4358", fontSize: 11, marginTop: 6, fontStyle: "italic" }}>
                 This Samvatsara shapes your core life-script and soul-purpose tendencies as recorded in Jyotish.
               </Text>
             </View>
@@ -28175,7 +28175,7 @@ function BirthChartSection({
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 }}>
                   <View style={{ backgroundColor: "rgba(192,132,252,0.15)", borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: "rgba(192,132,252,0.4)" }}>
                     <Text style={{ color: dashaColor, fontSize: 20, fontWeight: "900" }}>{dasha.currentMahadasha}</Text>
-                    <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 10, textAlign: "center" }}>Mahadasha</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 10, textAlign: "center" }}>Mahadasha</Text>
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700" }}>
@@ -28187,7 +28187,7 @@ function BirthChartSection({
                     <Text style={{ color: "#465871", fontSize: 12, lineHeight: 17, marginTop: 3 }}>
                       {DASHA_QUALITIES[dasha.currentMahadasha] ?? "Planetary period in effect"}
                     </Text>
-                    <Text style={{ color: "#64748B", fontSize: 11, marginTop: 4 }}>
+                    <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 4 }}>
                       Next: {dasha.nextMahadasha} Mahadasha
                     </Text>
                   </View>
@@ -28202,11 +28202,11 @@ function BirthChartSection({
                   <Text style={{ color: "#2600B8", fontSize: 12, marginTop: 3, lineHeight: 18 }}>
                     {summarizePlanetQuality(dasha.currentAntardasha)}. About {formatPhaseSpan(dasha.antardashaYearsLeft)} remain in this sub-period, then {dasha.nextAntardasha} starts.
                   </Text>
-                  <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 11, marginTop: 2, lineHeight: 16 }}>
+                  <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 2, lineHeight: 16 }}>
                     Started ~{formatApproxDate(dasha.antardashaStartedAtIso)} · Ends ~{formatApproxDate(dasha.antardashaEndsAtIso)}
                   </Text>
                 </View>
-                <Text style={{ color: "rgba(13,31,34,0.4)", fontSize: 10, fontStyle: "italic" }}>
+                <Text style={{ color: "#465871", fontSize: 10, fontStyle: "italic" }}>
                   Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods, exact birth time, and true Antardasha timing.
                 </Text>
               </View>
@@ -28230,7 +28230,7 @@ function BirthChartSection({
                     { label: "Lord", value: janmaNakshatra.lord },
                   ].map((item) => (
                     <View key={item.label} style={{ backgroundColor: "#E1EEEC", borderRadius: 8, padding: 8, minWidth: 80 }}>
-                      <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 9, fontWeight: "900", textTransform: "uppercase" }}>{item.label}</Text>
+                      <Text style={{ color: "#3F4B5F", fontSize: 11, fontWeight: "900", textTransform: "uppercase" }}>{item.label}</Text>
                       <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "800", marginTop: 2 }}>{item.value}</Text>
                     </View>
                   ))}
@@ -28242,7 +28242,7 @@ function BirthChartSection({
           {/* Cosmic Issue Guidance — connects current issue to Vedic reading */}
           {cosmicIssueGuidance && (
             <View style={{ backgroundColor: "#E6DEF2", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(126,111,214,0.3)" }}>
-              <Text style={{ color: "#A78BFA", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
+              <Text style={{ color: "#5B21B6", fontSize: 11, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
                 🪐 Cosmic guidance for {selectedIssueGuide.label}
               </Text>
               <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 20 }}>{cosmicIssueGuidance}</Text>
@@ -28277,7 +28277,7 @@ function BirthChartSection({
             </View>
             <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: "rgba(99,222,208,0.12)", borderWidth: 1, borderColor: "rgba(99,222,208,0.5)", alignItems: "center", justifyContent: "center", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 14, transform: [{ perspective: 900 }, { rotateZ: "-4deg" }] }}>
               <Text style={{ color: "#0E9488", fontSize: 24, fontWeight: "900" }}>48</Text>
-              <Text style={{ color: "#00A8B8", fontSize: 8, fontWeight: "900", letterSpacing: 1 }}>DIM</Text>
+              <Text style={{ color: "#00A8B8", fontSize: 10, fontWeight: "900", letterSpacing: 1 }}>DIM</Text>
             </View>
           </View>
 
@@ -28292,16 +28292,16 @@ function BirthChartSection({
                   <Text style={{ color: "#325C86", fontSize: 10, fontWeight: "900" }}>{rashiInfo.rashi.name}</Text>
                 </View>
                 {moonChartHouseSummary.map((house) => {
-                  const color = house.anchor ? moonChartVisualColor(house.anchor) : "#64748B";
+                  const color = house.anchor ? moonChartVisualColor(house.anchor) : "#3F4B5F";
                   const angle = ((house.house - 1) * 30 - 90) * Math.PI / 180;
                   const radius = isWide ? 102 : 90;
                   const x = Math.cos(angle) * radius;
                   const y = Math.sin(angle) * radius;
                   return (
                     <View key={`moon-house-orbit-${house.house}`} style={{ position: "absolute", left: "50%", top: "50%", width: 44, minHeight: 44, marginLeft: x - 22, marginTop: y - 22, borderRadius: 14, backgroundColor: `${color}1F`, borderWidth: 1, borderColor: `${color}66`, alignItems: "center", justifyContent: "center", shadowColor: color, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.28, shadowRadius: 8, transform: [{ perspective: 700 }, { rotateZ: `${house.house % 2 === 0 ? 3 : -3}deg` }] }}>
-                      <Text style={{ color, fontSize: 9, fontWeight: "900" }}>H{house.house}</Text>
+                      <Text style={{ color, fontSize: 11, fontWeight: "900" }}>H{house.house}</Text>
                       <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "900" }}>{house.average || "—"}</Text>
-                      {house.carefulCount > 0 && <Text style={{ color: "#B80000", fontSize: 8, fontWeight: "900" }}>care</Text>}
+                      {house.carefulCount > 0 && <Text style={{ color: "#B80000", fontSize: 10, fontWeight: "900" }}>care</Text>}
                     </View>
                   );
                 })}
@@ -28367,7 +28367,7 @@ function BirthChartSection({
                 <Text style={{ color: "#006EB8", fontSize: 12, lineHeight: 17 }}>{item.interpretation}</Text>
                 <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{item.remedyTitle}: </Text>{item.remedySteps.join(" ")}</Text>
                 <Text style={{ color: "rgba(0,82,184,0.78)", fontSize: 10, lineHeight: 15 }}>Score trace: {item.scoreReason}</Text>
-                <Text style={{ color: "rgba(13,31,34,0.6)", fontSize: 10, lineHeight: 15 }}>{item.calculationBasis}</Text>
+                <Text style={{ color: "#24384A", fontSize: 10, lineHeight: 15 }}>{item.calculationBasis}</Text>
               </View>
             ))}
           </View>
@@ -28393,7 +28393,7 @@ function BirthChartSection({
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 10 }}>
             <Text style={{ color: "#6D28D9", fontSize: 11, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>D1 Rashi Chart — Lagna and all 9 grahas</Text>
             {renderVedicChartWheel(rashiWheelOccupants, "#6D28D9", "RASHI")}
-            <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 10, fontStyle: "italic", textAlign: "center" }}>
+            <Text style={{ color: "#3F4B5F", fontSize: 10, fontStyle: "italic", textAlign: "center" }}>
               South Indian style: signs are fixed to position (Aries, Taurus, Gemini across the top, then clockwise). The shaded sign is your Lagna (Ascendant).
             </Text>
           </View>
@@ -28436,7 +28436,7 @@ function BirthChartSection({
             ) : (
               <Text style={{ color: "#3F5978", fontSize: 12, lineHeight: 17 }}>No classical yogas from this curated set were detected in this chart.</Text>
             )}
-            <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 10, fontStyle: "italic" }}>
+            <Text style={{ color: "#3F4B5F", fontSize: 10, fontStyle: "italic" }}>
               Scoped to conjunction and fixed-angle yogas (Gaja Kesari, Budhaditya, Chandra-Mangal, the five Pancha Mahapurusha yogas, Raja Yoga, Dhana Yoga) — not full classical graha drishti (planetary aspect), which varies by text.
             </Text>
           </View>
@@ -28498,7 +28498,7 @@ function BirthChartSection({
                     );
                   })}
                 </View>
-                <Text style={{ color: "rgba(13,31,34,0.5)", fontSize: 10, fontStyle: "italic", lineHeight: 15 }}>
+                <Text style={{ color: "#3F4B5F", fontSize: 10, fontStyle: "italic", lineHeight: 15 }}>
                   Includes Uchcha, Ojayugmarasyamsa and Kendradi Bala (three of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, and a motion-based Chesta Bala proxy. Kala Bala's day/night components, Drik (aspect) Bala, and the full six-divisional-chart Vimshopak Bala are deferred — they need machinery (precise local sunrise/sunset, several more divisional charts) this build doesn't have yet.
                 </Text>
               </>
@@ -29915,7 +29915,7 @@ function OnboardingOverlay({
                 <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800", marginTop: 2 }}>
                   A few quick choices tailor everything
                 </Text>
-                <Text style={{ color: "rgba(240,249,255,0.65)", fontSize: 12, marginTop: 3, lineHeight: 17 }}>
+                <Text style={{ color: "#24384A", fontSize: 12, marginTop: 3, lineHeight: 17 }}>
                   Your data stays on this device. Nothing is shared unless you explicitly share it.
                 </Text>
               </View>
@@ -31976,7 +31976,7 @@ function CounselingChatModal({
           </Pressable>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800" }}>Your guide is listening</Text>
-            <Text style={{ color: "#64748B", fontSize: 12 }}>
+            <Text style={{ color: "#3F4B5F", fontSize: 12 }}>
               {voiceAssistEnabled ? "Private · Replies are read aloud" : "Private · Voice reply is muted"}
             </Text>
           </View>
@@ -31999,12 +31999,12 @@ function CounselingChatModal({
             {/* Icon-only was ambiguous (mute vs. unmute isn't obvious from the
                 glyph alone) -- a short label next to it makes the tap target
                 self-explanatory without the person needing to guess. */}
-            <Text style={{ color: "#64748B", fontSize: 11, fontWeight: "700" }}>
+            <Text style={{ color: "#3F4B5F", fontSize: 11, fontWeight: "700" }}>
               {voiceAssistEnabled ? "Stop speaker" : "Unmute speaker"}
             </Text>
           </Pressable>
           <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
-            <Text style={{ color: "#64748B", fontSize: 13 }}>Skip →</Text>
+            <Text style={{ color: "#3F4B5F", fontSize: 13 }}>Skip →</Text>
           </Pressable>
         </View>
 
@@ -32051,7 +32051,7 @@ function CounselingChatModal({
                   <Text style={{ fontSize: 22 }}>{step.emoji}</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "700" }}>{i + 1}. {step.label}</Text>
-                    <Text style={{ color: "#64748B", fontSize: 12, lineHeight: 18, marginTop: 2 }}>{step.reason}</Text>
+                    <Text style={{ color: "#3F4B5F", fontSize: 12, lineHeight: 18, marginTop: 2 }}>{step.reason}</Text>
                   </View>
                 </View>
               ))}
@@ -32105,7 +32105,7 @@ function CounselingChatModal({
                 accessibilityLabel="Not right now"
                 style={({ pressed }) => ({ padding: 12, alignItems: "center", opacity: pressed ? 0.6 : 1 })}
               >
-                <Text style={{ color: "#64748B", fontSize: 13 }}>Not right now</Text>
+                <Text style={{ color: "#3F4B5F", fontSize: 13 }}>Not right now</Text>
               </Pressable>
             </View>
           )}
@@ -32125,7 +32125,7 @@ function CounselingChatModal({
                 textAlignVertical="top"
               />
               {speechInputNotice ? (
-                <Text style={{ color: isListening ? "#0E9488" : "#64748B", fontSize: 11, marginTop: 6 }}>
+                <Text style={{ color: isListening ? "#0E9488" : "#3F4B5F", fontSize: 11, marginTop: 6 }}>
                   {speechInputNotice}
                 </Text>
               ) : null}
@@ -32193,7 +32193,7 @@ function GuidedJourneyBar({
             Step {currentStepIndex + 1} of {steps.length}
           </Text>
           <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 1 }}>{current.label}</Text>
-          <Text style={{ color: "#64748B", fontSize: 12, lineHeight: 17, marginTop: 2 }} numberOfLines={2}>{current.reason}</Text>
+          <Text style={{ color: "#3F4B5F", fontSize: 12, lineHeight: 17, marginTop: 2 }} numberOfLines={2}>{current.reason}</Text>
         </View>
       </View>
 
@@ -32211,7 +32211,7 @@ function GuidedJourneyBar({
             onPress={onSkip}
             style={({ pressed }) => ({ paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", opacity: pressed ? 0.6 : 1 })}
           >
-            <Text style={{ color: "#64748B", fontSize: 13 }}>Skip</Text>
+            <Text style={{ color: "#3F4B5F", fontSize: 13 }}>Skip</Text>
           </Pressable>
         )}
       </View>
@@ -32375,7 +32375,7 @@ function DynamicHeroCard({
         <Text style={{ fontSize: 18 }}>🎙️</Text>
         <Text style={{ color: "#0E9488", fontSize: 14, fontWeight: "700" }}>Talk it through with your guide</Text>
       </Pressable>
-      <Text style={{ color: "#64748B", fontSize: 11, textAlign: "center", marginTop: 6 }}>
+      <Text style={{ color: "#3F4B5F", fontSize: 11, textAlign: "center", marginTop: 6 }}>
         Listens deeply, asks up to 6 questions across every dimension, then builds your personalised path
       </Text>
 
@@ -33194,7 +33194,7 @@ function GeminiInsightsCard({
           <Text style={{ color: "#0E9488", fontSize: 11, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             Personal Pattern Analysis
           </Text>
-          <Text style={{ color: "#64748B", fontSize: 11, marginTop: 1 }}>
+          <Text style={{ color: "#3F4B5F", fontSize: 11, marginTop: 1 }}>
             {entryCount} check-ins · {streakDays > 0 ? `${streakDays}-day streak` : "No active streak"}
           </Text>
         </View>
@@ -33204,13 +33204,13 @@ function GeminiInsightsCard({
       {/* Content */}
       {loading ? (
         <View style={{ paddingVertical: 12 }}>
-          <Text style={{ color: "#64748B", fontSize: 13, fontStyle: "italic" }}>Reading your patterns…</Text>
+          <Text style={{ color: "#3F4B5F", fontSize: 13, fontStyle: "italic" }}>Reading your patterns…</Text>
         </View>
       ) : insightText ? (
         <Text style={{ color: "#3F5978", fontSize: 13, lineHeight: 21 }}>{insightText}</Text>
       ) : (
         <View>
-          <Text style={{ color: "#64748B", fontSize: 13, lineHeight: 19, marginBottom: 14 }}>
+          <Text style={{ color: "#3F4B5F", fontSize: 13, lineHeight: 19, marginBottom: 14 }}>
             {entryCount >= 3
               ? `You have ${entryCount} check-ins to analyse. Get a personalised reading of your emotional patterns.`
               : `Add a few more check-ins and come back for your pattern reading.`}
@@ -33872,7 +33872,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2
   },
   brandTagCompact: {
-    fontSize: 9
+    fontSize: 11
   },
   heroTopActions: {
     flexDirection: "row",
@@ -34031,13 +34031,13 @@ const styles = StyleSheet.create({
   topStatusChipLabel: {
     color: "#0891B2",
     fontSize: 10,
-    lineHeight: 12,
+    lineHeight: 14,
     fontWeight: "900",
     textTransform: "uppercase"
   },
   topStatusChipLabelCompact: {
     fontSize: 10,
-    lineHeight: 12
+    lineHeight: 14
   },
   topStatusChipValue: {
     color: "#0D1F22",
@@ -34046,8 +34046,8 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   topStatusChipMeta: {
-    color: "rgba(13,31,34,0.6)",
-    fontSize: 9,
+    color: "#24384A",
+    fontSize: 11,
     lineHeight: 13,
     fontWeight: "700"
   },
@@ -34109,13 +34109,13 @@ const styles = StyleSheet.create({
   topPageModeLabel: {
     color: "#B45309",
     fontSize: 10,
-    lineHeight: 12,
+    lineHeight: 14,
     fontWeight: "900",
     textTransform: "uppercase"
   },
   topPageModeLabelCompact: {
-    fontSize: 9,
-    lineHeight: 11
+    fontSize: 11,
+    lineHeight: 14
   },
   topPageModeText: {
     color: "#0D1F22",
@@ -34150,7 +34150,7 @@ const styles = StyleSheet.create({
   },
   routeNoticeTitleCompact: {
     fontSize: 10,
-    lineHeight: 12
+    lineHeight: 14
   },
   routeNoticeDetail: {
     color: "#0D1F22",
@@ -34186,7 +34186,7 @@ const styles = StyleSheet.create({
     // #00B8A4 was 2.1:1 on this card's #E1EEEC background -- darkened.
     color: "#0A5C58",
     fontSize: 10,
-    lineHeight: 12,
+    lineHeight: 14,
     fontWeight: "900",
     letterSpacing: 1.1,
     textTransform: "uppercase"
@@ -34335,8 +34335,8 @@ const styles = StyleSheet.create({
   },
   visitReportLabel: {
     color: "#0891B2",
-    fontSize: 9,
-    lineHeight: 11,
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "900",
     textTransform: "uppercase"
   },
@@ -34347,7 +34347,7 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   visitReportMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -34393,7 +34393,7 @@ const styles = StyleSheet.create({
   homeOverviewEyebrow: {
     color: "#0891B2",
     fontSize: 10,
-    lineHeight: 12,
+    lineHeight: 14,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
@@ -34405,7 +34405,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   homeOverviewText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700"
@@ -34493,7 +34493,7 @@ const styles = StyleSheet.create({
   },
   homeToneBandButtonLabel: {
     color: "#0891B2",
-    fontSize: 7,
+    fontSize: 10,
     lineHeight: 9,
     fontWeight: "900",
     textTransform: "uppercase",
@@ -34523,7 +34523,7 @@ const styles = StyleSheet.create({
   },
   homeToneBandButtonSecondaryLabel: {
     color: "#B45309",
-    fontSize: 7,
+    fontSize: 10,
     lineHeight: 9,
     fontWeight: "900",
     textTransform: "uppercase",
@@ -34533,25 +34533,25 @@ const styles = StyleSheet.create({
     color: "#B88600"
   },
   homeToneLoopStatus: {
-    color: "rgba(13,31,34,0.65)",
-    fontSize: 9,
-    lineHeight: 12,
+    color: "#24384A",
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "800",
     marginTop: 4
   },
   homeToneLoopStatusCompact: {
-    fontSize: 8,
-    lineHeight: 10,
+    fontSize: 10,
+    lineHeight: 13,
     marginTop: 2
   },
   homeToneBandIntro: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
   },
   homeToneBandIntroCompact: {
-    fontSize: 7,
+    fontSize: 10,
     lineHeight: 9
   },
   homeToneQuickStrip: {
@@ -34578,16 +34578,16 @@ const styles = StyleSheet.create({
   },
   homeToneQuickMeta: {
     color: "rgba(14,180,160,0.9)",
-    fontSize: 9,
-    lineHeight: 11,
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "700"
   },
   homeToneQuickNote: {
     flex: 1,
     minWidth: 0,
-    color: "rgba(13,31,34,0.6)",
-    fontSize: 9,
-    lineHeight: 11,
+    color: "#24384A",
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "700",
     textAlign: "right"
   },
@@ -34627,7 +34627,7 @@ const styles = StyleSheet.create({
     borderRadius: 12
   },
   homeToneFeaturedMarkText: {
-    color: "#0D1F22",
+    color: "#FFFFFF",
     fontSize: 10,
     fontWeight: "900",
     letterSpacing: 0
@@ -34656,8 +34656,8 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   homeToneFeaturedMetaCompact: {
-    fontSize: 8,
-    lineHeight: 10
+    fontSize: 10,
+    lineHeight: 13
   },
   homeToneFeaturedUse: {
     color: "rgba(255,255,255,0.78)",
@@ -34666,18 +34666,18 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   homeToneFeaturedUseCompact: {
-    fontSize: 9,
-    lineHeight: 11
+    fontSize: 11,
+    lineHeight: 14
   },
   homeToneFeaturedSafety: {
-    color: "rgba(196,163,90,0.65)",
+    color: "#8A5A00",
     fontSize: 11,
     lineHeight: 15,
     fontWeight: "700"
   },
   homeToneFeaturedSafetyCompact: {
-    fontSize: 8,
-    lineHeight: 10
+    fontSize: 10,
+    lineHeight: 13
   },
   homeToneChipRow: {
     gap: 6,
@@ -34732,8 +34732,8 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     paddingHorizontal: 4,
     paddingVertical: 2,
-    fontSize: 8,
-    lineHeight: 10
+    fontSize: 10,
+    lineHeight: 13
   },
   homeToneChipMarkActive: {
     backgroundColor: "#0E6F69",
@@ -34747,21 +34747,21 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   homeToneChipLabelCompact: {
-    fontSize: 8,
-    lineHeight: 10
+    fontSize: 10,
+    lineHeight: 13
   },
   homeToneChipLabelActive: {
     color: "#B68502"
   },
   homeToneChipMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 15,
     fontWeight: "700"
   },
   homeToneChipMetaCompact: {
-    fontSize: 6,
-    lineHeight: 8
+    fontSize: 10,
+    lineHeight: 13
   },
   homeToneChipMetaActive: {
     color: "#0D1F22"
@@ -34829,7 +34829,7 @@ const styles = StyleSheet.create({
   toneTimerBadgeLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "rgba(13,31,34,0.65)"
+    color: "#24384A"
   },
   toneSessionRow: {
     flexDirection: "row",
@@ -34877,7 +34877,7 @@ const styles = StyleSheet.create({
   tonePresetChipLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "rgba(13,31,34,0.6)"
+    color: "#24384A"
   },
   tonePresetChipLabelActive: {
     color: "#00B8A4"
@@ -35020,8 +35020,8 @@ const styles = StyleSheet.create({
   },
   heroModeChipMeta: {
     color: "#486F5A",
-    fontSize: 9,
-    lineHeight: 12,
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "700",
     letterSpacing: 0
   },
@@ -35045,7 +35045,7 @@ const styles = StyleSheet.create({
   },
   emergencyEyebrow: {
     color: "#9D3224",
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase"
@@ -35116,7 +35116,7 @@ const styles = StyleSheet.create({
   },
   communityHeroEyebrow: {
     color: "#4D5BD1",
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase"
@@ -35434,7 +35434,7 @@ const styles = StyleSheet.create({
   },
   footerQuickActionLabelCompact: {
     fontSize: 10,
-    lineHeight: 12
+    lineHeight: 14
   },
   footerQuickActionMeta: {
     color: "rgba(13,31,34,0.72)",
@@ -35444,7 +35444,7 @@ const styles = StyleSheet.create({
   },
   footerQuickActionMetaCompact: {
     fontSize: 10,
-    lineHeight: 12
+    lineHeight: 14
   },
   footerExpandedArea: {
     borderTopWidth: 1,
@@ -35534,7 +35534,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   footerMiniButtonLabelCompact: {
-    fontSize: 9
+    fontSize: 11
   },
   footerMiniButtonSecondary: {
     minHeight: 30,
@@ -35556,7 +35556,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   footerMiniButtonSecondaryLabelCompact: {
-    fontSize: 9
+    fontSize: 11
   },
   legalFooterBand: {
     borderRadius: 8,
@@ -35641,7 +35641,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22"
   },
   issueChipMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -35667,7 +35667,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   issueLensText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 19
   },
@@ -35731,7 +35731,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   issueStepCheckText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "900"
   },
@@ -35778,7 +35778,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   issueSupportButtonMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -35815,8 +35815,8 @@ const styles = StyleSheet.create({
     gap: 3
   },
   sectionFlowSummaryCompact: {
-    fontSize: 9,
-    lineHeight: 11
+    fontSize: 11,
+    lineHeight: 14
   },
   issueCalloutActions: {
     flexDirection: "row",
@@ -35856,7 +35856,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   playSummary: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 14,
     lineHeight: 21
   },
@@ -35904,7 +35904,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   playCardMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -35914,7 +35914,7 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   playCardSummary: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 19
   },
@@ -35953,7 +35953,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   playStepCheckText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     fontWeight: "900"
   },
@@ -36045,7 +36045,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   communitySafetyText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "700"
@@ -36110,10 +36110,10 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   communityChatMetaVerified: {
-    color: "rgba(13,31,34,0.6)"
+    color: "#24384A"
   },
   communityChatMetaUser: {
-    color: "rgba(13,31,34,0.6)"
+    color: "#24384A"
   },
   communityChatActions: {
     flexDirection: "row",
@@ -36168,7 +36168,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   communityMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -36191,13 +36191,13 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   communityBadgeTextVerified: {
-    color: "#0D1F22"
+    color: "#FFFFFF"
   },
   communityBadgeTextUser: {
     color: "#0A5C58"
   },
   communityText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 14,
     lineHeight: 21
   },
@@ -36273,7 +36273,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69"
   },
   privateRoomMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 15,
     fontWeight: "700"
@@ -36306,7 +36306,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   privateRoomThreadMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700"
@@ -36372,7 +36372,7 @@ const styles = StyleSheet.create({
     color: "rgba(13,31,34,0.82)"
   },
   privateRoomMessageMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "700"
@@ -36401,12 +36401,12 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   searchCardMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "700"
   },
   searchCardDetail: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 14,
     lineHeight: 20
   },
@@ -36440,7 +36440,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   searchGroupMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -36448,7 +36448,7 @@ const styles = StyleSheet.create({
     gap: 10
   },
   searchEmptyText: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 14,
     lineHeight: 20
   },
@@ -36473,7 +36473,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   searchStarterText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 19
   },
@@ -36517,7 +36517,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   recommendDetail: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 16
   },
@@ -36550,7 +36550,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   nearbyChipMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -36566,7 +36566,7 @@ const styles = StyleSheet.create({
   },
   helpCategory: {
     color: "#2E5C8A",
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: "900",
     textTransform: "uppercase"
   },
@@ -36576,7 +36576,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   helpAudience: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     fontWeight: "700"
   },
@@ -36586,7 +36586,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   helpDescription: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 14
   },
@@ -36748,7 +36748,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   frontFeatureMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 15
   },
@@ -36854,8 +36854,8 @@ const styles = StyleSheet.create({
     gap: 2
   },
   heroArtifactEyebrow: {
-    color: "rgba(13,31,34,0.65)",
-    fontSize: 9,
+    color: "#24384A",
+    fontSize: 11,
     fontWeight: "800",
     textTransform: "uppercase",
     letterSpacing: 0
@@ -36868,7 +36868,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   heroArtifactMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 14
   },
@@ -36903,20 +36903,20 @@ const styles = StyleSheet.create({
   },
   heroArtifactTileMarkText: {
     color: "#0D1F22",
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: "900",
     letterSpacing: 0
   },
   heroArtifactTileLabel: {
     color: "#0D1F22",
-    fontSize: 8,
+    fontSize: 10,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0
   },
   heroArtifactTileText: {
-    color: "rgba(13,31,34,0.6)",
-    fontSize: 9,
+    color: "#24384A",
+    fontSize: 11,
     lineHeight: 13
   },
   heroArtifactFooter: {
@@ -36925,8 +36925,8 @@ const styles = StyleSheet.create({
     paddingTop: 6
   },
   heroArtifactFooterText: {
-    color: "rgba(13,31,34,0.65)",
-    fontSize: 9,
+    color: "#24384A",
+    fontSize: 11,
     fontWeight: "800",
     textTransform: "uppercase",
     letterSpacing: 0
@@ -37041,13 +37041,13 @@ const styles = StyleSheet.create({
   },
   topLanguageChipLabel: {
     color: "#B45309",
-    fontSize: 8,
-    lineHeight: 10,
+    fontSize: 10,
+    lineHeight: 13,
     fontWeight: "900",
     textTransform: "uppercase"
   },
   topLanguageChipLabelCompact: {
-    fontSize: 7,
+    fontSize: 10,
     lineHeight: 9
   },
   topLanguageChipValue: {
@@ -37058,7 +37058,7 @@ const styles = StyleSheet.create({
   },
   topLanguageChipValueCompact: {
     fontSize: 10,
-    lineHeight: 12
+    lineHeight: 14
   },
   sectionHeaderCompact: {
     flexDirection: "column",
@@ -37119,7 +37119,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   guidedStepMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 15
   },
@@ -37132,7 +37132,7 @@ const styles = StyleSheet.create({
     gap: 14
   },
   visionText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 19
   },
@@ -37166,7 +37166,7 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   visionGuidanceText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 17
   },
@@ -37399,7 +37399,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   aiStarterChipTextCompact: {
-    fontSize: 8
+    fontSize: 10
   },
   aiStarterChipTextDisabled: {
     color: "#7B8796"
@@ -37420,8 +37420,8 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   aiHelpChatMetaCompact: {
-    fontSize: 9,
-    lineHeight: 12
+    fontSize: 11,
+    lineHeight: 14
   },
   aiHelpFooterNoteCompact: {
     fontSize: 10,
@@ -37467,7 +37467,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   beaconXPillarMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 15
   },
@@ -37894,9 +37894,9 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   onboardingScrollHintMeta: {
-    color: "rgba(13,31,34,0.6)",
-    fontSize: 9,
-    lineHeight: 12
+    color: "#24384A",
+    fontSize: 11,
+    lineHeight: 14
   },
   onboardingTitle: {
     color: "#0D1F22",
@@ -37910,13 +37910,13 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   onboardingText: {
-    color: "rgba(13,31,34,0.6)",
-    fontSize: 9,
+    color: "#24384A",
+    fontSize: 11,
     lineHeight: 13
   },
   onboardingTextCompact: {
-    fontSize: 8,
-    lineHeight: 11
+    fontSize: 10,
+    lineHeight: 14
   },
   onboardingBlock: {
     gap: 6,
@@ -38017,7 +38017,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69"
   },
   launchNeedMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 14
   },
@@ -38039,7 +38039,7 @@ const styles = StyleSheet.create({
     marginBottom: 2
   },
   metricLabel: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "900",
     letterSpacing: 0,
@@ -38052,7 +38052,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   metricCaption: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 18
   },
@@ -38209,13 +38209,13 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   sectionSwitcherPanelCloseLabel: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 13,
     fontWeight: "900"
   },
   sectionSwitcherPanelMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
@@ -38290,7 +38290,7 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   tabLabel: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     fontWeight: "800",
     flexShrink: 1,
@@ -38338,7 +38338,7 @@ const styles = StyleSheet.create({
     gap: 10
   },
   accessSummaryLabel: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -38394,7 +38394,7 @@ const styles = StyleSheet.create({
   },
   adminAuthShieldSub: {
     fontSize: 11,
-    color: "rgba(196,163,90,0.65)",
+    color: "#8A5A00",
     lineHeight: 15
   },
   adminAuthDots: {
@@ -38417,7 +38417,7 @@ const styles = StyleSheet.create({
   adminAuthAttemptsLabel: {
     flex: 1,
     fontSize: 11,
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontWeight: "600"
   },
   adminLockoutBanner: {
@@ -38510,7 +38510,7 @@ const styles = StyleSheet.create({
   },
   adminAuthFooter: {
     fontSize: 10,
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     textAlign: "center",
     fontStyle: "italic",
     lineHeight: 15
@@ -38562,7 +38562,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   adminStatusPillTextActive: {
-    color: "#0D1F22"
+    color: "#FFFFFF"
   },
   adminStatsGrid: {
     flexDirection: "row",
@@ -38601,7 +38601,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   launchChecklistMarkText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     fontWeight: "900"
   },
@@ -38618,7 +38618,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   launchChecklistNote: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 17
   },
@@ -38653,7 +38653,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   adminQuickActionMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 16
   },
@@ -38669,13 +38669,13 @@ const styles = StyleSheet.create({
     gap: 4
   },
   adminReportMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 11,
     fontWeight: "800",
     textTransform: "uppercase"
   },
   adminReportText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 18
   },
@@ -38779,7 +38779,7 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   smallMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 20,
     fontWeight: "600",
@@ -38875,7 +38875,7 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   preferenceMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 13,
     fontWeight: "700"
   },
@@ -38930,7 +38930,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2
   },
   journalInsightText: {
-    color: "rgba(240,249,255,0.65)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "600"
@@ -38970,7 +38970,7 @@ const styles = StyleSheet.create({
   journalWordCountLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "rgba(13,31,34,0.65)"
+    color: "#24384A"
   },
   journalMoodRow: {
     flexDirection: "row",
@@ -38997,7 +38997,7 @@ const styles = StyleSheet.create({
   journalMoodLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "rgba(240,249,255,0.55)"
+    color: "#24384A"
   },
   journalMoodLabelActive: {
     color: "#B88900",
@@ -39059,7 +39059,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22"
   },
   dailyRoutineActionDetail: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700",
@@ -39118,8 +39118,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#E2E6EE",
     paddingHorizontal: 8,
     paddingVertical: 4,
-    fontSize: 9,
-    lineHeight: 12,
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "900",
     textTransform: "uppercase"
   },
@@ -39159,7 +39159,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmSituationMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700"
@@ -39210,7 +39210,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmSituationCardMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "800"
@@ -39246,7 +39246,7 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   calmVoiceText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700"
@@ -39280,7 +39280,7 @@ const styles = StyleSheet.create({
   },
   calmTeachingTheme: {
     color: "#0891B2",
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: "900",
     textTransform: "uppercase"
   },
@@ -39293,7 +39293,7 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmTeachingPractice: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 14,
     fontWeight: "700",
@@ -39301,9 +39301,9 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   calmTeachingRef: {
-    color: "rgba(13,31,34,0.65)",
-    fontSize: 9,
-    lineHeight: 12,
+    color: "#24384A",
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "800"
   },
   // ── Wisdom share ─────────────────────────────────────────────────────────
@@ -39365,7 +39365,7 @@ const styles = StyleSheet.create({
     color: "#0891B2"
   },
   calmLensChipMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -39389,7 +39389,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1
   },
   calmLensDetailText: {
-    color: "rgba(240,249,255,0.65)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 20,
     fontWeight: "600"
@@ -39452,7 +39452,7 @@ const styles = StyleSheet.create({
     color: "#274341"
   },
   calmPracticeMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
@@ -39515,7 +39515,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   routineMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 13,
     fontWeight: "600"
   },
@@ -39646,12 +39646,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1
   },
   historyNote: {
-    color: "rgba(240,249,255,0.6)",
+    color: "#24384A",
     fontSize: 14,
     lineHeight: 21
   },
   historyMeta: {
-    color: "rgba(240,249,255,0.42)",
+    color: "#465871",
     fontSize: 11,
     fontWeight: "800",
     textTransform: "uppercase",
@@ -39668,7 +39668,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   emptyText: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 14,
     lineHeight: 21
   },
@@ -39731,7 +39731,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0E6F69"
   },
   trendLabel: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "900"
   },
@@ -39743,7 +39743,7 @@ const styles = StyleSheet.create({
     gap: 4
   },
   signalLabel: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "900",
     textTransform: "uppercase"
@@ -39763,7 +39763,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   launchSummaryItem: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 19,
     fontWeight: "700"
@@ -39867,7 +39867,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   profileBannerMeta: {
-    color: "rgba(240,249,255,0.6)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -39913,7 +39913,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2
   },
   profileSummaryLabelCompact: {
-    fontSize: 7,
+    fontSize: 10,
     letterSpacing: 0.7
   },
   profileSummaryValue: {
@@ -39924,7 +39924,7 @@ const styles = StyleSheet.create({
   },
   profileSummaryValueCompact: {
     fontSize: 10,
-    lineHeight: 12
+    lineHeight: 14
   },
   accessFlowBand: {
     borderRadius: 12,
@@ -39962,7 +39962,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   accessFlowBandText: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 16,
     fontWeight: "700"
@@ -40024,14 +40024,14 @@ const styles = StyleSheet.create({
     lineHeight: 14
   },
   privateIntakeFlowMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
   },
   privateIntakeFlowMetaCompact: {
-    fontSize: 9,
-    lineHeight: 12
+    fontSize: 11,
+    lineHeight: 14
   },
   accessFlowPills: {
     flexDirection: "row",
@@ -40075,14 +40075,14 @@ const styles = StyleSheet.create({
     color: "#0A5C58"
   },
   accessFlowPillMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "700"
   },
   accessFlowPillMetaCompact: {
-    fontSize: 9,
-    lineHeight: 12
+    fontSize: 11,
+    lineHeight: 14
   },
   govHelpList: {
     gap: 12
@@ -40152,7 +40152,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   contactMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 12,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -40303,16 +40303,16 @@ const styles = StyleSheet.create({
     color: "#0D1F22"
   },
   identityMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 10,
     lineHeight: 14
   },
   identityMetaCompact: {
-    fontSize: 9,
-    lineHeight: 12
+    fontSize: 11,
+    lineHeight: 14
   },
   identityMetaActive: {
-    color: "rgba(13,31,34,0.6)"
+    color: "#24384A"
   },
   verificationStatusRow: {
     flexDirection: "row",
@@ -40397,7 +40397,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   careLensMeta: {
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontSize: 13,
     lineHeight: 20
   },
@@ -40454,7 +40454,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   languageButtonMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 11,
     lineHeight: 14,
     fontWeight: "700",
@@ -40490,7 +40490,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   segmentMeta: {
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "700"
@@ -40630,7 +40630,7 @@ const styles = StyleSheet.create({
   bottomNavLabel: {
     fontSize: 11,
     fontWeight: "800",
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     textAlign: "center",
     letterSpacing: 0.3
   },
@@ -40762,7 +40762,7 @@ const styles = StyleSheet.create({
   },
   dynamicHeroDate: {
     fontSize: 12,
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontWeight: "500",
     letterSpacing: 0.4,
   },
@@ -40781,7 +40781,7 @@ const styles = StyleSheet.create({
   },
   dynamicHeroGreeting: {
     fontSize: 13,
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     fontWeight: "500",
     marginBottom: 2,
     marginTop: 14,
@@ -40857,11 +40857,11 @@ const styles = StyleSheet.create({
   },
   welcomeExplainerCloseText: {
     fontSize: 16,
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
   },
   welcomeExplainerBody: {
     fontSize: 13,
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     lineHeight: 19,
     marginBottom: 12,
   },
@@ -40915,13 +40915,13 @@ const styles = StyleSheet.create({
   tabBannerSub: {
     fontSize: 13,
     lineHeight: 18,
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     marginTop: 2,
     letterSpacing: 0.2,
   },
   tabBannerDate: {
     fontSize: 11,
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     textAlign: "right",
   },
   // ── Community crisis notice ──
@@ -41061,7 +41061,7 @@ const styles = StyleSheet.create({
   vedicCardDate: {
     fontSize: 13,
     fontWeight: "700",
-    color: "rgba(13,31,34,0.6)"
+    color: "#24384A"
   },
   vedicRashiBadge: {
     alignItems: "center",
@@ -41106,12 +41106,12 @@ const styles = StyleSheet.create({
   },
   vedicVaraMantra: {
     fontSize: 11,
-    color: "#A78BFA",
+    color: "#5B21B6",
     fontStyle: "italic"
   },
   vedicVaraGuidance: {
     fontSize: 12,
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     lineHeight: 17
   },
   vedicChipsRow: {
@@ -41131,9 +41131,9 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   vedicChipLabel: {
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: "800",
-    color: "#A78BFA",
+    color: "#5B21B6",
     textTransform: "uppercase",
     letterSpacing: 0.8
   },
@@ -41144,8 +41144,8 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   vedicChipSub: {
-    fontSize: 9,
-    color: "rgba(13,31,34,0.65)",
+    fontSize: 11,
+    color: "#24384A",
     textAlign: "center"
   },
   vedicPredSection: {
@@ -41205,7 +41205,7 @@ const styles = StyleSheet.create({
   vedicLuckyToggleLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#A78BFA"
+    color: "#5B21B6"
   },
   vedicLuckyGrid: {
     flexDirection: "row",
@@ -41251,7 +41251,7 @@ const styles = StyleSheet.create({
   vedicMantraLabel: {
     fontSize: 10,
     fontWeight: "800",
-    color: "#A78BFA",
+    color: "#5B21B6",
     textTransform: "uppercase",
     letterSpacing: 1
   },
@@ -41269,7 +41269,7 @@ const styles = StyleSheet.create({
   },
   vedicDisclaimer: {
     fontSize: 10,
-    color: "rgba(13,31,34,0.65)",
+    color: "#24384A",
     textAlign: "center",
     fontStyle: "italic",
     lineHeight: 15
@@ -41308,7 +41308,7 @@ const styles = StyleSheet.create({
   },
   vedicSetupArrow: {
     fontSize: 22,
-    color: "#A78BFA",
+    color: "#5B21B6",
     fontWeight: "700"
   },
   birthChartPromptCard: {
@@ -41344,7 +41344,7 @@ const styles = StyleSheet.create({
   birthChartPromptHint: {
     fontSize: 10,
     lineHeight: 13,
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     fontWeight: "600"
   },
   birthChartPromptButtons: {
@@ -41353,7 +41353,7 @@ const styles = StyleSheet.create({
     gap: 6
   },
   birthChartPromptButton: {
-    backgroundColor: "#A78BFA",
+    backgroundColor: "#5B21B6",
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 7
@@ -41427,7 +41427,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   birthChartIntroButton: {
-    backgroundColor: "#A78BFA",
+    backgroundColor: "#5B21B6",
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8
@@ -41503,7 +41503,7 @@ const styles = StyleSheet.create({
   },
   birthChartExactChipLabel: {
     color: "#00B8A4",
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0.8
@@ -41582,7 +41582,7 @@ const styles = StyleSheet.create({
   },
   vedicDOBResultText: {
     fontSize: 13,
-    color: "rgba(13,31,34,0.6)",
+    color: "#24384A",
     lineHeight: 19
   },
   vedicDOBResultHighlight: {
@@ -41667,7 +41667,7 @@ const styles = StyleSheet.create({
   streakUnit: {
     fontSize: 10,
     fontWeight: "800",
-    color: "rgba(252,211,77,0.65)",
+    color: "#8A5A00",
     textTransform: "uppercase",
     letterSpacing: 1.2
   },
@@ -41678,7 +41678,7 @@ const styles = StyleSheet.create({
   streakTitle: {
     fontSize: 14,
     fontWeight: "900",
-    color: "#FEF3C7",
+    color: "#7C2D12",
     letterSpacing: 0.2
   },
   streakMilestone: {
@@ -41689,6 +41689,6 @@ const styles = StyleSheet.create({
   streakHint: {
     fontSize: 11,
     fontWeight: "600",
-    color: "rgba(252,211,77,0.5)"
+    color: "#8A5A00"
   }
 });

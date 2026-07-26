@@ -14,6 +14,10 @@ function mustNotInclude(marker, message) {
   assert(!source.includes(marker), message ?? `Forbidden low-visibility marker still present: ${marker}`);
 }
 
+function mustNotMatch(pattern, message) {
+  assert(!pattern.test(source), message ?? `Forbidden visibility pattern still present: ${pattern}`);
+}
+
 [
   'rgba(110,231,183,0.85)',
   'color: h.color',
@@ -23,6 +27,15 @@ function mustNotInclude(marker, message) {
   'color: "#000", fontSize: 10, fontWeight: "900" }>📞',
   'fontSize: 10, fontWeight: "800" }}>Portal ↗',
 ].forEach((marker) => mustNotInclude(marker));
+
+[
+  /color:\s*["']rgba\((?:13,31,34|226,232,240|240,249,255|241,245,249|196,163,90|252,211,77)[^)]*0\.[0-6][^)]*\)["']/g,
+  /fontSize:\s*[0-9]\b/g,
+  /#(?:64748B|818CF8|A78BFA|F472B6)/g,
+  /homeToneFeaturedMarkText:\s*\{\s*color:\s*["']#0D1F22["']/g,
+  /communityBadgeTextVerified:\s*\{\s*color:\s*["']#0D1F22["']/g,
+  /adminStatusPillTextActive:\s*\{\s*color:\s*["']#0D1F22["']/g,
+].forEach((pattern) => mustNotMatch(pattern));
 
 [
   'HIGH_CONTRAST_ACCENTS',
@@ -35,6 +48,9 @@ function mustNotInclude(marker, message) {
   'minWidth: 104',
   'minWidth: 112',
   'backgroundColor: "#FFFFFF", borderRadius: 9',
+  'color: "#3F4B5F", fontSize: 12',
+  'communityBadgeTextVerified: {\n    color: "#FFFFFF"',
+  'adminStatusPillTextActive: {\n    color: "#FFFFFF"',
 ].forEach((marker) => mustInclude(marker));
 
-console.log('Visibility regression passed: Help/Redress and directory cards avoid known low-contrast text, tiny portal labels, and black-on-dark call pills.');
+console.log('Visibility regression passed: app text avoids known low-contrast colors, 1-digit font sizes, tiny portal labels, and black-on-dark action/badge text.');
