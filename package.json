@@ -23,7 +23,8 @@
     "test:upgrades": "node scripts/app-upgrades-regression.mjs",
     "test:visibility": "node scripts/visibility-regression.mjs",
     "test:vedic": "node scripts/vedic-engine-regression.mjs",
-    "test:tone": "node scripts/tone-engine-regression.mjs"
+    "test:tone": "node scripts/tone-engine-regression.mjs",
+    "test:product-quality": "node scripts/product-quality-regression.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/playfair-display": "^0.4.2",

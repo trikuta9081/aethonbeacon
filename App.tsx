@@ -71,6 +71,12 @@ import {
   type RealtimeCommunityReactionEmoji,
   type RealtimeCommunityTypingEvent
 } from "./realtimeCommunity";
+import {
+  COUNSELLING_SAFETY_COPY,
+  REDRESS_CONTENT_STANDARD,
+  VEDIC_CALCULATION_STANDARD,
+  classifyCounsellingSafety
+} from "./product-quality";
 
 const APP_TEXT_WRAP_GUARD = {
   maxWidth: "100%" as const,
@@ -3454,7 +3460,7 @@ const URGENT_SAFETY_SIGNAL_PATTERN =
   /(emergency|unsafe|danger|dangerous|suicid|self[-\s]?harm|kill myself|hurt myself|end my life|end it all|don't want to live|don't want to be here|assault|assaulted|rape|sexual assault|being abused|abuse|abused|physical violence|violence|threat|threat to my life|being threatened|threatened|crisis|panic|112|911|999)/i;
 
 function isUrgentSafetySignal(text: string): boolean {
-  return URGENT_SAFETY_SIGNAL_PATTERN.test(text);
+  return classifyCounsellingSafety(text) === "immediate" || URGENT_SAFETY_SIGNAL_PATTERN.test(text);
 }
 
 function detectAIHelpRouteFromText(text: string): AIHelpRoute {
@@ -11316,14 +11322,10 @@ export default function App() {
     const orderedIds: TabId[] = [
       "today",
       "aihelp",
-      "guide",
-      "redress",
-      "search",
-      "journal",
-      // "focus" merged into "meditation" (see PRIMARY_NAV_TABS comment above)
-      "meditation",
       "vedic",
-      "settings"
+      "tones",
+      "community",
+      "redress"
     ];
     return orderedIds
       .map((id) => visibleTabs.find((tab) => tab.id === id))
@@ -21850,6 +21852,12 @@ function AIHelpSection({
       </View>
 
       <View style={[styles.aiHelpSummaryBand, compact && styles.aiHelpSummaryBandCompact]}>
+        <View style={[styles.aiHelpSummaryRow, { borderLeftWidth: 3, borderLeftColor: "#0E9488", paddingLeft: 10 }]}>
+          <Text style={styles.aiHelpSummaryLabel}>Scope and safety</Text>
+          <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
+            {COUNSELLING_SAFETY_COPY["supported-self-care"]}
+          </Text>
+        </View>
         <View style={styles.aiHelpSummaryRow}>
           <Text style={styles.aiHelpSummaryLabel}>Meaning</Text>
           <Text
@@ -25226,6 +25234,14 @@ function RedressSection({
         <Text style={styles.promptText}>
           Select the route that best matches your situation. Each route identifies the appropriate first office, recommended initial action, and formal escalation path.
         </Text>
+        <View style={{ marginBottom: 14, borderRadius: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
+          <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>
+            Verified guidance standard · {REDRESS_CONTENT_STANDARD.jurisdiction}
+          </Text>
+          <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
+            Reviewed {REDRESS_CONTENT_STANDARD.reviewedOn}. {REDRESS_CONTENT_STANDARD.sourceRule} {REDRESS_CONTENT_STANDARD.outcomeNotice}
+          </Text>
+        </View>
 
         {/* ── IMMEDIATE SAFETY ACTIONS ── */}
         {/* Consolidated with Help and Redress, minus anything this
@@ -28331,6 +28347,9 @@ function BirthChartSection({
               </Text>
               <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
                 Reorganised into calculation → interpretation → remedy. Every prediction is anchored only to Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara. No Sun-chart prediction is shown.
+              </Text>
+              <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 8 }}>
+                Method: {VEDIC_CALCULATION_STANDARD.zodiac}; {VEDIC_CALCULATION_STANDARD.ayanamsa}; prediction anchor: {VEDIC_CALCULATION_STANDARD.predictionAnchor}. {VEDIC_CALCULATION_STANDARD.limitations}
               </Text>
             </View>
             <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: "rgba(99,222,208,0.12)", borderWidth: 1, borderColor: "rgba(99,222,208,0.5)", alignItems: "center", justifyContent: "center", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 14, transform: [{ perspective: 900 }, { rotateZ: "-4deg" }] }}>
@@ -32070,6 +32089,16 @@ function CounselingChatModal({
           <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
             <Text style={{ color: "#1F2937", fontSize: 13 }}>Skip →</Text>
           </Pressable>
+        </View>
+
+        <View
+          accessibilityRole="summary"
+          style={{ marginHorizontal: 20, marginTop: 12, borderRadius: 12, padding: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
+        >
+          <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>Scope and safety</Text>
+          <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 3 }}>
+            {COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]}
+          </Text>
         </View>
 
         {/* Chat messages */}
