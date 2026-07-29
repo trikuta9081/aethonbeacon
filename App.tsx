@@ -1075,7 +1075,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
   },
   {
     id: "reset-gamma",
-    label: "Brain reset 40",
+    label: "Gamma focus 40",
     category: "Focus pulse",
     pattern: "40 Hz pulse cue for a short reset window.",
     use: "Best for a brief alert reset, not for long listening.",
@@ -2318,13 +2318,13 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   // and it still resolves to the merged Meditation screen).
   { id: "meditation", label: "Meditation", mark: "🪷", icon: "flower" },
   // ── Ordered block: chart first, then the surfaces that read from it ──
-  // Birth Chart → Messages → Tones → Help & Redress. Kept adjacent so the
+  // Birth Chart → Messages → Tones → Help and Redress. Kept adjacent so the
   // chart, the people you talk to about it, the tones it prescribes, and the
   // redress routes it may surface all sit together in the nav.
   { id: "vedic", label: "Birth Chart", mark: "🪐", icon: "planet" },
   { id: "community", label: "Messages", mark: "💬", icon: "chatbubbles" },
   { id: "tones", label: "Tones", mark: "🎵", icon: "musical-notes" },
-  { id: "redress", label: "Help & Redress", mark: "🛡️", icon: "shield-checkmark" },
+  { id: "redress", label: "Help and Redress", mark: "🛡️", icon: "shield-checkmark" },
   { id: "insights", label: "Patterns", mark: "📊", icon: "stats-chart" },
   { id: "search", label: "Explore", mark: "🔍", icon: "search" },
   { id: "play", label: "Practice", mark: "🎯", icon: "footsteps" },
@@ -5046,9 +5046,9 @@ const englishUiCopy: UiCopy = {
   openCommunity: "Open Community",
   seeRooms: "See rooms",
   unlockChat: "Unlock chat",
-  quickExitEyebrow: "Quick exit",
-  quickExitTitle: "SOS, complaint, or help",
-  quickExitPrompt: "Use this strip for urgent help, a complaint route, or a faster hand-off than the main intake.",
+  quickExitEyebrow: "Help and Redress",
+  quickExitTitle: "Emergency and formal support",
+  quickExitPrompt: "Use this section for emergency assistance, complaint routes, official escalation, or guided support.",
   sos: "SOS",
   complaint: "Complaint",
   help: "Help",
@@ -8700,7 +8700,7 @@ function nextAstroChatReply(question: string, ctx: {
       lines.push(`Go gently here: "${moon48Verdict.careful.label}" is at ${moon48Verdict.careful.score}/100 — ${moon48Verdict.careful.scoreReason}`);
     }
   } else {
-    lines.push(`Add your exact birth time and place for a calculated 48-dimension reading on this question — for now this leans on Rashi and Dasha only.`);
+    lines.push(`Add your exact birth time and place for a calculated multidimensional reading on this question. Until then, this guidance is based on Rashi and Dasha.`);
   }
 
   // 2. Rashi lens — supporting context now, not the headline
@@ -17695,7 +17695,7 @@ function isTrustedExternalUrl(url: string) {
               <View style={styles.homeVisionIntroCard}>
           <Text style={styles.homeVisionEyebrow}>What Aethon Beacon does</Text>
           <Text style={styles.homeVisionTitle}>Guidance, protection, redress, calm sound, community, and Moon-chart Vedic insight in one place.</Text>
-          <Text style={styles.homeVisionText}>Tell the app what is happening. It routes you to the right help path, reads guidance aloud, stores private notes, opens emergency/redress channels, supports testers, runs the 48-dimension counselling engine, and gives calculated Moon-chart predictions with remedies.</Text>
+          <Text style={styles.homeVisionText}>Describe what is happening to receive a suitable support route, spoken guidance, private notes, emergency and redress options, multidimensional counselling insight, and calculated Moon-chart guidance with remedies.</Text>
           <View style={styles.homeVisionPillRow}>
             {["Help + SOS", "Calm sounds", "Community", "Daily report", "Moon chart"].map((label) => (
               <View key={label} style={styles.homeVisionPill}>
@@ -17886,8 +17886,8 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: "rgba(252,211,77,0.1)", alignItems: "center", justifyContent: "center" }}>
                   <Text style={{ fontSize: 23 }}>🪐</Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 7, marginBottom: 3 }}>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 7, marginBottom: 3 }}>
                     <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
                       Premium Vedic engine
                     </Text>
@@ -18194,9 +18194,9 @@ function isTrustedExternalUrl(url: string) {
                 }}>
                   <Text style={{ fontSize: 20, marginRight: 10, marginTop: 1 }}>💡</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 0.6, marginBottom: 3 }}>DID YOU KNOW?</Text>
+                    <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 0.6, marginBottom: 3 }}>AVAILABLE FEATURES</Text>
                     <Text style={{ color: "#465871", fontSize: 12, lineHeight: 18 }}>
-                      Beyond check-ins, Aethon has guided practices 🎯, breath-and-body calming 🌿, healing sound tones 🎵 and guided meditations 🪷. Most people miss these. Tap Pages to explore.
+                      Aethon includes guided practices, breathing and body-calming exercises, therapeutic sound programmes, and guided meditation. Open Pages to review every feature.
                     </Text>
                   </View>
                   <Pressable
@@ -18216,9 +18216,9 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#DEE7F2", borderRadius: 16, borderWidth: 1, borderColor: "#1A3050", padding: 14, flexDirection: "row", alignItems: "flex-start" }}>
                   <Text style={{ fontSize: 20, marginRight: 10, marginTop: 2 }}>🔔</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700", marginBottom: 4 }}>Never miss a check-in</Text>
+                    <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700", marginBottom: 4 }}>Schedule a daily check-in</Text>
                     <Text style={{ color: "#465871", fontSize: 12, lineHeight: 18, marginBottom: 10 }}>
-                      A daily reminder keeps your streak alive and your clarity scores meaningful. Takes 5 seconds to set up.
+                      A daily reminder supports consistent check-ins and more meaningful clarity trends.
                     </Text>
                     <Pressable
                       onPress={() => handleTabPress("settings" as TabId)}
@@ -18229,55 +18229,6 @@ function isTrustedExternalUrl(url: string) {
                   </View>
                 </View>
               )}
-
-              {/* ── Urgent Help & Redress — always visible front page card ── */}
-              <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 16, overflow: "hidden", borderWidth: 1, borderColor: "rgba(239,68,68,0.35)" }}>
-                <View style={{ backgroundColor: "#FEE2E2", paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                    <Text style={{ fontSize: 16 }}>🛡️</Text>
-                    <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Help & Redress — Always Here</Text>
-                  </View>
-                  <Text style={{ color: "#465871", fontSize: 12, lineHeight: 17, marginBottom: 10 }}>
-                    {selectedIssueGuide.id !== "general"
-                      ? `Active: ${selectedIssueGuide.label} — official routes, rights, and escalation are one tap away.`
-                      : "Emergency call, counselling, and official complaint routes are one tap away."}
-                  </Text>
-                  <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => void handleEmergencyCall()}
-                      style={({ pressed }) => ({ backgroundColor: pressed ? "#7F1D1D" : "#991B1B", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
-                    >
-                      <Text style={{ fontSize: 14 }}>🆘</Text>
-                      <Text style={{ color: "#FEE2E2", fontSize: 12, fontWeight: "800" }}>Emergency</Text>
-                    </Pressable>
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => setShowCounselingChat(true)}
-                      style={({ pressed }) => ({ backgroundColor: pressed ? "#C4D5E9" : "#DEE7F2", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
-                    >
-                      <Text style={{ fontSize: 14 }}>💬</Text>
-                      <Text style={{ color: "#0079B8", fontSize: 12, fontWeight: "800" }}>Counselling</Text>
-                    </Pressable>
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => handleTabPress("redress")}
-                      style={({ pressed }) => ({ backgroundColor: pressed ? "#D2C8E4" : "#E6E0F0", borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 6 })}
-                    >
-                      <Text style={{ fontSize: 14 }}>⚖️</Text>
-                      <Text style={{ color: "#5700B8", fontSize: 12, fontWeight: "800" }}>File Complaint</Text>
-                    </Pressable>
-                  </View>
-                </View>
-                <View style={{ backgroundColor: "#EEE2E2", paddingHorizontal: 16, paddingVertical: 8, flexDirection: "row", gap: 6, alignItems: "center" }}>
-                  <Text style={{ color: "#EF4444", fontSize: 12, fontWeight: "900", letterSpacing: 0.8 }}>QUICK LINKS →</Text>
-                  <Pressable onPress={() => handleTabPress("redress")} style={{ flex: 1 }}>
-                    <Text style={{ color: "#3F4B5F", fontSize: 12 }} numberOfLines={1}>
-                      Rights · Escalation · Safe channels · Official routes
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
 
               <TodaySection
                 clarityScore={clarityScore}
@@ -19103,7 +19054,7 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#E9E3ED" }]}>
                 <Text style={styles.tabBannerEmoji}>🛡️</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Help & Redress</Text>
+                  <Text style={styles.tabBannerTitle}>Help and Redress</Text>
                   <Text style={styles.tabBannerSub}>Official routes · Rights · Escalation · Safe channels</Text>
                 </View>
               </View>
@@ -19759,14 +19710,14 @@ function TodaySection({
       <View style={styles.panel}>
         <View style={styles.homeSafetyStrip}>
           <View style={styles.sectionHeader}>
-            <View>
-              <Text style={[styles.eyebrow, { color: "#B82200" }]}>Help & Redress · Quick Exit</Text>
-              <Text style={[styles.sectionTitleSmall, { color: "#6B1E17" }]}>One safety hub: emergency, legal aid, complaint route, evidence</Text>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={[styles.eyebrow, { color: "#B82200" }]}>Help and Redress</Text>
+              <Text style={[styles.sectionTitleSmall, { color: "#6B1E17" }]}>Emergency assistance, legal aid, complaint routes, and evidence guidance</Text>
             </View>
             <Text style={styles.smallMeta}>Top priority</Text>
           </View>
           <Text style={[styles.promptText, { color: "#6B1E17", fontWeight: "900" }]} numberOfLines={4}>
-            No overlap, no duplicate hunt: call 112 for immediate danger, open Help & Redress for the exact route, institution type, portals, evidence checklist, templates, timelines, and read-aloud guidance.
+            Call 112 in immediate danger. Open this section for institution-specific complaint routes, official portals, evidence checklists, templates, escalation timelines, and spoken guidance.
           </Text>
           <View style={styles.homeRedressInfoGrid}>
             {[
@@ -19803,8 +19754,8 @@ function TodaySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={styles.footerQuickActionLabel}>Open Help & Redress</Text>
-              <Text style={styles.footerQuickActionMeta}>Routes, portals, templates</Text>
+                <Text style={styles.footerQuickActionLabel}>Open Help and Redress</Text>
+                <Text style={styles.footerQuickActionMeta}>View the complete support page</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -19828,133 +19779,31 @@ function TodaySection({
                 style={[styles.sectionTitleSmall, compact && styles.sectionTitleSmallCompact]}
                 numberOfLines={compact ? 4 : 3}
               >
-                {frontToneTotal}+ real sound tools: binaural, solfeggio, nature, isochronic, bilateral reset
+                Curated sound programmes for relaxation, focus, sleep, and emotional regulation
               </Text>
             </View>
-            <View style={styles.homeToneHeaderActions}>
-              <Pressable
-                accessibilityRole="button"
-                onPress={openBrainResetTone}
-                style={({ pressed }) => [styles.homeToneBandButtonSecondary, pressed && styles.pressed]}
-              >
-                <Text style={styles.homeToneBandButtonSecondaryLabel}>Brain reset 40</Text>
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityState={{ selected: mindRestLoopEnabled }}
-                onPress={() => setMindRestLoopEnabled((value) => !value)}
-                style={({ pressed }) => [
-                  styles.homeToneBandButtonSecondary,
-                  mindRestLoopEnabled && styles.homeToneBandButtonSecondaryActive,
-                  pressed && styles.pressed
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.homeToneBandButtonSecondaryLabel,
-                    mindRestLoopEnabled && styles.homeToneBandButtonSecondaryLabelActive
-                  ]}
-                >
-                  {mindRestLoopEnabled ? "Stop loop" : "Loop tones"}
-                  </Text>
-                </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => onOpenTab("tones")}
-                style={({ pressed }) => [styles.homeToneBandButtonSecondary, pressed && styles.pressed]}
-              >
-                <Text style={styles.homeToneBandButtonSecondaryLabel}>Open tones</Text>
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                onPress={onOpenCalm}
-                style={({ pressed }) => [styles.homeToneBandButton, pressed && styles.pressed]}
-              >
-                <Text style={styles.homeToneBandButtonLabel}>Open Reset</Text>
-              </Pressable>
-            </View>
           </View>
-          <Text style={[styles.homeToneBandIntro, compact && styles.homeToneBandIntroCompact]} numberOfLines={5}>
-            This is not one old beep. It contains {frontToneTotal} tone modes across {frontToneCategorySummaries.length} libraries, with safe-volume cues, loop timer, presets, brain-reset 40 Hz, nature ambience, binaural beats, isochronic pulses, and bilateral/EMDR-style reset options.
+          <Text style={[styles.homeToneBandIntro, compact && styles.homeToneBandIntroCompact]} numberOfLines={3}>
+            Access {frontToneTotal} organised sound modes with safe-volume guidance, session timers, nature ambience, binaural beats, isochronic pulses, and bilateral audio options.
           </Text>
-          <View style={styles.homeToneLibraryPreviewGrid}>
-            {frontToneCategorySummaries.map((category) => (
-              <View key={category.id} style={[styles.homeToneLibraryPreviewCard, { borderColor: category.color }]}>
-                <Text style={[styles.homeToneLibraryPreviewTitle, { color: category.color }]}>{category.label}</Text>
-                <Text style={styles.homeToneLibraryPreviewMeta}>{category.count} sounds · {category.desc}</Text>
-                <Text style={styles.homeToneLibraryPreviewExamples} numberOfLines={2}>{category.examples}</Text>
-              </View>
-            ))}
-          </View>
-          {/* Session timer display */}
-          {mindRestLoopEnabled && (
-            <View style={styles.toneSessionRow}>
-              <Text style={styles.toneSessionClock}>
-                {String(Math.floor(mindRestSessionSeconds / 60)).padStart(2, "0")}:{String(mindRestSessionSeconds % 60).padStart(2, "0")}
-              </Text>
-              {mindRestPresetMinutes > 0 && (
-                <View style={styles.toneProgressTrack}>
-                  <View style={[styles.toneProgressFill, { width: `${Math.min(100, Math.round((mindRestSessionSeconds / (mindRestPresetMinutes * 60)) * 100))}%` as unknown as number }]} />
-                </View>
-              )}
-            </View>
-          )}
-          {/* Preset duration chips */}
-          <View style={styles.tonePresetRow}>
-            {([0, 5, 10, 20, 30] as const).map((min) => (
-              <Pressable
-                key={min}
-                accessibilityRole="button"
-                accessibilityLabel={min === 0 ? "Unlimited" : `${min} minutes`}
-                accessibilityState={{ selected: mindRestPresetMinutes === min }}
-                onPress={() => setMindRestPresetMinutes(min)}
-                style={[styles.tonePresetChip, mindRestPresetMinutes === min && styles.tonePresetChipActive]}
-              >
-                <Text style={[styles.tonePresetChipLabel, mindRestPresetMinutes === min && styles.tonePresetChipLabelActive]}>
-                  {min === 0 ? "∞" : `${min}m`}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text style={[styles.homeToneLoopStatus, compact && styles.homeToneLoopStatusCompact]} numberOfLines={2}>
-            {mindRestLoopEnabled
-              ? `Playing ${selectedRelaxingTone.label}${mindRestPresetMinutes > 0 ? ` · ${mindRestPresetMinutes}m session` : " · ∞"} · tap Stop to end.`
-              : "Tap Loop tones to start a continuous calm session."}
-          </Text>
-          <View style={styles.homeToneQuickStrip}>
-            <View style={styles.homeToneQuickCopy}>
-              <Text style={styles.homeToneQuickTitle} numberOfLines={1}>
-                {selectedRelaxingTone.mark} {selectedRelaxingTone.label}
-              </Text>
-              <Text style={styles.homeToneQuickMeta} numberOfLines={1}>
-                {selectedRelaxingTone.category} / {selectedRelaxingTone.pattern}
-              </Text>
-            </View>
-            <Text style={styles.homeToneQuickNote} numberOfLines={3}>
-              Shows actual category, pattern, timer, and loop. Open Tones for full 40+ sound options.
-            </Text>
+          <View style={styles.homeOverviewActions}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open the complete Calm Sound page"
+              onPress={() => onOpenTab("tones")}
+              style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
+            >
+              <Text style={styles.homeOverviewButtonLabel}>Open Calm Sound</Text>
+            </Pressable>
           </View>
         </View>
 {/* Daily Loop section removed */}
         {/* Beacon Guide / Vision card removed */}
         <View style={[styles.homeOverviewGrid, compact && styles.homeOverviewGridCompact]}>
           <View style={[styles.homeOverviewCard, styles.homeOverviewCardCommunity, compact && styles.homeOverviewCardCompact]}>
-            <Text style={styles.homeOverviewEyebrow}>Community / Messages</Text>
-            <Text style={styles.homeOverviewTitle}>Feed, private support rooms, reactions, reporting, and safe verified chat</Text>
-            <Text style={styles.homeOverviewText}>Inside: public community notes, named private rooms, mentor/moderator style replies, realtime sync when available, offline saved posts, emoji reactions, saved messages, report/hide controls, verification-gated rooms, and safety blocking for harmful content.</Text>
-            <View style={styles.homeCommunityFeatureGrid}>
-              {[
-                { label: "Feed", text: `${communityVerifiedCount} verified voices visible` },
-                { label: "Rooms", text: `${privateSpaceCount} private support rooms` },
-                { label: "Safety", text: "Report · hide · harmful-content lock" },
-                { label: "Sync", text: canUseCommunityFeatures ? "Live / offline fallback ready" : "Verify to unlock full chat" }
-              ].map((item) => (
-                <View key={item.label} style={styles.homeCommunityFeatureCard}>
-                  <Text style={styles.homeCommunityFeatureTitle}>{item.label}</Text>
-                  <Text style={styles.homeCommunityFeatureText}>{item.text}</Text>
-                </View>
-              ))}
-            </View>
+            <Text style={styles.homeOverviewEyebrow}>Community and Messages</Text>
+            <Text style={styles.homeOverviewTitle}>Moderated community support and private conversations</Text>
+            <Text style={styles.homeOverviewText}>Access community posts, verified private rooms, saved messages, reactions, moderation controls, reporting tools, and protected conversation features.</Text>
             <View style={styles.homeOverviewActions}>
               <Pressable
                 accessibilityRole="button"
@@ -19977,7 +19826,7 @@ function TodaySection({
         </View>
         <View style={[styles.homeReportBand, compact && styles.homeReportBandCompact]}>
           <View style={styles.sectionHeader}>
-            <View>
+            <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={styles.eyebrow}>{uiCopy.reportEyebrow}</Text>
               <Text style={styles.sectionTitleSmall}>{uiCopy.reportTitle}</Text>
             </View>
@@ -20034,6 +19883,7 @@ function TodaySection({
             </Pressable>
           </View>
         </View>
+        {Platform.OS === "web" && (
         <View
           style={{
             marginBottom: 14,
@@ -20058,13 +19908,13 @@ function TodaySection({
               marginBottom: 6
             }}
           >
-            Current tester page · July 15 update
+            Become an Aethon Beacon tester
           </Text>
           <Text style={{ color: "#0D1F22", fontSize: compact ? 19 : 23, fontWeight: "900", marginBottom: 8 }}>
-            Android + iPhone testing link is live
+            Join Android or iPhone testing
           </Text>
           <Text style={{ color: "#265692", fontSize: compact ? 13 : 15, lineHeight: compact ? 19 : 22, marginBottom: 14 }}>
-            If you came here from WhatsApp, email, or an older preview, open the fresh tester page below. It has Android closed testing, iPhone TestFlight, and feedback instructions.
+            New testers can open the enrolment page for Android closed testing, iPhone TestFlight access, and feedback instructions.
           </Text>
           <View style={{ flexDirection: compact ? "column" : "row", gap: 10 }}>
             <Pressable
@@ -20085,7 +19935,7 @@ function TodaySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={{ color: "#062014", fontWeight: "900", fontSize: 14 }}>Open current tester page</Text>
+              <Text style={{ color: "#062014", fontWeight: "900", fontSize: 14 }}>Open tester enrolment</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -20109,6 +19959,7 @@ function TodaySection({
             </Pressable>
           </View>
         </View>
+        )}
       </View>
     </View>
   );
@@ -21136,7 +20987,7 @@ const TONE_CATEGORIES = [
   { id: "solfege", label: "🔔 Solfège · Sacred Hz", color: "#B45309", desc: "Ancient sacred frequencies for emotional + spiritual healing.", ids: ["aum-136","sol-396","sol-417","sol-432","sol-528","sol-639","sol-741","sol-852","sol-963"] },
   { id: "iso", label: "🎵 Isochronic Pulses", color: "#B85300", desc: "Single-tone rhythmic pulses — effective without headphones.", ids: ["iso-1","iso-2","iso-3","iso-4","iso-6","iso-8","iso-10"] },
   { id: "bilateral", label: "🔄 Bilateral · EMDR", color: "#B80064", desc: "Left-right audio tapping — EMDR-style nervous system reset.", ids: ["bilateral-soft-1","bilateral-soft-2","bilateral-soft-3"] },
-  { id: "special", label: "⚡ Special & Reset", color: "#0052B8", desc: "Deep sleep, brain reset, silence protocol, gamma states.", ids: ["reset-quiet","reset-gamma"] },
+  { id: "special", label: "⚡ Specialised Sessions", color: "#0052B8", desc: "Deep sleep, quiet sessions, and gamma-frequency programmes.", ids: ["reset-quiet","reset-gamma"] },
 ];
 
 function ToneLibrarySection({
@@ -25379,17 +25230,17 @@ function RedressSection({
       <View style={[styles.panel, !isWide && { flex: 0 }]}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Help & Redress</Text>
+            <Text style={styles.eyebrow}>Help and Redress</Text>
             <Text style={styles.sectionTitle}>Choose your complaint route</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
-          Select the route that fits your situation. Each route gives you a specific first office, exact first action, and escalation path — no guessing.
+          Select the route that best matches your situation. Each route identifies the appropriate first office, recommended initial action, and formal escalation path.
         </Text>
 
-        {/* ── QUICK EXIT ── */}
-        {/* Folded in from the Home tab's quick-exit strip, minus anything this
+        {/* ── IMMEDIATE SAFETY ACTIONS ── */}
+        {/* Consolidated with Help and Redress, minus anything this
             tab already covers (the numbers strip below and the route chips
             are the "complaint"/"help" half of that strip). Kept to the two
             actions that add something new here: an instant SOS call, and a
@@ -25397,8 +25248,8 @@ function RedressSection({
             heard rather than read under stress. */}
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FBEAE7", borderWidth: 1, borderColor: "rgba(239,68,68,0.35)", padding: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <Text style={{ color: "#B82200", fontSize: 12, fontWeight: "800" }}>{l("Quick exit")}</Text>
-            <Text style={{ color: "#8A5147", fontSize: 12 }}>Fast route</Text>
+            <Text style={{ color: "#B82200", fontSize: 12, fontWeight: "800" }}>{l("Immediate safety actions")}</Text>
+            <Text style={{ color: "#8A5147", fontSize: 12 }}>Priority access</Text>
           </View>
           <View style={{ flexDirection: "row", gap: 8 }}>
             <Pressable
@@ -27803,9 +27654,9 @@ function VedicDailyCard({
         })}
       </View>
 
-      {/* 48-dimension Moon chart snapshot */}
+      {/* Multidimensional Moon chart snapshot */}
       <View style={styles.vedicPredSection}>
-        <Text style={styles.vedicPredTitle}>48-Dimension Moon Chart Engine · Explainable Score {moonChart48Summary.average}/100</Text>
+        <Text style={styles.vedicPredTitle}>Multidimensional Moon Chart Engine · Explainable Score {moonChart48Summary.average}/100</Text>
         <Text style={[styles.vedicDisclaimer, { marginTop: 0, marginBottom: 8 }]}>Calculated from Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara only — lunar-chart prediction only.</Text>
         {moonChart48Summary.top.slice(0, 4).map((item) => (
           <View key={item.id} style={{ borderRadius: 14, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}44`, padding: 11, gap: 6 }}>
@@ -28485,7 +28336,7 @@ function BirthChartSection({
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                🌙 48-Dimension Vedic Moon Chart Engine
+                🌙 Multidimensional Vedic Moon Chart Engine
               </Text>
               <Text style={{ color: "#325C86", fontSize: 19, fontWeight: "900", marginTop: 3 }}>
                 Explainable lunar score {moonChart48Summary.average}/100
@@ -28495,8 +28346,8 @@ function BirthChartSection({
               </Text>
             </View>
             <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: "rgba(99,222,208,0.12)", borderWidth: 1, borderColor: "rgba(99,222,208,0.5)", alignItems: "center", justifyContent: "center", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 14, transform: [{ perspective: 900 }, { rotateZ: "-4deg" }] }}>
-              <Text style={{ color: "#0E9488", fontSize: 24, fontWeight: "900" }}>48</Text>
-              <Text style={{ color: "#00A8B8", fontSize: 12, fontWeight: "900", letterSpacing: 1 }}>DIM</Text>
+              <Text style={{ color: "#0E9488", fontSize: 24, fontWeight: "900" }}>MD</Text>
+              <Text style={{ color: "#00A8B8", fontSize: 12, fontWeight: "900", letterSpacing: 1 }}>INSIGHT</Text>
             </View>
           </View>
 
@@ -28608,7 +28459,7 @@ function BirthChartSection({
           </View>
 
           {/* D1 Rashi chart wheel -- Lagna-anchored birth chart, distinct from
-              the Moon-anchored radial map in the 48-Dimension engine above. */}
+              the Moon-anchored radial map in the multidimensional engine above. */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 10 }}>
             <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>D1 Rashi Chart — Lagna and all 9 grahas</Text>
             {renderVedicChartWheel(rashiWheelOccupants, "#6D28D9", "RASHI")}
@@ -28772,8 +28623,8 @@ function BirthChartSection({
       <View style={styles.birthChartFactGrid}>
         {[
           "Janma Rashi (Moon sign) prediction anchor",
-          "48-dimension Moon chart engine",
-          "48 calculated predictions + remedies",
+          "Multidimensional Moon-chart engine",
+          "Calculated predictions and remedies",
           "Lagna / Ascendant from birth time",
           "Janma Nakshatra · deity · gana · symbol",
           "Vimshottari Mahadasha current period",
@@ -30132,7 +29983,7 @@ function OnboardingOverlay({
                   Set up your profile
                 </Text>
                 <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800", marginTop: 2 }}>
-                  A few quick choices tailor everything
+                  Complete a brief profile for personalised guidance
                 </Text>
                 <Text style={{ color: "#24384A", fontSize: 12, marginTop: 3, lineHeight: 17 }}>
                   Your data stays on this device. Nothing is shared unless you explicitly share it.
@@ -30161,7 +30012,7 @@ function OnboardingOverlay({
             }}
           >
             <Text style={styles.eyebrow}>Exit review</Text>
-            <Text style={styles.settingsTitle}>Quick exit rating</Text>
+            <Text style={styles.settingsTitle}>Emergency support rating</Text>
             <Text style={styles.promptText}>
               Leave one rating. A short note is optional and helps us smooth the next visit.
             </Text>
@@ -30558,8 +30409,8 @@ function PrivateIntakeOverlay({
 // ── Persistent Bottom Navigation Bar ──────────────────────────────────────────
 // 5 primary tabs always visible.
 // Primary nav: Today / Journal / Meditation / Help / Profile
-// Help & Redress is intentionally surfaced here (not buried in Pages) because
-// safety, SOS, complaint route, and Quick Exit must be one tap away and visibly
+// Help and Redress is intentionally surfaced here (not buried in Pages) because
+// safety, SOS, complaint route, and immediate support must be one tap away and visibly
 // above the lower-priority "other/general" surfaces. Patterns, Community,
 // Explore, Birth Chart, Practice, and Tones remain accessible via Pages.
 // "Calm" (the old standalone Reset tab) is gone from primary nav — Meditation
@@ -31167,7 +31018,7 @@ function formatSupportDimensionLabels(guides: SupportDimensionGuide[]) {
 }
 
 // ── Real 48-axis reference panel, reused across every section ──────────────
-// Several sections used to show a "48-Dimension" title over a hardcoded
+// Several sections previously used a numeric title over a hardcoded
 // 5-field (practical/emotional/psychological/spiritual/cultural) lookup
 // table -- 5 items pretending to be 48. This renders the ACTUAL 48-entry
 // supportDimensionGuides dataset instead, the same real data that already
@@ -31211,14 +31062,14 @@ function SupportDimensionLibraryPanel({
     <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#E1EEEC", borderRadius: 16, borderWidth: 1, borderColor: accentColor + "33", overflow: "hidden" }}>
       <View style={{ backgroundColor: accentColor + "14", paddingHorizontal: 14, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
-          {eyebrow} · all 48 dimensions
+          {eyebrow} · multidimensional support
         </Text>
         <Text style={{ color: "#5B7A8A", fontSize: 12 }}>{issueGuide.label}</Text>
       </View>
       <Text style={{ color: "#6A8899", fontSize: 12, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4, lineHeight: 16 }}>
         {relevantCount > 0
-          ? `${relevantCount} of the 48 support dimensions match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} — shown first.`
-          : "The full 48-dimension support library, the same real data used by Path's counselling engine."}
+          ? `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first.`
+          : "The complete multidimensional support library used by the counselling engine."}
       </Text>
       {visible.map((guide, i) => {
         const relevant = isRelevant(guide);
@@ -31244,11 +31095,11 @@ function SupportDimensionLibraryPanel({
       <Pressable
         onPress={() => setExpanded((value) => !value)}
         accessibilityRole="button"
-        accessibilityLabel={expanded ? "Show fewer dimensions" : "Show all 48 dimensions"}
+        accessibilityLabel={expanded ? "Show fewer perspectives" : "Show all support perspectives"}
         style={{ paddingVertical: 10, alignItems: "center", borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.06)" }}
       >
         <Text style={{ color: accentColor, fontSize: 12, fontWeight: "800" }}>
-          {expanded ? "Show fewer ↑" : `Show all 48 dimensions ↓ (${ordered.length - visible.length} more)`}
+          {expanded ? "Show fewer ↑" : `Show all perspectives ↓ (${ordered.length - visible.length} more)`}
         </Text>
       </Pressable>
     </View>
@@ -35265,6 +35116,8 @@ const styles = StyleSheet.create({
     gap: 10
   },
   homeSafetyActions: {
+    width: "100%",
+    maxWidth: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
@@ -38228,11 +38081,11 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   onboardingSheet: {
-    width: "70%",
-    maxWidth: 300,
+    width: "94%",
+    maxWidth: 680,
     alignSelf: "center",
-    maxHeight: "52%",
-    borderRadius: 8,
+    maxHeight: "90%",
+    borderRadius: 20,
     backgroundColor: "#E7EFED",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
