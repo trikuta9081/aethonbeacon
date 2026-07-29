@@ -4,3 +4,11 @@ packages:
 
 minimumReleaseAgeExclude:
   - expo-updates@56.0.21
+  - uuid@11.1.1
+  - brace-expansion@5.0.7 || 5.0.8
+  - js-yaml@4.3.0
+  - shell-quote@1.8.5
+  - postcss@8.5.18
+
+overrides:
+  uuid@<11.1.1: ^11.1.1

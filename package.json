@@ -13,6 +13,7 @@
     "web": "node scripts/with-build-id.mjs expo start --web",
     "export:web": "node scripts/with-build-id.mjs expo export --platform web && node scripts/copy-public-web.mjs",
     "doctor": "RUBYOPT=-rlogger expo-doctor",
+    "health:expo": "RUBYOPT=-rlogger expo-doctor",
     "verification:server": "node scripts/verification-server.mjs",
     "verification:env-check": "node scripts/verification-env-check.mjs",
     "verification:qa": "node scripts/verification-qa.mjs",
@@ -31,34 +32,42 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.108.2",
     "astronomy-engine": "^2.1.19",
-    "expo": "~56.0.15",
-    "expo-asset": "~56.0.19",
-    "expo-audio": "^56.0.12",
-    "expo-constants": "56.0.20",
-    "expo-dev-client": "~56.0.22",
+    "expo": "~56.0.17",
+    "expo-asset": "~56.0.21",
+    "expo-audio": "^56.0.13",
+    "expo-constants": "56.0.22",
+    "expo-dev-client": "~56.0.24",
     "expo-file-system": "~56.0.8",
     "expo-font": "~56.0.7",
     "expo-haptics": "~56.0.3",
-    "expo-notifications": "^56.0.20",
+    "expo-notifications": "^56.0.22",
     "expo-speech": "~56.0.3",
     "expo-speech-recognition": "56.0.1",
     "expo-store-review": "~56.0.3",
-    "expo-updates": "~56.0.21",
+    "expo-system-ui": "~56.0.5",
+    "expo-updates": "~56.0.23",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.3",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-web": "~0.21.0",
+    "react-native-web": "~0.21.2",
     "resolve": "1.22.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.0",
-    "@types/react": "~19.2.0",
+    "@babel/core": "^7.29.7",
+    "@types/react": "~19.2.17",
     "babel-preset-expo": "56.0.15",
-    "expo-doctor": "^1.17.0",
+    "expo-doctor": "^1.19.10",
     "typescript": "~6.0.3"
   },
   "engines": {
     "node": ">=22.13.0"
+  },
+  "expo": {
+    "doctor": {
+      "appConfigFieldsNotSyncedCheck": {
+        "enabled": false
+      }
+    }
   }
 }

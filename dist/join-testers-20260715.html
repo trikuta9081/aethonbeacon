@@ -42,16 +42,16 @@
 <body>
 <main>
   <section class="hero">
-    <div class="eyebrow">Fresh Android + iPhone tester link · July 15, 2026</div>
+    <div class="eyebrow">Current Android + iPhone tester access · July 29, 2026</div>
     <h1>Join Aethon Beacon testing</h1>
     <p>This is the current tester page for Android and iPhone. If an older page appeared before, this fresh page replaces it. Android access is granted through a Play Console tester email list — submit your Gmail below and it will be added by hand, usually within 24 hours. iPhone access starts by submitting the Apple ID email used for TestFlight. If automatic email delivery is not configured, this page opens a ready-to-send email draft so the request is not lost.</p>
     <div id="deviceHint" class="detected"></div>
     <div class="actions">
       <a class="btn android" href="#iosAccess" onclick="document.getElementById('testerPlatform').value='Android closed test';document.getElementById('testerEmail').focus();">Android: Request access (Gmail)</a>
-      <a class="btn android" href="https://play.google.com/apps/testing/com.aethonbeacon.app">Android: Join closed test</a>
-      <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.aethonbeacon.app">Android: Install app</a>
+      <a class="btn android" href="https://play.google.com/apps/testing/com.aethonbeacon.app">Android: Join or reload closed test</a>
+      <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.aethonbeacon.app">Android: Open Play Store update</a>
       <a class="btn ios" href="https://aethonbeacon.com/?v=ios-web-20260715">iPhone: Open web app now</a>
-      <a class="btn ios" href="https://apps.apple.com/app/testflight/id899247664">iPhone: Install TestFlight</a>
+      <a class="btn ios" href="https://apps.apple.com/app/testflight/id899247664">iPhone: Open TestFlight and update</a>
       <a class="btn secondary" href="#iosAccess" onclick="document.getElementById('testerPlatform').value='iOS TestFlight';document.getElementById('testerEmail').focus();">iPhone: Submit Apple ID email</a>
     </div>
     <div class="grid">
@@ -124,7 +124,8 @@
     <div class="notice"><strong>iOS TestFlight note:</strong> Native iPhone beta access requires either an invited Apple ID email or a public TestFlight link from App Store Connect. Until App Store Connect login/API access is active, iPhone testers can open the live web app now and submit their Apple ID email here so the native invite request is captured.</div>
     <div class="notice"><strong>Testify / feedback:</strong> After installing, testers should send one short report: platform, device, what worked, what failed, and one optional short testimony. This helps prove the test is active and collect release feedback.</div>
     <div class="notice"><strong>Request delivery:</strong> If server email is not configured, the form will open a prepared email draft after recording the request. Testers should tap <strong>Send</strong> so the access/testify request reaches the app owner.</div>
-    <div class="notice"><strong>Current page:</strong> <code>https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2315</code></div>
+    <div class="notice"><strong>Reloading an existing tester device:</strong> Android testers should open the closed-test link with the invited Google account, then tap Update in Google Play. Invited iPhone testers should open TestFlight, pull down to refresh, select Aethon Beacon, and tap Update. A build appears only after Google Play or App Store Connect finishes processing it.</div>
+    <div class="notice"><strong>Current integrated tester link:</strong> <code>https://aethonbeacon.com/testers?v=20260729-1315</code></div>
   </section>
   <footer>Aethon Beacon · Android + iPhone tester page</footer>
 </main>
