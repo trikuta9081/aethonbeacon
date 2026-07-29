@@ -47,6 +47,21 @@ export const REDRESS_CONTENT_STANDARD = {
   outcomeNotice: "Guidance supports preparation and routing; it cannot guarantee acceptance, response time, or outcome."
 } as const;
 
+export function getRedressReviewState(now = new Date()): {
+  current: boolean;
+  daysSinceReview: number;
+  nextReviewOn: string;
+} {
+  const reviewed = new Date(`${REDRESS_CONTENT_STANDARD.reviewedOn}T00:00:00.000Z`);
+  const daysSinceReview = Math.max(0, Math.floor((now.getTime() - reviewed.getTime()) / 86_400_000));
+  const nextReview = new Date(reviewed.getTime() + REDRESS_CONTENT_STANDARD.reviewIntervalDays * 86_400_000);
+  return {
+    current: daysSinceReview <= REDRESS_CONTENT_STANDARD.reviewIntervalDays,
+    daysSinceReview,
+    nextReviewOn: nextReview.toISOString().slice(0, 10)
+  };
+}
+
 export type ProductMetricName =
   | "onboarding_completed"
   | "counselling_started"
@@ -71,6 +86,20 @@ export function createLocalProductMetric(
     occurredAt: new Date().toISOString(),
     ...(typeof durationSeconds === "number" ? { durationSeconds: Math.max(0, Math.round(durationSeconds)) } : {})
   };
+}
+
+export function summarizeLocalProductMetrics(metrics: LocalProductMetric[]): Record<ProductMetricName, number> {
+  const summary = {
+    onboarding_completed: 0,
+    counselling_started: 0,
+    counselling_completed: 0,
+    calm_session_completed: 0,
+    redress_route_opened: 0,
+    community_delivery_succeeded: 0,
+    community_delivery_failed: 0
+  } satisfies Record<ProductMetricName, number>;
+  for (const metric of metrics) summary[metric.name] += 1;
+  return summary;
 }
 
 export const ETHICAL_ACCESS_MODEL = {
@@ -110,3 +139,27 @@ export const BETA_DEVICE_MATRIX = {
     "supported non-English language"
   ]
 } as const;
+
+export type BetaReleaseEvidence = {
+  activeTesterCount: number;
+  coveredScenarios: string[];
+  openBlockers: number;
+  openMajorIssues: number;
+};
+
+export function evaluateBetaRelease(evidence: BetaReleaseEvidence): {
+  ready: boolean;
+  reasons: string[];
+} {
+  const reasons: string[] = [];
+  if (evidence.activeTesterCount < BETA_DEVICE_MATRIX.minimumActiveTesters) {
+    reasons.push(`Need at least ${BETA_DEVICE_MATRIX.minimumActiveTesters} active testers.`);
+  }
+  const missing = BETA_DEVICE_MATRIX.requiredCoverage.filter(
+    (scenario) => !evidence.coveredScenarios.includes(scenario)
+  );
+  if (missing.length) reasons.push(`Missing coverage: ${missing.join(", ")}.`);
+  if (evidence.openBlockers > 0) reasons.push(`${evidence.openBlockers} blocker issue(s) remain open.`);
+  if (evidence.openMajorIssues > 0) reasons.push(`${evidence.openMajorIssues} major issue(s) remain open.`);
+  return { ready: reasons.length === 0, reasons };
+}

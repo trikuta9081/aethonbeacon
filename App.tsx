@@ -72,10 +72,16 @@ import {
   type RealtimeCommunityTypingEvent
 } from "./realtimeCommunity";
 import {
+  BETA_DEVICE_MATRIX,
   COUNSELLING_SAFETY_COPY,
+  ETHICAL_ACCESS_MODEL,
   REDRESS_CONTENT_STANDARD,
   VEDIC_CALCULATION_STANDARD,
-  classifyCounsellingSafety
+  classifyCounsellingSafety,
+  createLocalProductMetric,
+  getRedressReviewState,
+  type LocalProductMetric,
+  type ProductMetricName
 } from "./product-quality";
 
 const APP_TEXT_WRAP_GUARD = {
@@ -262,6 +268,8 @@ type PersistedAppState = {
   launchNeedId: LaunchNeedId;
   onboardingCompleted: boolean;
   onboardingCompletedAt: string | null;
+  productAnalyticsEnabled: boolean;
+  localProductMetrics: LocalProductMetric[];
   trustedContacts: TrustedContact[];
   supportLocality: string;
   profileName: string;
@@ -493,6 +501,7 @@ type CommunityMessage = {
   text: string;
   topic: string;
   clientId?: string;
+  deliveryStatus?: "sending" | "sent" | "delivered" | "failed";
 };
 type CommunityChatMessage = {
   id: string;
@@ -502,6 +511,7 @@ type CommunityChatMessage = {
   text: string;
   persona: CommunityChatPersonaId;
   clientId?: string;
+  deliveryStatus?: "sending" | "sent" | "delivered" | "failed";
 };
 type PrivateSpaceKind = "dm" | "group";
 type PrivateSpaceMessageRole = "you" | "member" | "moderator";
@@ -11172,6 +11182,8 @@ export default function App() {
   const [hasSeenWelcomeCard, setHasSeenWelcomeCard] = useState(false); // first-run explainer card
   const [onboardingCompleted, setOnboardingCompleted] = useState(false); // profile prompt is the FIRST screen for new users; once completed, persisted true survives reloads
   const [onboardingCompletedAt, setOnboardingCompletedAt] = useState<string | null>(null);
+  const [productAnalyticsEnabled, setProductAnalyticsEnabled] = useState(false);
+  const [localProductMetrics, setLocalProductMetrics] = useState<LocalProductMetric[]>([]);
   const [showOnboardingPanel, setShowOnboardingPanel] = useState(false);
   const [trustedContacts, setTrustedContacts] = useState<TrustedContact[]>([]);
   const [supportLocality, setSupportLocality] = useState("");
@@ -13563,6 +13575,22 @@ export default function App() {
         setOnboardingCompleted(parsed.onboardingCompleted);
         setOnboardingCompletedAt(parsed.onboardingCompleted ? (completedAt ?? new Date().toISOString()) : null);
       }
+      if (typeof parsed.productAnalyticsEnabled === "boolean") {
+        setProductAnalyticsEnabled(parsed.productAnalyticsEnabled);
+      }
+      if (Array.isArray(parsed.localProductMetrics)) {
+        setLocalProductMetrics(
+          parsed.localProductMetrics
+            .filter(
+              (metric): metric is LocalProductMetric =>
+                !!metric &&
+                typeof metric === "object" &&
+                typeof metric.name === "string" &&
+                typeof metric.occurredAt === "string"
+            )
+            .slice(-250)
+        );
+      }
       if (typeof parsed.supportLocality === "string") {
         setSupportLocality(parsed.supportLocality);
       }
@@ -13981,6 +14009,8 @@ export default function App() {
       launchNeedId,
       onboardingCompleted,
       onboardingCompletedAt,
+      productAnalyticsEnabled,
+      localProductMetrics: productAnalyticsEnabled ? localProductMetrics.slice(-250) : [],
       profileName: accessName,
       profilePhone,
       profileEmail,
@@ -14064,6 +14094,8 @@ export default function App() {
     localOnly,
     onboardingCompleted,
     onboardingCompletedAt,
+    productAnalyticsEnabled,
+    localProductMetrics,
     accessName,
     profilePhone,
     profileEmail,
@@ -14687,11 +14719,17 @@ export default function App() {
     handleTabPress("journal");
   }
 
+  function recordProductMetric(name: ProductMetricName, durationSeconds?: number) {
+    if (!productAnalyticsEnabled) return;
+    setLocalProductMetrics((current) => [...current, createLocalProductMetric(name, durationSeconds)].slice(-250));
+  }
+
   function completeOnboarding(nextNeedId: LaunchNeedId = launchNeedId) {
     const launchNeed = getLaunchNeedMeta(nextNeedId);
     const nextIssueId = launchNeed.issueId ?? getDefaultIssueForIdentity(identityId);
     const nextRedressRouteId = launchNeed.redressRouteId ?? getDefaultRedressRouteForIdentity(identityId);
     setOnboardingCompleted(true);
+    recordProductMetric("onboarding_completed");
     setOnboardingCompletedAt(new Date().toISOString());
     setShowExitReviewPrompt(false);
     setHasSeenExitReviewPrompt(true);
@@ -15800,6 +15838,7 @@ async function fetchGeminiAIHelp(
       selectedIdentity.label
     );
     userMessage.clientId = presenceSessionId;
+    userMessage.deliveryStatus = communityRealtimeConfigured ? "sending" : "sent";
     const verifiedReply = createCommunityMessage(
       buildVerifiedReply(text),
       "verified",
@@ -15822,8 +15861,16 @@ async function fetchGeminiAIHelp(
         communityLocallySentMessageIdsRef.current.delete(userMessage.id);
         if (__DEV__) console.warn(`[community realtime] send failed: ${result.error ?? "unknown error"}`);
         setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device, it'll retry.");
+        setCommunityMessages((current) =>
+          current.map((message) => message.id === userMessage.id ? { ...message, deliveryStatus: "failed" } : message)
+        );
+        recordProductMetric("community_delivery_failed");
       } else {
         setCommunityRealtimeStatus("Live — connected");
+        setCommunityMessages((current) =>
+          current.map((message) => message.id === userMessage.id ? { ...message, deliveryStatus: "delivered" } : message)
+        );
+        recordProductMetric("community_delivery_succeeded");
       }
       return;
     }
@@ -19340,6 +19387,13 @@ function isTrustedExternalUrl(url: string) {
                 setReviewContact={setReviewContact}
                 onSubmitReview={submitUserReview}
                 onShowPrivacyPolicy={() => setShowPrivacyPolicyPanel(true)}
+                productAnalyticsEnabled={productAnalyticsEnabled}
+                setProductAnalyticsEnabled={(enabled) => {
+                  setProductAnalyticsEnabled(enabled);
+                  if (!enabled) setLocalProductMetrics([]);
+                }}
+                localProductMetrics={localProductMetrics}
+                onClearProductMetrics={() => setLocalProductMetrics([])}
               />
             </View>
           )}
@@ -25134,6 +25188,7 @@ function RedressSection({
   // Evidence items parsed from keepReady string
   const evidenceItems = selectedRedressRoute.keepReady.split(",").map((item) => item.trim()).filter(Boolean);
   const checkedCount = evidenceItems.filter((_, i) => checkedEvidence[String(i)]).length;
+  const redressReviewState = getRedressReviewState();
 
   // Route-specific complaint draft template
   const DRAFT_TEMPLATES: Partial<Record<RedressRouteId, string>> = {
@@ -25239,7 +25294,9 @@ function RedressSection({
             Verified guidance standard · {REDRESS_CONTENT_STANDARD.jurisdiction}
           </Text>
           <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
-            Reviewed {REDRESS_CONTENT_STANDARD.reviewedOn}. {REDRESS_CONTENT_STANDARD.sourceRule} {REDRESS_CONTENT_STANDARD.outcomeNotice}
+            Reviewed {REDRESS_CONTENT_STANDARD.reviewedOn}; next review {redressReviewState.nextReviewOn}.{" "}
+            {redressReviewState.current ? "Directory review is current." : "Directory review is overdue—confirm every destination on its official website before relying on it."}{" "}
+            {REDRESS_CONTENT_STANDARD.sourceRule} {REDRESS_CONTENT_STANDARD.outcomeNotice}
           </Text>
         </View>
 
@@ -26531,6 +26588,10 @@ function SettingsSection({
   setReviewContact,
   onSubmitReview,
   onShowPrivacyPolicy,
+  productAnalyticsEnabled,
+  setProductAnalyticsEnabled,
+  localProductMetrics,
+  onClearProductMetrics,
   themePreference,
   setThemePreference,
   theme
@@ -26606,6 +26667,10 @@ function SettingsSection({
   setReviewContact: (value: string) => void;
   onSubmitReview: () => void;
   onShowPrivacyPolicy: () => void;
+  productAnalyticsEnabled: boolean;
+  setProductAnalyticsEnabled: (value: boolean) => void;
+  localProductMetrics: LocalProductMetric[];
+  onClearProductMetrics: () => void;
 }) {
   const reminderChoice = reminderOptions.find((option) => option.id === reminderMode) ?? reminderOptions[0];
   const followUpChoice = followUpOptions.find((option) => option.id === followUpMode) ?? followUpOptions[0];
@@ -26714,6 +26779,45 @@ function SettingsSection({
         <Text style={styles.promptText}>
           It works across practical, emotional, psychological, spiritual, and cultural layers.
         </Text>
+      </View>
+      <View style={styles.settingsBlock}>
+        <Text style={styles.settingsTitle}>Privacy-conscious improvement</Text>
+        <Text style={styles.promptText}>
+          Optional product measurements are stored only on this device. They record feature names and timestamps—not counselling text, messages, birth details, contact information, or astrology results.
+        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10 }}>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>Allow local product measurements</Text>
+            <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>
+              {productAnalyticsEnabled ? `${localProductMetrics.length} local events retained` : "Off by default"}
+            </Text>
+          </View>
+          <Switch value={productAnalyticsEnabled} onValueChange={setProductAnalyticsEnabled} />
+        </View>
+        {localProductMetrics.length > 0 && (
+          <Pressable style={styles.secondaryDangerButton} onPress={onClearProductMetrics}>
+            <Text style={styles.secondaryDangerButtonLabel}>Erase local measurements</Text>
+          </Pressable>
+        )}
+      </View>
+      <View style={styles.settingsBlock}>
+        <Text style={styles.settingsTitle}>Access commitment</Text>
+        <Text style={styles.promptText}>
+          Emergency assistance, Help and Redress, core automatic counselling, basic Calm Sound, and basic Moon-chart insight remain available without a premium payment.
+        </Text>
+        <Text style={styles.promptText}>
+          Aethon Beacon will not sell personal wellbeing data, target advertising from emotional or astrological profiles, or place emergency help behind a paywall.
+        </Text>
+        <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>
+          Optional future services: {ETHICAL_ACCESS_MODEL.optionalPremium.join(" · ")}
+        </Text>
+      </View>
+      <View style={styles.settingsBlock}>
+        <Text style={styles.settingsTitle}>Controlled beta standard</Text>
+        <Text style={styles.promptText}>
+          Release target: {BETA_DEVICE_MATRIX.minimumActiveTesters}–{BETA_DEVICE_MATRIX.targetActiveTesters} active testers with no unresolved blocker.
+        </Text>
+        <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>{BETA_DEVICE_MATRIX.requiredCoverage.join(" · ")}</Text>
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>Launch status</Text>
