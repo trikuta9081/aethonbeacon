@@ -29419,7 +29419,10 @@ function AccessOverlay({
   const verificationInputRef = React.useRef<TextInput>(null);
   const profileScrollRef = React.useRef<ScrollView>(null);
   const didAutoJumpToVerificationRef = React.useRef(false);
-  const [verificationExpanded, setVerificationExpanded] = useState(showVerificationSection);
+  // Keep OTP controls visible in account setup. Hiding them behind a second
+  // disclosure made the phone/email fields appear unresponsive on compact
+  // screens because the actual send action was several sections below.
+  const [verificationExpanded, setVerificationExpanded] = useState(true);
   const [verificationSectionY, setVerificationSectionY] = useState(0);
   const [actionsSectionY, setActionsSectionY] = useState(0);
 
@@ -29690,6 +29693,49 @@ function AccessOverlay({
             textContentType="telephoneNumber"
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+            <Pressable
+              accessibilityRole="button"
+              disabled={verificationRequestBusy !== null || profilePhone.trim().length === 0}
+              onPress={async () => {
+                setVerificationChannel("phone");
+                const sent = await onRequestVerificationCode("phone");
+                if (sent) jumpToVerification();
+              }}
+              style={({ pressed }) => [
+                styles.onboardingButtonSecondary,
+                { flexGrow: 1, flexBasis: 150, minWidth: 0 },
+                (verificationRequestBusy !== null || profilePhone.trim().length === 0) && { opacity: 0.5 },
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={styles.onboardingButtonSecondaryLabel}>
+                {verificationRequestBusy === "phone" ? "Sending phone OTP…" : "Send phone OTP"}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              disabled={verificationRequestBusy !== null || profileEmail.trim().length === 0}
+              onPress={async () => {
+                setVerificationChannel("email");
+                const sent = await onRequestVerificationCode("email");
+                if (sent) jumpToVerification();
+              }}
+              style={({ pressed }) => [
+                styles.onboardingButtonSecondary,
+                { flexGrow: 1, flexBasis: 150, minWidth: 0 },
+                (verificationRequestBusy !== null || profileEmail.trim().length === 0) && { opacity: 0.5 },
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={styles.onboardingButtonSecondaryLabel}>
+                {verificationRequestBusy === "email" ? "Sending email OTP…" : "Send email OTP"}
+              </Text>
+            </Pressable>
+          </View>
+          <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
+            Enter a phone number or email above, send its OTP, then enter the received six-digit code in Verification below.
+          </Text>
           <TextInput
             value={profileEmail}
             onChangeText={setProfileEmail}
