@@ -59,18 +59,16 @@ assert(importantNumbers < directoriesHub, 'Important numbers must appear before 
 assert(directoriesHub < routeChips, 'Directories hub must appear before route chips/general route selection');
 
 
-// Front UI order: vision first, Help and Redress above other sections,
+// Front UI order: Help and Redress above other sections,
 // Calm Sound above Community, Community above Daily/report, tester page at the bottom.
 const todayStart = indexOf('{activeTab === "today" && (');
-const frontVision = indexOf('What Aethon Beacon does');
+const landingHeader = indexOf('{/* ── LANDING HEADER — Premium redesign ── */}');
 const mergedHelp = indexOf('Emergency assistance, legal aid, complaint routes, and evidence guidance');
 const calmSound = indexOf('Curated sound programmes for relaxation, focus, sleep, and emotional regulation');
 const communityFront = indexOf('styles.homeOverviewCard, styles.homeOverviewCardCommunity');
 const dailyReportFront = indexOf('uiCopy.reportTitle');
 const testerFront = indexOf('Become an Aethon Beacon tester');
-assert(todayStart < frontVision, 'Front vision block must be first inside the Today/front UI');
-assert(frontVision < indexOf('{/* ── LANDING HEADER — Premium redesign ── */}'), 'Vision lines must appear above the old landing header');
-assert(frontVision < mergedHelp, 'Vision block must appear before merged Help & Redress');
+assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
 assert(mergedHelp < calmSound, 'Help and Redress must appear above Calm Sound');
 assert(calmSound < communityFront, 'Calm Sound must appear above Community/message section');
 assert(communityFront < dailyReportFront, 'Community/message must appear above Daily Snapshot/report');
@@ -83,6 +81,8 @@ indexOf('Moderated community support and private conversations');
 indexOf('Community and Messages');
 indexOf('Open Calm Sound');
 indexOf('Platform.OS === "web" && (');
+indexOf('automatic multidimensional counselling engine');
+assert(!source.includes('What Aethon Beacon does'), 'Vision card must not remain on the front UI');
 assert(!source.includes('48-Dimension'), 'Public 48-Dimension terminology must remain hidden');
 assert(!source.includes('48-dimension reading'), 'Public 48-dimension reading terminology must remain hidden');
 

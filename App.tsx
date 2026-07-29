@@ -17692,18 +17692,6 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Today">
             <View onLayout={captureSectionLayout("today")}>
 
-              <View style={styles.homeVisionIntroCard}>
-          <Text style={styles.homeVisionEyebrow}>What Aethon Beacon does</Text>
-          <Text style={styles.homeVisionTitle}>Guidance, protection, redress, calm sound, community, and Moon-chart Vedic insight in one place.</Text>
-          <Text style={styles.homeVisionText}>Describe what is happening to receive a suitable support route, spoken guidance, private notes, emergency and redress options, an automatic multidimensional counselling engine, and calculated Moon-chart guidance with remedies.</Text>
-          <View style={styles.homeVisionPillRow}>
-            {["Help + SOS", "Calm sounds", "Community", "Daily report", "Moon chart"].map((label) => (
-              <View key={label} style={styles.homeVisionPill}>
-                <Text style={styles.homeVisionPillText}>{label}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
               {/* ── LANDING HEADER — Premium redesign ── */}
               {(() => {
                 const hour = new Date().getHours();
@@ -30071,6 +30059,12 @@ function OnboardingOverlay({
               <Text style={styles.onboardingText}>
                 Tell the app what's happening in one line. It identifies your situation and opens the right support path — instantly.
               </Text>
+              <Text style={[styles.onboardingText, { marginTop: 10 }]}>
+                Aethon Beacon brings guidance, protection, Help and Redress, Calm Sound, community support, and Moon-chart Vedic insight into one coordinated experience.
+              </Text>
+              <Text style={[styles.onboardingText, { marginTop: 8 }]}>
+                Receive spoken guidance, private notes, emergency and formal support options, an automatic multidimensional counselling engine, and calculated Moon-chart guidance with remedies.
+              </Text>
               <View style={{ marginTop: 16, gap: 12 }}>
                 {[
                   { icon: "🧭", text: "Smart routing — one line tells the app exactly where to take you next" },
@@ -34361,65 +34355,6 @@ const styles = StyleSheet.create({
   routePreviewDetailCompact: {
     fontSize: 12,
     lineHeight: 17
-  },
-  homeVisionIntroCard: {
-    maxWidth: "100%",
-    overflow: "hidden",
-    marginHorizontal: 16,
-    marginBottom: 12,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.36)",
-    backgroundColor: "#F4F8F7",
-    padding: 16,
-    gap: 10,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    elevation: 6
-  },
-  homeVisionEyebrow: {
-    color: "#0E6F69",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 1.1
-  },
-  homeVisionTitle: {
-    color: "#0D1F22",
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: "900"
-  },
-  homeVisionText: {
-    color: "#24384A",
-    fontSize: 13,
-    lineHeight: 20,
-    fontWeight: "800"
-  },
-  homeVisionPillRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  homeVisionPill: {
-    maxWidth: "100%",
-    minWidth: 0,
-    flexShrink: 1,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(8,145,178,0.28)",
-    backgroundColor: "#E6F6FA",
-    paddingHorizontal: 10,
-    paddingVertical: 6
-  },
-  homeVisionPillText: {
-    color: "#075985",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900"
   },
   homeReportBand: {
     borderRadius: 10,

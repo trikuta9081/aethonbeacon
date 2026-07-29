@@ -56,7 +56,9 @@ function mustNotMatch(pattern, message) {
   'color: "#EAF2F8", fontSize: 12, lineHeight: 16, fontWeight: "700" }}>{prog.purpose}',
   'homeToneChipLabel: {\n    color: "#0D1F22"',
   'homeToneFeaturedUse: {\n    color: "#24384A"',
-  'homeVisionIntroCard',
+  `onboardingSheet: {
+    width: "94%",
+    maxWidth: 680,`,
   `homeSafetyStrip: {\n    maxWidth: "100%",\n    overflow: "hidden",\n    marginTop: 0,`,
 ].forEach((marker) => mustInclude(marker));
 
