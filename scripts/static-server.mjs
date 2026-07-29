@@ -24,6 +24,7 @@ const appstoreApiKeyId = process.env.APPSTORE_API_KEY_ID?.trim() || "";
 const appstoreApiIssuerId = process.env.APPSTORE_API_ISSUER_ID?.trim() || "";
 const appstoreApiKeyP8 = process.env.APPSTORE_API_KEY_P8?.trim() || "";
 const appstoreBetaGroupId = process.env.APPSTORE_BETA_GROUP_ID?.trim() || "";
+const appstoreAppId = process.env.APPSTORE_APP_ID?.trim() || "6780326263";
 
 const mimeTypes = new Map([
   [".html", "text/html; charset=utf-8"],
@@ -318,6 +319,35 @@ async function addBetaTesterToGroup(token, testerId) {
   });
 }
 
+async function resendTestFlightInvitation(token, testerId) {
+  if (!appstoreAppId) {
+    return { attempted: false, success: false, reason: "appstore_app_id_not_configured" };
+  }
+  try {
+    await fetchJson("https://api.appstoreconnect.apple.com/v1/betaTesterInvitations", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        data: {
+          type: "betaTesterInvitations",
+          relationships: {
+            app: { data: { type: "apps", id: appstoreAppId } },
+            betaTester: { data: { type: "betaTesters", id: testerId } }
+          }
+        }
+      })
+    });
+    return { attempted: true, success: true };
+  } catch (error) {
+    return {
+      attempted: true,
+      success: false,
+      reason: "testflight_resend_failed",
+      detail: cleanField(error.message, 240)
+    };
+  }
+}
+
 async function addIosTesterToTestFlight(payload) {
   if (!appstoreApiKeyId || !appstoreApiIssuerId || !appstoreApiKeyP8 || !appstoreBetaGroupId) {
     return { attempted: false, success: false, reason: "appstore_connect_not_configured" };
@@ -329,11 +359,17 @@ async function addIosTesterToTestFlight(payload) {
       testerId = await createAppStoreBetaTester(token, payload);
     }
     await addBetaTesterToGroup(token, testerId);
-    return { attempted: true, success: true, betaGroupId: appstoreBetaGroupId, testerId };
+    const invitation = await resendTestFlightInvitation(token, testerId);
+    return { attempted: true, success: true, betaGroupId: appstoreBetaGroupId, testerId, invitation };
   } catch (error) {
     const alreadyInGroup = error.status === 409;
     if (alreadyInGroup) {
-      return { attempted: true, success: true, betaGroupId: appstoreBetaGroupId, alreadyInGroup: true };
+      const token = getAppStoreConnectToken();
+      const testerId = await findAppStoreBetaTesterId(token, payload.email);
+      const invitation = testerId
+        ? await resendTestFlightInvitation(token, testerId)
+        : { attempted: false, success: false, reason: "tester_not_found" };
+      return { attempted: true, success: true, betaGroupId: appstoreBetaGroupId, alreadyInGroup: true, testerId, invitation };
     }
     return { attempted: true, success: false, reason: "testflight_add_failed", detail: cleanField(error.message, 240) };
   }

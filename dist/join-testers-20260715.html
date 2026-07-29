@@ -74,6 +74,7 @@
           <li>Open the web app now on iPhone while the native TestFlight invite is pending.</li>
           <li>Install Apple TestFlight from the App Store.</li>
           <li>Enter the Apple ID email you use on your iPhone in the form below.</li>
+          <li>If you lost the invitation or TestFlight asks for a redeem code, submit the same Apple ID email again. The server will request a fresh Apple invitation when App Store Connect automation is available.</li>
           <li>If a public TestFlight link is not yet enabled, the Apple ID email must be invited from App Store Connect.</li>
           <li>After the invite arrives, open it on the iPhone, accept the beta, and install Aethon Beacon.</li>
           <li>Optional web fallback: in Safari, open <code>aethonbeacon.com</code> and use Share → Add to Home Screen.</li>
@@ -101,6 +102,7 @@
           <select id="testerPlatform">
             <option value="Android closed test">Android closed test</option>
             <option value="iOS TestFlight">iOS TestFlight</option>
+            <option value="iOS TestFlight resend invitation">iOS — resend TestFlight invitation</option>
             <option value="Feedback/testify only">Feedback/testify only</option>
           </select>
         </label>
