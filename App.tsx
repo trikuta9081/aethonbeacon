@@ -17695,7 +17695,7 @@ function isTrustedExternalUrl(url: string) {
               <View style={styles.homeVisionIntroCard}>
           <Text style={styles.homeVisionEyebrow}>What Aethon Beacon does</Text>
           <Text style={styles.homeVisionTitle}>Guidance, protection, redress, calm sound, community, and Moon-chart Vedic insight in one place.</Text>
-          <Text style={styles.homeVisionText}>Describe what is happening to receive a suitable support route, spoken guidance, private notes, emergency and redress options, multidimensional counselling insight, and calculated Moon-chart guidance with remedies.</Text>
+          <Text style={styles.homeVisionText}>Describe what is happening to receive a suitable support route, spoken guidance, private notes, emergency and redress options, an automatic multidimensional counselling engine, and calculated Moon-chart guidance with remedies.</Text>
           <View style={styles.homeVisionPillRow}>
             {["Help + SOS", "Calm sounds", "Community", "Daily report", "Moon chart"].map((label) => (
               <View key={label} style={styles.homeVisionPill}>
