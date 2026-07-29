@@ -42,20 +42,20 @@ function mustNotMatch(pattern, message) {
   'HIGH_CONTRAST_ACCENTS',
   'function highContrastAccent',
   'function textOnAccent',
-  'color: "#24384A", fontSize: 12',
+  'color: "#111827", fontSize: 12',
   'color: "#1F3F35", fontSize: 12',
   'borderWidth: 1.5, borderColor: accent',
   'fontSize: 13, fontWeight: "900"',
   'minWidth: 104',
   'minWidth: 112',
   'backgroundColor: "#FFFFFF", borderRadius: 9',
-  'color: "#3F4B5F", fontSize: 12',
+  'color: "#1F2937", fontSize: 12',
   'communityBadgeTextVerified: {\n    color: "#FFFFFF"',
   'adminStatusPillTextActive: {\n    color: "#FFFFFF"',
   'color: "#F8FAFC", fontSize: 14, fontWeight: "900" }}>{prog.name}',
   'color: "#EAF2F8", fontSize: 12, lineHeight: 16, fontWeight: "700" }}>{prog.purpose}',
   'homeToneChipLabel: {\n    color: "#0D1F22"',
-  'homeToneFeaturedUse: {\n    color: "#24384A"',
+  'homeToneFeaturedUse: {\n    color: "#111827"',
   `onboardingSheet: {
     width: "94%",
     maxWidth: 680,`,
@@ -79,6 +79,17 @@ function mustNotMatch(pattern, message) {
   `bottomNavItem: {
     flex: 1,
     minWidth: 0,`
+  ,
+  'isWide={width >= 1280}',
+  `grid: {
+    width: "100%",
+    maxWidth: "100%",
+    minWidth: 0,`,
+  `panel: {
+    flex: 1,
+    minWidth: 0,
+    maxWidth: "100%",`,
+  'flexDirection: "row", flexWrap: "wrap", alignItems: "flex-start", paddingHorizontal: 14'
 ].forEach((marker) => mustInclude(marker, `Expected mobile overflow guard missing: ${marker}`));
 
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, and black-on-dark action/badge text.');
