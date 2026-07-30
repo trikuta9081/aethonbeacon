@@ -16,3 +16,6 @@ android/upload_certificate.pem
 qa/
 .github/scripts/__pycache__/
 keystore_base64_for_github_secret.txt
+
+# Cowork scheduled-task files may contain server sync tokens
+scheduled-tasks/

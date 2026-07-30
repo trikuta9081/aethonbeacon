@@ -17,6 +17,8 @@ const sendgridApiKey = process.env.SENDGRID_API_KEY?.trim() || "";
 const sendgridFromEmail = process.env.SENDGRID_FROM_EMAIL?.trim() || testerRequestNotifyEmail;
 const sendgridFromName = process.env.SENDGRID_FROM_NAME?.trim() || "Aethon Beacon";
 const testerRequestsLogPath = process.env.TESTER_REQUESTS_LOG_PATH?.trim() || "/tmp/aethon-tester-requests.ndjson";
+const testerSyncedLogPath = process.env.TESTER_SYNCED_LOG_PATH?.trim() || "/tmp/aethon-tester-synced.ndjson";
+const testerSyncToken = process.env.TESTER_SYNC_TOKEN?.trim() || "";
 const googleTesterGroupEmail = process.env.GOOGLE_TESTER_GROUP_EMAIL?.trim() || "";
 const googleGroupServiceAccountJson = process.env.GOOGLE_GROUP_SERVICE_ACCOUNT_JSON?.trim() || "";
 const googleWorkspaceSubject = process.env.GOOGLE_WORKSPACE_SUBJECT?.trim() || "";
@@ -475,6 +477,139 @@ async function handleTesterRequest(req, res) {
   }
 }
 
+function extractBearerToken(req, url) {
+  const auth = req.headers.authorization || "";
+  const match = /^Bearer\s+(.+)$/i.exec(auth);
+  if (match) return match[1].trim();
+  const qp = url.searchParams.get("token");
+  return qp ? qp.trim() : "";
+}
+
+function isSyncTokenValid(req, url) {
+  if (!testerSyncToken) return false;
+  const provided = extractBearerToken(req, url);
+  if (!provided) return false;
+  // Constant-time compare
+  if (provided.length !== testerSyncToken.length) return false;
+  let diff = 0;
+  for (let i = 0; i < provided.length; i += 1) {
+    diff |= provided.charCodeAt(i) ^ testerSyncToken.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+async function readNdjsonLines(path) {
+  let text = "";
+  try {
+    text = await readFile(path, "utf8");
+  } catch (error) {
+    if (error && error.code === "ENOENT") return [];
+    throw error;
+  }
+  const out = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    try { out.push(JSON.parse(line)); } catch { /* skip malformed */ }
+  }
+  return out;
+}
+
+function normalizeEmailKey(raw) {
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return null;
+  return trimmed;
+}
+
+async function readPendingAndroidEmails() {
+  const [requests, synced] = await Promise.all([
+    readNdjsonLines(testerRequestsLogPath),
+    readNdjsonLines(testerSyncedLogPath)
+  ]);
+  const syncedSet = new Set();
+  for (const entry of synced) {
+    const email = normalizeEmailKey(entry.email);
+    if (email) syncedSet.add(email);
+  }
+  const pending = new Map(); // email -> first-seen entry
+  for (const entry of requests) {
+    const platform = typeof entry.platform === "string" ? entry.platform.toLowerCase() : "";
+    if (!platform.includes("android") && !platform.includes("play")) continue;
+    const email = normalizeEmailKey(entry.email);
+    if (!email || syncedSet.has(email)) continue;
+    if (!pending.has(email)) {
+      pending.set(email, {
+        email,
+        name: typeof entry.name === "string" ? entry.name : "",
+        device: typeof entry.device === "string" ? entry.device : "",
+        receivedAt: entry.receivedAt || entry.timestamp || null,
+        requestId: entry.id || null
+      });
+    }
+  }
+  return [...pending.values()].sort((a, b) => a.email.localeCompare(b.email));
+}
+
+async function appendSyncedEmails(emails, meta) {
+  try {
+    await mkdir(new URL(".", `file://${testerSyncedLogPath}`).pathname, { recursive: true });
+  } catch { /* ignore */ }
+  const now = new Date().toISOString();
+  const rows = [];
+  for (const rawEmail of emails) {
+    const email = normalizeEmailKey(rawEmail);
+    if (!email) continue;
+    rows.push(JSON.stringify({
+      email,
+      syncedAt: now,
+      target: (meta && meta.target) || "play-console-email-list",
+      note: (meta && meta.note) || null
+    }) + "\n");
+  }
+  if (!rows.length) return 0;
+  await appendFile(testerSyncedLogPath, rows.join(""), "utf8");
+  return rows.length;
+}
+
+async function handlePendingAndroidTesters(req, res, url) {
+  if (!isSyncTokenValid(req, url)) {
+    json(res, 401, { ok: false, message: "Missing or invalid sync token." });
+    return;
+  }
+  try {
+    const pending = await readPendingAndroidEmails();
+    json(res, 200, {
+      ok: true,
+      count: pending.length,
+      pending
+    });
+  } catch (error) {
+    console.error("pending android testers read failed", error);
+    json(res, 500, { ok: false, message: "Could not read tester log." });
+  }
+}
+
+async function handleMarkTestersSynced(req, res, url) {
+  if (!isSyncTokenValid(req, url)) {
+    json(res, 401, { ok: false, message: "Missing or invalid sync token." });
+    return;
+  }
+  try {
+    const raw = await readRequestBody(req);
+    const body = JSON.parse(raw || "{}");
+    const emails = Array.isArray(body.emails) ? body.emails : [];
+    if (!emails.length) {
+      json(res, 400, { ok: false, message: "Provide { emails: [...] }." });
+      return;
+    }
+    const written = await appendSyncedEmails(emails, { target: body.target, note: body.note });
+    json(res, 200, { ok: true, marked: written });
+  } catch (error) {
+    console.error("mark testers synced failed", error);
+    json(res, 500, { ok: false, message: "Could not mark testers as synced." });
+  }
+}
+
 async function readStaticFile(filePath) {
   const fileStat = await stat(filePath);
   if (!fileStat.isFile()) {
@@ -521,6 +656,32 @@ const server = createServer(async (req, res) => {
       return;
     }
     await handleTesterRequest(req, res);
+    return;
+  }
+
+  if (url.pathname === "/api/pending-android-testers") {
+    if (req.method !== "GET") {
+      res.writeHead(405, {
+        Allow: "GET",
+        "Content-Type": "application/json; charset=utf-8"
+      });
+      res.end(JSON.stringify({ message: "Method not allowed." }));
+      return;
+    }
+    await handlePendingAndroidTesters(req, res, url);
+    return;
+  }
+
+  if (url.pathname === "/api/mark-testers-synced") {
+    if (req.method !== "POST") {
+      res.writeHead(405, {
+        Allow: "POST",
+        "Content-Type": "application/json; charset=utf-8"
+      });
+      res.end(JSON.stringify({ message: "Method not allowed." }));
+      return;
+    }
+    await handleMarkTestersSynced(req, res, url);
     return;
   }
 

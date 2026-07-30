@@ -32,6 +32,10 @@ services:
         sync: false
       - key: APPSTORE_BETA_GROUP_ID
         sync: false
+      - key: TESTER_SYNC_TOKEN
+        sync: false
+      - key: TESTER_SYNCED_LOG_PATH
+        value: /tmp/aethon-tester-synced.ndjson
 
   - type: web
     name: aethon-beacon-verification
