@@ -88,9 +88,17 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add -f dist
           git commit -m "chore(web): auto-build from ${GITHUB_SHA}" || echo "Nothing changed in the built bundle -- skipping commit."
-          # Fine-grained PATs authenticate over HTTPS as the *password* with any
-          # username. The previous "x-access-token:" username form is the GitHub
-          # App installation-token convention and can be rejected for fine-grained
-          # PATs, surfacing as a misleading "repository not found".
-          git remote add render-mirror "https://trikuta9081:${CLEAN_TOKEN}@github.com/trikuta9081/AETHON-beacon-.git"
+
+          # THE ACTUAL FIX: actions/checkout installs a global git auth header
+          #   http.https://github.com/.extraheader = AUTHORIZATION: basic <GITHUB_TOKEN>
+          # containing the workflow's built-in GITHUB_TOKEN. That header is sent on
+          # EVERY push to github.com, overriding the credentials embedded in the
+          # remote URL below. The built-in token can only access THIS repo
+          # (aethonbeacon), so pushing to the separate AETHON-beacon- repo was
+          # being rejected as a misleading "Repository not found" -- which is why
+          # every correctly-scoped RENDER_MIRROR_TOKEN still failed. Clearing the
+          # inherited header lets our own token in the URL actually be used.
+          git config --unset-all http.https://github.com/.extraheader 2>/dev/null || true
+
+          git remote add render-mirror "https://x-access-token:${CLEAN_TOKEN}@github.com/trikuta9081/AETHON-beacon-.git"
           git push render-mirror HEAD:main --force
