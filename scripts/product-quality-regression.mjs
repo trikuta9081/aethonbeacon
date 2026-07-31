@@ -26,6 +26,7 @@ assert(!source.includes('"today",\n      "aihelp",\n      "guide",\n      "redre
 assert(source.includes('productAnalyticsEnabled={productAnalyticsEnabled}'), "Local analytics consent is not wired into Settings.");
 assert(source.includes('deliveryStatus: "failed"'), "Community failure delivery state is not implemented.");
 assert(source.includes('deliveryStatus: "delivered"'), "Community delivered state is not implemented.");
+assert(source.includes('COMMUNITY_POST_COOLDOWN_MS') && source.includes('communityPostCooldownRemainingMs'), "Community post anti-flood cooldown is missing.");
 assert(source.includes('getRedressReviewState()'), "Redress review expiry is not enforced in the UI.");
 assert(source.includes('COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]'), "Counselling safety triage is not rendered.");
 assert(source.includes('VEDIC_CALCULATION_STANDARD.zodiac'), "Vedic methodology is not rendered.");

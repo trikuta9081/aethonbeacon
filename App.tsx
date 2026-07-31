@@ -11694,6 +11694,12 @@ export default function App() {
   }, [presenceSessionId]);
 
   const communityFeedTypingSentAtRef = useRef(0);
+  // Anti-flood cooldown between community posts (feed + chat share the limit).
+  // There was no client-side rate limit before, so a user could spam the feed.
+  const lastCommunityPostRef = useRef(0);
+  const COMMUNITY_POST_COOLDOWN_MS = 4000;
+  const communityPostCooldownRemainingMs = () =>
+    Math.max(0, COMMUNITY_POST_COOLDOWN_MS - (Date.now() - lastCommunityPostRef.current));
   const communityChatTypingSentAtRef = useRef(0);
 
   const handleCommunityDraftChange = useCallback(
@@ -16063,6 +16069,13 @@ async function fetchGeminiAIHelp(
       return;
     }
 
+    const cooldownLeft = communityPostCooldownRemainingMs();
+    if (cooldownLeft > 0) {
+      Alert.alert("Slow down", `Please wait ${Math.ceil(cooldownLeft / 1000)}s before posting again.`);
+      return;
+    }
+    lastCommunityPostRef.current = Date.now();
+
     const userMessage = createCommunityMessage(
       text,
       "user",
@@ -16179,6 +16192,13 @@ async function fetchGeminiAIHelp(
       }
       return;
     }
+
+    const cooldownLeft = communityPostCooldownRemainingMs();
+    if (cooldownLeft > 0) {
+      Alert.alert("Slow down", `Please wait ${Math.ceil(cooldownLeft / 1000)}s before sending again.`);
+      return;
+    }
+    lastCommunityPostRef.current = Date.now();
 
     const persona = chatPersonaOptions.find((option) => option.id === communityChatPersona) ?? chatPersonaOptions[1];
     const userMessage = {
