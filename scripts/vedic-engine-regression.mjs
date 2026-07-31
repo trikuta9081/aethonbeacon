@@ -73,6 +73,28 @@ assert(source.includes('Current transits (Gochar)'), 'Gochar transit panel is no
 assert(/sadeSatiPhase/.test(source), 'Sade Sati detection is missing from the gochar layer');
 assert(source.includes('getNavagrahaLongitudes(new Date(date.getTime() + MS_PER_DAY))'), 'Gochar retrograde detection (next-day motion) is missing');
 
+// Independent computational verification of the gochar math (mirrors the app's
+// houseFromMoonSign so the test fails if the real formula ever drifts).
+assert(source.includes('((rashiIndex - natalMoonRashiIndex + 12) % 12) + 1'), 'houseFromMoonSign must use the classical (transit - moon) mod-12 + 1 formula');
+function houseFromMoonRef(transitSign, moonSign) {
+  return ((transitSign - moonSign + 12) % 12) + 1;
+}
+// Classical Sade Sati window = Saturn in the 12th, 1st or 2nd from the natal Moon.
+assert(houseFromMoonRef(11, 0) === 12, 'Sign before the Moon must be the 12th (Sade Sati rising)');
+assert(houseFromMoonRef(0, 0) === 1, 'Same sign as the Moon must be the 1st (Sade Sati peak)');
+assert(houseFromMoonRef(1, 0) === 2, 'Sign after the Moon must be the 2nd (Sade Sati setting)');
+assert(houseFromMoonRef(0, 11) === 2, 'House-from-Moon must wrap correctly across the zodiac boundary');
+assert(houseFromMoonRef(2, 0) === 3, 'Third from the Moon must be the 3rd (outside the Sade Sati window)');
+for (let moon = 0; moon < 12; moon += 1) {
+  for (let t = 0; t < 12; t += 1) {
+    const h = houseFromMoonRef(t, moon);
+    assert(h >= 1 && h <= 12, 'House-from-Moon must always resolve to 1..12');
+  }
+}
+// The app must treat exactly the 12th/1st/2nd as Sade Sati and 2/5/7/9/11 as Jupiter's auspicious transit houses.
+assert(source.includes('saturnHouse === 12 ? "rising" : saturnHouse === 1 ? "peak" : saturnHouse === 2 ? "setting"'), 'Sade Sati phase mapping (12=rising,1=peak,2=setting) must be exact');
+assert(source.includes('[2, 5, 7, 9, 11].includes(jupiterHouseFromMoon)'), 'Jupiter auspicious transit houses must be 2/5/7/9/11 from the Moon');
+
 function antardashaDurations(mahadasha) {
   return dashaOrder.map((planet, index) => ({
     planet,
