@@ -34,6 +34,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 // On native, the real expo-audio package is used.
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
 import type { AudioPlayer } from "expo-audio";
+import * as Print from "expo-print";
 import type { NotificationResponse } from "expo-notifications";
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from "expo-speech-recognition";
 import * as Speech from "expo-speech";
@@ -3485,6 +3486,34 @@ const CRISIS_HELPLINES: { name: string; dial: string; detail: string }[] = [
   { name: "KIRAN", dial: "1800-599-0019", detail: "Mental-health rehabilitation helpline (Govt. of India). Free, 24x7, 13 languages." },
   { name: "Emergency (112)", dial: "112", detail: "Pan-India emergency — police, ambulance, fire. Use if there is immediate danger to life." }
 ];
+
+// Escapes user/content text for safe embedding in the print HTML below.
+function escapeHtmlForPrint(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Builds a clean, printable A4 HTML document for a complaint letter, then opens
+// the OS print / "Save as PDF" dialog via expo-print (works on iOS, Android and
+// web). Whitespace is preserved so the letter's line breaks survive.
+async function exportComplaintLetterPdf(letterText: string, routeLabel: string): Promise<void> {
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      @page { margin: 24mm 18mm; }
+      body { font-family: Georgia, "Times New Roman", serif; color: #10151b; font-size: 13pt; line-height: 1.6; }
+      .meta { font-size: 9pt; color: #6a7683; border-top: 1px solid #d6dee5; margin-top: 28px; padding-top: 8px; }
+      pre { white-space: pre-wrap; word-wrap: break-word; font-family: Georgia, "Times New Roman", serif; margin: 0; }
+    </style></head>
+    <body>
+      <pre>${escapeHtmlForPrint(letterText)}</pre>
+      <div class="meta">Prepared with Aethon Beacon · ${escapeHtmlForPrint(routeLabel)} · Verify all bracketed details and keep a signed copy.</div>
+    </body></html>`;
+  await Print.printAsync({ html });
+}
 
 // ── Positive / neutral check-in detector ────────────────────────────────────
 // Bug this exists to fix: the "emotional context" classifier below matches on
@@ -26060,6 +26089,18 @@ function RedressSection({
                     style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(129,140,248,0.12)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(129,140,248,0.25)" }]}
                   >
                     <Text style={{ color: "#3730A3", fontSize: 12, fontWeight: "800" }}>↗ Share</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Save complaint letter as PDF"
+                    onPress={() => {
+                      void exportComplaintLetterPdf(draftTemplate ?? "", selectedRedressRoute.label).catch(() =>
+                        Alert.alert("Save as PDF", "Could not open the print dialog. You can use Share or Copy instead.")
+                      );
+                    }}
+                    style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(220,38,38,0.10)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(220,38,38,0.3)" }]}
+                  >
+                    <Text style={{ color: "#B91C1C", fontSize: 12, fontWeight: "800" }}>📄 Save PDF</Text>
                   </Pressable>
                 </View>
                 <View style={{ marginTop: 10, backgroundColor: "rgba(252,211,77,0.08)", borderRadius: 8, padding: 10, borderLeftWidth: 3, borderLeftColor: "#B45309" }}>

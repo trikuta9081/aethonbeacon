@@ -28,6 +28,8 @@ assert(source.includes('deliveryStatus: "failed"'), "Community failure delivery 
 assert(source.includes('deliveryStatus: "delivered"'), "Community delivered state is not implemented.");
 assert(source.includes('COMMUNITY_POST_COOLDOWN_MS') && source.includes('communityPostCooldownRemainingMs'), "Community post anti-flood cooldown is missing.");
 assert(source.includes('getRedressReviewState()'), "Redress review expiry is not enforced in the UI.");
+assert(source.includes('function exportComplaintLetterPdf') && source.includes('Print.printAsync'), "Complaint-letter PDF export is missing.");
+assert(source.includes('Save PDF'), "Save-as-PDF button is not rendered on the complaint letter.");
 assert(source.includes('COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]'), "Counselling safety triage is not rendered.");
 assert(source.includes('VEDIC_CALCULATION_STANDARD.zodiac'), "Vedic methodology is not rendered.");
 
