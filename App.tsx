@@ -19606,10 +19606,12 @@ function isTrustedExternalUrl(url: string) {
                   ] as Array<{ id: TabId; label: string; icon: string }>).map((item) => (
                     <Pressable
                       key={item.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={translateNavLabel(languageId, item.label)}
                       onPress={() => handleTabPress(item.id)}
                       style={({ pressed }) => [styles.profileFeatureChip, pressed && styles.pressed]}
                     >
-                      <Text style={styles.profileFeatureChipIcon}>{item.icon}</Text>
+                      <Text style={styles.profileFeatureChipIcon} accessibilityElementsHidden importantForAccessibility="no">{item.icon}</Text>
                       <Text style={styles.profileFeatureChipLabel}>
                         {translateNavLabel(languageId, item.label)}
                       </Text>
