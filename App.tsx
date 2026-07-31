@@ -3473,6 +3473,35 @@ function isUrgentSafetySignal(text: string): boolean {
   return classifyCounsellingSafety(text) === "immediate" || URGENT_SAFETY_SIGNAL_PATTERN.test(text);
 }
 
+// ── Positive / neutral check-in detector ────────────────────────────────────
+// Bug this exists to fix: the "emotional context" classifier below matches on
+// the bare words "feel" / "feeling" / "felt" so it can catch phrasing like
+// "I feel so alone" — but that same bare match also fires on "I am feeling
+// energetic", "I feel great today", etc. Every downstream step (the
+// counselling acknowledgment, the question bank, the synthesis) assumes
+// distress, so a genuinely positive message was being answered with "Whatever
+// you are carrying right now is real..." — a reply that has nothing to do
+// with what was actually typed. This detector runs BEFORE the emotional-
+// context check so a clearly positive, no-distress-signal message short-
+// circuits into a correctly-toned reply instead of the counselling engine.
+const POSITIVE_CHECKIN_PATTERN =
+  /(feeling energetic|feel energetic|feeling good|feel good|feeling great|feel great|feeling fine|feel fine|feeling well|feel well|feeling happy|feel happy|feeling positive|feel positive|feeling amazing|feel amazing|feeling wonderful|feel wonderful|feeling fantastic|feel fantastic|feeling motivated|feel motivated|feeling confident|feel confident|feeling proud|feel proud|feeling hopeful|feel hopeful|feeling optimistic|feel optimistic|feeling grateful|feel grateful|feeling thankful|feel thankful|feeling blessed|feel blessed|feeling calm|feel calm|feeling peaceful|feel peaceful|feeling relaxed|feel relaxed|feeling content|feel content|feeling satisfied|feel satisfied|feeling productive|feel productive|feeling accomplished|feel accomplished|feeling refreshed|feel refreshed|feeling alive|feel alive|feeling strong|feel strong|feeling better|feel better|feeling excited|feel excited|feeling joyful|feel joyful|feeling cheerful|feel cheerful|doing well|doing great|doing good|doing fine|doing fantastic|in a good place|on top of the world|really happy|so happy|very happy|great mood|good mood|feeling my best|life is good|things are going well|things are good|had a great day|had a good day|great day today|good day today)/;
+
+// Negative/distress vocabulary reused from the checks further down (minus the
+// bare "feel/feeling/felt" words that cause the false positive above). If any
+// of this fires alongside a positive phrase — e.g. "I felt great until this
+// happened, now I'm devastated" — the message is NOT treated as a pure
+// positive check-in, and the normal distress routing still applies.
+const NEGATIVE_SIGNAL_PATTERN =
+  /(upset|sad|hurt|broken|low mood|feeling low|feeling down|lost|numb|empty|hollow|ignored|invisible|unappreciated|not appreciated|not valued|not noticed|not recognised|not recognized|not seen|ugly|unattractive|not good looking|body image|insecur|ashamed|embarrassed|unloved|unwanted|rejected|alone|lonely|worthless|hopeless|depress|exhausted|tired of|sick of|struggling|overwhelmed|angry|anger|rage|furious|irritat|frustrat|anxious|anxiety|stress|stressed|worry|worried|panic|nervous|grief|griev|mourning|mourn|bereaved|bereavement|lost someone|someone died|passed away|divorce|separation|breakup|broke up|cheating|affair|marriage problem|relationship problem|job loss|lost my job|fired|laid off|redundant|money problem|debt|broke|financial trouble|loan|can.t pay|meaningless|addicted|can.t stop|complaint|grievance|redress|report|escalat|harass|bully|abuse|assault|trauma|suicid|self[-\s]?harm)/;
+
+function isPositiveCheckIn(text: string): boolean {
+  const n = text.toLowerCase();
+  if (isUrgentSafetySignal(n)) return false;
+  if (NEGATIVE_SIGNAL_PATTERN.test(n)) return false;
+  return POSITIVE_CHECKIN_PATTERN.test(n);
+}
+
 function detectAIHelpRouteFromText(text: string): AIHelpRoute {
   const n = text.toLowerCase();
 
@@ -3484,6 +3513,15 @@ function detectAIHelpRouteFromText(text: string): AIHelpRoute {
   // ── 2. PROFESSIONAL — clinical-level symptoms that need expert care ─────────
   if (/(seeing things|hearing voices|hallucina|psychosis|psychotic|paranoi|ptsd|flashback|trauma|dissociat|bipolar|schizophrenia|eating disorder|anorexia|bulimia|binge eating|self medicate|overdose|withdrawal|detox|rehab|addict|addiction|alcoholic|drug depend|substance abuse|chronic pain|chronic illness|terminal|diagnosed with|diagnosis|cancer|heart condition|severe depression|clinical depression|cannot get out of bed for weeks|not eaten|haven't slept in days|suicidal thoughts|want to die)/.test(n)) {
     return "professional";
+  }
+
+  // ── 2.5 POSITIVE CHECK-IN — clearly positive affect, no distress signal ─────
+  // Must run before the emotional-context check below, which matches on the
+  // bare words "feel"/"feeling"/"felt" regardless of what follows them. That
+  // bare match is what previously sent something like "I am feeling
+  // energetic" into the distress-support flow.
+  if (isPositiveCheckIn(n)) {
+    return "general";
   }
 
   // ── 3. EMOTIONAL CONTEXT — must check BEFORE redress ────────────────────────
@@ -3539,6 +3577,18 @@ function findAIHelpIssueIdFromText(text: string): IssueId | null {
  */
 function buildCounselingAcknowledgment(text: string, issueId: IssueId, route: AIHelpRoute): { heard: string; nextStep: string } {
   const t = text.toLowerCase();
+
+  // ── Positive / neutral check-in ─────────────────────────────────────────────
+  // Guards against the "Default" branch at the bottom of this function ("Whatever
+  // you are carrying right now is real...") firing on messages that describe no
+  // distress at all, e.g. "I am feeling energetic". Checked first so it wins
+  // over every distress branch below.
+  if (isPositiveCheckIn(t)) {
+    return {
+      heard: "That's genuinely good to hear — thank you for sharing something positive. Not every check-in here has to be about a problem.",
+      nextStep: "Let me know if there is anything specific on your mind — otherwise, enjoy the moment."
+    };
+  }
 
   // ── Grief / loss ────────────────────────────────────────────────────────────
   if (issueId === "grief" || /(grief|griev|mourning|bereaved|bereavement|lost someone|someone died|passed away|death of|loss of)/.test(t)) {
@@ -16258,6 +16308,19 @@ async function fetchGeminiAIHelp(
       openRedressTab(redressFocus);
       return;
     }
+    if (isPositiveCheckIn(text)) {
+      // A genuinely positive, no-distress message (e.g. "I am feeling
+      // energetic") should never be pulled into the counselling engine below
+      // — every question bank and acknowledgment in it assumes something is
+      // wrong, which is exactly what produced the "confused, unrelated
+      // reply" reported by testers. Answer it directly and stop here.
+      setAIHelpDraft("");
+      Alert.alert(
+        "Good to hear",
+        "That's genuinely good to hear — glad it's landing that way today. If anything specific is on your mind, tell me and I'll help; otherwise, enjoy the moment."
+      );
+      return;
+    }
 
     // Everything else — the vast majority of what people type here — now goes
     // through the single real two-way 48D counselling engine instead of a
@@ -16971,6 +17034,17 @@ async function fetchGeminiAIHelp(
             ? "Reset"
             : "Path";
     const nextRedressRouteId = route === "urgent" ? "crime" : findAIHelpRedressRouteFromText(routeText);
+
+    if (text.length > 0 && isPositiveCheckIn(routeText)) {
+      // A clearly positive, no-distress message (e.g. "I am feeling
+      // energetic") should not be pushed through the counselling engine at
+      // all — every acknowledgment, question bank, and journey below assumes
+      // something is wrong, which produced a mismatched "confused" reply for
+      // testers who typed something good. Acknowledge it plainly and stop.
+      setHomeIssueDraft("");
+      showRouteNotice("Heard", "That's genuinely good to hear — glad it's landing that way today.");
+      return;
+    }
 
     // Build a personal acknowledgment of what was shared — shown BEFORE routing
     const counseling = buildCounselingAcknowledgment(routeText, issue.id, route);
@@ -17832,7 +17906,7 @@ function isTrustedExternalUrl(url: string) {
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                             <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
-                              48-Dim redressal
+                              Multidimensional redressal
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
                               <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>Details →</Text>
@@ -31372,7 +31446,7 @@ function buildMoonChartCounselingOverlay(
   const primaryRemedy = careful[0]?.remedy ?? strongest[0]?.remedy ?? "Moon-chart remedy: keep the next step small, calm, and repeatable today.";
 
   return [
-    `48D Moon Chart counselling layer: I also checked the Moon-chart dimensions connected to this issue. The relevant 48D average is ${average}/100.`,
+    `Multidimensional Moon Chart counselling layer: I also checked the Moon-chart dimensions connected to this issue. The relevant multidimensional average is ${average}/100.`,
     `Supported capacities: ${topLine}.`,
     `Care points: ${carefulLine}.`,
     `How to use this today: treat the supported areas as resources, and protect the careful areas before making a big decision. ${primaryRemedy}`,
@@ -31762,7 +31836,7 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
     const careful = [...(focused.length > 0 ? focused : moonChart48Readings)].sort((a, b) => a.score - b.score)[0];
     steps.push({
       tabId: "vedic",
-      label: "Check 48D Moon Chart",
+      label: "Check Multidimensional Moon Chart",
       emoji: "🌙",
       reason: careful
         ? `Use the Moon-chart layer for timing and remedies; today it flags ${careful.label.toLowerCase()} as the main care point.`
