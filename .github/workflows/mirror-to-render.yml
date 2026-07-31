@@ -91,21 +91,30 @@ jobs:
             https://api.github.com/repos/trikuta9081/AETHON-beacon-)"
           echo "GitHub API repo-access check returned HTTP ${API_STATUS}"
 
-          git config user.name "aethon-deploy-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add -f dist
-          git commit -m "chore(web): auto-build from ${GITHUB_SHA}" || echo "Nothing changed in the built bundle -- skipping commit."
-
-          # THE ACTUAL FIX: actions/checkout installs a global git auth header
+          # actions/checkout installs a global git auth header
           #   http.https://github.com/.extraheader = AUTHORIZATION: basic <GITHUB_TOKEN>
           # containing the workflow's built-in GITHUB_TOKEN. That header is sent on
           # EVERY push to github.com, overriding the credentials embedded in the
           # remote URL below. The built-in token can only access THIS repo
           # (aethonbeacon), so pushing to the separate AETHON-beacon- repo was
-          # being rejected as a misleading "Repository not found" -- which is why
-          # every correctly-scoped RENDER_MIRROR_TOKEN still failed. Clearing the
-          # inherited header lets our own token in the URL actually be used.
+          # being rejected as a misleading "Repository not found". Clearing the
+          # inherited header lets our own RENDER_MIRROR_TOKEN in the URL be used.
           git config --unset-all http.https://github.com/.extraheader 2>/dev/null || true
 
+          # Publish the mirror as a single self-contained snapshot on an orphan
+          # branch (no parent history -> the pushed pack can never be missing a
+          # parent object, independent of clone depth). We also drop
+          # .github/workflows because GitHub refuses to let a fine-grained PAT
+          # without "workflow" scope create/update workflow files in the target
+          # repo -- and the Render mirror (which only serves the pre-built dist/
+          # via Dockerfile.web) has no need for aethonbeacon's CI workflows.
+          git checkout --orphan render-deploy
+          rm -rf .github/workflows
+          git add -A
+          git add -f dist
+          git -c user.name="aethon-deploy-bot" \
+              -c user.email="actions@users.noreply.github.com" \
+              commit -m "chore(web): auto-build from ${GITHUB_SHA}"
+
           git remote add render-mirror "https://x-access-token:${CLEAN_TOKEN}@github.com/trikuta9081/AETHON-beacon-.git"
-          git push render-mirror HEAD:main --force
+          git push render-mirror render-deploy:main --force
