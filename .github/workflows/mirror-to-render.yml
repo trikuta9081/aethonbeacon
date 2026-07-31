@@ -71,9 +71,26 @@ jobs:
           # produces a "repository not found" error even with a correctly-scoped token.
           CLEAN_TOKEN="$(printf '%s' "$RENDER_MIRROR_TOKEN" | tr -d '[:space:]')"
           echo "Token length after trim: ${#CLEAN_TOKEN} chars (sanity check only, value never printed)"
+
+          # DIAGNOSTIC: ask the GitHub API directly whether this token can see the
+          # target repo. This is independent of git's auth format, so it isolates
+          # "is the token/scope wrong" from "is the git URL format wrong".
+          #   200 -> token CAN see the repo (any push failure is a git-format issue)
+          #   404 -> token cannot see the repo (scope/approval problem on the token)
+          #   401 -> token is invalid/expired
+          API_STATUS="$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer ${CLEAN_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/trikuta9081/AETHON-beacon-)"
+          echo "GitHub API repo-access check returned HTTP ${API_STATUS}"
+
           git config user.name "aethon-deploy-bot"
           git config user.email "actions@users.noreply.github.com"
           git add -f dist
           git commit -m "chore(web): auto-build from ${GITHUB_SHA}" || echo "Nothing changed in the built bundle -- skipping commit."
-          git remote add render-mirror "https://x-access-token:${CLEAN_TOKEN}@github.com/trikuta9081/AETHON-beacon-.git"
+          # Fine-grained PATs authenticate over HTTPS as the *password* with any
+          # username. The previous "x-access-token:" username form is the GitHub
+          # App installation-token convention and can be rejected for fine-grained
+          # PATs, surfacing as a misleading "repository not found".
+          git remote add render-mirror "https://trikuta9081:${CLEAN_TOKEN}@github.com/trikuta9081/AETHON-beacon-.git"
           git push render-mirror HEAD:main --force
