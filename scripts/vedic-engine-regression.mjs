@@ -35,7 +35,7 @@ assert(source.includes('shouldAddMoonChartJourneyStep'), 'Counselling journey Mo
 assert(source.includes('moonChart48Readings={vedicMoonChart48Readings}'), 'Counselling modal is not receiving current Moon Chart 48D readings');
 assert(source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings)'), 'Counselling synthesis is not using Moon Chart 48D readings');
 assert(source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings)'), 'Counselling journey is not using Moon Chart 48D readings');
-assert(source.includes('48D Moon Chart counselling layer'), 'User-facing 48D counselling layer text is missing');
+assert(source.includes('Multidimensional Moon Chart counselling layer'), 'User-facing Multidimensional counselling layer text is missing');
 
 assert(source.includes('interpretation: string'), 'Moon Chart readings must include plain-language interpretation');
 assert(source.includes('scoreReason: string'), 'Moon Chart readings must include explainable score reason');

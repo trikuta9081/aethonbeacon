@@ -25352,7 +25352,7 @@ function RedressSection({
           stacked in a single column guarantees each panel is exactly as
           tall as its own content, with no possibility of stretching to
           match a taller sibling and leaving a blank tail behind it. */}
-      <View style={[styles.panel, !isWide && { flex: 0 }]}>
+      <View style={[styles.panel, !isWide && { flexGrow: 0, flexBasis: "auto" }]}>
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.eyebrow}>Help and Redress</Text>
@@ -25508,7 +25508,7 @@ function RedressSection({
       </View>
 
       {/* ── PANEL 2: INSTITUTION TYPE ── */}
-      <View style={[styles.panel, !isWide && { flex: 0 }]}>
+      <View style={[styles.panel, !isWide && { flexGrow: 0, flexBasis: "auto" }]}>
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.eyebrow}>Institution type</Text>
@@ -25602,7 +25602,7 @@ function RedressSection({
 
       {/* ── PANEL 3: ACTIVE ROUTE DETAIL ── */}
       <View
-        style={[styles.panel, !isWide && { flex: 0 }]}
+        style={[styles.panel, !isWide && { flexGrow: 0, flexBasis: "auto" }]}
         onLayout={onFocusSelectedRedressLayout ? onFocusSelectedRedressLayout(selectedRedressRoute.id) : undefined}
       >
         {/* Emergency triage for crime/domestic routes */}

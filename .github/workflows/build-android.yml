@@ -51,6 +51,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Gate the build on the app's own checks so a broken commit can never reach
+      # Play testers. Typecheck + the regression suites are fast and catch
+      # regressions in the counselling, vedic, tone, visibility and product
+      # quality engines before a binary is ever built.
+      - name: Verify (typecheck + regression tests)
+        run: |
+          pnpm run typecheck
+          pnpm run test:tone
+          pnpm run test:vedic
+          pnpm run test:visibility
+          pnpm run test:product-quality
+          pnpm run test:upgrades
+
       - name: Make Gradle executable
         run: chmod +x android/gradlew
 

@@ -57,6 +57,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Gate the web deploy on the app's own checks so a broken commit can never
+      # reach the live site.
+      - name: Verify (typecheck + regression tests)
+        run: |
+          pnpm run typecheck
+          pnpm run test:tone
+          pnpm run test:vedic
+          pnpm run test:visibility
+          pnpm run test:product-quality
+          pnpm run test:upgrades
+
       - name: Build web bundle
         run: pnpm run export:web
         env:
