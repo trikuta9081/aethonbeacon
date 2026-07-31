@@ -36,6 +36,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history (not the default shallow depth-1 clone). Pushing HEAD to
+          # the separate AETHON-beacon- repo builds a pack that references parent
+          # commits; with a shallow clone those objects are missing and the remote
+          # rejects the push with "did not receive expected object / index-pack
+          # failed". Fetching full history makes the pack complete.
+          fetch-depth: 0
 
       - name: Setup Node 22
         uses: actions/setup-node@v4
