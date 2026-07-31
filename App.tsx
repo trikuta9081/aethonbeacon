@@ -16434,6 +16434,20 @@ async function fetchGeminiAIHelp(
       return;
     }
 
+    // Low-confidence clarifier. The classifier only returns "general" when NO
+    // emotional, redress, urgent, professional, or calm signal matched at all —
+    // i.e. it is genuinely unsure what the person needs. On a substantive
+    // message (not a one-word greeting), rather than silently committing to the
+    // counselling engine with a possibly-wrong read — the exact situation that
+    // historically produced off-target replies — surface the route decision so
+    // the person can steer. Short/vague inputs still flow straight to the chat.
+    const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+    if (route === "general" && wordCount >= 6) {
+      setAIHelpDraft("");
+      openRouteDecision(text, issueFocus, route, redressFocus, profileDisplayName);
+      return;
+    }
+
     // Everything else — the vast majority of what people type here — now goes
     // through the single real two-way 48D counselling engine instead of a
     // shallow one-shot canned reply. That old path often ignored what was
