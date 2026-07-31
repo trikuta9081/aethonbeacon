@@ -9127,6 +9127,89 @@ function navamsaSignIndex(siderealLongitude: number): number {
   return totalNavamsaCount % 12;
 }
 
+// ── Gochar (current planetary transits) ─────────────────────────────────────
+// Classical Vedic prediction reads two layers: the birth chart + Vimshottari
+// Dasha timing (which the app already computes), and Gochar — where the nine
+// grahas are RIGHT NOW, judged from the natal Moon (Janma Rashi). The app was
+// missing this "now" layer entirely. Gochar reuses getNavagrahaLongitudes(),
+// so transits sit on the exact same real sidereal (Lahiri) ephemeris as every
+// other calculation — it is an additive foresight layer, not a second model,
+// and it does not touch any existing natal/dasha math.
+type TransitGraha = {
+  id: GrahaId;
+  label: string;
+  rashiIndex: number;    // 0-11 current sign
+  houseFromMoon: number; // 1-12 counted from the natal Moon's sign
+  retrograde: boolean;
+};
+type GocharChart = {
+  asOf: Date;
+  grahas: TransitGraha[];
+  sadeSatiPhase: "rising" | "peak" | "setting" | null;
+  jupiterHouseFromMoon: number;
+  jupiterAuspicious: boolean;
+};
+
+// House counted from the natal Moon's sign (1 = same sign as the Moon).
+function houseFromMoonSign(rashiIndex: number, natalMoonRashiIndex: number): number {
+  return ((rashiIndex - natalMoonRashiIndex + 12) % 12) + 1;
+}
+
+function gocharOrdinal(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
+}
+
+function getGocharChart(natalMoonRashiIndex: number, date: Date = new Date()): GocharChart {
+  const longitudes = getNavagrahaLongitudes(date);
+  // A day later, to detect apparent retrograde motion (longitude decreasing).
+  const nextDay = getNavagrahaLongitudes(new Date(date.getTime() + MS_PER_DAY));
+  const grahas: TransitGraha[] = NAVAGRAHA_IDS.map((id) => {
+    const rashiIndex = rashiIndexFromLongitude(longitudes[id]);
+    // Rahu/Ketu are always retrograde by convention; for the rest compare a day's motion.
+    const delta = normalizeDegrees(nextDay[id] - longitudes[id]);
+    const retrograde = id === "rahu" || id === "ketu" ? true : delta > 180;
+    return { id, label: GRAHA_LABELS[id], rashiIndex, houseFromMoon: houseFromMoonSign(rashiIndex, natalMoonRashiIndex), retrograde };
+  });
+  const saturnHouse = grahas.find((g) => g.id === "saturn")?.houseFromMoon ?? 0;
+  const sadeSatiPhase: GocharChart["sadeSatiPhase"] =
+    saturnHouse === 12 ? "rising" : saturnHouse === 1 ? "peak" : saturnHouse === 2 ? "setting" : null;
+  const jupiterHouseFromMoon = grahas.find((g) => g.id === "jupiter")?.houseFromMoon ?? 0;
+  return {
+    asOf: date,
+    grahas,
+    sadeSatiPhase,
+    jupiterHouseFromMoon,
+    jupiterAuspicious: [2, 5, 7, 9, 11].includes(jupiterHouseFromMoon),
+  };
+}
+
+function getGocharGuidance(chart: GocharChart): { headline: string; notes: string[] } {
+  const notes: string[] = [];
+  if (chart.sadeSatiPhase) {
+    const phaseLabel =
+      chart.sadeSatiPhase === "rising" ? "rising phase — Saturn in the 12th from your Moon"
+        : chart.sadeSatiPhase === "peak" ? "peak phase — Saturn transiting over your Moon sign"
+          : "closing phase — Saturn in the 2nd from your Moon";
+    notes.push(`Sade Sati is active (${phaseLabel}). Classically a roughly seven-and-a-half-year period that asks for patience, steadiness and honest effort — usually felt as added responsibility and slower results rather than misfortune. Reflective guidance, not a warning.`);
+  } else {
+    const saturn = chart.grahas.find((g) => g.id === "saturn");
+    if (saturn) notes.push(`Saturn is transiting the ${gocharOrdinal(saturn.houseFromMoon)} house from your Moon — a steady, structure-testing influence over that area of life.`);
+  }
+  notes.push(
+    chart.jupiterAuspicious
+      ? `Jupiter is transiting the ${gocharOrdinal(chart.jupiterHouseFromMoon)} house from your Moon — classically one of its supportive positions, favouring growth, learning and opportunity.`
+      : `Jupiter is transiting the ${gocharOrdinal(chart.jupiterHouseFromMoon)} house from your Moon — a quieter placement; steady effort matters more than lucky breaks in this window.`
+  );
+  const headline = chart.sadeSatiPhase
+    ? "Sade Sati is active"
+    : chart.jupiterAuspicious
+      ? "Jupiter is well-placed for you now"
+      : "A steady transit window";
+  return { headline, notes };
+}
+
 // ════════════════════════════════════════════════════════════════════════════
 // BIRTH CHART CORE — shared input for Navamsa, Yoga detection, Ashtakavarga,
 // and Shadbala. Computed once per birth-detail change; every classical system
@@ -28131,6 +28214,17 @@ function BirthChartSection({
     ? buildMoonChart48DimensionEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara, lagnaId: lagnaInfo?.lagnaId ?? null })
     : [];
   const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
+  // Gochar (current transits) read from the natal Moon — the "now" foresight
+  // layer. Memoized per day so it is not recomputed on unrelated renders.
+  const gocharDayKey = new Date().toISOString().slice(0, 10);
+  const gocharChart = React.useMemo(
+    () => (rashiInfo ? getGocharChart(rashiInfo.rashiId, new Date()) : null),
+    [rashiInfo?.rashiId, gocharDayKey]
+  );
+  const gocharGuidance = React.useMemo(
+    () => (gocharChart ? getGocharGuidance(gocharChart) : null),
+    [gocharChart]
+  );
   const moonChartCategorySummary = (["mind", "relationship", "work", "money", "body", "spiritual", "risk", "growth"] as MoonChart48Category[])
     .map((category) => {
       const items = moonChart48Readings.filter((item) => item.category === category);
@@ -28692,6 +28786,39 @@ function BirthChartSection({
               <Text style={{ color: "#00A8B8", fontSize: 12, fontWeight: "900", letterSpacing: 1 }}>INSIGHT</Text>
             </View>
           </View>
+
+          {/* ── Gochar (current transits) — the "now" foresight layer ── */}
+          {gocharChart && gocharGuidance && (
+          <View style={{ marginTop: 4, borderRadius: 18, backgroundColor: "#EAF3F0", borderWidth: 1, borderColor: gocharChart.sadeSatiPhase ? "rgba(180,120,30,0.5)" : "rgba(14,148,136,0.3)", padding: 14, gap: 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
+              <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flexShrink: 1, minWidth: 0 }}>
+                🪐 Current transits (Gochar) · from your Moon
+              </Text>
+              <Text style={{ color: "#5B6B7A", fontSize: 12, fontWeight: "700" }}>
+                as of {gocharChart.asOf.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+              </Text>
+            </View>
+            <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "900" }}>{gocharGuidance.headline}</Text>
+            {gocharGuidance.notes.map((note, i) => (
+              <Text key={i} style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>• {note}</Text>
+            ))}
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
+              {gocharChart.grahas.map((g) => (
+                <View key={g.id} style={{ borderRadius: 10, backgroundColor: "#DCEAE7", borderWidth: 1, borderColor: "rgba(14,148,136,0.25)", paddingHorizontal: 9, paddingVertical: 6, minWidth: 0 }}>
+                  <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "800" }}>
+                    {g.label}{g.retrograde ? " ℞" : ""}
+                  </Text>
+                  <Text style={{ color: "#3A577D", fontSize: 12 }}>
+                    {VEDIC_RASHIS[g.rashiIndex].en} · {gocharOrdinal(g.houseFromMoon)} from Moon
+                  </Text>
+                </View>
+              ))}
+            </View>
+            <Text style={{ color: "#5B6B7A", fontSize: 12, lineHeight: 16, fontStyle: "italic" }}>
+              Transits use the same real sidereal (Lahiri) positions as the rest of the chart. Reflective guidance for timing awareness — not a prediction or guarantee.
+            </Text>
+          </View>
+          )}
 
           <View style={{ flexDirection: isWide ? "row" : "column", gap: 12 }}>
             <View style={{ flex: 1.05, borderRadius: 20, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: "rgba(103,232,249,0.4)", padding: 12, transform: [{ perspective: 900 }, { rotateX: isWide ? "3deg" : "0deg" }] }}>

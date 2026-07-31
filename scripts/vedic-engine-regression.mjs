@@ -64,6 +64,15 @@ assert(source.includes('{askTheChartPanel}'), 'Ask-the-chart panel is not render
 assert(source.includes('return pairs.reverse().flat();'), 'Ask-the-chart history must render newest exchange first while preserving question→reply pairing');
 assert(source.includes("Kala Bala's day/night components, Drik (aspect) Bala, and the full six-divisional-chart Vimshopak Bala are deferred"), 'Partial Shadbala limitations must remain disclosed until fully implemented');
 
+// ── Gochar (current transits) foresight layer ───────────────────────────────
+assert(source.includes('function getGocharChart'), 'Gochar (current transits) chart builder is missing');
+assert(source.includes('function getGocharGuidance'), 'Gochar guidance builder is missing');
+assert(source.includes('function houseFromMoonSign'), 'Gochar house-from-Moon calculation is missing');
+assert(source.includes('getGocharChart(rashiInfo.rashiId, new Date())'), 'Transit panel must compute gochar from the natal Moon for the current moment');
+assert(source.includes('Current transits (Gochar)'), 'Gochar transit panel is not rendered in the Vedic section');
+assert(/sadeSatiPhase/.test(source), 'Sade Sati detection is missing from the gochar layer');
+assert(source.includes('getNavagrahaLongitudes(new Date(date.getTime() + MS_PER_DAY))'), 'Gochar retrograde detection (next-day motion) is missing');
+
 function antardashaDurations(mahadasha) {
   return dashaOrder.map((planet, index) => ({
     planet,
