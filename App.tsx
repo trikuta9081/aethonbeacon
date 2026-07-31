@@ -19326,6 +19326,7 @@ function isTrustedExternalUrl(url: string) {
                 onOpenGuide={() => handleTabPress("guide")}
                 onReadRouteAloud={(text) => void speakGuidance(text)}
                 onFocusSelectedRedressLayout={captureFocusLayout}
+                profileDisplayName={profileDisplayName}
                 isWide={width >= 1280}
               />
             </View>
@@ -25357,6 +25358,7 @@ function RedressSection({
   onOpenGuide,
   onReadRouteAloud,
   onFocusSelectedRedressLayout,
+  profileDisplayName,
   isWide
 }: {
   redressRoutes: RedressRoute[];
@@ -25374,6 +25376,7 @@ function RedressSection({
   onOpenGuide: () => void;
   onReadRouteAloud?: (text: string) => void;
   onFocusSelectedRedressLayout?: (routeId: RedressRouteId) => (event: { nativeEvent: { layout: { y: number } } }) => void;
+  profileDisplayName: string;
   isWide: boolean;
 }) {
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
@@ -25442,8 +25445,24 @@ function RedressSection({
   };
 
   const timeline = ROUTE_TIMELINES[selectedRedressRoute.id];
-  const draftTemplate = DRAFT_TEMPLATES[selectedRedressRoute.id];
-  const firstScript = FIRST_SCRIPTS[selectedRedressRoute.id];
+  // Auto-fill the sender's name into the complaint letter and first-call script
+  // so the person isn't re-typing "[Your Name]" 2-3 times per document. Only the
+  // name is filled — it is the one bracket that is unambiguously the user in
+  // every template. [Date], amounts, incident specifics, etc. are intentionally
+  // left as guided blanks because they are context-specific and must never be
+  // guessed (e.g. "[Date]" is used for both the incident date and the signature
+  // date within the same letter). Falls back to leaving the bracket untouched
+  // when the profile is still a generic address label.
+  const senderName =
+    profileDisplayName && !/^(you|there|friend|guest)$/i.test(profileDisplayName.trim())
+      ? profileDisplayName.trim()
+      : null;
+  const autoFillName = (tpl: string | undefined): string | undefined => {
+    if (!tpl || !senderName) return tpl;
+    return tpl.replace(/\[Your Name\]/g, senderName);
+  };
+  const draftTemplate = autoFillName(DRAFT_TEMPLATES[selectedRedressRoute.id]);
+  const firstScript = autoFillName(FIRST_SCRIPTS[selectedRedressRoute.id]);
   const isEmergencyRoute = selectedRedressRoute.id === "crime" || selectedRedressRoute.id === "domestic";
   const isCrimeRoute = selectedRedressRoute.id === "crime";
   const isDomesticRoute = selectedRedressRoute.id === "domestic";
