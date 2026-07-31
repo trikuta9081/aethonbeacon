@@ -13718,10 +13718,10 @@ export default function App() {
         setPlayClaimed(normalizePlayClaimed(parsed.playClaimed));
       }
       if (Array.isArray(parsed.communityMessages)) {
-        setCommunityMessages(normalizeCommunityMessages(parsed.communityMessages).slice(0, 24));
+        setCommunityMessages(normalizeCommunityMessages(parsed.communityMessages).slice(0, 50));
       }
       if (Array.isArray(parsed.communityChatMessages)) {
-        setCommunityChatMessages(normalizeCommunityChatMessages(parsed.communityChatMessages).slice(0, 24));
+        setCommunityChatMessages(normalizeCommunityChatMessages(parsed.communityChatMessages).slice(0, 50));
       }
       if (Array.isArray(parsed.privateSpaceThreads)) {
         const nextThreads = normalizePrivateSpaceThreads(parsed.privateSpaceThreads).slice(0, 8);
@@ -14225,8 +14225,8 @@ export default function App() {
       institutionSectorId,
       playProgress,
       playClaimed,
-      communityMessages: communityMessages.slice(0, 24),
-      communityChatMessages: communityChatMessages.slice(0, 24),
+      communityMessages: communityMessages.slice(0, 50),
+      communityChatMessages: communityChatMessages.slice(0, 50),
       communityChatPersona,
       privateSpaceThreads: privateSpaceThreads.slice(0, 8),
       privateSpaceSelectedThreadId,
