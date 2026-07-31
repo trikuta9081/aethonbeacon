@@ -27853,15 +27853,21 @@ function VedicDailyCard({
   const compact = width < 760;
   const today = new Date();
   const dateLabel = today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
-  const moonChart48Readings = buildMoonChart48DimensionEngine({
-    rashiId: rashi.id,
-    janmaNakshatra,
-    dashaState,
-    tithi,
-    vara,
-    lagnaId,
-  });
-  const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
+  // Memoized: recomputing all 48 lunar dimensions on every render (e.g. window
+  // resize, unrelated state) is wasteful. Keyed on the birth-derived inputs so
+  // it only recomputes when the chart actually changes.
+  const moonChart48Readings = React.useMemo(
+    () => buildMoonChart48DimensionEngine({
+      rashiId: rashi.id,
+      janmaNakshatra,
+      dashaState,
+      tithi,
+      vara,
+      lagnaId,
+    }),
+    [rashi.id, janmaNakshatra, dashaState, tithi, vara, lagnaId]
+  );
+  const moonChart48Summary = React.useMemo(() => summarizeMoonChart48(moonChart48Readings), [moonChart48Readings]);
   const lunarHousePreview = Array.from({ length: 12 }, (_, houseIndex) => {
     const house = houseIndex + 1;
     const items = moonChart48Readings.filter((item) => item.house === house);

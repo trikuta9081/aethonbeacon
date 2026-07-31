@@ -12,7 +12,7 @@ export const VEDIC_CALCULATION_STANDARD = {
   predictionAnchor: "Moon chart only",
   requiredInputs: ["date of birth", "exact local birth time", "birth place", "timezone"],
   limitations:
-    "Results are interpretive guidance, not guaranteed outcomes. Missing or approximate birth data reduces timing precision.",
+    "Results are reflective guidance for self-understanding — not predictions, guarantees, or a substitute for medical, mental-health, financial, or legal advice. Missing or approximate birth data reduces timing precision.",
   validationRule:
     "Planetary longitudes, Lagna, Nakshatra, Vimshottari Dasha and Antardasha must be checked against two independent reference calculations before a release is promoted."
 } as const;
