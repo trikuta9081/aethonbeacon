@@ -33,6 +33,15 @@
 # (github.com/trikuta9081/aethon-beacon, no trailing dash) is NOT touched by
 # this script and is not referenced anywhere in this project; it is safe to
 # delete on GitHub whenever you want to tidy up.
+#
+# Belt and suspenders: .github/workflows/mirror-to-render.yml now ALSO
+# rebuilds the web bundle and pushes it to the render mirror automatically,
+# server-side, on every push to origin/master (once its one-time
+# RENDER_MIRROR_TOKEN secret is set — see that file). So even a plain
+# `git push origin master` alone, without running this script, ships the
+# web app too. This script still does its own local build+push regardless,
+# so it keeps working exactly the same whether or not that secret has been
+# set up yet, and never depends on GitHub Actions minutes to ship.
 
 set -e
 cd "$(dirname "$0")"

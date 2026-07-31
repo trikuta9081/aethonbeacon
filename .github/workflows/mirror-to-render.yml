@@ -1,0 +1,66 @@
+name: Build web + deploy to Render
+
+# Render's "aethon-beacon-web" service serves a pre-built dist/ folder from
+# a SEPARATE GitHub repo (trikuta9081/AETHON-beacon-, watching its "main"
+# branch) rather than building from source itself (see Dockerfile.web --
+# "Serve pre-built dist committed to repo (no build step -- instant
+# deploys)"). Historically that meant a human had to remember to rebuild
+# the web bundle locally and push it to that second repo by hand -- the
+# exact kind of step that gets skipped and causes "I shipped it but the
+# site didn't update."
+#
+# This workflow removes that step entirely. On every push to master here,
+# it builds the web bundle itself and pushes the result to
+# AETHON-beacon-/main, which Render is watching and will redeploy within
+# seconds. Combined with build-android.yml and build-ios.yml (which also
+# trigger on push to master), a single `git push origin master` now ships
+# to all three surfaces -- web, Android testers, iOS testers -- with
+# nothing left to do by hand.
+#
+# One-time setup required: create a GitHub Personal Access Token that can
+# push to trikuta9081/AETHON-beacon-, then add it as a repository secret
+# here named RENDER_MIRROR_TOKEN (Settings -> Secrets and variables ->
+# Actions -> New repository secret). A fine-grained token scoped to just
+# that one repo with "Contents: Read and write" permission is enough --
+# it never touches this repo or any other.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build-and-mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web bundle
+        run: npm run export:web
+        env:
+          EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://aethon-beacon-verification.onrender.com"
+
+      - name: Commit bundle and push to the Render-watched repo
+        env:
+          RENDER_MIRROR_TOKEN: ${{ secrets.RENDER_MIRROR_TOKEN }}
+        run: |
+          if [ -z "$RENDER_MIRROR_TOKEN" ]; then
+            echo "::error::RENDER_MIRROR_TOKEN secret is not set -- see the comment at the top of this workflow for one-time setup."
+            exit 1
+          fi
+          git config user.name "aethon-deploy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f dist
+          git commit -m "chore(web): auto-build from ${GITHUB_SHA}" || echo "Nothing changed in the built bundle -- skipping commit."
+          git remote add render-mirror "https://x-access-token:${RENDER_MIRROR_TOKEN}@github.com/trikuta9081/AETHON-beacon-.git"
+          git push render-mirror HEAD:main --force
