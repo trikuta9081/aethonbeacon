@@ -30,4 +30,14 @@ assert(source.includes('getRedressReviewState()'), "Redress review expiry is not
 assert(source.includes('COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]'), "Counselling safety triage is not rendered.");
 assert(source.includes('VEDIC_CALCULATION_STANDARD.zodiac'), "Vedic methodology is not rendered.");
 
-console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, redress governance, local metrics, ethical access, and beta coverage standards are present.");
+// ── Crisis lifeline safeguard ───────────────────────────────────────────────
+// A self-directed safety signal (self-harm / suicidal ideation) must lead with
+// verified lifelines, never a conversational reply or a complaint flow.
+assert(source.includes('const CRISIS_HELPLINES'), "Verified crisis helpline list is missing.");
+assert(source.includes('Tele-MANAS') && source.includes('14416'), "Tele-MANAS lifeline (14416) is missing from crisis helplines.");
+assert(source.includes('1800-599-0019'), "KIRAN lifeline (1800-599-0019) is missing from crisis helplines.");
+assert(source.includes('function CrisisSupportModal'), "CrisisSupportModal component is missing.");
+assert(source.includes('setCrisisSupportVisible(true)'), "Urgent self-harm route does not open the crisis support overlay.");
+assert(/if \(route === "urgent"\) \{[\s\S]*?setCrisisSupportVisible\(true\)/.test(source), "Urgent route is not wired to the crisis overlay in the submit handler.");
+
+console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, and beta coverage standards are present.");

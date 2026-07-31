@@ -3473,6 +3473,19 @@ function isUrgentSafetySignal(text: string): boolean {
   return classifyCounsellingSafety(text) === "immediate" || URGENT_SAFETY_SIGNAL_PATTERN.test(text);
 }
 
+// ── Verified crisis lifelines (India) ───────────────────────────────────────
+// Government-operated, free, 24x7, multi-language. Verified against official
+// PIB / Ministry sources on 2026-07-31. When a self-directed safety signal
+// (self-harm / suicidal ideation) is detected, the app leads with these
+// IMMEDIATELY — never a conversational reply or a complaint flow. Re-verify
+// these numbers before each release; helplines change.
+const CRISIS_HELPLINES: { name: string; dial: string; detail: string }[] = [
+  { name: "Tele-MANAS", dial: "14416", detail: "National mental-health helpline (Govt. of India, MoHFW). Free, 24x7, 20 languages." },
+  { name: "Tele-MANAS (alt)", dial: "1800-891-4416", detail: "Toll-free alternate line for Tele-MANAS if 14416 does not connect." },
+  { name: "KIRAN", dial: "1800-599-0019", detail: "Mental-health rehabilitation helpline (Govt. of India). Free, 24x7, 13 languages." },
+  { name: "Emergency (112)", dial: "112", detail: "Pan-India emergency — police, ambulance, fire. Use if there is immediate danger to life." }
+];
+
 // ── Positive / neutral check-in detector ────────────────────────────────────
 // Bug this exists to fix: the "emotional context" classifier below matches on
 // the bare words "feel" / "feeling" / "felt" so it can catch phrasing like
@@ -11081,6 +11094,91 @@ function ExitReportModal({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Crisis support overlay. Shown the instant a self-directed safety signal
+// (self-harm / suicidal ideation) is detected in the counselling input. It
+// leads with verified, government-run lifelines and a grounding message, and
+// stays up until the person dismisses it — it is never auto-closed and never
+// buried behind other content.
+function CrisisSupportModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+  if (!visible) return null;
+  const callLine = (dial: string) => {
+    const clean = dial.replace(/[^0-9+]/g, "");
+    void Linking.openURL(`tel:${clean}`).catch(() =>
+      Alert.alert("Could not open dialer", `Please dial ${dial} directly.`)
+    );
+  };
+  return (
+    <Modal transparent animationType="fade" visible onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: "rgba(4, 11, 16, 0.9)", justifyContent: "center", padding: 20 }}>
+        <ScrollView
+          style={{ maxHeight: "92%" }}
+          contentContainerStyle={{
+            backgroundColor: "#F3F7F6",
+            borderRadius: 22,
+            borderWidth: 1,
+            borderColor: "rgba(14, 204, 184, 0.35)",
+            padding: 20,
+            gap: 14
+          }}
+        >
+          <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "900", letterSpacing: 1.4, textTransform: "uppercase" }}>
+            You are not alone
+          </Text>
+          <Text style={{ color: "#0D1F22", fontSize: 22, fontWeight: "900", lineHeight: 29 }}>
+            Please reach a real person right now
+          </Text>
+          <Text style={{ color: "#25364D", fontSize: 15, lineHeight: 22 }}>
+            What you are feeling matters, and you deserve support from someone trained to help. These lines are free, confidential, and answered 24 hours a day. Tap one to call now.
+          </Text>
+
+          <View style={{ gap: 10 }}>
+            {CRISIS_HELPLINES.map((line) => (
+              <Pressable
+                key={line.name}
+                accessibilityRole="button"
+                accessibilityLabel={`Call ${line.name} at ${line.dial}`}
+                onPress={() => callLine(line.dial)}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: "#0E8C82",
+                    borderRadius: 16,
+                    padding: 14,
+                    gap: 3
+                  },
+                  pressed && { opacity: 0.85 }
+                ]}
+              >
+                <Text style={{ color: "#FFFFFF", fontSize: 17, fontWeight: "900" }}>
+                  {line.name} · {line.dial}
+                </Text>
+                <Text style={{ color: "rgba(255,255,255,0.92)", fontSize: 12, lineHeight: 17 }}>
+                  {line.detail}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19 }}>
+            If you are in immediate danger, call 112. If you can, stay with someone you trust until you have spoken to a counsellor.
+          </Text>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close crisis support"
+            onPress={onClose}
+            style={({ pressed }) => [
+              { alignSelf: "center", paddingVertical: 12, paddingHorizontal: 24, borderRadius: 14, borderWidth: 1, borderColor: "#B9CDD2" },
+              pressed && { opacity: 0.7 }
+            ]}
+          >
+            <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>I have this handled for now</Text>
+          </Pressable>
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}
+
 export default function App() {
   const { width } = useWindowDimensions();
   const isWide = width >= 920;
@@ -11186,6 +11284,7 @@ export default function App() {
   const [privateSpaceDraft, setPrivateSpaceDraft] = useState("");
   const [homeIssueDraft, setHomeIssueDraft] = useState("");
   const [showCounselingChat, setShowCounselingChat] = useState(false);
+  const [crisisSupportVisible, setCrisisSupportVisible] = useState(false);
   const [counselingInitialText, setCounselingInitialText] = useState("");
   const [activeJourney, setActiveJourney] = useState<CounselingSession | null>(null);
   const [journeyStepIndex, setJourneyStepIndex] = useState(0);
@@ -16300,6 +16399,19 @@ async function fetchGeminiAIHelp(
       openRedressTab(redressFocus);
       return;
     }
+    if (route === "urgent") {
+      // Self-directed safety crisis (self-harm / suicidal ideation). External
+      // abuse is already handled above via detectAggravatedAbuse and routed to
+      // the correct legal path; anything still classified "urgent" here is a
+      // mental-health emergency for the person themselves. Lead IMMEDIATELY with
+      // verified lifelines — never a conversational reply, never a complaint
+      // flow, and never a delay behind intake questions. Before this branch
+      // existed, such messages fell through into the counselling chat below.
+      void scheduleUrgentSafetyCheckIn(issueFocus.label);
+      setAIHelpDraft("");
+      setCrisisSupportVisible(true);
+      return;
+    }
     if (route === "redress") {
       // Non-urgent grievance/redress reports also skip straight to the Help
       // tab — reporting/legal routes, not conversation, are what's needed.
@@ -19637,6 +19749,12 @@ function isTrustedExternalUrl(url: string) {
           voiceAssistEnabled={voiceAssistEnabled}
           onToggleVoiceAssist={() => setVoiceAssistEnabled((prev) => !prev)}
           onFetchGuideEnrichment={fetchGeminiAIHelp}
+        />
+
+        {/* ── Crisis support overlay (self-harm / suicidal ideation) ── */}
+        <CrisisSupportModal
+          visible={crisisSupportVisible}
+          onClose={() => setCrisisSupportVisible(false)}
         />
 
         {/* ── Exit / Visit Report Modal ── */}
