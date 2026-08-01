@@ -31390,8 +31390,20 @@ type SupportDimensionGuide = {
   label: string;
   issueId: IssueId;
   route: AIHelpRoute;
+  // Why this dimension matters, before jumping to action -- grounds the
+  // person in what is actually happening instead of only what to do.
+  context: string;
   firstAction: string;
+  // The concrete sequence from first action to an actually-resolved issue --
+  // this is what turns a one-line nudge into a real redress path.
+  resolutionSteps: string[];
+  // What resolution/conclusion looks like for this specific dimension, so
+  // the person has a real, checkable marker instead of guessing when to stop.
+  conclusionMarker: string;
   escalation: string;
+  // Concrete nearby-search targets, mirroring the 17 broad issues' supportPath
+  // -- specific enough to act on, not a generic "find help" prompt.
+  supportSearch: Array<{ label: string; query: string }>;
 };
 
 const supportDimensionGuides: Record<SupportDimensionId, SupportDimensionGuide> = {
@@ -31400,152 +31412,361 @@ const supportDimensionGuides: Record<SupportDimensionId, SupportDimensionGuide> 
     label: "self-image and dignity",
     issueId: "stigma",
     route: "guide",
+    context: "Self-image distress often outlives the comment or comparison that triggered it, because the mind keeps rehearsing it long after the moment has passed.",
     firstAction: "Write the exact self-critical sentence once, rewrite it without insult, then open Path for the private intake.",
-    escalation: "Bring in a counselor or psychologist if body shame is stopping sleep, food, work, study, relationships, or basic daily life."
+    resolutionSteps: [
+      "Write the exact self-critical sentence once, then rewrite it the way you would say it to someone you love.",
+      "Name one place you avoid because of this feeling — photos, mirrors, a social event — and re-enter it in a small, controlled way this week.",
+      "Track the feeling for seven days in Journal; a pattern that is genuinely lifting looks different from one that is stuck."
+    ],
+    conclusionMarker: "This is resolving when the self-critical sentence loses its grip — it still visits, but it no longer decides what you do or avoid.",
+    escalation: "Bring in a counselor or psychologist if body shame is stopping sleep, food, work, study, relationships, or basic daily life.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor self-image body image support" },
+      { label: "Psychologist", query: "psychologist self-esteem therapy" }
+    ]
   },
   grief: {
     id: "grief",
     label: "grief and loss",
     issueId: "grief",
     route: "professional",
+    context: "Grief is not a problem to solve — it is a process the mind and body need time and witness to move through.",
     firstAction: "Name the loss, tell one trusted person what today feels like, and choose one small ritual or practical task.",
-    escalation: "Use crisis support if grief includes self-harm thoughts, inability to eat or sleep, or feeling that life is not worth living."
+    resolutionSteps: [
+      "Name the loss out loud to one person today, even in one sentence.",
+      "Choose one small ritual or practical task connected to the loss — a photo, a letter, a task the person would have wanted done.",
+      "Give yourself an honest timeline check: most acute grief eases in intensity over weeks to months, even while it never fully disappears."
+    ],
+    conclusionMarker: "Grief does not conclude the way a task does — but it is moving in a healthy direction when the pain arrives in waves you can ride, not a flood that traps you.",
+    escalation: "Use crisis support if grief includes self-harm thoughts, inability to eat or sleep, or feeling that life is not worth living.",
+    supportSearch: [
+      { label: "Grief counselor", query: "grief counselor bereavement support" },
+      { label: "Support group", query: "grief support group nearby" }
+    ]
   },
   trauma: {
     id: "trauma",
     label: "trauma or abuse",
     issueId: "trauma",
     route: "professional",
+    context: "Trauma symptoms — flashbacks, hypervigilance, numbness — are the nervous system's leftover alarm from an overwhelming event, not a character flaw.",
     firstAction: "Check whether you are safe right now; if safe, write only the facts and choose one trauma-informed support contact.",
-    escalation: "Use SOS, 112, police, or a trusted nearby person immediately if danger, assault, threats, or self-harm risk is present."
+    resolutionSteps: [
+      "Confirm your physical safety right now — where you are and who you are with.",
+      "Write only the verifiable facts of what happened, separate from interpretation — useful for therapy and, later, any formal complaint.",
+      "Contact one trauma-informed professional (EMDR, somatic therapy, or CPT-trained) — self-help alone rarely resolves trauma fully."
+    ],
+    conclusionMarker: "Trauma work concludes gradually: the memory stays, but it stops hijacking your body — you can recall it without reliving it.",
+    escalation: "Use SOS, 112, police, or a trusted nearby person immediately if danger, assault, threats, or self-harm risk is present.",
+    supportSearch: [
+      { label: "Trauma therapist", query: "trauma therapist EMDR support" },
+      { label: "Psychiatrist", query: "psychiatrist PTSD treatment" }
+    ]
   },
   addiction: {
     id: "addiction",
     label: "addiction or compulsion",
     issueId: "addiction",
     route: "professional",
+    context: "Addiction is a learned brain pattern optimised around pain relief, not a moral failure — which is exactly why willpower alone rarely resolves it.",
     firstAction: "Name the trigger, remove the next easy access point, and contact one recovery, doctor, or counselor support route.",
-    escalation: "Get medical or crisis help for overdose risk, withdrawal symptoms, self-harm thoughts, or loss of control."
+    resolutionSteps: [
+      "Name the trigger — the feeling, situation, or thought that precedes the urge — and write it down every time it happens for a week.",
+      "Remove the single easiest point of access to the substance or behaviour.",
+      "Contact one structured support resource this week — recovery with real support has significantly better outcomes than solo attempts."
+    ],
+    conclusionMarker: "Recovery is not a single finish line — this is on a resolving path when relapses, if they happen, get shorter and further apart inside a real support structure.",
+    escalation: "Get medical or crisis help for overdose risk, withdrawal symptoms, self-harm thoughts, or loss of control.",
+    supportSearch: [
+      { label: "Addiction counselor", query: "addiction counselor substance recovery" },
+      { label: "De-addiction centre", query: "de-addiction rehabilitation centre nearby" }
+    ]
   },
   academic: {
     id: "academic",
     label: "academic pressure",
     issueId: "academic",
     route: "guide",
+    context: "Academic pressure activates the same stress response as physical threat — which is exactly why it degrades the memory and focus a student needs most.",
     firstAction: "Choose one 25-minute study block, one rest block, and one person or office that can clarify the next academic step.",
-    escalation: "Use Help or professional support if pressure includes threats, ragging, harassment, self-harm thoughts, or panic that feels unsafe."
+    resolutionSteps: [
+      "Reduce today's scope to the single highest-yield topic instead of 'everything'.",
+      "Protect one non-negotiable block for sleep and food today — performance collapses without them regardless of hours studied.",
+      "Tell one person how the pressure itself feels, not just the study plan."
+    ],
+    conclusionMarker: "This resolves when you can sit for an exam or deadline without the pressure spiralling into panic — the standard doesn't have to drop, only the panic does.",
+    escalation: "Use Help or professional support if pressure includes threats, ragging, harassment, self-harm thoughts, or panic that feels unsafe.",
+    supportSearch: [
+      { label: "School counselor", query: "school counselor student support" },
+      { label: "Tutor / mentor", query: "academic mentor tutoring support" }
+    ]
   },
   financial: {
     id: "financial",
     label: "financial stress",
     issueId: "financial",
     route: "guide",
+    context: "Financial stress compounds fast when the exact numbers stay vague — clarity is usually the first real relief, even before the money moves.",
     firstAction: "Write the amount, deadline, person or institution involved, and the one payment, call, or document needed first.",
-    escalation: "Use formal help if there is fraud, coercion, banking grievance, workplace salary issue, or self-harm risk."
+    resolutionSteps: [
+      "Write the exact amount, deadline, and the person or institution involved.",
+      "Identify the single next concrete action — one call, one payment, one document — and do only that one first.",
+      "If fraud, coercion, or a banking grievance is involved, open Redress in parallel with the practical fix."
+    ],
+    conclusionMarker: "This concludes when the immediate deadline or obligation is actually resolved, in writing where possible — not just when the worry quiets down.",
+    escalation: "Use formal help if there is fraud, coercion, banking grievance, workplace salary issue, or self-harm risk.",
+    supportSearch: [
+      { label: "Financial counselor", query: "debt counseling financial advisor" },
+      { label: "Banking ombudsman", query: "banking ombudsman complaint india" }
+    ]
   },
   health: {
     id: "health",
     label: "health or illness concern",
     issueId: "health",
     route: "professional",
+    context: "Unclear or worsening physical symptoms deserve a medical opinion before they deserve a guess.",
     firstAction: "Write symptoms, duration, medicines, and the last doctor advice; then choose a doctor, clinic, or counselor support route.",
-    escalation: "Seek urgent medical help for chest pain, fainting, severe symptoms, unsafe panic, or a worsening diagnosed condition."
+    resolutionSteps: [
+      "Write the symptom, when it started, its intensity, and what makes it better or worse.",
+      "Note every medicine currently taken and the last professional advice received.",
+      "Book the appropriate appointment — GP, specialist, or telemedicine — based on that write-up, not on searching symptoms online."
+    ],
+    conclusionMarker: "This resolves with an actual diagnosis or a clinician's clearance — not when the anxiety about the symptom fades on its own.",
+    escalation: "Seek urgent medical help for chest pain, fainting, severe symptoms, unsafe panic, or a worsening diagnosed condition.",
+    supportSearch: [
+      { label: "General physician", query: "general physician doctor nearby" },
+      { label: "Telemedicine", query: "esanjeevani telemedicine consultation" }
+    ]
   },
   parenting: {
     id: "parenting",
     label: "parenting or caregiving load",
     issueId: "parenting",
     route: "guide",
+    context: "Parenting load is heaviest when it is carried invisibly — naming it out loud is usually the first step that actually reduces it.",
     firstAction: "Name the child or care issue, the hardest time of day, and one support person or professional who can share the load.",
-    escalation: "Escalate if a child, caregiver, or vulnerable person is unsafe, neglected, abused, or at risk of harm."
+    resolutionSteps: [
+      "Name the specific child or care issue and the hardest time of day for it.",
+      "Ask one specific person — partner, family member, or professional — to take one specific task off you this week.",
+      "Revisit after two weeks: is the load actually shared now, or did the ask quietly slide back to you?"
+    ],
+    conclusionMarker: "This resolves when the load is genuinely shared in practice, not just agreed to in conversation.",
+    escalation: "Escalate if a child, caregiver, or vulnerable person is unsafe, neglected, abused, or at risk of harm.",
+    supportSearch: [
+      { label: "Parenting counselor", query: "parenting counselor family therapist" },
+      { label: "Family support group", query: "parent support group nearby" }
+    ]
   },
   relationship: {
     id: "relationship",
     label: "relationship distress",
     issueId: "relationship",
     route: "guide",
+    context: "Most relationship distress is a signal about an unmet need or an unclear boundary, not proof the relationship itself has failed.",
     firstAction: "Write what happened, what you need, and one calm sentence you can say or save before the next conversation.",
-    escalation: "Use Help or professional support if there is violence, coercion, stalking, abuse, severe isolation, or self-harm risk."
+    resolutionSteps: [
+      "Write what happened, what you need, and one calm sentence you can say or send.",
+      "Have the actual conversation, in person or in writing, rather than rehearsing it indefinitely.",
+      "Agree on one concrete, checkable change and a date to revisit whether it happened."
+    ],
+    conclusionMarker: "This resolves when the same issue stops repeating in the same way — not when one conversation temporarily calms it.",
+    escalation: "Use Help or professional support if there is violence, coercion, stalking, abuse, severe isolation, or self-harm risk.",
+    supportSearch: [
+      { label: "Couples counselor", query: "couples counselor relationship therapist" },
+      { label: "Individual therapist", query: "psychologist relationship support" }
+    ]
   },
   unappreciated: {
     id: "unappreciated",
     label: "being unseen or unappreciated",
     issueId: "loneliness",
     route: "guide",
+    context: "Feeling unseen usually has two separate sources — work and home — and they need separate, specific evidence, not one vague complaint.",
     firstAction: "Separate work and home, write one clear example from each, and ask for one specific acknowledgement or change.",
-    escalation: "Escalate to counseling, HR, a mentor, or family support if this is damaging self-worth, work, sleep, or relationships."
+    resolutionSteps: [
+      "Write one clear, specific example from work and one from home.",
+      "Ask for one concrete acknowledgement or change tied to each example, not a general 'appreciate me more'.",
+      "Notice whether the ask is heard even partially — that is more useful data than whether you still feel unseen this exact week."
+    ],
+    conclusionMarker: "This resolves when at least one concrete acknowledgement or change actually happens — recognition you had to ask for is still real recognition.",
+    escalation: "Escalate to counseling, HR, a mentor, or family support if this is damaging self-worth, work, sleep, or relationships.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor self-worth workplace support" },
+      { label: "HR / mentor", query: "HR mentor workplace recognition" }
+    ]
   },
   work: {
     id: "work",
     label: "workplace pressure",
     issueId: "burnout",
     route: "guide",
+    context: "Workplace pressure needs a decision about the right channel — conversation, HR, or formal complaint — before it needs a solution.",
     firstAction: "Write the role, person, incident, and next work decision; choose whether this needs a conversation, HR, or a formal complaint.",
-    escalation: "Use Help for harassment, unpaid wages, retaliation, unsafe conditions, threats, or a workplace rights issue."
+    resolutionSteps: [
+      "Write the role, person, incident, and the actual decision facing you.",
+      "Choose the least escalated channel that fits the facts: direct conversation, then manager, then HR.",
+      "If it involves harassment, retaliation, unpaid wages, or threats, open Redress instead of only trying to resolve it informally."
+    ],
+    conclusionMarker: "This resolves when the specific incident gets an actual response through the chosen channel — silence is not resolution and should trigger the next channel up.",
+    escalation: "Use Help for harassment, unpaid wages, retaliation, unsafe conditions, threats, or a workplace rights issue.",
+    supportSearch: [
+      { label: "HR / labour helpline", query: "labour helpline workplace complaint" },
+      { label: "Career counselor", query: "career counselor workplace conflict" }
+    ]
   },
   "home-family": {
     id: "home-family",
     label: "home and family pressure",
     issueId: "relationship",
     route: "guide",
+    context: "Repeated family pressure usually has one identifiable pattern underneath the daily friction — naming that pattern is more useful than relitigating each incident.",
     firstAction: "Name the person, the repeated pattern, and the smallest boundary or request that would reduce pressure today.",
-    escalation: "Use trusted contacts, community, Help, or emergency support if home is unsafe, abusive, threatening, or isolating."
+    resolutionSteps: [
+      "Name the person, the repeated pattern, and the smallest boundary or request that would reduce pressure today.",
+      "State the boundary once, clearly and calmly, without over-explaining or apologising for it.",
+      "Decide in advance what you will do if the pattern continues despite the boundary."
+    ],
+    conclusionMarker: "This resolves when the boundary is actually respected most of the time — occasional friction is normal in families, repeated violation is not.",
+    escalation: "Use trusted contacts, community, Help, or emergency support if home is unsafe, abusive, threatening, or isolating.",
+    supportSearch: [
+      { label: "Family counselor", query: "family therapist counselor" },
+      { label: "Community elder / mediator", query: "family mediator nearby" }
+    ]
   },
   anger: {
     id: "anger",
     label: "anger and heat",
     issueId: "anger",
     route: "guide",
+    context: "Anger is almost always a signal about a hurt, fear, or violated boundary underneath it — treating the heat alone leaves the real cause untouched.",
     firstAction: "Step away for ten minutes, relax your jaw and shoulders, then write the hurt, boundary, or need under the anger.",
-    escalation: "Get immediate support if anger may turn into violence, threats, self-harm, or loss of control."
+    resolutionSteps: [
+      "Step away for ten minutes before responding to anything.",
+      "Write the hurt, boundary, or need underneath the anger, separate from the story about who is wrong.",
+      "Address the actual need or boundary in a calm conversation once the heat has genuinely passed, not while still activated."
+    ],
+    conclusionMarker: "This resolves when the underlying need or boundary gets addressed — venting the anger without addressing the cause usually means it returns.",
+    escalation: "Get immediate support if anger may turn into violence, threats, self-harm, or loss of control.",
+    supportSearch: [
+      { label: "Counselor", query: "anger management counselor" },
+      { label: "Therapist", query: "anger management therapy" }
+    ]
   },
   anxiety: {
     id: "anxiety",
     label: "anxiety and overthinking",
     issueId: "anxiety",
     route: "guide",
+    context: "Anxiety narrows focus onto worst-case scenarios — the fastest relief usually comes from separating the one real decision from the pile of hypothetical ones.",
     firstAction: "Take three slow exhales, write the one real decision in front of you, and delay every non-urgent worry.",
-    escalation: "Bring in a doctor, counselor, or crisis support if panic, sleep loss, appetite loss, or body symptoms are worsening."
+    resolutionSteps: [
+      "Take three slow exhales, longer than the inhale.",
+      "Write the one real decision in front of you today and delay every non-urgent worry to a fixed 'worry time' later.",
+      "If panic, sleep loss, or appetite loss are worsening rather than easing, bring in a doctor or counselor rather than continuing to self-manage."
+    ],
+    conclusionMarker: "This resolves when anxious thoughts return to the background instead of driving your decisions — occasional anxiety is human, constant hijacking is not.",
+    escalation: "Bring in a doctor, counselor, or crisis support if panic, sleep loss, appetite loss, or body symptoms are worsening.",
+    supportSearch: [
+      { label: "Counselor", query: "anxiety counselor therapist" },
+      { label: "Psychiatrist", query: "psychiatrist anxiety treatment" }
+    ]
   },
   sadness: {
     id: "sadness",
     label: "sadness or low mood",
     issueId: "loneliness",
     route: "professional",
+    context: "Low mood that persists past two weeks, or affects basic functioning, is a clinical signal worth taking seriously rather than waiting out.",
     firstAction: "Write how long this has lasted, what basic care is affected, and one person or professional support route to contact.",
-    escalation: "Use urgent support if sadness includes hopelessness, self-harm thoughts, no sleep or food, or inability to function."
+    resolutionSteps: [
+      "Write how long this has lasted and what basic care — sleep, food, hygiene, work — is being affected.",
+      "Tell one person the honest scale of it, not a minimized version.",
+      "Contact a professional support route this week if it has lasted more than two weeks or is affecting daily function."
+    ],
+    conclusionMarker: "This resolves when basic functioning returns and the low mood becomes occasional again rather than constant — a checkable marker, not just a feeling.",
+    escalation: "Use urgent support if sadness includes hopelessness, self-harm thoughts, no sleep or food, or inability to function.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor low mood depression support" },
+      { label: "Psychiatrist", query: "psychiatrist depression treatment" }
+    ]
   },
   burnout: {
     id: "burnout",
     label: "burnout and exhaustion",
     issueId: "burnout",
     route: "guide",
+    context: "Burnout is a resource problem, not a discipline problem — pushing harder against it usually deepens it.",
     firstAction: "Drop or delay one demand today, protect one recovery block, and ask for one practical change from a real person.",
-    escalation: "Use professional help if exhaustion is causing collapse, panic, unsafe driving or work, or inability to function."
+    resolutionSteps: [
+      "Drop or delay one demand today, even a small one.",
+      "Protect one real recovery block — not a task disguised as rest.",
+      "Ask one real person for one practical change, and follow up in a week on whether it actually happened."
+    ],
+    conclusionMarker: "This resolves when your baseline energy returns on rest days — if exhaustion no longer lifts even after real rest, that is a signal for professional support, not more willpower.",
+    escalation: "Use professional help if exhaustion is causing collapse, panic, unsafe driving or work, or inability to function.",
+    supportSearch: [
+      { label: "Counselor", query: "burnout counselor therapist" },
+      { label: "Occupational health", query: "occupational health burnout support" }
+    ]
   },
   loneliness: {
     id: "loneliness",
     label: "loneliness and isolation",
     issueId: "loneliness",
     route: "guide",
+    context: "Loneliness often persists because reaching out feels riskier than staying isolated — the risk is usually smaller than it feels.",
     firstAction: "Send one honest message to a safe person, then choose one community or support space where you can be seen.",
-    escalation: "Use crisis or professional support if loneliness is tied to hopelessness, self-harm thoughts, or total withdrawal."
+    resolutionSteps: [
+      "Send one honest message to one safe person today.",
+      "Choose one community or support space — in person or online — where you can show up as yourself.",
+      "Return to it consistently for a few weeks; connection compounds, it rarely resolves after one interaction."
+    ],
+    conclusionMarker: "This resolves when you have at least one relationship or space where you feel genuinely seen — not when every hour is filled.",
+    escalation: "Use crisis or professional support if loneliness is tied to hopelessness, self-harm thoughts, or total withdrawal.",
+    supportSearch: [
+      { label: "Support group", query: "loneliness support group community" },
+      { label: "Counselor", query: "counselor loneliness isolation" }
+    ]
   },
   safety: {
     id: "safety",
     label: "safety or intimidation",
     issueId: "trauma",
     route: "redress",
+    context: "When intimidation or threat is involved, safety comes before documentation, and documentation comes before confrontation.",
     firstAction: "Move to safety first, save evidence without confronting the person, and use Help for the correct authority route.",
-    escalation: "Use SOS, 112, police, emergency services, or a trusted nearby person now if the danger is immediate."
+    resolutionSteps: [
+      "Move to physical safety first, before doing anything else.",
+      "Save evidence — messages, recordings, witnesses — without confronting the person directly.",
+      "Use Help/Redress to identify the correct authority (police, institution, or platform) for this specific situation."
+    ],
+    conclusionMarker: "This resolves when the immediate threat is neutralised and a formal record exists — a feeling of safety returning is the second stage, after the facts are secured.",
+    escalation: "Use SOS, 112, police, emergency services, or a trusted nearby person now if the danger is immediate.",
+    supportSearch: [
+      { label: "Police / emergency", query: "nearest police station" },
+      { label: "Legal aid", query: "legal aid safety intimidation" }
+    ]
   },
   fear: {
     id: "fear",
     label: "fear and self-doubt",
     issueId: "fear",
     route: "guide",
+    context: "Fear narrows the world to the feared outcome — the fastest way to loosen it is small, real evidence that the world is bigger than that outcome.",
     firstAction: "Write the feared outcome, the evidence for it, and one five-minute action that proves the situation can move.",
-    escalation: "Get support if fear is shrinking daily life, blocking basic tasks, or connected to threats, panic, or trauma."
+    resolutionSteps: [
+      "Write the feared outcome and the actual evidence for and against it.",
+      "Take one five-minute action that tests the fear in a low-risk way.",
+      "Repeat with slightly larger actions over the following days rather than waiting to feel ready."
+    ],
+    conclusionMarker: "This resolves when the fear stops blocking action, even if it doesn't disappear completely — courage is acting alongside fear, not after it ends.",
+    escalation: "Get support if fear is shrinking daily life, blocking basic tasks, or connected to threats, panic, or trauma.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor fear anxiety therapist" },
+      { label: "Coach / mentor", query: "confidence coach mentor" }
+    ]
   },
 
   sleep: {
@@ -31553,232 +31774,551 @@ const supportDimensionGuides: Record<SupportDimensionId, SupportDimensionGuide> 
     label: "sleep and restoration",
     issueId: "anxiety",
     route: "guide",
+    context: "Poor sleep and anxious thoughts feed each other in a loop — breaking either side of the loop helps the other.",
     firstAction: "Protect tonight first: reduce stimulation, write tomorrow's worry list, and choose one wind-down cue before bed.",
-    escalation: "Bring in a doctor or counselor if sleep loss lasts several nights, includes panic, unsafe thoughts, or daytime collapse."
+    resolutionSteps: [
+      "Reduce stimulation (screens, caffeine, heavy conversation) for the hour before bed.",
+      "Write tomorrow's worry list on paper before bed so the mind doesn't have to hold it overnight.",
+      "Pick one consistent wind-down cue and repeat it nightly for a week before judging whether it's working."
+    ],
+    conclusionMarker: "This resolves when sleep becomes reliably restorative most nights — if poor sleep continues for weeks despite this, a doctor should rule out a medical cause.",
+    escalation: "Bring in a doctor or counselor if sleep loss lasts several nights, includes panic, unsafe thoughts, or daytime collapse.",
+    supportSearch: [
+      { label: "Sleep clinic", query: "sleep clinic doctor consultation" },
+      { label: "Counselor", query: "counselor sleep anxiety" }
+    ]
   },
   appetite: {
     id: "appetite",
     label: "appetite and nourishment",
     issueId: "health",
     route: "professional",
+    context: "Sudden or significant changes in appetite are the body signalling something — physical, emotional, or both — that deserves a proper look, not just willpower.",
     firstAction: "Note what changed in food, appetite, nausea, weight, or cravings; choose one safe meal and one medical or support check if needed.",
-    escalation: "Seek medical help if appetite change is rapid, severe, tied to vomiting, fainting, self-harm, or eating-disorder risk."
+    resolutionSteps: [
+      "Note exactly what changed — more, less, nausea, specific cravings, weight change — and since when.",
+      "Choose one safe, simple meal today rather than trying to fix eating all at once.",
+      "Book a medical or counseling check if the change is rapid, severe, or tied to body-image distress."
+    ],
+    conclusionMarker: "This resolves when eating returns to a steady, sustainable pattern — not necessarily 'perfect', just steady and not driven by fear or numbness.",
+    escalation: "Seek medical help if appetite change is rapid, severe, tied to vomiting, fainting, self-harm, or eating-disorder risk.",
+    supportSearch: [
+      { label: "Doctor", query: "general physician appetite nutrition" },
+      { label: "Eating disorder specialist", query: "eating disorder counselor specialist" }
+    ]
   },
   "body-symptoms": {
     id: "body-symptoms",
     label: "body symptoms and nervous system",
     issueId: "health",
     route: "professional",
+    context: "The nervous system can produce real physical symptoms under sustained stress — they are genuine symptoms and still deserve a medical check, not dismissal either way.",
     firstAction: "Write the symptom, start time, intensity, medicines, and what makes it better or worse before deciding the next support route.",
-    escalation: "Use urgent medical care for chest pain, breathing difficulty, fainting, severe pain, neurological symptoms, or rapidly worsening signs."
+    resolutionSteps: [
+      "Write the symptom, when it started, intensity, and what makes it better or worse.",
+      "List current medicines and note anything that has changed recently in health or stress.",
+      "See a doctor to rule out a physical cause before assuming it is 'only stress'."
+    ],
+    conclusionMarker: "This resolves once a clinician has actually evaluated it — either treated, or confirmed as stress-related with a specific management plan.",
+    escalation: "Use urgent medical care for chest pain, breathing difficulty, fainting, severe pain, neurological symptoms, or rapidly worsening signs.",
+    supportSearch: [
+      { label: "General physician", query: "general physician body symptoms checkup" },
+      { label: "Neurologist (if needed)", query: "neurologist consultation nearby" }
+    ]
   },
   "legal-rights": {
     id: "legal-rights",
     label: "legal rights and formal remedy",
     issueId: "financial",
     route: "redress",
+    context: "A formal remedy needs the facts organised the way an authority actually reads them — who, what, when, evidence, and the specific outcome wanted.",
     firstAction: "Write the law-facing facts: who, what, when, where, evidence, and the exact remedy you want before contacting the authority.",
-    escalation: "Use police, legal aid, emergency, or a qualified lawyer if there are threats, violence, fraud, coercion, or limitation deadlines."
+    resolutionSteps: [
+      "Write the law-facing facts: who, what, when, where, and the evidence you have.",
+      "Identify the exact remedy you want — refund, correction, compensation, action taken.",
+      "Contact the correct authority or legal aid with that written summary, not a verbal complaint alone."
+    ],
+    conclusionMarker: "This resolves when you receive a written response or action from the authority — a complaint filed but never followed up rarely reaches conclusion on its own.",
+    escalation: "Use police, legal aid, emergency, or a qualified lawyer if there are threats, violence, fraud, coercion, or limitation deadlines.",
+    supportSearch: [
+      { label: "Legal aid (NALSA)", query: "free legal aid NALSA nearby" },
+      { label: "Consumer forum", query: "consumer complaint forum india" }
+    ]
   },
   "digital-safety": {
     id: "digital-safety",
     label: "digital safety and privacy",
     issueId: "trauma",
     route: "redress",
+    context: "Digital threats move fast — securing the account matters before addressing the person behind the threat.",
     firstAction: "Preserve screenshots, change passwords from a safe device, enable two-factor authentication, and avoid confronting the abuser online.",
-    escalation: "Use cybercrime, police, platform reporting, or trusted support if there is blackmail, leaked images, stalking, extortion, or account takeover."
+    resolutionSteps: [
+      "Preserve screenshots of everything before it can be deleted or edited.",
+      "Change passwords from a different, safe device and enable two-factor authentication.",
+      "Report to the platform and, for blackmail, extortion, or leaked images, to cybercrime — do not engage the person directly."
+    ],
+    conclusionMarker: "This resolves when the account is secured and either the content is taken down or a formal cybercrime case is registered — not when the threats simply stop temporarily.",
+    escalation: "Use cybercrime, police, platform reporting, or trusted support if there is blackmail, leaked images, stalking, extortion, or account takeover.",
+    supportSearch: [
+      { label: "Cybercrime portal", query: "cybercrime.gov.in report" },
+      { label: "Cyber cell", query: "cyber crime police station nearby" }
+    ]
   },
   "social-reputation": {
     id: "social-reputation",
     label: "reputation and social standing",
     issueId: "stigma",
     route: "guide",
+    context: "Public rumour spreads on fear, not fact — a calm, evidence-based response usually outperforms an emotional one.",
     firstAction: "Separate facts from public fear, save proof of what was said, and choose one calm correction or formal route only if needed.",
-    escalation: "Use legal or institutional help if defamation, harassment, threats, workplace harm, or public safety risk is present."
+    resolutionSteps: [
+      "Separate the actual facts from the public fear or gossip version.",
+      "Save proof of what was actually said or done.",
+      "Choose one calm correction to the people who matter, and only escalate formally if there is real harm — defamation, harassment, or workplace impact."
+    ],
+    conclusionMarker: "This resolves when the immediate harm — relationships, work, safety — is contained; a rumour fully disappearing is rarely realistic or necessary.",
+    escalation: "Use legal or institutional help if defamation, harassment, threats, workplace harm, or public safety risk is present.",
+    supportSearch: [
+      { label: "Lawyer (defamation)", query: "defamation lawyer consultation" },
+      { label: "Counselor", query: "counselor reputation stress support" }
+    ]
   },
   "career-growth": {
     id: "career-growth",
     label: "career growth and opportunity",
     issueId: "identity",
     route: "guide",
+    context: "Career stagnation usually has a specific missing piece — a skill, a proof point, or a conversation — hiding under the general feeling of being 'stuck'.",
     firstAction: "Name the next role or opportunity, the missing skill or proof, and one concrete action for the next 48 hours.",
-    escalation: "Bring in a mentor, HR, or professional support if career pressure is causing collapse, exploitation, discrimination, or hopelessness."
+    resolutionSteps: [
+      "Name the specific next role or opportunity you actually want.",
+      "Identify the one missing skill or proof point standing between you and it.",
+      "Take one concrete action toward it in the next 48 hours — a course, a conversation, an application."
+    ],
+    conclusionMarker: "This resolves when you have a specific plan in motion, not necessarily when the promotion or job arrives — direction is the real marker of progress here.",
+    escalation: "Bring in a mentor, HR, or professional support if career pressure is causing collapse, exploitation, discrimination, or hopelessness.",
+    supportSearch: [
+      { label: "Career counselor", query: "career counselor mentor" },
+      { label: "Mentor / industry contact", query: "professional mentorship nearby" }
+    ]
   },
   "workplace-conflict": {
     id: "workplace-conflict",
     label: "workplace conflict and power dynamics",
     issueId: "burnout",
     route: "redress",
+    context: "Workplace power dynamics need a documented trail before they need a resolution — memory alone rarely holds up.",
     firstAction: "Record incidents with dates, people, witnesses, and impact; decide whether the first step is a boundary, manager conversation, HR, or complaint.",
-    escalation: "Use HR, labor route, legal aid, or emergency support for harassment, retaliation, unsafe work, wage issues, or threats."
+    resolutionSteps: [
+      "Record each incident with date, people involved, witnesses, and impact.",
+      "Decide the right first step based on severity: a direct conversation, a manager, or HR.",
+      "Escalate to HR, a labour authority, or legal aid if the first step gets no real response or if there is retaliation."
+    ],
+    conclusionMarker: "This resolves when there is a documented, acted-on outcome — a verbal apology with no follow-through is not resolution if the pattern continues.",
+    escalation: "Use HR, labor route, legal aid, or emergency support for harassment, retaliation, unsafe work, wage issues, or threats.",
+    supportSearch: [
+      { label: "HR / labour helpline", query: "labour helpline workplace complaint" },
+      { label: "Legal aid", query: "employment lawyer consultation" }
+    ]
   },
   "education-admin": {
     id: "education-admin",
     label: "education administration and records",
     issueId: "academic",
     route: "redress",
+    context: "Institutional records (marksheets, fees, admissions) move on paper trails — a dated written request is far stronger than an informal ask.",
     firstAction: "Collect admission, fee, marksheet, attendance, scholarship, or certificate proof and ask the exact office for a dated written response.",
-    escalation: "Escalate to grievance cell, regulator, legal aid, or safety support for harassment, withheld records, fraud, ragging, or severe distress."
+    resolutionSteps: [
+      "Collect every relevant document — admission, fee receipts, marksheets, correspondence.",
+      "Send a written request to the exact responsible office, asking for a dated response.",
+      "If ignored or refused without reason, escalate to the grievance cell, regulator, or legal aid."
+    ],
+    conclusionMarker: "This resolves when you receive the document, correction, or written decision you requested — a verbal promise from an office is not the conclusion.",
+    escalation: "Escalate to grievance cell, regulator, legal aid, or safety support for harassment, withheld records, fraud, ragging, or severe distress.",
+    supportSearch: [
+      { label: "Institution grievance cell", query: "college university grievance cell" },
+      { label: "Education regulator", query: "UGC AICTE grievance portal" }
+    ]
   },
   "exam-performance": {
     id: "exam-performance",
     label: "exam performance and concentration",
     issueId: "academic",
     route: "guide",
+    context: "Exam performance is a skill-and-system problem as much as a knowledge problem — the right practice structure often matters more than raw hours.",
     firstAction: "Pick one scoring topic, one timed practice block, and one mistake log before adding more study material.",
-    escalation: "Use counselor, teacher, or crisis support if exam fear causes panic, self-harm thoughts, sleep collapse, or inability to function."
+    resolutionSteps: [
+      "Pick one scoring topic and one timed practice block today instead of broad revision.",
+      "Keep a mistake log — the same three mistakes repeated are worth more attention than new material.",
+      "Simulate real exam conditions at least once before the actual exam."
+    ],
+    conclusionMarker: "This resolves when practice scores stabilise or improve and the panic around the exam itself eases — a calm, prepared state, not a guaranteed perfect score.",
+    escalation: "Use counselor, teacher, or crisis support if exam fear causes panic, self-harm thoughts, sleep collapse, or inability to function.",
+    supportSearch: [
+      { label: "Tutor", query: "exam preparation tutor nearby" },
+      { label: "School counselor", query: "school counselor exam stress" }
+    ]
   },
   "time-management": {
     id: "time-management",
     label: "time management and load",
     issueId: "burnout",
     route: "guide",
+    context: "Overload usually isn't a time problem — it's a prioritisation problem hiding as one.",
     firstAction: "List every demand, mark what is urgent, delay one non-essential item, and block the next 25 minutes for only one task.",
-    escalation: "Ask for real support if deadlines are tied to job loss, academic penalty, medical neglect, caregiving danger, or unsafe exhaustion."
+    resolutionSteps: [
+      "List every current demand and mark which are actually urgent versus merely loud.",
+      "Delay or drop one non-essential item today.",
+      "Block one uninterrupted 25-minute window for exactly one task and protect it."
+    ],
+    conclusionMarker: "This resolves when your task list matches your actual capacity — not when the list reaches zero, which rarely happens.",
+    escalation: "Ask for real support if deadlines are tied to job loss, academic penalty, medical neglect, caregiving danger, or unsafe exhaustion.",
+    supportSearch: [
+      { label: "Coach", query: "productivity time management coach" },
+      { label: "Counselor", query: "counselor overload burnout" }
+    ]
   },
   procrastination: {
     id: "procrastination",
     label: "procrastination and task avoidance",
     issueId: "fear",
     route: "guide",
+    context: "Procrastination is usually fear or perfectionism wearing a disguise — the task itself is rarely the real obstacle.",
     firstAction: "Make the task embarrassingly small: open the file, write one line, or set a five-minute timer without negotiating with the fear.",
-    escalation: "Bring in support if avoidance is linked with depression, ADHD symptoms, panic, academic failure risk, or work consequences."
+    resolutionSteps: [
+      "Make the task embarrassingly small — open the file, write one line, set a five-minute timer.",
+      "Do not negotiate with the fear; start before you feel ready.",
+      "Notice which specific fear (failure, judgment, inadequacy) shows up, and name it directly next time it happens."
+    ],
+    conclusionMarker: "This resolves when starting stops requiring a fight — the task still takes effort, but the dread beforehand fades.",
+    escalation: "Bring in support if avoidance is linked with depression, ADHD symptoms, panic, academic failure risk, or work consequences.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor procrastination perfectionism" },
+      { label: "Coach", query: "productivity coach accountability" }
+    ]
   },
   motivation: {
     id: "motivation",
     label: "motivation and drive",
     issueId: "burnout",
     route: "guide",
+    context: "Motivation follows action more often than it precedes it — waiting to feel motivated usually delays the very thing that would create the motivation.",
     firstAction: "Do not wait for motivation; choose the smallest meaningful action and pair it with a recovery reward immediately after.",
-    escalation: "Use professional help if loss of motivation includes hopelessness, no pleasure, self-harm thoughts, or major functioning decline."
+    resolutionSteps: [
+      "Choose the smallest meaningful action available right now, without waiting to feel ready.",
+      "Pair it with an immediate, real reward or recovery moment afterward.",
+      "Track completed actions, not motivation levels — the data is more honest."
+    ],
+    conclusionMarker: "This resolves when action becomes possible again even without motivation leading it — if pleasure and drive stay absent for weeks, that is a signal for professional support.",
+    escalation: "Use professional help if loss of motivation includes hopelessness, no pleasure, self-harm thoughts, or major functioning decline.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor motivation low mood" },
+      { label: "Coach", query: "accountability coach" }
+    ]
   },
   confidence: {
     id: "confidence",
     label: "confidence and self-belief",
     issueId: "fear",
     route: "guide",
+    context: "Confidence is built from evidence, not from feeling — the fastest way to build it is a small, real win, not a pep talk.",
     firstAction: "Write one proof that you have handled something before, then take one low-risk action that gives fresh evidence today.",
-    escalation: "Use counseling, mentoring, or medical support if low confidence is blocking basic life, work, study, relationships, or safety."
+    resolutionSteps: [
+      "Write one proof that you have handled something difficult before.",
+      "Take one low-risk action today that generates fresh evidence.",
+      "Repeat with a slightly bigger action each week rather than waiting for confidence to arrive first."
+    ],
+    conclusionMarker: "This resolves when self-doubt stops blocking basic decisions and actions — some doubt is normal and can stay; paralysis is the part that needs to lift.",
+    escalation: "Use counseling, mentoring, or medical support if low confidence is blocking basic life, work, study, relationships, or safety.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor confidence self-esteem" },
+      { label: "Mentor / coach", query: "confidence coach mentor" }
+    ]
   },
   boundaries: {
     id: "boundaries",
     label: "boundaries and personal space",
     issueId: "relationship",
     route: "guide",
+    context: "A boundary that is never stated cannot be respected — clarity, not hostility, is what makes a boundary hold.",
     firstAction: "Write the limit in one sentence: what is okay, what is not okay, and what you will do if it continues.",
-    escalation: "Use trusted contacts, Help, or emergency support if boundary violations include coercion, stalking, abuse, threats, or violence."
+    resolutionSteps: [
+      "Write the limit in one sentence: what is okay, what is not, and what happens if it continues.",
+      "State it once, calmly, without over-explaining or apologising.",
+      "Follow through on the stated consequence if the boundary is crossed again."
+    ],
+    conclusionMarker: "This resolves when the boundary is actually respected — if it takes coercion, threats, or repeated violation to test it, that has moved beyond a boundary issue into a safety issue.",
+    escalation: "Use trusted contacts, Help, or emergency support if boundary violations include coercion, stalking, abuse, threats, or violence.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor boundaries assertiveness" },
+      { label: "Therapist", query: "therapist boundary setting" }
+    ]
   },
   communication: {
     id: "communication",
     label: "communication and repair",
     issueId: "relationship",
     route: "guide",
+    context: "Most communication breakdowns happen because a conversation is attempted while at least one person is emotionally flooded.",
     firstAction: "Prepare one calm sentence using facts, feeling, need, and request; avoid arguing while flooded.",
-    escalation: "Bring in a mediator, counselor, HR, or safety route if conversations become threats, humiliation, coercion, or repeated harm."
+    resolutionSteps: [
+      "Prepare one calm sentence using facts, feeling, need, and a specific request.",
+      "Wait until both people are calm enough to actually hear it — arguing while flooded rarely lands.",
+      "Check afterward whether the message was actually understood, not just delivered."
+    ],
+    conclusionMarker: "This resolves when the same misunderstanding stops recurring — one good conversation is a start, not the finish line.",
+    escalation: "Bring in a mediator, counselor, HR, or safety route if conversations become threats, humiliation, coercion, or repeated harm.",
+    supportSearch: [
+      { label: "Couples/family therapist", query: "communication therapist counselor" },
+      { label: "Mediator", query: "family mediator nearby" }
+    ]
   },
   trust: {
     id: "trust",
     label: "trust and betrayal",
     issueId: "relationship",
     route: "guide",
+    context: "Trust after betrayal rebuilds through consistent, verifiable action over time — reassurance alone doesn't repair it.",
     firstAction: "Separate what is known from what is feared, then ask for one verifiable repair action rather than endless reassurance.",
-    escalation: "Use professional or safety support if betrayal includes abuse, stalking, financial control, sexual coercion, or self-harm risk."
+    resolutionSteps: [
+      "Separate what is actually known from what is feared or assumed.",
+      "Ask for one specific, verifiable repair action rather than open-ended reassurance.",
+      "Track over weeks whether the action is actually sustained, not just promised once."
+    ],
+    conclusionMarker: "This resolves when trust is rebuilt through a track record of consistent action — or when it becomes clear it will not be, which is also a valid conclusion.",
+    escalation: "Use professional or safety support if betrayal includes abuse, stalking, financial control, sexual coercion, or self-harm risk.",
+    supportSearch: [
+      { label: "Couples therapist", query: "couples therapist betrayal trust" },
+      { label: "Individual therapist", query: "therapist trust issues" }
+    ]
   },
   intimacy: {
     id: "intimacy",
     label: "intimacy and closeness",
     issueId: "relationship",
     route: "professional",
+    context: "Intimacy problems usually have one specific root — safety, desire mismatch, communication, physical pain, or shame — that gets lost inside the general word 'intimacy'.",
     firstAction: "Name whether the issue is safety, desire, communication, pain, shame, or distance before trying to force closeness.",
-    escalation: "Seek medical, counseling, or safety help for pain, coercion, trauma triggers, sexual violence, or distress that feels unsafe."
+    resolutionSteps: [
+      "Name which specific root this actually is before trying to fix 'intimacy' in general.",
+      "If it's physical (pain, dysfunction), see a doctor before assuming it's purely emotional.",
+      "If it's emotional or relational, bring it into a calm conversation or a couples therapist rather than avoiding the topic."
+    ],
+    conclusionMarker: "This resolves when the specific root cause is actually addressed — avoidance of the topic itself is the main way this issue stays stuck.",
+    escalation: "Seek medical, counseling, or safety help for pain, coercion, trauma triggers, sexual violence, or distress that feels unsafe.",
+    supportSearch: [
+      { label: "Couples therapist", query: "couples therapist intimacy counselor" },
+      { label: "Sexual health doctor", query: "sexual health specialist doctor" }
+    ]
   },
   caregiving: {
     id: "caregiving",
     label: "caregiving load and duty",
     issueId: "parenting",
     route: "guide",
+    context: "Caregiving load becomes dangerous when it is carried entirely alone — the riskiest gap deserves attention before the whole load does.",
     firstAction: "Write the care tasks, the riskiest gap, and one person or service that can take one task off you this week.",
-    escalation: "Escalate if a child, elder, patient, caregiver, or dependent person is unsafe, neglected, abused, or medically at risk."
+    resolutionSteps: [
+      "Write out every care task currently on you.",
+      "Identify the single riskiest gap — a missed medicine, an unsafe moment, an unmet medical need.",
+      "Ask one person or service to take one specific task off you this week."
+    ],
+    conclusionMarker: "This resolves when the riskiest gap is closed and at least one task is genuinely shared — total relief is rarely realistic, safety and shared load are.",
+    escalation: "Escalate if a child, elder, patient, caregiver, or dependent person is unsafe, neglected, abused, or medically at risk.",
+    supportSearch: [
+      { label: "Caregiver support", query: "caregiver support service nearby" },
+      { label: "Home health aide", query: "home nursing care service" }
+    ]
   },
   "elder-care": {
     id: "elder-care",
     label: "elder care and ageing family needs",
     issueId: "health",
     route: "professional",
+    context: "Ageing family needs usually involve several moving parts at once — medicines, mobility, documents — that are easier to manage once written down together.",
     firstAction: "List medicines, appointments, mobility risks, documents, and the one family decision that needs clarity first.",
-    escalation: "Use medical, legal, or emergency help for falls, confusion, abuse, financial exploitation, neglect, or urgent symptoms."
+    resolutionSteps: [
+      "List medicines, appointments, mobility risks, and key documents in one place.",
+      "Identify the one family decision that needs clarity first — often around living arrangement or medical care level.",
+      "Book a geriatric or specialist consultation for anything that has changed recently or feels urgent."
+    ],
+    conclusionMarker: "This resolves when there is a clear, shared care plan in place — not when every worry about ageing disappears.",
+    escalation: "Use medical, legal, or emergency help for falls, confusion, abuse, financial exploitation, neglect, or urgent symptoms.",
+    supportSearch: [
+      { label: "Geriatric care", query: "geriatric specialist doctor nearby" },
+      { label: "Elder helpline", query: "elder care helpline india" }
+    ]
   },
   "pregnancy-postpartum": {
     id: "pregnancy-postpartum",
     label: "pregnancy and postpartum wellbeing",
     issueId: "health",
     route: "professional",
+    context: "Pregnancy and postpartum changes — physical and emotional — deserve regular clinical tracking, not just personal judgment about what's normal.",
     firstAction: "Track symptoms, mood, sleep, bleeding, pain, feeding, and support needs; contact a qualified clinician for anything worrying.",
-    escalation: "Seek urgent care for severe pain, heavy bleeding, fever, fainting, suicidal thoughts, psychosis signs, or danger to mother or baby."
+    resolutionSteps: [
+      "Track symptoms, mood, sleep, and any bleeding or pain with dates.",
+      "Bring this record to a qualified clinician rather than waiting for the next scheduled check-up if anything feels wrong.",
+      "Name postpartum mood changes explicitly to your provider — 'baby blues' and postpartum depression are different, and only a clinician can tell which this is."
+    ],
+    conclusionMarker: "This resolves with an actual clinical assessment and, if needed, a treatment plan — not when you convince yourself it's probably nothing.",
+    escalation: "Seek urgent care for severe pain, heavy bleeding, fever, fainting, suicidal thoughts, psychosis signs, or danger to mother or baby.",
+    supportSearch: [
+      { label: "Obstetrician", query: "gynecologist obstetrician consultation" },
+      { label: "Postpartum support", query: "postpartum depression support helpline" }
+    ]
   },
   "identity-values": {
     id: "identity-values",
     label: "identity, values, and self-respect",
     issueId: "identity",
     route: "guide",
+    context: "Identity conflict often surfaces when an external pressure asks you to act against a value you actually hold.",
     firstAction: "Write the value being violated and one action that protects self-respect without creating unnecessary danger.",
-    escalation: "Bring in trusted or professional support if identity conflict becomes isolation, coercion, family violence, or hopelessness."
+    resolutionSteps: [
+      "Write the specific value being pressured or violated.",
+      "Choose one action that protects your self-respect without creating unnecessary danger.",
+      "Revisit in a few weeks whether the pressure has eased, changed, or needs a bigger response."
+    ],
+    conclusionMarker: "This resolves when you can act in line with your own values without constant internal conflict — even if the external pressure hasn't fully disappeared.",
+    escalation: "Bring in trusted or professional support if identity conflict becomes isolation, coercion, family violence, or hopelessness.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor identity values therapist" },
+      { label: "Support community", query: "identity support community nearby" }
+    ]
   },
   "spirituality-faith": {
     id: "spirituality-faith",
     label: "spirituality and faith support",
     issueId: "identity",
     route: "guide",
+    context: "Spiritual distress is real distress — the goal is a practice that steadies you, not one that replaces care you actually need.",
     firstAction: "Choose one safe practice that steadies you—prayer, seva, mantra, reflection, or silence—without replacing necessary real-world help.",
-    escalation: "Use professional, medical, or emergency help if spiritual distress includes delusions, self-harm, coercion, or refusal of essential care."
+    resolutionSteps: [
+      "Choose one safe, steadying practice — prayer, seva, mantra, reflection, or silence.",
+      "Keep it alongside, not instead of, any medical or psychological care you need.",
+      "Talk to a trusted spiritual guide or counselor if the distress includes doubt, guilt, or fear that won't ease."
+    ],
+    conclusionMarker: "This resolves when the practice genuinely steadies you rather than adding pressure — spiritual struggle that includes self-harm thoughts or refusal of real care needs professional support first.",
+    escalation: "Use professional, medical, or emergency help if spiritual distress includes delusions, self-harm, coercion, or refusal of essential care.",
+    supportSearch: [
+      { label: "Counselor", query: "counselor spiritual distress support" },
+      { label: "Faith community leader", query: "community spiritual guide nearby" }
+    ]
   },
   "cultural-belonging": {
     id: "cultural-belonging",
     label: "culture, belonging, and community pressure",
     issueId: "stigma",
     route: "guide",
+    context: "Cultural or community pressure sits on a real line between respect and coercion — naming which side a specific demand falls on is the key step.",
     firstAction: "Name the tradition, pressure, or community rule involved, then separate respect from coercion before choosing your response.",
-    escalation: "Use Help, legal aid, or trusted safety routes if community pressure includes threats, violence, forced marriage, discrimination, or isolation."
+    resolutionSteps: [
+      "Name the specific tradition, pressure, or community rule involved.",
+      "Separate genuine respect for the tradition from coercion that overrides your safety or consent.",
+      "Choose your response accordingly — respectful negotiation for the former, help or legal aid for the latter."
+    ],
+    conclusionMarker: "This resolves when you find a way to hold your belonging and your boundaries together — or, where the two truly conflict, when you've made a safe, deliberate choice rather than a forced one.",
+    escalation: "Use Help, legal aid, or trusted safety routes if community pressure includes threats, violence, forced marriage, discrimination, or isolation.",
+    supportSearch: [
+      { label: "Legal aid", query: "legal aid forced marriage discrimination" },
+      { label: "Counselor", query: "counselor cultural identity support" }
+    ]
   },
   "decision-making": {
     id: "decision-making",
     label: "decision making and trade-offs",
     issueId: "identity",
     route: "guide",
+    context: "Big decisions made from a flooded, anxious state tend to be worse than the same decisions made with structure and a little distance.",
     firstAction: "Write the options, reversibility, worst realistic cost, best realistic gain, and the smallest test before deciding fully.",
-    escalation: "Bring in a mentor, counselor, doctor, lawyer, or trusted person when the decision affects safety, health, legal status, or major finances."
+    resolutionSteps: [
+      "Write the real options, each one's reversibility, and the realistic worst and best outcomes.",
+      "Design the smallest possible test of the decision before committing fully.",
+      "Bring in a mentor, professional, or trusted person if the decision affects safety, health, legal status, or major finances."
+    ],
+    conclusionMarker: "This resolves when a decision is actually made and acted on — not when every possible doubt has been eliminated, which rarely happens.",
+    escalation: "Bring in a mentor, counselor, doctor, lawyer, or trusted person when the decision affects safety, health, legal status, or major finances.",
+    supportSearch: [
+      { label: "Mentor / advisor", query: "decision making mentor advisor" },
+      { label: "Counselor", query: "counselor decision anxiety" }
+    ]
   },
   "habit-routine": {
     id: "habit-routine",
     label: "habit, routine, and consistency",
     issueId: "burnout",
     route: "guide",
+    context: "Habits stick through small, consistent repetition anchored to an existing cue — not through willpower or an all-or-nothing restart.",
     firstAction: "Anchor the habit to an existing cue, make it two minutes long, and track it once without judging the whole week.",
-    escalation: "Use professional support if routine collapse is tied to depression, addiction, ADHD symptoms, health decline, or unsafe neglect."
+    resolutionSteps: [
+      "Anchor the new habit to something you already do every day.",
+      "Make it two minutes long to start — smaller than feels meaningful.",
+      "Track it for one week without judging the whole week on any single missed day."
+    ],
+    conclusionMarker: "This resolves when the habit runs with less friction than before — if routine collapse is tied to depression, addiction, or health decline, that needs professional support, not just a better system.",
+    escalation: "Use professional support if routine collapse is tied to depression, addiction, ADHD symptoms, health decline, or unsafe neglect.",
+    supportSearch: [
+      { label: "Coach", query: "habit coach accountability" },
+      { label: "Counselor", query: "counselor routine burnout" }
+    ]
   },
   environment: {
     id: "environment",
     label: "environment and living conditions",
     issueId: "health",
     route: "redress",
+    context: "Unsafe living conditions are usually an accountability problem, not just a discomfort problem — documentation is what makes the responsible party act.",
     firstAction: "Document the condition with dates/photos, reduce immediate exposure if possible, and identify the owner, office, or authority responsible.",
-    escalation: "Escalate for unsafe housing, violence nearby, hazardous pollution, sanitation risk, fire/electrical danger, or health-threatening conditions."
+    resolutionSteps: [
+      "Document the condition with dated photos or notes.",
+      "Reduce immediate exposure or risk where possible while pursuing a fix.",
+      "Identify the responsible owner, landlord, or authority and file a formal request or complaint."
+    ],
+    conclusionMarker: "This resolves when the hazardous condition is actually fixed — a promise to fix it is not the conclusion until it's verified.",
+    escalation: "Escalate for unsafe housing, violence nearby, hazardous pollution, sanitation risk, fire/electrical danger, or health-threatening conditions.",
+    supportSearch: [
+      { label: "Municipal authority", query: "municipal corporation grievance nearby" },
+      { label: "Legal aid", query: "tenant rights legal aid" }
+    ]
   },
   "documentation-evidence": {
     id: "documentation-evidence",
     label: "documentation and evidence trail",
     issueId: "financial",
     route: "redress",
+    context: "Almost every formal process — police, legal, employment, education, medical — moves faster and more fairly with an organised evidence trail.",
     firstAction: "Create a dated folder with screenshots, receipts, messages, IDs, complaint numbers, and a one-page chronology.",
-    escalation: "Use formal help if documents are being withheld, forged, destroyed, or needed for police, legal, employment, education, or medical action."
+    resolutionSteps: [
+      "Create one dated folder with every screenshot, receipt, message, and ID needed.",
+      "Write a one-page chronology of events in plain, factual language.",
+      "Use this exact package for whichever process (police, legal, HR, school) is relevant — do not recreate it from memory each time."
+    ],
+    conclusionMarker: "This resolves when the trail is complete and has actually been submitted or preserved somewhere safe — not when it exists only in your head.",
+    escalation: "Use formal help if documents are being withheld, forged, destroyed, or needed for police, legal, employment, education, or medical action.",
+    supportSearch: [
+      { label: "Legal aid", query: "legal aid documentation evidence" },
+      { label: "Notary / affidavit service", query: "notary affidavit service nearby" }
+    ]
   },
   direction: {
     id: "direction",
     label: "direction and purpose",
     issueId: "identity",
     route: "guide",
+    context: "A sense of lost direction is often several smaller unresolved decisions stacked into one overwhelming feeling.",
     firstAction: "Write the decision, the options, and the smallest reversible step; avoid making a life-sized decision from a flooded mind.",
-    escalation: "Bring in a counselor, mentor, doctor, or trusted guide if confusion becomes hopelessness, paralysis, or unsafe withdrawal."
+    resolutionSteps: [
+      "Write the actual decision in front of you and the real options, not the vague sense of being lost.",
+      "Choose the smallest reversible step rather than trying to decide your whole future at once.",
+      "Bring in a counselor, mentor, or trusted guide if the confusion is turning into hopelessness or withdrawal."
+    ],
+    conclusionMarker: "This resolves one decision at a time — direction returns through small chosen steps, rarely through a single moment of clarity.",
+    escalation: "Bring in a counselor, mentor, doctor, or trusted guide if confusion becomes hopelessness, paralysis, or unsafe withdrawal.",
+    supportSearch: [
+      { label: "Career/life counselor", query: "life direction counselor mentor" },
+      { label: "Mentor", query: "mentor guidance nearby" }
+    ]
   }
 };
 
@@ -31907,6 +32447,19 @@ function SupportDimensionLibraryPanel({
                 <View style={{ backgroundColor: accentColor + "18", alignSelf: "flex-start", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3, marginBottom: 8, borderWidth: 1, borderColor: accentColor + "40" }}>
                   <Text style={{ color: accentColor, fontSize: 12, fontWeight: "800" }}>{routeLabel(guide.route)}</Text>
                 </View>
+                <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 8 }}>{guide.context}</Text>
+                <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 4 }}>
+                  Path to resolution
+                </Text>
+                {guide.resolutionSteps.map((step, stepIndex) => (
+                  <View key={`${guide.id}-step-${stepIndex}`} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 4, gap: 6 }}>
+                    <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900" }}>{stepIndex + 1}.</Text>
+                    <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, flex: 1 }}>{step}</Text>
+                  </View>
+                ))}
+                <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginTop: 6, marginBottom: 6 }}>
+                  <Text style={{ fontWeight: "900" }}>Resolved when: </Text>{guide.conclusionMarker}
+                </Text>
                 <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 6 }}>
                   <Text style={{ fontWeight: "900" }}>Escalate when: </Text>{guide.escalation}
                 </Text>
@@ -31927,15 +32480,18 @@ function SupportDimensionLibraryPanel({
                       <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Open Path</Text>
                     </Pressable>
                   ) : null}
-                  {openWebsite && buildNearbySearchUrl && guide.route === "professional" ? (
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => void openWebsite(buildNearbySearchUrl(`${guide.label} professional support`), guide.label)}
-                      style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
-                    >
-                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Find nearby support</Text>
-                    </Pressable>
-                  ) : null}
+                  {openWebsite && buildNearbySearchUrl
+                    ? guide.supportSearch.map((target) => (
+                        <Pressable
+                          key={`${guide.id}-search-${target.label}`}
+                          accessibilityRole="button"
+                          onPress={() => void openWebsite(buildNearbySearchUrl(target.query), target.label)}
+                          style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                        >
+                          <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Find: {target.label}</Text>
+                        </Pressable>
+                      ))
+                    : null}
                   {onEmergencyCall ? (
                     <Pressable accessibilityRole="button" onPress={onEmergencyCall} style={{ backgroundColor: "#B91C1C", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}>
                       <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>SOS</Text>

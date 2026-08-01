@@ -156,4 +156,50 @@ assert(source.includes('const routeToTab = (tab: TabId)'), 'Search does not adap
 const moonChartWiredCount = (source.match(/moonChart48Readings=\{(vedicMoonChart48Readings|moonChart48Readings)\}/g) ?? []).length;
 assert(moonChartWiredCount >= 10, `Expected at least 10 live moonChart48Readings wire-ups across sections; found ${moonChartWiredCount}`);
 
-console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, Path/Guide Moon Chart + 48-axis complement, and cross-section 48-dimension actionability.');
+// ── All 48 support dimensions resolve to an actual conclusion ───────────────
+// Each of the 48 used to be a one-line nudge (firstAction) plus a one-line
+// escalation. That is not enough to actually redress an issue to conclusion.
+// Every single one of the 48 must now carry: why it matters (context), a
+// real multi-step path to resolution (resolutionSteps, >= 3 steps), a
+// checkable definition of "resolved" (conclusionMarker), and at least two
+// concrete, searchable next-step targets (supportSearch) -- not just the
+// existing firstAction/escalation pair. This is checked per-entry, not by
+// sampling, so a shallow or missing entry fails the build.
+assert(source.includes('context: string;') && source.includes('resolutionSteps: string[];') && source.includes('conclusionMarker: string;') && source.includes('supportSearch: Array<{ label: string; query: string }>;'), 'SupportDimensionGuide type is missing the resolution-depth fields (context, resolutionSteps, conclusionMarker, supportSearch)');
+
+const dimensionsBlock = source.match(/const supportDimensionGuides: Record<SupportDimensionId, SupportDimensionGuide> = \{([\s\S]*?)\n\};/);
+assert(dimensionsBlock, 'supportDimensionGuides block not found');
+const dimensionsBody = dimensionsBlock[1];
+// Split into one chunk per dimension entry (each starts with a 2-space-indented `key: {` or `"key": {` line).
+const entryStarts = [...dimensionsBody.matchAll(/^ {2}"?[\w-]+"?: \{/gm)].map((m) => m.index);
+assert(entryStarts.length === 48, `Expected exactly 48 support dimension entries; found ${entryStarts.length}`);
+const entryChunks = entryStarts.map((start, i) => dimensionsBody.slice(start, entryStarts[i + 1] ?? dimensionsBody.length));
+const allDimensionIds = [
+  'self-image', 'grief', 'trauma', 'addiction', 'academic', 'financial', 'health', 'parenting', 'relationship', 'unappreciated',
+  'work', 'home-family', 'anger', 'anxiety', 'sadness', 'burnout', 'loneliness', 'safety', 'fear', 'sleep',
+  'appetite', 'body-symptoms', 'legal-rights', 'digital-safety', 'social-reputation', 'career-growth', 'workplace-conflict', 'education-admin', 'exam-performance', 'time-management',
+  'procrastination', 'motivation', 'confidence', 'boundaries', 'communication', 'trust', 'intimacy', 'caregiving', 'elder-care', 'pregnancy-postpartum',
+  'identity-values', 'spirituality-faith', 'cultural-belonging', 'decision-making', 'habit-routine', 'environment', 'documentation-evidence', 'direction'
+];
+assert(allDimensionIds.length === 48, 'Test fixture drifted from the real 48-dimension id list');
+for (const id of allDimensionIds) {
+  const chunk = entryChunks.find((c) => c.startsWith(`  "${id}": {`) || c.startsWith(`  ${id}: {`));
+  assert(chunk, `No supportDimensionGuides entry found for "${id}"`);
+  assert(/context: "[^"]{20,}"/.test(chunk), `"${id}" is missing a real context sentence`);
+  const stepsMatch = chunk.match(/resolutionSteps: \[([\s\S]*?)\]/);
+  assert(stepsMatch, `"${id}" is missing resolutionSteps`);
+  const stepCount = [...stepsMatch[1].matchAll(/"[^"]{15,}"/g)].length;
+  assert(stepCount >= 3, `"${id}" must have at least 3 real resolution steps; found ${stepCount}`);
+  assert(/conclusionMarker: "[^"]{20,}"/.test(chunk), `"${id}" is missing a real conclusionMarker`);
+  const searchMatch = chunk.match(/supportSearch: \[([\s\S]*?)\]/);
+  assert(searchMatch, `"${id}" is missing supportSearch`);
+  const searchCount = [...searchMatch[1].matchAll(/\{ label:/g)].length;
+  assert(searchCount >= 2, `"${id}" must have at least 2 supportSearch targets; found ${searchCount}`);
+}
+
+// The detail view must actually render this depth, not just carry it as data.
+assert(source.includes('Path to resolution'), 'SupportDimensionLibraryPanel does not render the resolution steps');
+assert(source.includes('Resolved when: '), 'SupportDimensionLibraryPanel does not render the conclusion marker');
+assert(source.includes('Find: {target.label}'), 'SupportDimensionLibraryPanel does not render per-dimension supportSearch buttons');
+
+console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, Path/Guide Moon Chart + 48-axis complement, cross-section 48-dimension actionability, and all 48 dimensions carry a real path to resolution and conclusion.');
