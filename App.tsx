@@ -136,7 +136,7 @@ type RelaxingToneMode = {
   tags?: string[];
   // Optional external open — YouTube / Spotify search or curated link for
   // trending social-media / lyric-heavy tracks the internal tone-gen can't
-  // reproduce (lo-fi mixes, motivational speeches, bhajans, Bollywood chill).
+  // reproduce (lo-fi mixes, motivational speeches, classical/acoustic playlists, Bollywood chill).
   externalUrl?: string;
   externalLabel?: string;
 };
@@ -416,10 +416,9 @@ type IssueGuide = {
   urgentNote: string;
 };
 
-// Deliberately non-denominational: this feeds the same underlying wisdom
-// that used to be attributed by name to specific scriptures/traditions, but
-// presents it as universal guidance (a theme + a teaching + a practice)
-// rather than teaching from any one religion or faith.
+// Deliberately non-denominational: this feeds universal reflective guidance
+// as a theme + a teaching + a practice, without naming or depending on any
+// one tradition, belief system, or source text.
 type CalmTeaching = {
   id: string;
   theme: string;
@@ -441,6 +440,17 @@ type MeditationChakra = {
   practice: string;
   audioToneId: RelaxingToneMode["id"];
   videoQuery: string;
+};
+
+type MeditationMethod = {
+  id: string;
+  label: string;
+  duration: string;
+  purpose: string;
+  bestFor: IssueId[];
+  steps: [string, string, string, string];
+  result: string;
+  toneId: RelaxingToneMode["id"];
 };
 
 type RedressRoute = {
@@ -786,29 +796,29 @@ const tones: Tone[] = [
 const routines: Routine[] = [
   {
     id: "morning",
-    name: "Morning clarity",
-    meta: "Breath, intent, first useful step",
+    name: "Morning alignment",
+    meta: "Breath, values, first useful action",
     duration: 8,
     accent: "#0E6F69"
   },
   {
     id: "calm",
-    name: "Reset",
-    meta: "Quiet restoration, breath, reduced noise",
+    name: "Deep reset",
+    meta: "Stillness, witness practice, nervous-system downshift",
     duration: 12,
     accent: "#7E6FD6"
   },
   {
     id: "reset",
-    name: "Midday reset",
-    meta: "Pause, body scan, refocus",
+    name: "Midday recalibration",
+    meta: "Pause, observe, choose one clean action",
     duration: 5,
     accent: "#F37B64"
   },
   {
     id: "evening",
-    name: "Evening sort",
-    meta: "Unload, close loops, release",
+    name: "Evening release",
+    meta: "Review, let go, close loops",
     duration: 10,
     accent: "#AD850B"
   }
@@ -1115,97 +1125,97 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     accent: "#24306F",
     mark: "30"
   },
-  // ── Solfeggio sacred frequencies ─────────────────────────────────────────
+  // ── Reflective frequency tones ───────────────────────────────────────────
   {
     id: "sol-396",
-    label: "396 Hz — Release",
-    category: "Solfeggio",
+    label: "396 Hz release tone",
+    category: "Frequency tone",
     pattern: "Sustained 396 Hz sine with gentle harmonic. Loops continuously.",
-    use: "Liberates guilt and fear. Use at the start of a hard session.",
-    safety: "Keep volume moderate. Continuous sustained tone.",
+    use: "Use at the start of a difficult session to mark a deliberate release of guilt, fear, or rumination.",
+    safety: "Keep volume moderate. This is a reflective sound cue, not a treatment.",
     accent: "#C4A35A",
     mark: "S1"
   },
   {
     id: "sol-417",
-    label: "417 Hz — Change",
-    category: "Solfeggio",
+    label: "417 Hz change tone",
+    category: "Frequency tone",
     pattern: "Sustained 417 Hz sine. Loops continuously.",
-    use: "Facilitates change and clears traumatic experience.",
-    safety: "Keep volume moderate. Continuous sustained tone.",
+    use: "Use when you are preparing for a change, apology, boundary, or new routine.",
+    safety: "Keep volume moderate. Do not use sound as a substitute for trauma care.",
     accent: "#D68C6C",
     mark: "S2"
   },
   {
     id: "sol-432",
-    label: "432 Hz — Nature",
-    category: "Solfeggio",
+    label: "432 Hz quiet tone",
+    category: "Frequency tone",
     pattern: "Sustained 432 Hz — the 'natural' concert pitch. Loops continuously.",
-    use: "Said to resonate with the universe. Deeply calming, non-aggressive.",
-    safety: "Keep volume moderate. Continuous sustained tone.",
+    use: "A smooth sustained tone for simple breathing, journaling, or background calm.",
+    safety: "Keep volume moderate. Stop if sustained tone feels irritating.",
     accent: "#72B7A8",
     mark: "S3"
   },
   {
     id: "sol-528",
-    label: "528 Hz — Love",
-    category: "Solfeggio",
+    label: "528 Hz compassion tone",
+    category: "Frequency tone",
     pattern: "Sustained 528 Hz miracle tone + octave harmonic. Loops continuously.",
-    use: "DNA repair frequency. Profound transformation and love.",
-    safety: "Keep volume moderate. Continuous sustained tone.",
+    use: "Pair with compassion practice, repair conversations, or a softer self-dialogue.",
+    safety: "Keep volume moderate. This is a calming cue, not a medical intervention.",
     accent: "#7E6FD6",
     mark: "S4"
   },
   {
     id: "sol-639",
-    label: "639 Hz — Connect",
-    category: "Solfeggio",
+    label: "639 Hz connection tone",
+    category: "Frequency tone",
     pattern: "Sustained 639 Hz sine. Loops continuously.",
-    use: "Reconnecting, relationships, and heart opening.",
-    safety: "Keep volume moderate. Continuous sustained tone.",
+    use: "Use before reaching out, repairing a relationship, or writing a careful message.",
+    safety: "Keep volume moderate and return to real communication after the session.",
     accent: "#4D9A6F",
     mark: "S5"
   },
   {
     id: "sol-741",
-    label: "741 Hz — Awaken",
-    category: "Solfeggio",
+    label: "741 Hz clarity tone",
+    category: "Frequency tone",
     pattern: "Sustained 741 Hz sine. Loops continuously.",
-    use: "Awakening intuition and solving problems.",
-    safety: "Keep volume moderate. Continuous sustained tone.",
+    use: "A clean attention cue for sorting facts, decisions, and next steps.",
+    safety: "Keep volume moderate. If it sharpens anxiety, switch to rain or breath sync.",
     accent: "#2E7D9A",
     mark: "S6"
   },
   {
     id: "sol-852",
-    label: "852 Hz — Intuition",
-    category: "Solfeggio",
+    label: "852 Hz insight tone",
+    category: "Frequency tone",
     pattern: "Sustained 852 Hz sine. Loops continuously.",
-    use: "Return to spiritual order and higher awareness.",
-    safety: "Keep volume moderate. Continuous sustained tone.",
+    use: "Use with witness practice when you need perspective rather than reaction.",
+    safety: "Keep volume moderate and avoid long sessions when tired.",
     accent: "#6A5ACD",
     mark: "S7"
   },
   {
     id: "sol-963",
-    label: "963 Hz — Divine",
-    category: "Solfeggio",
+    label: "963 Hz silence tone",
+    category: "Frequency tone",
     pattern: "Sustained 963 Hz sine. Loops continuously.",
-    use: "Pineal gland activation. Crown chakra. Highest frequency.",
-    safety: "Keep volume moderate. Continuous sustained tone.",
+    use: "Use for a short quiet close when you want to step back from mental noise.",
+    safety: "Keep volume moderate. This is a reflective cue, not a biological claim.",
     accent: "#E7A05D",
     mark: "S8"
   },
-  // ── Earth / AUM frequency ─────────────────────────────────────────────────
+  // ── Grounding frequency tone ───────────────────────────────────────────────
   {
     id: "aum-136",
-    label: "AUM 136.1 Hz",
-    category: "Earth frequency",
-    pattern: "136.1 Hz — the OM frequency of the Earth's year. Continuous loop.",
-    use: "Grounding, centring. The oldest meditative tone on record.",
-    safety: "Use with headphones for the full resonance effect.",
+    label: "136.1 Hz grounding tone",
+    category: "Grounding frequency",
+    pattern: "Low 136.1 Hz sustained tone with a gentle continuous loop.",
+    use: "A low grounding tone for breath, posture, and returning attention to the body.",
+    safety: "Use low volume. Headphones are optional; comfort matters more than intensity.",
     accent: "#0E6F69",
-    mark: "OM"
+    mark: "136"
   },
   // ── Noise generators ──────────────────────────────────────────────────────
   {
@@ -1244,7 +1254,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "Delta binaural 1",
     category: "Binaural beeps",
     pattern: "100 Hz L / 101 Hz R for a 1 Hz delta beat. Requires headphones.",
-    use: "Deep dreamless sleep induction, cellular recovery.",
+    use: "Sleep preparation and deep rest support when the day needs a full stop.",
     safety: "Use headphones only. Do not use while driving.",
     accent: "#24306F",
     mark: "D1"
@@ -1254,7 +1264,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "Delta binaural 2",
     category: "Binaural beeps",
     pattern: "100 Hz L / 102 Hz R for a 2 Hz delta beat. Requires headphones.",
-    use: "Deep rest and recovery. Body repair during sleep.",
+    use: "Deep rest support for evenings, body scan, and gentle decompression.",
     safety: "Use headphones only. Do not use while driving.",
     accent: "#3A3F8A",
     mark: "D2"
@@ -1264,7 +1274,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "Gamma binaural 40",
     category: "Binaural beeps",
     pattern: "220 Hz L / 260 Hz R for a 40 Hz gamma beat. Requires headphones.",
-    use: "Peak cognition, heightened awareness, insight states.",
+    use: "Short alert-focus sessions for planning, review, or structured study.",
     safety: "Use headphones. Keep sessions under 30 minutes.",
     accent: "#D4A017",
     mark: "G40"
@@ -1282,10 +1292,10 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
   },
   {
     id: "trend-tibetan-bowl",
-    label: "Tibetan Singing Bowl",
+    label: "Singing bowl resonance",
     category: "Trending",
     pattern: "7-tone singing bowl resonance at 432 Hz with natural overtone decay. Loops with gentle fade.",
-    use: "Chakra balancing, meditation, grounding. Trending on TikTok and YouTube meditation channels.",
+    use: "A resonant start for meditation, grounding, and transition from noise to stillness.",
     safety: "Louder strikes may be startling — keep initial volume low.",
     accent: "#C4913A",
     mark: "TB"
@@ -1295,18 +1305,18 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "Schumann 7.83 Hz",
     category: "Trending",
     pattern: "Earth's electromagnetic resonance frequency. Isochronic pulse at 7.83 Hz with ambient drone.",
-    use: "Synchronise with Earth's heartbeat. Anxiety relief, grounding, circadian rhythm support.",
-    safety: "Safe for extended use. No headphones required.",
+    use: "A slow grounding pulse for background calm, study preparation, or decompression.",
+    safety: "Use as a comfort cue only. No headphones required.",
     accent: "#2E7D4A",
     mark: "SR"
   },
   {
     id: "trend-krishna-flute",
-    label: "Krishna Flute (Bansuri)",
+    label: "Bansuri flute calm",
     category: "Trending",
     pattern: "Classical Indian bansuri flute melody in Raag Yaman. Soft reverb loop.",
-    use: "Devotional calm, emotional release, cultural healing. Viral on Indian spiritual platforms.",
-    safety: "Safe for all. Particularly effective for grief and loneliness.",
+    use: "Melodic instrumental calm for grief, loneliness, evening reflection, or quiet focus.",
+    safety: "Safe for general listening. Pause if nostalgia becomes heavy.",
     accent: "#3A7CBF",
     mark: "KF"
   },
@@ -1316,7 +1326,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     category: "Trending",
     pattern: "Gentle rain droplets on canvas with distant thunder. Binaural ASMR spatial recording.",
     use: "Sleep induction, anxiety relief. One of the top ASMR sounds on YouTube with billions of plays.",
-    safety: "Safe for extended use. Ideal at very low to moderate volume.",
+    safety: "Safe for general listening. Keep low at night or when using headphones.",
     accent: "#4A7FA8",
     mark: "RT"
   },
@@ -1325,7 +1335,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "Coffee Shop Ambience",
     category: "Trending",
     pattern: "Gentle cafe chatter, espresso machine, light jazz undertone. Spatial room sound.",
-    use: "Focus and productivity. Studies show moderate ambient noise boosts creative cognition.",
+    use: "Focus and productivity. Use as gentle background atmosphere for creative work; keep it low enough to think clearly.",
     safety: "Safe. Background noise level, not a treatment tone.",
     accent: "#8B6E4E",
     mark: "CS"
@@ -1345,27 +1355,27 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "432Hz Acoustic Guitar",
     category: "Trending",
     pattern: "Fingerpicked acoustic guitar tuned to 432 Hz. Gentle arpeggios with room reverb.",
-    use: "Emotional regulation, grief processing, relaxation. Widely shared in healing music communities.",
+    use: "Emotional regulation, grief processing, relaxation. Widely used as soft background music for reflection and rest.",
     safety: "Safe for extended listening.",
     accent: "#8B7355",
     mark: "AG"
   },
   {
     id: "trend-om-chant",
-    label: "Om / Aum Chant",
+    label: "Vocal resonance chant",
     category: "Trending",
-    pattern: "Group om chant with natural resonance and harmonic overtones. Vedic tradition. Continuous loop.",
-    use: "Spiritual grounding, throat chakra activation, pre-meditation. Ancient and trending simultaneously.",
-    safety: "Very safe. The oldest meditation sound on record.",
+    pattern: "Group vowel-tone chant with natural resonance and harmonic overtones. Continuous loop.",
+    use: "Breath pacing, voice resonance, and pre-meditation grounding.",
+    safety: "Use gently. If vocal sound feels uncomfortable, choose an ambient track.",
     accent: "#C4A800",
-    mark: "OM2"
+    mark: "VC"
   },
   {
     id: "trend-forest-birds",
     label: "Forest Birds at Dawn",
     category: "Trending",
     pattern: "Natural forest soundscape — birdsong, gentle breeze, stream in distance. Spatial stereo recording.",
-    use: "Morning energy, nature immersion, parasympathetic restoration. Top nature sound on Calm and Headspace.",
+    use: "Morning energy, nature immersion, and a familiar cue for gentle reset.",
     safety: "Safe for extended use.",
     accent: "#2E6E3A",
     mark: "FB"
@@ -1375,24 +1385,24 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "Deep Sleep Delta Drone",
     category: "Trending",
     pattern: "Sub-bass 1-3 Hz delta frequency drone with soft harmonic overtones. Engineered for sleep stages.",
-    use: "Sleep onset, trauma recovery, deep rest. Trending on sleep hygiene communities on Reddit and TikTok.",
+    use: "Sleep preparation, deep rest, and quiet decompression. Suitable after a heavy day.",
     safety: "Use while lying down only. Do not use while driving.",
     accent: "#1A2A4A",
     mark: "DS"
   },
   {
     id: "trend-528-miracle",
-    label: "528 Hz Miracle Tone Extended",
+    label: "528 Hz extended tone",
     category: "Trending",
     pattern: "Extended 528 Hz sine with layered harmonic series and binaural theta entrainment at 6 Hz.",
-    use: "DNA healing, heart chakra activation, emotional transformation. Most viral frequency on healing platforms.",
-    safety: "Safe. Keep volume moderate.",
+    use: "Longer compassion or emotional reset sessions when a soft, steady tone helps you stay present.",
+    safety: "Use headphones only for binaural layers. Keep volume moderate.",
     accent: "#6A4DB8",
     mark: "528+"
   },
   // ── Social-trending picks — opens curated search on YouTube ──────────────
   // These aren't internal tone patterns; they route to the trending community
-  // tracks users find on socials (lo-fi, phonk, bhajan, Bollywood chill,
+  // tracks users find on socials (lo-fi, phonk, acoustic/classical playlists,
   // motivational speech loops). Each opens a YouTube search in-browser.
   {
     id: "social-lofi",
@@ -1419,16 +1429,16 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     externalLabel: "Open phonk mixes"
   },
   {
-    id: "social-bhajan",
-    label: "Krishna bhajan mix",
+    id: "social-contemplative-music",
+    label: "Contemplative music mix",
     category: "Social trending",
-    pattern: "Devotional Krishna bhajans — Hare Krishna kirtan, Radha bhajans, morning Vishnu chants.",
-    use: "Devotional practice, morning routine, grief processing, cultural comfort.",
-    safety: "Safe for all ages. Very grounding.",
+    pattern: "Calm Indian classical, acoustic, and vocal playlists with a reflective pace.",
+    use: "Morning routine, grief processing, cultural comfort, or quiet reflection.",
+    safety: "Safe for all ages. Pause if nostalgia or lyrics feel overwhelming.",
     accent: "#B45309",
-    mark: "BJ",
-    externalUrl: "https://www.youtube.com/results?search_query=krishna+bhajan+kirtan+mix",
-    externalLabel: "Open bhajan mixes"
+    mark: "CM",
+    externalUrl: "https://www.youtube.com/results?search_query=indian+classical+contemplative+music+calm+mix",
+    externalLabel: "Open contemplative mixes"
   },
   {
     id: "social-bolly-chill",
@@ -1455,16 +1465,16 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     externalLabel: "Open motivation reels"
   },
   {
-    id: "social-hanuman-chalisa",
-    label: "Hanuman Chalisa (108x)",
+    id: "social-courage-playlist",
+    label: "Courage playlist",
     category: "Social trending",
-    pattern: "Recitations of Hanuman Chalisa by classical singers — Hariharan, Shankar Mahadevan, Anup Jalota.",
-    use: "Tuesday/Saturday practice, courage, protection from fear.",
-    safety: "Safe. Listen with attention or play as background during work.",
+    pattern: "Courage-themed vocal and instrumental playlists with a steady, uplifting pace.",
+    use: "Preparing for a difficult conversation, fear, or low confidence.",
+    safety: "Safe for general listening. Keep the volume comfortable.",
     accent: "#F97316",
-    mark: "HC",
-    externalUrl: "https://www.youtube.com/results?search_query=hanuman+chalisa+108+times",
-    externalLabel: "Open Hanuman Chalisa"
+    mark: "CP",
+    externalUrl: "https://www.youtube.com/results?search_query=courage+affirmation+music+calm+playlist",
+    externalLabel: "Open courage playlist"
   },
   {
     id: "social-nature-rain",
@@ -1480,10 +1490,10 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
   },
   {
     id: "social-40hz-adhd",
-    label: "40 Hz gamma — ADHD focus (clinical)",
+    label: "40 Hz focus pulse",
     category: "Social trending",
-    pattern: "Steady 40 Hz gamma binaural pulse — MIT Picower Institute research signal for cognition + memory.",
-    use: "ADHD focus support, deep work sessions, memory-heavy study.",
+    pattern: "Steady 40 Hz binaural-style focus pulse inspired by early attention research.",
+    use: "Short deep-work or study sessions when a structured audio cue helps.",
     safety: "Use headphones. Not a treatment — evidence is early-stage.",
     accent: "#A855F7",
     mark: "40",
@@ -1503,16 +1513,16 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     externalLabel: "Open Pomodoro timers"
   },
   {
-    id: "social-mantra-lyrics",
-    label: "Om Mani Padme Hum — chanted with lyrics",
+    id: "social-vocal-repetition",
+    label: "Vocal repetition with lyrics",
     category: "Social trending",
-    pattern: "Group chant of Om Mani Padme Hum with visible Sanskrit + Devanagari + English translation.",
-    use: "Compassion practice, learning pronunciation, cross-cultural meditation.",
-    safety: "Safe for all.",
+    pattern: "Slow group vocal repetition with visible lyrics and translation.",
+    use: "Compassion practice, pronunciation learning, and cross-cultural meditation.",
+    safety: "Safe for all. Skip if lyric-heavy audio distracts you.",
     accent: "#5C00B8",
-    mark: "OM3",
-    externalUrl: "https://www.youtube.com/results?search_query=om+mani+padme+hum+chant+with+lyrics",
-    externalLabel: "Open mantra with lyrics"
+    mark: "VR",
+    externalUrl: "https://www.youtube.com/results?search_query=compassion+chant+with+lyrics+meditation",
+    externalLabel: "Open vocal repetition"
   },
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -1728,46 +1738,46 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     externalLabel: "Open ambient piano"
   },
 
-  // ── TRENDING · INDIAN & DEVOTIONAL ────────────────────────────────────────
+  // ── TRENDING · INDIAN VOCAL & CLASSICAL ───────────────────────────────────
   {
-    id: "social-gayatri",
-    label: "Gayatri Mantra — 108 repetitions",
+    id: "social-morning-vocal",
+    label: "Morning vocal repetition — 108 counts",
     category: "Social trending",
-    pattern: "Full 108-count recitation of the Gayatri Mantra, steady tempo.",
+    pattern: "A steady 108-count vocal repetition at an even morning tempo.",
     use: "Morning practice, clarity, pre-exam steadiness.",
-    safety: "Safe for all.",
+    safety: "Safe for all. Keep volume soft during morning use.",
     accent: "#D97706",
-    mark: "GY",
+    mark: "MV",
     intent: "Steady",
-    brainState: "Focused devotional",
+    brainState: "Focused calm",
     bestTime: "Morning",
     durationMin: 30,
     qualityGrade: "External",
-    tags: ["devotional", "mantra", "morning", "india"],
-    externalUrl: "https://www.youtube.com/results?search_query=gayatri+mantra+108+times",
-    externalLabel: "Open Gayatri Mantra"
+    tags: ["vocal", "morning", "india"],
+    externalUrl: "https://www.youtube.com/results?search_query=morning+vocal+repetition+108+calm",
+    externalLabel: "Open morning vocal"
   },
   {
-    id: "social-hanuman-chalisa",
-    label: "Hanuman Chalisa",
+    id: "social-courage-recitation",
+    label: "Courage recitation",
     category: "Social trending",
-    pattern: "Forty-verse devotional recitation, roughly 9 minutes per cycle.",
-    use: "Courage before a confrontation, fear, night anxiety.",
-    safety: "Safe for all.",
+    pattern: "Long-form courage-themed vocal recitation at a steady pace.",
+    use: "Courage before a confrontation, fear, or night anxiety.",
+    safety: "Safe for all. Use at low volume if listening before sleep.",
     accent: "#DC2626",
-    mark: "HC",
+    mark: "CR",
     intent: "Courage",
-    brainState: "Focused devotional",
+    brainState: "Focused calm",
     bestTime: "Morning or night",
     durationMin: 10,
     qualityGrade: "External",
-    tags: ["devotional", "fear", "courage", "india"],
-    externalUrl: "https://www.youtube.com/results?search_query=hanuman+chalisa+full",
-    externalLabel: "Open Hanuman Chalisa"
+    tags: ["vocal", "fear", "courage", "india"],
+    externalUrl: "https://www.youtube.com/results?search_query=courage+recitation+calm+night+anxiety",
+    externalLabel: "Open courage recitation"
   },
   {
     id: "social-sufi-qawwali",
-    label: "Sufi qawwali — slow devotional",
+    label: "Slow qawwali vocals",
     category: "Social trending",
     pattern: "Harmonium and tabla under call-and-response vocals, building slowly.",
     use: "Emotional release, longing, grief that will not move.",
@@ -1779,7 +1789,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     bestTime: "Evening",
     durationMin: 30,
     qualityGrade: "External",
-    tags: ["devotional", "grief", "music", "india"],
+    tags: ["grief", "music", "india", "vocal"],
     externalUrl: "https://www.youtube.com/results?search_query=sufi+qawwali+slow+soulful",
     externalLabel: "Open qawwali"
   },
@@ -1821,9 +1831,9 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
   },
   {
     id: "social-tibetan-monks",
-    label: "Tibetan monks — overtone chanting",
+    label: "Deep overtone chanting",
     category: "Social trending",
-    pattern: "Deep multiphonic throat chanting with bowls and long horns.",
+    pattern: "Deep multiphonic throat chanting with bowls and long low-frequency resonance.",
     use: "Grounding when thoughts are racing; strong physical resonance.",
     safety: "Keep volume moderate — heavy low-frequency content.",
     accent: "#7C2D12",
@@ -1833,7 +1843,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     bestTime: "Evening",
     durationMin: 30,
     qualityGrade: "External",
-    tags: ["devotional", "grounding", "meditation"],
+    tags: ["grounding", "meditation", "vocal"],
     externalUrl: "https://www.youtube.com/results?search_query=tibetan+monks+overtone+chanting",
     externalLabel: "Open monk chanting"
   },
@@ -1851,7 +1861,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     bestTime: "Evening",
     durationMin: 20,
     qualityGrade: "External",
-    tags: ["guilt", "repair", "mantra", "viral"],
+    tags: ["guilt", "repair", "repetition", "viral"],
     externalUrl: "https://www.youtube.com/results?search_query=hooponopono+chant+meditation",
     externalLabel: "Open Ho'oponopono"
   },
@@ -1914,12 +1924,12 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     externalLabel: "Open box breathing"
   },
 
-  // ── TRENDING · SOLFEGGIO GAPS ─────────────────────────────────────────────
+  // ── TRENDING · FREQUENCY TONE GAPS ──────────────────────────────────────────
   {
     id: "social-sol-174",
     label: "174 Hz — pain and foundation",
     category: "Social trending",
-    pattern: "Sustained 174 Hz drone, the lowest of the Solfeggio set.",
+    pattern: "Sustained 174 Hz drone used as a low grounding bed.",
     use: "Physical discomfort, feeling unsafe, grounding after a hard day.",
     safety: "A comfort practice, not pain treatment. Keep seeing your clinician.",
     accent: "#7E22CE",
@@ -1929,9 +1939,9 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     bestTime: "Evening",
     durationMin: 30,
     qualityGrade: "External",
-    tags: ["pain", "grounding", "solfeggio"],
+    tags: ["pain", "grounding", "frequency"],
     contraindication: "Not a treatment for pain or illness.",
-    externalUrl: "https://www.youtube.com/results?search_query=174+hz+solfeggio+pain+relief",
+    externalUrl: "https://www.youtube.com/results?search_query=174+hz+grounding+tone",
     externalLabel: "Open 174 Hz"
   },
   {
@@ -1948,74 +1958,72 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     bestTime: "Anytime",
     durationMin: 30,
     qualityGrade: "External",
-    tags: ["recovery", "solfeggio"],
+    tags: ["recovery", "frequency"],
     contraindication: "Not a treatment for illness or injury.",
-    externalUrl: "https://www.youtube.com/results?search_query=285+hz+solfeggio+healing",
+    externalUrl: "https://www.youtube.com/results?search_query=285+hz+recovery+tone",
     externalLabel: "Open 285 Hz"
   }
 ];
 
 const calmTeachings: CalmTeaching[] = [
   {
-    id: "right-action",
-    theme: "Right action",
-    teaching: "Do the right action within your control; loosen the grip on every result.",
-    practice: "Choose one clean next step for this issue and do only that for five minutes."
+    id: "clean-action",
+    theme: "Clean action",
+    teaching: "Do the part that is actually yours to do. Let the rest be reviewed after the action, not before it paralyses you.",
+    practice: "Write one useful action, do it for five minutes, then stop and reassess."
   },
   {
     id: "equanimity",
     theme: "Equanimity",
-    teaching: "Steady conduct matters in success and failure; balance keeps judgment clear.",
-    practice: "Say: I will respond with steadiness, not panic, pride, or revenge."
+    teaching: "A steady mind does not mean a silent mind. It means the next decision is not owned by panic, pride, or revenge.",
+    practice: "Say: I can feel this fully and still choose the next step carefully."
   },
   {
     id: "witness-mind",
     theme: "Witness mind",
-    teaching: "You are not every wave of thought. Watch the mind, then let the wave pass.",
-    practice: "Name the feeling once, breathe out longer, and return to the present body."
+    teaching: "A thought can pass through awareness without becoming your identity or your instruction.",
+    practice: "Name the feeling once, breathe out longer, and watch the next thought arrive and leave."
   },
   {
-    id: "release",
-    theme: "Release",
-    teaching: "Freedom begins when you stop treating every fear as a command.",
-    practice: "Ask: is this a fact, a fear, or a habit? Act only on the fact."
+    id: "discernment",
+    theme: "Discernment",
+    teaching: "Not every inner voice is wise. Separate fact, fear, memory, habit, and intuition before deciding.",
+    practice: "Write: fact, fear, habit, next step. Act only on the line that is real."
   },
   {
     id: "calm-attention",
     theme: "Calm attention",
-    teaching: "A trained mind becomes shelter; a scattered mind makes pain heavier.",
+    teaching: "Attention becomes calmer when it is given one place to rest instead of ten things to chase.",
     practice: "Take five slow breaths and place attention on sound, body, and ground."
   },
   {
-    id: "inner-steadiness",
-    theme: "Inner steadiness",
-    teaching: "Return to the quiet witness inside before deciding what to do outside.",
-    practice: "Put one hand on the heart and choose truth with dignity."
+    id: "inner-ground",
+    theme: "Inner ground",
+    teaching: "Before asking the world to settle, find the small place inside that can observe without collapsing.",
+    practice: "Sit upright, soften the face, and ask: what remains steady even while this is hard?"
   },
   {
-    id: "patient-strength",
-    theme: "Patient strength",
-    teaching:
-      "Patience can protect the heart from rushing into harm and can keep the response anchored.",
-    practice: "Pause, breathe, and wait for one calm moment before speaking or deciding."
+    id: "values-under-pressure",
+    theme: "Values under pressure",
+    teaching: "Pressure reveals which value must lead now: truth, safety, kindness, duty, repair, or rest.",
+    practice: "Choose one value for the next hour and let it simplify the decision."
   },
   {
-    id: "soft-answer",
-    theme: "Soft answer",
-    teaching:
-      "A gentle answer lowers heat and keeps the door open for truth without humiliation.",
-    practice: "Shorten the reply, soften the tone, and keep the goal clear."
+    id: "skillful-speech",
+    theme: "Skillful speech",
+    teaching: "Truth lands better when it is precise, respectful, and free of unnecessary injury.",
+    practice: "Shorten the reply, remove insult, keep the request clear."
   },
   {
-    id: "inner-remembrance",
-    theme: "Inner remembrance",
-    teaching: "Keep the mind anchored in truth and humility so pressure does not fully carry you away.",
-    practice: "Pause, name one thing you are grateful for, and take the next honest step."
+    id: "self-inquiry",
+    theme: "Self-inquiry",
+    teaching: "Ask who is hurt, what is being protected, and what is still true when the story becomes quiet.",
+    practice: "Ask: what am I defending, what do I need, and what is the cleanest next step?"
   },
   {
     id: "service-and-release",
     theme: "Service and release",
-    teaching: "Humility and quiet service soften pride, reduce heat, and make hard conversations less sharp.",
+    teaching: "A helpful act can loosen self-absorption and return the mind to contribution.",
     practice: "Do one quiet helpful act before you reply or decide."
   },
   {
@@ -2031,6 +2039,30 @@ const calmTeachings: CalmTeaching[] = [
     teaching:
       "Slower breathing, better sleep, movement, and naming the feeling all reduce stress load and improve clarity.",
     practice: "Use a longer exhale, water, and a five-minute walk before the next decision."
+  },
+  {
+    id: "release-result",
+    theme: "Release the result",
+    teaching: "You can act sincerely without demanding that the result obey your fear or timeline.",
+    practice: "Do the step, record the outcome, and let the next review happen at a fixed time."
+  },
+  {
+    id: "compassion-with-boundary",
+    theme: "Compassion with boundary",
+    teaching: "Compassion is not self-abandonment. Care works best when it includes protection and clarity.",
+    practice: "Name one kind thing and one boundary that both need to be true."
+  },
+  {
+    id: "quiet-courage",
+    theme: "Quiet courage",
+    teaching: "Courage can be gentle. It may look like one honest sentence, one phone call, or one protected pause.",
+    practice: "Choose the smallest brave action that does not create avoidable harm."
+  },
+  {
+    id: "return-to-now",
+    theme: "Return to now",
+    teaching: "Most suffering becomes heavier when the mind keeps re-living or pre-living the situation.",
+    practice: "Look around, name five real things, and bring the decision back to today."
   }
 ];
 
@@ -2099,96 +2131,210 @@ const STATE_OFFICER_DIRECTORY: StateOfficerDirectory[] = [
 const meditationChakraTeachings: MeditationChakra[] = [
   {
     id: "root",
-    label: "Root chakra",
-    sanskrit: "Muladhara",
+    label: "Foundation grounding",
+    sanskrit: "Body anchor",
     body: "Base of spine",
     color: "#B64926",
-    figure: "Foundation and safety",
-    literature: "Classical yoga symbolism and body grounding traditions, paraphrased.",
-    teaching: "Grounding begins with safety, routine, and one honest contact with the present body.",
-    practice: "Feel your feet, slow the breath, and choose one task that is actually finishable.",
+    figure: "Safety, routine, and stability",
+    literature: "Neutral body-grounding frame.",
+    teaching: "Grounding begins when attention returns to the body and the next step becomes small enough to complete.",
+    practice: "Feel your feet, release the jaw, slow the exhale, and choose one task that is actually finishable.",
     audioToneId: "bilateral-soft-1",
-    videoQuery: "root chakra guided meditation"
+    videoQuery: "grounding meditation body awareness"
   },
   {
     id: "sacral",
-    label: "Sacral chakra",
-    sanskrit: "Svadhisthana",
+    label: "Emotional flow",
+    sanskrit: "Ease cue",
     body: "Lower abdomen",
     color: "#B36605",
-    figure: "Flow and creativity",
-    literature: "Classical yoga symbolism and creative life balance, paraphrased.",
-    teaching: "Flow returns when shame loosens and the body is allowed to move with ease.",
-    practice: "Relax the hips, soften the jaw, and name one creative choice without judging it.",
+    figure: "Feeling, flexibility, and creativity",
+    literature: "Neutral emotional-regulation frame.",
+    teaching: "Flow returns when shame loosens and the body is allowed to feel without being forced into a story.",
+    practice: "Relax the belly and hips, soften the jaw, and name one feeling without judging it.",
     audioToneId: "bilateral-soft-2",
-    videoQuery: "sacral chakra guided meditation"
+    videoQuery: "emotional release meditation body scan"
   },
   {
     id: "solar",
-    label: "Solar plexus chakra",
-    sanskrit: "Manipura",
+    label: "Agency and boundary",
+    sanskrit: "Action cue",
     body: "Upper abdomen",
     color: "#AD850B",
-    figure: "Will and boundaries",
-    literature: "Classical yoga symbolism and practical agency teaching, paraphrased.",
-    teaching: "Strength is clearer when it is calm, bounded, and not trying to dominate the room.",
+    figure: "Will, responsibility, and limits",
+    literature: "Neutral agency-and-boundary frame.",
+    teaching: "Strength becomes useful when it is calm, bounded, and aimed at the part of the situation you can actually influence.",
     practice: "Say one clear boundary out loud and complete one practical task before moving on.",
     audioToneId: "binaural-alpha-6",
-    videoQuery: "solar plexus chakra guided meditation"
+    videoQuery: "confidence boundary meditation"
   },
   {
     id: "heart",
-    label: "Heart chakra",
-    sanskrit: "Anahata",
+    label: "Compassion and steadiness",
+    sanskrit: "Care cue",
     body: "Center of chest",
     color: "#2E7D9A",
-    figure: "Connection and compassion",
-    literature: "Compassion practices and contemplative heart teachings, paraphrased.",
-    teaching: "Compassion is not collapse; it is a steady way to remain open without losing shape.",
+    figure: "Connection, repair, and care",
+    literature: "Neutral compassion practice frame.",
+    teaching: "Compassion is not collapse. It is a steady way to remain open while still protecting dignity and truth.",
     practice: "Name one person you can be kind to and one way you can protect your own heart.",
     audioToneId: "binaural-alpha-7",
-    videoQuery: "heart chakra guided meditation"
+    videoQuery: "compassion meditation loving kindness"
   },
   {
     id: "throat",
-    label: "Throat chakra",
-    sanskrit: "Vishuddha",
+    label: "Clear expression",
+    sanskrit: "Truth cue",
     body: "Throat",
     color: "#3C8D87",
-    figure: "Truth and expression",
-    literature: "Gentle speech traditions and truth practice, paraphrased.",
-    teaching: "Truth should be clear enough to help and gentle enough to keep the door open.",
+    figure: "Truth, tone, and request",
+    literature: "Neutral communication frame.",
+    teaching: "Truth should be clear enough to help, specific enough to act on, and calm enough to keep the door open.",
     practice: "Write one short sentence that says the issue without blame or drama.",
     audioToneId: "iso-6",
-    videoQuery: "throat chakra guided meditation"
+    videoQuery: "mindful communication meditation"
   },
   {
     id: "thirdEye",
-    label: "Third eye chakra",
-    sanskrit: "Ajna",
+    label: "Pattern awareness",
+    sanskrit: "Discernment cue",
     body: "Forehead",
     color: "#6A5ACD",
-    figure: "Insight and pattern reading",
-    literature: "Reflection and discernment traditions, paraphrased.",
+    figure: "Insight, evidence, and discernment",
+    literature: "Neutral reflective-inquiry frame.",
     teaching: "Insight is the quiet skill of seeing the pattern without becoming the panic.",
     practice: "Compare the fear with the facts, then keep only what remains true.",
     audioToneId: "binaural-theta-4",
-    videoQuery: "third eye chakra guided meditation"
+    videoQuery: "insight meditation witness awareness"
   },
   {
     id: "crown",
-    label: "Crown chakra",
-    sanskrit: "Sahasrara",
+    label: "Quiet meaning",
+    sanskrit: "Silence cue",
     body: "Top of head",
     color: "#7E6FD6",
-    figure: "Silence and meaning",
-    literature: "Contemplative silence traditions, paraphrased.",
-    teaching: "Meaning appears when the mind is allowed to soften and see the larger arc.",
+    figure: "Silence, perspective, and larger purpose",
+    literature: "Neutral silence-and-meaning frame.",
+    teaching: "Meaning appears more clearly when the mind softens and sees the larger arc without forcing an instant answer.",
     practice: "Sit still for one minute and let the next step emerge from quiet, not pressure.",
     audioToneId: "reset-quiet",
-    videoQuery: "crown chakra guided meditation"
+    videoQuery: "silent meditation meaning purpose"
   }
 ];
+
+const meditationMethods: MeditationMethod[] = [
+  {
+    id: "breath-regulation",
+    label: "Breath regulation",
+    duration: "3-7 min",
+    purpose: "Lower body activation before a conversation, study block, complaint, or difficult decision.",
+    bestFor: ["anxiety", "anger", "fear", "burnout", "academic", "health"],
+    steps: [
+      "Sit upright and relax the jaw, shoulders, and hands.",
+      "Inhale through the nose for four counts and exhale for six counts.",
+      "Keep attention on the exhale; if the mind wanders, return without criticism.",
+      "End by writing one clear next step."
+    ],
+    result: "Use when the body is too activated for clear thinking.",
+    toneId: "ambient-breath"
+  },
+  {
+    id: "witness-practice",
+    label: "Witness practice",
+    duration: "5-10 min",
+    purpose: "Create space between awareness and the thoughts, fears, or stories moving through it.",
+    bestFor: ["anxiety", "anger", "identity", "stigma", "relationship", "overconfidence"],
+    steps: [
+      "Close the eyes or soften the gaze.",
+      "Notice the next thought and silently label it: thought, memory, fear, plan, or feeling.",
+      "Let the label be enough; do not argue with the thought.",
+      "Return to the body and choose the calmest next action."
+    ],
+    result: "Use when the mind is loud and you need perspective before acting.",
+    toneId: "binaural-theta-4"
+  },
+  {
+    id: "values-and-action",
+    label: "Values and action",
+    duration: "6-8 min",
+    purpose: "Convert confusion into one sincere action without demanding a guaranteed result.",
+    bestFor: ["general", "academic", "financial", "identity", "fear", "burnout"],
+    steps: [
+      "Name the value that should lead now: safety, truth, care, fairness, duty, or rest.",
+      "Name the part of the situation you can control.",
+      "Name the part you cannot control today.",
+      "Act on the controllable part and set a review time."
+    ],
+    result: "Use when decisions feel too large or outcomes feel too uncertain.",
+    toneId: "binaural-alpha-10"
+  },
+  {
+    id: "self-inquiry",
+    label: "Self-inquiry",
+    duration: "7-12 min",
+    purpose: "Separate real identity from roles, labels, shame, comparison, and temporary emotion.",
+    bestFor: ["identity", "stigma", "loneliness", "overconfidence", "relationship"],
+    steps: [
+      "Ask: what am I believing about myself right now?",
+      "Ask: is this a fact, a role, a fear, or someone else's voice?",
+      "Ask: what remains true if this label is removed?",
+      "Write one sentence that treats you with dignity and accuracy."
+    ],
+    result: "Use when self-worth, identity, or purpose feels blurred.",
+    toneId: "binaural-alpha-7"
+  },
+  {
+    id: "compassion-practice",
+    label: "Compassion practice",
+    duration: "5-9 min",
+    purpose: "Soften harshness without losing boundaries, clarity, or self-respect.",
+    bestFor: ["relationship", "loneliness", "grief", "parenting", "stigma"],
+    steps: [
+      "Place attention on the chest and breathe slowly.",
+      "Wish steadiness for yourself first, then for one safe person.",
+      "Include one boundary that protects you.",
+      "End with one kind action or one honest message."
+    ],
+    result: "Use when pain has become harshness toward yourself or others.",
+    toneId: "sol-528"
+  },
+  {
+    id: "body-scan",
+    label: "Body scan",
+    duration: "8-15 min",
+    purpose: "Find where stress is stored physically and release only what can release safely today.",
+    bestFor: ["trauma", "health", "burnout", "grief", "addiction", "anxiety"],
+    steps: [
+      "Move attention from feet to head without forcing relaxation.",
+      "At each area, name tension, warmth, numbness, pressure, or ease.",
+      "Breathe into one tense area for three slow exhales.",
+      "Stop if the body feels overwhelmed and return to grounding."
+    ],
+    result: "Use when emotion is showing up as tension, numbness, pain, or fatigue.",
+    toneId: "ambient-rain"
+  },
+  {
+    id: "release-review",
+    label: "Release and review",
+    duration: "5-8 min",
+    purpose: "Close the loop after a difficult day without replaying it all night.",
+    bestFor: ["grief", "burnout", "financial", "relationship", "anger", "academic"],
+    steps: [
+      "Write what happened in factual language.",
+      "Write what you learned without blaming yourself.",
+      "Write what can wait until tomorrow.",
+      "Take one closing breath and leave the page."
+    ],
+    result: "Use at night or after conflict, overload, or disappointment.",
+    toneId: "reset-quiet"
+  }
+];
+
+function getMeditationMethodsForIssue(issueId: IssueId): MeditationMethod[] {
+  const recommended = meditationMethods.filter((method) => method.bestFor.includes(issueId));
+  const rest = meditationMethods.filter((method) => !method.bestFor.includes(issueId));
+  return [...recommended, ...rest];
+}
 
 // ── Dynamic hero helpers ─────────────────────────────────────────────────────
 function getTimeGreeting(): { greeting: string; emoji: string; accent: string } {
@@ -2624,7 +2770,7 @@ async function playMessageFeedbackCue(kind: "sent" | "received" | "blocked" = "s
 // Replaces the brief-cue + setInterval approach with a true sustained looping
 // audio engine. Binaural tones are rendered with two oscillators panned L/R via
 // ChannelMergerNode. Noise types are generated procedurally with looped buffers.
-// Solfeggio / AUM tones are sustained sine waves with a subtle harmonic layer.
+// Frequency tones are sustained sine waves with a subtle harmonic layer.
 
 type AethonContinuousNodes = {
   context: AudioContext;
@@ -2639,7 +2785,7 @@ type AethonContinuousNodes = {
 
 // Per-tone bundled native audio. Metro/Expo requires static require() calls
 // (no dynamic template paths), so every tone with a real, precisely-specified
-// sound (binaural beat pairs, solfeggio/AUM sustained tones, procedural noise
+// sound (binaural beat pairs, sustained frequency tones, procedural noise
 // colors, bilateral pulses, isochronic pulses) gets its own explicit require()
 // here, rendered by scripts/generate-tone-assets.py from the exact same
 // frequency tables and envelopes as the Web Audio implementation above --
@@ -2847,11 +2993,11 @@ async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOp
   };
 
   const isBinaural = tone.id.startsWith("binaural");
-  const isSolfeggio = tone.id.startsWith("sol-");
+  const isFrequencyTone = tone.id.startsWith("sol-");
   const isNoise = tone.id.startsWith("noise-");
   const isBilateral = tone.id.startsWith("bilateral");
   const isIso = tone.id.startsWith("iso-");
-  const isAum = tone.id === "aum-136";
+  const isGroundingTone = tone.id === "aum-136";
   const isGamma = tone.id === "reset-gamma";
 
   if (isBinaural) {
@@ -2897,8 +3043,8 @@ async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOp
     nodes.oscillators.push(oscR);
     nodes.gainNodes.push(gR);
 
-  } else if (isSolfeggio || isAum) {
-    // ── Sustained solfeggio / earth frequency ──────────────────────────────
+    } else if (isFrequencyTone || isGroundingTone) {
+    // ── Sustained frequency tone ───────────────────────────────────────────
     const SOL_FREQ: Record<string, number> = {
       "sol-396": 396, "sol-417": 417, "sol-432": 432, "sol-528": 528,
       "sol-639": 639, "sol-741": 741, "sol-852": 852, "sol-963": 963,
@@ -5788,8 +5934,8 @@ const careLenses: Array<{
   },
   {
     id: "spiritual",
-    label: "Spiritual",
-    meta: "Reconnect with values, prayer, silence, meaning, gratitude, or the inner discipline to pause.",
+    label: "Reflective",
+    meta: "Reconnect with values, silence, meaning, gratitude, and the inner discipline to pause before action.",
     accent: "#7E6FD6"
   },
   {
@@ -5879,7 +6025,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "Acknowledge fear without arguing with it. Gentle naming can reduce the force of the feeling.",
     spiritualLens:
-      "Use breath, prayer, reflection, or silence to make space between the feeling and the reaction.",
+      "Use breath, reflection, silence, or your own faith practice if you choose, to create space between feeling and reaction.",
     culturalLens:
       "Let support match the user’s family rhythm, faith practice, and privacy needs rather than forcing one style.",
     action:
@@ -6044,7 +6190,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "Say the truth plainly: you want contact, reassurance, or belonging. Naming it makes action easier.",
     spiritualLens:
-      "Meaning grows when you feel connected to something larger than the moment, whether that is faith, service, or purpose.",
+      "Meaning grows when you feel connected to something larger than the moment, such as service, purpose, family, community, or a personal practice.",
     culturalLens:
       "Community rituals, family ties, and trusted groups can matter more than generic advice; use the support pattern that fits the user’s world.",
     action:
@@ -6077,7 +6223,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "Every wave of grief is made of love. Honouring the pain is honouring what was lost.",
     spiritualLens:
-      "Most traditions offer rituals of remembrance, prayer, and community for a reason — they anchor the loss in something larger and less alone.",
+      "Rituals of remembrance, quiet reflection, and community support can anchor loss in something less lonely.",
     culturalLens:
       "Grief expressions vary widely. Some cultures encourage open mourning; others value privacy. Honour what feels authentic to you.",
     action:
@@ -6110,7 +6256,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "The discomfort of not knowing who you are is actually a sign of honesty. Many people live inside an identity that was never really theirs.",
     spiritualLens:
-      "Every major tradition has a practice for this: silence, pilgrimage, retreat, fasting, contemplation. The question of meaning is taken seriously precisely because it is important.",
+      "Meaning becomes clearer through silence, honest self-inquiry, service, and choices that align with your values.",
     culturalLens:
       "In collectivist cultures, identity is often tied to family and community role. Exploring personal identity does not mean rejecting that — it means understanding your relationship to it.",
     action:
@@ -6125,7 +6271,7 @@ const issueGuides: IssueGuide[] = [
     supportPath: [
       { label: "Psychologist", query: "psychologist identity purpose" },
       { label: "Counselor", query: "life counselor purpose clarity" },
-      { label: "Spiritual guidance", query: "spiritual guidance existential" }
+      { label: "Reflective guidance", query: "values clarity existential support" }
     ],
     urgentNote:
       "If the loss of purpose is accompanied by persistent hopelessness or thoughts of harm, seek professional support immediately — call 112, or Tele-MANAS 14416."
@@ -6143,7 +6289,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "Fear about health is not irrational — it is the mind trying to protect the body. Acknowledge it rather than dismissing it.",
     spiritualLens:
-      "The body and soul are not separate. Caring for health is also an act of respect for the life you have been given.",
+      "Caring for the body also protects clarity, dignity, and your ability to participate in life.",
     culturalLens:
       "Many people delay care due to cost, family expectations, or distrust of medical systems. These are real barriers, not excuses, and need to be addressed practically.",
     action:
@@ -6176,7 +6322,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "Money problems often carry enormous shame. Naming the shame separately from the practical problem makes both more manageable.",
     spiritualLens:
-      "Every tradition that addresses money distinguishes between what is enough and what is excess. Clarity about what you actually need vs what you fear losing can be grounding.",
+      "Clarity about what is needed, what is enough, and what is fear can make the financial problem less consuming.",
     culturalLens:
       "In many families, financial difficulty is hidden and deeply shaming. Finding one trusted person to discuss this with — even partially — can reduce the isolation significantly.",
     action:
@@ -6209,7 +6355,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "It is possible to love someone and also be hurt by them, feel angry at them, or need to protect yourself from them. These are not contradictions.",
     spiritualLens:
-      "Care for yourself as much as you care for the relationship. Many traditions speak of loving yourself as the foundation of loving another.",
+      "Care for yourself as much as you care for the relationship. Self-respect and care for others need to remain together.",
     culturalLens:
       "Many relationships exist within strong family and social systems that make individual decisions complicated. These systems are real — work with them rather than against them where possible.",
     action:
@@ -6275,7 +6421,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "What happened to you was not your fault. Your response to it was the best adaptation your system could manage at the time.",
     spiritualLens:
-      "Many traditions speak of healing that comes through witnessing, community, and meaning-making. You do not have to carry this in silence.",
+      "Healing often needs witnessing, safe connection, and meaning-making. You do not have to carry this in silence.",
     culturalLens:
       "Trauma is highly stigmatised in many cultures. Support must be private, trustworthy, and non-judgmental above all.",
     action:
@@ -6308,7 +6454,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "The fear around exams is often really a fear about belonging, being loved, and having a future. That is much bigger than the exam — and much more important to address.",
     spiritualLens:
-      "You are more than your performance. Most traditions that endure are built on character and effort, not rank.",
+      "You are more than your performance. Character, effort, recovery, and honesty matter beyond any single rank or result.",
     culturalLens:
       "Academic pressure is often inseparable from family honour and economic survival in South Asian contexts. This is a real, not imagined, pressure — and it needs both practical and emotional support.",
     action:
@@ -6341,7 +6487,7 @@ const issueGuides: IssueGuide[] = [
     emotionalLens:
       "There is usually pain underneath a compulsive pattern. The substance or behaviour numbs, soothes, or distracts from something that has not been faced.",
     spiritualLens:
-      "Many successful recovery communities are built on spiritual foundations — not because religion fixes addiction, but because meaning, community, and surrender to something larger support the work.",
+      "Recovery becomes stronger when it includes meaning, community, honesty, and the humility to accept structured help.",
     culturalLens:
       "Addiction carries enormous stigma, especially in South Asian families. Private, professional support is often the safest first step before family disclosure.",
     action:
@@ -6367,7 +6513,7 @@ const issueGuides: IssueGuide[] = [
 // Every section used to only know about the *manually selected* issue guide,
 // threaded down as one more prop. That only captures what the user tapped,
 // not what they've actually said or done. This context adds a second,
-// *inferred* signal -- built from Path's real 48-dimension counselling engine
+// *inferred* signal -- built from Path's multidimensional counselling engine
 // (detectedThemes, a genuine SupportDimensionId[] output, not a guess) and
 // recent mood check-ins -- so sections can react to real user behavior
 // instead of only the explicit issue chip. It's provided once, near the top
@@ -8049,11 +8195,11 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
     },
     stigma: {
       journal: "write about yourself as a friend would — not as a critic",
-      tones: "528 Hz (DNA repair / self-love frequency) is recommended for this state",
+      tones: "528 Hz compassion tone can support a softer self-dialogue before action",
       meditation: "use a self-compassion practice: 'may I be kind to myself as I would be to a friend'",
       wisdom: "find a teaching on dignity, worth, and separating identity from issue",
       community: "share privately — many people carry shame about the same things you do",
-      focus: "use the spiritual lens — what is your worth independent of others' opinions?",
+      focus: "use the reflective lens — what is your worth independent of others' opinions?",
       play: "the stigma challenge rebuilds self-respect through small, private acts of dignity",
       guide: "this path separates who you are from what you are carrying — issue ≠ identity",
       redress: "if stigma is being imposed by a system or institution, the redress route applies",
@@ -8063,7 +8209,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
     },
     burnout: {
       journal: "write what you can remove or delay today — not what you need to add",
-      tones: "Delta waves (0.5–4 Hz) support deep rest and nervous system repair",
+      tones: "Low-tempo audio cues support deep rest preparation and evening decompression",
       meditation: "body-scan to locate tension and consciously release each area",
       wisdom: "search for a teaching on rest as part of purpose, not opposed to it",
       community: "burnout is pervasive — read from others who found a way through",
@@ -8077,7 +8223,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
     },
     loneliness: {
       journal: "write about one connection — past or present — where you felt genuinely seen",
-      tones: "Beta or Alpha tones can help shift from withdrawal to gentle outward orientation",
+      tones: "Soft focus tones can help shift from withdrawal toward one small outward action",
       meditation: "visualise one person who cares about you and sit with that feeling for 3 minutes",
       wisdom: "look for a teaching on belonging, service, and being part of something larger",
       community: "share here — this is exactly where connection starts",
@@ -8095,7 +8241,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
       meditation: "allow the grief to be present without trying to resolve it — just witness it for 5 minutes",
       wisdom: "search for a teaching on loss, honouring what was, and continuing to live",
       community: "grief is one of the most isolating experiences — sharing it here can ease the weight",
-      focus: "use the spiritual lens — what did this person or thing mean to your deepest values?",
+      focus: "use the reflective lens — what did this person or thing mean to your deepest values?",
       play: "grief needs ritual: one small act of remembrance counts as the full practice today",
       guide: "this path holds space for grief while pointing toward the smallest next step",
       redress: "if the loss involved negligence or injustice, the redress route is available when ready",
@@ -8105,7 +8251,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
     },
     identity: {
       journal: "write who you were at 10, who you are now, and what you would tell your younger self",
-      tones: "Theta waves support the inward-facing reflection this work requires",
+      tones: "Quiet reflective audio supports inward-facing values review",
       meditation: "spend 5 minutes with the question 'what do I actually want?' — without pressure for an answer",
       wisdom: "search for a teaching on purpose, authenticity, and what it means to be yourself",
       community: "others are quietly asking the same questions about identity and direction",
@@ -8119,7 +8265,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
     },
     health: {
       journal: "write your symptoms, your fears, and one concrete next step toward clarity",
-      tones: "Solfeggio 528 Hz is associated with cellular healing and physical wellbeing",
+      tones: "528 Hz compassion tone can be used as a calm background cue while reviewing health needs",
       meditation: "send breath deliberately to the area of the body that needs attention",
       wisdom: "find a teaching on the body-mind connection and caring for physical health as a whole",
       community: "share what you are navigating — others dealing with health challenges understand in ways others cannot",
@@ -8133,7 +8279,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
     },
     financial: {
       journal: "write the one financial number that worries you most — naming it makes it smaller",
-      tones: "Alpha or Theta tones reduce the cortisol load that makes financial thinking harder",
+      tones: "Alpha or Theta tones can support a calmer review before financial decisions",
       meditation: "practice releasing the shame around money for 5 minutes — shame is not useful information",
       wisdom: "search for a teaching that separates your worth from your net worth",
       community: "financial stress affects everyone — sharing it removes the private weight of it",
@@ -8147,7 +8293,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
     },
     relationship: {
       journal: "write exactly what you need from this relationship right now — as specifically as possible",
-      tones: "528 Hz or heart-chakra tones can help soften the hurt that sits in the chest",
+      tones: "528 Hz compassion tone or soft drone can support a slower, kinder conversation",
       meditation: "visualise a conversation where both people feel heard — what would that look like?",
       wisdom: "find a teaching on communication, boundaries, and loving without losing yourself",
       community: "relationship difficulties are universal — read from others who have navigated similar dynamics",
@@ -8179,7 +8325,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
       meditation: "grounding practice only: feel your feet, name 5 things you can see, slow your breath",
       wisdom: "search for a teaching on healing, witnessing, and the courage of survival",
       community: "you do not need to share the details — even a general 'I am carrying something heavy' reaches people who understand",
-      focus: "use the spiritual lens — what strength have you already shown just by being here?",
+      focus: "use the reflective lens — what strength have you already shown just by being here?",
       play: "trauma needs safety first: the challenge today is one grounding practice, nothing more",
       guide: "this path moves at your pace — safety, then steadiness, then steps",
       redress: "if the trauma involved a crime or institutional failure, the redress route preserves your rights",
@@ -8189,7 +8335,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
     },
     academic: {
       journal: "write what you know well, what you are unsure about, and what you need to let go of worrying about",
-      tones: "Gamma waves (30–100 Hz) support focus, memory, and cognitive clarity",
+      tones: "Short focus cues support a structured study block when paired with timed breaks",
       meditation: "5-minute brain dump before studying: write everything distracting you, then close the page",
       wisdom: "find a teaching that separates performance from identity and effort from worth",
       community: "academic pressure is a shared experience — read from others who have been through it",
@@ -8706,9 +8852,9 @@ function rashiCategoryLens(cat: AstroChatCategory, rashiId: number): string {
   return `${r} energy is ${lenses[cat][rashiId] ?? lenses[cat][0]}.`;
 }
 
-// Maps each astro-chat question category onto the 48-dimension Moon Chart
+// Maps each astro-chat question category onto the multidimensional Moon Chart
 // categories most relevant to it, mirroring COUNSELING_THEME_TO_MOON48_CATEGORIES
-// above so the two-way chart chat draws on the same 48D engine the rest of the
+// above so the two-way chart chat draws on the same multidimensional engine the rest of the
 // Vedic tab uses, instead of only Rashi/Dasha/Panchang.
 const ASTRO_CHAT_CATEGORY_TO_MOON48: Record<AstroChatCategory, MoonChart48Category[]> = {
   career: ["work", "growth", "money"],
@@ -8825,7 +8971,7 @@ function nextAstroChatReply(question: string, ctx: {
     relevantDomains.includes(item.domain.toLowerCase() as PhaseDomain)
   );
 
-  // 48-dimension Moon Chart lens — same explainable-score engine used
+  // Multidimensional Moon Chart lens — same explainable-score engine used
   // elsewhere in the Vedic tab, filtered to the dimensions relevant to this
   // question's category. Computed FIRST so the reply can open with a real,
   // calculated verdict for this specific question instead of a canned line.
@@ -8845,7 +8991,7 @@ function nextAstroChatReply(question: string, ctx: {
 
   // 1. Calculated, question-specific opener. This is what actually changes
   // between two different questions in the same category (e.g. "will I get
-  // the job" vs "should I quit") because it is derived from the live 48D
+  // the job" vs "should I quit") because it is derived from the live multidimensional
   // score for the dimensions tied to THIS question, not a fixed template.
   if (moon48Verdict) {
     const leadIn =
@@ -10423,7 +10569,7 @@ function getVedicDailyPrediction(
 }
 
 
-// 48-DIMENSION MOON CHART ENGINE
+// MULTIDIMENSIONAL MOON CHART ENGINE
 // Calculated predictions and remedies are anchored solely to Janma Rashi
 // (Moon sign), Janma Nakshatra, Vimshottari phase, Tithi and Vara. Only lunar-chart prediction paths are used here.
 type MoonChart48Category = "self" | "mind" | "body" | "relationship" | "work" | "money" | "family" | "spiritual" | "risk" | "growth";
@@ -10698,7 +10844,7 @@ function describeMoonChartScore(score: number, category: MoonChart48Category): s
   return `${categoryFocus[category]} need extra caution and grounding`;
 }
 
-function buildMoonChart48DimensionEngine(input: {
+function buildMoonChartMultidimensionalEngine(input: {
   rashiId: number;
   janmaNakshatra: ReturnType<typeof getJanmaNakshatra>;
   dashaState: VimshottariDashaState | null;
@@ -12522,7 +12668,7 @@ export default function App() {
   );
 
   // The shared cross-section signal (see CrossSectionContext above): combines
-  // the manually selected issue with what Path's real 48-dimension engine
+  // the manually selected issue with what Path's multidimensional engine
   // has actually detected this session, plus a simple recent-mood trend from
   // the last few check-ins, so sections can react to real signal instead of
   // only the explicit issue chip.
@@ -12576,7 +12722,7 @@ export default function App() {
   // ── Vedic Daily Prediction ─────────────────────────────────────────────────
   // Janma Rashi (Moon sign, from Nakshatra) is the primary prediction anchor;
   // the real Ascendant (Lagna), once geocoded, adds a secondary confirming
-  // layer in the 48-dimension engine below (self/body categories especially).
+  // layer in the multidimensional engine below (self/body categories especially).
   const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
   const vedicJanmaNakshatra = useMemo(() => getJanmaNakshatra(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
   const vedicDashaState = useMemo(
@@ -12596,7 +12742,7 @@ export default function App() {
   );
   const vedicMoonChart48Readings = useMemo(
     () => vedicRashiInfo
-      ? buildMoonChart48DimensionEngine({
+      ? buildMoonChartMultidimensionalEngine({
           rashiId: vedicRashiInfo.rashiId,
           janmaNakshatra: vedicJanmaNakshatra,
           dashaState: vedicDashaState,
@@ -16553,7 +16699,7 @@ async function fetchGeminiAIHelp(
     const text =
       requestedText.length > 0
         ? requestedText
-        : `I am ${profileDisplayName}. Guide me through ${issueGuide.label} with practical, emotional, psychological, spiritual, and cultural next steps.`;
+        : `I am ${profileDisplayName}. Guide me through ${issueGuide.label} with practical, emotional, psychological, reflective, and cultural next steps.`;
     const safetyViolation = inspectAIHelpPrompt(text);
     if (safetyViolation) {
       const nextStrikeCount = communitySafetyStrikeCount + 1;
@@ -16634,7 +16780,7 @@ async function fetchGeminiAIHelp(
     }
 
     // Everything else — the vast majority of what people type here — now goes
-    // through the single real two-way 48D counselling engine instead of a
+    // through the single real two-way multidimensional counselling engine instead of a
     // shallow one-shot canned reply. That old path often ignored what was
     // actually typed; the adaptive chat modal below is now the ONE
     // issue-resolution surface in the app, so every non-emergency message
@@ -17400,7 +17546,7 @@ async function fetchGeminiAIHelp(
       return;
     }
     // Any typed life issue should be heard first, then routed through the app.
-    // The two-way 48D counselling engine is now the single issue-resolution
+    // The two-way multidimensional counselling engine is now the single issue-resolution
     // surface, so any non-empty typed text opens it — not just the subset the
     // keyword classifier happened to recognize as "professional" or themed.
     const shouldCounselFirst = text.length > 0;
@@ -18210,7 +18356,7 @@ function isTrustedExternalUrl(url: string) {
                           strip. Signature of the app; stays on Home but
                           tightened. Was mislabeled "48-dim" over a hardcoded
                           5-field table; now shows the top 3 of the ACTUAL
-                          48-entry supportDimensionGuides library, ranked by
+                          complete supportDimensionGuides library, ranked by
                           the same crossSectionSignal (real Path-detected
                           themes + active issue) used everywhere else. */}
                       {issueActive && (
@@ -18768,7 +18914,7 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={styles.tabBannerEmoji}>🎵</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Mind Rest Tones</Text>
-                  <Text style={styles.tabBannerSub}>Binaural · Solfège · Nature · 432Hz · Deep calm</Text>
+                  <Text style={styles.tabBannerSub}>Binaural · Frequency tones · Nature · Deep calm</Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -18778,7 +18924,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               )}
 
-              {/* Real 48-axis library, not a 5-field table pretending to be
+              {/* Real multidimensional library, not a 5-field table pretending to be
                   one -- see SupportDimensionLibraryPanel. */}
               <SupportDimensionLibraryPanel
                 eyebrow="🎵 Tone guide"
@@ -18826,7 +18972,7 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={styles.tabBannerEmoji}>🪷</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Meditation & Calm</Text>
-                  <Text style={styles.tabBannerSub}>Chakra · Breath · Reset · Wisdom</Text>
+                  <Text style={styles.tabBannerSub}>Body awareness · Breath · Reset · Reflection</Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -18852,22 +18998,22 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (() => {
                 type Rec = { emoji: string; title: string; body: string; toneId: string; breath: string; color: string };
                 const REC: Partial<Record<IssueId, Rec>> = {
-                  anxiety:      { emoji: "🌊", title: "Slow-wave settling", body: "Theta binaural 5 Hz + 4-7-8 breath. 6 min softens the nervous system.", toneId: "binaural-theta-5", breath: "4-7-8", color: "#0891B2" },
-                  anger:        { emoji: "🌧️", title: "Rain-bed cool-down", body: "Ambient rain + box breath (4-4-4-4). Discharge without acting.", toneId: "ambient-rain", breath: "4-4-4-4 box", color: "#0052B8" },
-                  fear:         { emoji: "🛡️", title: "Ground + Hanuman Chalisa", body: "Solfeggio 396 Hz for release + repeat the courage line 3×.", toneId: "sol-396", breath: "Slow diaphragm", color: "#B45309" },
-                  burnout:      { emoji: "💆", title: "432 Hz restoration", body: "432 Hz ambient + long exhale (4-in, 8-out). Rest without guilt.", toneId: "sol-432", breath: "4-in / 8-out", color: "#059669" },
-                  loneliness:   { emoji: "🎵", title: "Krishna flute + heart open", body: "Bansuri melody + one message to one trusted person after.", toneId: "trend-krishna-flute", breath: "Natural", color: "#BE185D" },
-                  grief:        { emoji: "🕯️", title: "Om chant + release", body: "Group Om chant. Let the sound carry weight for you.", toneId: "trend-om-chant", breath: "In-through-nose, out-through-mouth", color: "#5C00B8" },
-                  addiction:    { emoji: "⚡", title: "40 Hz gamma focus", body: "40 Hz reset + urge surfing: watch the wave for 10 min, don't act.", toneId: "reset-gamma", breath: "Steady 5 sec each", color: "#A855F7" },
+                  anxiety:      { emoji: "🌊", title: "Slow-wave settling", body: "Slow-wave audio + 4-7-8 breathing. Six minutes for a slower, clearer reset.", toneId: "binaural-theta-5", breath: "4-7-8", color: "#0891B2" },
+                  anger:        { emoji: "🌧️", title: "Rain-bed cool-down", body: "Ambient rain + box breath (4-4-4-4). Pause before speaking or sending anything.", toneId: "ambient-rain", breath: "4-4-4-4 box", color: "#0052B8" },
+                  fear:         { emoji: "🛡️", title: "Ground + safety cue", body: "Grounding tone + one clear safety sentence repeated three times.", toneId: "sol-396", breath: "Slow diaphragm", color: "#B45309" },
+                  burnout:      { emoji: "💆", title: "Quiet restoration", body: "Soft sustained tone + long exhale (4-in, 8-out). Rest is part of recovery.", toneId: "sol-432", breath: "4-in / 8-out", color: "#059669" },
+                  loneliness:   { emoji: "🎵", title: "Bansuri calm + outreach", body: "Instrumental flute + one low-pressure message to a trusted person after.", toneId: "trend-krishna-flute", breath: "Natural", color: "#BE185D" },
+                  grief:        { emoji: "🕯️", title: "Vocal resonance + release", body: "Resonant vocal sound + one gentle memory or one practical task.", toneId: "trend-om-chant", breath: "In-through-nose, out-through-mouth", color: "#5C00B8" },
+                  addiction:    { emoji: "⚡", title: "Focus pulse + urge surfing", body: "Short focus cue + urge surfing: watch the wave for 10 minutes before acting.", toneId: "reset-gamma", breath: "Steady 5 sec each", color: "#A855F7" },
                   overconfidence: { emoji: "🧭", title: "Quiet close reset", body: "Very soft close pulse + 5 slow breaths. Cool the heat before deciding.", toneId: "reset-quiet", breath: "5 slow", color: "#3730A3" },
                   trauma:       { emoji: "🌱", title: "Bilateral soft + safety cue", body: "Soft bilateral tapping 1 Hz + name 5 things you see in the room.", toneId: "bilateral-soft-1", breath: "Grounding count", color: "#10A76B" },
-                  stigma:       { emoji: "🌟", title: "528 Hz heart + acceptance", body: "528 Hz + self-compassion phrase: 'this belongs to my humanity too'.", toneId: "sol-528", breath: "Natural", color: "#9C00B8" },
+                  stigma:       { emoji: "🌟", title: "Compassion tone + acceptance", body: "Compassion cue + phrase: 'This is a difficulty, not my whole identity.'", toneId: "sol-528", breath: "Natural", color: "#9C00B8" },
                   health:       { emoji: "🫁", title: "Iso 6 Hz + body scan", body: "Isochronic 6 Hz + slow head-to-toe scan. Note without fixing.", toneId: "iso-6", breath: "Body-scan pace", color: "#007FB8" },
                   financial:    { emoji: "🌿", title: "Alpha 8 + one small action", body: "Alpha 8 Hz for calm focus, then take one 10-minute money step.", toneId: "binaural-alpha-8", breath: "Steady 4-4", color: "#6EB107" },
                   relationship: { emoji: "💗", title: "Bollywood chill + reflect", body: "Instrumental chill + write one sentence you can't say aloud yet.", toneId: "trend-bolly-chill", breath: "Natural", color: "#FB7185" },
                   parenting:    { emoji: "🍃", title: "Forest birds + patience", body: "Dawn forest + one moment of 'I will breathe before I speak'.", toneId: "trend-forest-birds", breath: "In 4, out 4", color: "#11A648" },
                   academic:     { emoji: "📚", title: "Pomodoro 25/5 + lo-fi", body: "25 min lo-fi focus + 5 min break. Repeat three times max.", toneId: "social-pomodoro", breath: "Diaphragmatic", color: "#0EA5E9" },
-                  identity:     { emoji: "🌌", title: "Deep sleep drone + who-am-I", body: "Delta drone + repeat 'I am the awareness behind all this' 5×.", toneId: "trend-deep-sleep", breath: "Very slow", color: "#8B5CF6" },
+                  identity:     { emoji: "🌌", title: "Quiet inquiry + identity reset", body: "Deep rest cue + repeat: 'I can notice this without becoming it.'", toneId: "trend-deep-sleep", breath: "Very slow", color: "#8B5CF6" },
                 };
                 const rec = REC[selectedIssueGuide.id];
                 if (!rec) return null;
@@ -18884,10 +19030,10 @@ function isTrustedExternalUrl(url: string) {
                           Practice for {selectedIssueGuide.label}
                         </Text>
                         <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>{rec.title}</Text>
-                        <Text style={{ color: "rgba(240,249,255,0.75)", fontSize: 12, lineHeight: 17, marginTop: 4 }}>{rec.body}</Text>
+                        <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginTop: 4, fontWeight: "700" }}>{rec.body}</Text>
                         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
                           <View style={{ backgroundColor: rec.color + "18", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: rec.color + "40" }}>
-                            <Text style={{ color: rec.color, fontSize: 12, fontWeight: "800" }}>🎵 {rec.toneId}</Text>
+                            <Text style={{ color: rec.color, fontSize: 12, fontWeight: "800" }}>🎵 Matched sound</Text>
                           </View>
                           <View style={{ backgroundColor: rec.color + "18", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: rec.color + "40" }}>
                             <Text style={{ color: rec.color, fontSize: 12, fontWeight: "800" }}>🫁 {rec.breath}</Text>
@@ -19439,7 +19585,7 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={styles.tabBannerEmoji}>🧭</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Your Path</Text>
-                  <Text style={styles.tabBannerSub}>Practical · Emotional · Psychological · Spiritual · Cultural · Vedic</Text>
+                  <Text style={styles.tabBannerSub}>Practical · Emotional · Psychological · Reflective · Cultural · Vedic</Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -19458,7 +19604,7 @@ function isTrustedExternalUrl(url: string) {
                 />
               )}
 
-              {/* Real 48-axis support library, the same one Automatic
+              {/* Real multidimensional support library, the same one Automatic
                   Counselling and the Tones/Meditation tabs draw on — Path is
                   the natural home for it, so it now complements this tab too
                   instead of only living behind the chat. */}
@@ -20561,7 +20707,7 @@ function JournalSection({
           <Text style={styles.textButtonLabel}>{uiCopy.clearHistory}</Text>
         </Pressable>
       </View>
-      {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+      {/* Real multidimensional library, not a 5-field table pretending to be one. */}
       <SupportDimensionLibraryPanel
         eyebrow="📝 Journal prompts"
         actionLabel="Write about"
@@ -20815,7 +20961,7 @@ function FocusSection({
     { id: "practical", label: "Practical", text: selectedIssueGuide.logicalLens, hint: "facts" },
     { id: "emotional", label: "Emotional", text: selectedIssueGuide.emotionalLens, hint: "feelings" },
     { id: "psychological", label: "Psychological", text: selectedIssueGuide.theoreticalLens, hint: "patterns" },
-    { id: "spiritual", label: "Spiritual", text: selectedIssueGuide.spiritualLens, hint: "values" },
+    { id: "spiritual", label: "Reflective", text: selectedIssueGuide.spiritualLens, hint: "values" },
     { id: "cultural", label: "Cultural", text: selectedIssueGuide.culturalLens, hint: "context" }
   ] as const;
   const calmSituationCards = getSituationRouteCards(selectedIssueGuide, selectedIdentityLabel);
@@ -21382,7 +21528,7 @@ const PRISTINE_TONE_SESSION_PRESETS: ToneSessionPreset[] = [
     volume: 0.16,
     fadeInMs: 1600,
     breath: "Slow 6-6",
-    intent: "Longer parasympathetic settling after stress, grief, or conflict.",
+    intent: "Longer settling period after stress, grief, or conflict.",
     guardrail: "Do not use while driving or operating machinery."
   },
   {
@@ -21419,7 +21565,7 @@ function getToneBrainState(tone: RelaxingToneMode): string {
   if (tone.id.includes("alpha") || tone.id.startsWith("iso-8") || tone.id.startsWith("iso-10")) return "Alpha · calm focus";
   if (tone.id === "reset-gamma") return "Gamma · brief alert reset";
   if (tone.id.startsWith("bilateral")) return "Bilateral · left-right regulation";
-  if (tone.id.startsWith("noise-") || tone.id.startsWith("ambient")) return "Ambient · parasympathetic texture";
+  if (tone.id.startsWith("noise-") || tone.id.startsWith("ambient")) return "Ambient · settling texture";
   if (tone.id.startsWith("sol-") || tone.id === "aum-136") return "Resonance · sacred-frequency layer";
   return "Gentle reset · low-stimulation support";
 }
@@ -21470,18 +21616,59 @@ function getPristineToneBadges(tone: RelaxingToneMode): string[] {
   return badges;
 }
 
-// Issue-specific healing session programs
+// Issue-specific sound session programs. These are regulation cues, not
+// medical treatments; the language stays practical and auditable.
 const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number; toneId: RelaxingToneMode["id"]; dim: string; dimColor: string; purpose: string; breathPattern: string }>> = {
-  anxiety:      [{ name: "Panic Reset", duration: 5, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Grounds flight-or-fight via bilateral nervous system reset", breathPattern: "4-4-4-4 Box" },{ name: "Alpha Calm", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Shifts brainwaves from beta anxiety to alpha calm", breathPattern: "4-7-8 Exhale" },{ name: "Root Safety", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Nature sounds lower cortisol and signal safety", breathPattern: "Slow 5-5" }],
-  anger:        [{ name: "Cool-down", duration: 5, toneId: "binaural-alpha-6", dim: "Psychological", dimColor: "#3730A3", purpose: "Alpha waves inhibit amygdala reactivity", breathPattern: "4-7-8 Exhale" },{ name: "Heart Reset", duration: 10, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Ocean rhythms regulate heart rate variability", breathPattern: "Slow 6-6" },{ name: "Stillness", duration: 15, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#B45309", purpose: "Silence protocol for ego dissolution", breathPattern: "Natural breath" }],
-  grief:        [{ name: "Gentle Hold", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Rain tones allow grief processing without words", breathPattern: "Slow 5-5" },{ name: "Deep Process", duration: 15, toneId: "binaural-theta-4", dim: "Psychological", dimColor: "#3730A3", purpose: "Theta unlocks subconscious emotion integration", breathPattern: "4-4-4-4 Box" },{ name: "Reconnect", duration: 10, toneId: "ambient-softdrone", dim: "Spiritual", dimColor: "#B45309", purpose: "Drone tones restore sense of continuity", breathPattern: "Natural breath" }],
-  burnout:      [{ name: "Recovery", duration: 15, toneId: "binaural-alpha-10", dim: "Practical", dimColor: "#059669", purpose: "Alpha 10 Hz restores depleted cognitive reserves", breathPattern: "Slow 6-6" },{ name: "System Reset", duration: 20, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Parasympathetic restoration via ocean rhythm", breathPattern: "4-7-8 Exhale" },{ name: "Deep Rest", duration: 10, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#B45309", purpose: "Conscious silence to rebuild internal resource", breathPattern: "Natural breath" }],
-  trauma:       [{ name: "Safe Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Bilateral tapping mimics EMDR for trauma processing", breathPattern: "4-4-4-4 Box" },{ name: "Safety Cue", duration: 15, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Ocean tones reduce trauma hypervigilance", breathPattern: "Slow 5-5" },{ name: "Integration", duration: 10, toneId: "binaural-theta-5", dim: "Spiritual", dimColor: "#B45309", purpose: "Theta integrates fragmented memory safely", breathPattern: "Natural breath" }],
-  loneliness:   [{ name: "Connection", duration: 10, toneId: "binaural-alpha-8", dim: "Emotional", dimColor: "#B80064", purpose: "Alpha 8 Hz enhances social empathy circuits", breathPattern: "Slow 5-5" },{ name: "Belonging", duration: 15, toneId: "ambient-ocean", dim: "Cultural", dimColor: "#B85300", purpose: "Vast natural sounds reduce felt isolation", breathPattern: "4-7-8 Exhale" },{ name: "Self-Love", duration: 10, toneId: "iso-6", dim: "Spiritual", dimColor: "#B45309", purpose: "Isochronic tones for self-compassion states", breathPattern: "Natural breath" }],
-  relationship: [{ name: "Empathy Mode", duration: 10, toneId: "binaural-alpha-7", dim: "Emotional", dimColor: "#B80064", purpose: "Alpha 7 Hz boosts mirror neuron activity", breathPattern: "Slow 6-6" },{ name: "Nervous Sync", duration: 10, toneId: "bilateral-soft-2", dim: "Psychological", dimColor: "#3730A3", purpose: "Bilateral tones synchronise two nervous systems", breathPattern: "4-4-4-4 Box" },{ name: "Heart Tone", duration: 15, toneId: "ambient-softdrone", dim: "Spiritual", dimColor: "#B45309", purpose: "Sustained drone for heart-chakra coherence", breathPattern: "Natural breath" }],
-  financial:    [{ name: "Focus Block", duration: 15, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#059669", purpose: "Alpha 12 Hz for strategic analytical thinking", breathPattern: "Slow 5-5" },{ name: "Stress Drop", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Rain dissolves financial anxiety cortisol", breathPattern: "4-7-8 Exhale" },{ name: "Clarity", duration: 10, toneId: "binaural-reset-14", dim: "Psychological", dimColor: "#3730A3", purpose: "Beta-edge reset for sharp decision-making", breathPattern: "4-4-4-4 Box" }],
-  identity:     [{ name: "Inner Mirror", duration: 10, toneId: "binaural-alpha-10", dim: "Psychological", dimColor: "#3730A3", purpose: "Alpha 10 Hz for self-awareness and metacognition", breathPattern: "Slow 6-6" },{ name: "Core Still", duration: 15, toneId: "reset-quiet", dim: "Spiritual", dimColor: "#B45309", purpose: "Silence to hear authentic inner voice", breathPattern: "Natural breath" },{ name: "Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Cultural", dimColor: "#B85300", purpose: "Grounding via body-rhythm bilateral tones", breathPattern: "4-4-4-4 Box" }],
-  general:      [{ name: "Morning Set", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Alpha calm-alertness for a clear-headed start", breathPattern: "Slow 5-5" },{ name: "Stress Drop", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Nature sounds for general wellbeing reset", breathPattern: "4-7-8 Exhale" },{ name: "Deep Rest", duration: 10, toneId: "binaural-theta-4", dim: "Spiritual", dimColor: "#B45309", purpose: "Theta for subconscious recharge", breathPattern: "Natural breath" }],
+  anxiety: [
+    { name: "Panic Reset", duration: 5, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Pairs alternating sound with box breathing to ground the body before analysis.", breathPattern: "4-4-4-4 Box" },
+    { name: "Alpha Calm", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Supports calm focus while you name the next controllable step.", breathPattern: "4-7-8 Exhale" },
+    { name: "Root Safety", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Uses a soft nature bed to reduce stimulation and support steady breathing.", breathPattern: "Slow 5-5" }
+  ],
+  anger: [
+    { name: "Cool-down", duration: 5, toneId: "binaural-alpha-6", dim: "Psychological", dimColor: "#3730A3", purpose: "Creates a pause before speech so the response can be cleaner.", breathPattern: "4-7-8 Exhale" },
+    { name: "Heart Reset", duration: 10, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Uses a slow rhythm to soften the body before a boundary or repair conversation.", breathPattern: "Slow 6-6" },
+    { name: "Stillness", duration: 15, toneId: "reset-quiet", dim: "Reflective", dimColor: "#B45309", purpose: "A quiet close for letting the heat pass before deciding.", breathPattern: "Natural breath" }
+  ],
+  grief: [
+    { name: "Gentle Hold", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Provides a soft container for grief without forcing an explanation.", breathPattern: "Slow 5-5" },
+    { name: "Deep Process", duration: 15, toneId: "binaural-theta-4", dim: "Psychological", dimColor: "#3730A3", purpose: "Supports quiet reflection and a slower inner pace.", breathPattern: "4-4-4-4 Box" },
+    { name: "Reconnect", duration: 10, toneId: "ambient-softdrone", dim: "Reflective", dimColor: "#B45309", purpose: "Helps mark remembrance, continuity, and one small act of care.", breathPattern: "Natural breath" }
+  ],
+  burnout: [
+    { name: "Recovery", duration: 15, toneId: "binaural-alpha-10", dim: "Practical", dimColor: "#059669", purpose: "Supports calm planning after load, sleep, and recovery are named.", breathPattern: "Slow 6-6" },
+    { name: "System Reset", duration: 20, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Gives the body a slower rhythm before adding any new demand.", breathPattern: "4-7-8 Exhale" },
+    { name: "Deep Rest", duration: 10, toneId: "reset-quiet", dim: "Reflective", dimColor: "#B45309", purpose: "Closes open loops and protects rest as a legitimate next step.", breathPattern: "Natural breath" }
+  ],
+  trauma: [
+    { name: "Safe Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Pairs gentle alternating sound with present-time grounding; stop if it feels activating.", breathPattern: "4-4-4-4 Box" },
+    { name: "Safety Cue", duration: 15, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Supports orientation to the room, the body, and current safety.", breathPattern: "Slow 5-5" },
+    { name: "Integration", duration: 10, toneId: "binaural-theta-5", dim: "Reflective", dimColor: "#B45309", purpose: "Use only for gentle reflection after grounding, not exposure work.", breathPattern: "Natural breath" }
+  ],
+  loneliness: [
+    { name: "Connection", duration: 10, toneId: "binaural-alpha-8", dim: "Emotional", dimColor: "#B80064", purpose: "Supports a calm state before one real outreach step.", breathPattern: "Slow 5-5" },
+    { name: "Belonging", duration: 15, toneId: "ambient-ocean", dim: "Cultural", dimColor: "#B85300", purpose: "Uses a spacious sound bed while you choose a shared place or person.", breathPattern: "4-7-8 Exhale" },
+    { name: "Self-Respect", duration: 10, toneId: "iso-6", dim: "Reflective", dimColor: "#B45309", purpose: "Supports a kinder inner tone before community action.", breathPattern: "Natural breath" }
+  ],
+  relationship: [
+    { name: "Empathy Mode", duration: 10, toneId: "binaural-alpha-7", dim: "Emotional", dimColor: "#B80064", purpose: "Creates space to hold care and self-respect together before speaking.", breathPattern: "Slow 6-6" },
+    { name: "Boundary Sync", duration: 10, toneId: "bilateral-soft-2", dim: "Psychological", dimColor: "#3730A3", purpose: "Pairs alternating sound with a clear request or boundary sentence.", breathPattern: "4-4-4-4 Box" },
+    { name: "Repair Tone", duration: 15, toneId: "ambient-softdrone", dim: "Reflective", dimColor: "#B45309", purpose: "Supports a slower tone for repair, apology, or careful listening.", breathPattern: "Natural breath" }
+  ],
+  financial: [
+    { name: "Focus Block", duration: 15, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#059669", purpose: "Supports structured review of numbers, deadlines, and options.", breathPattern: "Slow 5-5" },
+    { name: "Stress Drop", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Reduces stimulation before making calls, lists, or payment decisions.", breathPattern: "4-7-8 Exhale" },
+    { name: "Clarity", duration: 10, toneId: "binaural-reset-14", dim: "Psychological", dimColor: "#3730A3", purpose: "Supports a short decision window for one financial next step.", breathPattern: "4-4-4-4 Box" }
+  ],
+  identity: [
+    { name: "Inner Mirror", duration: 10, toneId: "binaural-alpha-10", dim: "Psychological", dimColor: "#3730A3", purpose: "Supports self-inquiry without turning uncertainty into panic.", breathPattern: "Slow 6-6" },
+    { name: "Core Still", duration: 15, toneId: "reset-quiet", dim: "Reflective", dimColor: "#B45309", purpose: "Creates a quiet window for values, roles, and purpose to separate.", breathPattern: "Natural breath" },
+    { name: "Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Cultural", dimColor: "#B85300", purpose: "Uses body rhythm to return identity questions to one practical step.", breathPattern: "4-4-4-4 Box" }
+  ],
+  general: [
+    { name: "Morning Set", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Supports a clear-headed start and one chosen action.", breathPattern: "Slow 5-5" },
+    { name: "Stress Drop", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "A general downshift for breath, posture, and review.", breathPattern: "4-7-8 Exhale" },
+    { name: "Deep Rest", duration: 10, toneId: "binaural-theta-4", dim: "Reflective", dimColor: "#B45309", purpose: "Supports quiet reflection before closing the loop.", breathPattern: "Natural breath" }
+  ],
 };
 // Breathing pattern guide text
 const BREATH_GUIDE: Record<string, string[]> = {
@@ -21493,12 +21680,12 @@ const BREATH_GUIDE: Record<string, string[]> = {
 };
 // Tone category groupings
 const TONE_CATEGORIES = [
-  { id: "trending", label: "🌟 Trending & Social", color: "#BE185D", desc: "Famous tones from YouTube, TikTok, Spotify & healing communities.", ids: ["trend-lofi","trend-tibetan-bowl","trend-schumann","trend-krishna-flute","trend-rain-tent","trend-cafe","trend-fireplace","trend-432-guitar","trend-om-chant","trend-forest-birds","trend-deep-sleep","trend-528-miracle"] },
-  { id: "binaural", label: "🧠 Binaural Beats", color: "#3730A3", desc: "Two-tone beats for brainwave entrainment. Use headphones.", ids: ["binaural-theta-4","binaural-theta-5","binaural-alpha-6","binaural-alpha-7","binaural-alpha-8","binaural-alpha-10","binaural-alpha-12","binaural-reset-14","binaural-release-16","binaural-delta-1","binaural-delta-2","binaural-gamma-40"] },
-  { id: "nature", label: "🌊 Nature & Ambient", color: "#059669", desc: "Natural sounds — parasympathetic restore, cortisol reduction.", ids: ["ambient-rain","ambient-ocean","ambient-wind","ambient-softdrone","ambient-breath","noise-brown","noise-pink","noise-white"] },
-  { id: "solfege", label: "🔔 Solfège · Sacred Hz", color: "#B45309", desc: "Ancient sacred frequencies for emotional + spiritual healing.", ids: ["aum-136","sol-396","sol-417","sol-432","sol-528","sol-639","sol-741","sol-852","sol-963"] },
-  { id: "iso", label: "🎵 Isochronic Pulses", color: "#B85300", desc: "Single-tone rhythmic pulses — effective without headphones.", ids: ["iso-1","iso-2","iso-3","iso-4","iso-6","iso-8","iso-10"] },
-  { id: "bilateral", label: "🔄 Bilateral · EMDR", color: "#B80064", desc: "Left-right audio tapping — EMDR-style nervous system reset.", ids: ["bilateral-soft-1","bilateral-soft-2","bilateral-soft-3"] },
+  { id: "trending", label: "🌟 Trending & Social", color: "#BE185D", desc: "Popular external playlists and sound styles for focus, rest, breath, and reflection.", ids: ["trend-lofi","trend-tibetan-bowl","trend-schumann","trend-krishna-flute","trend-rain-tent","trend-cafe","trend-fireplace","trend-432-guitar","trend-om-chant","trend-forest-birds","trend-deep-sleep","trend-528-miracle"] },
+  { id: "binaural", label: "🧠 Binaural Beats", color: "#3730A3", desc: "Two-tone headphone cues for focus, rest, and breath pacing.", ids: ["binaural-theta-4","binaural-theta-5","binaural-alpha-6","binaural-alpha-7","binaural-alpha-8","binaural-alpha-10","binaural-alpha-12","binaural-reset-14","binaural-release-16","binaural-delta-1","binaural-delta-2","binaural-gamma-40"] },
+  { id: "nature", label: "🌊 Nature & Ambient", color: "#059669", desc: "Natural sounds for decompression, breath pacing, and background calm.", ids: ["ambient-rain","ambient-ocean","ambient-wind","ambient-softdrone","ambient-breath","noise-brown","noise-pink","noise-white"] },
+  { id: "solfege", label: "🔔 Frequency tones", color: "#B45309", desc: "Sustained tone sessions for breath pacing, reflection, and calm background focus.", ids: ["aum-136","sol-396","sol-417","sol-432","sol-528","sol-639","sol-741","sol-852","sol-963"] },
+  { id: "iso", label: "🎵 Isochronic Pulses", color: "#B85300", desc: "Single-tone rhythmic pulses — usable without headphones.", ids: ["iso-1","iso-2","iso-3","iso-4","iso-6","iso-8","iso-10"] },
+  { id: "bilateral", label: "🔄 Bilateral cues", color: "#B80064", desc: "Left-right audio tapping for grounding and present-time orientation.", ids: ["bilateral-soft-1","bilateral-soft-2","bilateral-soft-3"] },
   { id: "special", label: "⚡ Specialised Sessions", color: "#0052B8", desc: "Deep sleep, quiet sessions, and gamma-frequency programmes.", ids: ["reset-quiet","reset-gamma"] },
 ];
 
@@ -21797,7 +21984,7 @@ function ToneLibrarySection({
         </View>
       </View>
 
-      {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+      {/* Real multidimensional library, not a 5-field table pretending to be one. */}
       <SupportDimensionLibraryPanel
         eyebrow="🎵 Tone map"
         actionLabel="Try"
@@ -21916,7 +22103,7 @@ function ToneLibrarySection({
                           <View style={{ flexDirection: "row", gap: 6 }}>
                             {toneMode.externalUrl ? (
                               // Social-trending entries route to the curated
-                              // external search (lo-fi, phonk, bhajan, etc).
+                              // external search (lo-fi, focus mixes, acoustic/classical playlists, etc).
                               <Pressable
                                 onPress={() => {
                                   const url = toneMode.externalUrl!;
@@ -22008,6 +22195,9 @@ function MeditationSection({
   const recommendedChakra =
     meditationChakraTeachings.find((chakra) => chakra.id === recommendedChakraId) ?? meditationChakraTeachings[0];
   const selectedTone = getMeditationTone(selectedChakra.id);
+  const meditationMethodOptions = getMeditationMethodsForIssue(selectedIssueGuide.id);
+  const featuredMeditationMethods = meditationMethodOptions.slice(0, compact ? 3 : 4);
+  const primaryMeditationMethod = meditationMethodOptions[0] ?? meditationMethods[0];
   const routeCards = getSituationRouteCards(selectedIssueGuide, selectedIdentityLabel);
   const objectiveRouteCards = [
     routeCards.find((card) => card.destination === "guide"),
@@ -22016,9 +22206,10 @@ function MeditationSection({
     routeCards.find((card) => card.destination === "sos")
   ].filter((card): card is SituationRouteCard => Boolean(card));
   const selectedVoiceText = [
-    `Meditation reset for ${selectedIssueGuide.label}. This is not the final destination.`,
-    `Current practice: ${selectedChakra.label}.`,
-    selectedChakra.literature,
+    `Meditation guidance for ${selectedIssueGuide.label}. This is a regulation stop that helps you return to action with a steadier mind.`,
+    `Recommended method: ${primaryMeditationMethod.label}. ${primaryMeditationMethod.purpose}`,
+    `Steps: ${primaryMeditationMethod.steps.join(" ")}`,
+    `Current body focus: ${selectedChakra.label}.`,
     selectedChakra.teaching,
     selectedChakra.practice,
     `After this, return to Path, Help, or Journal and take one real next step.`
@@ -22037,13 +22228,54 @@ function MeditationSection({
       <View style={styles.visionGuidanceBox}>
         <Text style={styles.visionGuidanceTitle}>Real objective</Text>
         <Text style={styles.visionGuidanceText}>
-          This is a short regulation stop for {selectedIssueGuide.label.toLowerCase()}, not a separate spiritual detour. Use it to lower noise, then return to the right action channel.
+          This is a short regulation stop for {selectedIssueGuide.label.toLowerCase()}. Use it to settle the body, observe the mind clearly, and return to the right action channel.
         </Text>
       </View>
 
-      {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+      <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.eyebrow}>Practice library</Text>
+            <Text style={styles.sectionTitleSmall}>Choose the method that fits now</Text>
+          </View>
+          <Text style={styles.smallMeta}>Neutral guidance</Text>
+        </View>
+        <Text style={styles.beaconXWisdomLead}>
+          Start with the first recommended method, or choose another route if your body needs something different.
+        </Text>
+        <View style={styles.calmTeachingGrid}>
+          {featuredMeditationMethods.map((method) => {
+            const methodTone =
+              mindRelaxingToneModes.find((toneMode) => toneMode.id === method.toneId) ?? mindRelaxingToneModes[0];
+            return (
+              <View key={method.id} style={styles.calmTeachingCard}>
+                <View style={styles.calmTeachingTop}>
+                  <Text style={styles.calmTeachingSource}>{method.duration}</Text>
+                  <Text style={styles.calmTeachingTheme}>{method.label}</Text>
+                </View>
+                <Text style={styles.calmTeachingText}>{method.purpose}</Text>
+                {method.steps.map((step, index) => (
+                  <Text key={`${method.id}-step-${index}`} style={styles.calmTeachingPractice}>
+                    {index + 1}. {step}
+                  </Text>
+                ))}
+                <Text style={styles.calmTeachingRef}>{method.result}</Text>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => void playRelaxingToneCue(methodTone)}
+                  style={styles.calmQuickActionButton}
+                >
+                  <Text style={styles.calmQuickActionLabel}>Play matching sound</Text>
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* Multidimensional library, not a 5-field table pretending to be complete. */}
       <SupportDimensionLibraryPanel
-        eyebrow="🪷 Meditation frame"
+        eyebrow="Meditation guidance"
         actionLabel="Try"
         accentColor="#3730A3"
         moonChart48Readings={moonChart48Readings}
@@ -22163,7 +22395,7 @@ function MeditationSection({
               Practice: {selectedChakra.practice}
             </Text>
             <Text style={styles.calmTeachingRef}>
-              Literature: {selectedChakra.literature}
+              Principle: {selectedChakra.literature}
             </Text>
             <View style={styles.calmQuickActionRow}>
               <Pressable
@@ -22171,7 +22403,7 @@ function MeditationSection({
                 onPress={() => onReadMeditation(selectedVoiceText)}
                 style={styles.calmQuickActionButton}
               >
-                <Text style={styles.calmQuickActionLabel}>Read teaching</Text>
+                <Text style={styles.calmQuickActionLabel}>Read guidance</Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
@@ -22185,11 +22417,11 @@ function MeditationSection({
                 onPress={() => onOpenWebsite(buildMeditationVideoUrl(selectedChakra), `${selectedChakra.label} video lesson`)}
                 style={styles.calmQuickActionButton}
               >
-                <Text style={styles.calmQuickActionLabel}>Open video</Text>
+                <Text style={styles.calmQuickActionLabel}>Open lesson</Text>
               </Pressable>
             </View>
             <Text style={styles.smallMeta} numberOfLines={2}>
-              Audio uses the calm cue library. Video is optional learning. The required step is to return to Path, Help, Journal, or Practice.
+              Audio uses the calm cue library. External lessons are optional. The required step is to return to Path, Help, Journal, or Practice.
             </Text>
           </View>
         </View>
@@ -23949,7 +24181,7 @@ function SearchSection({
         ? "public"
         : "private";
   // SearchSection routes via onOpenGuide/onOpenRedress/onOpenCommunity
-  // instead of a single onOpenTab(tab) -- this adapts the 48-axis panel's
+  // instead of a single onOpenTab(tab) -- this adapts the multidimensional panel's
   // uniform TabId routing onto those three so its route buttons work here too.
   const routeToTab = (tab: TabId) => {
     if (tab === "redress") onOpenRedress(recommendedRedressRouteId);
@@ -24126,7 +24358,7 @@ function SearchSection({
             { label: "Community", onPress: onOpenCommunity }
           ]}
         />
-        {/* Real 48-axis library, not a 5-field table pretending to be one.
+        {/* Real multidimensional library, not a 5-field table pretending to be one.
             Also closes Explore's biggest gap: it previously had zero
             adaptive logic beyond this one static lookup -- this panel now
             reacts to Path's actually-detected themes too, not just the
@@ -24440,7 +24672,7 @@ function PlaySection({
               : "The practice loop starts with a few useful cards only."}
           </Text>
         </View>
-        {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+        {/* Real multidimensional library, not a 5-field table pretending to be one. */}
         <SupportDimensionLibraryPanel
           eyebrow="🎯 Practice focus"
           actionLabel="Try"
@@ -24626,6 +24858,141 @@ function PlaySection({
   );
 }
 
+
+type IssuePathDepth = {
+  principle: string;
+  discernmentQuestion: string;
+  practice: string;
+  boundary: string;
+  completion: string;
+};
+
+const issuePathDepthByIssue: Record<IssueId, IssuePathDepth> = {
+  general: {
+    principle: "Begin with clean observation: separate what happened, what you feel, what story the mind is adding, and what action is actually required.",
+    discernmentQuestion: "What is the verified fact, and what is only an interpretation or fear about the fact?",
+    practice: "Write four short lines: fact, feeling, need, next step. Do not solve the whole life; solve the next honest step.",
+    boundary: "Do not make the situation larger than the available evidence. If safety or legal risk exists, use Help and Redress first.",
+    completion: "One concrete next step is chosen, and the issue has a route instead of remaining vague."
+  },
+  anger: {
+    principle: "Anger is useful information, but it is not a safe driver. Let it reveal what was violated, then act from clarity rather than heat.",
+    discernmentQuestion: "What value, boundary, promise, or respect was violated — and what response would still protect your dignity tomorrow?",
+    practice: "Take ninety seconds before replying. Name the violated boundary, then write the smallest firm sentence that does not attack.",
+    boundary: "No sending, posting, calling, threatening, or deciding while the body is still in surge mode.",
+    completion: "The response is firm, specific, and non-destructive; the issue moves from reaction to repair or redress."
+  },
+  anxiety: {
+    principle: "Anxiety turns uncertainty into emergency. Return the mind to evidence, probability, and one safe action.",
+    discernmentQuestion: "What do I know, what do I not know, and what is the next action that reduces uncertainty without feeding reassurance loops?",
+    practice: "Use 4-7-8 breathing for three rounds, then write one evidence line and one action line.",
+    boundary: "Do not repeatedly check, ask, search, or reopen the same fear unless new evidence appears.",
+    completion: "A short evidence-based action has been taken, and the nervous system has a lower-intensity plan to follow."
+  },
+  fear: {
+    principle: "Fear asks for protection, not paralysis. Respect the signal, verify the risk, and choose the safest route.",
+    discernmentQuestion: "Is there immediate danger, a realistic future risk, or only a feared image? Each needs a different response.",
+    practice: "Name five things you see, three body contact points, and one safe person or place you can access.",
+    boundary: "If danger is present, do not self-coach; use SOS, trusted support, or official help immediately.",
+    completion: "The safety route is clear: immediate help, prevention step, or calm continuation."
+  },
+  overconfidence: {
+    principle: "Confidence becomes wisdom when it can tolerate verification. Strong action should still answer to evidence.",
+    discernmentQuestion: "What assumption could make this plan fail, and who would see the blind spot before I do?",
+    practice: "Run a two-minute pre-mortem: write the best case, worst case, and one check before acting.",
+    boundary: "No irreversible move before one contrary fact, one affected person, and one practical risk are reviewed.",
+    completion: "The decision is still strong, but now it is calibrated by evidence and accountability."
+  },
+  stigma: {
+    principle: "Shame tries to turn a problem into an identity. Keep the issue separate from your worth.",
+    discernmentQuestion: "What happened, what label am I attaching to myself, and would I use that label for a friend in the same position?",
+    practice: "Write the situation in neutral words, then write one respectful sentence you would offer to someone you care about.",
+    boundary: "Do not disclose vulnerable details to unsafe people just to reduce discomfort quickly.",
+    completion: "The issue is named without self-attack, and one dignity-preserving step is chosen."
+  },
+  burnout: {
+    principle: "Exhaustion is data. Recovery starts by reducing load before demanding new motivation.",
+    discernmentQuestion: "What is one obligation I can pause, delegate, simplify, or delay without creating serious harm?",
+    practice: "Choose one protected rest block and one reduced task. Let the body experience a smaller day.",
+    boundary: "Do not add a new self-improvement project when the real need is recovery and load reduction.",
+    completion: "A real load has been reduced, not merely renamed, and rest has a protected place in the plan."
+  },
+  loneliness: {
+    principle: "Connection often returns through a small honest signal, not a dramatic rescue. Make one low-pressure bridge.",
+    discernmentQuestion: "Who is safe enough for a small message, and what can I say without pretending to be fine?",
+    practice: "Send one simple message: 'I was thinking of you today. No pressure to reply quickly.' Then do one grounding activity.",
+    boundary: "Do not chase unavailable people or measure your worth by one response time.",
+    completion: "One real bridge has been opened and loneliness has moved from silence into contact or community."
+  },
+  grief: {
+    principle: "Grief is love reorganising around absence. It does not need to be defeated; it needs room and gentle structure.",
+    discernmentQuestion: "What needs to be honoured today, and what practical duty needs only the smallest possible completion?",
+    practice: "Hold one memory for two minutes, then complete one small practical task connected to today.",
+    boundary: "Do not force closure, compare grief, or demand productivity from a wounded day.",
+    completion: "The loss is honoured, and one small life-maintaining action is completed."
+  },
+  identity: {
+    principle: "Roles change, but awareness and values can observe the change. Build identity through chosen action, not panic.",
+    discernmentQuestion: "Which part of this identity is inherited, which part is performed, and which part still feels honest?",
+    practice: "Write three columns: inherited, chosen, outgrown. Pick one value-aligned action for today.",
+    boundary: "Do not make a large life decision only to escape uncertainty. Let clarity earn its way through repeated small choices.",
+    completion: "One chosen value has been expressed in action, even before the full answer is visible."
+  },
+  health: {
+    principle: "The body deserves evidence, care, and patience — not panic or neglect. Make the next health step concrete.",
+    discernmentQuestion: "What symptom is present, what is feared, and what professional or practical step would create real clarity?",
+    practice: "Record symptom, time, trigger, severity, and one question for a doctor or trusted health professional.",
+    boundary: "Do not spiral through random searches as a substitute for appropriate medical advice.",
+    completion: "Symptoms are documented, a care step is selected, and fear has been separated from fact."
+  },
+  financial: {
+    principle: "Money stress grows in fog. Numbers are not moral judgments; they are navigation data.",
+    discernmentQuestion: "What exact amount, deadline, account, bill, or call matters first?",
+    practice: "Create a one-page money snapshot: due now, due later, available, and one contact/action.",
+    boundary: "No avoidance spending, panic borrowing, or shame-based hiding from the most urgent number.",
+    completion: "The first number is visible and one realistic financial action has been taken or scheduled."
+  },
+  relationship: {
+    principle: "A relationship improves when truth is spoken without attack and boundaries are stated without cruelty.",
+    discernmentQuestion: "What do I need, what am I requesting, and what boundary is required if the pattern continues?",
+    practice: "Draft three sentences: what happened, what I felt/need, what I am asking for next.",
+    boundary: "If there is coercion, violence, stalking, or threat, do not treat it as a communication issue; use safety and redress routes.",
+    completion: "A clear request or boundary exists, and safety has been prioritised where required."
+  },
+  parenting: {
+    principle: "Children borrow the adult nervous system. Pause first, then guide with structure and repair.",
+    discernmentQuestion: "What is the child communicating, and what part of my response belongs to my own stress or history?",
+    practice: "Before correcting, breathe once, lower your voice, name the limit, and offer the next acceptable choice.",
+    boundary: "Never discipline from rage, humiliation, or revenge. Step away safely when your body is too activated.",
+    completion: "The child receives a clear limit, the adult stays regulated, and repair is offered if the moment went wrong."
+  },
+  trauma: {
+    principle: "Safety comes before story. The goal is present-time orientation and trustworthy support, not forcing the memory open.",
+    discernmentQuestion: "What would make this moment 5% safer: location, person, body position, breath, light, or distance from a trigger?",
+    practice: "Use grounding only: feet on floor, name five visible objects, orient to date/place, and contact one safe person if needed.",
+    boundary: "Do not retell details while dysregulated or with someone who cannot protect confidentiality and care.",
+    completion: "The body is more present, immediate risk is lower, and one safe support path is identified."
+  },
+  academic: {
+    principle: "Performance matters, but it is not your identity. Convert pressure into a study unit small enough to start.",
+    discernmentQuestion: "What is the next examinable unit, and what is one distractor I need to remove for the next 25 minutes?",
+    practice: "Do one 25-minute focused block, mark what was actually covered, then take a five-minute reset.",
+    boundary: "Do not use panic, comparison, or all-night exhaustion as the primary study strategy.",
+    completion: "One measurable study block is complete and the next unit is visible."
+  },
+  addiction: {
+    principle: "An urge is a wave, not a command. Delay, observe, change context, and use support before the wave becomes action.",
+    discernmentQuestion: "What triggered the urge, what time window is dangerous, and what replacement action can start now?",
+    practice: "Set a ten-minute timer, move away from access, sip water, message one support contact, and track whether the urge rises or falls.",
+    boundary: "Do not stay alone with easy access when the urge is high. Remove access or involve support early.",
+    completion: "The urge window has passed or been reduced, and the next protective step is in place."
+  }
+};
+
+function getIssuePathDepth(issueId: IssueId): IssuePathDepth {
+  return issuePathDepthByIssue[issueId] ?? issuePathDepthByIssue.general;
+}
+
 function IssueGuideSection({
   issueGuides,
   selectedIssueGuide,
@@ -24683,6 +25050,7 @@ function IssueGuideSection({
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const [showFullPathDetails, setShowFullPathDetails] = useState(false);
   const issueDisplayLabel = selectedIssueGuide.id === "anxiety" ? "Calm route" : selectedIssueGuide.label;
+  const pathDepth = getIssuePathDepth(selectedIssueGuide.id);
   const moonChartComplement = useMemo(
     () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChart48Readings ?? []),
     [selectedIssueGuide.id, moonChart48Readings]
@@ -24704,14 +25072,14 @@ function IssueGuideSection({
         </View>
         <Text style={styles.promptText}>
           {l(
-            "Pick the issue that feels closest now. The guide turns it into one route and one next step with practical, emotional, spiritual, cultural, and science-aware support.",
+            "Pick the issue that feels closest now. The guide turns it into one route and one next step with practical, emotional, reflective, cultural, and evidence-aware support.",
             {
-              hindi: "अभी जो समस्या सबसे नज़दीक लगे उसे चुनें। यह guide उसे एक route और एक अगले कदम में बदल देता है, practical, emotional, spiritual, cultural, और science-aware support के साथ।",
-              punjabi: "ਹੁਣ ਜੋ ਮੁੱਦਾ ਸਭ ਤੋਂ ਨੇੜੇ ਲੱਗੇ, ਉਹ ਚੁਣੋ। ਇਹ guide ਉਸਨੂੰ ਇੱਕ ਰਾਹ ਅਤੇ ਇੱਕ ਅਗਲੇ ਕਦਮ ਵਿੱਚ ਬਦਲ ਦਿੰਦਾ ਹੈ, practical, emotional, spiritual, cultural, ਅਤੇ science-aware support ਨਾਲ।",
-              marathi: "सध्या जी समस्या सर्वात जवळची वाटते ती निवडा. हा guide तिला एका route आणि एका पुढच्या पावलात बदलतो, practical, emotional, spiritual, cultural, आणि science-aware support सह.",
-              telugu: "ఇప్పుడే దగ్గరగా అనిపించే సమస్యను ఎంచుకోండి. ఈ guide దాన్ని ఒక route మరియు ఒక next step గా మార్చుతుంది, practical, emotional, spiritual, cultural, మరియు science-aware support తో.",
-              tamil: "இப்போது மிகவும் அருகில் தோன்றும் பிரச்சினையைத் தேர்ந்தெடுக்கவும். இந்த guide அதை ஒரு route மற்றும் ஒரு next step-ஆக மாற்றுகிறது, practical, emotional, spiritual, cultural, மற்றும் science-aware support உடன்.",
-              urdu: "اب جو مسئلہ سب سے قریب لگے اسے چنیں۔ یہ guide اسے ایک route اور ایک اگلے قدم میں بدل دیتا ہے، practical، emotional، spiritual، cultural، اور science-aware support کے ساتھ۔"
+              hindi: "अभी जो समस्या सबसे नज़दीक लगे उसे चुनें। यह guide उसे एक route और एक अगले कदम में बदल देता है, practical, emotional, reflective, cultural, और evidence-aware support के साथ।",
+              punjabi: "ਹੁਣ ਜੋ ਮੁੱਦਾ ਸਭ ਤੋਂ ਨੇੜੇ ਲੱਗੇ, ਉਹ ਚੁਣੋ। ਇਹ guide ਉਸਨੂੰ ਇੱਕ ਰਾਹ ਅਤੇ ਇੱਕ ਅਗਲੇ ਕਦਮ ਵਿੱਚ ਬਦਲ ਦਿੰਦਾ ਹੈ, practical, emotional, reflective, cultural, ਅਤੇ evidence-aware support ਨਾਲ।",
+              marathi: "सध्या जी समस्या सर्वात जवळची वाटते ती निवडा. हा guide तिला एका route आणि एका पुढच्या पावलात बदलतो, practical, emotional, reflective, cultural, आणि evidence-aware support सह.",
+              telugu: "ఇప్పుడే దగ్గరగా అనిపించే సమస్యను ఎంచుకోండి. ఈ guide దాన్ని ఒక route మరియు ఒక next step గా మార్చుతుంది, practical, emotional, reflective, cultural, మరియు evidence-aware support తో.",
+              tamil: "இப்போது மிகவும் அருகில் தோன்றும் பிரச்சினையைத் தேர்ந்தெடுக்கவும். இந்த guide அதை ஒரு route மற்றும் ஒரு next step-ஆக மாற்றுகிறது, practical, emotional, reflective, cultural, மற்றும் evidence-aware support உடன்.",
+              urdu: "اب جو مسئلہ سب سے قریب لگے اسے چنیں۔ یہ guide اسے ایک route اور ایک اگلے قدم میں بدل دیتا ہے، practical، emotional، reflective، cultural، اور evidence-aware support کے ساتھ۔"
             }
           )}
         </Text>
@@ -24773,11 +25141,36 @@ function IssueGuideSection({
           <Text style={styles.smallMeta}>{l("One route / one next step", { hindi: "एक route / एक next step", punjabi: "ਇੱਕ ਰਾਹ / ਇੱਕ ਅਗਲਾ ਕਦਮ", marathi: "एक route / एक पुढचे पाऊल", telugu: "ఒక route / ఒక తదుపరి అడుగు", tamil: "ஒரு route / ஒரு அடுத்த படி", urdu: "ایک راستہ / ایک اگلا قدم" })}</Text>
         </View>
         <Text style={styles.promptText}>{selectedIssueGuide.summary}</Text>
+        <View style={styles.issueSupportBand}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.eyebrow}>Clarity discipline</Text>
+              <Text style={styles.sectionTitleSmall}>How to work with this issue</Text>
+            </View>
+            <Text style={styles.smallMeta}>Neutral practice</Text>
+          </View>
+          <Text style={styles.promptText}>{pathDepth.principle}</Text>
+          <View style={styles.profileSummaryGrid}>
+            <View style={styles.profileSummaryCard}>
+              <Text style={styles.profileSummaryLabel}>Ask</Text>
+              <Text style={styles.profileSummaryValue}>{pathDepth.discernmentQuestion}</Text>
+            </View>
+            <View style={styles.profileSummaryCard}>
+              <Text style={styles.profileSummaryLabel}>Practice</Text>
+              <Text style={styles.profileSummaryValue}>{pathDepth.practice}</Text>
+            </View>
+            <View style={styles.profileSummaryCard}>
+              <Text style={styles.profileSummaryLabel}>Boundary</Text>
+              <Text style={styles.profileSummaryValue}>{pathDepth.boundary}</Text>
+            </View>
+          </View>
+          <Text style={styles.issueActionText}>Completion marker: {pathDepth.completion}</Text>
+        </View>
         <View style={[styles.issueLensList, !showFullPathDetails && styles.hiddenSection]}>
           <IssueLensRow label={l("Logical", { hindi: "तार्किक", punjabi: "ਤਰਕਸੰਗਤ", marathi: "तार्किक", telugu: "తార్కిక", tamil: "தர்க்கம்", urdu: "منطقی" })} text={selectedIssueGuide.logicalLens} />
           <IssueLensRow label={l("Theoretical", { hindi: "सैद्धांतिक", punjabi: "ਸਿਧਾਂਤਕ", marathi: "सैद्धांतिक", telugu: "సిద్ధాంతపరమైన", tamil: "கோட்பாட்டு", urdu: "نظریاتی" })} text={selectedIssueGuide.theoreticalLens} />
           <IssueLensRow label={l("Emotional", { hindi: "भावनात्मक", punjabi: "ਭਾਵਨਾਤਮਕ", marathi: "भावनिक", telugu: "భావోద్వేగ", tamil: "உணர்ச்சி", urdu: "جذباتی" })} text={selectedIssueGuide.emotionalLens} />
-          <IssueLensRow label={l("Spiritual", { hindi: "आध्यात्मिक", punjabi: "ਆਤਮਿਕ", marathi: "आध्यात्मिक", telugu: "ఆధ్యాత్మిక", tamil: "ஆன்மீக", urdu: "روحانی" })} text={selectedIssueGuide.spiritualLens} />
+          <IssueLensRow label={l("Reflective", { hindi: "चिंतन", punjabi: "ਚਿੰਤਨ", marathi: "चिंतन", telugu: "పరిశీలన", tamil: "பரிசீலனை", urdu: "غور و فکر" })} text={selectedIssueGuide.spiritualLens} />
           <IssueLensRow label={l("Cultural", { hindi: "सांस्कृतिक", punjabi: "ਸੱਭਿਆਚਾਰਕ", marathi: "सांस्कृतिक", telugu: "సాంస్కృతిక", tamil: "கலாசார", urdu: "ثقافتی" })} text={selectedIssueGuide.culturalLens} />
         </View>
 
@@ -27124,7 +27517,7 @@ function InsightsSection({
         <SignalRow label="Weak spot" value={patternCritique.warning} />
         <SignalRow label="Next test" value={patternCritique.next} />
         <SignalRow label="Support lens" value={supportiveLens} />
-        {/* Real 48-axis library, not a 5-field table pretending to be one. */}
+        {/* Real multidimensional library, not a 5-field table pretending to be one. */}
         <SupportDimensionLibraryPanel
           eyebrow="📊 Watch for"
           actionLabel="Signal"
@@ -27421,7 +27814,7 @@ function SettingsSection({
           Notice what is happening, name it without shame, choose one useful next step, and keep a direct path to support.
         </Text>
         <Text style={styles.promptText}>
-          It works across practical, emotional, psychological, spiritual, and cultural layers.
+          It works across practical, emotional, psychological, reflective, and cultural layers.
         </Text>
       </View>
       <View style={styles.settingsBlock}>
@@ -28272,11 +28665,11 @@ function VedicDailyCard({
   const compact = width < 760;
   const today = new Date();
   const dateLabel = today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
-  // Memoized: recomputing all 48 lunar dimensions on every render (e.g. window
+  // Memoized: recomputing all lunar dimensions on every render (e.g. window
   // resize, unrelated state) is wasteful. Keyed on the birth-derived inputs so
   // it only recomputes when the chart actually changes.
   const moonChart48Readings = React.useMemo(
-    () => buildMoonChart48DimensionEngine({
+    () => buildMoonChartMultidimensionalEngine({
       rashiId: rashi.id,
       janmaNakshatra,
       dashaState,
@@ -28547,7 +28940,7 @@ function BirthChartSection({
     /^\d{2}:\d{2}$/.test(profileBirthTime) &&
     profileBirthPlace.trim().length >= 3;
   const moonChart48Readings = rashiInfo
-    ? buildMoonChart48DimensionEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara, lagnaId: lagnaInfo?.lagnaId ?? null })
+    ? buildMoonChartMultidimensionalEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara, lagnaId: lagnaInfo?.lagnaId ?? null })
     : [];
   const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
   // Gochar (current transits) read from the natal Moon — the "now" foresight
@@ -29231,7 +29624,7 @@ function BirthChartSection({
           </View>
 
           <View style={{ gap: 8 }}>
-            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>All 48 calculated dimensions · full trace</Text>
+            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Complete multidimensional calculated trace</Text>
             {moonChart48Readings.map((item) => (
               <View key={item.id} style={{ backgroundColor: "#F4F8F7", borderRadius: 14, padding: 11, borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, gap: 5, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 8, transform: [{ perspective: 700 }, { translateY: item.verdict === "Excellent" ? -1 : 0 }] }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
@@ -32414,10 +32807,10 @@ function formatSupportDimensionLabels(guides: SupportDimensionGuide[]) {
     .join(", ");
 }
 
-// ── Real 48-axis reference panel, reused across every section ──────────────
+// ── Real multidimensional reference panel, reused across every section ──────────────
 // Several sections previously used a numeric title over a hardcoded
-// 5-field (practical/emotional/psychological/spiritual/cultural) lookup
-// table -- 5 items pretending to be 48. This renders the ACTUAL 48-entry
+// 5-field (practical/emotional/psychological/reflective/cultural) lookup
+// table -- 5 items pretending to be 48. This renders the ACTUAL complete
 // supportDimensionGuides dataset instead, the same real data that already
 // powers Path's counselling engine. Entries the user has actually surfaced
 // this session (activeJourney.detectedThemes, a real classifier output) or
@@ -32450,7 +32843,7 @@ function SupportDimensionLibraryPanel({
   accentColor?: string;
   // Only passed by Path today -- when present, tapping open a dimension also
   // shows its personal Moon Chart complement and a direct route button, so
-  // the full 48-dimension library becomes actionable, not just readable.
+  // the full multidimensional library becomes actionable, not just readable.
   moonChart48Readings?: MoonChart48Reading[];
   onOpenTab?: (tab: TabId) => void;
   onEmergencyCall?: () => Promise<void>;
@@ -32491,8 +32884,8 @@ function SupportDimensionLibraryPanel({
       </View>
       <Text style={{ color: "#6A8899", fontSize: 12, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4, lineHeight: 16 }}>
         {relevantCount > 0
-          ? `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first. Tap any of the 48 for its full escalation guidance and route.`
-          : "The complete multidimensional support library used by the counselling engine. Tap any of the 48 for its full escalation guidance and route."}
+          ? `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first. Tap any perspective for its full escalation guidance and route.`
+          : "The complete multidimensional support library used by the counselling engine. Tap any perspective for its full escalation guidance and route."}
       </Text>
       {visible.map((guide, i) => {
         const relevant = isRelevant(guide);
@@ -32697,7 +33090,7 @@ function buildMoonChartCounselingOverlay(
   const primaryRemedy = careful[0]?.remedy ?? strongest[0]?.remedy ?? "Moon-chart remedy: keep the next step small, calm, and repeatable today.";
 
   return [
-    `Multidimensional Moon Chart counselling layer: I also checked the Moon-chart dimensions connected to this issue. The relevant multidimensional average is ${average}/100.`,
+    `Multidimensional Moon Chart counselling layer: I also checked the lunar pattern connected to this issue. The relevant support average is ${average}/100.`,
     `Supported capacities: ${topLine}.`,
     `Care points: ${carefulLine}.`,
     `How to use this today: treat the supported areas as resources, and protect the careful areas before making a big decision. ${primaryRemedy}`,
@@ -32711,7 +33104,7 @@ function shouldAddMoonChartJourneyStep(themes: SupportDimensionId[], moonChart48
   return moonChart48Readings.some((reading) => categories.includes(reading.category));
 }
 
-// Maps each Path/Guide issue onto the 48-dimension Moon Chart categories most
+// Maps each Path/Guide issue onto the multidimensional Moon Chart categories most
 // relevant to it, mirroring COUNSELING_THEME_TO_MOON48_CATEGORIES above so the
 // Path tab draws on the exact same multidimensional Moon Chart engine the
 // Automatic Counselling chat already uses — instead of Path staying a
@@ -32795,16 +33188,46 @@ function buildDimensionMoonChartComplement(
   return buildMoonChartComplementForCategories(categories, moonChart48Readings);
 }
 
+function buildCounselingReflectionCue(theme: SupportDimensionId, turnIndex: number): string {
+  const commonCues = [
+    "separate the event from the story your mind is adding to it.",
+    "notice that a feeling can be present without becoming your whole identity.",
+    "name the part that is yours to act on and the part that is outside your control today.",
+    "choose the value that should lead the next step: truth, safety, care, dignity, fairness, or rest.",
+    "look for what can be released now: comparison, blame, rehearsal, or the need to solve everything at once.",
+    "bring the answer back to one honest step, one boundary, or one request."
+  ];
+  const byTheme: Partial<Record<SupportDimensionId, string>> = {
+    trauma: "stay within what feels safe; a broad outline is enough, and protection comes before analysis.",
+    grief: "let the loss be named without forcing it to make sense today.",
+    addiction: "look for the urge, the trigger, and the unmet need underneath the pattern.",
+    anxiety: "separate actual danger from imagined danger before deciding.",
+    anger: "look under the heat for the hurt, boundary, fear, or unfairness asking for attention.",
+    fear: "check whether courage here means a big leap or one small protected step.",
+    "self-image": "notice whether the inner critic is giving useful information or only punishment.",
+    "social-reputation": "separate the issue from your identity; a problem is not the whole person.",
+    relationship: "hold care and self-respect together; neither one has to erase the other.",
+    loneliness: "notice whether the need is company, being understood, or feeling useful somewhere.",
+    burnout: "treat exhaustion as information about load and recovery, not as a defect in character.",
+    financial: "separate the numbers from the shame so the practical problem can be solved.",
+    academic: "separate performance from worth; then name the next study action clearly.",
+    "identity-values": "look past roles and labels toward what remains true when pressure quiets.",
+    direction: "choose the smallest reversible step rather than forcing a life-sized answer.",
+    health: "separate medical facts, uncertainty, and fear; each needs a different response."
+  };
+  return `As you answer, ${byTheme[theme] ?? commonCues[Math.min(turnIndex, commonCues.length - 1)]}`;
+}
+
 /**
  * Supreme-level adaptive counseling question builder.
- * Full 48-dimension coverage: bespoke banks for core themes plus generated
+ * Full multidimensional coverage: bespoke banks for core themes plus generated
  * high-quality banks for every advanced dimension in SupportDimensionId.
  * Branches across themes for turns 3-5.
  */
 function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: number, allUserText?: string): string {
   // ── Bespoke 7-question banks for the core dimensions ───────────────────────
   // Advanced dimensions use buildSupportDimensionQuestionBank so the counseling
-  // engine remains fully complementary with the 48-dimension support engine.
+  // engine remains fully complementary with the multidimensional support engine.
   const byTheme: Partial<Record<SupportDimensionId, string[]>> = {
     "self-image": [
       "Tell me more — when did this feeling about your appearance or how you see yourself start feeling this heavy? Was there a particular moment, or has it been quietly building?",
@@ -33006,24 +33429,26 @@ function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: numbe
   // For turns 4-5: cross into tertiary or use physical/support/what-you-need dimensions
   const primaryTheme = themes[0] ?? "direction";
   const primaryPool = getQuestionPool(primaryTheme);
+  const composeQuestion = (question: string, theme: SupportDimensionId) =>
+    `${question}\n\n${buildCounselingReflectionCue(theme, turnIndex)}`;
 
   // Cross-theme adaptive branching
   if (turnIndex >= 2 && themes.length > 1) {
     const secondTheme = themes[1];
     const secondPool = getQuestionPool(secondTheme);
     // Turn 2: second theme question 1
-    if (turnIndex === 2) return secondPool[1] ?? primaryPool[2] ?? defaultQuestions[2];
+    if (turnIndex === 2) return composeQuestion(secondPool[1] ?? primaryPool[2] ?? defaultQuestions[2], secondTheme);
     // Turn 3: secondary theme question 2
-    if (turnIndex === 3) return secondPool[2] ?? primaryPool[3] ?? defaultQuestions[3];
+    if (turnIndex === 3) return composeQuestion(secondPool[2] ?? primaryPool[3] ?? defaultQuestions[3], secondTheme);
   }
   if (turnIndex >= 4 && themes.length > 2) {
     const thirdTheme = themes[2];
     const thirdPool = getQuestionPool(thirdTheme);
-    if (turnIndex === 4) return thirdPool[2] ?? primaryPool[4] ?? defaultQuestions[4];
+    if (turnIndex === 4) return composeQuestion(thirdPool[2] ?? primaryPool[4] ?? defaultQuestions[4], thirdTheme);
   }
 
   // Standard sequential questions from primary theme
-  return primaryPool[Math.min(turnIndex, primaryPool.length - 1)];
+  return composeQuestion(primaryPool[Math.min(turnIndex, primaryPool.length - 1)], primaryTheme);
 }
 
 /**
@@ -33075,13 +33500,15 @@ function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId, 
     synthesis += "What you have shared is real and it matters. You are not overreacting, and you are not alone in this. Everything you have described points to genuine need for attention and care — not a quick answer, but a real engagement with what is happening.\n\n";
   }
 
+  synthesis += "The working principle here is simple: observe the mind without becoming every thought, do the part that is honestly within your control, release the result pressure you cannot control today, and choose the next step that protects dignity and reduces harm.\n\n";
+
   // ── Physical check-in ────────────────────────────────────────────────────────
   const physicalMentioned = /(sleep|sleeping|appetite|eating|chest|breath|body|tired|exhaust|pain|headache|tension)/.test(combined);
   if (!physicalMentioned && (themes.includes("anxiety") || themes.includes("burnout") || themes.includes("grief") || themes.includes("sadness"))) {
     synthesis += "I also want to check in on the physical side — what you are going through often shows up in the body first. Please pay attention to your sleep, appetite, and breathing as we go through this.\n\n";
   }
 
-  // ── 48D Moon Chart counselling overlay ───────────────────────────────────────
+  // ── Multidimensional Moon Chart counselling overlay ─────────────────────────
   const moonChartCounselingOverlay = buildMoonChartCounselingOverlay(themes, moonChart48Readings);
   if (moonChartCounselingOverlay.length > 0) {
     synthesis += `${moonChartCounselingOverlay}\n\n`;
@@ -33117,9 +33544,9 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
   if (has("anxiety") || has("burnout") || has("anger") || has("trauma") || has("grief") || has("fear")) {
     steps.push({
       tabId: "tones",
-      label: "Sound therapy",
+      label: "Sound-guided reset",
       emoji: "🎵",
-      reason: "Binaural and Solfeggio tones directly shift the nervous system — this is not just relaxation, it is neurological regulation.",
+      reason: "Use a low-volume sound cue to support breathing, attention, and emotional downshift before the next decision.",
       completed: false, skipped: false
     });
   }
@@ -33128,9 +33555,9 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
   if (has("self-image") || has("loneliness") || has("sadness") || has("grief") || has("trauma") || has("health") || has("addiction") || has("burnout")) {
     steps.push({
       tabId: "meditation",
-      label: "Wellness practice",
+      label: "Meditation practice",
       emoji: "🪷",
-      reason: "A breath or body-scan practice helps process what words cannot fully reach.",
+      reason: "A breath, body-scan, witness, or values practice helps turn emotion into a clear next step.",
       completed: false, skipped: false
     });
   }
@@ -33164,7 +33591,7 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
     completed: false, skipped: false
   });
 
-  // ── 6. 48D Moon Chart layer — when birth details make it operational ─────────
+  // ── 6. Multidimensional Moon Chart layer — when birth details make it operational ─
   if (shouldAddMoonChartJourneyStep(themes, moonChart48Readings) && !steps.some((step) => step.tabId === "vedic")) {
     const categories = getCounselingMoonChartCategories(themes);
     const focused = moonChart48Readings.filter((reading) => categories.includes(reading.category));
@@ -33580,9 +34007,9 @@ function CounselingChatModal({
     const tabId: TabId = choice === "calmness" ? "focus" : choice === "redress" ? "redress" : "meditation";
     const label =
       choice === "meditation" ? "Meditation" :
-      choice === "chakra" ? "Chakra work" :
+      choice === "chakra" ? "Body focus" :
       choice === "calmness" ? "Calm Focus" : "Redressal guidance";
-    const emoji = choice === "meditation" ? "🧘" : choice === "chakra" ? "🌀" : choice === "calmness" ? "🌿" : "🧭";
+    const emoji = choice === "meditation" ? "🧘" : choice === "chakra" ? "🫁" : choice === "calmness" ? "🌿" : "🧭";
     const chosenStep: JourneyStep = {
       tabId, label, emoji,
       reason: "Chosen by you at the end of the conversation.",
@@ -33724,7 +34151,7 @@ function CounselingChatModal({
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                 {[
                   { choice: "meditation" as const, emoji: "🧘", label: "Meditation" },
-                  { choice: "chakra" as const, emoji: "🌀", label: "Chakra work" },
+                  { choice: "chakra" as const, emoji: "🫁", label: "Body focus" },
                   { choice: "calmness" as const, emoji: "🌿", label: "Calmness" },
                   { choice: "redress" as const, emoji: "🧭", label: "Redressal guidance" },
                 ].map((option) => (
@@ -41360,7 +41787,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   calmLensChipMetaActive: {
-    color: "rgba(34,211,238,0.7)"
+    color: "#0E6F69"
   },
   calmLensDetail: {
     borderRadius: 12,
@@ -41895,7 +42322,7 @@ const styles = StyleSheet.create({
     gap: 2
   },
   profileSummaryLabel: {
-    color: "rgba(34,211,238,0.7)",
+    color: "#0E6F69",
     fontSize: 12,
     fontWeight: "900",
     textTransform: "uppercase",
@@ -43021,8 +43448,8 @@ const styles = StyleSheet.create({
   },
   profileFeatureChipLabel: {
     fontSize: 12,
-    fontWeight: "700",
-    color: "rgba(240,249,255,0.88)",
+    fontWeight: "800",
+    color: "#0D1F22",
   },
   // ── Vedic Daily Prediction Card ────────────────────────────────────────────
   vedicCard: {
