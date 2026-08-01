@@ -137,4 +137,23 @@ for (const id of allIssueIds) {
 // Path is the tab most relevant to it and must too.
 assert(source.includes('🧭 Path frame'), 'Path is missing the 48-axis SupportDimensionLibraryPanel complement');
 
-console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, and Path/Guide Moon Chart + 48-axis complement.');
+// ── Cross-section 48-dimension actionability ────────────────────────────────
+// The 48-axis library used to be read-only in every section except the
+// counselling chat. Every section that renders it must now let a tap reveal
+// the real escalation guidance, its Moon Chart complement, and a working
+// route button -- not just a label and a first action.
+assert(source.includes('function buildMoonChartComplementForCategories'), 'Shared category-based Moon Chart complement builder is missing');
+assert(source.includes('function buildDimensionMoonChartComplement'), '48-dimension-scoped Moon Chart complement builder is missing');
+assert(source.includes('openDimensionMoonChart'), 'SupportDimensionLibraryPanel does not compute a per-dimension Moon Chart complement');
+assert(source.includes('routeLabel(guide.route)'), 'SupportDimensionLibraryPanel does not surface each dimension\'s route');
+assert(/Escalate when: /.test(source), 'SupportDimensionLibraryPanel does not surface each dimension\'s escalation guidance');
+assert(source.includes('const routeToTab = (tab: TabId)'), 'Search does not adapt the panel\'s route buttons onto its own onOpenGuide/onOpenRedress/onOpenCommunity routing');
+
+// Every section already known to render the 48-axis panel (Tones banner,
+// Path banner + Path itself, Journal, Tones library, Meditation, Search,
+// Practice/Play, Insights) must feed it the live Moon Chart readings -- a
+// panel with the prop wired to nothing would silently stay read-only.
+const moonChartWiredCount = (source.match(/moonChart48Readings=\{(vedicMoonChart48Readings|moonChart48Readings)\}/g) ?? []).length;
+assert(moonChartWiredCount >= 10, `Expected at least 10 live moonChart48Readings wire-ups across sections; found ${moonChartWiredCount}`);
+
+console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, Path/Guide Moon Chart + 48-axis complement, and cross-section 48-dimension actionability.');

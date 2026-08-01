@@ -18697,6 +18697,10 @@ function isTrustedExternalUrl(url: string) {
                 saveCheckIn={saveCheckIn}
                 onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
                 onOpenTab={handleTabPress}
+                onEmergencyCall={handleEmergencyCall}
+                openWebsite={openWebsite}
+                buildNearbySearchUrl={buildNearbySearchUrl}
+                moonChart48Readings={vedicMoonChart48Readings}
                 routePreview={journalRoutePreview}
                 languageId={languageId}
               />
@@ -18727,6 +18731,11 @@ function isTrustedExternalUrl(url: string) {
                 eyebrow="🎵 Tone guide"
                 actionLabel="Try"
                 accentColor="#0891B2"
+                moonChart48Readings={vedicMoonChart48Readings}
+                onOpenTab={handleTabPress}
+                onEmergencyCall={handleEmergencyCall}
+                openWebsite={openWebsite}
+                buildNearbySearchUrl={buildNearbySearchUrl}
               />
 
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "tones" && (
@@ -18743,6 +18752,10 @@ function isTrustedExternalUrl(url: string) {
                 selectedIdentityLabel={profileDisplayName}
                 onOpenTab={handleTabPress}
                 onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
+                onEmergencyCall={handleEmergencyCall}
+                openWebsite={openWebsite}
+                buildNearbySearchUrl={buildNearbySearchUrl}
+                moonChart48Readings={vedicMoonChart48Readings}
                 isWide={isWide}
               />
             </View>
@@ -18856,6 +18869,8 @@ function isTrustedExternalUrl(url: string) {
                 onStopVoice={stopVoiceGuidance}
                 voiceAssistEnabled={voiceAssistEnabled}
                 voiceAssistStatus={voiceAssistStatus}
+                buildNearbySearchUrl={buildNearbySearchUrl}
+                moonChart48Readings={vedicMoonChart48Readings}
                 isWide={isWide}
               />
 
@@ -19124,6 +19139,10 @@ function isTrustedExternalUrl(url: string) {
                     selectedIssueGuide={selectedIssueGuide}
                     onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
                     onOpenTab={handleTabPress}
+                    onEmergencyCall={handleEmergencyCall}
+                    openWebsite={openWebsite}
+                    buildNearbySearchUrl={buildNearbySearchUrl}
+                    moonChart48Readings={vedicMoonChart48Readings}
                     isWide={isWide}
                     onFocusFeaturedPlayLayout={captureFocusLayout}
                     languageId={languageId}
@@ -19170,6 +19189,9 @@ function isTrustedExternalUrl(url: string) {
                 onOpenCommunity={() => handleTabPress("community")}
                 onOpenWebsite={openWebsite}
                 onGovernmentCall={handleGovernmentCall}
+                onEmergencyCall={handleEmergencyCall}
+                buildNearbySearchUrl={buildNearbySearchUrl}
+                moonChart48Readings={vedicMoonChart48Readings}
                 selectedIdentity={selectedIdentity}
                 selectedIssueGuide={selectedIssueGuide}
                 isWide={isWide}
@@ -19560,6 +19582,10 @@ function isTrustedExternalUrl(url: string) {
                 onShareDailyReport={handleShareDailyReport}
                 onOpenTab={handleTabPress}
                 onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
+                onEmergencyCall={handleEmergencyCall}
+                openWebsite={openWebsite}
+                buildNearbySearchUrl={buildNearbySearchUrl}
+                moonChart48Readings={vedicMoonChart48Readings}
                 isWide={isWide}
                 languageId={languageId}
               />
@@ -20372,6 +20398,10 @@ function JournalSection({
   saveCheckIn,
   onOpenCalm,
   onOpenTab,
+  onEmergencyCall,
+  openWebsite,
+  buildNearbySearchUrl,
+  moonChart48Readings,
   routePreview,
   languageId
 }: {
@@ -20385,6 +20415,10 @@ function JournalSection({
   saveCheckIn: () => void;
   onOpenCalm: () => void;
   onOpenTab: (tab: TabId) => void;
+  onEmergencyCall?: () => Promise<void>;
+  openWebsite?: (url: string, title: string) => void | Promise<void>;
+  buildNearbySearchUrl?: (query: string) => string;
+  moonChart48Readings?: MoonChart48Reading[];
   routePreview: RoutePreview;
   languageId: LanguageId;
 }) {
@@ -20463,6 +20497,11 @@ function JournalSection({
         eyebrow="📝 Journal prompts"
         actionLabel="Write about"
         accentColor="#0891B2"
+        moonChart48Readings={moonChart48Readings}
+        onOpenTab={onOpenTab}
+        onEmergencyCall={onEmergencyCall}
+        openWebsite={openWebsite}
+        buildNearbySearchUrl={buildNearbySearchUrl}
       />
       <View style={styles.homeOverviewActions}>
         <Pressable
@@ -21391,12 +21430,20 @@ function ToneLibrarySection({
   selectedIdentityLabel,
   onOpenTab,
   onOpenCalm,
+  onEmergencyCall,
+  openWebsite,
+  buildNearbySearchUrl,
+  moonChart48Readings,
   isWide
 }: {
   selectedIssueGuide: IssueGuide;
   selectedIdentityLabel: string;
   onOpenTab: (tabId: TabId) => void;
   onOpenCalm: () => void;
+  onEmergencyCall?: () => Promise<void>;
+  openWebsite?: (url: string, title: string) => void | Promise<void>;
+  buildNearbySearchUrl?: (query: string) => string;
+  moonChart48Readings?: MoonChart48Reading[];
   isWide: boolean;
 }) {
   const compact = !isWide;
@@ -21678,6 +21725,11 @@ function ToneLibrarySection({
         eyebrow="🎵 Tone map"
         actionLabel="Try"
         accentColor="#0891B2"
+        moonChart48Readings={moonChart48Readings}
+        onOpenTab={onOpenTab}
+        onEmergencyCall={onEmergencyCall}
+        openWebsite={openWebsite}
+        buildNearbySearchUrl={buildNearbySearchUrl}
       />
 
       {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
@@ -21850,6 +21902,8 @@ function MeditationSection({
   onStopVoice,
   voiceAssistEnabled,
   voiceAssistStatus,
+  buildNearbySearchUrl,
+  moonChart48Readings,
   isWide
 }: {
   selectedIssueGuide: IssueGuide;
@@ -21861,6 +21915,8 @@ function MeditationSection({
   onStopVoice: () => void;
   voiceAssistEnabled: boolean;
   voiceAssistStatus: string;
+  buildNearbySearchUrl?: (query: string) => string;
+  moonChart48Readings?: MoonChart48Reading[];
   isWide: boolean;
 }) {
   const compact = !isWide;
@@ -21913,6 +21969,11 @@ function MeditationSection({
         eyebrow="🪷 Meditation frame"
         actionLabel="Try"
         accentColor="#3730A3"
+        moonChart48Readings={moonChart48Readings}
+        onOpenTab={onOpenTab}
+        onEmergencyCall={onEmergencyCall}
+        openWebsite={onOpenWebsite}
+        buildNearbySearchUrl={buildNearbySearchUrl}
       />
 
       <Text style={styles.promptText}>
@@ -23771,6 +23832,9 @@ function SearchSection({
   onOpenCommunity,
   onOpenWebsite,
   onGovernmentCall,
+  onEmergencyCall,
+  buildNearbySearchUrl,
+  moonChart48Readings,
   selectedIdentity,
   selectedIssueGuide,
   isWide
@@ -23790,6 +23854,9 @@ function SearchSection({
   onOpenCommunity: () => void;
   onOpenWebsite: (url: string, title: string) => void;
   onGovernmentCall: (resource: (typeof governmentHelplines)[number]) => void;
+  onEmergencyCall?: () => Promise<void>;
+  buildNearbySearchUrl?: (query: string) => string;
+  moonChart48Readings?: MoonChart48Reading[];
   selectedIdentity: (typeof identityProfiles)[number];
   selectedIssueGuide: IssueGuide;
   isWide: boolean;
@@ -23804,6 +23871,14 @@ function SearchSection({
       : selectedIdentity.id === "officer" || selectedIdentity.id === "official"
         ? "public"
         : "private";
+  // SearchSection routes via onOpenGuide/onOpenRedress/onOpenCommunity
+  // instead of a single onOpenTab(tab) -- this adapts the 48-axis panel's
+  // uniform TabId routing onto those three so its route buttons work here too.
+  const routeToTab = (tab: TabId) => {
+    if (tab === "redress") onOpenRedress(recommendedRedressRouteId);
+    else if (tab === "community") onOpenCommunity();
+    else onOpenGuide(selectedIssueGuide.id);
+  };
   const suggestionPills = [
     "clear next step",
     "complaint",
@@ -23983,6 +24058,11 @@ function SearchSection({
           eyebrow="🔍 Where to look"
           actionLabel="Search for"
           accentColor="#0891B2"
+          moonChart48Readings={moonChart48Readings}
+          onOpenTab={routeToTab}
+          onEmergencyCall={onEmergencyCall}
+          openWebsite={onOpenWebsite}
+          buildNearbySearchUrl={buildNearbySearchUrl}
         />
         <TextInput
           value={searchQuery}
@@ -24167,6 +24247,10 @@ function PlaySection({
   selectedIssueGuide,
   onOpenCalm,
   onOpenTab,
+  onEmergencyCall,
+  openWebsite,
+  buildNearbySearchUrl,
+  moonChart48Readings,
   isWide,
   onFocusFeaturedPlayLayout,
   languageId
@@ -24185,6 +24269,10 @@ function PlaySection({
   selectedIssueGuide: IssueGuide;
   onOpenCalm: () => void;
   onOpenTab: (tab: TabId) => void;
+  onEmergencyCall?: () => Promise<void>;
+  openWebsite?: (url: string, title: string) => void | Promise<void>;
+  buildNearbySearchUrl?: (query: string) => string;
+  moonChart48Readings?: MoonChart48Reading[];
   isWide: boolean;
   onFocusFeaturedPlayLayout?: (key: string) => (event: { nativeEvent: { layout: { y: number } } }) => void;
   languageId: LanguageId;
@@ -24280,6 +24368,11 @@ function PlaySection({
           eyebrow="🎯 Practice focus"
           actionLabel="Try"
           accentColor="#059669"
+          moonChart48Readings={moonChart48Readings}
+          onOpenTab={onOpenTab}
+          onEmergencyCall={onEmergencyCall}
+          openWebsite={openWebsite}
+          buildNearbySearchUrl={buildNearbySearchUrl}
         />
         <Text style={styles.smallMeta}>Current issue: {selectedIssueGuide.label}</Text>
         <Text style={styles.smallMeta}>
@@ -26697,6 +26790,10 @@ function InsightsSection({
   onShareDailyReport,
   onOpenTab,
   onOpenCalm,
+  onEmergencyCall,
+  openWebsite,
+  buildNearbySearchUrl,
+  moonChart48Readings,
   isWide,
   languageId
 }: {
@@ -26716,6 +26813,10 @@ function InsightsSection({
   onShareDailyReport: () => Promise<void>;
   onOpenTab: (tab: TabId) => void;
   onOpenCalm: () => void;
+  onEmergencyCall?: () => Promise<void>;
+  openWebsite?: (url: string, title: string) => void | Promise<void>;
+  buildNearbySearchUrl?: (query: string) => string;
+  moonChart48Readings?: MoonChart48Reading[];
   isWide: boolean;
   languageId: LanguageId;
 }) {
@@ -26951,6 +27052,11 @@ function InsightsSection({
           eyebrow="📊 Watch for"
           actionLabel="Signal"
           accentColor="#3730A3"
+          moonChart48Readings={moonChart48Readings}
+          onOpenTab={onOpenTab}
+          onEmergencyCall={onEmergencyCall}
+          openWebsite={openWebsite}
+          buildNearbySearchUrl={buildNearbySearchUrl}
         />
         <View style={styles.issueCalloutActions}>
           <Pressable
@@ -31731,7 +31837,7 @@ function SupportDimensionLibraryPanel({
   moonChart48Readings?: MoonChart48Reading[];
   onOpenTab?: (tab: TabId) => void;
   onEmergencyCall?: () => Promise<void>;
-  openWebsite?: (url: string, title: string) => Promise<void>;
+  openWebsite?: (url: string, title: string) => void | Promise<void>;
   buildNearbySearchUrl?: (query: string) => string;
 }) {
   const { issueGuide, detectedThemes } = useCrossSectionSignal();
