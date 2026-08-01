@@ -19364,7 +19364,7 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={styles.tabBannerEmoji}>🧭</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Your Path</Text>
-                  <Text style={styles.tabBannerSub}>Practical · Emotional · Psychological · Spiritual · Cultural</Text>
+                  <Text style={styles.tabBannerSub}>Practical · Emotional · Psychological · Spiritual · Cultural · Vedic</Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -19382,6 +19382,22 @@ function isTrustedExternalUrl(url: string) {
                   onEndJourney={endJourney}
                 />
               )}
+
+              {/* Real 48-axis support library, the same one Automatic
+                  Counselling and the Tones/Meditation tabs draw on — Path is
+                  the natural home for it, so it now complements this tab too
+                  instead of only living behind the chat. */}
+              <SupportDimensionLibraryPanel
+                eyebrow="🧭 Path frame"
+                actionLabel="Try"
+                accentColor="#2563EB"
+                moonChart48Readings={vedicMoonChart48Readings}
+                onOpenTab={handleTabPress}
+                onEmergencyCall={handleEmergencyCall}
+                openWebsite={openWebsite}
+                buildNearbySearchUrl={buildNearbySearchUrl}
+              />
+
               <IssueGuideSection
                 issueGuides={issueGuides}
                 selectedIssueGuide={selectedIssueGuide}
@@ -19406,6 +19422,7 @@ function isTrustedExternalUrl(url: string) {
                 onEmergencyCall={handleEmergencyCall}
                 onOpenRedress={() => handleTabPress("redress")}
                 onFocusSelectedIssueLayout={captureFocusLayout}
+                moonChart48Readings={vedicMoonChart48Readings}
                 isWide={isWide}
               />
             </View>
@@ -24463,6 +24480,7 @@ function IssueGuideSection({
   onEmergencyCall,
   onOpenRedress,
   onFocusSelectedIssueLayout,
+  moonChart48Readings,
   isWide
 }: {
   issueGuides: IssueGuide[];
@@ -24488,12 +24506,17 @@ function IssueGuideSection({
   onEmergencyCall: () => Promise<void>;
   onOpenRedress: () => void;
   onFocusSelectedIssueLayout?: (issueId: IssueId) => (event: { nativeEvent: { layout: { y: number } } }) => void;
+  moonChart48Readings?: MoonChart48Reading[];
   isWide: boolean;
 }) {
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const [showFullPathDetails, setShowFullPathDetails] = useState(false);
   const issueDisplayLabel = selectedIssueGuide.id === "anxiety" ? "Calm route" : selectedIssueGuide.label;
+  const moonChartComplement = useMemo(
+    () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChart48Readings ?? []),
+    [selectedIssueGuide.id, moonChart48Readings]
+  );
 
   useEffect(() => {
     setShowFullPathDetails(false);
@@ -24587,6 +24610,79 @@ function IssueGuideSection({
           <IssueLensRow label={l("Spiritual", { hindi: "आध्यात्मिक", punjabi: "ਆਤਮਿਕ", marathi: "आध्यात्मिक", telugu: "ఆధ్యాత్మిక", tamil: "ஆன்மீக", urdu: "روحانی" })} text={selectedIssueGuide.spiritualLens} />
           <IssueLensRow label={l("Cultural", { hindi: "सांस्कृतिक", punjabi: "ਸੱਭਿਆਚਾਰਕ", marathi: "सांस्कृतिक", telugu: "సాంస్కృతిక", tamil: "கலாசார", urdu: "ثقافتی" })} text={selectedIssueGuide.culturalLens} />
         </View>
+
+        {/* Moon Chart complement — the same multidimensional Vedic layer the
+            Automatic Counselling chat already overlays, now surfaced directly
+            on the Path itself instead of only inside the chat. */}
+        <View style={styles.issueSupportBand}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.eyebrow}>Moon Chart complement</Text>
+              <Text style={styles.sectionTitleSmall}>How your personal chart intersects this issue</Text>
+            </View>
+            {moonChartComplement ? (
+              <Text style={styles.smallMeta}>{moonChartComplement.average}/100 · {moonChartComplement.verdict}</Text>
+            ) : null}
+          </View>
+          {moonChartComplement ? (
+            <>
+              <Text style={styles.promptText}>
+                Multidimensional Moon Chart reading for {selectedIssueGuide.label.toLowerCase()}: the {moonChartComplement.categories.join(", ")} dimensions of your chart average {moonChartComplement.average}/100 ({moonChartComplement.verdict.toLowerCase()}) right now.
+              </Text>
+              <View style={styles.issueChipGrid}>
+                {moonChartComplement.strongest.map((item) => (
+                  <View
+                    key={`strong-${item.id}`}
+                    style={{
+                      borderRadius: 10, borderWidth: 1, borderColor: moonChartVisualColor(item) + "55",
+                      backgroundColor: moonChartVisualColor(item) + "12", paddingHorizontal: 10, paddingVertical: 6, marginRight: 8, marginBottom: 8
+                    }}
+                  >
+                    <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "800" }}>{item.label} · {item.score}</Text>
+                  </View>
+                ))}
+                {moonChartComplement.careful.map((item) => (
+                  <View
+                    key={`careful-${item.id}`}
+                    style={{
+                      borderRadius: 10, borderWidth: 1, borderColor: "#B45309" + "55",
+                      backgroundColor: "#B45309" + "12", paddingHorizontal: 10, paddingVertical: 6, marginRight: 8, marginBottom: 8
+                    }}
+                  >
+                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800" }}>{item.label} · {item.score}</Text>
+                  </View>
+                ))}
+              </View>
+              <Text style={styles.issueActionText}>{moonChartComplement.remedyTitle}: {moonChartComplement.remedy}</Text>
+              <View style={styles.issueCalloutActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => onOpenTab("vedic")}
+                  style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+                >
+                  <Text style={styles.helpButtonSecondaryLabel}>Open full Moon Chart</Text>
+                </Pressable>
+              </View>
+              <Text style={styles.smallMeta}>Reflective Vedic timing layer — not medical, legal, or emergency advice.</Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.promptText}>
+                Add your date of birth, time, and place in Vedic Insights to see how your personal Moon Chart connects to {selectedIssueGuide.label.toLowerCase()}.
+              </Text>
+              <View style={styles.issueCalloutActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => onOpenTab("vedic")}
+                  style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+                >
+                  <Text style={styles.helpButtonSecondaryLabel}>Open Vedic Insights</Text>
+                </Pressable>
+              </View>
+            </>
+          )}
+        </View>
+
         <View style={styles.issueActionBand}>
           <Text style={styles.issueActionTitle}>{l("Start here", { hindi: "यहाँ से शुरू करें", punjabi: "ਇੱਥੋਂ ਸ਼ੁਰੂ ਕਰੋ", marathi: "इथून सुरू करा", telugu: "ఇక్కడి నుంచే ప్రారంభించండి", tamil: "இங்கிருந்து தொடங்குங்கள்", urdu: "یہاں سے شروع کریں" })}</Text>
           <Text style={styles.issueActionText}>{selectedIssueGuide.action}</Text>
@@ -31619,14 +31715,28 @@ function orderSupportDimensionsByRelevance(
 function SupportDimensionLibraryPanel({
   eyebrow,
   actionLabel,
-  accentColor = "#0891B2"
+  accentColor = "#0891B2",
+  moonChart48Readings,
+  onOpenTab,
+  onEmergencyCall,
+  openWebsite,
+  buildNearbySearchUrl
 }: {
   eyebrow: string;
   actionLabel: string;
   accentColor?: string;
+  // Only passed by Path today -- when present, tapping open a dimension also
+  // shows its personal Moon Chart complement and a direct route button, so
+  // the full 48-dimension library becomes actionable, not just readable.
+  moonChart48Readings?: MoonChart48Reading[];
+  onOpenTab?: (tab: TabId) => void;
+  onEmergencyCall?: () => Promise<void>;
+  openWebsite?: (url: string, title: string) => Promise<void>;
+  buildNearbySearchUrl?: (query: string) => string;
 }) {
   const { issueGuide, detectedThemes } = useCrossSectionSignal();
   const [expanded, setExpanded] = useState(false);
+  const [openDimensionId, setOpenDimensionId] = useState<SupportDimensionId | null>(null);
   const ordered = useMemo(
     () => orderSupportDimensionsByRelevance(issueGuide.id, detectedThemes),
     [issueGuide.id, detectedThemes]
@@ -31635,6 +31745,18 @@ function SupportDimensionLibraryPanel({
     guide.issueId === issueGuide.id || detectedThemes.includes(guide.id);
   const relevantCount = ordered.filter(isRelevant).length;
   const visible = expanded ? ordered : ordered.slice(0, 6);
+  const openDimensionMoonChart = useMemo(
+    () =>
+      openDimensionId
+        ? buildDimensionMoonChartComplement(openDimensionId, moonChart48Readings ?? [])
+        : null,
+    [openDimensionId, moonChart48Readings]
+  );
+  const routeLabel = (route: AIHelpRoute) =>
+    route === "redress" ? "Formal remedy · Redress" :
+    route === "professional" ? "Professional support" :
+    route === "urgent" ? "Urgent safety support" :
+    "Guided practical action · Path";
 
   return (
     <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#E1EEEC", borderRadius: 16, borderWidth: 1, borderColor: accentColor + "33", overflow: "hidden" }}>
@@ -31646,27 +31768,76 @@ function SupportDimensionLibraryPanel({
       </View>
       <Text style={{ color: "#6A8899", fontSize: 12, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4, lineHeight: 16 }}>
         {relevantCount > 0
-          ? `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first.`
-          : "The complete multidimensional support library used by the counselling engine."}
+          ? `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first. Tap any of the 48 for its full escalation guidance and route.`
+          : "The complete multidimensional support library used by the counselling engine. Tap any of the 48 for its full escalation guidance and route."}
       </Text>
       {visible.map((guide, i) => {
         const relevant = isRelevant(guide);
+        const isOpen = openDimensionId === guide.id;
         return (
-          <View
-            key={guide.id}
-            style={{
-              flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 8,
-              borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(255,255,255,0.05)",
-              backgroundColor: relevant ? accentColor + "0C" : "transparent"
-            }}
-          >
-            <View style={{ width: 3, borderRadius: 2, alignSelf: "stretch", marginRight: 10, marginTop: 1, backgroundColor: relevant ? accentColor : "rgba(100,116,139,0.25)" }} />
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: relevant ? accentColor : "#5B7A8A", fontSize: 12, fontWeight: "800", textTransform: "capitalize", marginBottom: 2 }}>
-                {guide.label}
-              </Text>
-              <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }}>{actionLabel}: {guide.firstAction}</Text>
-            </View>
+          <View key={guide.id}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ expanded: isOpen }}
+              accessibilityLabel={`${guide.label}, tap for escalation guidance and route`}
+              onPress={() => setOpenDimensionId(isOpen ? null : guide.id)}
+              style={({ pressed }) => [{
+                flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 8,
+                borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(255,255,255,0.05)",
+                backgroundColor: pressed ? accentColor + "10" : relevant ? accentColor + "0C" : "transparent"
+              }]}
+            >
+              <View style={{ width: 3, borderRadius: 2, alignSelf: "stretch", marginRight: 10, marginTop: 1, backgroundColor: relevant ? accentColor : "rgba(100,116,139,0.25)" }} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: relevant ? accentColor : "#5B7A8A", fontSize: 12, fontWeight: "800", textTransform: "capitalize", marginBottom: 2 }}>
+                  {guide.label}
+                </Text>
+                <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }}>{actionLabel}: {guide.firstAction}</Text>
+              </View>
+              <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900", marginLeft: 6 }}>{isOpen ? "▲" : "▼"}</Text>
+            </Pressable>
+            {isOpen ? (
+              <View style={{ paddingHorizontal: 14, paddingBottom: 12, paddingTop: 2, backgroundColor: accentColor + "08" }}>
+                <View style={{ backgroundColor: accentColor + "18", alignSelf: "flex-start", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3, marginBottom: 8, borderWidth: 1, borderColor: accentColor + "40" }}>
+                  <Text style={{ color: accentColor, fontSize: 12, fontWeight: "800" }}>{routeLabel(guide.route)}</Text>
+                </View>
+                <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 6 }}>
+                  <Text style={{ fontWeight: "900" }}>Escalate when: </Text>{guide.escalation}
+                </Text>
+                {openDimensionMoonChart ? (
+                  <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 8 }}>
+                    <Text style={{ fontWeight: "900" }}>Moon Chart: </Text>
+                    {openDimensionMoonChart.average}/100 ({openDimensionMoonChart.verdict.toLowerCase()}) · {openDimensionMoonChart.remedyTitle}: {openDimensionMoonChart.remedy}
+                  </Text>
+                ) : null}
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                  {onOpenTab && guide.route === "redress" ? (
+                    <Pressable accessibilityRole="button" onPress={() => onOpenTab("redress")} style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}>
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Open Redress</Text>
+                    </Pressable>
+                  ) : null}
+                  {onOpenTab && guide.route === "guide" ? (
+                    <Pressable accessibilityRole="button" onPress={() => onOpenTab("guide")} style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}>
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Open Path</Text>
+                    </Pressable>
+                  ) : null}
+                  {openWebsite && buildNearbySearchUrl && guide.route === "professional" ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => void openWebsite(buildNearbySearchUrl(`${guide.label} professional support`), guide.label)}
+                      style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+                    >
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Find nearby support</Text>
+                    </Pressable>
+                  ) : null}
+                  {onEmergencyCall ? (
+                    <Pressable accessibilityRole="button" onPress={onEmergencyCall} style={{ backgroundColor: "#B91C1C", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}>
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>SOS</Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              </View>
+            ) : null}
           </View>
         );
       })}
@@ -31799,6 +31970,90 @@ function shouldAddMoonChartJourneyStep(themes: SupportDimensionId[], moonChart48
   if (moonChart48Readings.length === 0) return false;
   const categories = getCounselingMoonChartCategories(themes);
   return moonChart48Readings.some((reading) => categories.includes(reading.category));
+}
+
+// Maps each Path/Guide issue onto the 48-dimension Moon Chart categories most
+// relevant to it, mirroring COUNSELING_THEME_TO_MOON48_CATEGORIES above so the
+// Path tab draws on the exact same multidimensional Moon Chart engine the
+// Automatic Counselling chat already uses — instead of Path staying a
+// text-only lens system with no personal-chart complement.
+const ISSUE_TO_MOON48_CATEGORIES: Record<IssueId, MoonChart48Category[]> = {
+  general: ["mind", "growth"],
+  anger: ["mind", "risk", "relationship"],
+  anxiety: ["mind", "body", "risk"],
+  fear: ["risk", "mind", "body"],
+  overconfidence: ["risk", "self", "mind"],
+  stigma: ["self", "relationship", "spiritual"],
+  burnout: ["body", "mind", "work"],
+  loneliness: ["relationship", "mind", "spiritual"],
+  grief: ["mind", "family", "spiritual", "relationship"],
+  identity: ["self", "spiritual", "growth"],
+  health: ["body", "mind", "risk"],
+  financial: ["money", "mind", "risk"],
+  relationship: ["relationship", "mind", "family"],
+  parenting: ["family", "mind", "relationship"],
+  trauma: ["risk", "mind", "body", "spiritual"],
+  academic: ["growth", "mind", "work"],
+  addiction: ["body", "mind", "risk", "growth"]
+};
+
+type PathMoonChartComplement = {
+  average: number;
+  verdict: MoonChart48Verdict;
+  categories: MoonChart48Category[];
+  strongest: MoonChart48Reading[];
+  careful: MoonChart48Reading[];
+  remedyTitle: string;
+  remedy: string;
+};
+
+// Builds the same kind of "supported vs careful" Moon Chart read the
+// counselling overlay produces, but returns structured data (not a prose
+// string) so it can render as a proper visual card instead of a paragraph
+// of injected chat text. Shared by both the 17 broad Path issues and, below,
+// each of the 48 fine-grained support dimensions -- one calculation, reused
+// wherever a category set needs a personal-chart complement.
+function buildMoonChartComplementForCategories(
+  categories: MoonChart48Category[],
+  moonChart48Readings: MoonChart48Reading[]
+): PathMoonChartComplement | null {
+  if (moonChart48Readings.length === 0) return null;
+  const relevant = moonChart48Readings.filter((reading) => categories.includes(reading.category));
+  const pool = relevant.length > 0 ? relevant : moonChart48Readings;
+  const strongest = [...pool].sort((a, b) => b.score - a.score).slice(0, 3);
+  const careful = [...pool].sort((a, b) => a.score - b.score).slice(0, 3);
+  const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
+  const anchor = careful[0] ?? strongest[0];
+  return {
+    average,
+    verdict: moonChartVerdict(average),
+    categories,
+    strongest,
+    careful,
+    remedyTitle: anchor?.remedyTitle ?? "Today's care point",
+    remedy: anchor?.remedy ?? "Keep the next step small, calm, and repeatable today."
+  };
+}
+
+function buildPathMoonChartComplement(
+  issueId: IssueId,
+  moonChart48Readings: MoonChart48Reading[]
+): PathMoonChartComplement | null {
+  const categories = ISSUE_TO_MOON48_CATEGORIES[issueId] ?? ["mind", "growth"];
+  return buildMoonChartComplementForCategories(categories, moonChart48Readings);
+}
+
+// Same complement, scoped to one of the 48 fine-grained support dimensions
+// instead of one of the 17 broad Path issues -- reuses the exact category
+// mapping (getCounselingMoonChartCategories) the Automatic Counselling
+// engine already relies on, so a dimension's Moon Chart read here and its
+// Moon Chart read inside a counselling reply are always the same numbers.
+function buildDimensionMoonChartComplement(
+  dimensionId: SupportDimensionId,
+  moonChart48Readings: MoonChart48Reading[]
+): PathMoonChartComplement | null {
+  const categories = getCounselingMoonChartCategories([dimensionId]);
+  return buildMoonChartComplementForCategories(categories, moonChart48Readings);
 }
 
 /**

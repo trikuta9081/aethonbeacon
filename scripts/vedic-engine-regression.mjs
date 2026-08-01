@@ -112,4 +112,29 @@ const sampleNakshatraElapsed = 0.25;
 const expectedBalance = dashaYears[sampleBirthLord] * (1 - sampleNakshatraElapsed);
 assert(expectedBalance === 7.5, `Sample Chandra balance should be 7.5 years; got ${expectedBalance}`);
 
-console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, and no sun-chart user-facing text.');
+// ── Path/Guide × Moon Chart 48D complement ──────────────────────────────────
+// Path used to be a text-only 5-lens system with no link to the personal
+// Moon Chart. It must now draw on the same multidimensional engine the
+// Automatic Counselling chat overlays, mirroring COUNSELING_THEME_TO_MOON48_CATEGORIES.
+assert(source.includes('const ISSUE_TO_MOON48_CATEGORIES'), 'Issue-to-Moon-Chart category map is missing from Path');
+assert(source.includes('function buildPathMoonChartComplement'), 'Path Moon Chart complement builder is missing');
+assert(source.includes('moonChartComplement = useMemo'), 'Path does not memoize its Moon Chart complement');
+assert(source.includes('moonChart48Readings={vedicMoonChart48Readings}'), 'Path is not receiving the live Moon Chart 48D readings');
+assert(source.includes('Moon Chart complement'), 'Moon Chart complement panel is not rendered on Path');
+assert(source.includes('Add your date of birth, time, and place in Vedic Insights to see how your personal Moon Chart connects'), 'Path is missing the no-birth-data fallback for the Moon Chart complement');
+// All 17 Path issues must have an explicit Moon Chart category mapping — no
+// issue should silently fall through to a hardcoded default.
+const issueMoon48Block = source.match(/const ISSUE_TO_MOON48_CATEGORIES: Record<IssueId, MoonChart48Category\[\]> = \{[\s\S]*?\n\};/);
+assert(issueMoon48Block, 'ISSUE_TO_MOON48_CATEGORIES block not found');
+const mappedIssueIds = [...issueMoon48Block[0].matchAll(/^\s*(\w[\w-]*):\s*\[/gm)].map((m) => m[1]);
+const allIssueIds = ['general', 'anger', 'anxiety', 'fear', 'overconfidence', 'stigma', 'burnout', 'loneliness', 'grief', 'identity', 'health', 'financial', 'relationship', 'parenting', 'trauma', 'academic', 'addiction'];
+for (const id of allIssueIds) {
+  assert(mappedIssueIds.includes(id), `ISSUE_TO_MOON48_CATEGORIES is missing an explicit mapping for issue "${id}"`);
+}
+
+// ── Path/Guide × 48-axis support library complement ─────────────────────────
+// Tones and Meditation already surface the real 48-axis support library;
+// Path is the tab most relevant to it and must too.
+assert(source.includes('🧭 Path frame'), 'Path is missing the 48-axis SupportDimensionLibraryPanel complement');
+
+console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, and Path/Guide Moon Chart + 48-axis complement.');
