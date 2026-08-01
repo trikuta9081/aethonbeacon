@@ -5779,7 +5779,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Counselor", query: "counselor support" },
       { label: "Doctor", query: "doctor help" }
     ],
-    urgentNote: "If the situation becomes unsafe, use SOS or emergency help immediately."
+    urgentNote: "If the situation becomes unsafe, use SOS or emergency help immediately — call 112, or Tele-MANAS 14416 for mental-health crisis support."
   },
   {
     id: "anger",
@@ -5812,7 +5812,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Doctor", query: "doctor stress sleep anger" }
     ],
     urgentNote:
-      "If anger leads to violence, threats, self-harm, or you feel you may lose control, use SOS or emergency help immediately."
+      "If anger leads to violence, threats, self-harm, or you feel you may lose control, use SOS or emergency help immediately — call 112, or Tele-MANAS 14416."
   },
   {
     id: "anxiety",
@@ -5845,7 +5845,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Psychiatrist", query: "psychiatrist anxiety" }
     ],
     urgentNote:
-      "If anxiety includes chest pain, fainting, panic that feels unsafe, or thoughts of harm, seek urgent professional help."
+      "If anxiety includes chest pain, fainting, panic that feels unsafe, or thoughts of harm, seek urgent professional help — call 112 for a medical emergency, or Tele-MANAS 14416 for crisis support."
   },
   {
     id: "fear",
@@ -5878,7 +5878,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Doctor", query: "doctor anxiety fear sleep" }
     ],
     urgentNote:
-      "If fear keeps you from basic functioning for days or you feel unsafe, get professional support rather than pushing through alone."
+      "If fear keeps you from basic functioning for days or you feel unsafe, get professional support rather than pushing through alone — Tele-MANAS 14416, or 112 if you are in immediate danger."
   },
   {
     id: "overconfidence",
@@ -5911,7 +5911,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Doctor", query: "doctor stress sleep" }
     ],
     urgentNote:
-      "If overconfidence is linked with risky behavior, sleep loss, or big mood swings, it deserves professional review."
+      "If overconfidence is linked with risky behavior, sleep loss, or big mood swings, it deserves professional review — a psychiatrist can rule out a mood-cycle cause. Tele-MANAS 14416 can point you to one."
   },
   {
     id: "stigma",
@@ -5944,7 +5944,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Tele-MANAS", query: "counselling support india" }
     ],
     urgentNote:
-      "If shame is pushing thoughts of self-harm or total withdrawal, use emergency or helpline support right away."
+      "If shame is pushing thoughts of self-harm or total withdrawal, use emergency or helpline support right away — call 112, or Tele-MANAS 14416."
   },
   {
     id: "burnout",
@@ -5977,7 +5977,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Counselor", query: "counselor stress support" }
     ],
     urgentNote:
-      "If burnout is causing collapse, panic, or inability to function, seek urgent support quickly."
+      "If burnout is causing collapse, panic, or inability to function, seek urgent support quickly — call 112, or Tele-MANAS 14416."
   },
   {
     id: "loneliness",
@@ -6010,7 +6010,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Doctor", query: "doctor sleep loneliness" }
     ],
     urgentNote:
-      "If loneliness is tied to hopelessness or thoughts of self-harm, reach out to emergency or crisis support now."
+      "If loneliness is tied to hopelessness or thoughts of self-harm, reach out to emergency or crisis support now — call 112, or Tele-MANAS 14416."
   },
   {
     id: "grief",
@@ -6043,7 +6043,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Tele-MANAS", query: "counselling support india" }
     ],
     urgentNote:
-      "If grief is accompanied by thoughts of self-harm, inability to eat or sleep for days, or a sense that life is not worth living, reach out to crisis support now."
+      "If grief is accompanied by thoughts of self-harm, inability to eat or sleep for days, or a sense that life is not worth living, reach out to crisis support now — call 112, or Tele-MANAS 14416."
   },
   {
     id: "identity",
@@ -6076,7 +6076,7 @@ const issueGuides: IssueGuide[] = [
       { label: "Spiritual guidance", query: "spiritual guidance existential" }
     ],
     urgentNote:
-      "If the loss of purpose is accompanied by persistent hopelessness or thoughts of harm, seek professional support immediately."
+      "If the loss of purpose is accompanied by persistent hopelessness or thoughts of harm, seek professional support immediately — call 112, or Tele-MANAS 14416."
   },
   {
     id: "health",
@@ -6307,7 +6307,7 @@ const issueGuides: IssueGuide[] = [
       { label: "NIMHANS", query: "nimhans addiction treatment india" }
     ],
     urgentNote:
-      "If the addiction involves overdose risk, withdrawal, or medical emergency, call 112 immediately."
+      "If the addiction involves overdose risk, withdrawal, or medical emergency, call 112 immediately. For non-emergency de-addiction support, KIRAN (1800-599-0019) can refer you to an IRCA rehabilitation centre."
   }
 ];
 
@@ -18843,12 +18843,6 @@ function isTrustedExternalUrl(url: string) {
                   </View>
                 );
               })()}
-
-              {/* National health directory belongs here — mental-health helplines,
-                  verified doctor / psychologist search, hospitals, telemedicine.
-                  Moved out of the Redress tab into the Wellness tab where the
-                  user is already thinking about care. */}
-              <HealthDirectoryCard openWebsite={openWebsite} />
 
               <MeditationSection
                 selectedIssueGuide={selectedIssueGuide}
