@@ -43,4 +43,39 @@ assert(source.includes('function CrisisSupportModal'), "CrisisSupportModal compo
 assert(source.includes('setCrisisSupportVisible(true)'), "Urgent self-harm route does not open the crisis support overlay.");
 assert(/if \(route === "urgent"\) \{[\s\S]*?setCrisisSupportVisible\(true\)/.test(source), "Urgent route is not wired to the crisis overlay in the submit handler.");
 
-console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, and beta coverage standards are present.");
+// ── Mood understanding: positive and negative, actually used ────────────────
+// A mood tag the user tapped in Journal must be persisted and must actually
+// change what the app says back -- not just get set as UI state and dropped.
+assert(source.includes('mood?: string;'), "CheckInEntry is missing a mood field -- the Journal mood tag would be saved nowhere.");
+assert(source.includes('function saveCheckIn(mood?: string | null)'), "saveCheckIn does not accept the selected mood.");
+assert(source.includes('saveCheckIn(selectedMood)'), "Journal's save action does not pass the selected mood through to saveCheckIn.");
+assert(source.includes('...(mood ? { mood } : {})'), "saveCheckIn does not persist the mood onto the saved CheckInEntry.");
+
+const moodTagsBlock = source.match(/const MOOD_TAGS = \[([\s\S]*?)\];/);
+assert(moodTagsBlock, "MOOD_TAGS list not found");
+const moodLabels = [...moodTagsBlock[1].matchAll(/label: "([^"]+)"/g)].map((m) => m[1]);
+assert(moodLabels.length >= 18, `MOOD_TAGS should cover a real spectrum (>=18 moods); found ${moodLabels.length}`);
+const POSITIVE_MOODS = ["Grateful", "Happy", "Calm", "Motivated", "Proud", "Hopeful", "Excited", "Content", "Relieved"];
+const NEGATIVE_MOODS = ["Frustrated", "Anxious", "Sad", "Overwhelmed", "Angry", "Lonely", "Hurt", "Scared", "Numb"];
+for (const label of [...POSITIVE_MOODS, ...NEGATIVE_MOODS]) {
+  assert(moodLabels.includes(label), `MOOD_TAGS is missing "${label}" -- mood coverage must include a real range of both positive and negative moods.`);
+}
+
+// Every mood tag must have its own differentiated reply -- not a shared
+// generic line -- so the app actually "replies accordingly" per mood.
+const moodResponseBlock = source.match(/const JOURNAL_MOOD_RESPONSES: Record<string, string> = \{([\s\S]*?)\n\};/);
+assert(moodResponseBlock, "JOURNAL_MOOD_RESPONSES not found");
+for (const label of moodLabels) {
+  assert(new RegExp(`\\n  ${label}: "`).test(moodResponseBlock[0]) || moodResponseBlock[1].includes(`${label}: "`), `JOURNAL_MOOD_RESPONSES is missing a differentiated reply for "${label}"`);
+}
+assert(source.includes('latestEntry.mood ? JOURNAL_MOOD_RESPONSES[latestEntry.mood] : null'), "getJournalInsight does not actually use the saved mood to shape its reply.");
+
+// The Automatic Counselling positive check-in must also differentiate by
+// specific emotion (grateful vs proud vs calm, etc.), not return one
+// identical sentence for every positive message.
+assert(source.includes('function buildPositiveCheckInReply'), "Differentiated positive check-in reply builder is missing.");
+assert(source.includes('return buildPositiveCheckInReply(t);'), "Positive check-in branch does not use the differentiated reply builder.");
+const positiveReplyBranches = (source.match(/if \(\/\([^)]*\)\/\.test\(n\)\) \{\s*\n\s*return \{\s*\n\s*heard:/g) ?? []).length;
+assert(positiveReplyBranches >= 5, `buildPositiveCheckInReply should differentiate at least 5 distinct positive-emotion categories; found ${positiveReplyBranches}`);
+
+console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");

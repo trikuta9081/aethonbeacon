@@ -176,6 +176,11 @@ type CheckInEntry = {
   routineId: string;
   routineName: string;
   note: string;
+  // The mood tag the person actually tapped in Journal (Grateful, Sad, ...),
+  // if any -- previously captured in the UI but never saved, so the insight
+  // that followed reflected only a numeric clarity score, never the named
+  // mood the person chose. See getJournalInsight and MOOD_TAGS.
+  mood?: string;
 };
 
 type TrustedContact = {
@@ -3544,6 +3549,56 @@ function isPositiveCheckIn(text: string): boolean {
   return POSITIVE_CHECKIN_PATTERN.test(n);
 }
 
+// A positive check-in used to get one identical reply no matter which
+// positive emotion was actually named -- "grateful" and "energetic" and
+// "proud" all produced the same sentence. Real emotional understanding
+// means the reply changes with the specific mood, the same way the 48
+// support dimensions each get their own guidance instead of one shared
+// template. Order matters: more specific emotion words are checked first.
+function buildPositiveCheckInReply(text: string): { heard: string; nextStep: string } {
+  const n = text.toLowerCase();
+  if (/(grateful|thankful|blessed)/.test(n)) {
+    return {
+      heard: "That's a good thing to notice and name — gratitude tends to grow when it's put into words instead of only felt.",
+      nextStep: "Write down what specifically you're grateful for in Journal, so it's easy to find again on a harder day."
+    };
+  }
+  if (/(energetic|motivated|productive|accomplished|refreshed|feeling strong|feel strong|feeling alive|feel alive)/.test(n)) {
+    return {
+      heard: "Good energy is worth using, not just noticing — this is a genuinely useful window, not a permanent state.",
+      nextStep: "Put some of that energy into one real thing you've been putting off, while it's here."
+    };
+  }
+  if (/(proud|confident)/.test(n)) {
+    return {
+      heard: "That's worth sitting with for a moment instead of rushing past it — pride in real effort is earned, not indulgent.",
+      nextStep: "Name specifically what you're proud of. It makes the feeling easier to draw on again later, on a harder day."
+    };
+  }
+  if (/(calm|peaceful|relaxed|content|satisfied)/.test(n)) {
+    return {
+      heard: "That steadiness is real progress, not just the absence of a problem — it's worth recognising on its own terms.",
+      nextStep: "No action needed here. If you'd like, use this calm state for something reflective in Path or Journal."
+    };
+  }
+  if (/(hopeful|optimistic)/.test(n)) {
+    return {
+      heard: "Hope is genuinely useful, especially paired with one concrete next step rather than left as only a feeling.",
+      nextStep: "If there's something specific you're hopeful about, one small action now tends to make the hope hold longer."
+    };
+  }
+  if (/(excited|joyful|cheerful|fantastic|amazing|wonderful)/.test(n)) {
+    return {
+      heard: "Good to hear — let this be enjoyed for what it is, not only as a lead-up to whatever comes next.",
+      nextStep: "If you want to remember this moment, a quick Journal note captures it better than memory usually does."
+    };
+  }
+  return {
+    heard: "That's genuinely good to hear — thank you for sharing something positive. Not every check-in here has to be about a problem.",
+    nextStep: "Let me know if there is anything specific on your mind — otherwise, enjoy the moment."
+  };
+}
+
 function detectAIHelpRouteFromText(text: string): AIHelpRoute {
   const n = text.toLowerCase();
 
@@ -3626,10 +3681,7 @@ function buildCounselingAcknowledgment(text: string, issueId: IssueId, route: AI
   // distress at all, e.g. "I am feeling energetic". Checked first so it wins
   // over every distress branch below.
   if (isPositiveCheckIn(t)) {
-    return {
-      heard: "That's genuinely good to hear — thank you for sharing something positive. Not every check-in here has to be about a problem.",
-      nextStep: "Let me know if there is anything specific on your mind — otherwise, enjoy the moment."
-    };
+    return buildPositiveCheckInReply(t);
   }
 
   // ── Grief / loss ────────────────────────────────────────────────────────────
@@ -14798,7 +14850,7 @@ export default function App() {
     };
   }, [hasLoaded, reminderChoice.hour, reminderChoice.minute, reminderEnabled, reminderMode, followUpMode, notifStreakEnabled, notifVedicEnabled, notifReengageEnabled, notifWellbeingEnabled, checkInStreak, vedicRashiInfo, vedicDashaState, profileDisplayName, hasExactBirthDetails, selectedIssueGuide.id]);
 
-  function saveCheckIn() {
+  function saveCheckIn(mood?: string | null) {
     const note = journal.trim();
     if (note.length > 0 && note.length < 15) {
       Alert.alert(
@@ -14827,7 +14879,8 @@ export default function App() {
       score: clarityScore,
       routineId: selectedRoutine.id,
       routineName: selectedRoutine.name,
-      note: smartNote
+      note: smartNote,
+      ...(mood ? { mood } : {})
     };
     const nextEntries = [entry, ...entries].slice(0, 80);
     const intakeReport = buildPrivateIntakeReport(
@@ -20412,7 +20465,7 @@ function JournalSection({
   weeklyAverage: number;
   journal: string;
   setJournal: (value: string) => void;
-  saveCheckIn: () => void;
+  saveCheckIn: (mood?: string | null) => void;
   onOpenCalm: () => void;
   onOpenTab: (tab: TabId) => void;
   onEmergencyCall?: () => Promise<void>;
@@ -20433,15 +20486,31 @@ function JournalSection({
   const [showFullJournal, setShowFullJournal] = useState(false);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
+  // A real spectrum, not a token gesture: positive and negative moods in
+  // roughly equal depth, so a tap here is worth as much information as a
+  // full sentence would be. Feeds into CheckInEntry.mood and getJournalInsight
+  // below -- previously this list was cosmetic and nothing read the selection.
   const MOOD_TAGS = [
     { emoji: "🌟", label: "Grateful" },
+    { emoji: "😊", label: "Happy" },
     { emoji: "😌", label: "Calm" },
     { emoji: "💪", label: "Motivated" },
+    { emoji: "🏆", label: "Proud" },
+    { emoji: "🌤️", label: "Hopeful" },
+    { emoji: "🤩", label: "Excited" },
+    { emoji: "🙂", label: "Content" },
+    { emoji: "😮‍💨", label: "Relieved" },
     { emoji: "🤔", label: "Reflective" },
+    { emoji: "😴", label: "Tired" },
     { emoji: "😤", label: "Frustrated" },
     { emoji: "😰", label: "Anxious" },
     { emoji: "😔", label: "Sad" },
     { emoji: "🌊", label: "Overwhelmed" },
+    { emoji: "😠", label: "Angry" },
+    { emoji: "🫂", label: "Lonely" },
+    { emoji: "💔", label: "Hurt" },
+    { emoji: "😨", label: "Scared" },
+    { emoji: "🫥", label: "Numb" },
   ];
 
   const WRITING_PROMPTS = [
@@ -20591,7 +20660,15 @@ function JournalSection({
           </Text>
         </View>
         <View style={styles.journalDraftActions}>
-          <CommandButton label={uiCopy.saveAndOpenPath} mark="" onPress={saveCheckIn} variant="primary" />
+          <CommandButton
+            label={uiCopy.saveAndOpenPath}
+            mark=""
+            onPress={() => {
+              saveCheckIn(selectedMood);
+              setSelectedMood(null);
+            }}
+            variant="primary"
+          />
           <Pressable
             accessibilityRole="button"
             onPress={() => setJournal("")}
@@ -34599,6 +34676,33 @@ function buildGuidedJournalNote(
   ].join("\n");
 }
 
+// One real, differentiated reflection per named mood -- both positive and
+// negative get a reply matched to what was actually tapped, not a shared
+// generic line. Mirrors the depth already given to the 17 issues and 48
+// support dimensions, applied to the mood layer of Journal.
+const JOURNAL_MOOD_RESPONSES: Record<string, string> = {
+  Grateful: "Gratitude is worth naming, not just feeling — writing it down tends to make it last longer than the moment itself.",
+  Happy: "Good to see this. Notice what actually led here so you have something to point back to later.",
+  Calm: "This steadiness is real progress, not just the absence of a problem.",
+  Motivated: "A good moment to act on one real thing while the drive is here — motivation is a resource, not a permanent state.",
+  Proud: "Let this stand. Don't immediately minimise what you did to make room for the next demand.",
+  Hopeful: "Hope paired with one concrete step tends to hold; hope on its own can fade faster than it arrived.",
+  Excited: "Enjoy this — and if you can, put a little of the energy into one real next step while it's here.",
+  Content: "Contentment is easy to overlook because it isn't loud. It still counts as a good day.",
+  Relieved: "Notice what the relief is telling you about what was actually weighing on you.",
+  Reflective: "A good headspace for looking at the pattern underneath today, not just today itself.",
+  Tired: "Tiredness is data. If it's more than one bad night, it deserves real rest, not just pushing through.",
+  Frustrated: "Frustration usually points at a specific blocked need — worth naming exactly what it is, not just the heat.",
+  Anxious: "Anxiety narrows focus onto worst cases. Try separating the one real decision in front of you from the rest.",
+  Sad: "Sadness doesn't need to be fixed immediately. Let it be here, and stay connected to at least one person today.",
+  Overwhelmed: "When everything feels urgent, almost nothing actually is. Pick one thing and let the rest wait.",
+  Angry: "Anger is usually a signal about a boundary or hurt underneath it — the heat isn't the whole story.",
+  Lonely: "Isolation feeds this feeling more than almost anything else. One honest message to a safe person can shift it.",
+  Hurt: "This is worth taking seriously, not minimising because someone else might see it as small.",
+  Scared: "Fear shrinks the world down to the feared outcome. One small, low-risk action usually proves the world is bigger than that.",
+  Numb: "Numbness is often the mind pausing something too big to feel all at once — it deserves gentle attention, not alarm."
+};
+
 function getJournalInsight(
   latestEntry: CheckInEntry,
   entryCount: number,
@@ -34612,9 +34716,15 @@ function getJournalInsight(
         ? "Your latest check-in is asking for a smaller next step."
         : "Your latest check-in is asking for recovery before pressure.";
 
+  const moodLine = latestEntry.mood ? JOURNAL_MOOD_RESPONSES[latestEntry.mood] : null;
+
   return {
-    title: `${entryCount} saved / weekly clarity ${weeklyAverage}`,
-    detail: `${scoreDirection} Continue with ${guide.label}: ${guide.steps[0]}`
+    title: latestEntry.mood
+      ? `${entryCount} saved / feeling ${latestEntry.mood.toLowerCase()} / weekly clarity ${weeklyAverage}`
+      : `${entryCount} saved / weekly clarity ${weeklyAverage}`,
+    detail: moodLine
+      ? `${moodLine} ${scoreDirection} Continue with ${guide.label}: ${guide.steps[0]}`
+      : `${scoreDirection} Continue with ${guide.label}: ${guide.steps[0]}`
   };
 }
 
