@@ -17758,7 +17758,7 @@ function isTrustedExternalUrl(url: string) {
             >
               <View style={[styles.brandBadge, isCompact && styles.brandBadgeCompact]}>
                 <Image
-                  source={require("./assets/aethon-beacon-icon.png")}
+                  source={require("./assets/icon.png")}
                   style={[styles.brandMark, isCompact && styles.brandMarkCompact]}
                   resizeMode="cover"
                   accessibilityLabel="Aethon Beacon logo"
@@ -33963,7 +33963,7 @@ function DynamicHeroCard({
       {/* Brand row */}
       <View style={styles.heroRouteHeaderRow}>
         <Image
-          source={require("./assets/aethon-beacon-icon.png")}
+          source={require("./assets/icon.png")}
           style={styles.heroRouteLogo}
           resizeMode="cover"
           accessibilityLabel="Aethon Beacon logo"

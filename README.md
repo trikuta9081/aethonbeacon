@@ -139,7 +139,7 @@ xcrun simctl openurl booted exp://192.168.29.146:8081
 
 Expo Go may show a first-run developer-menu overlay. Tap `Continue` once in the simulator to dismiss it.
 
-The launch asset set now uses `assets/aethon-beacon-icon.png` for the app icon and favicon, with `assets/aethon-beacon-foreground.png` powering the splash and Android adaptive icon foreground.
+The launch asset set uses the generated `assets/icon.png` gold-A mark consistently for the Expo fallback, iOS, web favicon, and in-app branding. Android adaptive resources are generated from `assets/adaptive-icon.png` on the dark brand background; run `python3 scripts/generate-brand-icons.py` after changing the source artwork.
 
 Daily reminder notifications are available on iOS and Android. In the web preview, the reminder control is visible but disabled because browser notification scheduling is not supported the same way.
 The SOS button opens the configured emergency number from the main screen. Set the number in Settings so it matches your region.
