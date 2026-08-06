@@ -109,11 +109,24 @@ jobs:
           # increasing integer, unique per workflow file, that only ever
           # goes up. Using it directly as the versionCode means every run
           # -- whether or not the app code changed -- gets a versionCode
-          # strictly greater than every prior run, so this exact failure
-          # class becomes structurally impossible from here on. The
-          # human-readable app.json/build.gradle value stays as a
+          # strictly greater than every prior run, so collisions between
+          # two CI runs are structurally impossible.
+          #
+          # That guarantee does NOT cover versionCodes consumed OUTSIDE this
+          # workflow -- e.g. manual troubleshooting in the Play Console UI
+          # (draft releases, "add from library") can burn a whole range of
+          # version codes without a single CI run ever using them. That's
+          # exactly what happened on 2026-08-06: runs #214, #215, and #216
+          # all failed on "Version code N has already been used" even though
+          # each was the first CI run to ever try that number, because a
+          # manual Play Console session earlier the same day had already
+          # burned that range. A +100000 offset jumps past any such
+          # manually-burned range (past or future) while staying trivially
+          # far below Android's hard versionCode ceiling of ~2.1 billion, and
+          # remains monotonically increasing forever since run_number is.
+          # The human-readable app.json/build.gradle value stays as a
           # cosmetic baseline; this step overwrites it for the actual build.
-          NEW_VERSION_CODE="${{ github.run_number }}"
+          NEW_VERSION_CODE=$(( ${{ github.run_number }} + 100000 ))
           echo "Setting versionCode to $NEW_VERSION_CODE (GitHub run number)"
           sed -i -E "s/versionCode [0-9]+/versionCode ${NEW_VERSION_CODE}/" app/build.gradle
           grep -n "versionCode" app/build.gradle
