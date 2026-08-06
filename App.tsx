@@ -320,6 +320,11 @@ type PersistedAppState = {
   lastWeeklyVedicCheck: string | null; // week key "YYYY-WN" of last weekly vedic check
   journeyCardDismissed: boolean;
   featureNudgeDismissed: boolean;
+  // Generalizes the lastVedicViewDate pattern above to every tab -- ISO date
+  // "YYYY-MM-DD" of the last time each tab was opened, set in handleTabPress.
+  // Powers the Home "you haven't checked X in a while" nudge below (see
+  // neglectedTabNudge) instead of only reacting to explicit taps each visit.
+  lastTabViewedAt: Partial<Record<TabId, string>>;
 };
 
 type TabId =
@@ -12019,10 +12024,15 @@ export default function App() {
   const [appLastHeartbeatAt, setAppLastHeartbeatAt] = useState<string | null>(null);
   const [dismissedHintTabs, setDismissedHintTabs] = useState<string[]>([]);
   const [lastVedicViewDate, setLastVedicViewDate] = useState<string | null>(null);
+  const [lastTabViewedAt, setLastTabViewedAt] = useState<Partial<Record<TabId, string>>>({});
   const [lastWeeklyVedicCheck, setLastWeeklyVedicCheck] = useState<string | null>(null);
   const [showWeeklyVedicBanner, setShowWeeklyVedicBanner] = useState(false);
   const [journeyCardDismissed, setJourneyCardDismissed] = useState(false);
   const [featureNudgeDismissed, setFeatureNudgeDismissed] = useState(false);
+  // Session-only (not persisted) -- unlike featureNudgeDismissed above,
+  // dismissing "you haven't opened X in a while" shouldn't silence it
+  // forever, since which tab is stalest genuinely changes over time.
+  const [neglectedTabNudgeDismissed, setNeglectedTabNudgeDismissed] = useState(false);
   const [postCheckInSuggest, setPostCheckInSuggest] = useState<{
     icon: string; text: string; cta: string; tab: TabId;
   } | null>(null);
@@ -12542,6 +12552,30 @@ export default function App() {
     () => journeyMilestones.find((m) => !m.done) ?? null,
     [journeyMilestones]
   );
+
+  // Which real feature (if any) has genuinely gone unused for a while,
+  // using lastTabViewedAt above -- an actual recency signal, not a guess.
+  // Requires at least 5 check-ins first: a brand-new install hasn't "gone
+  // to any tab in 6 days" in a meaningful sense, it just installed the app.
+  const neglectedTabNudge = useMemo(() => {
+    if (entries.length < 5) return null;
+    const candidates: { tab: TabId; label: string; emoji: string }[] = [
+      { tab: "insights", label: "your Patterns", emoji: "📊" },
+      { tab: "vedic", label: "your Moon chart", emoji: "🪐" },
+      { tab: "play", label: "Practice", emoji: "🎯" },
+      { tab: "journal", label: "Journal", emoji: "✍️" },
+    ];
+    const now = Date.now();
+    let stalest: { tab: TabId; label: string; emoji: string; days: number } | null = null;
+    for (const candidate of candidates) {
+      const lastIso = lastTabViewedAt[candidate.tab];
+      const days = lastIso ? Math.floor((now - new Date(lastIso).getTime()) / 86400000) : Infinity;
+      if (days >= 5 && (!stalest || days > stalest.days)) {
+        stalest = { ...candidate, days };
+      }
+    }
+    return stalest;
+  }, [entries.length, lastTabViewedAt]);
 
   useEffect(() => {
     if (Platform.OS !== "web" || typeof document === "undefined") return;
@@ -14583,6 +14617,9 @@ export default function App() {
       if (typeof parsed.lastVedicViewDate === "string" || parsed.lastVedicViewDate === null) {
         setLastVedicViewDate(parsed.lastVedicViewDate ?? null);
       }
+      if (parsed.lastTabViewedAt && typeof parsed.lastTabViewedAt === "object" && !Array.isArray(parsed.lastTabViewedAt)) {
+        setLastTabViewedAt(parsed.lastTabViewedAt);
+      }
       if (typeof parsed.lastWeeklyVedicCheck === "string") {
         setLastWeeklyVedicCheck(parsed.lastWeeklyVedicCheck);
       }
@@ -14917,7 +14954,8 @@ export default function App() {
       lastVedicViewDate,
       lastWeeklyVedicCheck,
       journeyCardDismissed,
-      featureNudgeDismissed
+      featureNudgeDismissed,
+      lastTabViewedAt
     };
     const saveTimer = setTimeout(() => {
       AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload)).catch(() => undefined);
@@ -15012,7 +15050,8 @@ export default function App() {
     lastVedicViewDate,
     lastWeeklyVedicCheck,
     journeyCardDismissed,
-    featureNudgeDismissed
+    featureNudgeDismissed,
+    lastTabViewedAt
   ]);
 
   useEffect(() => {
@@ -17497,6 +17536,15 @@ async function fetchGeminiAIHelp(
       const today = new Date().toISOString().slice(0, 10);
       setLastVedicViewDate(today);
     }
+    // Generalized per-tab last-viewed date (see lastTabViewedAt on
+    // PersistedAppState) -- every tab, not just Vedic, so Home can nudge
+    // toward whichever real feature has actually gone unused for a while.
+    {
+      const todayIso = new Date().toISOString().slice(0, 10);
+      setLastTabViewedAt((current) =>
+        current[tabId] === todayIso ? current : { ...current, [tabId]: todayIso }
+      );
+    }
     // Log tab visit for exit report
     const tabLabelMap: Partial<Record<TabId, string>> = {
       today: "Today", journal: "Journal", vedic: "Vedic / Horoscope",
@@ -19211,6 +19259,48 @@ function isTrustedExternalUrl(url: string) {
                     style={{ marginLeft: 8 }}
                     accessibilityRole="button"
                     accessibilityLabel="Dismiss tip"
+                  >
+                    <Text style={{ color: "#1F2937", fontSize: 13 }}>✕</Text>
+                  </Pressable>
+                </View>
+              )}
+
+              {/* ── Neglected-tab nudge -- real recency signal (lastTabViewedAt),
+                  not a guess. Points at whichever of a few real features has
+                  actually gone unopened longest, instead of a generic
+                  "explore more" line. ── */}
+              {neglectedTabNudge && !neglectedTabNudgeDismissed && (
+                <View style={{
+                  marginHorizontal: 16, marginBottom: 10,
+                  backgroundColor: "#F3E8FF", borderRadius: 16,
+                  borderWidth: 1, borderColor: "rgba(109,40,217,0.22)",
+                  padding: 14, flexDirection: "row", alignItems: "flex-start",
+                  shadowColor: "#6D28D9", shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 3
+                }}>
+                  <Text style={{ fontSize: 20, marginRight: 10, marginTop: 1 }}>{neglectedTabNudge.emoji}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 0.6, marginBottom: 3 }}>
+                      {neglectedTabNudge.days === Infinity ? "STILL UNEXPLORED" : `${neglectedTabNudge.days} DAYS SINCE YOU CHECKED THIS`}
+                    </Text>
+                    <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, marginBottom: 10 }}>
+                      {neglectedTabNudge.days === Infinity
+                        ? `You haven't opened ${neglectedTabNudge.label} yet — it's built from your own real check-in history.`
+                        : `It's been a while since you looked at ${neglectedTabNudge.label}. Worth a quick check.`}
+                    </Text>
+                    <Pressable
+                      onPress={() => handleTabPress(neglectedTabNudge.tab)}
+                      style={{ alignSelf: "flex-start", backgroundColor: "#6D28D9", borderRadius: 8, paddingHorizontal: 14, paddingVertical: 7 }}
+                      accessibilityRole="button"
+                    >
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>Open {neglectedTabNudge.label} →</Text>
+                    </Pressable>
+                  </View>
+                  <Pressable
+                    onPress={() => setNeglectedTabNudgeDismissed(true)}
+                    hitSlop={8}
+                    style={{ marginLeft: 8 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Dismiss"
                   >
                     <Text style={{ color: "#1F2937", fontSize: 13 }}>✕</Text>
                   </Pressable>
