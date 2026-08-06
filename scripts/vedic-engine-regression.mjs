@@ -69,6 +69,22 @@ assert(source.includes('netVirupasWithDrik'), 'Shadbala net-with-aspects figure 
 assert(source.includes('function drekkanaBala'), 'Drekkana Bala calculation is missing');
 assert(source.includes('PLANET_GENDER'), 'Drekkana Bala planet gender table is missing');
 
+// ── Next 15 Years — bilingual Dasha forecast timeline ───────────────────────
+assert(source.includes('function getVimshottariDashaTimeline'), 'Vimshottari forward-forecast timeline builder is missing');
+assert(source.includes('function overallPeriodVerdict'), 'Per-period overall verdict function is missing');
+assert(source.includes('Next 15 Years'), 'Next 15 Years forecast panel is not rendered');
+assert(source.includes('getVimshottariDashaTimeline(profileDOB, janmaNakshatra.lord, profileBirthTime, 15)'), '15-year forecast must be computed from real birth details, not a placeholder horizon');
+assert(source.includes('dashaForecastTimeline'), 'Forecast timeline state/memo is missing from BirthChartSection');
+assert(source.includes('DASHA_PLANET_HI') && source.includes('DASHA_QUALITIES_HI') && source.includes('DASHA_REMEDY_LINE_HI'), 'Hindi translation packs for the Dasha forecast are missing');
+assert(source.includes('DASHA_FORECAST_VERDICT_EN') && source.includes('DASHA_FORECAST_VERDICT_HI'), 'Bilingual verdict framing for the Dasha forecast is missing');
+assert(source.includes("period.verdict === \"Watch\""), 'Forecast must surface remedies specifically for Watch-verdict periods');
+assert(source.includes('🪔'), 'Forecast remedy line is not rendered');
+// The forecast must reuse the existing chartBriefLang toggle already in scope
+// for the Plain Language card, not a duplicate/independent language state.
+const forecastPanelBlock = source.match(/Next 15 Years — Dasha Forecast[\s\S]{0,400}/);
+assert(forecastPanelBlock, 'Next 15 Years panel block not found for language-toggle check');
+assert(source.includes('setChartBriefLang("en")') && source.includes('setChartBriefLang("hi")'), 'Forecast language toggle must drive the shared chartBriefLang state');
+
 // ── Gochar (current transits) foresight layer ───────────────────────────────
 assert(source.includes('function getGocharChart'), 'Gochar (current transits) chart builder is missing');
 assert(source.includes('function getGocharGuidance'), 'Gochar guidance builder is missing');

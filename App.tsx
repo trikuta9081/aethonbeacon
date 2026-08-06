@@ -10664,6 +10664,121 @@ function buildPhaseDomainOutlook(
   });
 }
 
+// Overall difficulty signal for one Mahadasha/Antardasha pair, reusing the
+// exact same DOMAIN_PHASE_WEIGHTS + 0.65/0.35 weighting already used per
+// domain above (no new astrological scoring invented) -- simply averaged
+// across all 7 domains to give one combined verdict per forecast period.
+function overallPeriodVerdict(mahadasha: string, antardasha: string): { verdict: "Good" | "Mixed" | "Watch"; score: number } {
+  const domains: PhaseDomain[] = ["health", "wealth", "peace", "tension", "relationships", "job", "home"];
+  const currentWeight = 0.65;
+  const antardashaWeight = 0.35;
+  let total = 0;
+  for (const domain of domains) {
+    const mahaScore = DOMAIN_PHASE_WEIGHTS[domain][mahadasha] ?? 0;
+    const antarScore = DOMAIN_PHASE_WEIGHTS[domain][antardasha] ?? 0;
+    total += mahaScore * currentWeight + antarScore * antardashaWeight;
+  }
+  const score = total / domains.length;
+  return { verdict: getDomainVerdict(score), score };
+}
+
+type VimshottariForecastPeriod = {
+  mahadasha: string;
+  antardasha: string;
+  startIso: string;
+  endIso: string;
+  startYear: number;
+  endYear: number;
+  isCurrent: boolean;
+  verdict: "Good" | "Mixed" | "Watch";
+};
+
+// Forks the cursor-walk loop inside getVimshottariDashaState (above) to
+// accumulate every Mahadasha/Antardasha period touching the next
+// `horizonYears` instead of early-returning on the single period containing
+// "now". Same real Vimshottari math (DASHA_ORDER, DASHA_YEARS,
+// SIDEREAL_YEAR_MS, 120-year cycle handling) -- just walked forward and
+// collected instead of stopped at the first match.
+function getVimshottariDashaTimeline(
+  dob: string,
+  nakshatraLord: string,
+  birthTime: string | null | undefined,
+  horizonYears: number
+): VimshottariForecastPeriod[] {
+  const birthDate = parseVedicBirthMoment(dob, birthTime);
+  if (!birthDate) return [];
+
+  const janmaNakshatra = getJanmaNakshatra(dob, birthTime);
+  const birthDashaLord = janmaNakshatra?.lord ?? nakshatraLord;
+  const startIdx = DASHA_ORDER.indexOf(birthDashaLord);
+  if (startIdx < 0) return [];
+
+  const asOf = new Date();
+  const horizonEnd = new Date(asOf.getTime() + horizonYears * SIDEREAL_YEAR_MS);
+  const birthDashaYears = DASHA_YEARS[birthDashaLord] ?? 7;
+  const elapsedFractionAtBirth = janmaNakshatra?.fractionElapsed ?? 0;
+  const balanceFractionAtBirth = janmaNakshatra?.balanceFraction ?? 1;
+  const elapsedYearsAtBirth = birthDashaYears * elapsedFractionAtBirth;
+  const balanceYearsAtBirth = birthDashaYears * balanceFractionAtBirth;
+
+  let cursorStart = new Date(birthDate.getTime() - elapsedYearsAtBirth * SIDEREAL_YEAR_MS);
+  let cursorEnd = new Date(birthDate.getTime() + balanceYearsAtBirth * SIDEREAL_YEAR_MS);
+  let mahadashaIndex = startIdx;
+
+  const periods: VimshottariForecastPeriod[] = [];
+
+  for (let segment = 0; segment < DASHA_ORDER.length * 6 && cursorStart.getTime() < horizonEnd.getTime(); segment++) {
+    const mahadashaPlanet = DASHA_ORDER[mahadashaIndex];
+    const mahadashaYears = DASHA_YEARS[mahadashaPlanet] ?? 7;
+
+    if (cursorEnd.getTime() >= asOf.getTime() && cursorStart.getTime() <= horizonEnd.getTime()) {
+      let antarStart = new Date(cursorStart.getTime());
+      for (let subOffset = 0; subOffset < DASHA_ORDER.length; subOffset++) {
+        const antardashaIndex = (mahadashaIndex + subOffset) % DASHA_ORDER.length;
+        const antardashaPlanet = DASHA_ORDER[antardashaIndex];
+        const antardashaYears = mahadashaYears * ((DASHA_YEARS[antardashaPlanet] ?? 0) / VIMSHOTTARI_TOTAL_YEARS);
+        const antarEnd = new Date(antarStart.getTime() + antardashaYears * SIDEREAL_YEAR_MS);
+
+        if (antarEnd.getTime() >= asOf.getTime() && antarStart.getTime() <= horizonEnd.getTime()) {
+          const { verdict } = overallPeriodVerdict(mahadashaPlanet, antardashaPlanet);
+          periods.push({
+            mahadasha: mahadashaPlanet,
+            antardasha: antardashaPlanet,
+            startIso: antarStart.toISOString(),
+            endIso: antarEnd.toISOString(),
+            startYear: antarStart.getUTCFullYear(),
+            endYear: antarEnd.getUTCFullYear(),
+            isCurrent: asOf.getTime() >= antarStart.getTime() && asOf.getTime() <= antarEnd.getTime(),
+            verdict,
+          });
+        }
+
+        antarStart = antarEnd;
+        if (antarStart.getTime() > horizonEnd.getTime()) break;
+      }
+    }
+
+    cursorStart = cursorEnd;
+    mahadashaIndex = (mahadashaIndex + 1) % DASHA_ORDER.length;
+    const nextYears = DASHA_YEARS[DASHA_ORDER[mahadashaIndex]] ?? 7;
+    cursorEnd = new Date(cursorStart.getTime() + nextYears * SIDEREAL_YEAR_MS);
+
+    // Fast-forward by full 120-year cycles when the walk is still safely
+    // before "now" -- mirrors the same skip-ahead optimization used in
+    // getVimshottariDashaState so very old birth dates don't loop forever.
+    if (segment === DASHA_ORDER.length - 1 && asOf.getTime() > cursorEnd.getTime()) {
+      const cyclesToSkip = Math.max(0, Math.floor((asOf.getTime() - cursorEnd.getTime()) / (VIMSHOTTARI_TOTAL_YEARS * SIDEREAL_YEAR_MS)));
+      if (cyclesToSkip > 0) {
+        const shift = cyclesToSkip * VIMSHOTTARI_TOTAL_YEARS * SIDEREAL_YEAR_MS;
+        cursorStart = new Date(cursorStart.getTime() + shift);
+        cursorEnd = new Date(cursorEnd.getTime() + shift);
+      }
+    }
+  }
+
+  return periods;
+}
+
 const LAL_KITAB_REMEDY_PACK: Record<string, { action: string; avoid: string }> = {
   Ketu: {
     action: "Donate a blanket, medicine, or a small useful item to someone in need, and keep a 10-minute silence practice once a week.",
@@ -10701,6 +10816,74 @@ const LAL_KITAB_REMEDY_PACK: Record<string, { action: string; avoid: string }> =
     action: "Donate green moong or stationery on Wednesday, write down your plans, and keep your speech factual.",
     avoid: "gossip, scattered focus, and over-talking",
   },
+};
+
+// ── Bilingual support for the 15-year Dasha forecast below ─────────────────
+// Mirrors the chartBriefLang "en"|"hi" pattern already used for the Plain
+// Language house-placement card above (same file, search PLAIN_LANGUAGE_HI)
+// -- a local Record-shaped translation pack switched inline, rather than
+// routing through the app-wide getUiCopy/languageId chrome system, which
+// (confirmed) has never reached any Vedic prediction content.
+const DASHA_PLANET_HI: Record<string, string> = {
+  Surya: "सूर्य", Chandra: "चंद्र", Mangal: "मंगल", Rahu: "राहु",
+  Guru: "गुरु", Shani: "शनि", Budha: "बुध", Ketu: "केतु", Shukra: "शुक्र",
+};
+
+const DASHA_QUALITIES_HI: Record<string, string> = {
+  Ketu: "आध्यात्मिक मुक्ति, विरक्ति, पूर्वजन्म के कर्मों का समाधान",
+  Shukra: "प्रेम, रचनात्मकता, विलासिता, रिश्ते, भौतिक समृद्धि",
+  Surya: "नेतृत्व, अधिकार, पिता, आत्मविश्वास, करियर का शिखर",
+  Chandra: "भावनाएँ, माता, मन, अंतर्ज्ञान, घर और देखभाल",
+  Mangal: "साहस, महत्वाकांक्षा, संपत्ति, भाई-बहन, शारीरिक ऊर्जा",
+  Rahu: "महत्वाकांक्षा, विदेशी प्रभाव, तकनीक, अपरंपरागत रास्ते",
+  Guru: "ज्ञान, विस्तार, संतान, शिक्षा, आध्यात्मिक विकास",
+  Shani: "अनुशासन, कर्म, देरी, कठिन परिश्रम, दीर्घकालिक परिणाम",
+  Budha: "संवाद, बुद्धि, व्यापार, सीखना, विश्लेषणात्मक सोच",
+};
+
+function summarizePlanetQualityHi(planet: string): string {
+  const text = DASHA_QUALITIES_HI[planet] ?? "मिश्रित प्रभाव";
+  return text.split(",")[0]?.trim() ?? text;
+}
+
+// Short, forecast-card-sized remedy line per planet (distinct from the
+// longer action/avoid pair in LAL_KITAB_REMEDY_PACK above, which stays
+// English-only and is used by the separate Ask-the-chart flow).
+const DASHA_REMEDY_LINE_EN: Record<string, string> = {
+  Ketu: "Keep a weekly quiet/silence practice and avoid unnecessary secrecy.",
+  Shukra: "Keep your space clean and avoid overindulgence or waste.",
+  Surya: "Offer water to the rising Sun and avoid pride or empty display.",
+  Chandra: "Keep a steady sleep routine and avoid harsh words in emotional moments.",
+  Mangal: "Channel energy into exercise or disciplined work, not impulsive conflict.",
+  Rahu: "Keep your routine simple and avoid shortcuts or hurried decisions.",
+  Guru: "Keep a daily gratitude practice and avoid overpromising.",
+  Shani: "Keep commitments small but steady and avoid neglecting duty.",
+  Budha: "Write down your plans and keep speech factual, not scattered.",
+};
+const DASHA_REMEDY_LINE_HI: Record<string, string> = {
+  Ketu: "साप्ताहिक मौन अभ्यास रखें और अनावश्यक गोपनीयता से बचें।",
+  Shukra: "अपने स्थान को स्वच्छ रखें और अति-भोग या अपव्यय से बचें।",
+  Surya: "उगते सूर्य को जल अर्पित करें और अहंकार से बचें।",
+  Chandra: "नींद की नियमितता बनाए रखें और भावुक क्षणों में कठोर शब्दों से बचें।",
+  Mangal: "ऊर्जा को व्यायाम या अनुशासित कार्य में लगाएं, आवेगी टकराव में नहीं।",
+  Rahu: "अपनी दिनचर्या सरल रखें और शॉर्टकट या जल्दबाज़ी वाले फैसलों से बचें।",
+  Guru: "प्रतिदिन कृतज्ञता का अभ्यास रखें और अधिक वादे करने से बचें।",
+  Shani: "प्रतिबद्धताएँ छोटी पर स्थिर रखें, कर्तव्य की उपेक्षा न करें।",
+  Budha: "अपनी योजनाएँ लिखें और बोलने में तथ्यों पर टिके रहें।",
+};
+
+// Compact verdict framing for the forecast timeline -- deliberately its own
+// small pack rather than translating all 21 buildPhaseDomainOutlook notes,
+// since the forecast shows one combined line per period, not a 7-domain grid.
+const DASHA_FORECAST_VERDICT_EN: Record<"Good" | "Mixed" | "Watch", string> = {
+  Good: "A supportive stretch — good for progress and follow-through.",
+  Mixed: "A mixed stretch — steady effort works better than big swings.",
+  Watch: "A tougher stretch — go gently, reduce risk, and lean on the remedy below.",
+};
+const DASHA_FORECAST_VERDICT_HI: Record<"Good" | "Mixed" | "Watch", string> = {
+  Good: "एक सहायक दौर — प्रगति और निरंतरता के लिए अच्छा समय।",
+  Mixed: "मिश्रित दौर — बड़े जोखिमों से बेहतर है स्थिर प्रयास।",
+  Watch: "एक कठिन दौर — धीरे चलें, जोखिम कम करें, और नीचे दिए उपाय का सहारा लें।",
 };
 
 function buildLalKitabRemedies(
@@ -29474,6 +29657,15 @@ function BirthChartSection({
     [birthChartCore, chartBriefLang]
   );
 
+  // Next-15-years Vimshottari forecast -- forks the same real dasha-cursor
+  // math used for the "current period" panel below, walked forward instead
+  // of stopped at "now". Recomputed only when birth details change (not on
+  // every render/language toggle).
+  const dashaForecastTimeline = useMemo(() => {
+    if (!janmaNakshatra) return [];
+    return getVimshottariDashaTimeline(profileDOB, janmaNakshatra.lord, profileBirthTime, 15);
+  }, [profileDOB, profileBirthTime, janmaNakshatra]);
+
   // Occupant lists (by sign, index 0 = Aries .. 11 = Pisces) for the two
   // chart-wheel visuals below: D1 Rashi (Lagna + all 9 grahas by their real
   // sidereal sign) and D9 Navamsa (same set, by navamsa sign).
@@ -30006,6 +30198,102 @@ function BirthChartSection({
                 </View>
                 <Text style={{ color: "#263244", fontSize: 12, fontStyle: "italic" }}>
                   Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods, exact birth time, and true Antardasha timing.
+                </Text>
+              </View>
+            );
+          })()}
+          {/* Next 15 Years — forward Vimshottari forecast timeline, bilingual EN/HI
+              via the same chartBriefLang toggle used by the Plain Language card
+              above. Real dasha-cursor math (getVimshottariDashaTimeline), real
+              domain-weighted verdict (overallPeriodVerdict, same weights as the
+              Domain Outlook elsewhere), real remedies (Lal Kitab pack) — nothing
+              here is templated filler. */}
+          {dashaForecastTimeline.length > 0 && (() => {
+            const forecastColor = "#5C00B8";
+            const isHi = chartBriefLang === "hi";
+            const verdictColor = (v: "Good" | "Mixed" | "Watch") =>
+              v === "Good" ? "#0D6B36" : v === "Watch" ? "#B42318" : "#B88400";
+            const verdictBg = (v: "Good" | "Mixed" | "Watch") =>
+              v === "Good" ? "rgba(16,185,129,0.12)" : v === "Watch" ? "rgba(239,68,68,0.12)" : "rgba(251,191,36,0.14)";
+            const verdictLabelHi = (v: "Good" | "Mixed" | "Watch") =>
+              v === "Good" ? "अनुकूल" : v === "Watch" ? "सतर्क रहें" : "मिश्रित";
+            return (
+              <View style={{ backgroundColor: "#E3DFF1", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(192,132,252,0.3)", gap: 10 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
+                  <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                    {isHi ? "🔮 अगले 15 वर्ष — दशा पूर्वानुमान" : "🔮 Next 15 Years — Dasha Forecast"}
+                  </Text>
+                  <View style={{ flexDirection: "row", backgroundColor: "rgba(192,132,252,0.12)", borderRadius: 8, padding: 2 }}>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: chartBriefLang === "en" }}
+                      onPress={() => setChartBriefLang("en")}
+                      style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6, backgroundColor: chartBriefLang === "en" ? "#5C00B8" : "transparent" }}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "en" ? "#FFFFFF" : "#5C00B8" }}>English</Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: chartBriefLang === "hi" }}
+                      onPress={() => setChartBriefLang("hi")}
+                      style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6, backgroundColor: chartBriefLang === "hi" ? "#5C00B8" : "transparent" }}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "hi" ? "#FFFFFF" : "#5C00B8" }}>हिन्दी</Text>
+                    </Pressable>
+                  </View>
+                </View>
+                <Text style={{ color: "#263244", fontSize: 12.5, lineHeight: 18 }}>
+                  {isHi
+                    ? "यह समयरेखा आपकी विंशोत्तरी दशा के अगले महादशा/अंतर्दशा चरणों को दिखाती है, ताकि आप समझ सकें कि किस समय क्या हो रहा है और क्यों — साथ ही कठिन दौर के लिए व्यावहारिक उपाय भी।"
+                    : "This timeline walks your Vimshottari Mahadasha/Antardasha forward, period by period, so you can see what's shaping each stretch of time and why — with a practical remedy for the tougher stretches."}
+                </Text>
+                {dashaForecastTimeline.map((period, idx) => {
+                  const remedyLine = period.verdict === "Watch"
+                    ? (isHi ? DASHA_REMEDY_LINE_HI[period.antardasha] : DASHA_REMEDY_LINE_EN[period.antardasha])
+                    : null;
+                  const mahaLabel = isHi ? (DASHA_PLANET_HI[period.mahadasha] ?? period.mahadasha) : period.mahadasha;
+                  const antarLabel = isHi ? (DASHA_PLANET_HI[period.antardasha] ?? period.antardasha) : period.antardasha;
+                  const qualityLine = isHi ? summarizePlanetQualityHi(period.antardasha) : summarizePlanetQuality(period.antardasha);
+                  return (
+                    <View
+                      key={`${period.startIso}-${period.antardasha}`}
+                      style={{
+                        borderRadius: 10,
+                        padding: 10,
+                        backgroundColor: period.isCurrent ? "rgba(192,132,252,0.16)" : "rgba(192,132,252,0.06)",
+                        borderWidth: 1,
+                        borderColor: period.isCurrent ? "rgba(192,132,252,0.45)" : "rgba(192,132,252,0.16)",
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
+                        <Text style={{ color: "#325C86", fontSize: 13.5, fontWeight: "900" }}>
+                          {period.startYear === period.endYear ? `${period.startYear}` : `${period.startYear}–${period.endYear}`}
+                          <Text style={{ color: "#5C00B8" }}>  {mahaLabel} / {antarLabel}</Text>
+                          {period.isCurrent && (
+                            <Text style={{ color: "#0E9488" }}>  · {isHi ? "अभी" : "now"}</Text>
+                          )}
+                        </Text>
+                        <View style={{ backgroundColor: verdictBg(period.verdict), borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}>
+                          <Text style={{ color: verdictColor(period.verdict), fontSize: 12, fontWeight: "900" }}>
+                            {isHi ? verdictLabelHi(period.verdict) : period.verdict}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, marginTop: 4 }}>
+                        {qualityLine}. {isHi ? DASHA_FORECAST_VERDICT_HI[period.verdict] : DASHA_FORECAST_VERDICT_EN[period.verdict]}
+                      </Text>
+                      {remedyLine && (
+                        <Text style={{ color: "#B42318", fontSize: 12, lineHeight: 17, marginTop: 4, fontWeight: "700" }}>
+                          {isHi ? "🪔 उपाय: " : "🪔 Remedy: "}{remedyLine}
+                        </Text>
+                      )}
+                    </View>
+                  );
+                })}
+                <Text style={{ color: "#263244", fontSize: 12, fontStyle: "italic" }}>
+                  {isHi
+                    ? "अनुमानित — जन्म नक्षत्र स्वामी पर आधारित। सटीक उप-अवधि और वास्तविक अंतर्दशा समय के लिए ज्योतिषी से सलाह लें।"
+                    : "Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods and true Antardasha timing."}
                 </Text>
               </View>
             );
