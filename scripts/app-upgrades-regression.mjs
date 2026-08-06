@@ -171,8 +171,8 @@ assert(
   'Your recent check-ins have been trending heavier',
 ].forEach((marker) => indexOf(marker));
 assert(
-  source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount)'),
-  'Counselling synthesis call site must pass real recurrenceCount computed from visitReports'
+  source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount, sadeSatiNote, weeklyTrend)'),
+  'Counselling synthesis call site must pass real recurrenceCount, sadeSatiNote, and weeklyTrend'
 );
 assert(
   source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend })'),
@@ -192,5 +192,34 @@ assert(
   'This has come up {selectedIssueRecurrenceCount} times before',
   'crossSectionSignal.recentMoodTrend === "declining"',
 ].forEach((marker) => indexOf(marker));
+
+// Three more previously-dead-ended real signals now reach the counselling
+// engine: journal notes feed theme detection, a real active Sade Sati
+// transit phase (Gochar, already shown on the Vedic tab) adds one sentence
+// for anxiety/fear/direction themes, and the real weekly-vs-monthly clarity
+// average (already shown on Patterns) names an actual measured dip.
+[
+  'recentJournalNotesText',
+  'counselingSadeSatiNote',
+  'sadeSatiNote: string | null = null',
+  'weeklyTrend: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null = null',
+  'Your own check-in history backs this up',
+].forEach((marker) => indexOf(marker));
+assert(
+  source.includes('weeklyTrend={{ weeklyAverage, monthlyAverage, sampleSize: weekEntries.length }}'),
+  'CounselingChatModal must receive the real weekly/monthly clarity averages, not a placeholder'
+);
+
+// Counselling chat UI polish: consistent "Beacon Guide" branding (header
+// previously said the generic "Your guide", clashing with the enrichment
+// card's "Beacon Guide" label), and a dismissible Scope-and-safety notice
+// (previously permanently consumed header space with no way to collapse it
+// once read, and reset back open on every new session).
+[
+  'Beacon Guide is listening',
+  'safetyNoticeExpanded',
+  'setSafetyNoticeExpanded(true)',
+].forEach((marker) => indexOf(marker));
+assert(!source.includes('>Your guide is listening<'), 'Counselling header must not regress to the inconsistent "Your guide" label');
 
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, and counselling personalization wired to real visit-recurrence and mood-trend history are present.');

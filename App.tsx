@@ -13472,6 +13472,18 @@ export default function App() {
     [visitReports, selectedIssueGuide]
   );
 
+  // The last couple of journal notes (already real, already saved via
+  // saveCheckIn/buildGuidedJournalNote) were never scanned for themes --
+  // theme detection only ever ran on the Home intake text and the live
+  // counselling chat turns, so a person who journalled about something but
+  // phrased their counselling-chat opener differently got no benefit from
+  // what they'd already written. Concatenated in below purely as extra
+  // input text to detectThemes(), same as any other user text.
+  const recentJournalNotesText = useMemo(
+    () => entries.slice(0, 3).map((entry) => entry.note).filter(Boolean).join(" "),
+    [entries]
+  );
+
   // The shared cross-section signal (see CrossSectionContext above): combines
   // the manually selected issue with what Path's multidimensional engine
   // has actually detected this session, plus a simple recent-mood trend from
@@ -13530,6 +13542,20 @@ export default function App() {
   // the real Ascendant (Lagna), once geocoded, adds a secondary confirming
   // layer in the multidimensional engine below (self/body categories especially).
   const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
+  // Current transits (Gochar) were already fully computed and displayed on
+  // the Vedic tab (getGocharChart/getGocharGuidance) but never reached the
+  // counselling engine. Reusing the same pure functions with the birth data
+  // already available here -- purely additive, only feeds one optional
+  // sentence into buildCounselingSynthesis when a real Sade Sati phase is
+  // active, never changes theme detection or routing.
+  const counselingSadeSatiNote = useMemo(() => {
+    if (!vedicRashiInfo) return null;
+    const chart = getGocharChart(vedicRashiInfo.rashiId, new Date());
+    if (!chart.sadeSatiPhase) return null;
+    // notes[0] is always the full Sade Sati sentence (phase + classical
+    // meaning) whenever sadeSatiPhase is set -- see getGocharGuidance.
+    return getGocharGuidance(chart).notes[0] ?? null;
+  }, [vedicRashiInfo]);
   const vedicJanmaNakshatra = useMemo(() => getJanmaNakshatra(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
   const vedicDashaState = useMemo(
     () => (vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord, profileBirthTime) : null),
@@ -21170,6 +21196,9 @@ function isTrustedExternalUrl(url: string) {
           moodTagLeaning={crossSectionSignal.recentMoodTagLeaning}
           visitReports={visitReports}
           moodTrend={crossSectionSignal.recentMoodTrend}
+          recentJournalNotesText={recentJournalNotesText}
+          sadeSatiNote={counselingSadeSatiNote}
+          weeklyTrend={{ weeklyAverage, monthlyAverage, sampleSize: weekEntries.length }}
         />
 
         {/* ── Crisis support overlay (self-harm / suicidal ideation) ── */}
@@ -23057,9 +23086,15 @@ function ToneLibrarySection({
                           key={toneMode.id}
                           accessibilityRole="button"
                           onPress={() => { setSelectedToneId(toneMode.id); setActiveProgram(null); setLoopEnabled(false); }}
-                          style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: isActive ? cat.color + "15" : pressed ? "rgba(255,255,255,0.04)" : "transparent", borderRadius: 10, padding: 10, borderWidth: isActive ? 1 : 0, borderColor: cat.color + "40" })}
+                          style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: isActive ? cat.color + "15" : pressed ? "rgba(15,23,42,0.04)" : "transparent", borderRadius: 10, padding: 10, borderWidth: isActive ? 1 : 0, borderColor: cat.color + "40" })}
                         >
-                          <Text style={{ fontSize: 20, width: 30, textAlign: "center" }}>{toneMode.mark}</Text>
+                          {/* Consistent icon-chip container (was a bare emoji
+                              glyph with no background, misaligned against
+                              the 44x44 program icons and orb elsewhere in
+                              this same section) */}
+                          <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: isActive ? cat.color + "20" : "rgba(15,23,42,0.05)", alignItems: "center", justifyContent: "center" }}>
+                            <Text style={{ fontSize: 16 }}>{toneMode.mark}</Text>
+                          </View>
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: isActive ? cat.color : "#3A577D", fontSize: 13, fontWeight: isActive ? "900" : "700" }}>{toneMode.label}</Text>
                             <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 1 }}>{toneMode.use}</Text>
@@ -23114,8 +23149,15 @@ function ToneLibrarySection({
 
       {/* ── Quick links ── */}
       <View style={{ flexDirection: "row", gap: 8, marginHorizontal: 16, marginTop: 16 }}>
-        {[{ label: "Meditation", tab: "meditation" as TabId }, { label: "Path", tab: "guide" as TabId }, { label: "Journal", tab: "journal" as TabId }].map((item) => (
-          <Pressable key={item.tab} onPress={() => onOpenTab(item.tab)} style={({ pressed }) => ({ flex: 1, backgroundColor: pressed ? "#C4D1E8" : "#DEE5F2", borderRadius: 10, paddingVertical: 10, alignItems: "center", borderWidth: 1, borderColor: "rgba(99,222,208,0.12)" })}>
+        {[{ label: "Meditation", tab: "meditation" as TabId, mark: "🧘" }, { label: "Path", tab: "guide" as TabId, mark: "🧭" }, { label: "Journal", tab: "journal" as TabId, mark: "✍️" }].map((item) => (
+          <Pressable
+            key={item.tab}
+            onPress={() => { void Haptics.selectionAsync(); onOpenTab(item.tab); }}
+            accessibilityRole="button"
+            accessibilityLabel={`Open ${item.label}`}
+            style={({ pressed }) => ({ flex: 1, backgroundColor: pressed ? "#C4D1E8" : "#DEE5F2", borderRadius: 12, paddingVertical: 12, alignItems: "center", gap: 4, borderWidth: 1, borderColor: "rgba(99,222,208,0.16)", shadowColor: "#0F3B45", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6, elevation: 1 })}
+          >
+            <Text style={{ fontSize: 16 }}>{item.mark}</Text>
             <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{item.label}</Text>
           </Pressable>
         ))}
@@ -34660,7 +34702,16 @@ function buildCounselingSynthesis(
   // disclosure even when the person had raised it repeatedly. 0 by default
   // -- purely additive, only adds one paragraph, never changes theme
   // detection or which route/steps get recommended.
-  recurrenceCount = 0
+  recurrenceCount = 0,
+  // Current transits (Gochar) note -- only set when a real Sade Sati phase
+  // is active right now (getGocharChart/getGocharGuidance, the same
+  // functions already powering the Vedic tab's "Current transits" card).
+  // Purely additive, one sentence, only for anxiety/fear-leaning themes.
+  sadeSatiNote: string | null = null,
+  // Real weekly-vs-monthly clarity averages (same numbers already shown on
+  // Patterns) -- only used when there's enough real history and a genuine
+  // decline, to name an actual measured dip instead of a vague feeling.
+  weeklyTrend: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null = null
 ): string {
   const themes = session.detectedThemes;
   const userAnswers = session.turns.filter(t => t.role === "user").map(t => t.message).join(" ");
@@ -34735,6 +34786,19 @@ function buildCounselingSynthesis(
   const moonChartCounselingOverlay = buildMoonChartCounselingOverlay(themes, moonChart48Readings);
   if (moonChartCounselingOverlay.length > 0) {
     synthesis += `${moonChartCounselingOverlay}\n\n`;
+  }
+
+  // ── Current transits (Gochar) — only when a real Sade Sati phase is active,
+  // and only alongside the themes it's actually relevant to, so it never
+  // reads as generic filler dropped into every conversation.
+  if (sadeSatiNote && (themes.includes("anxiety") || themes.includes("fear") || themes.includes("direction"))) {
+    synthesis += `One more real thing worth naming: ${sadeSatiNote} That does not explain everything you are feeling, but it can add real weight to a period that already feels heavy.\n\n`;
+  }
+
+  // ── Measured weekly trend — only when there is enough real history and the
+  // dip is genuine, so this names an actual number, not a guess.
+  if (weeklyTrend && weeklyTrend.sampleSize >= 3 && weeklyTrend.weeklyAverage < weeklyTrend.monthlyAverage - 10) {
+    synthesis += `Your own check-in history backs this up: your clarity score has averaged ${weeklyTrend.weeklyAverage} this week, down from ${weeklyTrend.monthlyAverage} over the last month. That is a real, measured dip -- not just how today feels.\n\n`;
   }
 
   // ── Route options ────────────────────────────────────────────────────────────
@@ -34958,6 +35022,9 @@ function CounselingChatModal({
   moodTagLeaning = null,
   visitReports = [],
   moodTrend = null,
+  recentJournalNotesText = "",
+  sadeSatiNote = null,
+  weeklyTrend = null,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -35006,13 +35073,28 @@ function CounselingChatModal({
   // yourself first" step read a real recent trend instead of only the
   // single latest mood tag.
   moodTrend?: "improving" | "steady" | "declining" | null;
+  // Text from the last few real journal entries (buildGuidedJournalNote
+  // output, already saved via saveCheckIn) -- folded into theme detection
+  // alongside the original issue text and chat turns, so something already
+  // written in Journal can inform the synthesis even if never repeated here.
+  recentJournalNotesText?: string;
+  // Current transits (Gochar) note, only set when a real Sade Sati phase is
+  // active for this person right now (getGocharChart/getGocharGuidance --
+  // same functions already powering the Vedic tab's "Current transits"
+  // card). null the rest of the time, so this never appears as filler.
+  sadeSatiNote?: string | null;
+  // Real weekly-vs-monthly clarity averages (same numbers already shown on
+  // Patterns) -- only used when there's enough real check-in history and a
+  // genuine decline, to name an actual measured dip rather than a vague
+  // feeling.
+  weeklyTrend?: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null;
 }) {
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
     originalIssue: initialIssue,
     turns: [],
     questionIndex: 0,
-    detectedThemes: detectThemes(initialIssue),
+    detectedThemes: detectThemes(recentJournalNotesText ? `${initialIssue} ${recentJournalNotesText}` : initialIssue),
     journeySteps: [],
   }));
   const [draft, setDraft] = React.useState("");
@@ -35054,6 +35136,12 @@ function CounselingChatModal({
   // it in immediately. Nothing about the reply's content changes or waits on
   // a network call; this is purely pacing + honest "still here" feedback.
   const [isGuideTyping, setIsGuideTyping] = React.useState(false);
+  // The "Scope and safety" notice used to permanently consume header space
+  // above every message, with no way to dismiss it once read. Collapsible
+  // now (defaults open, same as before); resets open on each new session
+  // via the "Reset when modal opens" effect below so it's never silently
+  // hidden for a person who hasn't seen it yet.
+  const [safetyNoticeExpanded, setSafetyNoticeExpanded] = React.useState(true);
   const typingTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const typingDotsAnim = React.useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
@@ -35140,7 +35228,8 @@ function CounselingChatModal({
   // Reset when modal opens with new issue
   React.useEffect(() => {
     if (!visible) return;
-    const themes = detectThemes(initialIssue);
+    setSafetyNoticeExpanded(true);
+    const themes = detectThemes(recentJournalNotesText ? `${initialIssue} ${recentJournalNotesText}` : initialIssue);
     const firstQuestion = buildCounselingQuestions(themes, 0);
     const opening = buildCounselingAcknowledgment(initialIssue, issueId, detectAIHelpRouteFromText(initialIssue));
     const openingMsg = `${opening.heard}\n\nI'd like to understand a bit more before we figure out the best path for you. ${firstQuestion}`;
@@ -35251,7 +35340,7 @@ function CounselingChatModal({
       const recurrenceCount = currentIssueLabel
         ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
         : 0;
-      const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount);
+      const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount, sadeSatiNote, weeklyTrend);
       const steps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
 
       typingTimeoutRef.current = setTimeout(() => {
@@ -35430,7 +35519,11 @@ function CounselingChatModal({
             <Text style={{ color: "#0E9488", fontSize: 22 }}>←</Text>
           </Pressable>
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800" }}>Your guide is listening</Text>
+            {/* Consistent branding -- the enrichment card below and the
+                system prompt both already say "Beacon Guide"; the header
+                previously said the generic "Your guide", reading as two
+                different guides in the same conversation. */}
+            <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800" }}>Beacon Guide is listening</Text>
             <Text style={{ color: "#1F2937", fontSize: 12 }}>
               {voiceAssistEnabled ? "Private · Replies are read aloud" : "Private · Voice reply is muted"}
             </Text>
@@ -35463,15 +35556,22 @@ function CounselingChatModal({
           </Pressable>
         </View>
 
-        <View
+        <Pressable
           accessibilityRole="summary"
+          accessibilityLabel={safetyNoticeExpanded ? "Scope and safety notice, expanded. Tap to collapse." : "Scope and safety notice, collapsed. Tap to expand."}
+          onPress={() => { void Haptics.selectionAsync(); setSafetyNoticeExpanded((v) => !v); }}
           style={{ marginHorizontal: 20, marginTop: 12, borderRadius: 12, padding: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
         >
-          <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>Scope and safety</Text>
-          <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 3 }}>
-            {COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]}
-          </Text>
-        </View>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>Scope and safety</Text>
+            <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "700" }}>{safetyNoticeExpanded ? "Hide ▲" : "Show ▼"}</Text>
+          </View>
+          {safetyNoticeExpanded && (
+            <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 3 }}>
+              {COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]}
+            </Text>
+          )}
+        </Pressable>
 
         {/* Chat messages */}
         <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
