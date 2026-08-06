@@ -8878,14 +8878,18 @@ type AstroChatCategory = "career" | "relationship" | "health" | "money" | "famil
 
 function classifyAstroQuestion(text: string): AstroChatCategory {
   const t = text.toLowerCase();
-  if (/(job|career|work|boss|promotion|interview|salary|business|office|colleague)/.test(t)) return "career";
-  if (/(love|partner|husband|wife|girlfriend|boyfriend|marriage|relationship|breakup|fight)/.test(t)) return "relationship";
-  if (/(health|sick|pain|illness|disease|body|sleep|energy|tired|doctor)/.test(t)) return "health";
-  if (/(money|finance|debt|loan|invest|save|wealth|rich|poor|income|expense)/.test(t)) return "money";
-  if (/(family|parent|mother|father|child|kid|son|daughter|sibling|brother|sister|home)/.test(t)) return "family";
-  if (/(god|spiritual|meditat|dharma|purpose|soul|karma|moksha|pray|temple)/.test(t)) return "spiritual";
-  if (/(when|time|muhurat|start|begin|launch|marriage date|auspicious)/.test(t)) return "timing";
-  if (/(who am i|myself|identity|confidence|self)/.test(t)) return "identity";
+  // Each category matches English keywords AND Hindi keywords (Devanagari +
+  // common romanized forms), so a question typed in Hindi classifies into the
+  // right category instead of always falling through to "general" -- without
+  // this, bilingual output would still receive the wrong category upstream.
+  if (/(job|career|work|boss|promotion|interview|salary|business|office|colleague|नौकरी|काम|करियर|बॉस|प्रमोशन|तरक्की|वेतन|सैलरी|व्यापार|बिज़नेस|बिजनेस|ऑफिस|दफ्तर|naukri|kaam|career|vyapar|vyaapar)/.test(t)) return "career";
+  if (/(love|partner|husband|wife|girlfriend|boyfriend|marriage|relationship|breakup|fight|प्यार|प्रेम|पति|पत्नी|शादी|विवाह|रिश्ता|रिश्ते|ब्रेकअप|झगड़ा|प्रेमी|प्रेमिका|गर्लफ्रेंड|बॉयफ्रेंड|pyar|prem|shaadi|shadi|vivah|rishta|pati|patni)/.test(t)) return "relationship";
+  if (/(health|sick|pain|illness|disease|body|sleep|energy|tired|doctor|स्वास्थ्य|सेहत|बीमारी|बीमार|दर्द|रोग|शरीर|नींद|थकान|डॉक्टर|sehat|bimari|beemari|dard|rog|sharir|neend)/.test(t)) return "health";
+  if (/(money|finance|debt|loan|invest|save|wealth|rich|poor|income|expense|पैसा|पैसे|धन|कर्ज|कर्ज़|कर्ज़ा|लोन|निवेश|बचत|अमीर|गरीब|आय|आमदनी|खर्च|paisa|paise|dhan|karz|karza|nivesh|bachat)/.test(t)) return "money";
+  if (/(family|parent|mother|father|child|kid|son|daughter|sibling|brother|sister|home|परिवार|माता|पिता|माँ|मां|बाप|बच्चा|बच्चे|बेटा|बेटी|भाई|बहन|घर|parivar|mata|pita|maa|bachcha|beta|beti|bhai|bahan|behan|ghar)/.test(t)) return "family";
+  if (/(god|spiritual|meditat|dharma|purpose|soul|karma|moksha|pray|temple|भगवान|आध्यात्म|आध्यात्मिक|ध्यान|धर्म|आत्मा|कर्म|मोक्ष|पूजा|मंदिर|प्रार्थना|bhagwan|bhagvan|dhyan|dharma|dharm|atma|aatma|karma|karm|moksha|puja|mandir)/.test(t)) return "spiritual";
+  if (/(when|time|muhurat|start|begin|launch|marriage date|auspicious|कब|समय|मुहूर्त|शुरू|शुभ|मुहूरत|samay|muhurat|muhurta|shuru|shubh)/.test(t)) return "timing";
+  if (/(who am i|myself|identity|confidence|self|मैं कौन|खुद|पहचान|आत्मविश्वास|आत्म-विश्वास|main kaun|khud|pehchan|pehchaan|aatmvishwas|atmvishwas)/.test(t)) return "identity";
   return "general";
 }
 
@@ -8905,21 +8909,54 @@ const RASHI_REMEDIES: Array<{ mantra: string; gem: string; fast: string; deity: 
   { mantra: "Om Brihaspataye Namah", gem: "Yellow Sapphire", fast: "Thursday", deity: "Vishnu", food: "Ghee · yellow lentils" },   //11 Meena
 ];
 
+// Hindi twin of RASHI_REMEDIES (same rashi order). Mantras stay in their
+// standard Devanagari form; gemstone/day/deity/food are translated.
+const RASHI_REMEDIES_HI: Array<{ mantra: string; gem: string; fast: string; deity: string; food: string }> = [
+  { mantra: "ॐ अंगारकाय नमः", gem: "मूंगा (लाल)", fast: "मंगलवार", deity: "हनुमान", food: "तीखा कम करें · गुड़ जोड़ें" },        // 0 Mesha
+  { mantra: "ॐ शुक्राय नमः", gem: "हीरा / सफेद पुखराज", fast: "शुक्रवार", deity: "लक्ष्मी", food: "मीठे फल · दूध" },              // 1 Vrishabha
+  { mantra: "ॐ बुधाय नमः", gem: "पन्ना", fast: "बुधवार", deity: "विष्णु / गणेश", food: "हरी पत्तेदार सब्ज़ी · अंकुरित अनाज" },      // 2 Mithuna
+  { mantra: "ॐ चंद्राय नमः", gem: "मोती / मूनस्टोन", fast: "सोमवार", deity: "शिव", food: "दूध · चावल · सफेद भोजन" },            // 3 Karka
+  { mantra: "ॐ सूर्याय नमः", gem: "माणिक", fast: "रविवार", deity: "सूर्य", food: "गेहूँ · गर्म भोजन · नमक कम करें" },            // 4 Simha
+  { mantra: "ॐ बुधाय नमः", gem: "पन्ना", fast: "बुधवार", deity: "विष्णु", food: "हरी सब्ज़ियाँ · हल्का भोजन" },                  // 5 Kanya
+  { mantra: "ॐ शुक्राय नमः", gem: "हीरा / ओपल", fast: "शुक्रवार", deity: "लक्ष्मी", food: "दही · मीठा · सुंदर परोसना" },        // 6 Tula
+  { mantra: "ॐ अंगारकाय नमः", gem: "मूंगा (लाल)", fast: "मंगलवार", deity: "कार्तिकेय / काली", food: "गर्मी कम करें · नारियल जोड़ें" },// 7 Vrischika
+  { mantra: "ॐ बृहस्पतये नमः", gem: "पुखराज (पीला)", fast: "गुरुवार", deity: "विष्णु / गुरु", food: "हल्दी · पीले भोजन" },        // 8 Dhanus
+  { mantra: "ॐ शनये नमः", gem: "नीलम", fast: "शनिवार", deity: "शनि / हनुमान", food: "काले तिल · आयरन-युक्त भोजन" },         // 9 Makara
+  { mantra: "ॐ शनये नमः", gem: "नीलम", fast: "शनिवार", deity: "शनि", food: "सादा · बिना पॉलिश किया अनाज" },                //10 Kumbha
+  { mantra: "ॐ बृहस्पतये नमः", gem: "पुखराज (पीला)", fast: "गुरुवार", deity: "विष्णु", food: "घी · पीली दाल" },               //11 Meena
+];
+
 // Category × Rashi guidance lens. Uses the Rashi name so replies feel personal.
-function rashiCategoryLens(cat: AstroChatCategory, rashiId: number): string {
-  const r = VEDIC_RASHIS[rashiId]?.name ?? "your Rashi";
-  const lenses: Record<AstroChatCategory, string[]> = {
-    career: ["initiative-driven — lead visibly", "value-anchored — steady building beats speed", "communication-heavy — write and network", "care-first — nurture the team", "spotlight-favoured — take the podium", "detail-oriented — the fine print is your edge", "diplomacy-first — mediate rather than push", "intense — invest deeply in fewer bets", "vision-led — teach and expand", "structure-first — systems compound", "innovative — unusual paths open", "intuitive — trust the pattern under the data"],
-    relationship: ["direct — say the difficult thing kindly", "steady — small consistent gestures", "conversation-fed — call, don't text", "emotionally attuned — receive and reflect", "generous — but avoid one-sided giving", "service-oriented — small acts land big", "harmony-seeking — but not at cost of truth", "loyal — verify before intensifying", "expansive — protect them, don't teach at them", "committed — schedule warmth into the calendar", "unconventional — friendship first", "empathic — set a soft boundary"],
-    health: ["watch head/BP; walk daily", "watch throat/neck; hydrate", "watch nervous system; deep breathing", "watch stomach/emotions; regular meals", "watch heart/back; cardio + rest", "watch digestion; smaller meals", "watch kidneys; reduce salt", "watch reproductive system; detox gently", "watch hips/liver; movement + turmeric", "watch knees/joints; strength work", "watch calves/circulation; walk daily", "watch feet/lymph; sleep discipline"],
-    money: ["earn actively, then save", "build slow reliable assets", "diversify across small streams", "save in liquid/emergency funds", "invest in name/brand", "budget with detailed tracking", "partner-based ventures suit you", "concentrated bets after research", "long-horizon wisdom-based capital", "systematic investment plans", "unconventional / tech assets", "faith-backed but verify-then-trust"],
-    family: ["lead but listen", "provide steadily", "communicate more, assume less", "hold the emotional centre", "make space for their pride too", "serve without controlling", "mediate disputes gently", "protect their privacy fiercely", "guide with wisdom, not orders", "carry duty without carrying resentment", "give freedom generously", "make the home a sanctuary"],
-    spiritual: ["karma yoga — action as offering", "bhakti — devotion through beauty", "jnana — study and inquiry", "bhakti — devotion through emotion", "karma — service in public role", "seva — quiet service", "bhakti — through art and balance", "kundalini — transformation practice", "jnana — teaching and study", "karma — discipline and duty", "jnana — meditation and detachment", "bhakti — surrender and dissolution"],
-    timing: ["Tuesday mornings favour launches", "Friday afternoons favour agreements", "Wednesday for negotiations", "Monday nights for reflection", "Sunday for public moves", "Wednesday for detailed work", "Friday for aesthetic launches", "Tuesday for research phase", "Thursday for teaching/travel", "Saturday for structural commitments", "Saturday for unconventional moves", "Thursday for spiritual commitments"],
-    identity: ["you are the initiator — own that role", "you are the builder — patience is strength", "you are the messenger — words shape your world", "you are the nurturer — feelings are data", "you are the sovereign — magnanimity befits you", "you are the analyst — precision serves love", "you are the harmoniser — decisiveness balances it", "you are the transformer — depth is your gift", "you are the teacher — expansion is your path", "you are the architect — legacy over speed", "you are the visionary — walk your own timeline", "you are the mystic — dissolve, then rebuild"],
-    general: ["today favours action over rumination", "steady daily practice compounds", "one honest conversation clears three assumptions", "an early night resets more than caffeine", "a small public step lifts the mood", "one careful list beats scattered urgency", "one act of harmony ripples", "one deep breath before the next reaction", "one wise teacher's word for the day", "one commitment kept beats ten promised", "one unusual walk clears mental fog", "one moment of silence brings the answer"],
-  };
-  return `${r} energy is ${lenses[cat][rashiId] ?? lenses[cat][0]}.`;
+const RASHI_CATEGORY_LENSES_EN: Record<AstroChatCategory, string[]> = {
+  career: ["initiative-driven — lead visibly", "value-anchored — steady building beats speed", "communication-heavy — write and network", "care-first — nurture the team", "spotlight-favoured — take the podium", "detail-oriented — the fine print is your edge", "diplomacy-first — mediate rather than push", "intense — invest deeply in fewer bets", "vision-led — teach and expand", "structure-first — systems compound", "innovative — unusual paths open", "intuitive — trust the pattern under the data"],
+  relationship: ["direct — say the difficult thing kindly", "steady — small consistent gestures", "conversation-fed — call, don't text", "emotionally attuned — receive and reflect", "generous — but avoid one-sided giving", "service-oriented — small acts land big", "harmony-seeking — but not at cost of truth", "loyal — verify before intensifying", "expansive — protect them, don't teach at them", "committed — schedule warmth into the calendar", "unconventional — friendship first", "empathic — set a soft boundary"],
+  health: ["watch head/BP; walk daily", "watch throat/neck; hydrate", "watch nervous system; deep breathing", "watch stomach/emotions; regular meals", "watch heart/back; cardio + rest", "watch digestion; smaller meals", "watch kidneys; reduce salt", "watch reproductive system; detox gently", "watch hips/liver; movement + turmeric", "watch knees/joints; strength work", "watch calves/circulation; walk daily", "watch feet/lymph; sleep discipline"],
+  money: ["earn actively, then save", "build slow reliable assets", "diversify across small streams", "save in liquid/emergency funds", "invest in name/brand", "budget with detailed tracking", "partner-based ventures suit you", "concentrated bets after research", "long-horizon wisdom-based capital", "systematic investment plans", "unconventional / tech assets", "faith-backed but verify-then-trust"],
+  family: ["lead but listen", "provide steadily", "communicate more, assume less", "hold the emotional centre", "make space for their pride too", "serve without controlling", "mediate disputes gently", "protect their privacy fiercely", "guide with wisdom, not orders", "carry duty without carrying resentment", "give freedom generously", "make the home a sanctuary"],
+  spiritual: ["karma yoga — action as offering", "bhakti — devotion through beauty", "jnana — study and inquiry", "bhakti — devotion through emotion", "karma — service in public role", "seva — quiet service", "bhakti — through art and balance", "kundalini — transformation practice", "jnana — teaching and study", "karma — discipline and duty", "jnana — meditation and detachment", "bhakti — surrender and dissolution"],
+  timing: ["Tuesday mornings favour launches", "Friday afternoons favour agreements", "Wednesday for negotiations", "Monday nights for reflection", "Sunday for public moves", "Wednesday for detailed work", "Friday for aesthetic launches", "Tuesday for research phase", "Thursday for teaching/travel", "Saturday for structural commitments", "Saturday for unconventional moves", "Thursday for spiritual commitments"],
+  identity: ["you are the initiator — own that role", "you are the builder — patience is strength", "you are the messenger — words shape your world", "you are the nurturer — feelings are data", "you are the sovereign — magnanimity befits you", "you are the analyst — precision serves love", "you are the harmoniser — decisiveness balances it", "you are the transformer — depth is your gift", "you are the teacher — expansion is your path", "you are the architect — legacy over speed", "you are the visionary — walk your own timeline", "you are the mystic — dissolve, then rebuild"],
+  general: ["today favours action over rumination", "steady daily practice compounds", "one honest conversation clears three assumptions", "an early night resets more than caffeine", "a small public step lifts the mood", "one careful list beats scattered urgency", "one act of harmony ripples", "one deep breath before the next reaction", "one wise teacher's word for the day", "one commitment kept beats ten promised", "one unusual walk clears mental fog", "one moment of silence brings the answer"],
+};
+// Hindi twin of RASHI_CATEGORY_LENSES_EN (same 8 categories × 12 rashis order:
+// Mesha, Vrishabha, Mithuna, Karka, Simha, Kanya, Tula, Vrischika, Dhanus,
+// Makara, Kumbha, Meena) -- switched by chartBriefLang in rashiCategoryLens.
+const RASHI_CATEGORY_LENSES_HI: Record<AstroChatCategory, string[]> = {
+  career: ["पहल-प्रधान — खुलकर नेतृत्व करें", "मूल्य-आधारित — गति से बेहतर है स्थिर निर्माण", "संवाद-प्रधान — लिखें और संपर्क बनाएं", "देखभाल-प्रथम — टीम का पोषण करें", "मंच-अनुकूल — नेतृत्व की भूमिका लें", "विस्तार-केंद्रित — बारीकियाँ आपकी ताकत हैं", "कूटनीति-प्रथम — दबाव नहीं, मध्यस्थता करें", "गहन — कम दांव पर गहराई से लगें", "दृष्टि-प्रधान — सिखाएं और विस्तार करें", "संरचना-प्रथम — व्यवस्थाएँ फल देती हैं", "नवाचारी — असामान्य रास्ते खुलते हैं", "अंतर्ज्ञानी — आँकड़ों के नीचे के पैटर्न पर भरोसा करें"],
+  relationship: ["सीधे — कठिन बात दयालुता से कहें", "स्थिर — छोटे निरंतर प्रयास", "बातचीत-प्रधान — संदेश नहीं, फ़ोन करें", "भावनात्मक रूप से संवेदनशील — सुनें और समझें", "उदार — पर एकतरफा देने से बचें", "सेवा-प्रधान — छोटे काम बड़ा असर करते हैं", "सामंजस्य-प्रिय — पर सच की कीमत पर नहीं", "वफादार — गहराने से पहले परखें", "विस्तृत — उनकी रक्षा करें, उपदेश न दें", "प्रतिबद्ध — गर्मजोशी के लिए समय तय करें", "अपरंपरागत — पहले मित्रता", "सहानुभूतिपूर्ण — एक कोमल सीमा रखें"],
+  health: ["सिर/रक्तचाप का ध्यान; रोज़ टहलें", "गला/गर्दन का ध्यान; पानी पीते रहें", "तंत्रिका तंत्र का ध्यान; गहरी साँस लें", "पेट/भावनाओं का ध्यान; नियमित भोजन", "हृदय/पीठ का ध्यान; कार्डियो + आराम", "पाचन का ध्यान; छोटे भोजन", "गुर्दे का ध्यान; नमक कम करें", "प्रजनन तंत्र का ध्यान; धीरे-धीरे शुद्धि", "कूल्हे/यकृत का ध्यान; गति + हल्दी", "घुटने/जोड़ों का ध्यान; शक्ति व्यायाम", "पिंडली/रक्त-संचार का ध्यान; रोज़ टहलें", "पैर/लसिका का ध्यान; नींद का अनुशासन"],
+  money: ["सक्रिय रूप से कमाएं, फिर बचाएं", "धीमी विश्वसनीय संपत्ति बनाएं", "छोटे-छोटे स्रोतों में विविधता लाएं", "तरल/आपातकालीन कोष में बचाएं", "नाम/ब्रांड में निवेश करें", "विस्तृत ट्रैकिंग के साथ बजट बनाएं", "साझेदारी वाले उद्यम आपके लिए उपयुक्त", "शोध के बाद केंद्रित दांव", "दीर्घकालिक ज्ञान-आधारित पूंजी", "व्यवस्थित निवेश योजनाएं", "अपरंपरागत / तकनीकी संपत्ति", "श्रद्धा-आधारित पर पहले परखें फिर भरोसा करें"],
+  family: ["नेतृत्व करें पर सुनें भी", "स्थिर रूप से सहारा दें", "अधिक संवाद करें, कम मान लें", "भावनात्मक केंद्र संभालें", "उनके स्वाभिमान के लिए भी जगह दें", "नियंत्रण किए बिना सेवा करें", "विवादों में कोमलता से मध्यस्थता करें", "उनकी निजता की दृढ़ता से रक्षा करें", "आदेश नहीं, ज्ञान से मार्गदर्शन करें", "कर्तव्य निभाएं पर द्वेष न पालें", "उदारता से स्वतंत्रता दें", "घर को एक शरणस्थली बनाएं"],
+  spiritual: ["कर्म योग — कर्म को अर्पण मानें", "भक्ति — सौंदर्य के माध्यम से भक्ति", "ज्ञान — अध्ययन और जिज्ञासा", "भक्ति — भावना के माध्यम से भक्ति", "कर्म — सार्वजनिक भूमिका में सेवा", "सेवा — मौन सेवा", "भक्ति — कला और संतुलन के माध्यम से", "कुंडलिनी — रूपांतरण साधना", "ज्ञान — शिक्षण और अध्ययन", "कर्म — अनुशासन और कर्तव्य", "ज्ञान — ध्यान और वैराग्य", "भक्ति — समर्पण और विलय"],
+  timing: ["मंगलवार की सुबह शुभारंभ के लिए अनुकूल", "शुक्रवार की दोपहर समझौतों के लिए अनुकूल", "बुधवार बातचीत के लिए", "सोमवार की रात चिंतन के लिए", "रविवार सार्वजनिक कदमों के लिए", "बुधवार विस्तृत कार्य के लिए", "शुक्रवार सौंदर्य-संबंधी शुभारंभ के लिए", "मंगलवार शोध चरण के लिए", "गुरुवार शिक्षण/यात्रा के लिए", "शनिवार संरचनात्मक प्रतिबद्धताओं के लिए", "शनिवार अपरंपरागत कदमों के लिए", "गुरुवार आध्यात्मिक प्रतिबद्धताओं के लिए"],
+  identity: ["आप प्रवर्तक हैं — उस भूमिका को अपनाएं", "आप निर्माता हैं — धैर्य ही शक्ति है", "आप संदेशवाहक हैं — शब्द आपकी दुनिया गढ़ते हैं", "आप पोषक हैं — भावनाएँ भी जानकारी हैं", "आप राजसी हैं — उदारता आप पर शोभा देती है", "आप विश्लेषक हैं — सटीकता प्रेम की सेवा करती है", "आप संतुलनकर्ता हैं — निर्णायकता इसे संतुलित करती है", "आप रूपांतरक हैं — गहराई आपका उपहार है", "आप शिक्षक हैं — विस्तार आपका मार्ग है", "आप वास्तुकार हैं — गति से बढ़कर विरासत", "आप दूरदर्शी हैं — अपनी गति से चलें", "आप रहस्यदर्शी हैं — विलीन हों, फिर पुनर्निर्माण करें"],
+  general: ["आज चिंतन से अधिक कर्म अनुकूल है", "स्थिर दैनिक अभ्यास फल देता है", "एक ईमानदार बातचीत तीन अनुमान दूर करती है", "जल्दी सोना कैफीन से अधिक ताज़ा करता है", "एक छोटा सार्वजनिक कदम मन उठाता है", "एक सुव्यवस्थित सूची बिखरी जल्दबाज़ी से बेहतर", "सामंजस्य का एक कार्य दूर तक फैलता है", "अगली प्रतिक्रिया से पहले एक गहरी साँस", "दिन के लिए एक ज्ञानी गुरु का वचन", "एक निभाया वादा दस किए वादों से बेहतर", "एक असामान्य सैर मानसिक धुंध दूर करती है", "मौन का एक क्षण उत्तर लाता है"],
+};
+function rashiCategoryLens(cat: AstroChatCategory, rashiId: number, lang: "en" | "hi" = "en"): string {
+  const r = VEDIC_RASHIS[rashiId]?.name ?? (lang === "hi" ? "आपकी राशि" : "your Rashi");
+  const lenses = lang === "hi" ? RASHI_CATEGORY_LENSES_HI : RASHI_CATEGORY_LENSES_EN;
+  const phrase = lenses[cat][rashiId] ?? lenses[cat][0];
+  return lang === "hi" ? `${r} की ऊर्जा ${phrase} है।` : `${r} energy is ${phrase}.`;
 }
 
 // Maps each astro-chat question category onto the multidimensional Moon Chart
@@ -8956,7 +8993,14 @@ const ASTRO_CHAT_CATEGORY_TO_PHASE_DOMAIN: Record<AstroChatCategory, PhaseDomain
 // Turns a 0-100 score into a plain-language verdict word so the reply can
 // give a direct, calculated answer up front instead of only a wall of
 // context the user has to interpret themselves.
-function verdictPhraseFromScore(score: number): string {
+function verdictPhraseFromScore(score: number, lang: "en" | "hi" = "en"): string {
+  if (lang === "hi") {
+    if (score >= 78) return "अनुकूल";
+    if (score >= 62) return "थोड़ा अनुकूल";
+    if (score >= 48) return "मिश्रित";
+    if (score >= 32) return "सावधानी चाहिए";
+    return "अभी कठिन";
+  }
   if (score >= 78) return "Favourable";
   if (score >= 62) return "Mildly favourable";
   if (score >= 48) return "Mixed";
@@ -8970,9 +9014,13 @@ function verdictPhraseFromScore(score: number): string {
 type AstroQuestionTone = "yesno" | "why" | "when" | "open";
 function detectQuestionTone(text: string): AstroQuestionTone {
   const t = text.trim().toLowerCase();
-  if (/^(will|can|should|is|are|do|does|did|am i|has|have)\b/.test(t)) return "yesno";
-  if (/^why\b/.test(t)) return "why";
-  if (/^(when|what time|kab)\b/.test(t)) return "when";
+  // "why"/"when" checked before "yes/no" because a Hindi question can contain
+  // both a yes/no verb (होगा) and a why/when word (क्यों/कब); the more
+  // specific shape should win. Hindi: क्यों = why, कब = when, and क्या/होगा/
+  // चाहिए/मिलेगा/सकता = yes/no framing.
+  if (/(^why\b|क्यों|kyun|kyon)/.test(t)) return "why";
+  if (/(^(when|what time)\b|कब|\bkab\b)/.test(t)) return "when";
+  if (/(^(will|can|should|is|are|do|does|did|am i|has|have)\b|^क्या|होगा|होगी|चाहिए|मिलेगा|मिलेगी|सकता|सकती|kya|hoga|hogi|chahiye|milega|milegi)/.test(t)) return "yesno";
   return "open";
 }
 
@@ -8991,21 +9039,43 @@ function nextAstroChatReply(question: string, ctx: {
   todayTithi: string;
   todayVara: string;
   moonChart48Readings?: MoonChart48Reading[];
+  // Shares the chartBriefLang "en"|"hi" toggle lifted to App(), so a reply
+  // comes back in the same language the user set the chart brief to. Defaults
+  // to English so any legacy caller without it is unaffected.
+  lang?: "en" | "hi";
 }): { category: AstroChatCategory; reply: string; remedy: string } {
   const cat = classifyAstroQuestion(question);
+  const lang: "en" | "hi" = ctx.lang ?? "en";
+  const hi = lang === "hi";
   const lines: string[] = [];
 
   if (ctx.moonRashiId === null) {
-    lines.push(`Add your date of birth in Profile so I can read your Moon Rashi — the reply will be sharper.`);
-    lines.push(`General direction for a ${cat} question: pause, name what you actually want, then take one small step that a wise friend would suggest.`);
+    lines.push(hi
+      ? `प्रोफ़ाइल में अपनी जन्मतिथि जोड़ें ताकि मैं आपकी चंद्र राशि पढ़ सकूँ — तब उत्तर अधिक सटीक होगा।`
+      : `Add your date of birth in Profile so I can read your Moon Rashi — the reply will be sharper.`);
+    lines.push(hi
+      ? `${astroCategoryLabel(cat, lang)} प्रश्न के लिए सामान्य दिशा: रुकें, तय करें कि आप वास्तव में क्या चाहते हैं, फिर एक छोटा कदम उठाएं जो कोई समझदार मित्र सुझाए।`
+      : `General direction for a ${astroCategoryLabel(cat, lang)} question: pause, name what you actually want, then take one small step that a wise friend would suggest.`);
     return {
       category: cat,
       reply: lines.join("\n\n"),
-      remedy: `Light a diya at dusk. Chant Om Namah Shivaya 11 times. Add your birth details for a personalised remedy.`,
+      remedy: hi
+        ? `संध्या को एक दीया जलाएं। "ॐ नमः शिवाय" 11 बार जपें। व्यक्तिगत उपाय के लिए अपने जन्म-विवरण जोड़ें।`
+        : `Light a diya at dusk. Chant Om Namah Shivaya 11 times. Add your birth details for a personalised remedy.`,
     };
   }
 
-  const categoryActions: Record<AstroChatCategory, string> = {
+  const categoryActions: Record<AstroChatCategory, string> = hi ? {
+    career: "इस सप्ताह एक ठोस कदम उठाएं: एक बार आवेदन करें, पूछें, या प्रकाशित करें। यह दौर पूर्ण स्पष्टता की प्रतीक्षा से अधिक संरचना को फल देता है।",
+    relationship: "सीधे पर कोमलता से बोलें। असली ज़रूरत बताएं, एक सीमा साफ़ रखें, और इशारों पर निर्भर न रहें।",
+    health: "दिनचर्या सरल करें। नींद, पानी, भोजन और एक दैनिक सैर, अधिक सोचने से बेहतर इस दौर को स्थिर करेंगे।",
+    money: "अगले 30 दिन ध्यान से देखें, रिसाव कम करें, और एक अनुशासित बचत या चुकौती का कदम उठाएं।",
+    family: "स्वर शांत रखें, ज़रूरी बात एक बार दोहराएं, और एक ही बात को अलग शब्दों में बार-बार लड़ने का चक्र रोकें।",
+    spiritual: "प्रतिदिन एक स्थिर अभ्यास रखें। इस दौर में तीव्रता से अधिक दोहराव मायने रखता है।",
+    timing: "यदि निर्णय टल न सके तो सबसे छोटा वापस लेने योग्य कदम चुनें; अन्यथा समय को थोड़ा और पकने दें।",
+    identity: "आज एक दृश्य तरीके से उस व्यक्ति की तरह व्यवहार करें जो आप बनना चाहते हैं। छोटी निरंतरता पैटर्न बदल देती है।",
+    general: "एक स्पष्ट कदम और एक स्पष्ट सीमा से भ्रम कम करें। चार्ट को सरल और दोहराने योग्य कर्म पसंद है।",
+  } : {
     career: "Take one concrete move this week: apply, ask, or publish once. The phase rewards structure over waiting for perfect clarity.",
     relationship: "Speak directly but softly. Name the actual need, keep one boundary clean, and do not rely on hints.",
     health: "Simplify the routine. Sleep, water, meals, and one daily walk will stabilize the phase better than overthinking it.",
@@ -9016,29 +9086,46 @@ function nextAstroChatReply(question: string, ctx: {
     identity: "Act like the person you are trying to become in one visible way today. Small consistency changes the pattern.",
     general: "Reduce confusion with one clear step and one clear boundary. The chart likes action that is simple and repeatable."
   };
-  const currentDashaQuality = ctx.currentDasha ? summarizePlanetQuality(ctx.currentDasha) : "mixed influences";
-  const currentAntardashaQuality = ctx.currentAntardasha ? summarizePlanetQuality(ctx.currentAntardasha) : "mixed influences";
-  const dashaTiming = [
-    ctx.currentAntardashaYearsLeft !== null ? `the current Antardasha has about ${formatPhaseSpan(ctx.currentAntardashaYearsLeft)} left` : null,
-    ctx.currentDashaYearsLeft !== null ? `the broader Mahadasha has about ${formatPhaseSpan(ctx.currentDashaYearsLeft)} left` : null
-  ].filter(Boolean).join(" and ");
-  const phaseWindow = [
-    ctx.currentDashaStartedAtIso && ctx.currentDashaEndsAtIso
-      ? `Mahadasha started around ${formatApproxDate(ctx.currentDashaStartedAtIso)} and ends around ${formatApproxDate(ctx.currentDashaEndsAtIso)}`
-      : null,
-    ctx.currentAntardashaStartedAtIso && ctx.currentAntardashaEndsAtIso
-      ? `Antardasha started around ${formatApproxDate(ctx.currentAntardashaStartedAtIso)} and ends around ${formatApproxDate(ctx.currentAntardashaEndsAtIso)}`
-      : null,
-  ].filter(Boolean).join(" • ");
+  const mixedInfluences = hi ? "मिश्रित प्रभाव" : "mixed influences";
+  const currentDashaQuality = ctx.currentDasha ? summarizePlanetQuality(ctx.currentDasha, lang) : mixedInfluences;
+  const currentAntardashaQuality = ctx.currentAntardasha ? summarizePlanetQuality(ctx.currentAntardasha, lang) : mixedInfluences;
+  const dashaTiming = hi
+    ? [
+        ctx.currentAntardashaYearsLeft !== null ? `वर्तमान अंतर्दशा में लगभग ${formatPhaseSpan(ctx.currentAntardashaYearsLeft, lang)} शेष हैं` : null,
+        ctx.currentDashaYearsLeft !== null ? `व्यापक महादशा में लगभग ${formatPhaseSpan(ctx.currentDashaYearsLeft, lang)} शेष हैं` : null
+      ].filter(Boolean).join(" और ")
+    : [
+        ctx.currentAntardashaYearsLeft !== null ? `the current Antardasha has about ${formatPhaseSpan(ctx.currentAntardashaYearsLeft, lang)} left` : null,
+        ctx.currentDashaYearsLeft !== null ? `the broader Mahadasha has about ${formatPhaseSpan(ctx.currentDashaYearsLeft, lang)} left` : null
+      ].filter(Boolean).join(" and ");
+  const phaseWindow = hi
+    ? [
+        ctx.currentDashaStartedAtIso && ctx.currentDashaEndsAtIso
+          ? `महादशा लगभग ${formatApproxDate(ctx.currentDashaStartedAtIso, lang)} को शुरू हुई और लगभग ${formatApproxDate(ctx.currentDashaEndsAtIso, lang)} को समाप्त होगी`
+          : null,
+        ctx.currentAntardashaStartedAtIso && ctx.currentAntardashaEndsAtIso
+          ? `अंतर्दशा लगभग ${formatApproxDate(ctx.currentAntardashaStartedAtIso, lang)} को शुरू हुई और लगभग ${formatApproxDate(ctx.currentAntardashaEndsAtIso, lang)} को समाप्त होगी`
+          : null,
+      ].filter(Boolean).join(" • ")
+    : [
+        ctx.currentDashaStartedAtIso && ctx.currentDashaEndsAtIso
+          ? `Mahadasha started around ${formatApproxDate(ctx.currentDashaStartedAtIso, lang)} and ends around ${formatApproxDate(ctx.currentDashaEndsAtIso, lang)}`
+          : null,
+        ctx.currentAntardashaStartedAtIso && ctx.currentAntardashaEndsAtIso
+          ? `Antardasha started around ${formatApproxDate(ctx.currentAntardashaStartedAtIso, lang)} and ends around ${formatApproxDate(ctx.currentAntardashaEndsAtIso, lang)}`
+          : null,
+      ].filter(Boolean).join(" • ");
   const domainOutlookFull = buildPhaseDomainOutlook(
     ctx.currentDasha && ctx.currentAntardasha
       ? { currentMahadasha: ctx.currentDasha, currentAntardasha: ctx.currentAntardasha }
-      : null
+      : null,
+    lang
   );
   // Only the domains that match what was actually asked, not all seven.
+  // Filter on the language-independent domainKey, not the display label.
   const relevantDomains = ASTRO_CHAT_CATEGORY_TO_PHASE_DOMAIN[cat];
   const domainOutlook = domainOutlookFull.filter((item) =>
-    relevantDomains.includes(item.domain.toLowerCase() as PhaseDomain)
+    relevantDomains.includes(item.domainKey)
   );
 
   // Multidimensional Moon Chart lens — same explainable-score engine used
@@ -9055,7 +9142,7 @@ function nextAstroChatReply(question: string, ctx: {
     const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
     const anchor = [...pool].sort((a, b) => b.score - a.score)[0];
     const careful = [...pool].sort((a, b) => a.score - b.score)[0];
-    moon48Verdict = { average, verdictWord: verdictPhraseFromScore(average), anchor, careful };
+    moon48Verdict = { average, verdictWord: verdictPhraseFromScore(average, lang), anchor, careful };
   }
   const tone = detectQuestionTone(question);
 
@@ -9063,74 +9150,110 @@ function nextAstroChatReply(question: string, ctx: {
   // between two different questions in the same category (e.g. "will I get
   // the job" vs "should I quit") because it is derived from the live multidimensional
   // score for the dimensions tied to THIS question, not a fixed template.
+  // NOTE: the anchor/careful reading's own label + interpretation +
+  // scoreReason come from buildMoonChartMultidimensionalEngine, which is
+  // still English-only (it feeds the whole Vedic tab + counselling engine;
+  // translating all 48 dimensions' interpretation/scoreReason/remedy text is
+  // a separate, much larger pass). So in Hindi mode these few embedded
+  // reading strings stay English while the surrounding narration is Hindi --
+  // an honest partial, not a claim of full translation.
   if (moon48Verdict) {
-    const leadIn =
-      tone === "yesno" ? `Short answer first: ${moon48Verdict.verdictWord.toLowerCase()} right now. `
-      : tone === "why" ? `Here is what the chart is actually doing: `
-      : tone === "when" ? `On timing specifically: `
-      : "";
-    lines.push(
-      `${leadIn}${moonChartCategoryLabel(primaryMoonCategory)} is reading ${moon48Verdict.average}/100 (${moon48Verdict.verdictWord}) — this tracks ${moonChartCategoryMeaning(primaryMoonCategory)}. The clearest signal is "${moon48Verdict.anchor.label}" at ${moon48Verdict.anchor.score}/100: ${moon48Verdict.anchor.interpretation}`
+    const leadIn = hi
+      ? (tone === "yesno" ? `संक्षेप में पहले: अभी ${moon48Verdict.verdictWord}। `
+        : tone === "why" ? `चार्ट असल में जो कर रहा है वह यह है: `
+        : tone === "when" ? `विशेष रूप से समय पर: `
+        : "")
+      : (tone === "yesno" ? `Short answer first: ${moon48Verdict.verdictWord.toLowerCase()} right now. `
+        : tone === "why" ? `Here is what the chart is actually doing: `
+        : tone === "when" ? `On timing specifically: `
+        : "");
+    lines.push(hi
+      ? `${leadIn}${moonChartCategoryLabel(primaryMoonCategory, lang)} ${moon48Verdict.average}/100 (${moon48Verdict.verdictWord}) दिखा रहा है — यह ${moonChartCategoryMeaning(primaryMoonCategory, lang)} को दर्शाता है। सबसे स्पष्ट संकेत "${moon48Verdict.anchor.label}" ${moon48Verdict.anchor.score}/100 पर है: ${moon48Verdict.anchor.interpretation}`
+      : `${leadIn}${moonChartCategoryLabel(primaryMoonCategory, lang)} is reading ${moon48Verdict.average}/100 (${moon48Verdict.verdictWord}) — this tracks ${moonChartCategoryMeaning(primaryMoonCategory, lang)}. The clearest signal is "${moon48Verdict.anchor.label}" at ${moon48Verdict.anchor.score}/100: ${moon48Verdict.anchor.interpretation}`
     );
     if (moon48Verdict.careful.id !== moon48Verdict.anchor.id && moon48Verdict.careful.score < 55) {
-      lines.push(`Go gently here: "${moon48Verdict.careful.label}" is at ${moon48Verdict.careful.score}/100 — ${moon48Verdict.careful.scoreReason}`);
+      lines.push(hi
+        ? `यहाँ धीरे चलें: "${moon48Verdict.careful.label}" ${moon48Verdict.careful.score}/100 पर है — ${moon48Verdict.careful.scoreReason}`
+        : `Go gently here: "${moon48Verdict.careful.label}" is at ${moon48Verdict.careful.score}/100 — ${moon48Verdict.careful.scoreReason}`);
     }
   } else {
-    lines.push(`Add your exact birth time and place for a calculated multidimensional reading on this question. Until then, this guidance is based on Rashi and Dasha.`);
+    lines.push(hi
+      ? `इस प्रश्न पर गणना-आधारित बहुआयामी पठन के लिए अपना सटीक जन्म-समय और स्थान जोड़ें। तब तक यह मार्गदर्शन राशि और दशा पर आधारित है।`
+      : `Add your exact birth time and place for a calculated multidimensional reading on this question. Until then, this guidance is based on Rashi and Dasha.`);
   }
 
   // 2. Rashi lens — supporting context now, not the headline
-  lines.push(`Underlying pattern for ${ctx.moonRashiName}: ${rashiCategoryLens(cat, ctx.moonRashiId)}`);
+  lines.push(hi
+    ? `${ctx.moonRashiName} के लिए अंतर्निहित पैटर्न: ${rashiCategoryLens(cat, ctx.moonRashiId, lang)}`
+    : `Underlying pattern for ${ctx.moonRashiName}: ${rashiCategoryLens(cat, ctx.moonRashiId, lang)}`);
 
   // 3. Dasha lens
   if (ctx.currentDasha && ctx.currentAntardasha) {
-    lines.push(
-      `Why: ${ctx.currentDasha} Mahadasha is the broad life lesson and ${ctx.currentAntardasha} Antardasha is the active sub-pattern. ${ctx.currentDasha} brings ${currentDashaQuality.toLowerCase()}, while ${ctx.currentAntardasha} adds ${currentAntardashaQuality.toLowerCase()}; that blend is what the chart is expressing right now.`
-    );
+    lines.push(hi
+      ? `क्यों: ${ctx.currentDasha} महादशा व्यापक जीवन-पाठ है और ${ctx.currentAntardasha} अंतर्दशा सक्रिय उप-पैटर्न है। ${ctx.currentDasha} ${currentDashaQuality} लाता है, जबकि ${ctx.currentAntardasha} ${currentAntardashaQuality} जोड़ता है; यही मिश्रण अभी चार्ट व्यक्त कर रहा है।`
+      : `Why: ${ctx.currentDasha} Mahadasha is the broad life lesson and ${ctx.currentAntardasha} Antardasha is the active sub-pattern. ${ctx.currentDasha} brings ${currentDashaQuality.toLowerCase()}, while ${ctx.currentAntardasha} adds ${currentAntardashaQuality.toLowerCase()}; that blend is what the chart is expressing right now.`);
   } else if (ctx.currentDasha) {
-    lines.push(
-      `Why: you are in ${ctx.currentDasha} Mahadasha (${currentDashaQuality.toLowerCase()}). It is shaping the larger current and deciding which efforts can actually stick.`
-    );
+    lines.push(hi
+      ? `क्यों: आप ${ctx.currentDasha} महादशा में हैं (${currentDashaQuality})। यह बड़ी धारा को आकार दे रही है और तय कर रही है कि कौन-से प्रयास वास्तव में टिक सकते हैं।`
+      : `Why: you are in ${ctx.currentDasha} Mahadasha (${currentDashaQuality.toLowerCase()}). It is shaping the larger current and deciding which efforts can actually stick.`);
   }
 
   // 4. Timing lens
   if (dashaTiming.length > 0) {
-    lines.push(`How long this phase lasts: ${dashaTiming}. These timings are approximate because they are derived from the birth date here; an exact birth time and location will sharpen the result.`);
+    lines.push(hi
+      ? `यह दौर कितना चलेगा: ${dashaTiming}। ये समय अनुमानित हैं क्योंकि ये यहाँ की जन्मतिथि से निकाले गए हैं; सटीक जन्म-समय और स्थान परिणाम को और स्पष्ट करेंगे।`
+      : `How long this phase lasts: ${dashaTiming}. These timings are approximate because they are derived from the birth date here; an exact birth time and location will sharpen the result.`);
   }
   if (phaseWindow.length > 0) {
-    lines.push(`When it started and ends: ${phaseWindow}.`);
+    lines.push(hi ? `कब शुरू हुआ और कब समाप्त होगा: ${phaseWindow}।` : `When it started and ends: ${phaseWindow}.`);
   }
 
   // 5. Domain outlook — only the domains tied to this question's category.
   if (domainOutlook.length > 0) {
-    lines.push(`Where this shows up practically:`);
+    lines.push(hi ? `यह व्यवहार में कहाँ दिखता है:` : `Where this shows up practically:`);
     domainOutlook.forEach((item) => {
-      lines.push(`${item.domain}: ${item.verdict} — ${item.note}`);
+      lines.push(`${item.domain}: ${item.verdictLabel} — ${item.note}`);
     });
   }
 
   // 6. Practical action lens
-  lines.push(`What to do now: ${categoryActions[cat]}.`);
+  lines.push(hi ? `अब क्या करें: ${categoryActions[cat]}` : `What to do now: ${categoryActions[cat]}.`);
 
   // 7. Today's Panchang lens
-  lines.push(`Today’s Panchang: ${ctx.todayVara}, ${ctx.todayTithi}. If the decision can wait, use this window to observe once more before forcing the outcome.`);
+  lines.push(hi
+    ? `आज का पंचांग: ${ctx.todayVara}, ${ctx.todayTithi}। यदि निर्णय टल सकता है, तो परिणाम को ज़बरदस्ती करने से पहले इस अवसर पर एक बार और अवलोकन करें।`
+    : `Today’s Panchang: ${ctx.todayVara}, ${ctx.todayTithi}. If the decision can wait, use this window to observe once more before forcing the outcome.`);
 
-  lines.push(`If you want, ask the same thing in a narrower way and I will go one layer deeper into the same phase.`);
+  lines.push(hi
+    ? `चाहें तो यही बात और संकीर्ण रूप में पूछें और मैं उसी दौर में एक परत और गहराई तक जाऊँगा।`
+    : `If you want, ask the same thing in a narrower way and I will go one layer deeper into the same phase.`);
 
   // Remedy from the Rashi remedy pack
-  const R = RASHI_REMEDIES[ctx.moonRashiId] ?? RASHI_REMEDIES[0];
-  const lalKitabRemedies = buildLalKitabRemedies(ctx.currentDasha, ctx.currentAntardasha, cat);
-  const remedy = [
-    "Vedic remedy",
-    `Mantra: ${R.mantra} — 108 times, morning after bath.`,
-    `Gemstone: ${R.gem} (consult a Jyotishi before wearing).`,
-    `Fast: ${R.fast} — sunrise to sunset, break with fruit.`,
-    `Deity: offer flowers or a diya to ${R.deity}.`,
-    `Food: ${R.food}.`,
-    "",
-    "Lal Kitab remedies",
-    ...lalKitabRemedies,
-  ].join("\n");
+  const R = (hi ? RASHI_REMEDIES_HI : RASHI_REMEDIES)[ctx.moonRashiId] ?? (hi ? RASHI_REMEDIES_HI : RASHI_REMEDIES)[0];
+  const lalKitabRemedies = buildLalKitabRemedies(ctx.currentDasha, ctx.currentAntardasha, cat, lang);
+  const remedy = hi
+    ? [
+        "वैदिक उपाय",
+        `मंत्र: ${R.mantra} — 108 बार, स्नान के बाद प्रातःकाल।`,
+        `रत्न: ${R.gem} (धारण करने से पहले किसी ज्योतिषी से परामर्श करें)।`,
+        `व्रत: ${R.fast} — सूर्योदय से सूर्यास्त तक, फल से खोलें।`,
+        `देवता: ${R.deity} को फूल या दीया अर्पित करें।`,
+        `भोजन: ${R.food}।`,
+        "",
+        "लाल किताब उपाय",
+        ...lalKitabRemedies,
+      ].join("\n")
+    : [
+        "Vedic remedy",
+        `Mantra: ${R.mantra} — 108 times, morning after bath.`,
+        `Gemstone: ${R.gem} (consult a Jyotishi before wearing).`,
+        `Fast: ${R.fast} — sunrise to sunset, break with fruit.`,
+        `Deity: offer flowers or a diya to ${R.deity}.`,
+        `Food: ${R.food}.`,
+        "",
+        "Lal Kitab remedies",
+        ...lalKitabRemedies,
+      ].join("\n");
 
   return { category: cat, reply: lines.join("\n\n"), remedy };
 }
@@ -10530,20 +10653,20 @@ type VimshottariDashaState = {
   antardashaProgress: number;
 };
 
-function formatPhaseSpan(years: number): string {
-  if (!isFinite(years) || years <= 0) return "less than a month";
+function formatPhaseSpan(years: number, lang: "en" | "hi" = "en"): string {
+  if (!isFinite(years) || years <= 0) return lang === "hi" ? "एक महीने से कम" : "less than a month";
   if (years < 1) {
     const months = Math.max(1, Math.round(years * 12));
-    return `${months} month${months === 1 ? "" : "s"}`;
+    return lang === "hi" ? `${months} महीने` : `${months} month${months === 1 ? "" : "s"}`;
   }
   const rounded = years < 10 ? Math.round(years * 10) / 10 : Math.round(years);
-  return `${rounded} year${rounded === 1 ? "" : "s"}`;
+  return lang === "hi" ? `${rounded} वर्ष` : `${rounded} year${rounded === 1 ? "" : "s"}`;
 }
 
-function formatApproxDate(iso: string): string {
+function formatApproxDate(iso: string, lang: "en" | "hi" = "en"): string {
   const date = new Date(iso);
-  if (isNaN(date.getTime())) return "unknown";
-  return date.toLocaleDateString("en-IN", {
+  if (isNaN(date.getTime())) return lang === "hi" ? "अज्ञात" : "unknown";
+  return date.toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -10551,7 +10674,8 @@ function formatApproxDate(iso: string): string {
   });
 }
 
-function summarizePlanetQuality(planet: string): string {
+function summarizePlanetQuality(planet: string, lang: "en" | "hi" = "en"): string {
+  if (lang === "hi") return summarizePlanetQualityHi(planet);
   const text = DASHA_QUALITIES[planet] ?? "mixed influences";
   return text.split(",")[0]?.trim() ?? text;
 }
@@ -10674,9 +10798,54 @@ function getDomainVerdict(score: number): "Good" | "Mixed" | "Watch" {
   return "Mixed";
 }
 
+const PHASE_DOMAIN_LABEL_HI: Record<PhaseDomain, string> = {
+  health: "स्वास्थ्य", wealth: "धन", peace: "शांति", tension: "तनाव",
+  relationships: "रिश्ते", job: "नौकरी", home: "घर",
+};
+const PHASE_DOMAIN_VERDICT_HI: Record<"Good" | "Mixed" | "Watch", string> = {
+  Good: "अच्छा", Mixed: "मिश्रित", Watch: "सावधान",
+};
+const PHASE_DOMAIN_NOTES_HI: Record<PhaseDomain, Record<"Good" | "Mixed" | "Watch", string>> = {
+  health: {
+    Good: "दिनचर्या, स्वास्थ्य-लाभ और शारीरिक अनुशासन के लिए अच्छा।",
+    Mixed: "मिश्रित। नींद, भोजन, पानी और टहलना नियमित रखें।",
+    Watch: "शरीर का ध्यान रखें। तनाव, देर रात और अति-परिश्रम कम करें।",
+  },
+  wealth: {
+    Good: "बचत, बातचीत और सोच-समझकर लाभ के लिए अच्छा।",
+    Mixed: "मिश्रित। सट्टेबाज़ी से बेहतर है साफ़ बजट।",
+    Watch: "नकदी प्रवाह का ध्यान रखें; जोखिम भरा खर्च या उधार टालें।",
+  },
+  peace: {
+    Good: "शांति, प्रार्थना, चिंतन और भावनात्मक स्थिरता के लिए अच्छा।",
+    Mixed: "मिश्रित। शांत समय की योजना बनाएं ताकि मन पर बोझ न पड़े।",
+    Watch: "तनाव और शोर का ध्यान रखें। दिन को सामान्य से सरल रखें।",
+  },
+  tension: {
+    Good: "कम तनाव या संभालने योग्य दबाव, यदि गति स्थिर रखें।",
+    Mixed: "तनाव घटता-बढ़ता रहेगा। वातावरण अव्यवस्था-मुक्त रखें।",
+    Watch: "अधिक तनाव। प्रतिक्रिया से पहले रुकें और अनावश्यक ज़िम्मेदारियाँ घटाएं।",
+  },
+  relationships: {
+    Good: "गर्मजोशी, सुलह, ईमानदार बातचीत और गहरी प्रतिबद्धता के लिए अच्छा।",
+    Mixed: "मिश्रित। स्पष्ट बोलें और यह अपेक्षा न करें कि लोग इशारे समझें।",
+    Watch: "बहस, अनुमान और भावनात्मक आवेग का ध्यान रखें।",
+  },
+  job: {
+    Good: "साक्षात्कार, पदोन्नति, संरचना और दृश्य कार्य के लिए अच्छा।",
+    Mixed: "मिश्रित। कार्य-सूची छोटी रखें और जो खुला है उसे पूरा करें।",
+    Watch: "देरी, राजनीति और बिखरे प्रयास का ध्यान रखें।",
+  },
+  home: {
+    Good: "व्यवस्थित होने, पारिवारिक क्रम और व्यावहारिक घरेलू प्रगति के लिए अच्छा।",
+    Mixed: "मिश्रित। घरेलू दिनचर्या स्थिर रखें और नाटकीयता से बचें।",
+    Watch: "टकराव, बेचैनी का ध्यान रखें और आवेगी घरेलू निर्णयों से बचें।",
+  },
+};
 function buildPhaseDomainOutlook(
-  state: Pick<VimshottariDashaState, "currentMahadasha" | "currentAntardasha"> | null
-): Array<{ domain: string; verdict: "Good" | "Mixed" | "Watch"; note: string }> {
+  state: Pick<VimshottariDashaState, "currentMahadasha" | "currentAntardasha"> | null,
+  lang: "en" | "hi" = "en"
+): Array<{ domain: string; domainKey: PhaseDomain; verdict: "Good" | "Mixed" | "Watch"; verdictLabel: string; note: string }> {
   if (!state) return [];
   const currentWeight = 0.65;
   const antardashaWeight = 0.35;
@@ -10726,9 +10895,11 @@ function buildPhaseDomainOutlook(
     const score = mahaScore * currentWeight + antarScore * antardashaWeight;
     const verdict = getDomainVerdict(score);
     return {
-      domain: domain.charAt(0).toUpperCase() + domain.slice(1),
+      domain: lang === "hi" ? PHASE_DOMAIN_LABEL_HI[domain] : domain.charAt(0).toUpperCase() + domain.slice(1),
+      domainKey: domain,
       verdict,
-      note: notes[domain][verdict],
+      verdictLabel: lang === "hi" ? PHASE_DOMAIN_VERDICT_HI[verdict] : verdict,
+      note: lang === "hi" ? PHASE_DOMAIN_NOTES_HI[domain][verdict] : notes[domain][verdict],
     };
   });
 }
@@ -11008,24 +11179,79 @@ function buildShadbalaStrengthNarrative(
   return `In this partial computation, your strongest planet is ${label[strongest.id]} at ${strongest.net.toFixed(2)} rupas (net, including aspects) — classically this supports ${domain[strongest.id]}. Your weakest is ${label[weakest.id]} at ${weakest.net.toFixed(2)} rupas — meaning deliberate, conscious effort around ${domain[weakest.id]} is likely to pay off more than it would for a planet that's already strong.`;
 }
 
+// Human-facing label for an astro-chat question category, in either language
+// (the raw category id like "career" is an internal enum, not display text).
+const ASTRO_CATEGORY_LABEL_EN: Record<AstroChatCategory, string> = {
+  career: "career", relationship: "relationship", health: "health", money: "money",
+  family: "family", spiritual: "spiritual", timing: "timing", identity: "identity", general: "general",
+};
+const ASTRO_CATEGORY_LABEL_HI: Record<AstroChatCategory, string> = {
+  career: "करियर", relationship: "रिश्ते", health: "स्वास्थ्य", money: "धन",
+  family: "परिवार", spiritual: "आध्यात्म", timing: "समय", identity: "पहचान", general: "सामान्य",
+};
+function astroCategoryLabel(cat: AstroChatCategory, lang: "en" | "hi" = "en"): string {
+  return (lang === "hi" ? ASTRO_CATEGORY_LABEL_HI : ASTRO_CATEGORY_LABEL_EN)[cat];
+}
+
+// Hindi twin of LAL_KITAB_REMEDY_PACK (keyed by the same planet names).
+const LAL_KITAB_REMEDY_PACK_HI: Record<string, { action: string; avoid: string }> = {
+  Ketu: {
+    action: "किसी ज़रूरतमंद को कंबल, दवा या कोई छोटी उपयोगी वस्तु दान करें, और सप्ताह में एक बार 10 मिनट का मौन अभ्यास रखें।",
+    avoid: "एकांतवास, भ्रम और अनावश्यक गोपनीयता",
+  },
+  Shukra: {
+    action: "अपना घर और कपड़े स्वच्छ रखें, शुक्रवार को सफेद मिठाई या चावल दान करें, और किसी स्त्री/साथी/बुज़ुर्ग के प्रति एक दयालु कार्य करें।",
+    avoid: "अति-भोग, घमंड और अपव्यय",
+  },
+  Surya: {
+    action: "उगते सूर्य को जल अर्पित करें, पिता/बुज़ुर्गों का सम्मान करें, और अहंकार के बिना एक ईमानदार नेतृत्व कार्य करें।",
+    avoid: "अभिमान, अनादर और खोखला दिखावा",
+  },
+  Chandra: {
+    action: "सोमवार को दूध या चावल दान करें, जल-पात्र स्वच्छ रखें, और कुछ शांत पल परिवार या प्रार्थना के साथ बिताएं।",
+    avoid: "भावनात्मक अतिरेक, नींद की अनियमितता और कठोर वचन",
+  },
+  Mangal: {
+    action: "मंगलवार को मसूर दाल या गुड़ दान करें, शारीरिक व्यायाम करें, और क्रोध को अनुशासित कार्य में लगाएं।",
+    avoid: "आवेगी बहस, चोट और लापरवाह कार्य",
+  },
+  Rahu: {
+    action: "किसी आश्रय/दान-संस्था को गहरे रंग का कंबल या सरसों के बीज दान करें, दिनचर्या सरल रखें, और शॉर्टकट से बचें।",
+    avoid: "नशा, झूठ, जुनून और जल्दबाज़ी वाले फैसले",
+  },
+  Guru: {
+    action: "गुरुवार को हल्दी, चना दाल या पुस्तकें दान करें, शिक्षकों का सम्मान करें, और प्रतिदिन कृतज्ञता का अभ्यास रखें।",
+    avoid: "अहंकार, अधिक वादे और व्यर्थ सलाह देना",
+  },
+  Shani: {
+    action: "शनिवार को काले तिल या कंबल दान करें, किसी बुज़ुर्ग या श्रमिक की सेवा करें, और प्रतिबद्धताएँ छोटी पर स्थिर रखें।",
+    avoid: "आलस्य, क्रूरता और कर्तव्य की उपेक्षा",
+  },
+  Budha: {
+    action: "बुधवार को हरी मूंग या लेखन-सामग्री दान करें, अपनी योजनाएँ लिखें, और अपनी वाणी तथ्यपरक रखें।",
+    avoid: "गपशप, बिखरा ध्यान और अधिक बोलना",
+  },
+};
 function buildLalKitabRemedies(
   currentDasha: string | null,
   currentAntardasha: string | null,
-  category: AstroChatCategory
+  category: AstroChatCategory,
+  lang: "en" | "hi" = "en"
 ): string[] {
   const lines: string[] = [];
+  const pack = lang === "hi" ? LAL_KITAB_REMEDY_PACK_HI : LAL_KITAB_REMEDY_PACK;
 
   if (currentDasha) {
-    const pack = LAL_KITAB_REMEDY_PACK[currentDasha];
-    if (pack) {
-      lines.push(`For ${currentDasha}: ${pack.action} Avoid ${pack.avoid}.`);
+    const p = pack[currentDasha];
+    if (p) {
+      lines.push(lang === "hi" ? `${currentDasha} के लिए: ${p.action} ${p.avoid} से बचें।` : `For ${currentDasha}: ${p.action} Avoid ${p.avoid}.`);
     }
   }
 
   if (currentAntardasha && currentAntardasha !== currentDasha) {
-    const pack = LAL_KITAB_REMEDY_PACK[currentAntardasha];
-    if (pack) {
-      lines.push(`For ${currentAntardasha}: ${pack.action} Avoid ${pack.avoid}.`);
+    const p = pack[currentAntardasha];
+    if (p) {
+      lines.push(lang === "hi" ? `${currentAntardasha} के लिए: ${p.action} ${p.avoid} से बचें।` : `For ${currentAntardasha}: ${p.action} Avoid ${p.avoid}.`);
     }
   }
 
@@ -11040,9 +11266,24 @@ function buildLalKitabRemedies(
     identity: "Choose one habit that matches the life you want and repeat it for 21 days without drama.",
     general: "Keep one diya/candle or prayer lamp in a clean place and complete one quiet act of charity this week.",
   };
+  const categoryRemediesHi: Record<AstroChatCategory, string> = {
+    career: "मेज़ साफ़ रखें, एक व्यवस्थित फ़ॉलो-अप भेजें, और सोने से पहले कल का अगला काम कागज़ पर लिखें।",
+    relationship: "एक सच्ची बात दयालुता से कहें, बिना टोके सुनें, और दूसरे को अप्रत्यक्ष रूप से परखने से बचें।",
+    health: "समय पर सोएं, पर्याप्त पानी पिएं, और तीव्र परिश्रम के बजाय भोजन के बाद थोड़ा टहलें।",
+    money: "अपने खर्च लिखें, एक रिसाव बंद करें, और एक छोटी बचत को स्वचालित रखें।",
+    family: "घर का कोना व्यवस्थित रखें, तीखी वाणी कम करें, और परिवार के लिए एक छोटा सेवा-कार्य करें।",
+    spiritual: "प्रतिदिन एक दीपक/प्रार्थना या मंत्र रखें, भले संक्षिप्त हो, और तीव्रता से अधिक निरंतरता बनाए रखें।",
+    timing: "यदि संभव हो तो साफ़ समय की प्रतीक्षा करें; अन्यथा छोटा, प्रलेखित और वापस लेने योग्य कदम उठाएं।",
+    identity: "एक आदत चुनें जो आपके चाहे जीवन से मेल खाती हो और उसे बिना नाटक 21 दिन दोहराएं।",
+    general: "एक दीया/मोमबत्ती या प्रार्थना-दीप स्वच्छ स्थान पर रखें और इस सप्ताह एक मौन दान-कार्य पूरा करें।",
+  };
 
-  lines.push(`For ${category} matters: ${categoryRemedies[category]}`);
-  lines.push("Traditional Lal Kitab remedies are symbolic and gentle. Keep the one that fits your faith and local practice, and avoid anything unsafe or extreme.");
+  const catRem = lang === "hi" ? categoryRemediesHi : categoryRemedies;
+  const catLabel = astroCategoryLabel(category, lang);
+  lines.push(lang === "hi" ? `${catLabel} संबंधी बातों के लिए: ${catRem[category]}` : `For ${catLabel} matters: ${catRem[category]}`);
+  lines.push(lang === "hi"
+    ? "पारंपरिक लाल किताब उपाय प्रतीकात्मक और सौम्य हैं। जो आपकी श्रद्धा और स्थानीय प्रथा से मेल खाए उसे रखें, और असुरक्षित या अति किसी भी चीज़ से बचें।"
+    : "Traditional Lal Kitab remedies are symbolic and gentle. Keep the one that fits your faith and local practice, and avoid anything unsafe or extreme.");
 
   return lines;
 }
@@ -11272,7 +11513,7 @@ function moonChartVerdict(score: number): MoonChart48Verdict {
   return "Careful";
 }
 
-function moonChartCategoryLabel(category: MoonChart48Category): string {
+function moonChartCategoryLabel(category: MoonChart48Category, lang: "en" | "hi" = "en"): string {
   const labels: Record<MoonChart48Category, string> = {
     self: "Self and courage",
     mind: "Mind and emotional climate",
@@ -11285,10 +11526,22 @@ function moonChartCategoryLabel(category: MoonChart48Category): string {
     risk: "Risk and restraint",
     growth: "Growth and learning",
   };
-  return labels[category];
+  const labelsHi: Record<MoonChart48Category, string> = {
+    self: "स्वयं और साहस",
+    mind: "मन और भावनात्मक वातावरण",
+    body: "शरीर की लय",
+    relationship: "रिश्ते और जुड़ाव",
+    work: "कार्य और कर्तव्य",
+    money: "धन और संसाधन",
+    family: "परिवार और घर",
+    spiritual: "धर्म और मुक्ति",
+    risk: "जोखिम और संयम",
+    growth: "विकास और सीख",
+  };
+  return (lang === "hi" ? labelsHi : labels)[category];
 }
 
-function moonChartCategoryMeaning(category: MoonChart48Category): string {
+function moonChartCategoryMeaning(category: MoonChart48Category, lang: "en" | "hi" = "en"): string {
   const meanings: Record<MoonChart48Category, string> = {
     self: "how firmly you can stand in your own identity without forcing the outcome",
     mind: "how the inner weather, memory, sleep, and sensitivity may behave today",
@@ -11301,7 +11554,19 @@ function moonChartCategoryMeaning(category: MoonChart48Category): string {
     risk: "where emotional escalation, hidden pressure, conflict, or avoidable mistakes need restraint",
     growth: "where learning, courage, skill, future direction, and wise experimentation are supported",
   };
-  return meanings[category];
+  const meaningsHi: Record<MoonChart48Category, string> = {
+    self: "आप बिना परिणाम को ज़बरदस्ती किए अपनी पहचान में कितनी दृढ़ता से टिक सकते हैं",
+    mind: "आज भीतर का मौसम, स्मृति, नींद और संवेदनशीलता कैसे व्यवहार कर सकते हैं",
+    body: "भोजन, विश्राम, लय और दिनचर्या के माध्यम से शरीर कितने स्थिर रूप से साथ दे सकता है",
+    relationship: "विश्वास, स्नेह, सीमाएँ और संवाद कैसे प्रवाहित होने की संभावना है",
+    work: "कर्तव्य, सार्वजनिक दृश्यता, अनुशासन और निष्पादन कैसे संभाले जा सकते हैं",
+    money: "संसाधन, खर्च, दायित्व और व्यावहारिक सुरक्षा को कैसे संभालना चाहिए",
+    family: "वाणी, घर का वातावरण, बुज़ुर्ग, देखभाल और अपनापन कैसे सुरक्षित रखा जा सकता है",
+    spiritual: "श्रद्धा, प्रार्थना, समर्पण, तीर्थ और भीतरी मुक्ति आपका कैसे सहारा बन सकते हैं",
+    risk: "कहाँ भावनात्मक उग्रता, छुपा दबाव, टकराव या टालने योग्य गलतियों में संयम चाहिए",
+    growth: "कहाँ सीख, साहस, कौशल, भविष्य की दिशा और समझदार प्रयोग को समर्थन मिलता है",
+  };
+  return (lang === "hi" ? meaningsHi : meanings)[category];
 }
 
 function moonChartCategoryRemedyPack(category: MoonChart48Category, rashiName: string): { title: string; steps: string[] } {
@@ -12242,6 +12507,15 @@ export default function App() {
   const [aiHelpDraft, setAIHelpDraft] = useState("");
   const [aiHelpLoading, setAIHelpLoading] = useState(false);
   const [vedicEngineIssueContext, setVedicEngineIssueContext] = useState<VedicEngineIssueContext | null>(null);
+  // Plain-language chart language toggle -- lifted here from BirthChartSection
+  // so BOTH the chart-brief content (Plain Language card, Yogas, Ashtakavarga,
+  // Shadbala -- still rendered inside BirthChartSection, now driven by this
+  // prop) AND the Ask-the-chart answer engine (submitAstroQuestion/
+  // nextAstroChatReply, which live here in App()) can read the same toggle.
+  // Previously the toggle was local to BirthChartSection, so a Hindi-speaking
+  // user could switch the chart brief to Hindi but every Ask-the-chart reply
+  // still came back in English. English default, exclusive en/hi (never both).
+  const [chartBriefLang, setChartBriefLang] = useState<"en" | "hi">("en");
   // Astro two-way chat — user asks anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy
   const [astroChatMessages, setAstroChatMessages] = useState<Array<{ id: string; role: "user" | "astro"; text: string; remedy?: string; category?: string; ts: string }>>([]);
   const [astroChatDraft, setAstroChatDraft] = useState("");
@@ -17487,6 +17761,7 @@ async function fetchGeminiAIHelp(
         todayTithi: vedicTithi?.name ?? "today's Tithi",
         todayVara: vedicVara?.name ?? "today",
         moonChart48Readings: vedicMoonChart48Readings,
+        lang: chartBriefLang,
       });
       const astroMsg = {
         id: `a-${Date.now()}`,
@@ -20106,6 +20381,8 @@ function isTrustedExternalUrl(url: string) {
                 onOpenHome={() => handleTabPress("today")}
                 selectedIssueGuide={selectedIssueGuide}
                 issueContext={vedicEngineIssueContext}
+                chartBriefLang={chartBriefLang}
+                setChartBriefLang={setChartBriefLang}
                 // "Ask the chart" is passed in as a prop (rather than
                 // rendered as a sibling below) so BirthChartSection can
                 // place it immediately next to the visual chart map instead
@@ -20123,14 +20400,34 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ fontSize: 22 }}>🔮</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                      Ask the chart
+                      {chartBriefLang === "hi" ? "चार्ट से पूछें" : "Ask the chart"}
                     </Text>
                     <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
-                      Two-way astro guidance
+                      {chartBriefLang === "hi" ? "दो-तरफ़ा ज्योतिष मार्गदर्शन" : "Two-way astro guidance"}
                     </Text>
                     <Text style={{ color: "#111827", fontSize: 12, marginTop: 2, lineHeight: 16 }}>
-                      Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha, current Antardasha, and today's Panchang, then explains what is happening, why it is happening, how long it may last, and what to do next.
+                      {chartBriefLang === "hi"
+                        ? "कुछ भी पूछें — करियर, रिश्ते, स्वास्थ्य, धन, समय। यह आपकी चंद्र राशि, वर्तमान महादशा, वर्तमान अंतर्दशा और आज के पंचांग के माध्यम से पढ़ता है, फिर बताता है कि क्या हो रहा है, क्यों हो रहा है, कब तक रह सकता है, और आगे क्या करें।"
+                        : "Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha, current Antardasha, and today's Panchang, then explains what is happening, why it is happening, how long it may last, and what to do next."}
                     </Text>
+                  </View>
+                  {/* Reply-language toggle -- shares the same chartBriefLang
+                      state that drives the Plain-Language chart card, so
+                      switching here also switches the chart brief, and vice
+                      versa (one source of truth, lifted to App()). */}
+                  <View style={{ flexDirection: "row", backgroundColor: "rgba(13,31,34,0.06)", borderRadius: 999, padding: 2 }}>
+                    {(["en", "hi"] as const).map((lng) => (
+                      <Pressable
+                        key={lng}
+                        onPress={() => { void Haptics.selectionAsync(); setChartBriefLang(lng); }}
+                        accessibilityRole="button"
+                        accessibilityLabel={lng === "en" ? "Reply in English" : "उत्तर हिंदी में"}
+                        accessibilityState={{ selected: chartBriefLang === lng }}
+                        style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, backgroundColor: chartBriefLang === lng ? "#D97706" : "transparent" }}
+                      >
+                        <Text style={{ color: chartBriefLang === lng ? "#FFFFFF" : "#B45309", fontSize: 12, fontWeight: "800" }}>{lng === "en" ? "EN" : "हिं"}</Text>
+                      </Pressable>
+                    ))}
                   </View>
                 </View>
 
@@ -20142,7 +20439,9 @@ function isTrustedExternalUrl(url: string) {
                   <TextInput
                     value={astroChatDraft}
                     onChangeText={setAstroChatDraft}
-                    placeholder={hasExactBirthDetails ? "e.g. Will I get this job? Should I marry now? Why am I always tired?" : "Enter exact birth details above to unlock chart questions"}
+                    placeholder={hasExactBirthDetails
+                      ? (chartBriefLang === "hi" ? "जैसे: क्या मुझे यह नौकरी मिलेगी? क्या अभी शादी करूँ? मैं हमेशा थका क्यों रहता हूँ?" : "e.g. Will I get this job? Should I marry now? Why am I always tired?")
+                      : (chartBriefLang === "hi" ? "चार्ट प्रश्न खोलने के लिए ऊपर सटीक जन्म-विवरण भरें" : "Enter exact birth details above to unlock chart questions")}
                     placeholderTextColor="rgba(13,31,34,0.4)"
                     multiline
                     editable={hasExactBirthDetails}
@@ -20161,7 +20460,9 @@ function isTrustedExternalUrl(url: string) {
                         borderRadius: 10, paddingHorizontal: 16, paddingVertical: 9
                       })}>
                       <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>
-                        {astroChatLoading ? "Consulting the chart…" : "Ask the chart →"}
+                        {astroChatLoading
+                          ? (chartBriefLang === "hi" ? "चार्ट से परामर्श…" : "Consulting the chart…")
+                          : (chartBriefLang === "hi" ? "चार्ट से पूछें →" : "Ask the chart →")}
                       </Text>
                     </Pressable>
                   </View>
@@ -20178,10 +20479,12 @@ function isTrustedExternalUrl(url: string) {
                     borderWidth: 1, borderColor: "rgba(252,211,77,0.25)"
                   }}>
                     <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
-                      Reading your chart…
+                      {chartBriefLang === "hi" ? "आपका चार्ट पढ़ा जा रहा है…" : "Reading your chart…"}
                     </Text>
                     <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 19 }}>
-                      Checking your Moon Rashi, current Mahadasha/Antardasha, and today's Panchang for this question.
+                      {chartBriefLang === "hi"
+                        ? "इस प्रश्न के लिए आपकी चंद्र राशि, वर्तमान महादशा/अंतर्दशा और आज का पंचांग जाँचा जा रहा है।"
+                        : "Checking your Moon Rashi, current Mahadasha/Antardasha, and today's Panchang for this question."}
                     </Text>
                   </Animated.View>
                 )}
@@ -20192,7 +20495,7 @@ function isTrustedExternalUrl(url: string) {
                     onPress={() => handleTabPress("vedic")}
                     style={{ backgroundColor: "rgba(251,191,36,0.08)", borderRadius: 10, borderWidth: 1, borderColor: "rgba(251,191,36,0.22)", padding: 11 }}
                   >
-                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800" }}>Complete date, time, and birth place above to activate the engine.</Text>
+                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800" }}>{chartBriefLang === "hi" ? "इंजन सक्रिय करने के लिए ऊपर तिथि, समय और जन्म-स्थान भरें।" : "Complete date, time, and birth place above to activate the engine."}</Text>
                   </Pressable>
                 )}
 
@@ -20230,7 +20533,11 @@ function isTrustedExternalUrl(url: string) {
                           color: m.role === "user" ? "#007FB8" : "#B45309",
                           fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4
                         }}>
-                          {m.role === "user" ? "You asked" : `Chart reply · ${m.category ?? "general"}`}
+                          {m.role === "user"
+                            ? (chartBriefLang === "hi" ? "आपने पूछा" : "You asked")
+                            : (chartBriefLang === "hi"
+                                ? `चार्ट उत्तर · ${astroCategoryLabel((m.category ?? "general") as AstroChatCategory, "hi")}`
+                                : `Chart reply · ${m.category ?? "general"}`)}
                         </Text>
                         <Text style={{ color: m.role === "user" ? "#FFFFFF" : "#0D1F22", fontSize: 13, lineHeight: 19, whiteSpace: "pre-wrap" } as any}>
                           {m.text}
@@ -20240,7 +20547,7 @@ function isTrustedExternalUrl(url: string) {
                             marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(180,83,9,0.2)"
                           }}>
                             <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
-                              Vedic + Lal Kitab remedies
+                              {chartBriefLang === "hi" ? "वैदिक + लाल किताब उपाय" : "Vedic + Lal Kitab remedies"}
                             </Text>
                             <Text style={{ color: "rgba(13,31,34,0.78)", fontSize: 12, lineHeight: 17, whiteSpace: "pre-wrap" } as any}>
                               {m.remedy}
@@ -29869,6 +30176,8 @@ function BirthChartSection({
   selectedIssueGuide,
   issueContext,
   askTheChartPanel,
+  chartBriefLang,
+  setChartBriefLang,
 }: {
   rashiInfo: ReturnType<typeof getMoonRashiFromDOB> | null;
   predictionLines: string[] | null;
@@ -29896,6 +30205,9 @@ function BirthChartSection({
   // state (astroChatDraft, astroChatMessages, submitAstroQuestion) is owned
   // by App(), not by BirthChartSection.
   askTheChartPanel?: React.ReactNode;
+  // Lifted to App() so the Ask-the-chart answer engine shares this toggle.
+  chartBriefLang: "en" | "hi";
+  setChartBriefLang: (v: "en" | "hi") => void;
 }) {
   const { width } = useWindowDimensions();
   const isWide = width >= 760;
@@ -30015,9 +30327,11 @@ function BirthChartSection({
 
   // Plain-language, layman-facing graha-in-house reading. Exclusive toggle --
   // English or Hindi, never both at once, per product requirement -- kept
-  // local to this card rather than tied to the app's general 22-language
-  // settings, which govern UI chrome/voice, not this specific reading.
-  const [chartBriefLang, setChartBriefLang] = useState<"en" | "hi">("en");
+  // separate from the app's general 22-language settings (which govern UI
+  // chrome/voice, not this specific reading). NOTE: chartBriefLang/
+  // setChartBriefLang are now props lifted up to App() so the Ask-the-chart
+  // engine (which lives in App()) shares this exact same toggle -- see the
+  // comment on the App()-level useState.
   const housePlacementResult = useMemo(
     () => (birthChartCore ? computeHousePlacements(birthChartCore, chartBriefLang) : null),
     [birthChartCore, chartBriefLang]

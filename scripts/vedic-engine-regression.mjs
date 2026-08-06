@@ -233,4 +233,18 @@ assert(source.includes('Path to resolution'), 'SupportDimensionLibraryPanel does
 assert(source.includes('Resolved when: '), 'SupportDimensionLibraryPanel does not render the conclusion marker');
 assert(source.includes('Find: {target.label}'), 'SupportDimensionLibraryPanel does not render per-dimension supportSearch buttons');
 
+// ── Bilingual "Ask the chart" ────────────────────────────────────────────────
+// The Ask-the-chart answer engine must produce Hindi as well as English, driven
+// by the SAME chartBriefLang toggle already used for the Plain-Language chart
+// card (lifted to App() so both share it). Previously a Hindi user could set
+// the chart brief to Hindi but every Ask-the-chart reply still returned English.
+assert(source.includes('const [chartBriefLang, setChartBriefLang] = useState<"en" | "hi">("en")'), 'chartBriefLang must be a single lifted state (in App()) shared by the chart brief and Ask-the-chart engine');
+assert(source.includes('chartBriefLang={chartBriefLang}') && source.includes('setChartBriefLang={setChartBriefLang}'), 'chartBriefLang/setChartBriefLang must be threaded into BirthChartSection as props');
+assert(source.includes('lang: chartBriefLang'), 'submitAstroQuestion must pass the shared language into nextAstroChatReply');
+assert(source.includes('RASHI_CATEGORY_LENSES_HI') && source.includes('RASHI_REMEDIES_HI') && source.includes('LAL_KITAB_REMEDY_PACK_HI'), 'Ask-the-chart Hindi string packs (rashi lenses, rashi remedies, Lal Kitab) must exist');
+assert(source.includes('function astroCategoryLabel'), 'Ask-the-chart must localise the question-category label');
+assert(/नौकरी|करियर/.test(source) && /classifyAstroQuestion/.test(source), 'classifyAstroQuestion must match Hindi/Devanagari question keywords');
+assert(source.includes('चार्ट से पूछें'), 'Ask-the-chart UI must render the Hindi title when chartBriefLang is hi');
+assert(source.includes('वैदिक + लाल किताब उपाय'), 'Ask-the-chart remedy header must be bilingual');
+
 console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, Path/Guide Moon Chart + 48-axis complement, cross-section 48-dimension actionability, and all 48 dimensions carry a real path to resolution and conclusion.');
