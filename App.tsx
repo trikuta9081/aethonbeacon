@@ -10733,7 +10733,7 @@ function getVedicDailyPrediction(
 // (Moon sign), Janma Nakshatra, Vimshottari phase, Tithi and Vara. Only lunar-chart prediction paths are used here.
 type MoonChart48Category = "self" | "mind" | "body" | "relationship" | "work" | "money" | "family" | "spiritual" | "risk" | "growth";
 type MoonChart48Verdict = "Excellent" | "Supportive" | "Mixed" | "Careful";
-type MoonChart48Blueprint = { id: string; label: string; category: MoonChart48Category; house: number; weight: number; meaning: string };
+type MoonChart48Blueprint = { id: string; label: string; category: MoonChart48Category; house: number; weight: number; meaning: string; remedyFocus: string };
 type MoonChart48Reading = MoonChart48Blueprint & {
   score: number;
   verdict: MoonChart48Verdict;
