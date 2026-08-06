@@ -59,8 +59,7 @@ assert(importantNumbers < directoriesHub, 'Important numbers must appear before 
 assert(directoriesHub < routeChips, 'Directories hub must appear before route chips/general route selection');
 
 
-// Front UI order: Help and Redress above other sections,
-// Daily/report above tester page, tester page at the bottom.
+// Front UI order: Help and Redress above other sections, tester page at the bottom.
 const todayStart = indexOf('{activeTab === "today" && (');
 const landingHeader = indexOf('{/* ── LANDING HEADER — Premium redesign ── */}');
 // The front-screen Help and Redress card was intentionally trimmed from a
@@ -69,16 +68,16 @@ const landingHeader = indexOf('{/* ── LANDING HEADER — Premium redesign �
 // bottom-nav tab (see PRIMARY_NAV_TABS comment), so repeating it in full on
 // the front screen was redundant clutter. SOS stays a single tap either way.
 const mergedHelp = indexOf('In immediate danger, call 112.');
-// Calm Sound and Community/Messages preview cards were removed from the front
-// page entirely -- both already have their own always-visible tab in the top
-// tab rail (headerNavTabs includes "tones" and "community"), so previewing
-// them again on the front page was redundant clutter, same reasoning as the
-// Help & Redress trim above.
-const dailyReportFront = indexOf('uiCopy.reportTitle');
+// Calm Sound, Community/Messages, and Visit Report preview cards were removed
+// from the front page entirely -- all three already have their own
+// always-visible tab in the top tab rail (headerNavTabs includes "tones",
+// "community", and "insights"), so previewing them again on the front page
+// was redundant clutter, same reasoning as the Help & Redress trim above.
+// The Patterns/insights tab's own "Progress Report Card" is a richer version
+// of what the front-page report card used to show.
 const testerFront = indexOf('Become an Aethon Beacon tester');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
-assert(mergedHelp < dailyReportFront, 'Help and Redress must appear above Daily Snapshot/report');
-assert(dailyReportFront < testerFront, 'Current tester page must be placed at the bottom of the front UI');
+assert(mergedHelp < testerFront, 'Help and Redress must appear above the tester page');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
 assert(!source.includes('Moderated community support and private conversations'), 'Community/Messages preview must not remain on the front UI');
 indexOf('Open Help and Redress');
@@ -86,7 +85,9 @@ indexOf('Open Help and Redress');
 // safety strip was trimmed down to SOS + "Open Help and Redress" (the 4-number
 // grid they styled no longer exists in JSX) -- see mergedHelp marker above.
 indexOf('Platform.OS === "web" && (');
-indexOf('"tones",\n      "community"');
+indexOf('"tones",\n      "community",\n      "redress",\n      "insights"');
+// The richer report card that Visit Report moved into still lives on Patterns.
+indexOf('Progress Report Card');
 indexOf('automatic multidimensional counselling engine');
 assert(!source.includes('What Aethon Beacon does'), 'Vision card must not remain on the front UI');
 assert(!source.includes('48-Dimension'), 'Public 48-Dimension terminology must remain hidden');

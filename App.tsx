@@ -11976,7 +11976,8 @@ export default function App() {
       "vedic",
       "tones",
       "community",
-      "redress"
+      "redress",
+      "insights"
     ];
     return orderedIds
       .map((id) => visibleTabs.find((tab) => tab.id === id))
@@ -20557,72 +20558,17 @@ function TodaySection({
         </View>
 {/* Daily Loop section removed */}
         {/* Beacon Guide / Vision card removed */}
-        {/* Calm Sound and Community/Messages preview cards removed from the front
-            page on purpose -- both already have their own always-visible tab in
-            the top tab rail ("Tones" and "Messages" in headerNavTabs, plus the
-            full page-switcher reachable via "More"), the same reasoning that
-            already trimmed the Help and Redress preview down to a strip. This
-            keeps the front page short and premium instead of repeating full
-            previews of pages that are one tap away either way. */}
-        <View style={[styles.homeReportBand, compact && styles.homeReportBandCompact]}>
-          <View style={styles.sectionHeader}>
-            <View style={{ flex: 1, minWidth: 0 }}>
-              <Text style={styles.eyebrow}>{uiCopy.reportEyebrow}</Text>
-              <Text style={styles.sectionTitleSmall}>{uiCopy.reportTitle}</Text>
-            </View>
-            <Text style={styles.smallMeta}>{visitReportCount} saved</Text>
-          </View>
-          <Text style={styles.promptText}>{uiCopy.reportPrompt}</Text>
-          <Text style={styles.smallMeta}>{reportPrivacyMessage}</Text>
-          <View style={[styles.visitReportGrid, compact && styles.visitReportGridCompact]}>
-            <View style={[styles.visitReportCard, compact && styles.visitReportCardCompact]}>
-              <Text style={styles.visitReportLabel}>Step report</Text>
-              <Text style={styles.visitReportText} numberOfLines={2}>
-                {stepVisitReport
-                  ? stepVisitReport.summary
-                  : "Save a check-in to generate the first step report."}
-              </Text>
-              {stepVisitReport?.dataTrail?.length ? (
-                <Text style={styles.smallMeta} numberOfLines={2}>
-                  {stepVisitReport.dataTrail.join(" · ")}
-                </Text>
-              ) : null}
-              <Text style={styles.visitReportMeta} numberOfLines={2}>
-                {stepVisitReport ? stepVisitReport.nextStep : "The next step will appear here after a save."}
-              </Text>
-            </View>
-            <View style={[styles.visitReportCard, compact && styles.visitReportCardCompact]}>
-              <Text style={styles.visitReportLabel}>Daily report</Text>
-              <Text style={styles.visitReportText} numberOfLines={2}>
-                {dailyVisitReport.summary}
-              </Text>
-              {dailyVisitReport.dataTrail?.length ? (
-                <Text style={styles.smallMeta} numberOfLines={2}>
-                  {dailyVisitReport.dataTrail.join(" · ")}
-                </Text>
-              ) : null}
-              <Text style={styles.visitReportMeta} numberOfLines={2}>
-                {dailyVisitReport.nextStep}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.homeOverviewActions}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => onOpenTab("insights")}
-              style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.homeOverviewButtonLabel}>Open report</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => onOpenTab("journal")}
-              style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.homeOverviewButtonSecondaryLabel}>Back to journal</Text>
-            </Pressable>
-          </View>
-        </View>
+        {/* Calm Sound, Community/Messages, and Visit Report preview cards removed
+            from the front page on purpose -- all three already have their own
+            always-visible tab in the top tab rail ("Tones", "Messages", and now
+            "Patterns" in headerNavTabs, plus the full page-switcher reachable via
+            "More"), the same reasoning that already trimmed the Help and Redress
+            preview down to a strip. The Patterns tab's own "Progress Report Card"
+            (grade, score bars, latest session reports, export) is a richer version
+            of what this card used to show, so nothing was lost -- it just moved to
+            where it already lived. This keeps the front page short and premium
+            instead of repeating full previews of pages that are one tap away
+            either way. */}
         {Platform.OS === "web" && (
         <View
           style={{
