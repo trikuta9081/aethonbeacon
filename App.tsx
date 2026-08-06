@@ -21140,6 +21140,8 @@ function isTrustedExternalUrl(url: string) {
           onFetchGuideEnrichment={fetchGeminiAIHelp}
           streak={checkInStreak}
           moodTagLeaning={crossSectionSignal.recentMoodTagLeaning}
+          visitReports={visitReports}
+          moodTrend={crossSectionSignal.recentMoodTrend}
         />
 
         {/* ── Crisis support overlay (self-harm / suicidal ideation) ── */}
@@ -34607,13 +34609,29 @@ function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: numbe
  * Supreme-level synthesis: covers all dimension combinations, presents
  * multiple route options with reasoning, acknowledges every theme heard.
  */
-function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId, moonChart48Readings: MoonChart48Reading[] = []): string {
+function buildCounselingSynthesis(
+  session: CounselingSession,
+  issueId: IssueId,
+  moonChart48Readings: MoonChart48Reading[] = [],
+  // How many prior visit reports (real, timestamped daily/step reports --
+  // see VisitReport, App-level `visitReports`) already carry this same
+  // issue label. Previously computed and stored across the app (Insights
+  // tab reads it) but never reached the counselling engine, so every
+  // conversation about a recurring issue was treated as a first-time
+  // disclosure even when the person had raised it repeatedly. 0 by default
+  // -- purely additive, only adds one paragraph, never changes theme
+  // detection or which route/steps get recommended.
+  recurrenceCount = 0
+): string {
   const themes = session.detectedThemes;
   const userAnswers = session.turns.filter(t => t.role === "user").map(t => t.message).join(" ");
   const combined = (session.originalIssue + " " + userAnswers).toLowerCase();
 
   // ── Opening ──────────────────────────────────────────────────────────────────
   let synthesis = "I have been listening to everything you have shared, and I want to reflect back what I am hearing before we figure out the right paths for you.\n\n";
+  if (recurrenceCount >= 2) {
+    synthesis += `I also want to name something: this is not the first time this has come up -- you've raised something in this same area ${recurrenceCount} times before. That is not a failure on your part. It usually means this is a real, ongoing pattern rather than a one-off moment, and that changes what actually helps -- less about a single fix, more about something steadier and repeatable.\n\n`;
+  }
 
   // ── Core observation — based on dominant theme combination ───────────────────
   if (themes.includes("trauma")) {
@@ -34698,15 +34716,23 @@ function buildJourneySteps(
   // Optional and additive only -- deliberately never changes which steps are
   // included or their order (the calm/grounding, professional-support, and
   // redress steps above are safety-relevant and stay driven purely by
-  // detected themes, same as before). Only varies the *reason* copy on two
-  // already-always-present steps, so a returning person with real history
-  // gets guidance that acknowledges it instead of always reading like their
-  // very first visit.
-  personalization: { streak?: number; moodTagLeaning?: "negative" | "positive" | "mixed" | null } = {}
+  // detected themes, same as before). Only varies the *reason* copy on a
+  // handful of already-always-present steps, so a returning person with
+  // real history gets guidance that acknowledges it instead of always
+  // reading like their very first visit. recurrenceCount/moodTrend are the
+  // same two additional real signals (visitReports history, and
+  // crossSectionSignal's numeric mood trend) now also passed into
+  // buildCounselingSynthesis -- see that function's comment.
+  personalization: {
+    streak?: number;
+    moodTagLeaning?: "negative" | "positive" | "mixed" | null;
+    recurrenceCount?: number;
+    moodTrend?: "improving" | "steady" | "declining" | null;
+  } = {}
 ): JourneyStep[] {
   const steps: JourneyStep[] = [];
   const has = (t: SupportDimensionId) => themes.includes(t);
-  const { streak = 0, moodTagLeaning = null } = personalization;
+  const { streak = 0, moodTagLeaning = null, recurrenceCount = 0, moodTrend = null } = personalization;
 
   // ── 1. Immediate calm / grounding — for any emotional distress ───────────────
   const needsCalm: SupportDimensionId[] = ["self-image", "anxiety", "anger", "burnout", "sadness", "loneliness", "grief", "trauma", "fear", "financial", "health", "academic", "relationship"];
@@ -34715,7 +34741,10 @@ function buildJourneySteps(
       tabId: "focus",
       label: "Ground yourself first",
       emoji: "🌿",
-      reason: "The body needs to settle before the mind can make good decisions. Start here.",
+      reason:
+        moodTrend === "declining"
+          ? "Your recent check-ins have been trending heavier — settle the body before anything else, so the mind isn't making decisions from a stress state."
+          : "The body needs to settle before the mind can make good decisions. Start here.",
       completed: false, skipped: false
     });
   }
@@ -34775,9 +34804,11 @@ function buildJourneySteps(
     label: "Get personalised guidance",
     emoji: "🤝",
     reason:
-      streak >= 7
-        ? `Talk through your specific situation — you've already shown up ${streak} days running, so bring that same consistency here.`
-        : "Talk through your specific situation and get tailored next steps — not generic advice.",
+      recurrenceCount >= 2
+        ? `This is the ${recurrenceCount + 1}${recurrenceCount + 1 === 3 ? "rd" : "th"} time this has come up — talking it through properly now can break the repeat cycle instead of just easing this instance.`
+        : streak >= 7
+          ? `Talk through your specific situation — you've already shown up ${streak} days running, so bring that same consistency here.`
+          : "Talk through your specific situation and get tailored next steps — not generic advice.",
     completed: false, skipped: false
   });
 
@@ -34886,6 +34917,8 @@ function CounselingChatModal({
   onFetchGuideEnrichment,
   streak = 0,
   moodTagLeaning = null,
+  visitReports = [],
+  moodTrend = null,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -34925,6 +34958,15 @@ function CounselingChatModal({
   // text, never which steps appear.
   streak?: number;
   moodTagLeaning?: "negative" | "positive" | "mixed" | null;
+  // Real per-issue history log (already populated across the app on
+  // check-ins and Home-intake routing) -- used below to detect when the
+  // current issue is a repeat visit, so the synthesis and journey steps can
+  // acknowledge the pattern instead of treating every session as the first.
+  visitReports?: VisitReport[];
+  // crossSectionSignal.recentMoodTrend from App() -- lets the "ground
+  // yourself first" step read a real recent trend instead of only the
+  // single latest mood tag.
+  moodTrend?: "improving" | "steady" | "declining" | null;
 }) {
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
@@ -35163,8 +35205,15 @@ function CounselingChatModal({
         ...session, turns: newTurns, stage: "synthesizing",
         questionIndex: newQuestionIndex, detectedThemes: mergedThemes
       };
-      const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings);
-      const steps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning });
+      // How many prior visit reports already exist for this same issue --
+      // real history, not a guess -- so the synthesis and journey steps can
+      // acknowledge a repeat pattern instead of treating every session fresh.
+      const currentIssueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? null;
+      const recurrenceCount = currentIssueLabel
+        ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
+        : 0;
+      const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount);
+      const steps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
 
       typingTimeoutRef.current = setTimeout(() => {
         typingTimeoutRef.current = null;
@@ -35277,7 +35326,11 @@ function CounselingChatModal({
 
   function skipToRoute() {
     const route = detectAIHelpRouteFromText(session.originalIssue);
-    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning });
+    const currentIssueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? null;
+    const recurrenceCount = currentIssueLabel
+      ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
+      : 0;
+    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
     const finalSession: CounselingSession = { ...session, stage: "done", journeySteps: steps };
     onJourneyReady(finalSession);
   }

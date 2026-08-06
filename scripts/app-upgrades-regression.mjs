@@ -155,4 +155,32 @@ assert(
   'ToneLibrarySection must stay mounted (hidden via display:none) instead of being conditionally rendered, or background tone playback breaks again'
 );
 
-console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, and a persistent Tones mini-player that survives tab navigation are present.');
+// Counselling personalization pass: two real, already-computed signals that
+// were previously dead-ended before reaching the counselling engine --
+// visitReports (a real, timestamped per-issue history log populated across
+// the app on check-ins and Home-intake routing) and
+// crossSectionSignal.recentMoodTrend -- now flow into both the synthesis
+// paragraph (recurrence acknowledgement) and the journey steps (grounding /
+// guidance reason copy). Purely additive: never changes theme detection or
+// which steps/route get recommended, only reason/synthesis copy.
+[
+  'recurrenceCount = 0',
+  "moodTrend?: \"improving\" | \"steady\" | \"declining\" | null;",
+  'visitReports?: VisitReport[];',
+  'this is not the first time this has come up',
+  'Your recent check-ins have been trending heavier',
+].forEach((marker) => indexOf(marker));
+assert(
+  source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount)'),
+  'Counselling synthesis call site must pass real recurrenceCount computed from visitReports'
+);
+assert(
+  source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend })'),
+  'Counselling journey steps call site must pass recurrenceCount and moodTrend through personalization'
+);
+assert(
+  source.includes('visitReports={visitReports}') && source.includes('moodTrend={crossSectionSignal.recentMoodTrend}'),
+  'CounselingChatModal must receive real visitReports and crossSectionSignal.recentMoodTrend from App()'
+);
+
+console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, and counselling personalization wired to real visit-recurrence and mood-trend history are present.');
