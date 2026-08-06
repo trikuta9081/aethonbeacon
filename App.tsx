@@ -2476,7 +2476,15 @@ type ThemeColors = { [K in keyof typeof DARK_COLORS]: string };
 const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof Ionicons.glyphMap }> = [
   { id: "today", label: "Home", mark: "🏠", icon: "home" },
   { id: "guide", label: "Path", mark: "🧭", icon: "compass" },
-  { id: "aihelp", label: "Insights", mark: "✨", icon: "sparkles" },
+  // Label deliberately distinct from both "guide"/"Path" and "insights"/"Patterns"
+  // -- this tab's own internal id ("aihelp") happened to share a word with each
+  // of those, and it briefly carried the label "Insights" too, which collided
+  // head-on with the real Patterns tab (id "insights") right next to it in this
+  // same list. Two differently-behaving tabs both user-facing-labelled
+  // "Insights" meant tapping one when you meant the other. "Ask" is unique,
+  // short, and accurately describes what this tab actually is: a free-text
+  // chat that reads what you type and gives you a next step.
+  { id: "aihelp", label: "Ask", mark: "✨", icon: "sparkles" },
   { id: "journal", label: "Journal", mark: "📓", icon: "book" },
   // "focus" (formerly its own "Calm" nav entry) no longer has a standalone
   // tab body — its content now renders inside the Meditation tab (see the
@@ -2533,8 +2541,12 @@ const launchNeeds: Array<{
   },
   {
     id: "aihelp",
-    label: "Guidance",
-    meta: "Open Guide and let it classify the issue.",
+    // Was also "Guidance" -- identical to the "guide" card three lines up,
+    // on the same onboarding screen, pointing at two different tabs. A new
+    // user's very first choice on the app had two cards with the same
+    // headline. Matches the "Ask" label now used in the tabs array.
+    label: "Ask",
+    meta: "Open Ask and type what's on your mind in your own words.",
     tab: "aihelp"
   },
   {
@@ -11877,7 +11889,12 @@ export default function App() {
   const [adminSessionExpiresAt, setAdminSessionExpiresAt] = useState<string | null>(null);
   const [communityPostingLocked, setCommunityPostingLocked] = useState(false);
   const [sensitivePreviewsLocked, setSensitivePreviewsLocked] = useState(false);
-  const [voiceAssistEnabled, setVoiceAssistEnabled] = useState(true);
+  // Defaults OFF -- voice replies must be an opt-in the person deliberately turns
+  // on (Settings > Voice character, or the in-chat speaker toggle), not something
+  // that starts talking on its own the first time someone opens the counselling
+  // chat. A saved preference (loaded a few lines below from AsyncStorage) always
+  // overrides this default once the person has made an explicit choice either way.
+  const [voiceAssistEnabled, setVoiceAssistEnabled] = useState(false);
   const [voiceGender, setVoiceGender] = useState<"female" | "male">("female");
   const [voiceRate, setVoiceRate] = useState(1.0);
   const [voiceAssistStatus, setVoiceAssistStatus] = useState("Ready");
@@ -19596,9 +19613,7 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#E1EEEC", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center" }}>
                   <Text style={{ fontSize: 18, marginRight: 10 }}>✨</Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1, lineHeight: 18 }}>
-                    {entries.length < 5
-                      ? `Log ${5 - entries.length} more check-in${5 - entries.length === 1 ? "" : "s"} to unlock your full pattern dashboard.`
-                      : "Your mood patterns are ready. Explore your emotional trends and insights below."}
+                    Type what's on your mind, in your own words. It reads your check-ins and birth chart for context and gives you a concrete next step -- not just a reply.
                   </Text>
                   <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "aihelp"])} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss hint">
                     <Text style={{ color: "#1F2937", fontSize: 14, marginLeft: 8 }}>✕</Text>
@@ -34111,8 +34126,15 @@ function CounselingChatModal({
     >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        // "height" on Android resizes the whole screen when the keyboard opens,
+        // which was pushing the "Reply here..." input and the most recent
+        // message down past the visible area instead of keeping them in view --
+        // exactly the "reply is somewhere down and can be overseen" report.
+        // "padding" on both platforms instead adds bottom padding equal to the
+        // keyboard height, keeping this modal's layout (and the fixed input bar
+        // at its bottom) stable and visible while typing.
+        behavior="padding"
+        keyboardVerticalOffset={0}
       >
       <View style={{ flex: 1, backgroundColor: "#E1EEEC" }}>
         {/* Header */}
