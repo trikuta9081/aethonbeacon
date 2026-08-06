@@ -13462,6 +13462,16 @@ export default function App() {
     [issueGuideId]
   );
 
+  // How many prior visit reports already carry this same issue label -- the
+  // same real-history signal that now drives the counselling chat's
+  // recurrence acknowledgement (buildCounselingSynthesis/buildJourneySteps),
+  // surfaced here too so the Path tab's "Active focus" strip stops treating
+  // every visit as a first-time disclosure.
+  const selectedIssueRecurrenceCount = useMemo(
+    () => visitReports.filter((report) => report.issueLabel === selectedIssueGuide.label).length,
+    [visitReports, selectedIssueGuide]
+  );
+
   // The shared cross-section signal (see CrossSectionContext above): combines
   // the manually selected issue with what Path's multidimensional engine
   // has actually detected this session, plus a simple recent-mood trend from
@@ -20522,6 +20532,24 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "guide")}</Text></Text>
                 </View>
               )}
+              {selectedIssueGuide.id !== "general" && selectedIssueRecurrenceCount >= 2 && (
+                // Real-history recurrence note -- same signal (visitReports
+                // matched by issueLabel) already used in the counselling
+                // chat's synthesis, now visible on Path too instead of only
+                // inside a conversation the person has to start.
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#FDF3D9", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: "rgba(180,83,9,0.18)" }}>
+                  <Text style={{ color: "#92400E", fontSize: 12 }}>🔁</Text>
+                  <Text style={{ color: "#92400E", fontSize: 12, fontWeight: "600", flex: 1 }}>
+                    This has come up {selectedIssueRecurrenceCount} times before — worth trying a different step from this path than last time.
+                  </Text>
+                </View>
+              )}
+              {crossSectionSignal.recentMoodTrend === "declining" && (
+                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#0E9488", fontSize: 12 }}>📉</Text>
+                  <Text style={{ color: "#263244", fontSize: 12, fontWeight: "600", flex: 1 }}>Your recent check-ins have trended heavier — consider starting with a grounding step before working through the path below.</Text>
+                </View>
+              )}
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "guide" && (
                 <GuidedJourneyBar
                   steps={activeJourney.journeySteps}
@@ -22711,15 +22739,26 @@ function ToneLibrarySection({
   return (
     <View style={{ paddingBottom: 20 }}>
       {/* ── NOW PLAYING / IDLE PLAYER ── */}
-      <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 20, overflow: "hidden", backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: loopEnabled ? "rgba(34,211,238,0.4)" : "rgba(99,222,208,0.15)" }}>
+      {/* Visibility fix: this card previously opened with a near-black header
+          (#071C2E/#040C18) while its own text underneath (tone name,
+          category, timer suffix) used near-black colors (#0D1F22, #1F2937)
+          meant for a LIGHT background -- i.e. dark text on a dark header,
+          reading as blank/invisible. Header is now light to match the rest
+          of the app's glassy card language, and the ornament colors below
+          (orb ring, progress track, breathing-step chips, divider lines)
+          are switched from white-tinted (built for dark bg) to dark-tinted
+          rgba so they stay visible against the new light surfaces. Also
+          added a tinted shadow so the card reads as elevated like the
+          Home hero / tabBanner / calmTeaching cards instead of pasted-on flat. */}
+      <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 20, overflow: "hidden", backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: loopEnabled ? "rgba(8,145,178,0.35)" : "rgba(99,222,208,0.2)", shadowColor: "#0F3B45", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.1, shadowRadius: 16, elevation: 4 }}>
         {/* Player header */}
-        <View style={{ backgroundColor: loopEnabled ? "#071C2E" : "#040C18", paddingHorizontal: 18, paddingTop: 16, paddingBottom: 12 }}>
+        <View style={{ backgroundColor: loopEnabled ? "#DCEEFB" : "#E9F3F2", paddingHorizontal: 18, paddingTop: 16, paddingBottom: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 14 }}>
             {/* Tone mark orb */}
-            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: loopEnabled ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.06)", borderWidth: 2, borderColor: loopEnabled ? "#0891B2" : "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" }}>
+            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: loopEnabled ? "rgba(8,145,178,0.14)" : "rgba(15,23,42,0.05)", borderWidth: 2, borderColor: loopEnabled ? "#0891B2" : "rgba(15,23,42,0.12)", alignItems: "center", justifyContent: "center" }}>
               <Text style={{ fontSize: 22 }}>{selectedTone.mark}</Text>
               {loopEnabled && !tonePaused && (
-                <View style={{ position: "absolute", bottom: -2, right: -2, width: 14, height: 14, borderRadius: 7, backgroundColor: "#0891B2", borderWidth: 2, borderColor: "#071C2E" }} />
+                <View style={{ position: "absolute", bottom: -2, right: -2, width: 14, height: 14, borderRadius: 7, backgroundColor: "#0891B2", borderWidth: 2, borderColor: "#DCEEFB" }} />
               )}
             </View>
             <View style={{ flex: 1 }}>
@@ -22733,34 +22772,34 @@ function ToneLibrarySection({
                   </View>
                 )}
               </View>
-              <Text style={{ color: "#0D1F22", fontSize: 17, fontWeight: "900" }} numberOfLines={1}>{selectedTone.label}</Text>
-              <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>{selectedTone.category} · {selectedTone.pattern}</Text>
+              <Text style={{ color: "#0D1F22", fontSize: 18, fontWeight: "900" }} numberOfLines={1}>{selectedTone.label}</Text>
+              <Text style={{ color: "#3A577D", fontSize: 12, marginTop: 2, fontWeight: "600" }}>{selectedTone.category} · {selectedTone.pattern}</Text>
             </View>
             {/* Timer */}
             {loopEnabled && (
               <View style={{ alignItems: "center" }}>
                 <Text style={{ color: tonePaused ? "#B45309" : "#0891B2", fontSize: 20, fontWeight: "900", fontVariant: ["tabular-nums"] }}>{sessionLabel}</Text>
-                {presetMinutes > 0 && <Text style={{ color: "#1F2937", fontSize: 12 }}>/ {presetMinutes}m</Text>}
+                {presetMinutes > 0 && <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "600" }}>/ {presetMinutes}m</Text>}
               </View>
             )}
           </View>
           {/* Progress bar */}
           {loopEnabled && presetMinutes > 0 && (
-            <View style={{ height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.08)", marginTop: 12, overflow: "hidden" }}>
+            <View style={{ height: 3, borderRadius: 2, backgroundColor: "rgba(15,23,42,0.08)", marginTop: 12, overflow: "hidden" }}>
               <View style={{ height: 3, borderRadius: 2, backgroundColor: "#0891B2", width: `${Math.round(presetProgress * 100)}%` as unknown as number }} />
             </View>
           )}
         </View>
         {/* Breathing guide — shows during active program */}
         {loopEnabled && activeProgram && breathSteps.length > 0 && (
-          <View style={{ backgroundColor: "#DEE7F2", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(34,211,238,0.1)" }}>
+          <View style={{ backgroundColor: "#DEE7F2", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(8,145,178,0.15)" }}>
             <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
               🫁 Breathing guide — {activeProgram.breathPattern}
             </Text>
             <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
               {breathSteps.map((step, i) => (
-                <View key={step} style={{ flex: 1, minWidth: 60, backgroundColor: i === breathStep % breathSteps.length ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.04)", borderRadius: 8, paddingVertical: 8, alignItems: "center", borderWidth: 1, borderColor: i === breathStep % breathSteps.length ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.06)" }}>
-                  <Text style={{ color: i === breathStep % breathSteps.length ? "#0891B2" : "#1F2937", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{step}</Text>
+                <View key={step} style={{ flex: 1, minWidth: 60, backgroundColor: i === breathStep % breathSteps.length ? "rgba(8,145,178,0.15)" : "rgba(15,23,42,0.04)", borderRadius: 8, paddingVertical: 8, alignItems: "center", borderWidth: 1, borderColor: i === breathStep % breathSteps.length ? "rgba(8,145,178,0.4)" : "rgba(15,23,42,0.08)" }}>
+                  <Text style={{ color: i === breathStep % breathSteps.length ? "#0891B2" : "#3A577D", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{step}</Text>
                 </View>
               ))}
             </View>
@@ -22768,7 +22807,7 @@ function ToneLibrarySection({
         )}
         {/* Issue purpose — shows during program */}
         {loopEnabled && activeProgram && (
-          <View style={{ backgroundColor: "#DEE6F2", paddingHorizontal: 18, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
+          <View style={{ backgroundColor: "#DEE6F2", paddingHorizontal: 18, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(15,23,42,0.05)" }}>
             <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16 }}>
               <Text style={{ color: activeProgram.dimColor, fontWeight: "800" }}>{activeProgram.dim}: </Text>
               {activeProgram.purpose}
@@ -22776,7 +22815,7 @@ function ToneLibrarySection({
           </View>
         )}
         {/* Control buttons */}
-        <View style={{ flexDirection: "row", gap: 8, padding: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
+        <View style={{ flexDirection: "row", gap: 8, padding: 14, borderTopWidth: 1, borderTopColor: "rgba(15,23,42,0.06)" }}>
           <Pressable
             accessibilityRole="button"
             onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setLoopEnabled(false); setTonePaused(false); void playRelaxingToneCue(selectedTone); }}
@@ -22948,7 +22987,7 @@ function ToneLibrarySection({
                   setBreathStep(0);
                   setLoopEnabled(true);
                 }}
-                style={({ pressed }) => ({ borderRadius: 14, overflow: "hidden", backgroundColor: isRunning ? "#061520" : pressed ? "#050D18" : "#040C16", borderWidth: 1, borderColor: isRunning ? prog.dimColor + "60" : "rgba(255,255,255,0.07)" })}
+                style={({ pressed }) => ({ borderRadius: 14, overflow: "hidden", backgroundColor: isRunning ? prog.dimColor + "12" : pressed ? "#E4EEEC" : "#EFF6F5", borderWidth: 1, borderColor: isRunning ? prog.dimColor + "60" : "rgba(15,23,42,0.08)", shadowColor: "#0F3B45", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 })}
               >
                 <View style={{ flexDirection: "row", alignItems: "center", padding: 14, gap: 12 }}>
                   <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: prog.dimColor + "20", borderWidth: isRunning ? 2 : 1, borderColor: prog.dimColor + (isRunning ? "90" : "40"), alignItems: "center", justifyContent: "center" }}>
@@ -22956,21 +22995,21 @@ function ToneLibrarySection({
                   </View>
                   <View style={{ flex: 1 }}>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                      <Text style={{ color: "#F8FAFC", fontSize: 14, fontWeight: "900" }}>{prog.name}</Text>
+                      <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "900" }}>{prog.name}</Text>
                       <View style={{ backgroundColor: prog.dimColor + "20", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}>
                         <Text style={{ color: prog.dimColor, fontSize: 12, fontWeight: "900" }}>{prog.dim}</Text>
                       </View>
-                      <Text style={{ color: "#D6E4F0", fontSize: 12, fontWeight: "800" }}>{prog.duration}m</Text>
+                      <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "800" }}>{prog.duration}m</Text>
                     </View>
-                    <Text style={{ color: "#EAF2F8", fontSize: 12, lineHeight: 16, fontWeight: "700" }}>{prog.purpose}</Text>
-                    <Text style={{ color: "#FDE68A", fontSize: 12, lineHeight: 16, marginTop: 3, fontWeight: "800" }}>🫁 {prog.breathPattern} breathing</Text>
+                    <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "600" }}>{prog.purpose}</Text>
+                    <Text style={{ color: "#92400E", fontSize: 12, lineHeight: 16, marginTop: 3, fontWeight: "800" }}>🫁 {prog.breathPattern} breathing</Text>
                   </View>
                   <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: isRunning ? "#991B1B" : prog.dimColor + "20", borderWidth: 1, borderColor: isRunning ? "#DC2626" : prog.dimColor + "50", alignItems: "center", justifyContent: "center" }}>
                     <Text style={{ color: isRunning ? "#DC2626" : prog.dimColor, fontSize: 14 }}>{isRunning ? "⏹" : "▶"}</Text>
                   </View>
                 </View>
                 {isRunning && (
-                  <View style={{ height: 3, backgroundColor: "rgba(255,255,255,0.05)" }}>
+                  <View style={{ height: 3, backgroundColor: "rgba(15,23,42,0.06)" }}>
                     <View style={{ height: 3, backgroundColor: prog.dimColor, width: `${Math.round(presetProgress * 100)}%` as unknown as number }} />
                   </View>
                 )}
@@ -22992,21 +23031,21 @@ function ToneLibrarySection({
             const isOpen = expandedCategory === cat.id;
             const hasActive = catTones.some((t) => t.id === selectedTone.id);
             return (
-              <View key={cat.id} style={{ borderRadius: 14, overflow: "hidden", borderWidth: 1, borderColor: hasActive ? cat.color + "40" : "rgba(255,255,255,0.06)" }}>
+              <View key={cat.id} style={{ borderRadius: 14, overflow: "hidden", borderWidth: 1, borderColor: hasActive ? cat.color + "40" : "rgba(15,23,42,0.08)", shadowColor: "#0F3B45", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6, elevation: 1 }}>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={`${cat.label} category`}
                   accessibilityState={{ expanded: isOpen }}
                   onPress={() => { void Haptics.selectionAsync(); setExpandedCategory(isOpen ? null : cat.id); }}
-                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: hasActive ? cat.color + "10" : pressed ? "#060E18" : "#040C16", paddingHorizontal: 14, paddingVertical: 12 })}
+                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: hasActive ? cat.color + "12" : pressed ? "#E4EEEC" : "#EFF6F5", paddingHorizontal: 14, paddingVertical: 12 })}
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: cat.color, fontSize: 13, fontWeight: "900" }}>{cat.label}</Text>
-                    <Text style={{ color: "#D6E4F0", fontSize: 12, lineHeight: 16, marginTop: 2, fontWeight: "700" }}>{cat.desc}</Text>
+                    <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 16, marginTop: 2, fontWeight: "700" }}>{cat.desc}</Text>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     {hasActive && <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#0891B2" }} />}
-                    <Text style={{ color: "#D6E4F0", fontSize: 13, fontWeight: "900" }}>{isOpen ? "▲" : "▼"}</Text>
+                    <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "900" }}>{isOpen ? "▲" : "▼"}</Text>
                   </View>
                 </Pressable>
                 {isOpen && (

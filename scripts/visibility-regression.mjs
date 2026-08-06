@@ -52,8 +52,12 @@ function mustNotMatch(pattern, message) {
   'color: "#1F2937", fontSize: 12',
   'communityBadgeTextVerified: {\n    color: "#FFFFFF"',
   'adminStatusPillTextActive: {\n    color: "#FFFFFF"',
-  'color: "#F8FAFC", fontSize: 14, fontWeight: "900" }}>{prog.name}',
-  'color: "#EAF2F8", fontSize: 12, lineHeight: 16, fontWeight: "700" }}>{prog.purpose}',
+  // Healing Program cards were converted from near-black cards + light text
+  // to the app's standard light glassy card + dark text (see tone-engine/
+  // app-upgrades commit "Tones visibility pass") -- these now assert the
+  // new, correctly-paired colors instead of the old dark-card ones.
+  'color: "#0D1F22", fontSize: 14, fontWeight: "900" }}>{prog.name}',
+  'color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "600" }}>{prog.purpose}',
   'homeToneChipLabel: {\n    color: "#0D1F22"',
   'homeToneFeaturedUse: {\n    color: "#111827"',
   `onboardingSheet: {
@@ -92,4 +96,27 @@ function mustNotMatch(pattern, message) {
   'flexDirection: "row", flexWrap: "wrap", alignItems: "flex-start", paddingHorizontal: 14'
 ].forEach((marker) => mustInclude(marker, `Expected mobile overflow guard missing: ${marker}`));
 
-console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, and black-on-dark action/badge text.');
+// ── Tones player header visibility fix ───────────────────────────────────────
+// The now-playing/idle player header used to be near-black
+// (#071C2E/#040C18) while the tone name/category text directly inside it
+// used near-black colors (#0D1F22/#1F2937) meant for a light background --
+// dark text on a dark header, effectively invisible. Header is now light
+// (#DCEEFB/#E9F3F2) so that same dark text is legible again.
+mustNotInclude(
+  'backgroundColor: loopEnabled ? "#071C2E" : "#040C18"',
+  'Tones player header must not regress to the near-black background that made its own dark tone-name/category text invisible'
+);
+mustInclude(
+  'backgroundColor: loopEnabled ? "#DCEEFB" : "#E9F3F2"',
+  'Tones player header must use a light background so its dark tone-name/category text stays legible'
+);
+mustNotInclude(
+  'backgroundColor: isRunning ? "#061520" : pressed ? "#050D18" : "#040C16"',
+  'Healing Program cards must not regress to near-black backgrounds that clash with the rest of the light glassy design system'
+);
+mustNotInclude(
+  'backgroundColor: hasActive ? cat.color + "10" : pressed ? "#060E18" : "#040C16"',
+  'Tone Library category rows must not regress to near-black backgrounds that clash with the rest of the light glassy design system'
+);
+
+console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, and the Tones player/program/category dark-on-dark contrast bug stays fixed.');

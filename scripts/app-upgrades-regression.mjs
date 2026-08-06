@@ -183,4 +183,14 @@ assert(
   'CounselingChatModal must receive real visitReports and crossSectionSignal.recentMoodTrend from App()'
 );
 
+// Path tab: the same visitReports-derived recurrence signal and
+// crossSectionSignal.recentMoodTrend used in counselling chat are now also
+// surfaced directly on the Path tab's "Active focus" strip, so the pattern
+// is visible without having to start a chat conversation.
+[
+  'selectedIssueRecurrenceCount',
+  'This has come up {selectedIssueRecurrenceCount} times before',
+  'crossSectionSignal.recentMoodTrend === "declining"',
+].forEach((marker) => indexOf(marker));
+
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, and counselling personalization wired to real visit-recurrence and mood-trend history are present.');
