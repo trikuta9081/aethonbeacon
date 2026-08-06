@@ -33632,6 +33632,22 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
     });
   }
 
+  // ── 1.5. Structured issue path — the Path tab's principle/practice/boundary
+  // framework was never once recommended by this journey builder before, even
+  // though every other content tab (tones, meditation, search, aihelp, journal,
+  // vedic, redress, community, play, insights) is. Only makes sense once a
+  // specific issue has actually been identified (not the "general" default) --
+  // that structured plan doesn't exist for an unclassified concern.
+  if (issueId !== "general") {
+    steps.push({
+      tabId: "guide",
+      label: "See your structured path",
+      emoji: "🧭",
+      reason: "A concrete principle, practice, and boundary for exactly this issue — not general advice.",
+      completed: false, skipped: false
+    });
+  }
+
   // ── 2. Sound / tones for nervous system regulation ───────────────────────────
   if (has("anxiety") || has("burnout") || has("anger") || has("trauma") || has("grief") || has("fear")) {
     steps.push({
