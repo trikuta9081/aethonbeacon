@@ -2925,22 +2925,67 @@ async function stopContinuousTone(fadeMs = 700): Promise<void> {
 
   const nodes = _aethonContinuousWindow?.__aethonContinuous;
   if (!nodes) return;
-  const { masterGain, oscillators, gainNodes, effectNodes, bufferSource, context, stopTimer } = nodes;
+  // Claim (null out) the shared engine reference immediately, before doing
+  // any async work below. ToneLibrarySection's playback effect can call
+  // stopContinuousTone() twice back-to-back for a single Stop tap (once
+  // from the outgoing effect's cleanup, once from the new effect body's own
+  // `if (!loopEnabled)` branch) -- without this, both calls would read the
+  // same not-yet-cleared nodes and race to fade+stop them independently.
+  // With it, the second call sees nothing left to do.
+  if (_aethonContinuousWindow) _aethonContinuousWindow.__aethonContinuous = undefined;
+
+  const { masterGain, oscillators, gainNodes, effectNodes, bufferSource, merger, context, stopTimer } = nodes;
   if (stopTimer) clearTimeout(stopTimer);
   const now = context.currentTime;
   const fadeSec = Math.max(0.08, Math.min(4, fadeMs / 1000));
+  const stopAt = now + fadeSec;
+
+  // Bilateral, isochronic, and gamma tones pre-schedule their own pulse
+  // envelope directly on their individual gain nodes for the *entire*
+  // session horizon (up to 20+ minutes, thousands of setValueAtTime /
+  // linearRampToValueAtTime calls baked in at start time -- see
+  // startContinuousTone's isBilateral/isIso/isGamma branches). Cancelling
+  // scheduled values only on masterGain, as before, left every one of
+  // those individually-scheduled pulses still queued underneath it.
   try {
     masterGain.gain.cancelScheduledValues(now);
     masterGain.gain.setValueAtTime(Math.max(0.0001, masterGain.gain.value), now);
-    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + fadeSec);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, stopAt);
   } catch {}
-  await new Promise<void>((resolve) => setTimeout(resolve, fadeMs + 80));
-  for (const osc of oscillators) { try { osc.stop(); osc.disconnect(); } catch {} }
-  for (const g of gainNodes) { try { g.disconnect(); } catch {} }
-  for (const effect of effectNodes) { try { effect.disconnect(); } catch {} }
-  try { bufferSource?.stop(); bufferSource?.disconnect(); } catch {}
-  try { masterGain.disconnect(); } catch {}
-  if (_aethonContinuousWindow) _aethonContinuousWindow.__aethonContinuous = undefined;
+  for (const g of gainNodes) {
+    try {
+      g.gain.cancelScheduledValues(now);
+      g.gain.setValueAtTime(0.0001, now);
+    } catch {}
+  }
+
+  // Schedule the actual stop on the WebAudio clock itself (native
+  // .stop(time) scheduling), NOT a JS setTimeout -- this is the fix for
+  // "tone keeps buzzing even after Stop." Browsers throttle background-tab
+  // JS timers (sometimes to once a minute), so the previous approach --
+  // `await new Promise(resolve => setTimeout(resolve, fadeMs))` before ever
+  // calling osc.stop()/disconnect() -- could leave a tone audibly playing
+  // far longer than intended whenever the tab wasn't focused at the moment
+  // Stop was pressed. That's now a routine case, not an edge case, since
+  // tones can keep playing across tab navigation via the mini-player.
+  // Audio-clock-scheduled stops are driven by the audio render thread and
+  // fire reliably regardless of any JS timer throttling.
+  for (const osc of oscillators) {
+    try { osc.stop(stopAt); } catch { try { osc.stop(); } catch {} }
+  }
+  try { bufferSource?.stop(stopAt); } catch { try { bufferSource?.stop(); } catch {} }
+
+  // Disconnecting is pure reference cleanup with no audible effect either
+  // way (the scheduled stops above already guarantee silence on time), so
+  // it's fine for this part to ride on an ordinary JS timer.
+  setTimeout(() => {
+    for (const osc of oscillators) { try { osc.disconnect(); } catch {} }
+    for (const g of gainNodes) { try { g.disconnect(); } catch {} }
+    for (const effect of effectNodes) { try { effect.disconnect(); } catch {} }
+    try { bufferSource?.disconnect(); } catch {}
+    try { merger?.disconnect(); } catch {}
+    try { masterGain.disconnect(); } catch {}
+  }, fadeMs + 80);
 }
 
 async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOptions = {}): Promise<void> {
@@ -21208,31 +21253,6 @@ function TodaySection({
   const uiCopy = getUiCopy(languageId);
   const compact = !isWide;
   const [selectedRelaxingToneId, setSelectedRelaxingToneId] = useState(mindRelaxingToneModes[3].id);
-  const [mindRestLoopEnabled, setMindRestLoopEnabled] = useState(false);
-  const [mindRestSessionSeconds, setMindRestSessionSeconds] = useState(0);
-  const [mindRestPresetMinutes, setMindRestPresetMinutes] = useState(0);
-  const mindRestLoopIndexRef = useRef(0);
-  const mindRestLoopSequence = useMemo(() => {
-    const loopIds = [
-      "ambient-rain",
-      "ambient-ocean",
-      "ambient-softdrone",
-      "ambient-breath",
-      "binaural-theta-4",
-      "binaural-alpha-7",
-      "iso-6",
-      "reset-quiet"
-    ] as const;
-    return loopIds
-      .map((id) => mindRelaxingToneModes.find((toneMode) => toneMode.id === id))
-      .filter((toneMode): toneMode is RelaxingToneMode => Boolean(toneMode));
-  }, []);
-  const selectedRelaxingTone = useMemo(
-    () =>
-      mindRelaxingToneModes.find((toneMode) => toneMode.id === selectedRelaxingToneId) ??
-      mindRelaxingToneModes[0],
-    [selectedRelaxingToneId]
-  );
   const frontToneCategorySummaries = useMemo(() =>
     TONE_CATEGORIES.map((category) => {
       const tones = mindRelaxingToneModes.filter((toneMode) => category.ids.includes(toneMode.id));
@@ -21248,43 +21268,25 @@ function TodaySection({
     []
   );
   const frontToneTotal = mindRelaxingToneModes.length;
-  useEffect(() => {
-    if (!mindRestLoopEnabled) {
-      void stopContinuousTone();
-      setMindRestSessionSeconds(0);
-      return undefined;
-    }
-    const toneMode =
-      mindRelaxingToneModes.find((t) => t.id === selectedRelaxingToneId) ??
-      mindRelaxingToneModes[0];
-    void startContinuousTone(toneMode, {
-      volume: 0.13,
-      fadeInMs: 1000,
-      durationMs: mindRestPresetMinutes > 0 ? mindRestPresetMinutes * 60 * 1000 : undefined
-    });
-    setMindRestSessionSeconds(0);
-    const ticker = setInterval(() => setMindRestSessionSeconds((s) => s + 1), 1000);
-    return () => {
-      clearInterval(ticker);
-      void stopContinuousTone();
-    };
-  }, [mindRestLoopEnabled, selectedRelaxingToneId, mindRestPresetMinutes]);
-
-  // Auto-stop home tones when preset duration reached
-  useEffect(() => {
-    if (!mindRestLoopEnabled || mindRestPresetMinutes === 0) return;
-    if (mindRestSessionSeconds >= mindRestPresetMinutes * 60) {
-      setMindRestLoopEnabled(false);
-    }
-  }, [mindRestSessionSeconds, mindRestPresetMinutes, mindRestLoopEnabled]);
+  // Previously there was a second, entirely independent continuous-loop
+  // player here (mindRestLoopEnabled/mindRestSessionSeconds/
+  // mindRestPresetMinutes/mindRestLoopIndexRef/mindRestLoopSequence/
+  // selectedRelaxingTone) sharing the same single-instance audio engine as
+  // ToneLibrarySection's loop player, with zero UI ever wired to actually
+  // turn it on (setMindRestLoopEnabled(true) was never called anywhere in
+  // the app -- confirmed by search). Because its effect depended on
+  // selectedRelaxingToneId, every tap of the brain-reset button below (which
+  // calls setSelectedRelaxingToneId) re-ran that dead effect and, since
+  // mindRestLoopEnabled was always false, unconditionally called
+  // stopContinuousTone() -- silently killing any tone actively looping
+  // elsewhere in the app (e.g. from the Tones tab or its mini-player) just
+  // from tapping this unrelated Home button. Removed entirely; the one real
+  // feature here (a one-shot reset cue) only ever used playRelaxingToneCue,
+  // never the loop engine.
   const openBrainResetTone = () => {
     const toneMode =
       mindRelaxingToneModes.find((item) => item.id === "reset-gamma") ?? mindRelaxingToneModes[0];
     setSelectedRelaxingToneId(toneMode.id);
-    mindRestLoopIndexRef.current = Math.max(
-      0,
-      mindRestLoopSequence.findIndex((item) => item.id === toneMode.id)
-    );
     void playRelaxingToneCue(toneMode);
   };
   return (

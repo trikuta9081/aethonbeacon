@@ -28,4 +28,25 @@ assert(app.includes("Safe gain"), "tone UI must expose safe gain control");
 assert(app.includes("getToneContraindication"), "tone safety copy must be generated per tone family");
 assert(pkg.scripts["test:tone"] === "node scripts/tone-engine-regression.mjs", "package.json must expose test:tone");
 
-console.log("Tone engine regression passed: pristine presets, safe limiter, native WAV, UI controls verified.");
+// ── "Tone keeps buzzing after Stop" fix ──────────────────────────────────────
+// Root causes: (1) masterGain-only cancellation left every individually
+// pre-scheduled pulse envelope on bilateral/isochronic/gamma tones' own gain
+// nodes still queued; (2) the old approach waited on a JS setTimeout before
+// ever calling osc.stop()/disconnect(), and background-tab JS timer
+// throttling could delay that indefinitely; (3) React's effect
+// cleanup-then-rerun could fire stopContinuousTone twice concurrently,
+// racing on the same not-yet-cleared shared engine reference.
+assert(app.includes("osc.stop(stopAt)"), "stopContinuousTone must schedule oscillator stops on the WebAudio clock, not rely on a JS setTimeout before stopping audio");
+assert(/for \(const g of gainNodes\) \{\s*try \{\s*g\.gain\.cancelScheduledValues\(now\);/.test(app), "stopContinuousTone must cancel scheduled automation on every individual gain node, not only masterGain");
+assert(app.includes("_aethonContinuousWindow.__aethonContinuous = undefined"), "stopContinuousTone must claim (null out) the shared engine reference before doing async work, to prevent concurrent stop calls from racing");
+
+// ── Dead "Home mind-rest loop" player removed ────────────────────────────────
+// This second, entirely independent continuous-loop player shared the same
+// single-instance audio engine as ToneLibrarySection's loop player, but had
+// no UI ever wired to turn it on -- its effect still ran on every
+// selectedRelaxingToneId change (i.e. every tap of the Home brain-reset
+// button) and unconditionally called stopContinuousTone(), silently killing
+// any tone actively looping elsewhere in the app.
+assert(!app.includes("useState(false); const [mindRestLoopEnabled") && !app.includes("const [mindRestLoopEnabled, setMindRestLoopEnabled] = useState"), "dead mindRestLoopEnabled Home tone-loop state must not be reintroduced -- it had no UI and silently killed unrelated active tones");
+
+console.log("Tone engine regression passed: pristine presets, safe limiter, native WAV, UI controls, reliable audio-clock-scheduled stop, and no dead cross-tab-interfering tone state verified.");
