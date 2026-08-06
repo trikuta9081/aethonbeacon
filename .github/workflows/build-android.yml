@@ -214,3 +214,24 @@ jobs:
           releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
           track: internal
           status: completed
+
+      # Google Play's "Internal testing" and "Closed testing (Alpha)" are two
+      # separate, unlinked tracks -- publishing to one never reaches testers
+      # on the other. The real closed-testing tester lists (the ones synced
+      # by the android-tester-auto-sync scheduled task) live on the alpha
+      # track, but this workflow only ever published to internal, so alpha
+      # silently fell multiple days and many commits behind internal/web
+      # every time until someone manually clicked "Promote release" in the
+      # Play Console UI -- which nobody was doing. Publishing the same AAB to
+      # both tracks in the same run keeps alpha permanently current with zero
+      # manual steps, matching how web (mirror-to-render.yml) and iOS
+      # (TestFlight internal auto-distribution) already behave.
+      - name: Publish to Play Console (alpha / closed testing track)
+        if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.aethonbeacon.app
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: alpha
+          status: completed

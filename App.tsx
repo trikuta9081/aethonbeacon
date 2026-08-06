@@ -9862,7 +9862,13 @@ const NAISARGIKA_BALA: Record<ShadbalaPlanet, number> = {
 
 // Classical minimum Shadbala (in Rupas) each planet needs to be considered
 // "strong enough" to deliver its full significations -- also a fixed,
-// per-planet constant, not something that varies by chart.
+// per-planet constant, not something that varies by chart. NOT currently
+// compared against anything: it's a threshold for the FULL six-fold total,
+// and computeShadbala() below only produces a partial (4-of-6-category)
+// total, so the comparison would be invalid (see ShadbalaComponents comment).
+// Kept here, correct and ready, for when Kala Bala + Drik Bala + the
+// remaining Sthana Bala parts are implemented and a real full-total
+// comparison becomes possible.
 const SHADBALA_MINIMUM_RUPAS: Record<ShadbalaPlanet, number> = {
   sun: 6.5,
   moon: 6.0,
@@ -9937,8 +9943,20 @@ type ShadbalaComponents = {
   naisargikaBala: number;
   totalVirupas: number; // sum of the components above (partial Shadbala, not full six-fold total)
   totalRupas: number;
-  minimumRequiredRupas: number;
-  meetsClassicalMinimum: boolean;
+  // The classical SHADBALA_MINIMUM_RUPAS table is a threshold for the FULL
+  // six-fold total (Sthana + Dig + Kala + Chesta + Naisargika + Drik). This
+  // build only computes 4 of those 6 categories (see module comment for what
+  // Kala Bala and Drik Bala require), so totalRupas is structurally smaller
+  // than a full Shadbala and comparing it against the full-total minimum
+  // would show nearly every planet on nearly every chart as "below min" --
+  // not a real astrological signal, just a category-count mismatch. Instead,
+  // coveragePercent compares totalVirupas against includedMaxVirupas, the
+  // maximum this same partial formula could ever award (each component's own
+  // known ceiling: Sthana-partial 150, Dig 60, Chesta 60 where applicable,
+  // Naisargika its fixed constant) -- an honest "how strong within what we
+  // actually calculate" figure, not a guessed pass/fail line.
+  includedMaxVirupas: number;
+  coveragePercent: number;
 };
 
 type ShadbalaResult = {
@@ -10005,7 +10023,8 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
     const naisargikaBala = NAISARGIKA_BALA[planet];
     const totalVirupas = sthanaBalaPartial + digBala + (chestaBala ?? 0) + naisargikaBala;
     const totalRupas = totalVirupas / 60;
-    const minimumRequiredRupas = SHADBALA_MINIMUM_RUPAS[planet];
+    const includedMaxVirupas = 150 + 60 + (chestaBala !== null ? 60 : 0) + naisargikaBala;
+    const coveragePercent = (totalVirupas / includedMaxVirupas) * 100;
 
     planets[planet] = {
       sthanaBalaPartial,
@@ -10014,12 +10033,152 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
       naisargikaBala,
       totalVirupas,
       totalRupas,
-      minimumRequiredRupas,
-      meetsClassicalMinimum: totalRupas >= minimumRequiredRupas,
+      includedMaxVirupas,
+      coveragePercent,
     };
   }
 
   return { planets };
+}
+
+// ── Plain-language house placements (layman graha-in-bhava reading) ────────
+// The rest of this file's Vedic engine intentionally stays terse and
+// classical (Rupas, Virupas, Bindus) for people who already read charts.
+// This section is the opposite: it is written for someone who has never
+// looked at a horoscope before and just wants to know, in one or two plain
+// sentences per planet, "what does this mean for my life." It reuses the
+// same real Lagna + navagraha longitudes as Shadbala/Ashtakavarga above
+// (houseFromLagna, rashiIndexFromLongitude) -- nothing here is a separate or
+// looser calculation, only the wording is different.
+//
+// Content is built compositionally from two independent, genuinely distinct
+// dictionaries -- HOUSE_DOMAIN (12 entries) and GRAHA_NATURE (9 entries) --
+// combined into one sentence per graha-in-house. This is the same technique
+// classical Jyotish texts themselves use (a planet's karakatwa "significations"
+// expressed through a bhava's "domain"), and it means every one of the up to
+// 9 cards a person sees is built from a distinct pairing, never a copy-pasted
+// paragraph reused across different placements (that was a real bug fixed
+// elsewhere in this file for the Moon Chart 48-dimension engine).
+type PlainLanguageStrings = {
+  houseDomain: Record<number, { title: string; life: string }>;
+  grahaNature: Record<GrahaId, { name: string; brings: string }>;
+  ordinals: Record<number, string>;
+  sentence: (grahaName: string, ordinal: string, houseTitle: string, grahaBrings: string, houseLife: string) => string;
+  briefIntro: string;
+  briefOutro: string;
+};
+
+const PLAIN_LANGUAGE_EN: PlainLanguageStrings = {
+  houseDomain: {
+    1: { title: "the house of Self and Body", life: "your personality, health, and the first impression you make on others" },
+    2: { title: "the house of Wealth and Family Values", life: "your income, savings, speech, food habits, and the values your family raised you with" },
+    3: { title: "the house of Courage and Effort", life: "your siblings, self-effort, communication, and short journeys" },
+    4: { title: "the house of Home and Inner Peace", life: "your home, mother, emotional foundation, property, and peace of mind" },
+    5: { title: "the house of Creativity and Intelligence", life: "your children, creativity, intelligence, romance, and confidence in your own ideas" },
+    6: { title: "the house of Work and Obstacles", life: "your daily work, health challenges, debts, and how you handle rivals or difficulties" },
+    7: { title: "the house of Partnership", life: "your marriage, business partnerships, and how you deal with the public" },
+    8: { title: "the house of Transformation", life: "sudden change, shared resources, in-laws, and matters people usually keep private" },
+    9: { title: "the house of Luck and Higher Purpose", life: "your father, higher learning, faith, ethics, and long journeys" },
+    10: { title: "the house of Career and Status", life: "your career, public reputation, and sense of authority" },
+    11: { title: "the house of Gains and Aspirations", life: "your income growth, friendships, and how your hopes and wishes tend to be fulfilled" },
+    12: { title: "the house of Release and Letting Go", life: "expenses, distant places, solitude, rest, and your inner spiritual life" },
+  },
+  grahaNature: {
+    sun: { name: "Surya (the Sun)", brings: "confidence, visibility, and a pull toward leadership and recognition" },
+    moon: { name: "Chandra (the Moon)", brings: "emotional sensitivity, adaptability, and a need for comfort and reassurance" },
+    mars: { name: "Mangal (Mars)", brings: "energy, courage, and directness, which can tip into impatience or conflict if unchecked" },
+    mercury: { name: "Budha (Mercury)", brings: "sharp thinking, communication skill, and a practical, analytical approach" },
+    jupiter: { name: "Guru (Jupiter)", brings: "optimism, wisdom, growth, and a generally protective, expansive influence" },
+    venus: { name: "Shukra (Venus)", brings: "a love of beauty, comfort, relationships, and pleasure" },
+    saturn: { name: "Shani (Saturn)", brings: "discipline and delay -- slow, hard-earned progress that tends to last" },
+    rahu: { name: "Rahu", brings: "restless ambition and a pull toward the unconventional, foreign, or intensely desired" },
+    ketu: { name: "Ketu", brings: "detachment and instinct -- a quiet pull away from material focus and toward inner release" },
+  },
+  ordinals: { 1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", 6: "6th", 7: "7th", 8: "8th", 9: "9th", 10: "10th", 11: "11th", 12: "12th" },
+  sentence: (grahaName, ordinal, houseTitle, grahaBrings, houseLife) =>
+    `${grahaName} sits in your ${ordinal} house, ${houseTitle}. This placement brings ${grahaBrings} into ${houseLife} -- that is the area of life most likely to carry this planet's flavour.`,
+  briefIntro: "Here is your chart in plain language -- no jargon, just what each planet's placement tends to mean for your everyday life.",
+  briefOutro: "Remember: a birth chart shows tendencies and leanings, not a fixed fate. How you respond to these energies matters more than the placements themselves.",
+};
+
+const PLAIN_LANGUAGE_HI: PlainLanguageStrings = {
+  houseDomain: {
+    1: { title: "स्वयं और शरीर का भाव", life: "आपका व्यक्तित्व, स्वास्थ्य, और दूसरों पर पड़ने वाला पहला प्रभाव" },
+    2: { title: "धन और पारिवारिक मूल्यों का भाव", life: "आपकी आय, बचत, वाणी, खान-पान, और वे मूल्य जो परिवार ने आपको दिए" },
+    3: { title: "साहस और प्रयास का भाव", life: "आपके भाई-बहन, आत्म-प्रयास, संवाद क्षमता, और छोटी यात्राएँ" },
+    4: { title: "घर और मानसिक शांति का भाव", life: "आपका घर, माता, भावनात्मक आधार, संपत्ति, और मन की शांति" },
+    5: { title: "रचनात्मकता और बुद्धि का भाव", life: "आपकी संतान, रचनात्मकता, बुद्धि, प्रेम-संबंध, और अपने विचारों पर भरोसा" },
+    6: { title: "कार्य और बाधाओं का भाव", life: "आपका दैनिक कार्य, स्वास्थ्य संबंधी चुनौतियाँ, ऋण, और प्रतिस्पर्धियों से निपटने का तरीका" },
+    7: { title: "साझेदारी का भाव", life: "आपका विवाह, व्यावसायिक साझेदारी, और लोगों से व्यवहार करने का तरीका" },
+    8: { title: "रूपांतरण का भाव", life: "अचानक बदलाव, साझा संसाधन, ससुराल पक्ष, और वे बातें जिन्हें लोग निजी रखते हैं" },
+    9: { title: "भाग्य और उच्च उद्देश्य का भाव", life: "आपके पिता, उच्च शिक्षा, आस्था, नैतिकता, और लंबी यात्राएँ" },
+    10: { title: "करियर और प्रतिष्ठा का भाव", life: "आपका करियर, सार्वजनिक प्रतिष्ठा, और अधिकार की भावना" },
+    11: { title: "लाभ और आकांक्षाओं का भाव", life: "आपकी आय वृद्धि, मित्रता, और आपकी इच्छाएँ किस तरह पूरी होती हैं" },
+    12: { title: "मुक्ति और त्याग का भाव", life: "खर्च, दूर के स्थान, एकांत, विश्राम, और आपका आंतरिक आध्यात्मिक जीवन" },
+  },
+  grahaNature: {
+    sun: { name: "सूर्य", brings: "आत्मविश्वास, दृश्यता, और नेतृत्व एवं पहचान की चाह" },
+    moon: { name: "चंद्र", brings: "भावनात्मक संवेदनशीलता, अनुकूलनशीलता, और सुकून व आश्वासन की आवश्यकता" },
+    mars: { name: "मंगल", brings: "ऊर्जा, साहस, और सीधापन, जो बिना संयम के अधीरता या टकराव में बदल सकता है" },
+    mercury: { name: "बुध", brings: "तीक्ष्ण सोच, संवाद कौशल, और व्यावहारिक, विश्लेषणात्मक दृष्टिकोण" },
+    jupiter: { name: "गुरु", brings: "आशावाद, ज्ञान, विकास, और एक सामान्यतः संरक्षक व विस्तारशील प्रभाव" },
+    venus: { name: "शुक्र", brings: "सौंदर्य, आराम, रिश्तों, और आनंद के प्रति लगाव" },
+    saturn: { name: "शनि", brings: "अनुशासन और विलंब -- धीमी, कठिन परिश्रम से मिली प्रगति जो टिकाऊ होती है" },
+    rahu: { name: "राहु", brings: "बेचैन महत्वाकांक्षा और अपरंपरागत, विदेशी, या तीव्र इच्छा की ओर खिंचाव" },
+    ketu: { name: "केतु", brings: "वैराग्य और सहज-बोध -- भौतिक फोकस से दूर और आंतरिक मुक्ति की ओर एक शांत खिंचाव" },
+  },
+  ordinals: { 1: "पहले", 2: "दूसरे", 3: "तीसरे", 4: "चौथे", 5: "पांचवें", 6: "छठे", 7: "सातवें", 8: "आठवें", 9: "नौवें", 10: "दसवें", 11: "ग्यारहवें", 12: "बारहवें" },
+  sentence: (grahaName, ordinal, houseTitle, grahaBrings, houseLife) =>
+    `${grahaName} आपके ${ordinal} भाव में स्थित है, यानी ${houseTitle}। यह स्थिति ${houseLife} में ${grahaBrings} लाती है -- यही वह क्षेत्र है जहाँ इस ग्रह का प्रभाव सबसे अधिक दिखेगा।`,
+  briefIntro: "यह रहा आपकी जन्म कुंडली का सरल भाषा में विवरण -- बिना कठिन शब्दों के, सीधे यह कि हर ग्रह की स्थिति आपके रोज़मर्रा के जीवन के लिए क्या मायने रखती है।",
+  briefOutro: "याद रखें: जन्म कुंडली प्रवृत्तियाँ और झुकाव दिखाती है, कोई तय भाग्य नहीं। आप इन ऊर्जाओं पर कैसे प्रतिक्रिया देते हैं, यह स्थिति से भी अधिक मायने रखता है।",
+};
+
+type HousePlacementEntry = {
+  house: number;
+  grahas: GrahaId[];
+  cardTexts: string[]; // one composed sentence per graha in this house
+};
+
+type HousePlacementResult = {
+  houses: HousePlacementEntry[]; // only houses that actually contain a graha, ordered 1..12
+  brief: string; // all sentences joined into one readable paragraph, with intro/outro
+};
+
+// Requires the same precise Lagna as Shadbala/Ashtakavarga (house positions
+// are meaningless without a real Ascendant), so it deliberately returns null
+// rather than a misleading result -- same guard as computeShadbala.
+function computeHousePlacements(core: BirthChartCore, lang: "en" | "hi"): HousePlacementResult | null {
+  if (core.ascendantSidereal === null) return null;
+  const strings = lang === "hi" ? PLAIN_LANGUAGE_HI : PLAIN_LANGUAGE_EN;
+  const lagnaRashi = rashiIndexFromLongitude(core.ascendantSidereal);
+
+  const byHouse = new Map<number, GrahaId[]>();
+  for (const id of NAVAGRAHA_IDS) {
+    const rashiIndex = rashiIndexFromLongitude(core.navagraha[id]);
+    const house = houseFromLagna(rashiIndex, lagnaRashi);
+    if (!byHouse.has(house)) byHouse.set(house, []);
+    byHouse.get(house)!.push(id);
+  }
+
+  const houses: HousePlacementEntry[] = [];
+  const allSentences: string[] = [];
+  for (let house = 1; house <= 12; house++) {
+    const grahas = byHouse.get(house);
+    if (!grahas || grahas.length === 0) continue;
+    const domain = strings.houseDomain[house];
+    const ordinal = strings.ordinals[house];
+    const cardTexts = grahas.map((id) => {
+      const nature = strings.grahaNature[id];
+      const text = strings.sentence(nature.name, ordinal, domain.title, nature.brings, domain.life);
+      allSentences.push(text);
+      return text;
+    });
+    houses.push({ house, grahas, cardTexts });
+  }
+
+  const brief = [strings.briefIntro, ...allSentences, strings.briefOutro].join(" ");
+  return { houses, brief };
 }
 
 // Geocodes a free-text birth place into {lat, lon} using OpenStreetMap
@@ -10574,7 +10733,7 @@ function getVedicDailyPrediction(
 // (Moon sign), Janma Nakshatra, Vimshottari phase, Tithi and Vara. Only lunar-chart prediction paths are used here.
 type MoonChart48Category = "self" | "mind" | "body" | "relationship" | "work" | "money" | "family" | "spiritual" | "risk" | "growth";
 type MoonChart48Verdict = "Excellent" | "Supportive" | "Mixed" | "Careful";
-type MoonChart48Blueprint = { id: string; label: string; category: MoonChart48Category; house: number; weight: number };
+type MoonChart48Blueprint = { id: string; label: string; category: MoonChart48Category; house: number; weight: number; meaning: string };
 type MoonChart48Reading = MoonChart48Blueprint & {
   score: number;
   verdict: MoonChart48Verdict;
@@ -10589,55 +10748,65 @@ type MoonChart48Reading = MoonChart48Blueprint & {
   visualDepth: number;
 };
 
+// Each entry carries its own `meaning` clause rather than falling back to the
+// parent category's generic text. Several entries deliberately share a
+// category + house (e.g. the four house-10 "work" entries below) because
+// they're distinct real-life facets of the same house -- career direction is
+// not the same lived experience as authority/recognition or workload
+// discipline, even though a classical astrologer would read all three from
+// the 10th house. Before this field existed, moonChartCategoryMeaning()
+// collapsed all of them to one identical sentence, so testers reading four
+// "different" cards back to back saw the same paragraph four times. Keep
+// every `meaning` string here distinct -- that's the whole point of the field.
 const MOON_CHART_48_BLUEPRINTS: MoonChart48Blueprint[] = [
-  { id: "mind-peace", label: "Mind peace", category: "mind", house: 4, weight: 1.3 },
-  { id: "emotional-regulation", label: "Emotional regulation", category: "mind", house: 1, weight: 1.25 },
-  { id: "confidence", label: "Confidence", category: "self", house: 1, weight: 1.1 },
-  { id: "self-image", label: "Self-image", category: "self", house: 2, weight: 0.95 },
-  { id: "decision-clarity", label: "Decision clarity", category: "growth", house: 5, weight: 1.05 },
-  { id: "communication", label: "Communication", category: "relationship", house: 3, weight: 1.0 },
-  { id: "siblings-network", label: "Siblings and close network", category: "relationship", house: 3, weight: 0.8 },
-  { id: "home-peace", label: "Home peace", category: "family", house: 4, weight: 1.15 },
-  { id: "mother-support", label: "Mother and nurturance", category: "family", house: 4, weight: 1.0 },
-  { id: "education-learning", label: "Education and learning", category: "growth", house: 5, weight: 1.05 },
-  { id: "creativity", label: "Creativity", category: "growth", house: 5, weight: 0.9 },
-  { id: "children-parenting", label: "Children and parenting", category: "family", house: 5, weight: 0.95 },
-  { id: "health-vitality", label: "Health vitality", category: "body", house: 6, weight: 1.2 },
-  { id: "stress-immunity", label: "Stress immunity", category: "body", house: 6, weight: 1.1 },
-  { id: "habits-routine", label: "Habits and routine", category: "body", house: 6, weight: 1.0 },
-  { id: "debt-obligations", label: "Debt and obligations", category: "money", house: 6, weight: 1.0 },
-  { id: "marriage-partnership", label: "Marriage and partnership", category: "relationship", house: 7, weight: 1.2 },
-  { id: "trust-bonding", label: "Trust and bonding", category: "relationship", house: 7, weight: 1.15 },
-  { id: "public-dealings", label: "Public dealings", category: "work", house: 7, weight: 0.9 },
-  { id: "transformation", label: "Transformation", category: "growth", house: 8, weight: 1.05 },
-  { id: "hidden-fears", label: "Hidden fears", category: "risk", house: 8, weight: 1.15 },
-  { id: "inheritance-shared-assets", label: "Shared assets", category: "money", house: 8, weight: 0.9 },
-  { id: "dharma-faith", label: "Dharma and faith", category: "spiritual", house: 9, weight: 1.1 },
-  { id: "luck-grace", label: "Luck and grace", category: "spiritual", house: 9, weight: 1.0 },
-  { id: "father-mentors", label: "Father and mentors", category: "growth", house: 9, weight: 0.85 },
-  { id: "career-direction", label: "Career direction", category: "work", house: 10, weight: 1.25 },
-  { id: "authority-recognition", label: "Authority and recognition", category: "work", house: 10, weight: 1.05 },
-  { id: "workload-discipline", label: "Workload discipline", category: "work", house: 10, weight: 1.0 },
-  { id: "income-gains", label: "Income and gains", category: "money", house: 11, weight: 1.2 },
-  { id: "friends-community", label: "Friends and community", category: "relationship", house: 11, weight: 0.95 },
-  { id: "long-term-goals", label: "Long-term goals", category: "growth", house: 11, weight: 1.0 },
-  { id: "expenses", label: "Expenses", category: "money", house: 12, weight: 1.0 },
-  { id: "sleep-dreams", label: "Sleep and dreams", category: "mind", house: 12, weight: 1.1 },
-  { id: "spiritual-release", label: "Spiritual release", category: "spiritual", house: 12, weight: 1.05 },
-  { id: "foreign-distance", label: "Distance and foreign links", category: "growth", house: 12, weight: 0.8 },
-  { id: "speech-family-values", label: "Speech and family values", category: "family", house: 2, weight: 1.0 },
-  { id: "savings", label: "Savings", category: "money", house: 2, weight: 1.1 },
-  { id: "food-nourishment", label: "Food and nourishment", category: "body", house: 2, weight: 0.9 },
-  { id: "courage-initiative", label: "Courage and initiative", category: "self", house: 3, weight: 1.0 },
-  { id: "skills-practice", label: "Skills and practice", category: "growth", house: 3, weight: 0.95 },
-  { id: "property-comforts", label: "Property and comforts", category: "family", house: 4, weight: 0.9 },
-  { id: "romance-joy", label: "Romance and joy", category: "relationship", house: 5, weight: 0.95 },
-  { id: "competition", label: "Competition", category: "work", house: 6, weight: 0.95 },
-  { id: "legal-conflicts", label: "Legal conflicts", category: "risk", house: 6, weight: 1.0 },
-  { id: "intimacy", label: "Intimacy", category: "relationship", house: 8, weight: 0.9 },
-  { id: "travel-pilgrimage", label: "Travel and pilgrimage", category: "spiritual", house: 9, weight: 0.85 },
-  { id: "status-impact", label: "Status and impact", category: "work", house: 10, weight: 1.0 },
-  { id: "wish-fulfilment", label: "Wish fulfilment", category: "growth", house: 11, weight: 1.05 },
+  { id: "mind-peace", label: "Mind peace", category: "mind", house: 4, weight: 1.3, meaning: "how calm and undisturbed your inner mental space feels right now" },
+  { id: "emotional-regulation", label: "Emotional regulation", category: "mind", house: 1, weight: 1.25, meaning: "how well reactions, mood swings, and emotional intensity can be steadied" },
+  { id: "confidence", label: "Confidence", category: "self", house: 1, weight: 1.1, meaning: "how sure and grounded you feel in your own presence and choices" },
+  { id: "self-image", label: "Self-image", category: "self", house: 2, weight: 0.95, meaning: "how you see your own worth, value, and self-respect right now" },
+  { id: "decision-clarity", label: "Decision clarity", category: "growth", house: 5, weight: 1.05, meaning: "how clearly you can weigh options and commit to a direction" },
+  { id: "communication", label: "Communication", category: "relationship", house: 3, weight: 1.0, meaning: "how clearly words, messages, and everyday exchanges land with others" },
+  { id: "siblings-network", label: "Siblings and close network", category: "relationship", house: 3, weight: 0.8, meaning: "how steady support and goodwill from siblings and your close circle feel" },
+  { id: "home-peace", label: "Home peace", category: "family", house: 4, weight: 1.15, meaning: "how calm and settled the atmosphere at home feels" },
+  { id: "mother-support", label: "Mother and nurturance", category: "family", house: 4, weight: 1.0, meaning: "how nurtured, cared for, and emotionally held you feel" },
+  { id: "education-learning", label: "Education and learning", category: "growth", house: 5, weight: 1.05, meaning: "how easily new knowledge and study can be absorbed and retained" },
+  { id: "creativity", label: "Creativity", category: "growth", house: 5, weight: 0.9, meaning: "how freely original ideas and creative expression can flow" },
+  { id: "children-parenting", label: "Children and parenting", category: "family", house: 5, weight: 0.95, meaning: "how smoothly bonds with children or those you mentor are working" },
+  { id: "health-vitality", label: "Health vitality", category: "body", house: 6, weight: 1.2, meaning: "how much physical energy and resilience the body has to draw on" },
+  { id: "stress-immunity", label: "Stress immunity", category: "body", house: 6, weight: 1.1, meaning: "how well the body can absorb pressure without breaking down" },
+  { id: "habits-routine", label: "Habits and routine", category: "body", house: 6, weight: 1.0, meaning: "how consistently daily habits and routines can be maintained" },
+  { id: "debt-obligations", label: "Debt and obligations", category: "money", house: 6, weight: 1.0, meaning: "how manageable debts, dues, and financial obligations feel" },
+  { id: "marriage-partnership", label: "Marriage and partnership", category: "relationship", house: 7, weight: 1.2, meaning: "how balanced give-and-take feels with a spouse or life partner" },
+  { id: "trust-bonding", label: "Trust and bonding", category: "relationship", house: 7, weight: 1.15, meaning: "how safe it feels to trust and be trusted in close relationships" },
+  { id: "public-dealings", label: "Public dealings", category: "work", house: 7, weight: 0.9, meaning: "how smoothly negotiations, clients, and public-facing dealings go" },
+  { id: "transformation", label: "Transformation", category: "growth", house: 8, weight: 1.05, meaning: "how ready you are to let go of what's ending and step into what's next" },
+  { id: "hidden-fears", label: "Hidden fears", category: "risk", house: 8, weight: 1.15, meaning: "where unspoken anxieties or hidden pressure need honest attention" },
+  { id: "inheritance-shared-assets", label: "Shared assets", category: "money", house: 8, weight: 0.9, meaning: "how shared or inherited money and assets should be handled" },
+  { id: "dharma-faith", label: "Dharma and faith", category: "spiritual", house: 9, weight: 1.1, meaning: "how aligned your actions feel with your deeper sense of purpose and faith" },
+  { id: "luck-grace", label: "Luck and grace", category: "spiritual", house: 9, weight: 1.0, meaning: "how much unearned support or good fortune is flowing your way" },
+  { id: "father-mentors", label: "Father and mentors", category: "growth", house: 9, weight: 0.85, meaning: "how supportive guidance from father figures or mentors feels" },
+  { id: "career-direction", label: "Career direction", category: "work", house: 10, weight: 1.25, meaning: "how clear the path forward in your career or vocation feels" },
+  { id: "authority-recognition", label: "Authority and recognition", category: "work", house: 10, weight: 1.05, meaning: "how much your effort is being seen, credited, and respected by others" },
+  { id: "workload-discipline", label: "Workload discipline", category: "work", house: 10, weight: 1.0, meaning: "how sustainably your current workload can be handled with discipline" },
+  { id: "income-gains", label: "Income and gains", category: "money", house: 11, weight: 1.2, meaning: "how freely income and material gains are flowing in" },
+  { id: "friends-community", label: "Friends and community", category: "relationship", house: 11, weight: 0.95, meaning: "how reliable support from friends and your wider community feels" },
+  { id: "long-term-goals", label: "Long-term goals", category: "growth", house: 11, weight: 1.0, meaning: "how realistic long-term ambitions look from where you stand today" },
+  { id: "expenses", label: "Expenses", category: "money", house: 12, weight: 1.0, meaning: "how controlled or leaking your outgoing expenses are" },
+  { id: "sleep-dreams", label: "Sleep and dreams", category: "mind", house: 12, weight: 1.1, meaning: "how restorative sleep and the inner dream-mind feel" },
+  { id: "spiritual-release", label: "Spiritual release", category: "spiritual", house: 12, weight: 1.05, meaning: "how able you are to surrender control and let something go" },
+  { id: "foreign-distance", label: "Distance and foreign links", category: "growth", house: 12, weight: 0.8, meaning: "how smoothly travel, relocation, or distant connections are unfolding" },
+  { id: "speech-family-values", label: "Speech and family values", category: "family", house: 2, weight: 1.0, meaning: "how well your words reflect the values your family raised you with" },
+  { id: "savings", label: "Savings", category: "money", house: 2, weight: 1.1, meaning: "how secure your saved wealth and financial cushion feel" },
+  { id: "food-nourishment", label: "Food and nourishment", category: "body", house: 2, weight: 0.9, meaning: "how nourishing your food, appetite, and eating rhythm are right now" },
+  { id: "courage-initiative", label: "Courage and initiative", category: "self", house: 3, weight: 1.0, meaning: "how ready you feel to act first rather than wait and watch" },
+  { id: "skills-practice", label: "Skills and practice", category: "growth", house: 3, weight: 0.95, meaning: "how much daily practice is sharpening a specific skill" },
+  { id: "property-comforts", label: "Property and comforts", category: "family", house: 4, weight: 0.9, meaning: "how secure your home, property, and everyday comforts feel" },
+  { id: "romance-joy", label: "Romance and joy", category: "relationship", house: 5, weight: 0.95, meaning: "how much lightness, romance, and shared joy are present" },
+  { id: "competition", label: "Competition", category: "work", house: 6, weight: 0.95, meaning: "how you're holding up against rivals, deadlines, or competitive pressure" },
+  { id: "legal-conflicts", label: "Legal conflicts", category: "risk", house: 6, weight: 1.0, meaning: "how disputes, complaints, or legal matters are likely to move" },
+  { id: "intimacy", label: "Intimacy", category: "relationship", house: 8, weight: 0.9, meaning: "how safe and connected physical and emotional intimacy feels" },
+  { id: "travel-pilgrimage", label: "Travel and pilgrimage", category: "spiritual", house: 9, weight: 0.85, meaning: "how a journey, retreat, or pilgrimage could support your inner state" },
+  { id: "status-impact", label: "Status and impact", category: "work", house: 10, weight: 1.0, meaning: "how visible your standing, reputation, and impact are to others" },
+  { id: "wish-fulfilment", label: "Wish fulfilment", category: "growth", house: 11, weight: 1.05, meaning: "how close a specific wish or goal is to actually landing" },
 ];
 
 function clampMoonScore(value: number): number {
@@ -10937,7 +11106,7 @@ function buildMoonChartMultidimensionalEngine(input: {
       lagnaLordScore: lagnaLordScore * 0.5,
       lagnaElementBias: lagnaElementBias + lagnaSelfBodyEmphasis,
     });
-    const interpretation = `In plain language, ${dimension.label.toLowerCase()} belongs to ${moonChartCategoryMeaning(dimension.category)}. ${moonChartVerdictTone(verdict)}`;
+    const interpretation = `In plain language, ${dimension.label.toLowerCase()} belongs to ${dimension.meaning}. ${moonChartVerdictTone(verdict)}`;
 
     return {
       ...dimension,
@@ -18432,10 +18601,13 @@ function isTrustedExternalUrl(url: string) {
                 onOpenTab={handleTabPress}
               />
 
-              {/* Compact premium entry point; the full calculated reading opens on tap. */}
+              {/* Compact entry point; the full calculated reading opens on tap.
+                  Not gated behind payment -- see "Aethon Beacon is free" notice
+                  in the profile tab. Labelling this "Premium" contradicted that
+                  and confused testers, so it's named for what it does instead. */}
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Open premium Vedic answer engine"
+                accessibilityLabel="Open full Vedic answer engine"
                 onPress={() => handleTabPress("vedic")}
                 style={({ pressed }) => ({
                   marginHorizontal: 16,
@@ -18457,7 +18629,7 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ flex: 1, minWidth: 0 }}>
                   <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 7, marginBottom: 3 }}>
                     <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
-                      Premium Vedic engine
+                      Full Vedic engine
                     </Text>
                     <View style={{ backgroundColor: hasExactBirthDetails ? "rgba(52,211,153,0.12)" : "rgba(148,163,184,0.1)", borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 }}>
                       <Text style={{ color: hasExactBirthDetails ? "#059669" : "#263244", fontSize: 12, fontWeight: "900" }}>
@@ -27769,44 +27941,15 @@ function SettingsSection({
       </View>
 
       {/* ─── SECTION: Identity ─────────────────────────────────────── */}
+      {/* The "Who is this for?" occupation picker (Student/Teacher/Doctor/...)
+          that used to live here was removed at the user's request -- the
+          profile only asks for name, gender, age/DOB, birth time+place, and
+          phone/email verification now. identityId/selectedIdentity stay at
+          their "other" default so the (unrelated) respectful-address and
+          default-issue helpers elsewhere keep working with a neutral voice;
+          nothing in the UI lets a user change it anymore. */}
       <View style={{ paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
         <Text style={[styles.eyebrow, { color: "#06B6D4", fontSize: 12, letterSpacing: 1.4 }]}>👤  PROFILE</Text>
-      </View>
-      <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Who is this for?</Text>
-        <Text style={styles.promptText}>
-          Pick the role that best fits your day. It keeps the guidance and pace human.
-        </Text>
-        <View style={styles.identityGrid}>
-          {identityProfiles.map((profile) => {
-            const isSelected = profile.id === identityId;
-            return (
-              <Pressable
-                key={profile.id}
-                accessibilityRole="button"
-                accessibilityState={{ selected: isSelected }}
-                onPress={() => setIdentityId(profile.id)}
-                style={[styles.identityCard, isSelected && styles.identityCardActive]}
-              >
-                <View style={[styles.identityMark, isSelected && styles.identityMarkActive]}>
-                  <Text style={[styles.identityMarkText, isSelected && styles.identityMarkTextActive]}>
-                    {profile.mark}
-                  </Text>
-                </View>
-                <Text style={[styles.identityLabel, isSelected && styles.identityLabelActive]}>
-                  {profile.label}
-                </Text>
-                <Text style={[styles.identityMeta, isSelected && styles.identityMetaActive]}>
-                  {profile.meta}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <View style={styles.identitySummary}>
-          <Text style={styles.identitySummaryTitle}>{selectedIdentity.label}</Text>
-          <Text style={styles.identitySummaryText}>{selectedIdentity.help}</Text>
-        </View>
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>App vision</Text>
@@ -27912,14 +28055,16 @@ function SettingsSection({
         </Text>
         <View style={styles.profileBanner}>
           <View style={styles.profileBannerMark}>
-            <Text style={styles.profileBannerMarkText}>{selectedIdentity.mark}</Text>
+            <Text style={styles.profileBannerMarkText}>
+              {profileDisplayName.trim().length > 0 ? profileDisplayName.trim()[0].toUpperCase() : "👤"}
+            </Text>
           </View>
           <View style={styles.profileBannerCopy}>
             <Text style={styles.profileBannerTitle}>
               {profileDisplayName.length > 0 ? profileDisplayName : "Profile not named yet"}
             </Text>
             <Text style={styles.profileBannerMeta}>
-              {getIdentityLabel(profileRoleId)} / {getProfileGenderLabel(profileGender)}
+              {getProfileGenderLabel(profileGender)}
             </Text>
             <View style={styles.profileStatusRow}>
               <View style={[styles.verificationStatusChip, profilePhoneVerified && styles.verificationStatusChipActive]}>
@@ -27955,10 +28100,6 @@ function SettingsSection({
           <View style={styles.profileSummaryCard}>
             <Text style={styles.profileSummaryLabel}>Gender</Text>
             <Text style={styles.profileSummaryValue}>{getProfileGenderLabel(profileGender)}</Text>
-          </View>
-          <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>Role</Text>
-            <Text style={styles.profileSummaryValue}>{getIdentityLabel(profileRoleId)}</Text>
           </View>
         </View>
         <View style={styles.backupActions}>
@@ -28984,6 +29125,16 @@ function BirthChartSection({
   const ashtakavargaResult = useMemo(() => (birthChartCore ? buildAshtakavarga(birthChartCore) : null), [birthChartCore]);
   const shadbalaResult = useMemo(() => (birthChartCore ? computeShadbala(birthChartCore) : null), [birthChartCore]);
 
+  // Plain-language, layman-facing graha-in-house reading. Exclusive toggle --
+  // English or Hindi, never both at once, per product requirement -- kept
+  // local to this card rather than tied to the app's general 22-language
+  // settings, which govern UI chrome/voice, not this specific reading.
+  const [chartBriefLang, setChartBriefLang] = useState<"en" | "hi">("en");
+  const housePlacementResult = useMemo(
+    () => (birthChartCore ? computeHousePlacements(birthChartCore, chartBriefLang) : null),
+    [birthChartCore, chartBriefLang]
+  );
+
   // Occupant lists (by sign, index 0 = Aries .. 11 = Pisces) for the two
   // chart-wheel visuals below: D1 Rashi (Lagna + all 9 grahas by their real
   // sidereal sign) and D9 Navamsa (same set, by navamsa sign).
@@ -29747,27 +29898,34 @@ function BirthChartSection({
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
                   {(["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const).map((planet) => {
                     const s = shadbalaResult.planets[planet];
+                    // Tiered purely on coveragePercent -- how strong this planet
+                    // is within the components we actually compute. Not a
+                    // classical pass/fail verdict; see ShadbalaComponents comment.
+                    const tier = s.coveragePercent >= 66 ? "high" : s.coveragePercent >= 40 ? "mid" : "low";
+                    const tierColor = tier === "high" ? "#0D6B36" : tier === "mid" ? "#B45309" : "#B80000";
+                    const tierBg = tier === "high" ? "rgba(5,150,105,0.14)" : tier === "mid" ? "rgba(180,83,9,0.1)" : "rgba(220,38,38,0.1)";
+                    const tierBorder = tier === "high" ? "rgba(5,150,105,0.4)" : tier === "mid" ? "rgba(180,83,9,0.35)" : "rgba(220,38,38,0.3)";
                     return (
                       <View
                         key={`shadbala-${planet}`}
                         style={{
-                          backgroundColor: s.meetsClassicalMinimum ? "rgba(5,150,105,0.14)" : "rgba(220,38,38,0.1)",
+                          backgroundColor: tierBg,
                           borderRadius: 10, padding: 8, minWidth: 92,
-                          borderWidth: 1, borderColor: s.meetsClassicalMinimum ? "rgba(5,150,105,0.4)" : "rgba(220,38,38,0.3)",
+                          borderWidth: 1, borderColor: tierBorder,
                         }}
                       >
                         <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900", textTransform: "capitalize" }}>{planet}</Text>
                         <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "900" }}>{s.totalRupas.toFixed(2)}</Text>
-                        <Text style={{ color: "#25364D", fontSize: 12 }}>needs {s.minimumRequiredRupas}</Text>
-                        <Text style={{ color: s.meetsClassicalMinimum ? "#0D6B36" : "#B80000", fontSize: 12, fontWeight: "800" }}>
-                          {s.meetsClassicalMinimum ? "Strong" : "Below min"}
+                        <Text style={{ color: "#25364D", fontSize: 12 }}>of {(s.includedMaxVirupas / 60).toFixed(2)} partial max</Text>
+                        <Text style={{ color: tierColor, fontSize: 12, fontWeight: "800" }}>
+                          {s.coveragePercent.toFixed(0)}% of partial scale
                         </Text>
                       </View>
                     );
                   })}
                 </View>
                 <Text style={{ color: "#1F2937", fontSize: 12, fontStyle: "italic", lineHeight: 16 }}>
-                  Includes Uchcha, Ojayugmarasyamsa and Kendradi Bala (three of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, and a motion-based Chesta Bala proxy. Kala Bala's day/night components, Drik (aspect) Bala, and the full six-divisional-chart Vimshopak Bala are deferred — they need machinery (precise local sunrise/sunset, several more divisional charts) this build doesn't have yet.
+                  Includes Uchcha, Ojayugmarasyamsa and Kendradi Bala (three of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, and a motion-based Chesta Bala proxy. Kala Bala's day/night components, Drik (aspect) Bala, and the full six-divisional-chart Vimshopak Bala are deferred — they need machinery (precise local sunrise/sunset, several more divisional charts) this build doesn't have yet. Because of that, the percentage above is each planet's strength within only these four categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded "below min" against a full-total threshold.
                 </Text>
               </>
             ) : (
@@ -29776,6 +29934,61 @@ function BirthChartSection({
           </View>
         </View>
       )}
+
+      {/* Plain-language, layman-facing house-by-house reading. Placed above
+          the technical Advanced panel and the Moon Chart card on purpose --
+          this is the reading meant for someone with zero astrology
+          background, so it should be the first thing they see, not
+          something buried under Rupas/Virupas/Bindus. */}
+      <View style={{ backgroundColor: "#FFF7ED", borderRadius: 16, marginHorizontal: 16, marginBottom: 16, padding: 14, borderWidth: 1, borderColor: "rgba(180,83,9,0.25)", gap: 10 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+          <Text style={{ color: "#9A3412", fontSize: 14, fontWeight: "900" }}>
+            {chartBriefLang === "hi" ? "आपकी कुंडली सरल भाषा में" : "Your Chart in Plain Language"}
+          </Text>
+          <View style={{ flexDirection: "row", backgroundColor: "rgba(154,52,18,0.1)", borderRadius: 10, padding: 3 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: chartBriefLang === "en" }}
+              onPress={() => setChartBriefLang("en")}
+              style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "en" ? "#9A3412" : "transparent" }}
+            >
+              <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "en" ? "#FFFFFF" : "#9A3412" }}>English</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: chartBriefLang === "hi" }}
+              onPress={() => setChartBriefLang("hi")}
+              style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "hi" ? "#9A3412" : "transparent" }}
+            >
+              <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "hi" ? "#FFFFFF" : "#9A3412" }}>हिन्दी</Text>
+            </Pressable>
+          </View>
+        </View>
+
+        {housePlacementResult ? (
+          <>
+            <Text style={{ color: "#431407", fontSize: 13, lineHeight: 19 }}>
+              {chartBriefLang === "hi" ? PLAIN_LANGUAGE_HI.briefIntro : PLAIN_LANGUAGE_EN.briefIntro}
+            </Text>
+            {housePlacementResult.houses.map((entry) => (
+              <View key={`house-plain-${entry.house}`} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 10, borderWidth: 1, borderColor: "rgba(154,52,18,0.15)", gap: 4 }}>
+                {entry.cardTexts.map((text, idx) => (
+                  <Text key={idx} style={{ color: "#3A2A1A", fontSize: 13, lineHeight: 19 }}>{text}</Text>
+                ))}
+              </View>
+            ))}
+            <Text style={{ color: "#7C2D12", fontSize: 12, fontStyle: "italic", lineHeight: 17 }}>
+              {chartBriefLang === "hi" ? PLAIN_LANGUAGE_HI.briefOutro : PLAIN_LANGUAGE_EN.briefOutro}
+            </Text>
+          </>
+        ) : (
+          <Text style={{ color: "#7C2D12", fontSize: 12, lineHeight: 17 }}>
+            {chartBriefLang === "hi"
+              ? "सटीक जन्म समय और स्थान चाहिए -- लग्न (Ascendant) के बिना यह भाव-वार पठन संभव नहीं है।"
+              : "Needs a precise birth time and place -- house placements can't be read without a real Ascendant."}
+          </Text>
+        )}
+      </View>
 
       <View style={styles.birthChartGeminiCard}>
         <View style={styles.birthChartGeminiHeader}>
@@ -30925,42 +31138,10 @@ function AccessOverlay({
           </View>
         </View>
 
-        <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
-          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Who needs the guidance?</Text>
-          <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-            Pick the role that best fits the user. It keeps guidance closer to the person’s day.
-          </Text>
-          <View style={[styles.identityStack, compactStartup && styles.identityStackCompact]}>
-            {identityProfiles.map((profile) => {
-              const isSelected = profileRoleId === profile.id;
-              return (
-                <Pressable
-                  key={profile.id}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: isSelected }}
-                  onPress={() => setProfileRoleId(profile.id)}
-                  style={[styles.identityChoiceRow, compactStartup && styles.identityChoiceRowCompact, isSelected && styles.identityCardActive]}
-                >
-                  <View style={styles.identityChoiceCopy}>
-                    <Text style={[styles.identityLabel, isSelected && styles.identityLabelActive]}>
-                      {profile.label}
-                    </Text>
-                    <Text style={[styles.identityMeta, isSelected && styles.identityMetaActive]}>
-                      {profile.meta}
-                    </Text>
-                  </View>
-                  <View style={[styles.identityMark, isSelected && styles.identityMarkActive]}>
-                    <Text
-                      style={[styles.identityMarkText, isSelected && styles.identityMarkTextActive]}
-                    >
-                      {profile.mark}
-                    </Text>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+        {/* "Who needs the guidance?" occupation picker (Student/Teacher/Doctor/...)
+            removed at the user's request. profileRoleId stays at its "other"
+            default so downstream personalization helpers keep working with a
+            neutral voice; nothing in this form lets a user change it anymore. */}
 
         <View
           style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}
@@ -31341,44 +31522,23 @@ function OnboardingOverlay({
               <Text style={styles.onboardingScrollHintIcon}>↓</Text>
               <View style={styles.onboardingScrollHintCopy}>
                 <Text style={styles.onboardingScrollHintText}>Set up in 30 seconds</Text>
-                <Text style={styles.onboardingScrollHintMeta}>Pick who you are, then choose where to start</Text>
+                <Text style={styles.onboardingScrollHintMeta}>Tap Continue, then choose where to start</Text>
               </View>
             </View>
 
             <View style={styles.onboardingBlock}>
-              <Text style={styles.settingsTitle}>Who are you today?</Text>
-              <Text style={styles.promptText}>The app personalises your guidance based on your role. You can change this anytime.</Text>
-              <View style={styles.identityGrid}>
-                {identityProfiles.map((profile) => {
-                  const isSelected = profile.id === selectedIdentity.id;
-                  return (
-                    <Pressable
-                      key={profile.id}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: isSelected }}
-                      onPress={() => {
-                        onChooseIdentity(profile.id);
-                        scrollToLaunchSection();
-                      }}
-                      style={[styles.identityCard, isSelected && styles.identityCardActive]}
-                    >
-                      <View style={[styles.identityMark, isSelected && styles.identityMarkActive]}>
-                        <Text
-                          style={[styles.identityMarkText, isSelected && styles.identityMarkTextActive]}
-                        >
-                          {profile.mark}
-                        </Text>
-                      </View>
-                      <Text style={[styles.identityLabel, isSelected && styles.identityLabelActive]}>
-                        {profile.label}
-                      </Text>
-                      <Text style={[styles.identityMeta, isSelected && styles.identityMetaActive]}>
-                        {profile.meta}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
+              <Text style={styles.settingsTitle}>Ready to begin</Text>
+              <Text style={styles.promptText}>Guidance opens with a neutral, general voice for everyone -- no role or occupation questions needed.</Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  onChooseIdentity("other");
+                  scrollToLaunchSection();
+                }}
+                style={[styles.identityCard, styles.identityCardActive, { alignItems: "center" }]}
+              >
+                <Text style={[styles.identityLabel, styles.identityLabelActive]}>Continue</Text>
+              </Pressable>
             </View>
 
             <View
