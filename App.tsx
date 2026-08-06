@@ -9846,7 +9846,7 @@ function buildAshtakavarga(core: BirthChartCore): AshtakavargaResult | null {
 // ── Shadbala (six-fold planetary strength) ──────────────────────────────────
 // Classical source: Brihat Parashara Hora Shastra, Ch. 27. Full BPHS Shadbala
 // sums SIX categories: Sthana Bala, Dig Bala, Kala Bala, Chesta Bala,
-// Naisargika Bala, and Drik Bala. Three of the sub-formulas need machinery
+// Naisargika Bala, and Drik Bala. Two of the sub-formulas still need machinery
 // this app does not have yet and are DELIBERATELY OMITTED rather than
 // approximated with guessed numbers:
 //   - Saptavargaja Bala and Drekkana Bala (two of Sthana Bala's five parts)
@@ -9855,17 +9855,22 @@ function buildAshtakavarga(core: BirthChartCore): AshtakavargaResult | null {
 //   - Kala Bala's day/night-based parts (Nathonnatha, Tribhaga, Ayana Bala)
 //     need precise local sunrise/sunset and a ghati-based sinusoidal formula
 //     that no source we could verify gave in exact, checkable form.
-//   - Drik Bala (aspectual strength) needs a degree-weighted graha-drishti
-//     falloff table that varies across texts and software.
 // What IS included below is fully classical and verifiable: Uchcha Bala,
 // Ojayugmarasyamsa Bala, and Kendradi Bala (3 of Sthana Bala's 5 parts), the
-// full Dig Bala, the full fixed Naisargika Bala, and a Chesta Bala PROXY
-// (real BPHS Chesta Bala uses each planet's Seeghrocha/mean-Sun conjunction
-// angle, which needs orbital-element machinery this app doesn't have; the
-// proxy below uses actual vs. mean daily motion, which tracks the same
-// underlying idea -- slow/retrograde = strong, fast direct = weak -- but is
-// not the literal classical formula). Sun and Moon never get Chesta Bala in
-// any classical system since they never move retrograde.
+// full Dig Bala, the full fixed Naisargika Bala, a Chesta Bala PROXY (real
+// BPHS Chesta Bala uses each planet's Seeghrocha/mean-Sun conjunction angle,
+// which needs orbital-element machinery this app doesn't have; the proxy
+// below uses actual vs. mean daily motion, which tracks the same underlying
+// idea -- slow/retrograde = strong, fast direct = weak -- but is not the
+// literal classical formula; Sun and Moon never get Chesta Bala in any
+// classical system since they never move retrograde), and now Drik Bala
+// (aspectual strength, see drishtiVirupas below) using the standard discrete
+// per-house-ahead virupa table published in several Jyotish software specs
+// (1/4 aspect at houses 3 & 10, 1/2 at 4 & 8, 3/4 at 5 & 9, full at 7, with
+// Mars/Jupiter/Saturn's classical special aspects upgraded to full) rather
+// than a continuous degree-interpolated curve, since sources disagree on the
+// exact interpolation shape within a sign -- this discrete version is a
+// documented simplification, not the literal untraceable formula.
 type ShadbalaPlanet = AshtakavargaPlanet; // sun..saturn, the 7 classical grahas
 
 // Fixed, source-verified (B.V. Raman / standard BPHS tables), identical in
@@ -9886,9 +9891,11 @@ const NAISARGIKA_BALA: Record<ShadbalaPlanet, number> = {
 // compared against anything: it's a threshold for the FULL six-fold total,
 // and computeShadbala() below only produces a partial (4-of-6-category)
 // total, so the comparison would be invalid (see ShadbalaComponents comment).
-// Kept here, correct and ready, for when Kala Bala + Drik Bala + the
-// remaining Sthana Bala parts are implemented and a real full-total
-// comparison becomes possible.
+// Kept here, correct and ready, for when Kala Bala + the remaining Sthana
+// Bala parts are implemented and a real full-total comparison becomes
+// possible (Drik Bala is now implemented -- see drikBala/netVirupasWithDrik
+// above -- but coveragePercent intentionally still excludes it; see the
+// ShadbalaComponents comment).
 const SHADBALA_MINIMUM_RUPAS: Record<ShadbalaPlanet, number> = {
   sun: 6.5,
   moon: 6.0,
@@ -9956,27 +9963,78 @@ function angularSeparationDegrees(a: number, b: number): number {
   return diff > 180 ? 360 - diff : diff;
 }
 
+// Drishti (aspect) strength in virupas, by how many houses ahead the
+// aspected point is from the aspecting planet's own sign (1 = next sign ...
+// 12 = own sign / conjunction, which casts no aspect). See the Shadbala
+// module comment above for the discrete-vs-continuous caveat.
+const DRISHTI_BASE_VIRUPAS: Record<number, number> = { 3: 15, 4: 30, 5: 45, 7: 60, 8: 30, 9: 45, 10: 15 };
+function drishtiVirupas(housesAhead: number, aspectingPlanet: ShadbalaPlanet): number {
+  let virupas = DRISHTI_BASE_VIRUPAS[housesAhead] ?? 0;
+  // Classical special aspects: Mars additionally sees the 4th/8th in full,
+  // Jupiter the 5th/9th in full, Saturn the 3rd/10th in full (all three
+  // already receive a partial aspect there under the base table above;
+  // this simply upgrades those specific planet+house combinations to 60).
+  if (aspectingPlanet === "mars" && (housesAhead === 4 || housesAhead === 8)) virupas = 60;
+  if (aspectingPlanet === "jupiter" && (housesAhead === 5 || housesAhead === 9)) virupas = 60;
+  if (aspectingPlanet === "saturn" && (housesAhead === 3 || housesAhead === 10)) virupas = 60;
+  return virupas;
+}
+
+// Natural benefic/malefic classification used only to sign the Drik Bala
+// contribution (benefic aspectors add virupas, malefic aspectors subtract --
+// the standard BPHS convention). Jupiter/Venus/Mercury are treated as
+// benefic (Mercury is classically conditional -- becomes malefic in malefic
+// company -- but this build doesn't model planetary association, so it
+// defaults to its more common benefic classification, documented here
+// rather than silently assumed). The Moon is benefic while waxing (Shukla
+// Paksha) and malefic while waning (Krishna Paksha), the same Paksha
+// distinction classical texts use for Chandra Bala. Sun, Mars, and Saturn
+// are always malefic. Rahu/Ketu are excluded entirely -- Drik Bala here only
+// sums contributions among the 7 classical grahas already in `targets`
+// below, consistent with the rest of this partial Shadbala build.
+function isNaturalBeneficForDrikBala(planet: ShadbalaPlanet, core: BirthChartCore): boolean {
+  if (planet === "jupiter" || planet === "venus" || planet === "mercury") return true;
+  if (planet === "moon") {
+    const moonAheadOfSun = normalizeDegrees(core.navagraha.moon - core.navagraha.sun);
+    return moonAheadOfSun < 180; // Shukla Paksha (waxing)
+  }
+  return false; // sun, mars, saturn
+}
+
 type ShadbalaComponents = {
   sthanaBalaPartial: number; // Uchcha + Ojayugmarasyamsa + Kendradi only -- see module comment
   digBala: number;
   chestaBala: number | null; // null for Sun/Moon -- never applicable classically
   naisargikaBala: number;
-  totalVirupas: number; // sum of the components above (partial Shadbala, not full six-fold total)
+  // Aspectual strength -- CAN be negative (a planet hemmed by malefic
+  // aspects is genuinely weakened, not just "not computed"). Kept separate
+  // from totalVirupas/coveragePercent below rather than folded in, because
+  // those two fields specifically mean "strength within the non-negative
+  // components we compute" -- mixing in a signed value would break that
+  // meaning. netVirupasWithDrik/netRupasWithDrik are the combined figure.
+  drikBala: number;
+  totalVirupas: number; // sum of the non-negative components above (partial Shadbala, not full six-fold total)
   totalRupas: number;
   // The classical SHADBALA_MINIMUM_RUPAS table is a threshold for the FULL
   // six-fold total (Sthana + Dig + Kala + Chesta + Naisargika + Drik). This
-  // build only computes 4 of those 6 categories (see module comment for what
-  // Kala Bala and Drik Bala require), so totalRupas is structurally smaller
-  // than a full Shadbala and comparing it against the full-total minimum
-  // would show nearly every planet on nearly every chart as "below min" --
-  // not a real astrological signal, just a category-count mismatch. Instead,
-  // coveragePercent compares totalVirupas against includedMaxVirupas, the
-  // maximum this same partial formula could ever award (each component's own
-  // known ceiling: Sthana-partial 150, Dig 60, Chesta 60 where applicable,
-  // Naisargika its fixed constant) -- an honest "how strong within what we
-  // actually calculate" figure, not a guessed pass/fail line.
+  // build still doesn't compute full Kala Bala or the remaining 2 of 5
+  // Sthana Bala parts (see module comment), so totalRupas is structurally
+  // smaller than a full Shadbala and comparing it against the full-total
+  // minimum would show nearly every planet on nearly every chart as "below
+  // min" -- not a real astrological signal, just a category-count mismatch.
+  // Instead, coveragePercent compares totalVirupas against includedMaxVirupas,
+  // the maximum this same partial (non-Drik) formula could ever award (each
+  // component's own known ceiling: Sthana-partial 150, Dig 60, Chesta 60
+  // where applicable, Naisargika its fixed constant) -- an honest "how
+  // strong within what we actually calculate" figure, not a guessed
+  // pass/fail line.
   includedMaxVirupas: number;
   coveragePercent: number;
+  // totalVirupas + drikBala -- the closer-to-full-classical net figure now
+  // that Drik Bala is implemented. Shown alongside, not instead of,
+  // coveragePercent, since this one can go negative and isn't a percentage.
+  netVirupasWithDrik: number;
+  netRupasWithDrik: number;
 };
 
 type ShadbalaResult = {
@@ -10041,20 +10099,41 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
     }
 
     const naisargikaBala = NAISARGIKA_BALA[planet];
+
+    // Drik Bala: sum of aspect virupas received from the other 6 grahas in
+    // this same target set, signed by each aspecting planet's natural
+    // benefic/malefic nature (see isNaturalBeneficForDrikBala above).
+    let drikBala = 0;
+    for (const other of targets) {
+      if (other === planet) continue;
+      const otherLongitude = core.navagraha[other];
+      const otherRashiIndex = rashiIndexFromLongitude(otherLongitude);
+      // How many houses ahead of `other` this planet sits -- i.e. the
+      // aspect `other` casts onto `planet`'s position.
+      const housesAhead = houseFromLagna(rashiIndex, otherRashiIndex);
+      const virupas = drishtiVirupas(housesAhead, other);
+      drikBala += isNaturalBeneficForDrikBala(other, core) ? virupas : -virupas;
+    }
+
     const totalVirupas = sthanaBalaPartial + digBala + (chestaBala ?? 0) + naisargikaBala;
     const totalRupas = totalVirupas / 60;
     const includedMaxVirupas = 150 + 60 + (chestaBala !== null ? 60 : 0) + naisargikaBala;
     const coveragePercent = (totalVirupas / includedMaxVirupas) * 100;
+    const netVirupasWithDrik = totalVirupas + drikBala;
+    const netRupasWithDrik = netVirupasWithDrik / 60;
 
     planets[planet] = {
       sthanaBalaPartial,
       digBala,
       chestaBala,
       naisargikaBala,
+      drikBala,
       totalVirupas,
       totalRupas,
       includedMaxVirupas,
       coveragePercent,
+      netVirupasWithDrik,
+      netRupasWithDrik,
     };
   }
 
@@ -11805,6 +11884,26 @@ export default function App() {
   // Astro two-way chat — user asks anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy
   const [astroChatMessages, setAstroChatMessages] = useState<Array<{ id: string; role: "user" | "astro"; text: string; remedy?: string; category?: string; ts: string }>>([]);
   const [astroChatDraft, setAstroChatDraft] = useState("");
+  // The reply itself is pure synchronous local computation (real chart data,
+  // but no network call), which made every answer appear literally
+  // instantly -- indistinguishable from a pre-written/cached response even
+  // though it genuinely is freshly computed per question. This adds a real
+  // pending state with a short randomized delay so submitting a question
+  // visibly consults the chart and loads a fresh answer, instead of the
+  // answer just materializing the instant Send is tapped.
+  const [astroChatLoading, setAstroChatLoading] = useState(false);
+  const astroChatPulseAnim = React.useRef(new Animated.Value(1)).current;
+  React.useEffect(() => {
+    if (!astroChatLoading) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(astroChatPulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
+        Animated.timing(astroChatPulseAnim, { toValue: 1.0, duration: 700, useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [astroChatLoading, astroChatPulseAnim]);
   const [aiHelpProvider, setAIHelpProvider] = useState<AIHelpProvider>("local");
   // ── Personal guidance state ────────────────────────────────────────────────
   const [geminiDailyBrief, setGeminiDailyBrief] = useState<string | null>(null);
@@ -12381,6 +12480,25 @@ export default function App() {
     if (checkInStreak === 1) return "👋 First step taken — keep going";
     return null;
   }, [checkInStreak]);
+
+  // Reward "pop" on the Home hero's streak badge -- a real milestone moment
+  // (Duolingo/Cred-style tasteful celebration) rather than the badge just
+  // silently incrementing. One-shot spring, not a loop -- fires only the
+  // render right after checkInStreak crosses into a milestone, not on every
+  // render while at that streak, so it reads as a reward, not decoration.
+  const streakPopAnim = React.useRef(new Animated.Value(1)).current;
+  const prevCheckInStreakRef = React.useRef(checkInStreak);
+  useEffect(() => {
+    const milestones = new Set([3, 7, 14, 30, 60, 100]);
+    if (checkInStreak !== prevCheckInStreakRef.current && milestones.has(checkInStreak)) {
+      streakPopAnim.setValue(1);
+      Animated.sequence([
+        Animated.spring(streakPopAnim, { toValue: 1.22, useNativeDriver: true, speed: 20, bounciness: 12 }),
+        Animated.spring(streakPopAnim, { toValue: 1, useNativeDriver: true, speed: 14, bounciness: 6 }),
+      ]).start();
+    }
+    prevCheckInStreakRef.current = checkInStreak;
+  }, [checkInStreak, streakPopAnim]);
 
   // ── Days since last check-in (for empathy card) ────────────────────────────
   const daysSinceLastCheckIn = useMemo(() => {
@@ -16902,43 +17020,54 @@ async function fetchGeminiAIHelp(
     }
     const q = (rawQuestion ?? astroChatDraft).trim();
     if (q.length === 0) return;
+    if (astroChatLoading) return; // one in-flight question at a time
     const nowIso = new Date().toISOString();
     const userMsg = { id: `u-${Date.now()}`, role: "user" as const, text: q, ts: nowIso };
-    const dasha = vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord, profileBirthTime) : null;
-    const result = nextAstroChatReply(q, {
-      moonRashiId: vedicRashiInfo ? vedicRashiInfo.rashiId : null,
-      moonRashiName: vedicRashiInfo?.rashi.name ?? "",
-      nakshatraLord: vedicJanmaNakshatra?.lord ?? null,
-      currentDasha: dasha?.currentMahadasha ?? null,
-      currentAntardasha: dasha?.currentAntardasha ?? null,
-      currentDashaYearsLeft: dasha?.mahadashaYearsLeft ?? null,
-      currentAntardashaYearsLeft: dasha?.antardashaYearsLeft ?? null,
-      currentDashaStartedAtIso: dasha?.mahadashaStartedAtIso ?? null,
-      currentDashaEndsAtIso: dasha?.mahadashaEndsAtIso ?? null,
-      currentAntardashaStartedAtIso: dasha?.antardashaStartedAtIso ?? null,
-      currentAntardashaEndsAtIso: dasha?.antardashaEndsAtIso ?? null,
-      todayTithi: vedicTithi?.name ?? "today's Tithi",
-      todayVara: vedicVara?.name ?? "today",
-      moonChart48Readings: vedicMoonChart48Readings,
-    });
-    const astroMsg = {
-      id: `a-${Date.now()}`,
-      role: "astro" as const,
-      text: result.reply,
-      remedy: result.remedy,
-      category: result.category,
-      ts: new Date().toISOString(),
-    };
-    // Appended to the END (oldest-first) so the transcript reads naturally
-    // top-to-bottom -- question, then its answer, then the next question.
-    // This used to prepend [astroMsg, userMsg, ...prev], which put every
-    // reply visually ABOVE the question that produced it and pushed the
-    // newest exchange to the top instead of the bottom, making the
-    // back-and-forth look scrambled/non-corresponding even though the
-    // underlying question/answer pairing was always correct.
-    setAstroChatMessages((prev) => [...prev, userMsg, astroMsg].slice(-40));
+    // Post the question immediately (real chat feel), then let the reply
+    // load in after a beat -- see the astroChatLoading comment above.
+    setAstroChatMessages((prev) => [...prev, userMsg].slice(-40));
     setAstroChatDraft("");
+    setAstroChatLoading(true);
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    const thinkingMs = 550 + Math.floor(Math.random() * 450);
+    setTimeout(() => {
+      const dasha = vedicJanmaNakshatra ? getVimshottariDashaState(profileDOB, vedicJanmaNakshatra.lord, profileBirthTime) : null;
+      const result = nextAstroChatReply(q, {
+        moonRashiId: vedicRashiInfo ? vedicRashiInfo.rashiId : null,
+        moonRashiName: vedicRashiInfo?.rashi.name ?? "",
+        nakshatraLord: vedicJanmaNakshatra?.lord ?? null,
+        currentDasha: dasha?.currentMahadasha ?? null,
+        currentAntardasha: dasha?.currentAntardasha ?? null,
+        currentDashaYearsLeft: dasha?.mahadashaYearsLeft ?? null,
+        currentAntardashaYearsLeft: dasha?.antardashaYearsLeft ?? null,
+        currentDashaStartedAtIso: dasha?.mahadashaStartedAtIso ?? null,
+        currentDashaEndsAtIso: dasha?.mahadashaEndsAtIso ?? null,
+        currentAntardashaStartedAtIso: dasha?.antardashaStartedAtIso ?? null,
+        currentAntardashaEndsAtIso: dasha?.antardashaEndsAtIso ?? null,
+        todayTithi: vedicTithi?.name ?? "today's Tithi",
+        todayVara: vedicVara?.name ?? "today",
+        moonChart48Readings: vedicMoonChart48Readings,
+      });
+      const astroMsg = {
+        id: `a-${Date.now()}`,
+        role: "astro" as const,
+        text: result.reply,
+        remedy: result.remedy,
+        category: result.category,
+        ts: new Date().toISOString(),
+      };
+      // Appended to the END (oldest-first) so the transcript reads naturally
+      // top-to-bottom -- question, then its answer, then the next question.
+      // This used to prepend [astroMsg, userMsg, ...prev], which put every
+      // reply visually ABOVE the question that produced it and pushed the
+      // newest exchange to the top instead of the bottom, making the
+      // back-and-forth look scrambled/non-corresponding even though the
+      // underlying question/answer pairing was always correct.
+      setAstroChatMessages((prev) => [...prev, astroMsg].slice(-40));
+      setAstroChatLoading(false);
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }, thinkingMs);
   }
 
   function queueVedicEngineIssue(rawText: string, issue: IssueGuide, source: VedicEngineSource) {
@@ -18580,9 +18709,19 @@ function isTrustedExternalUrl(url: string) {
                     ? "The last few check-ins have leaned heavy — that's worth noticing, not pushing past."
                     : null;
                 return (
-                  <View style={{ marginHorizontal: 0, marginBottom: 6 }}>
-                    {/* ── Hero greeting panel ── */}
-                    <View style={{ backgroundColor: bgGrad, paddingHorizontal: 18, paddingTop: 18, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: "rgba(99,222,208,0.12)" }}>
+                  <View style={{ marginHorizontal: 16, marginTop: 10, marginBottom: 10 }}>
+                    {/* ── Hero greeting panel — glassy elevated card (same
+                        layered-shadow + soft blob technique already used on
+                        the Moon Chart Engine card), replacing the previous
+                        flat edge-to-edge strip, for a premium-app feel
+                        consistent across Home and Vedic. ── */}
+                    <View style={{
+                      backgroundColor: bgGrad, borderRadius: 24, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 16,
+                      borderWidth: 1, borderColor: "rgba(99,222,208,0.18)", overflow: "hidden",
+                      shadowColor: "#0F3D5E", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 22, elevation: 10
+                    }}>
+                      <View pointerEvents="none" style={{ position: "absolute", right: -40, top: -55, width: 150, height: 150, borderRadius: 75, backgroundColor: "rgba(99,222,208,0.10)" }} />
+                      <View pointerEvents="none" style={{ position: "absolute", left: -35, bottom: -60, width: 130, height: 130, borderRadius: 65, backgroundColor: "rgba(129,140,248,0.08)" }} />
                       {/* Row 1: greeting label */}
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
                         <Text style={{ fontSize: 13 }}>{greetEmoji}</Text>
@@ -18613,8 +18752,12 @@ function isTrustedExternalUrl(url: string) {
                         </View>
                         {/* Clarity score orb — bigger + labelled */}
                         <View style={{ alignItems: "center" }}>
-                          <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: scoreColor + "12", borderWidth: 2, borderColor: scoreColor, alignItems: "center", justifyContent: "center" }}>
-                            <Text style={{ color: scoreColor, fontSize: 18, fontWeight: "900", lineHeight: 22 }}>{clarityScore}</Text>
+                          <View style={{
+                            width: 58, height: 58, borderRadius: 29, backgroundColor: scoreColor + "12", borderWidth: 2.5, borderColor: scoreColor,
+                            alignItems: "center", justifyContent: "center",
+                            shadowColor: scoreColor, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.28, shadowRadius: 10, elevation: 6
+                          }}>
+                            <Text style={{ color: scoreColor, fontSize: 19, fontWeight: "900", lineHeight: 23 }}>{clarityScore}</Text>
                             <Text style={{ color: scoreColor, fontSize: 12, fontWeight: "900", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
                           </View>
                           <Text style={{ color: scoreColor, fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{scoreLabel}</Text>
@@ -18633,10 +18776,10 @@ function isTrustedExternalUrl(url: string) {
                           </View>
                         )}
                         {checkInStreak > 0 && (
-                          <View style={{ backgroundColor: "rgba(251,191,36,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(251,191,36,0.25)", flexDirection: "row", alignItems: "center", gap: 4 }}>
+                          <Animated.View style={{ backgroundColor: "rgba(251,191,36,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(251,191,36,0.25)", flexDirection: "row", alignItems: "center", gap: 4, transform: [{ scale: streakPopAnim }] }}>
                             <Text style={{ fontSize: 12 }}>🔥</Text>
                             <Text style={{ color: "#B88400", fontSize: 12, fontWeight: "900" }}>{checkInStreak} day streak</Text>
-                          </View>
+                          </Animated.View>
                         )}
                         {visitReports.length > 0 && (
                           <View style={{ backgroundColor: "rgba(129,140,248,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(129,140,248,0.25)" }}>
@@ -19504,16 +19647,37 @@ function isTrustedExternalUrl(url: string) {
                   <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 8 }}>
                     <Pressable
                       onPress={() => submitAstroQuestion()}
-                      disabled={!hasExactBirthDetails || astroChatDraft.trim().length === 0}
+                      disabled={!hasExactBirthDetails || astroChatDraft.trim().length === 0 || astroChatLoading}
                       accessibilityRole="button"
                       style={({ pressed }) => ({
-                        backgroundColor: !hasExactBirthDetails || astroChatDraft.trim().length === 0 ? "#334155" : (pressed ? "#B45309" : "#D97706"),
+                        backgroundColor: !hasExactBirthDetails || astroChatDraft.trim().length === 0 || astroChatLoading ? "#334155" : (pressed ? "#B45309" : "#D97706"),
                         borderRadius: 10, paddingHorizontal: 16, paddingVertical: 9
                       })}>
-                      <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>Ask the chart →</Text>
+                      <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>
+                        {astroChatLoading ? "Consulting the chart…" : "Ask the chart →"}
+                      </Text>
                     </Pressable>
                   </View>
                 </View>
+
+                {/* Pending reply -- real per-query load, not an instant
+                    lookup (see astroChatLoading comment on submitAstroQuestion).
+                    Same pulse pattern as the counselling/Moon-chart loading
+                    cards elsewhere in this app. */}
+                {astroChatLoading && (
+                  <Animated.View style={{
+                    opacity: astroChatPulseAnim,
+                    backgroundColor: "#F3E8FF", borderRadius: 12, padding: 12,
+                    borderWidth: 1, borderColor: "rgba(252,211,77,0.25)"
+                  }}>
+                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
+                      Reading your chart…
+                    </Text>
+                    <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 19 }}>
+                      Checking your Moon Rashi, current Mahadasha/Antardasha, and today's Panchang for this question.
+                    </Text>
+                  </Animated.View>
+                )}
 
                 {!hasExactBirthDetails && (
                   <Pressable
@@ -29498,6 +29662,82 @@ function BirthChartSection({
         </View>
       </View>
 
+      {/* Plain-language, layman-facing chart reading -- moved to the very
+          top of the reading (right after birth details are saved, ahead of
+          even the quick-facts grid and Samvatsara/Dasha panels below), since
+          someone with zero astrology background should see this before any
+          Rupas/Virupas/Bindus jargon further down the page. Previously this
+          card was positioned after Yogas/Ashtakavarga/Shadbala despite a
+          comment there claiming it was already "placed above the technical
+          panel" -- it wasn't; this actually moves it. Elaborated with a real
+          opening summary (Lagna + Moon Rashi + Nakshatra woven into one
+          paragraph, using data already computed above) on top of the
+          existing per-house graha readings, so it reads as a proper
+          orientation instead of jumping straight into house-by-house detail. */}
+      {hasExactBirthDetails && (
+        <View style={{ backgroundColor: "#FFF7ED", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(180,83,9,0.25)", gap: 10 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+            <Text style={{ color: "#9A3412", fontSize: 15, fontWeight: "900" }}>
+              {chartBriefLang === "hi" ? "आपकी कुंडली सरल भाषा में" : "Your Chart in Plain Language"}
+            </Text>
+            <View style={{ flexDirection: "row", backgroundColor: "rgba(154,52,18,0.1)", borderRadius: 10, padding: 3 }}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected: chartBriefLang === "en" }}
+                onPress={() => setChartBriefLang("en")}
+                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "en" ? "#9A3412" : "transparent" }}
+              >
+                <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "en" ? "#FFFFFF" : "#9A3412" }}>English</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected: chartBriefLang === "hi" }}
+                onPress={() => setChartBriefLang("hi")}
+                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "hi" ? "#9A3412" : "transparent" }}
+              >
+                <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "hi" ? "#FFFFFF" : "#9A3412" }}>हिन्दी</Text>
+              </Pressable>
+            </View>
+          </View>
+
+          {housePlacementResult ? (
+            <>
+              {rashiInfo && (
+                <View style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "rgba(154,52,18,0.15)" }}>
+                  <Text style={{ color: "#9A3412", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
+                    {chartBriefLang === "hi" ? "आपकी कुंडली की नींव" : "The foundation of your chart"}
+                  </Text>
+                  <Text style={{ color: "#3A2A1A", fontSize: 13, lineHeight: 20 }}>
+                    {chartBriefLang === "hi"
+                      ? `आपकी जन्म राशि ${rashiInfo.rashi.name} है${lagnaInfo ? `, और आपका लग्न ${lagnaInfo.lagna.name} है` : ""}${janmaNakshatra ? `. आपका जन्म नक्षत्र ${janmaNakshatra.name} है, जिसके स्वामी ${janmaNakshatra.lord} हैं` : ""}। यह तीनों मिलकर आपकी कुंडली की नींव बनाते हैं — राशि आपके मन और भावनाओं को, लग्न आपके व्यक्तित्व व शरीर को, और नक्षत्र आपकी गहरी प्रवृत्तियों को दर्शाता है। नीचे हर उस भाव (घर) का सरल विवरण है जिसमें कोई ग्रह स्थित है।`
+                      : `Your Moon sign (Janma Rashi) is ${rashiInfo.rashi.name} (${rashiInfo.rashi.en})${lagnaInfo ? `, and your Ascendant (Lagna) is ${lagnaInfo.lagna.name} (${lagnaInfo.lagna.en})` : ""}${janmaNakshatra ? `. Your birth star (Janma Nakshatra) is ${janmaNakshatra.name}, ruled by ${janmaNakshatra.lord}` : ""}. Together these three points are the foundation of your chart — the Moon sign shapes your mind and emotions, the Ascendant shapes your personality and how you come across, and the Nakshatra shapes your deeper instincts. Below is a plain-language read of every house that has a planet in it.`}
+                  </Text>
+                </View>
+              )}
+              <Text style={{ color: "#431407", fontSize: 13, lineHeight: 19 }}>
+                {chartBriefLang === "hi" ? PLAIN_LANGUAGE_HI.briefIntro : PLAIN_LANGUAGE_EN.briefIntro}
+              </Text>
+              {housePlacementResult.houses.map((entry) => (
+                <View key={`house-plain-${entry.house}`} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 10, borderWidth: 1, borderColor: "rgba(154,52,18,0.15)", gap: 4 }}>
+                  {entry.cardTexts.map((text, idx) => (
+                    <Text key={idx} style={{ color: "#3A2A1A", fontSize: 13, lineHeight: 19 }}>{text}</Text>
+                  ))}
+                </View>
+              ))}
+              <Text style={{ color: "#7C2D12", fontSize: 12, fontStyle: "italic", lineHeight: 17 }}>
+                {chartBriefLang === "hi" ? PLAIN_LANGUAGE_HI.briefOutro : PLAIN_LANGUAGE_EN.briefOutro}
+              </Text>
+            </>
+          ) : (
+            <Text style={{ color: "#7C2D12", fontSize: 12, lineHeight: 17 }}>
+              {chartBriefLang === "hi"
+                ? "सटीक जन्म समय और स्थान चाहिए -- लग्न (Ascendant) के बिना यह भाव-वार पठन संभव नहीं है।"
+                : "Needs a precise birth time and place -- house placements can't be read without a real Ascendant."}
+            </Text>
+          )}
+        </View>
+      )}
+
       {/* Analysis summary (shows after save) */}
       {hasExactBirthDetails && (
         <View style={{ backgroundColor: "#E1EEEC", borderRadius: 14, padding: 16, gap: 12, borderWidth: 1, borderColor: "rgba(99,222,208,0.25)" }}>
@@ -29943,12 +30183,18 @@ function BirthChartSection({
                         <Text style={{ color: tierColor, fontSize: 12, fontWeight: "800" }}>
                           {s.coveragePercent.toFixed(0)}% of partial scale
                         </Text>
+                        <Text style={{ color: s.drikBala >= 0 ? "#0D6B36" : "#B80000", fontSize: 12, fontWeight: "700", marginTop: 2 }}>
+                          Drik Bala {s.drikBala >= 0 ? "+" : ""}{(s.drikBala / 60).toFixed(2)} rupas
+                        </Text>
+                        <Text style={{ color: "#25364D", fontSize: 12 }}>
+                          Net w/ aspects: {s.netRupasWithDrik.toFixed(2)}
+                        </Text>
                       </View>
                     );
                   })}
                 </View>
                 <Text style={{ color: "#1F2937", fontSize: 12, fontStyle: "italic", lineHeight: 16 }}>
-                  Includes Uchcha, Ojayugmarasyamsa and Kendradi Bala (three of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, and a motion-based Chesta Bala proxy. Kala Bala's day/night components, Drik (aspect) Bala, and the full six-divisional-chart Vimshopak Bala are deferred — they need machinery (precise local sunrise/sunset, several more divisional charts) this build doesn't have yet. Because of that, the percentage above is each planet's strength within only these four categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded "below min" against a full-total threshold.
+                  Includes Uchcha, Ojayugmarasyamsa and Kendradi Bala (three of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, a motion-based Chesta Bala proxy, and now Drik Bala (aspectual strength from the other six grahas, signed by benefic/malefic nature — this can be negative, unlike every other component here, which is why it's shown separately as "Net w/ aspects" rather than folded into the coverage percentage above). Kala Bala's day/night components and the remaining two of Sthana Bala's five classical parts (Saptavargaja and Drekkana Bala, which need divisional charts this build doesn't compute) are still deferred. Because of that, the coverage percentage is each planet's strength within only the non-aspectual categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded "below min" against a full-total threshold.
                 </Text>
               </>
             ) : (
@@ -29957,61 +30203,6 @@ function BirthChartSection({
           </View>
         </View>
       )}
-
-      {/* Plain-language, layman-facing house-by-house reading. Placed above
-          the technical Advanced panel and the Moon Chart card on purpose --
-          this is the reading meant for someone with zero astrology
-          background, so it should be the first thing they see, not
-          something buried under Rupas/Virupas/Bindus. */}
-      <View style={{ backgroundColor: "#FFF7ED", borderRadius: 16, marginHorizontal: 16, marginBottom: 16, padding: 14, borderWidth: 1, borderColor: "rgba(180,83,9,0.25)", gap: 10 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-          <Text style={{ color: "#9A3412", fontSize: 14, fontWeight: "900" }}>
-            {chartBriefLang === "hi" ? "आपकी कुंडली सरल भाषा में" : "Your Chart in Plain Language"}
-          </Text>
-          <View style={{ flexDirection: "row", backgroundColor: "rgba(154,52,18,0.1)", borderRadius: 10, padding: 3 }}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{ selected: chartBriefLang === "en" }}
-              onPress={() => setChartBriefLang("en")}
-              style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "en" ? "#9A3412" : "transparent" }}
-            >
-              <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "en" ? "#FFFFFF" : "#9A3412" }}>English</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{ selected: chartBriefLang === "hi" }}
-              onPress={() => setChartBriefLang("hi")}
-              style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "hi" ? "#9A3412" : "transparent" }}
-            >
-              <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "hi" ? "#FFFFFF" : "#9A3412" }}>हिन्दी</Text>
-            </Pressable>
-          </View>
-        </View>
-
-        {housePlacementResult ? (
-          <>
-            <Text style={{ color: "#431407", fontSize: 13, lineHeight: 19 }}>
-              {chartBriefLang === "hi" ? PLAIN_LANGUAGE_HI.briefIntro : PLAIN_LANGUAGE_EN.briefIntro}
-            </Text>
-            {housePlacementResult.houses.map((entry) => (
-              <View key={`house-plain-${entry.house}`} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 10, borderWidth: 1, borderColor: "rgba(154,52,18,0.15)", gap: 4 }}>
-                {entry.cardTexts.map((text, idx) => (
-                  <Text key={idx} style={{ color: "#3A2A1A", fontSize: 13, lineHeight: 19 }}>{text}</Text>
-                ))}
-              </View>
-            ))}
-            <Text style={{ color: "#7C2D12", fontSize: 12, fontStyle: "italic", lineHeight: 17 }}>
-              {chartBriefLang === "hi" ? PLAIN_LANGUAGE_HI.briefOutro : PLAIN_LANGUAGE_EN.briefOutro}
-            </Text>
-          </>
-        ) : (
-          <Text style={{ color: "#7C2D12", fontSize: 12, lineHeight: 17 }}>
-            {chartBriefLang === "hi"
-              ? "सटीक जन्म समय और स्थान चाहिए -- लग्न (Ascendant) के बिना यह भाव-वार पठन संभव नहीं है।"
-              : "Needs a precise birth time and place -- house placements can't be read without a real Ascendant."}
-          </Text>
-        )}
-      </View>
 
       <View style={styles.birthChartGeminiCard}>
         <View style={styles.birthChartGeminiHeader}>
