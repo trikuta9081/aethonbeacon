@@ -6541,6 +6541,11 @@ type CrossSectionSignal = {
   detectedThemes: SupportDimensionId[];
   recentMoodScore: number | null;
   recentMoodTrend: "improving" | "steady" | "declining" | null;
+  // From getRecentMoodProfile(entries) -- a majority read across the last few
+  // *mood-tagged* Journal check-ins (independent of recentMoodScore/Trend,
+  // which come from the numeric tone score instead). Null until at least 2
+  // tagged entries exist.
+  recentMoodTagLeaning: "negative" | "positive" | "mixed" | null;
 };
 
 const CrossSectionContext = createContext<CrossSectionSignal | null>(null);
@@ -6554,7 +6559,8 @@ function useCrossSectionSignal(): CrossSectionSignal {
     issueGuide: issueGuides.find((guide) => guide.id === "general") ?? issueGuides[0],
     detectedThemes: [],
     recentMoodScore: null,
-    recentMoodTrend: null
+    recentMoodTrend: null,
+    recentMoodTagLeaning: null
   };
 }
 
@@ -12855,7 +12861,12 @@ export default function App() {
     return Math.round(total / monthEntries.length);
   }, [monthEntries, weeklyAverage]);
 
-  const streak = useMemo(() => getDailyStreak(entries), [entries]);
+  // Was its own getDailyStreak(entries) memo with slightly different edge-case
+  // handling than checkInStreak above (Set-based vs day-by-day walk) -- two
+  // streak numbers that could silently disagree on the same screen. Aliased
+  // to the one source of truth so every surface (Home badges, Patterns
+  // report card, this routine plan) always shows the same count.
+  const streak = checkInStreak;
   const trend = useMemo(() => getSevenDayTrend(entries), [entries]);
   const monthTrend = useMemo(() => getThirtyDayTrend(entries), [entries]);
   const topRoutine = useMemo(() => getTopRoutine(entries), [entries]);
@@ -12959,7 +12970,8 @@ export default function App() {
       issueGuide: selectedIssueGuide,
       detectedThemes: activeJourney?.detectedThemes ?? [],
       recentMoodScore,
-      recentMoodTrend
+      recentMoodTrend,
+      recentMoodTagLeaning: getRecentMoodProfile(entries)?.leaning ?? null
     };
   }, [selectedIssueGuide, activeJourney, entries]);
 
@@ -18557,6 +18569,16 @@ function isTrustedExternalUrl(url: string) {
                   "Your journey is uniquely yours.", "Courage is choosing to continue.", "Progress over perfection.",
                 ];
                 const motivation = motivations[new Date().getDate() % motivations.length];
+                // Responds to a real short-term pattern (majority of the last
+                // 2-3 mood-tagged Journal check-ins) instead of only ever
+                // showing a rotating generic line regardless of how the
+                // person has actually been doing lately. Deliberately not
+                // clinical or alarmed -- just an honest acknowledgement, in
+                // the same voice as the Journal mood responses.
+                const moodAwareLine =
+                  crossSectionSignal.recentMoodTagLeaning === "negative"
+                    ? "The last few check-ins have leaned heavy — that's worth noticing, not pushing past."
+                    : null;
                 return (
                   <View style={{ marginHorizontal: 0, marginBottom: 6 }}>
                     {/* ── Hero greeting panel ── */}
@@ -18586,7 +18608,7 @@ function isTrustedExternalUrl(url: string) {
                             {profileDisplayName || "Welcome back"}
                           </Text>
                           <Text style={{ color: "#334155", fontSize: 12, marginTop: 3, fontStyle: "italic" }} numberOfLines={1}>
-                            {motivation}
+                            {moodAwareLine ?? motivation}
                           </Text>
                         </View>
                         {/* Clarity score orb — bigger + labelled */}
@@ -20405,6 +20427,8 @@ function isTrustedExternalUrl(url: string) {
           voiceAssistEnabled={voiceAssistEnabled}
           onToggleVoiceAssist={() => setVoiceAssistEnabled((prev) => !prev)}
           onFetchGuideEnrichment={fetchGeminiAIHelp}
+          streak={checkInStreak}
+          moodTagLeaning={crossSectionSignal.recentMoodTagLeaning}
         />
 
         {/* ── Crisis support overlay (self-harm / suicidal ideation) ── */}
@@ -33709,9 +33733,23 @@ function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId, 
  * Supreme-level journey builder — adapts to all 20 theme dimensions.
  * Steps are ordered by urgency/logic: calm body → process emotionally → act.
  */
-function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route: AIHelpRoute, moonChart48Readings: MoonChart48Reading[] = []): JourneyStep[] {
+function buildJourneySteps(
+  themes: SupportDimensionId[],
+  issueId: IssueId,
+  route: AIHelpRoute,
+  moonChart48Readings: MoonChart48Reading[] = [],
+  // Optional and additive only -- deliberately never changes which steps are
+  // included or their order (the calm/grounding, professional-support, and
+  // redress steps above are safety-relevant and stay driven purely by
+  // detected themes, same as before). Only varies the *reason* copy on two
+  // already-always-present steps, so a returning person with real history
+  // gets guidance that acknowledges it instead of always reading like their
+  // very first visit.
+  personalization: { streak?: number; moodTagLeaning?: "negative" | "positive" | "mixed" | null } = {}
+): JourneyStep[] {
   const steps: JourneyStep[] = [];
   const has = (t: SupportDimensionId) => themes.includes(t);
+  const { streak = 0, moodTagLeaning = null } = personalization;
 
   // ── 1. Immediate calm / grounding — for any emotional distress ───────────────
   const needsCalm: SupportDimensionId[] = ["self-image", "anxiety", "anger", "burnout", "sadness", "loneliness", "grief", "trauma", "fear", "financial", "health", "academic", "relationship"];
@@ -33779,7 +33817,10 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
     tabId: "aihelp",
     label: "Get personalised guidance",
     emoji: "🤝",
-    reason: "Talk through your specific situation and get tailored next steps — not generic advice.",
+    reason:
+      streak >= 7
+        ? `Talk through your specific situation — you've already shown up ${streak} days running, so bring that same consistency here.`
+        : "Talk through your specific situation and get tailored next steps — not generic advice.",
     completed: false, skipped: false
   });
 
@@ -33788,7 +33829,10 @@ function buildJourneySteps(themes: SupportDimensionId[], issueId: IssueId, route
     tabId: "journal",
     label: "Write it out",
     emoji: "✍️",
-    reason: "Getting it onto paper externalises the weight, creates clarity, and shifts perspective.",
+    reason:
+      moodTagLeaning === "negative"
+        ? "The last few check-ins have leaned heavy — getting it onto paper externalises the weight instead of carrying it silently."
+        : "Getting it onto paper externalises the weight, creates clarity, and shifts perspective.",
     completed: false, skipped: false
   });
 
@@ -33883,6 +33927,8 @@ function CounselingChatModal({
   voiceAssistEnabled,
   onToggleVoiceAssist,
   onFetchGuideEnrichment,
+  streak = 0,
+  moodTagLeaning = null,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -33916,6 +33962,12 @@ function CounselingChatModal({
     profileAddressLabel: string,
     issueGuide: IssueGuide
   ) => Promise<{ text: string; source: string } | null>;
+  // Passed down from App() (checkInStreak / crossSectionSignal.recentMoodTagLeaning)
+  // so buildJourneySteps below can vary its copy with real history -- see the
+  // comment on buildJourneySteps itself for why this only ever changes reason
+  // text, never which steps appear.
+  streak?: number;
+  moodTagLeaning?: "negative" | "positive" | "mixed" | null;
 }) {
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
@@ -34104,7 +34156,7 @@ function CounselingChatModal({
         questionIndex: newQuestionIndex, detectedThemes: mergedThemes
       };
       const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings);
-      const steps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings);
+      const steps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning });
 
       const finalTurns: CounselingTurn[] = [...newTurns, { role: "friend", message: synthesis }];
       const finalSession: CounselingSession = {
@@ -34212,7 +34264,7 @@ function CounselingChatModal({
 
   function skipToRoute() {
     const route = detectAIHelpRouteFromText(session.originalIssue);
-    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChart48Readings);
+    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning });
     const finalSession: CounselingSession = { ...session, stage: "done", journeySteps: steps };
     onJourneyReady(finalSession);
   }
@@ -34999,19 +35051,6 @@ function isToday(dateValue: string) {
   return date.toDateString() === new Date().toDateString();
 }
 
-function getDailyStreak(entries: CheckInEntry[]) {
-  const days = new Set(entries.map((entry) => new Date(entry.createdAt).toDateString()));
-  let streak = 0;
-  const cursor = new Date();
-
-  while (days.has(cursor.toDateString())) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  return streak;
-}
-
 function getSevenDayTrend(entries: CheckInEntry[]) {
   return Array.from({ length: 7 }).map((_, index) => {
     const date = new Date();
@@ -35340,6 +35379,23 @@ function buildGuidedJournalNote(
   ].join("\n");
 }
 
+// Same 10/10 split already used visually in the Journal mood-tag grid
+// (see the MOOD_TAGS comment near where it's rendered) -- named here at
+// module level so getRecentMoodProfile below can read it without duplicating
+// the list a third time.
+const NEGATIVE_MOOD_LABELS = new Set([
+  "Tired",
+  "Frustrated",
+  "Anxious",
+  "Sad",
+  "Overwhelmed",
+  "Angry",
+  "Lonely",
+  "Hurt",
+  "Scared",
+  "Numb"
+]);
+
 // One real, differentiated reflection per named mood -- both positive and
 // negative get a reply matched to what was actually tapped, not a shared
 // generic line. Mirrors the depth already given to the 17 issues and 48
@@ -35389,6 +35445,40 @@ function getJournalInsight(
     detail: moodLine
       ? `${moodLine} ${scoreDirection} Continue with ${guide.label}: ${guide.steps[0]}`
       : `${scoreDirection} Continue with ${guide.label}: ${guide.steps[0]}`
+  };
+}
+
+// Reads across the last few *mood-tagged* check-ins (not just the single
+// latest one that getJournalInsight above already covers) so Home/guidance
+// can respond to a real short-term pattern -- e.g. three sad/anxious taps in
+// a row -- instead of only ever reacting to whatever was tapped in this exact
+// session. Deliberately conservative: fewer than 2 tagged entries returns
+// null (not enough signal to act on), and "leaning" only fires when the
+// majority of the sample agrees, so one off mood doesn't flip anything.
+type RecentMoodProfile = {
+  sampleSize: number;
+  negativeCount: number;
+  positiveCount: number;
+  leaning: "negative" | "positive" | "mixed";
+};
+
+function getRecentMoodProfile(entries: CheckInEntry[], sampleWindow = 3): RecentMoodProfile | null {
+  const tagged = [...entries]
+    .filter((entry): entry is CheckInEntry & { mood: string } => typeof entry.mood === "string" && entry.mood.length > 0)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, sampleWindow);
+
+  if (tagged.length < 2) return null;
+
+  const negativeCount = tagged.filter((entry) => NEGATIVE_MOOD_LABELS.has(entry.mood)).length;
+  const positiveCount = tagged.length - negativeCount;
+  const majority = Math.ceil(tagged.length / 2) + (tagged.length % 2 === 0 ? 1 : 0); // strict majority, ties -> mixed
+
+  return {
+    sampleSize: tagged.length,
+    negativeCount,
+    positiveCount,
+    leaning: negativeCount >= majority ? "negative" : positiveCount >= majority ? "positive" : "mixed"
   };
 }
 
