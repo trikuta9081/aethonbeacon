@@ -36797,12 +36797,17 @@ const styles = StyleSheet.create({
   },
   routeFollowUpCard: {
     marginTop: 10,
-    borderRadius: 14,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "rgba(14, 204, 184, 0.26)",
+    borderColor: "rgba(14, 204, 184, 0.2)",
     backgroundColor: "#E1EEEC",
     padding: 12,
-    gap: 10
+    gap: 10,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3
   },
   routeFollowUpHeader: {
     flexDirection: "row",
@@ -36879,18 +36884,18 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   routePreviewCard: {
-    borderRadius: 12,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.35)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 2,
     marginTop: 10,
     shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.09,
+    shadowRadius: 14,
     elevation: 3
   },
   routePreviewCardCompact: {
@@ -36950,17 +36955,17 @@ const styles = StyleSheet.create({
     flexBasis: 170,
     minWidth: 0,
     minHeight: 84,
-    borderRadius: 9,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.25)",
+    borderColor: "rgba(14,111,105,0.18)",
     backgroundColor: "#F4F8F7",
     padding: 8,
     gap: 3,
     shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 6,
-    elevation: 3
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2
   },
   visitReportCardCompact: {
     flexBasis: 150,
@@ -37001,17 +37006,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 180,
     minWidth: 0,
-    borderRadius: 12,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
     padding: 10,
     gap: 6,
     shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.09,
+    shadowRadius: 14,
+    elevation: 3
   },
   homeOverviewCardCompact: {
     padding: 8,
@@ -37031,12 +37036,17 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 150,
     minWidth: 0,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(30,80,200,0.22)",
+    borderColor: "rgba(30,80,200,0.18)",
     backgroundColor: "#F5F7FF",
     padding: 10,
-    gap: 4
+    gap: 4,
+    shadowColor: "#1E50C8",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2
   },
   homeCommunityFeatureTitle: {
     color: "#24306F",
@@ -37250,11 +37260,16 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 164,
     minWidth: 0,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1.5,
     backgroundColor: "#F8FAFC",
     padding: 10,
-    gap: 4
+    gap: 4,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2
   },
   homeToneLibraryPreviewTitle: {
     fontSize: 13,
@@ -37314,17 +37329,17 @@ const styles = StyleSheet.create({
     textAlign: "left"
   },
   homeToneFeaturedCard: {
-    borderRadius: 14,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.4)",
+    borderColor: "rgba(14,111,105,0.25)",
     backgroundColor: "#E1EEEC",
     padding: 12,
     gap: 6,
     shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 5
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 14,
+    elevation: 3
   },
   homeToneFeaturedCardCompact: {
     padding: 5,
@@ -38391,12 +38406,17 @@ const styles = StyleSheet.create({
   },
   institutionDetailCard: {
     marginTop: 12,
-    borderRadius: 14,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.36)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
     padding: 12,
-    gap: 12
+    gap: 12,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 3
   },
   institutionDetailHeader: {
     flexDirection: "row",
@@ -38493,11 +38513,16 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     alignItems: "center",
     gap: 10,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(8,145,178,0.28)",
+    borderColor: "rgba(8,145,178,0.2)",
     backgroundColor: "#E6F6FA",
-    padding: 10
+    padding: 10,
+    shadowColor: "#0891B2",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2
   },
   institutionPortalTitle: {
     color: "#075985",
@@ -38734,12 +38759,17 @@ const styles = StyleSheet.create({
     gap: 8
   },
   playFeaturedCard: {
-    borderRadius: 8,
+    borderRadius: 18,
     backgroundColor: "#F4F8F7",
     borderWidth: 1,
-    borderColor: "rgba(14,199,189,0.28)",
+    borderColor: "rgba(14,199,189,0.2)",
     padding: 14,
-    gap: 8
+    gap: 8,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 3
   },
   playSummary: {
     color: "#111827",
@@ -39131,12 +39161,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: "48%",
     minHeight: 72,
-    borderRadius: 8,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#6D644A",
     backgroundColor: "#F4F8F7",
     padding: 10,
-    gap: 6
+    gap: 6,
+    shadowColor: "#6D644A",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 2
   },
   privateRoomCardCompact: {
     flexBasis: "100%"
@@ -39356,12 +39391,17 @@ const styles = StyleSheet.create({
   searchStarterCard: {
     flexGrow: 1,
     flexBasis: 220,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
     padding: 14,
-    gap: 6
+    gap: 6,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3
   },
   searchStarterTitle: {
     color: "#0D1F22",
@@ -39458,12 +39498,17 @@ const styles = StyleSheet.create({
   helpCard: {
     flexGrow: 1,
     flexBasis: 144,
-    borderRadius: 8,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#2E4E8A",
     backgroundColor: "#F4F8F7",
     padding: 8,
-    gap: 4
+    gap: 4,
+    shadowColor: "#2E4E8A",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 2
   },
   helpCategory: {
     color: "#2E5C8A",
@@ -39614,14 +39659,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 150,
     minHeight: 70,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8
+    gap: 8,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2
   },
   frontFeatureCardCompact: {
     flexBasis: "100%"
@@ -40344,15 +40394,20 @@ const styles = StyleSheet.create({
     flexBasis: 150,
     minWidth: 0,
     minHeight: 62,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(167,139,250,0.34)",
+    borderColor: "rgba(167,139,250,0.24)",
     backgroundColor: "#F4F8F7",
     paddingHorizontal: 10,
     paddingVertical: 9,
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 8
+    gap: 8,
+    shadowColor: "#7C3AED",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2
   },
   beaconXPillarMark: {
     width: 12,
@@ -40502,13 +40557,18 @@ const styles = StyleSheet.create({
     flexBasis: 160,
     minWidth: 0,
     minHeight: 82,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.34)",
+    borderColor: "rgba(14,204,184,0.22)",
     backgroundColor: "#E1EEEC",
     paddingHorizontal: 10,
     paddingVertical: 9,
-    gap: 4
+    gap: 4,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2
   },
   beaconXRouteCardLabel: {
     color: "#0D1F22",
@@ -40906,13 +40966,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: "48%",
     minHeight: 64,
-    borderRadius: 8,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
     paddingHorizontal: 10,
     paddingVertical: 8,
-    gap: 4
+    gap: 4,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2
   },
   launchNeedCardActive: {
     borderColor: "#0E6F69",
@@ -41579,12 +41644,17 @@ const styles = StyleSheet.create({
     gap: 10
   },
   adminReportCard: {
-    borderRadius: 8,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
     padding: 12,
-    gap: 4
+    gap: 4,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2
   },
   adminReportMeta: {
     color: "#111827",
@@ -41940,14 +42010,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 240,
     minHeight: 82,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "rgba(14,199,189,0.2)",
     backgroundColor: "#DFEEF1",
     padding: 12,
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 10
+    gap: 10,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2
   },
   dailyRoutineActionCardPrimary: {
     borderColor: "#E1EEEC",
@@ -42093,13 +42168,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 220,
     minHeight: 92,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.36)",
+    borderColor: "rgba(14,204,184,0.24)",
     backgroundColor: "#E1EEEC",
     paddingHorizontal: 10,
     paddingVertical: 9,
-    gap: 4
+    gap: 4,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 2
   },
   calmSituationCardTop: {
     flexDirection: "row",
@@ -42136,12 +42216,17 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
   calmVoiceBand: {
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
     padding: 12,
-    gap: 8
+    gap: 8,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 2
   },
   calmVoiceHeader: {
     flexDirection: "row",
@@ -42179,12 +42264,17 @@ const styles = StyleSheet.create({
   calmTeachingCard: {
     flexGrow: 1,
     flexBasis: 210,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "#3000B8",
     backgroundColor: "#F4F8F7",
     padding: 10,
-    gap: 7
+    gap: 7,
+    shadowColor: "#3000B8",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2
   },
   calmTeachingTop: {
     flexDirection: "row",
@@ -42446,12 +42536,17 @@ const styles = StyleSheet.create({
   },
   focusCard: {
     minHeight: 170,
-    borderRadius: 8,
+    borderRadius: 20,
     backgroundColor: "#E1EEEC",
     padding: 20,
     alignItems: "flex-start",
     justifyContent: "center",
-    gap: 10
+    gap: 10,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.09,
+    shadowRadius: 16,
+    elevation: 4
   },
   focusCount: {
     color: "#B45309",
@@ -42692,13 +42787,18 @@ const styles = StyleSheet.create({
     gap: 10
   },
   legalTrustCard: {
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.32)",
+    borderColor: "rgba(14,204,184,0.22)",
     backgroundColor: "#E1EEEC",
     paddingHorizontal: 14,
     paddingVertical: 12,
-    gap: 8
+    gap: 8,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 2
   },
   legalTrustHeader: {
     flexDirection: "row",
@@ -42810,13 +42910,18 @@ const styles = StyleSheet.create({
     flexBasis: "48%",
     flexGrow: 1,
     minWidth: 140,
-    borderRadius: 12,
+    borderRadius: 18,
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.2)",
     backgroundColor: "#E1EEEC",
     paddingHorizontal: 14,
     paddingVertical: 14,
-    gap: 5
+    gap: 5,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3
   },
   profileSummaryCardCompact: {
     minWidth: 0,
@@ -42898,12 +43003,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 10,
-    borderRadius: 8,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
     paddingHorizontal: 10,
-    paddingVertical: 8
+    paddingVertical: 8,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2
   },
   privateIntakeFlowCardCompact: {
     gap: 8,
@@ -43053,12 +43163,17 @@ const styles = StyleSheet.create({
     gap: 12
   },
   contactCard: {
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
     padding: 12,
-    gap: 10
+    gap: 10,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 2
   },
   contactHeader: {
     flexDirection: "row",
@@ -43153,13 +43268,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 118,
     minHeight: 72,
-    borderRadius: 8,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
     paddingHorizontal: 9,
     paddingVertical: 8,
-    gap: 4
+    gap: 4,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2
   },
   identityCardActive: {
     borderColor: "#E1EEEC",
@@ -43574,9 +43694,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     shadowColor: "#0891B2",
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.14,
     shadowRadius: 24,
-    elevation: 14,
+    elevation: 10,
     borderWidth: 1.5,
     borderColor: "rgba(34,211,238,0.22)"
   },
@@ -43669,9 +43789,9 @@ const styles = StyleSheet.create({
     // Deep layered shadow
     shadowColor: "#0EA5E9",
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.12,
     shadowRadius: 22,
-    elevation: 14,
+    elevation: 10,
     borderWidth: 1.5,
     borderColor: "rgba(196,163,90,0.22)",
   },
@@ -43759,11 +43879,16 @@ const styles = StyleSheet.create({
   // ── First-run welcome card ──
   welcomeExplainerCard: {
     backgroundColor: "#F4F8F7",
-    borderRadius: 14,
+    borderRadius: 18,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.24)",
+    borderColor: "rgba(14,204,184,0.2)",
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.07,
+    shadowRadius: 12,
+    elevation: 3,
   },
   welcomeExplainerRow: {
     flexDirection: "row",
@@ -43879,7 +44004,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "#DEF2EC",
     borderWidth: 1,
-    borderColor: "rgba(16,185,129,0.35)",
+    borderColor: "rgba(16,185,129,0.24)",
     borderLeftWidth: 4,
     borderLeftColor: "#10B981",
     padding: 18,
@@ -43887,9 +44012,9 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     shadowColor: "#10B981",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.12,
     shadowRadius: 20,
-    elevation: 10
+    elevation: 6
   },
   smartBriefGreeting: {
     fontSize: 14,
