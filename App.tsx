@@ -29020,6 +29020,25 @@ function BirthChartSection({
   const [placeDraft, setPlaceDraft] = useState(profileBirthPlace);
   const [saved, setSaved] = useState(false);
 
+  // Same house pulse used on the counselling chat's "looking a little
+  // deeper" line -- this card already had text feedback ("Reading…" /
+  // "Analysing your Moon-chart birth details…") but no motion at all, so it
+  // read as static/frozen during the wait for this app's single most
+  // anticipated moment (the personal Moon-chart reading). Purely cosmetic;
+  // idle at full opacity whenever nothing is loading.
+  const horoscopePulseAnim = React.useRef(new Animated.Value(1)).current;
+  React.useEffect(() => {
+    if (!geminiHoroscopeLoading) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(horoscopePulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
+        Animated.timing(horoscopePulseAnim, { toValue: 1.0, duration: 700, useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [geminiHoroscopeLoading, horoscopePulseAnim]);
+
   // Derived combined values for validation/save
   const dobDraft = dobYYYY.length === 4 && dobMM.length >= 1 && dobDD.length >= 1
     ? `${dobYYYY}-${dobMM.padStart(2,"0")}-${dobDD.padStart(2,"0")}`
@@ -29973,13 +29992,15 @@ function BirthChartSection({
       <View style={styles.birthChartGeminiCard}>
         <View style={styles.birthChartGeminiHeader}>
           <Text style={styles.birthChartGeminiTitle}>Personal Moon Chart Analysis</Text>
-          <Text style={styles.birthChartGeminiBadge}>{geminiHoroscopeLoading ? "Reading…" : hasExactBirthDetails ? "Ready" : "Waiting"}</Text>
+          <Animated.Text style={[styles.birthChartGeminiBadge, geminiHoroscopeLoading && { opacity: horoscopePulseAnim }]}>
+            {geminiHoroscopeLoading ? "Reading…" : hasExactBirthDetails ? "Ready" : "Waiting"}
+          </Animated.Text>
         </View>
-              <Text style={styles.birthChartGeminiText}>
+        <Animated.Text style={[styles.birthChartGeminiText, geminiHoroscopeLoading && { opacity: horoscopePulseAnim }]}>
           {geminiHoroscopeLoading
             ? "Analysing your Moon-chart birth details…"
             : geminiHoroscope ?? (hasExactBirthDetails ? "Tap 'Save & Analyse' above to generate your reading." : "Enter date, time, and place of birth above to unlock your Moon-chart analysis.")}
-        </Text>
+        </Animated.Text>
       </View>
 
       {hasReading ? (
@@ -33907,6 +33928,27 @@ function CounselingChatModal({
   const [draft, setDraft] = React.useState("");
   const [geminiEnrichment, setGeminiEnrichment] = React.useState<string | null>(null);
   const [geminiEnrichmentLoading, setGeminiEnrichmentLoading] = React.useState(false);
+  // Subtle pulse for the "looking a little deeper" line below -- geminiEnrichmentLoading
+  // was already being tracked but never rendered anywhere, so during an actual
+  // Gemini fetch (when it IS configured) the person saw nothing happen for a
+  // couple seconds after the synthesis appeared, then a new card just showed
+  // up unexplained. This keeps the original "no clutter if it never appears"
+  // intent (renders null the instant loading finishes with no content) while
+  // giving honest feedback during a real, active wait. Same Animated pulse
+  // pattern already used on the Home hero card's CTA, not a generic spinner,
+  // to stay consistent with the app's house motion style.
+  const enrichmentPulseAnim = React.useRef(new Animated.Value(1)).current;
+  React.useEffect(() => {
+    if (!geminiEnrichmentLoading) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(enrichmentPulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
+        Animated.timing(enrichmentPulseAnim, { toValue: 1.0, duration: 700, useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [geminiEnrichmentLoading, enrichmentPulseAnim]);
   const [isListening, setIsListening] = React.useState(false);
   const [speechInputNotice, setSpeechInputNotice] = React.useState("");
   const [synthText, setSynthText] = React.useState("");
@@ -34301,10 +34343,18 @@ function CounselingChatModal({
             <View style={{ marginTop: 8, gap: 8 }}>
               {/* Optional cloud-AI enrichment -- purely additive on top of the
                   offline synthesis above, which is already fully complete by
-                  the time this ever appears. Renders nothing at all while
-                  loading (no spinner clutter) and nothing at all if Gemini
-                  isn't configured or the call fails -- only ever appears once
-                  there's real text to show. */}
+                  the time this ever appears. Nothing at all if Gemini isn't
+                  configured or the call fails -- only ever appears once
+                  there's real text to show. While an actual fetch is in
+                  flight, a brief pulsing line replaces total silence; it
+                  unmounts the instant loading finishes either way. */}
+              {geminiEnrichmentLoading && (
+                <Animated.View style={{ opacity: enrichmentPulseAnim, paddingVertical: 2, paddingHorizontal: 2 }}>
+                  <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700" }}>
+                    Beacon Guide is looking a little deeper…
+                  </Text>
+                </Animated.View>
+              )}
               {geminiEnrichment && geminiEnrichment.trim().length > 0 && (
                 <View style={{ backgroundColor: "#F2F1E8", borderRadius: 12, padding: 14, borderLeftWidth: 3, borderLeftColor: "#B45309", marginBottom: 4 }}>
                   <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>A closer look</Text>
