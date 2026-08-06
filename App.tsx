@@ -34637,6 +34637,29 @@ function CounselingChatModal({
   const [synthText, setSynthText] = React.useState("");
   const [journeySteps, setJourneySteps] = React.useState<JourneyStep[]>([]);
   const scrollRef = React.useRef<ScrollView>(null);
+  // Guide "typing…" beat -- every reply here (opening line, follow-up
+  // question, and the final synthesis) is computed instantly from local
+  // logic, so it used to appear the instant you tapped send: no pause, no
+  // sense of being heard, closer to a form submit than a conversation. The
+  // same fix already applied to the Vedic "Ask the chart" flow (see
+  // astroChatLoading) applies here -- hold the already-computed reply behind
+  // a short, natural pause with a real typing indicator instead of dumping
+  // it in immediately. Nothing about the reply's content changes or waits on
+  // a network call; this is purely pacing + honest "still here" feedback.
+  const [isGuideTyping, setIsGuideTyping] = React.useState(false);
+  const typingTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const typingDotsAnim = React.useRef(new Animated.Value(1)).current;
+  React.useEffect(() => {
+    if (!isGuideTyping) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(typingDotsAnim, { toValue: 0.3, duration: 420, useNativeDriver: true }),
+        Animated.timing(typingDotsAnim, { toValue: 1.0, duration: 420, useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [isGuideTyping, typingDotsAnim]);
   // Tracks the pending "speak after a short delay" timeout so it can be
   // cancelled if the modal closes or resets before it fires — without this,
   // speakText() would still play after the user has already dismissed the
@@ -34718,7 +34741,7 @@ function CounselingChatModal({
     setSession({
       stage: "questioning",
       originalIssue: initialIssue,
-      turns: [{ role: "friend", message: openingMsg }],
+      turns: [],
       questionIndex: 0,
       detectedThemes: themes,
       journeySteps: [],
@@ -34730,12 +34753,24 @@ function CounselingChatModal({
     setGeminiEnrichment(null);
     setGeminiEnrichmentLoading(false);
 
-    // Speak the opening message
-    scheduleSpeakRef.current(openingMsg, 400);
+    // Hold the opening line behind a brief typing beat instead of dumping it
+    // in the instant the modal opens -- see isGuideTyping comment above.
+    setIsGuideTyping(true);
+    typingTimeoutRef.current = setTimeout(() => {
+      typingTimeoutRef.current = null;
+      setIsGuideTyping(false);
+      setSession((prev) => ({ ...prev, turns: [{ role: "friend", message: openingMsg }] }));
+      scheduleSpeakRef.current(openingMsg, 150);
+    }, 650);
+
     return () => {
       if (speakTimeoutRef.current) {
         clearTimeout(speakTimeoutRef.current);
         speakTimeoutRef.current = null;
+      }
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
       }
     };
     // Intentionally NOT depending on scheduleSpeak here (see the ref comment
@@ -34749,6 +34784,11 @@ function CounselingChatModal({
     if (visible) return;
     setIsListening(false);
     setSpeechInputNotice("");
+    setIsGuideTyping(false);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
     try {
       ExpoSpeechRecognitionModule.abort();
     } catch {
@@ -34756,14 +34796,15 @@ function CounselingChatModal({
     }
   }, [visible]);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom -- also fires when the typing indicator appears so
+  // it's visible immediately rather than off-screen until the real reply lands.
   React.useEffect(() => {
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
-  }, [session.turns]);
+  }, [session.turns, isGuideTyping]);
 
   function handleSend() {
     const text = draft.trim();
-    if (!text) return;
+    if (!text || isGuideTyping) return;
     stopSpeech();
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -34779,6 +34820,16 @@ function CounselingChatModal({
 
     const userResponses = newTurns.filter(t => t.role === "user").length;
 
+    // The user's own message still appears the instant they send it (that
+    // part was never the problem). Only the guide's side is now held behind
+    // a typing beat -- see isGuideTyping comment above -- computed exactly
+    // once, up front, then revealed after a short, natural pause instead of
+    // both bubbles landing in the same frame.
+    setSession((prev) => ({ ...prev, turns: newTurns, questionIndex: newQuestionIndex, detectedThemes: mergedThemes }));
+    setDraft("");
+    setIsGuideTyping(true);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
     // After 6 user responses, synthesize (deep counseling — covers all dimensions)
     if (userResponses >= 6) {
       const route = detectAIHelpRouteFromText(session.originalIssue + " " + allUserText);
@@ -34789,15 +34840,18 @@ function CounselingChatModal({
       const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings);
       const steps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning });
 
-      const finalTurns: CounselingTurn[] = [...newTurns, { role: "friend", message: synthesis }];
-      const finalSession: CounselingSession = {
-        ...updatedSession, turns: finalTurns, stage: "synthesizing", journeySteps: steps
-      };
-      setSession(finalSession);
-      setSynthText(synthesis);
-      setJourneySteps(steps);
-      setDraft("");
-      scheduleSpeak(synthesis, 200);
+      typingTimeoutRef.current = setTimeout(() => {
+        typingTimeoutRef.current = null;
+        setIsGuideTyping(false);
+        const finalTurns: CounselingTurn[] = [...newTurns, { role: "friend", message: synthesis }];
+        const finalSession: CounselingSession = {
+          ...updatedSession, turns: finalTurns, stage: "synthesizing", journeySteps: steps
+        };
+        setSession(finalSession);
+        setSynthText(synthesis);
+        setJourneySteps(steps);
+        scheduleSpeak(synthesis, 150);
+      }, 700 + Math.random() * 350);
 
       // Optional cloud-AI enrichment layered on top of the offline synthesis
       // above, which has already fully completed and is never blocked or
@@ -34819,17 +34873,19 @@ function CounselingChatModal({
     } else {
       // Ask next adaptive question using updated merged themes
       const nextQ = buildCounselingQuestions(mergedThemes, newQuestionIndex, allUserText);
-      const friendTurn: CounselingTurn = { role: "friend", message: nextQ };
-      const updatedSession: CounselingSession = {
-        ...session,
-        turns: [...newTurns, friendTurn],
-        questionIndex: newQuestionIndex,
-        stage: "questioning",
-        detectedThemes: mergedThemes,
-      };
-      setSession(updatedSession);
-      setDraft("");
-      scheduleSpeak(nextQ, 200);
+      typingTimeoutRef.current = setTimeout(() => {
+        typingTimeoutRef.current = null;
+        setIsGuideTyping(false);
+        const friendTurn: CounselingTurn = { role: "friend", message: nextQ };
+        setSession((prev) => ({
+          ...prev,
+          turns: [...newTurns, friendTurn],
+          questionIndex: newQuestionIndex,
+          stage: "questioning",
+          detectedThemes: mergedThemes,
+        }));
+        scheduleSpeak(nextQ, 150);
+      }, 550 + Math.random() * 300);
     }
   }
 
@@ -35008,18 +35064,34 @@ function CounselingChatModal({
                   <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Text style={{ fontSize: 16 }}>🌟</Text>
                   </View>
-                  <View style={{ backgroundColor: "#E1EEEC", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, flex: 1 }}>
+                  <View style={{ backgroundColor: "#E1EEEC", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, flex: 1, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 }}>
                     <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
                   </View>
                 </View>
               )}
               {turn.role === "user" && (
-                <View style={{ backgroundColor: "#DEF2F2", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, maxWidth: "80%" }}>
+                <View style={{ backgroundColor: "#DEF2F2", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, maxWidth: "80%", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 1 }}>
                   <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
                 </View>
               )}
             </View>
           ))}
+
+          {/* Guide typing beat -- see isGuideTyping comment above. Same
+              avatar-plus-bubble shape as a real friend turn so it reads as
+              "someone is composing a reply," not a generic spinner. */}
+          {isGuideTyping && (
+            <View style={{ alignItems: "flex-start" }}>
+              <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, maxWidth: "60%" }}>
+                <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Text style={{ fontSize: 16 }}>🌟</Text>
+                </View>
+                <Animated.View style={{ backgroundColor: "#E1EEEC", borderRadius: 16, borderBottomLeftRadius: 4, paddingVertical: 14, paddingHorizontal: 16, opacity: typingDotsAnim }}>
+                  <Text style={{ color: "#3A617D", fontSize: 18, fontWeight: "900", letterSpacing: 2 }}>•••</Text>
+                </Animated.View>
+              </View>
+            </View>
+          )}
 
           {/* Journey options */}
           {showJourneyOptions && (
@@ -35140,11 +35212,12 @@ function CounselingChatModal({
             </Pressable>
             <Pressable
               onPress={handleSend}
+              disabled={isGuideTyping}
               accessibilityRole="button"
-              accessibilityLabel="Send message"
-              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() ? "#0E6F69" : "#E1EEEC", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+              accessibilityLabel={isGuideTyping ? "Your guide is replying" : "Send message"}
+              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#E1EEEC", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
             >
-              <Text style={{ color: draft.trim() ? "#FFFFFF" : "#263244", fontSize: 20 }}>↑</Text>
+              <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#263244", fontSize: 20 }}>↑</Text>
             </Pressable>
           </View>
         )}

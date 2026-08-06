@@ -122,6 +122,12 @@ assert(!source.includes('48-dimension reading'), 'Public 48-dimension reading te
   'Stop speaker',
   'Unmute speaker',
   'onFetchGuideEnrichment',
+  // Counselling chat "typing…" beat -- replies are computed instantly from
+  // local logic, so without this every guide message (opening line, each
+  // follow-up question, and the final synthesis) used to land in the same
+  // frame as the tap, reading like a form submit instead of a conversation.
+  'isGuideTyping',
+  'typingDotsAnim',
 ].forEach((marker) => indexOf(marker));
 
-console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, and Gemini counselling enrichment are present.');
+console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, and a real typing beat on every counselling chat reply are present.');
