@@ -12015,6 +12015,14 @@ export default function App() {
     [isCompact, isTablet, isDesktop]
   );
   const [activeTab, setActiveTab] = useState<TabId>("today");
+  // Mini-player state for background tone playback -- see the
+  // ToneLibrarySection render-site comment for why this section now stays
+  // mounted (hidden, not unmounted) instead of dying with the rest of the
+  // Tones tab. toneNowPlaying is purely a reporting channel (updated via
+  // onNowPlayingChange); toneControlsRef holds the pause/resume/stop
+  // closures handed up once via onControlsReady.
+  const [toneNowPlaying, setToneNowPlaying] = useState<ToneNowPlaying>(null);
+  const toneControlsRef = useRef<ToneLibraryControls | null>(null);
   // "focus" still exists as an internal TabId (journeys, low-mood nudges,
   // and situation cards route to it directly) but its content now renders
   // inside the merged Meditation tab and it no longer has its own nav pill.
@@ -19710,19 +19718,34 @@ function isTrustedExternalUrl(url: string) {
                   onEndJourney={endJourney}
                 />
               )}
-              <ToneLibrarySection
-                selectedIssueGuide={selectedIssueGuide}
-                selectedIdentityLabel={profileDisplayName}
-                onOpenTab={handleTabPress}
-                onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
-                onEmergencyCall={handleEmergencyCall}
-                openWebsite={openWebsite}
-                buildNearbySearchUrl={buildNearbySearchUrl}
-                moonChart48Readings={vedicMoonChart48Readings}
-                isWide={isWide}
-              />
             </View>
           )}
+          {/* ToneLibrarySection stays mounted for the entire app session (never
+              conditionally unmounted like other tabs) and is hidden with
+              display:none instead of removed from the tree when the person
+              isn't on this tab. This is the fix for tone audio silently
+              stopping the instant you navigated away -- previously this whole
+              section unmounted with the rest of the tab, and its playback
+              useEffect's cleanup (stopContinuousTone) fired on every
+              unmount. Now it keeps running in the background exactly like
+              Calm/Spotify/Headspace, and reports state up via
+              onNowPlayingChange/onControlsReady for the mini-player rendered
+              near the bottom nav below. */}
+          <View style={activeTab === "tones" ? undefined : { display: "none" }}>
+            <ToneLibrarySection
+              selectedIssueGuide={selectedIssueGuide}
+              selectedIdentityLabel={profileDisplayName}
+              onOpenTab={handleTabPress}
+              onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
+              onEmergencyCall={handleEmergencyCall}
+              openWebsite={openWebsite}
+              buildNearbySearchUrl={buildNearbySearchUrl}
+              moonChart48Readings={vedicMoonChart48Readings}
+              isWide={isWide}
+              onNowPlayingChange={setToneNowPlaying}
+              onControlsReady={(controls) => { toneControlsRef.current = controls; }}
+            />
+          </View>
 
           {(activeTab === "meditation" || activeTab === "focus") && (
             <TabErrorBoundary tabName="Meditation">
@@ -20788,6 +20811,63 @@ function isTrustedExternalUrl(url: string) {
 
         </View>
       </ScrollView>
+
+      {/* ── Tones mini-player ── shown whenever a tone is looping in the
+          background and the person isn't currently on the Tones tab itself
+          (where the full player is already visible). Tap the body to jump
+          back to Tones; the two icon buttons control playback directly via
+          toneControlsRef without needing to navigate at all -- same pattern
+          as Spotify/Calm's persistent mini-player. */}
+      {toneNowPlaying && activeTab !== "tones" && (
+        <Pressable
+          onPress={() => handleTabPress("tones")}
+          accessibilityRole="button"
+          accessibilityLabel={`Now playing ${toneNowPlaying.label}. Tap to open Tones.`}
+          style={({ pressed }) => ({
+            flexDirection: "row", alignItems: "center", gap: 10,
+            marginHorizontal: 12, marginBottom: 8, borderRadius: 16,
+            backgroundColor: pressed ? "#CDE7F2" : "#DEECF5",
+            borderWidth: 1, borderColor: "rgba(8,145,178,0.28)",
+            paddingVertical: 10, paddingHorizontal: 14,
+            shadowColor: "#0891B2", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 14, elevation: 4
+          })}
+        >
+          <Text style={{ fontSize: 20 }}>{toneNowPlaying.mark}</Text>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 0.6 }} numberOfLines={1}>
+              {toneNowPlaying.paused ? "Paused" : "Now playing"} · {toneNowPlaying.label}
+            </Text>
+            <Text style={{ color: "#3A577D", fontSize: 12, marginTop: 1 }}>
+              {toneNowPlaying.presetMinutes > 0 ? `${toneNowPlaying.presetMinutes} min session · tap to open` : "Looping · tap to open"}
+            </Text>
+          </View>
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation?.();
+              void Haptics.selectionAsync();
+              if (toneNowPlaying.paused) toneControlsRef.current?.resume();
+              else toneControlsRef.current?.pause();
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={toneNowPlaying.paused ? "Resume tone" : "Pause tone"}
+            style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(8,145,178,0.3)" }}
+          >
+            <Text style={{ color: "#0891B2", fontSize: 15 }}>{toneNowPlaying.paused ? "▶" : "⏸"}</Text>
+          </Pressable>
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation?.();
+              void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              toneControlsRef.current?.stop();
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Stop tone"
+            style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(8,145,178,0.3)" }}
+          >
+            <Text style={{ color: "#991B1B", fontSize: 14 }}>⏹</Text>
+          </Pressable>
+        </Pressable>
+      )}
 
       {/* ── Persistent Bottom Navigation ── */}
       {isCompact ? (
@@ -22374,6 +22454,18 @@ const TONE_CATEGORIES = [
   { id: "special", label: "⚡ Specialised Sessions", color: "#0052B8", desc: "Deep sleep, quiet sessions, and gamma-frequency programmes.", ids: ["reset-quiet","reset-gamma"] },
 ];
 
+// Reported up to App() so a persistent mini-player can show/control playback
+// from any tab -- see the ToneLibrarySection mount-persistence comment below
+// for why this is necessary (the section used to fully unmount, and silently
+// kill the audio, the instant you left the Tones tab).
+type ToneNowPlaying = {
+  label: string;
+  mark: string;
+  paused: boolean;
+  presetMinutes: number;
+} | null;
+type ToneLibraryControls = { pause: () => void; resume: () => void; stop: () => void };
+
 function ToneLibrarySection({
   selectedIssueGuide,
   selectedIdentityLabel,
@@ -22383,7 +22475,9 @@ function ToneLibrarySection({
   openWebsite,
   buildNearbySearchUrl,
   moonChart48Readings,
-  isWide
+  isWide,
+  onNowPlayingChange,
+  onControlsReady
 }: {
   selectedIssueGuide: IssueGuide;
   selectedIdentityLabel: string;
@@ -22394,6 +22488,11 @@ function ToneLibrarySection({
   buildNearbySearchUrl?: (query: string) => string;
   moonChart48Readings?: MoonChart48Reading[];
   isWide: boolean;
+  // Optional -- both are additive reporting/control hooks for the App()-level
+  // mini-player. Neither changes any of this section's own behavior when
+  // omitted (e.g. in tests or if ever reused standalone).
+  onNowPlayingChange?: (state: ToneNowPlaying) => void;
+  onControlsReady?: (controls: ToneLibraryControls) => void;
 }) {
   const compact = !isWide;
   const recommendedTone = useMemo(
@@ -22412,7 +22511,18 @@ function ToneLibrarySection({
   const [breathStep, setBreathStep] = useState(0);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
+  // Guarded against resetting an actively-playing session: this section now
+  // stays mounted in the background when the user leaves the Tones tab (see
+  // the render site comment), so recommendedTone.id can change purely
+  // because the person switched their focus issue somewhere else in the app
+  // -- e.g. Home -- while a tone is still looping behind them. Without this
+  // guard that unrelated action would silently cut off their background
+  // audio. While nothing is playing, the original "pick a fresh recommended
+  // default" behavior is unchanged.
+  const loopEnabledRef = useRef(loopEnabled);
+  useEffect(() => { loopEnabledRef.current = loopEnabled; }, [loopEnabled]);
   useEffect(() => {
+    if (loopEnabledRef.current) return;
     setSelectedToneId(recommendedTone.id);
     setLoopEnabled(false);
     setTonePaused(false);
@@ -22425,6 +22535,20 @@ function ToneLibrarySection({
     setBreathStep(0);
   }, [recommendedTone.id]);
 
+  // Register imperative controls exactly once -- setLoopEnabled/setTonePaused
+  // are React setState functions, guaranteed stable across this component's
+  // entire lifetime, so a single registration at mount covers the whole
+  // session (this component is never remounted once the app starts -- see
+  // render site comment).
+  useEffect(() => {
+    onControlsReady?.({
+      pause: () => setTonePaused(true),
+      resume: () => setTonePaused(false),
+      stop: () => setLoopEnabled(false),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const selectedTone =
     mindRelaxingToneModes.find((toneMode) => toneMode.id === selectedToneId) ?? mindRelaxingToneModes[0];
   const selectedSessionPreset =
@@ -22434,6 +22558,20 @@ function ToneLibrarySection({
   const selectedToneHeadphones = toneRequiresHeadphones(selectedTone);
   const selectedToneContraindication = getToneContraindication(selectedTone);
   const toneVolumePercent = Math.round(clampToneVolume(toneVolume) * 100);
+
+  // Report now-playing state up for the mini-player. Deliberately excludes
+  // sessionSeconds (which ticks every second while playing) so a background
+  // session doesn't force an App()-level re-render once a second -- the
+  // mini-player shows tone name, preset length, and play/pause state, not a
+  // live counter.
+  useEffect(() => {
+    onNowPlayingChange?.(
+      loopEnabled
+        ? { label: selectedTone.label, mark: selectedTone.mark, paused: tonePaused, presetMinutes }
+        : null
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loopEnabled, tonePaused, selectedTone.label, selectedTone.mark, presetMinutes]);
 
   useEffect(() => {
     if (!loopEnabled) {

@@ -134,6 +134,25 @@ assert(!source.includes('48-dimension reading'), 'Public 48-dimension reading te
   // evidence checklist, route select, tone play/loop/pause/preset/volume) --
   // confirmed zero Haptics.* calls existed in any of the three before this.
   'function confirmDestructive',
+  // Tones mini-player: audio used to die silently the instant you left the
+  // Tones tab (the whole section unmounted with the tab, and its playback
+  // effect's cleanup called stopContinuousTone). ToneLibrarySection now stays
+  // mounted (hidden via display:none, not unmounted) for the app's whole
+  // session and reports state up so a persistent mini-player can show/control
+  // it from any tab, matching Calm/Spotify-style background playback.
+  'onNowPlayingChange',
+  'onControlsReady',
+  'toneControlsRef',
+  'toneNowPlaying',
 ].forEach((marker) => indexOf(marker));
 
-console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, and confirm-gated destructive actions with haptic feedback across Community/Redress/Tones are present.');
+// Lock in that ToneLibrarySection is rendered unconditionally (hidden via
+// style, not removed from the tree) -- a regression back to
+// `{activeTab === "tones" && <ToneLibrarySection` would silently reintroduce
+// the "audio dies when you leave the tab" bug this was built to fix.
+assert(
+  /<View style=\{activeTab === "tones" \? undefined : \{ display: "none" \}\}>\s*<ToneLibrarySection/.test(source),
+  'ToneLibrarySection must stay mounted (hidden via display:none) instead of being conditionally rendered, or background tone playback breaks again'
+);
+
+console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, and a persistent Tones mini-player that survives tab navigation are present.');
