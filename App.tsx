@@ -10759,54 +10759,54 @@ type MoonChart48Reading = MoonChart48Blueprint & {
 // "different" cards back to back saw the same paragraph four times. Keep
 // every `meaning` string here distinct -- that's the whole point of the field.
 const MOON_CHART_48_BLUEPRINTS: MoonChart48Blueprint[] = [
-  { id: "mind-peace", label: "Mind peace", category: "mind", house: 4, weight: 1.3, meaning: "how calm and undisturbed your inner mental space feels right now" },
-  { id: "emotional-regulation", label: "Emotional regulation", category: "mind", house: 1, weight: 1.25, meaning: "how well reactions, mood swings, and emotional intensity can be steadied" },
-  { id: "confidence", label: "Confidence", category: "self", house: 1, weight: 1.1, meaning: "how sure and grounded you feel in your own presence and choices" },
-  { id: "self-image", label: "Self-image", category: "self", house: 2, weight: 0.95, meaning: "how you see your own worth, value, and self-respect right now" },
-  { id: "decision-clarity", label: "Decision clarity", category: "growth", house: 5, weight: 1.05, meaning: "how clearly you can weigh options and commit to a direction" },
-  { id: "communication", label: "Communication", category: "relationship", house: 3, weight: 1.0, meaning: "how clearly words, messages, and everyday exchanges land with others" },
-  { id: "siblings-network", label: "Siblings and close network", category: "relationship", house: 3, weight: 0.8, meaning: "how steady support and goodwill from siblings and your close circle feel" },
-  { id: "home-peace", label: "Home peace", category: "family", house: 4, weight: 1.15, meaning: "how calm and settled the atmosphere at home feels" },
-  { id: "mother-support", label: "Mother and nurturance", category: "family", house: 4, weight: 1.0, meaning: "how nurtured, cared for, and emotionally held you feel" },
-  { id: "education-learning", label: "Education and learning", category: "growth", house: 5, weight: 1.05, meaning: "how easily new knowledge and study can be absorbed and retained" },
-  { id: "creativity", label: "Creativity", category: "growth", house: 5, weight: 0.9, meaning: "how freely original ideas and creative expression can flow" },
-  { id: "children-parenting", label: "Children and parenting", category: "family", house: 5, weight: 0.95, meaning: "how smoothly bonds with children or those you mentor are working" },
-  { id: "health-vitality", label: "Health vitality", category: "body", house: 6, weight: 1.2, meaning: "how much physical energy and resilience the body has to draw on" },
-  { id: "stress-immunity", label: "Stress immunity", category: "body", house: 6, weight: 1.1, meaning: "how well the body can absorb pressure without breaking down" },
-  { id: "habits-routine", label: "Habits and routine", category: "body", house: 6, weight: 1.0, meaning: "how consistently daily habits and routines can be maintained" },
-  { id: "debt-obligations", label: "Debt and obligations", category: "money", house: 6, weight: 1.0, meaning: "how manageable debts, dues, and financial obligations feel" },
-  { id: "marriage-partnership", label: "Marriage and partnership", category: "relationship", house: 7, weight: 1.2, meaning: "how balanced give-and-take feels with a spouse or life partner" },
-  { id: "trust-bonding", label: "Trust and bonding", category: "relationship", house: 7, weight: 1.15, meaning: "how safe it feels to trust and be trusted in close relationships" },
-  { id: "public-dealings", label: "Public dealings", category: "work", house: 7, weight: 0.9, meaning: "how smoothly negotiations, clients, and public-facing dealings go" },
-  { id: "transformation", label: "Transformation", category: "growth", house: 8, weight: 1.05, meaning: "how ready you are to let go of what's ending and step into what's next" },
-  { id: "hidden-fears", label: "Hidden fears", category: "risk", house: 8, weight: 1.15, meaning: "where unspoken anxieties or hidden pressure need honest attention" },
-  { id: "inheritance-shared-assets", label: "Shared assets", category: "money", house: 8, weight: 0.9, meaning: "how shared or inherited money and assets should be handled" },
-  { id: "dharma-faith", label: "Dharma and faith", category: "spiritual", house: 9, weight: 1.1, meaning: "how aligned your actions feel with your deeper sense of purpose and faith" },
-  { id: "luck-grace", label: "Luck and grace", category: "spiritual", house: 9, weight: 1.0, meaning: "how much unearned support or good fortune is flowing your way" },
-  { id: "father-mentors", label: "Father and mentors", category: "growth", house: 9, weight: 0.85, meaning: "how supportive guidance from father figures or mentors feels" },
-  { id: "career-direction", label: "Career direction", category: "work", house: 10, weight: 1.25, meaning: "how clear the path forward in your career or vocation feels" },
-  { id: "authority-recognition", label: "Authority and recognition", category: "work", house: 10, weight: 1.05, meaning: "how much your effort is being seen, credited, and respected by others" },
-  { id: "workload-discipline", label: "Workload discipline", category: "work", house: 10, weight: 1.0, meaning: "how sustainably your current workload can be handled with discipline" },
-  { id: "income-gains", label: "Income and gains", category: "money", house: 11, weight: 1.2, meaning: "how freely income and material gains are flowing in" },
-  { id: "friends-community", label: "Friends and community", category: "relationship", house: 11, weight: 0.95, meaning: "how reliable support from friends and your wider community feels" },
-  { id: "long-term-goals", label: "Long-term goals", category: "growth", house: 11, weight: 1.0, meaning: "how realistic long-term ambitions look from where you stand today" },
-  { id: "expenses", label: "Expenses", category: "money", house: 12, weight: 1.0, meaning: "how controlled or leaking your outgoing expenses are" },
-  { id: "sleep-dreams", label: "Sleep and dreams", category: "mind", house: 12, weight: 1.1, meaning: "how restorative sleep and the inner dream-mind feel" },
-  { id: "spiritual-release", label: "Spiritual release", category: "spiritual", house: 12, weight: 1.05, meaning: "how able you are to surrender control and let something go" },
-  { id: "foreign-distance", label: "Distance and foreign links", category: "growth", house: 12, weight: 0.8, meaning: "how smoothly travel, relocation, or distant connections are unfolding" },
-  { id: "speech-family-values", label: "Speech and family values", category: "family", house: 2, weight: 1.0, meaning: "how well your words reflect the values your family raised you with" },
-  { id: "savings", label: "Savings", category: "money", house: 2, weight: 1.1, meaning: "how secure your saved wealth and financial cushion feel" },
-  { id: "food-nourishment", label: "Food and nourishment", category: "body", house: 2, weight: 0.9, meaning: "how nourishing your food, appetite, and eating rhythm are right now" },
-  { id: "courage-initiative", label: "Courage and initiative", category: "self", house: 3, weight: 1.0, meaning: "how ready you feel to act first rather than wait and watch" },
-  { id: "skills-practice", label: "Skills and practice", category: "growth", house: 3, weight: 0.95, meaning: "how much daily practice is sharpening a specific skill" },
-  { id: "property-comforts", label: "Property and comforts", category: "family", house: 4, weight: 0.9, meaning: "how secure your home, property, and everyday comforts feel" },
-  { id: "romance-joy", label: "Romance and joy", category: "relationship", house: 5, weight: 0.95, meaning: "how much lightness, romance, and shared joy are present" },
-  { id: "competition", label: "Competition", category: "work", house: 6, weight: 0.95, meaning: "how you're holding up against rivals, deadlines, or competitive pressure" },
-  { id: "legal-conflicts", label: "Legal conflicts", category: "risk", house: 6, weight: 1.0, meaning: "how disputes, complaints, or legal matters are likely to move" },
-  { id: "intimacy", label: "Intimacy", category: "relationship", house: 8, weight: 0.9, meaning: "how safe and connected physical and emotional intimacy feels" },
-  { id: "travel-pilgrimage", label: "Travel and pilgrimage", category: "spiritual", house: 9, weight: 0.85, meaning: "how a journey, retreat, or pilgrimage could support your inner state" },
-  { id: "status-impact", label: "Status and impact", category: "work", house: 10, weight: 1.0, meaning: "how visible your standing, reputation, and impact are to others" },
-  { id: "wish-fulfilment", label: "Wish fulfilment", category: "growth", house: 11, weight: 1.05, meaning: "how close a specific wish or goal is to actually landing" },
+  { id: "mind-peace", label: "Mind peace", category: "mind", house: 4, weight: 1.3, meaning: "how calm and undisturbed your inner mental space feels right now", remedyFocus: "Protect one quiet 10-minute window today with no phone, no notifications." },
+  { id: "emotional-regulation", label: "Emotional regulation", category: "mind", house: 1, weight: 1.25, meaning: "how well reactions, mood swings, and emotional intensity can be steadied", remedyFocus: "Name the emotion out loud in one word before reacting to anything." },
+  { id: "confidence", label: "Confidence", category: "self", house: 1, weight: 1.1, meaning: "how sure and grounded you feel in your own presence and choices", remedyFocus: "Do the one task you're avoiding first, before anything else today." },
+  { id: "self-image", label: "Self-image", category: "self", house: 2, weight: 0.95, meaning: "how you see your own worth, value, and self-respect right now", remedyFocus: "Write one honest thing you did well this week and let it stand uncontested." },
+  { id: "decision-clarity", label: "Decision clarity", category: "growth", house: 5, weight: 1.05, meaning: "how clearly you can weigh options and commit to a direction", remedyFocus: "Write the decision down in one sentence, then sleep on it before acting." },
+  { id: "communication", label: "Communication", category: "relationship", house: 3, weight: 1.0, meaning: "how clearly words, messages, and everyday exchanges land with others", remedyFocus: "Say the one thing you've been avoiding saying, plainly and kindly." },
+  { id: "siblings-network", label: "Siblings and close network", category: "relationship", house: 3, weight: 0.8, meaning: "how steady support and goodwill from siblings and your close circle feel", remedyFocus: "Reach out to one sibling or close friend today, even briefly." },
+  { id: "home-peace", label: "Home peace", category: "family", house: 4, weight: 1.15, meaning: "how calm and settled the atmosphere at home feels", remedyFocus: "Tidy or fix one small thing at home that's been quietly bothering you." },
+  { id: "mother-support", label: "Mother and nurturance", category: "family", house: 4, weight: 1.0, meaning: "how nurtured, cared for, and emotionally held you feel", remedyFocus: "Call or check in with your mother or a mother-figure today." },
+  { id: "education-learning", label: "Education and learning", category: "growth", house: 5, weight: 1.05, meaning: "how easily new knowledge and study can be absorbed and retained", remedyFocus: "Study or read for 20 focused minutes on the one subject that matters most now." },
+  { id: "creativity", label: "Creativity", category: "growth", house: 5, weight: 0.9, meaning: "how freely original ideas and creative expression can flow", remedyFocus: "Make something small and unfinished-on-purpose -- a sketch, a draft, a note." },
+  { id: "children-parenting", label: "Children and parenting", category: "family", house: 5, weight: 0.95, meaning: "how smoothly bonds with children or those you mentor are working", remedyFocus: "Give one child (or mentee) 15 minutes of undivided, phone-free attention." },
+  { id: "health-vitality", label: "Health vitality", category: "body", house: 6, weight: 1.2, meaning: "how much physical energy and resilience the body has to draw on", remedyFocus: "Move your body for at least 15 minutes before the day gets away from you." },
+  { id: "stress-immunity", label: "Stress immunity", category: "body", house: 6, weight: 1.1, meaning: "how well the body can absorb pressure without breaking down", remedyFocus: "Identify the one stressor doing the most damage and remove or reduce it today." },
+  { id: "habits-routine", label: "Habits and routine", category: "body", house: 6, weight: 1.0, meaning: "how consistently daily habits and routines can be maintained", remedyFocus: "Pick one routine you keep skipping and do it once, imperfectly, today." },
+  { id: "debt-obligations", label: "Debt and obligations", category: "money", house: 6, weight: 1.0, meaning: "how manageable debts, dues, and financial obligations feel", remedyFocus: "List every debt and due date in one place before deciding anything." },
+  { id: "marriage-partnership", label: "Marriage and partnership", category: "relationship", house: 7, weight: 1.2, meaning: "how balanced give-and-take feels with a spouse or life partner", remedyFocus: "Ask your partner one honest question about how they're really doing." },
+  { id: "trust-bonding", label: "Trust and bonding", category: "relationship", house: 7, weight: 1.15, meaning: "how safe it feels to trust and be trusted in close relationships", remedyFocus: "Share one small vulnerability with someone you trust today." },
+  { id: "public-dealings", label: "Public dealings", category: "work", house: 7, weight: 0.9, meaning: "how smoothly negotiations, clients, and public-facing dealings go", remedyFocus: "Prepare your key points in writing before the next negotiation or meeting." },
+  { id: "transformation", label: "Transformation", category: "growth", house: 8, weight: 1.05, meaning: "how ready you are to let go of what's ending and step into what's next", remedyFocus: "Name out loud the one thing you're ready to let go of." },
+  { id: "hidden-fears", label: "Hidden fears", category: "risk", house: 8, weight: 1.15, meaning: "where unspoken anxieties or hidden pressure need honest attention", remedyFocus: "Write the fear down exactly as it is, without softening or exaggerating it." },
+  { id: "inheritance-shared-assets", label: "Shared assets", category: "money", house: 8, weight: 0.9, meaning: "how shared or inherited money and assets should be handled", remedyFocus: "Get shared money or asset matters in writing before assuming anything." },
+  { id: "dharma-faith", label: "Dharma and faith", category: "spiritual", house: 9, weight: 1.1, meaning: "how aligned your actions feel with your deeper sense of purpose and faith", remedyFocus: "Spend five minutes today doing the one practice that reconnects you to purpose." },
+  { id: "luck-grace", label: "Luck and grace", category: "spiritual", house: 9, weight: 1.0, meaning: "how much unearned support or good fortune is flowing your way", remedyFocus: "Say one genuine thank-you today for something that came easily." },
+  { id: "father-mentors", label: "Father and mentors", category: "growth", house: 9, weight: 0.85, meaning: "how supportive guidance from father figures or mentors feels", remedyFocus: "Ask a mentor or father-figure for one piece of specific advice." },
+  { id: "career-direction", label: "Career direction", category: "work", house: 10, weight: 1.25, meaning: "how clear the path forward in your career or vocation feels", remedyFocus: "Write down the one next concrete step toward the career direction you actually want." },
+  { id: "authority-recognition", label: "Authority and recognition", category: "work", house: 10, weight: 1.05, meaning: "how much your effort is being seen, credited, and respected by others", remedyFocus: "Document one recent contribution in writing so credit isn't left to memory." },
+  { id: "workload-discipline", label: "Workload discipline", category: "work", house: 10, weight: 1.0, meaning: "how sustainably your current workload can be handled with discipline", remedyFocus: "Pick the single most accountable task and finish it before starting anything new." },
+  { id: "income-gains", label: "Income and gains", category: "money", house: 11, weight: 1.2, meaning: "how freely income and material gains are flowing in", remedyFocus: "Review where money is actually coming from before chasing a new source." },
+  { id: "friends-community", label: "Friends and community", category: "relationship", house: 11, weight: 0.95, meaning: "how reliable support from friends and your wider community feels", remedyFocus: "Reach out to one friend you haven't spoken to in a while." },
+  { id: "long-term-goals", label: "Long-term goals", category: "growth", house: 11, weight: 1.0, meaning: "how realistic long-term ambitions look from where you stand today", remedyFocus: "Break the long-term goal into one concrete step you can do this week." },
+  { id: "expenses", label: "Expenses", category: "money", house: 12, weight: 1.0, meaning: "how controlled or leaking your outgoing expenses are", remedyFocus: "Track every expense for one full day without judging any of them yet." },
+  { id: "sleep-dreams", label: "Sleep and dreams", category: "mind", house: 12, weight: 1.1, meaning: "how restorative sleep and the inner dream-mind feel", remedyFocus: "Set a firm wind-down time tonight and actually stop screens then." },
+  { id: "spiritual-release", label: "Spiritual release", category: "spiritual", house: 12, weight: 1.05, meaning: "how able you are to surrender control and let something go", remedyFocus: "Sit quietly for five minutes and consciously release one thing you're holding onto." },
+  { id: "foreign-distance", label: "Distance and foreign links", category: "growth", house: 12, weight: 0.8, meaning: "how smoothly travel, relocation, or distant connections are unfolding", remedyFocus: "Confirm the practical details of the trip or move before the emotional ones." },
+  { id: "speech-family-values", label: "Speech and family values", category: "family", house: 2, weight: 1.0, meaning: "how well your words reflect the values your family raised you with", remedyFocus: "Notice one thing you say out of habit and check if you still mean it." },
+  { id: "savings", label: "Savings", category: "money", house: 2, weight: 1.1, meaning: "how secure your saved wealth and financial cushion feel", remedyFocus: "Move one small amount into savings today, even if it's symbolic." },
+  { id: "food-nourishment", label: "Food and nourishment", category: "body", house: 2, weight: 0.9, meaning: "how nourishing your food, appetite, and eating rhythm are right now", remedyFocus: "Eat one real, unhurried meal today instead of grabbing something quickly." },
+  { id: "courage-initiative", label: "Courage and initiative", category: "self", house: 3, weight: 1.0, meaning: "how ready you feel to act first rather than wait and watch", remedyFocus: "Take the first small action today instead of waiting for the perfect moment." },
+  { id: "skills-practice", label: "Skills and practice", category: "growth", house: 3, weight: 0.95, meaning: "how much daily practice is sharpening a specific skill", remedyFocus: "Practise the specific skill for 15 minutes, not just think about practising it." },
+  { id: "property-comforts", label: "Property and comforts", category: "family", house: 4, weight: 0.9, meaning: "how secure your home, property, and everyday comforts feel", remedyFocus: "Fix or maintain one small thing about your living space this week." },
+  { id: "romance-joy", label: "Romance and joy", category: "relationship", house: 5, weight: 0.95, meaning: "how much lightness, romance, and shared joy are present", remedyFocus: "Do one small, low-effort thing today purely because it brings joy." },
+  { id: "competition", label: "Competition", category: "work", house: 6, weight: 0.95, meaning: "how you're holding up against rivals, deadlines, or competitive pressure", remedyFocus: "Focus today's effort on your own progress, not on comparing to the rival." },
+  { id: "legal-conflicts", label: "Legal conflicts", category: "risk", house: 6, weight: 1.0, meaning: "how disputes, complaints, or legal matters are likely to move", remedyFocus: "Preserve the facts, dates, and evidence before responding to the conflict." },
+  { id: "intimacy", label: "Intimacy", category: "relationship", house: 8, weight: 0.9, meaning: "how safe and connected physical and emotional intimacy feels", remedyFocus: "Have one honest conversation about what intimacy needs right now, not assumptions." },
+  { id: "travel-pilgrimage", label: "Travel and pilgrimage", category: "spiritual", house: 9, weight: 0.85, meaning: "how a journey, retreat, or pilgrimage could support your inner state", remedyFocus: "Plan one concrete detail of the journey or retreat instead of just wishing for it." },
+  { id: "status-impact", label: "Status and impact", category: "work", house: 10, weight: 1.0, meaning: "how visible your standing, reputation, and impact are to others", remedyFocus: "Choose one visible action today that reflects how you actually want to be seen." },
+  { id: "wish-fulfilment", label: "Wish fulfilment", category: "growth", house: 11, weight: 1.05, meaning: "how close a specific wish or goal is to actually landing", remedyFocus: "Write the wish down specifically enough that you'd recognise it arriving." },
 ];
 
 function clampMoonScore(value: number): number {
@@ -10818,11 +10818,6 @@ function moonChartVerdict(score: number): MoonChart48Verdict {
   if (score >= 68) return "Supportive";
   if (score >= 50) return "Mixed";
   return "Careful";
-}
-
-function moonChartCategoryRemedy(category: MoonChart48Category, rashiName: string): string {
-  const pack = moonChartCategoryRemedyPack(category, rashiName);
-  return `Moon-chart remedy: ${pack.steps.join(" ")}`;
 }
 
 function moonChartCategoryLabel(category: MoonChart48Category): string {
@@ -11085,7 +11080,15 @@ function buildMoonChartMultidimensionalEngine(input: {
     const verdict = moonChartVerdict(score);
     const focus = describeMoonChartScore(score, dimension.category);
     const dashaText = input.dashaState ? `${maha} Mahadasha / ${antar} Antardasha` : `${nakshatraLord} Nakshatra-lord phase`;
-    const remedyPack = moonChartCategoryRemedyPack(dimension.category, rashi.name);
+    // The category-level pack (title + generic steps) is shared by every
+    // blueprint in the same category on purpose -- it names a real technique
+    // (e.g. "Pause before escalation") -- but its first generic step is
+    // replaced with this blueprint's own remedyFocus so two life-areas in
+    // the same category (e.g. "Hidden fears" and "Legal conflicts", both
+    // category "risk") no longer render identical steps end to end. Same
+    // fix philosophy as the interpretation/meaning dedup above.
+    const categoryPack = moonChartCategoryRemedyPack(dimension.category, rashi.name);
+    const remedyPack = { title: categoryPack.title, steps: [dimension.remedyFocus, ...categoryPack.steps.slice(1)] };
     const scoreReason = buildMoonChartScoreReason({
       houseScore,
       mahaScore,
@@ -11115,7 +11118,7 @@ function buildMoonChartMultidimensionalEngine(input: {
       prediction: `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}${lagnaRashi ? `, with Lagna ${lagnaRashi.name}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. The reading is calculated through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}${lagnaRashi ? `, tempered by the Ascendant in ${lagnaRashi.name}` : ""}.`,
       interpretation,
       scoreReason,
-      remedy: moonChartCategoryRemedy(dimension.category, rashi.name),
+      remedy: `Moon-chart remedy: ${remedyPack.steps.join(" ")}`,
       remedyTitle: remedyPack.title,
       remedySteps: remedyPack.steps,
       calculationBasis: `Moon-chart basis (primary): sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.${lagnaRashi ? ` Ascendant overlay (secondary): Lagna ${lagnaRashi.name}, lord ${lagnaLord}.` : ""}`,
@@ -11660,7 +11663,15 @@ function CrisisSupportModal({ visible, onClose }: { visible: boolean; onClose: (
 
 export default function App() {
   const { width } = useWindowDimensions();
-  const isWide = width >= 920;
+  // isWide previously kicked in at 920px, well above where isTablet (620px)
+  // already says a device IS a tablet -- so every portrait tablet (roughly
+  // 620-919px, which covers most iPads and Android tablets held upright) was
+  // silently getting the cramped single-column "compact" card layout meant
+  // for phones, while the shell chrome around it correctly treated the same
+  // device as a tablet. Aligning isWide with isTablet's own threshold means
+  // "properly visible on phones and tablets" is now one consistent rule
+  // instead of two disagreeing ones.
+  const isWide = width >= 620;
   const isCompact = width < 620;
   const isTablet = width >= 620 && width < 1120;
   const isDesktop = width >= 1120;
@@ -20501,29 +20512,21 @@ function TodaySection({
   return (
     <View style={styles.grid}>
       <View style={styles.panel}>
+        {/* Trimmed to a compact safety strip on purpose. The full version
+            (all 4 numbers, complaint templates, evidence checklists) already
+            has its own always-visible bottom-nav tab -- "Help" is one of the
+            5 primary tabs precisely so it's never more than one tap away
+            (see PRIMARY_NAV_TABS comment). Repeating the entire card here too
+            was pure redundancy cluttering the front screen; SOS itself stays
+            a single tap for safety, everything else is one more tap via the
+            tab that already exists for it. */}
         <View style={styles.homeSafetyStrip}>
           <View style={styles.sectionHeader}>
             <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={[styles.eyebrow, { color: "#B82200" }]}>Help and Redress</Text>
-              <Text style={[styles.sectionTitleSmall, { color: "#6B1E17" }]}>Emergency assistance, legal aid, complaint routes, and evidence guidance</Text>
+              <Text style={[styles.sectionTitleSmall, { color: "#6B1E17" }]}>In immediate danger, call 112.</Text>
             </View>
             <Text style={styles.smallMeta}>Top priority</Text>
-          </View>
-          <Text style={[styles.promptText, { color: "#6B1E17", fontWeight: "900" }]} numberOfLines={4}>
-            Call 112 in immediate danger. Open this section for institution-specific complaint routes, official portals, evidence checklists, templates, escalation timelines, and spoken guidance.
-          </Text>
-          <View style={styles.homeRedressInfoGrid}>
-            {[
-              { label: "112", text: "Police · fire · ambulance immediate danger" },
-              { label: "181 / 1098", text: "Women and child protection routes" },
-              { label: "1930", text: "Cyber-fraud golden-hour reporting" },
-              { label: "Legal aid", text: "NALSA/DLSA, complaint drafts, evidence trail" }
-            ].map((item) => (
-              <View key={item.label} style={styles.homeRedressInfoCard}>
-                <Text style={styles.homeRedressInfoTitle}>{item.label}</Text>
-                <Text style={styles.homeRedressInfoText}>{item.text}</Text>
-              </View>
-            ))}
           </View>
           <View style={styles.homeSafetyActions}>
             <Pressable
@@ -20548,75 +20551,19 @@ function TodaySection({
               ]}
             >
                 <Text style={styles.footerQuickActionLabel}>Open Help and Redress</Text>
-                <Text style={styles.footerQuickActionMeta}>View the complete support page</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onReadGuidance}
-              style={({ pressed }) => [
-                styles.footerQuickAction,
-                styles.footerQuickActionSecondary,
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={styles.footerQuickActionLabel}>Read aloud</Text>
-              <Text style={styles.footerQuickActionMeta}>Voice guidance</Text>
-            </Pressable>
-          </View>
-        </View>
-        <View style={[styles.homeToneBand, compact && styles.homeToneBandCompact]}>
-          <View style={[styles.sectionHeader, compact && styles.sectionHeaderCompact, styles.homeToneBandHeader]}>
-            <View style={styles.homeToneBandHeaderCopy}>
-              <Text style={styles.eyebrow}>Calm sound</Text>
-              <Text
-                style={[styles.sectionTitleSmall, compact && styles.sectionTitleSmallCompact]}
-                numberOfLines={compact ? 4 : 3}
-              >
-                Curated sound programmes for relaxation, focus, sleep, and emotional regulation
-              </Text>
-            </View>
-          </View>
-          <Text style={[styles.homeToneBandIntro, compact && styles.homeToneBandIntroCompact]} numberOfLines={3}>
-            Access {frontToneTotal} organised sound modes with safe-volume guidance, session timers, nature ambience, binaural beats, isochronic pulses, and bilateral audio options.
-          </Text>
-          <View style={styles.homeOverviewActions}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Open the complete Calm Sound page"
-              onPress={() => onOpenTab("tones")}
-              style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.homeOverviewButtonLabel}>Open Calm Sound</Text>
+                <Text style={styles.footerQuickActionMeta}>Numbers, complaint routes, evidence guidance</Text>
             </Pressable>
           </View>
         </View>
 {/* Daily Loop section removed */}
         {/* Beacon Guide / Vision card removed */}
-        <View style={[styles.homeOverviewGrid, compact && styles.homeOverviewGridCompact]}>
-          <View style={[styles.homeOverviewCard, styles.homeOverviewCardCommunity, compact && styles.homeOverviewCardCompact]}>
-            <Text style={styles.homeOverviewEyebrow}>Community and Messages</Text>
-            <Text style={styles.homeOverviewTitle}>Moderated community support and private conversations</Text>
-            <Text style={styles.homeOverviewText}>Access community posts, verified private rooms, saved messages, reactions, moderation controls, reporting tools, and protected conversation features.</Text>
-            <View style={styles.homeOverviewActions}>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => onOpenTab("community")}
-                style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
-              >
-                <Text style={styles.homeOverviewButtonLabel}>Open Community</Text>
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                onPress={canUseCommunityFeatures ? () => onOpenTab("community") : onOpenVerification}
-                style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
-              >
-                <Text style={styles.homeOverviewButtonSecondaryLabel}>
-                  {canUseCommunityFeatures ? "Open private rooms" : "Verify / unlock chat"}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
+        {/* Calm Sound and Community/Messages preview cards removed from the front
+            page on purpose -- both already have their own always-visible tab in
+            the top tab rail ("Tones" and "Messages" in headerNavTabs, plus the
+            full page-switcher reachable via "More"), the same reasoning that
+            already trimmed the Help and Redress preview down to a strip. This
+            keeps the front page short and premium instead of repeating full
+            previews of pages that are one tap away either way. */}
         <View style={[styles.homeReportBand, compact && styles.homeReportBandCompact]}>
           <View style={styles.sectionHeader}>
             <View style={{ flex: 1, minWidth: 0 }}>
@@ -21266,7 +21213,7 @@ function FocusSection({
             <View style={styles.calmVoiceHeaderCopy}>
               <Text style={styles.calmVoiceTitle}>Voice calm</Text>
               <Text style={styles.calmVoiceMeta}>
-                {voiceAssistEnabled ? `Ready / ${voiceAssistStatus}` : "Voice is off"}
+                {voiceAssistEnabled ? voiceAssistStatus : "Voice is off"}
               </Text>
             </View>
             <Text style={styles.smallMeta}>Speak the loop aloud</Text>
@@ -28160,7 +28107,7 @@ function SettingsSection({
       />
       <PreferenceRow
         label="Voice assistance"
-        meta={voiceAssistEnabled ? `Spoken guidance ready / ${voiceAssistStatus}` : "Voice readout is off"}
+        meta={voiceAssistEnabled ? voiceAssistStatus : "Voice readout is off"}
         value={voiceAssistEnabled}
         onValueChange={setVoiceAssistEnabled}
       />
@@ -28704,7 +28651,7 @@ function LanguageSection({
 
       <PreferenceRow
         label="Voice assistance"
-        meta={voiceAssistEnabled ? `Spoken guidance ready / ${voiceAssistStatus}` : "Voice readout is off"}
+        meta={voiceAssistEnabled ? voiceAssistStatus : "Voice readout is off"}
         value={voiceAssistEnabled}
         onValueChange={setVoiceAssistEnabled}
       />
@@ -30879,7 +30826,7 @@ function AccessOverlay({
           </Text>
           <View style={[styles.accessFlowPills, compactStartup && styles.accessFlowPillsCompact]}>
             {[
-              { id: "profile", label: "Profile", meta: "Role and name", done: name.trim().length > 0 },
+              { id: "profile", label: "Profile", meta: "Name", done: name.trim().length > 0 },
               {
                 id: "contact",
                 label: "Contact",
@@ -33157,14 +33104,24 @@ function buildSupportDimensionQuestionBank(theme: SupportDimensionId): string[] 
     guide.route === "guide" ? "guided practical action" :
     "steady support";
 
+  // These 7 questions used to be a single label-substituted template shared
+  // identically (word for word, except the topic name) across all ~33
+  // dimensions that don't have a bespoke hand-written question bank in
+  // buildCounselingQuestions above -- which reads exactly like a generic
+  // chatbot mad-lib, the opposite of what a real counselling engine should
+  // feel like. supportDimensionGuides already has rich, specifically-authored
+  // context/firstAction/resolutionSteps/escalation text per dimension (see
+  // that type's own comments) that simply wasn't being used here. Weaving
+  // guide.context and guide.escalation into the questions grounds each one in
+  // real, already-written material instead of a mechanically repeated shape.
   return [
-    `For ${label}, what happened most recently that made this feel important today? I want the real situation, not a generic category.`,
+    `${guide.context} With that in mind -- what happened most recently that made ${label} feel important today? I want the real situation, not a generic category.`,
     `How long has ${label} been affecting you, and is it getting heavier, lighter, or changing shape?`,
-    `Where does ${label} show up most strongly — body, thoughts, emotions, relationships, work or home?`,
+    `Where does ${label} show up most strongly -- body, thoughts, emotions, relationships, work or home?`,
     `Who else is involved in ${label}, and what do you need from them that you are not getting right now?`,
     `What have you already tried for ${label}, and what made those attempts work, fail, or feel incomplete?`,
-    `If we choose the safest ${routeLabel} route, what would one acceptable next step look like for you?`,
-    `Before we act, is there any risk, evidence, deadline, medical concern, or safety issue around ${label} that should change the priority?`,
+    `If we choose the safest ${routeLabel} route, what would one acceptable next step look like for you? For reference, ${guide.firstAction.charAt(0).toLowerCase()}${guide.firstAction.slice(1)}`,
+    `One thing before we act: ${guide.escalation.charAt(0).toLowerCase()}${guide.escalation.slice(1)} Does anything like that apply right now, or is this steady enough to keep working through together?`,
   ];
 }
 
@@ -33657,7 +33614,21 @@ function buildCounselingSynthesis(session: CounselingSession, issueId: IssueId, 
   } else if (themes.includes("parenting")) {
     synthesis += "The love behind the difficulty you are describing is obvious. Parenting is one of the few places where caring deeply makes the hard parts harder — because the stakes feel absolute. What you are navigating is not a failure; it is one of the most challenging aspects of being human.\n\n";
   } else {
-    synthesis += "What you have shared is real and it matters. You are not overreacting, and you are not alone in this. Everything you have described points to genuine need for attention and care — not a quick answer, but a real engagement with what is happening.\n\n";
+    // Themes without a hand-written synthesis paragraph above (roughly the
+    // other 28 of the 48 support dimensions -- confidence, motivation,
+    // procrastination, workplace conflict, digital safety, and similar) used
+    // to fall through to fully generic boilerplate that said nothing
+    // specific to what the person actually described. supportDimensionGuides
+    // already has a real, specifically-authored `context` sentence for every
+    // one of the 48 dimensions (see that type's comment) -- using it here
+    // means even the "no bespoke branch yet" case still reflects back
+    // something concrete instead of a templated placeholder.
+    const primaryGuide = supportDimensionGuides[themes[0]];
+    if (primaryGuide) {
+      synthesis += `${primaryGuide.context} You are not overreacting, and you are not alone in this.\n\n`;
+    } else {
+      synthesis += "What you have shared is real and it matters. You are not overreacting, and you are not alone in this. Everything you have described points to genuine need for attention and care — not a quick answer, but a real engagement with what is happening.\n\n";
+    }
   }
 
   synthesis += "The working principle here is simple: observe the mind without becoming every thought, do the part that is honestly within your control, release the result pressure you cannot control today, and choose the next step that protects dignity and reduces harm.\n\n";
@@ -37250,13 +37221,13 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     overflow: "hidden",
     marginTop: 0,
-    marginBottom: 12,
-    borderRadius: 16,
+    marginBottom: 10,
+    borderRadius: 14,
     borderWidth: 2,
     borderColor: "#C73F33",
     backgroundColor: "#FDE9E5",
-    padding: 14,
-    gap: 10
+    padding: 12,
+    gap: 8
   },
   homeSafetyActions: {
     width: "100%",
@@ -37264,35 +37235,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
-  },
-  homeRedressInfoGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  homeRedressInfoCard: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 148,
-    minWidth: 0,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(199,63,51,0.26)",
-    backgroundColor: "#FFF7F5",
-    padding: 10,
-    gap: 4
-  },
-  homeRedressInfoTitle: {
-    color: "#B82200",
-    fontSize: 14,
-    lineHeight: 18,
-    fontWeight: "900"
-  },
-  homeRedressInfoText: {
-    color: "#6B1E17",
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: "800"
   },
   heroMainActionMark: {
     color: "#0D1F22",

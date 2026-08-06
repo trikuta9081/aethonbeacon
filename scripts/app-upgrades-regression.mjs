@@ -60,27 +60,33 @@ assert(directoriesHub < routeChips, 'Directories hub must appear before route ch
 
 
 // Front UI order: Help and Redress above other sections,
-// Calm Sound above Community, Community above Daily/report, tester page at the bottom.
+// Daily/report above tester page, tester page at the bottom.
 const todayStart = indexOf('{activeTab === "today" && (');
 const landingHeader = indexOf('{/* ── LANDING HEADER — Premium redesign ── */}');
-const mergedHelp = indexOf('Emergency assistance, legal aid, complaint routes, and evidence guidance');
-const calmSound = indexOf('Curated sound programmes for relaxation, focus, sleep, and emotional regulation');
-const communityFront = indexOf('styles.homeOverviewCard, styles.homeOverviewCardCommunity');
+// The front-screen Help and Redress card was intentionally trimmed from a
+// full preview (all 4 emergency numbers + 3 actions) down to a compact
+// safety strip -- the full version already has its own always-visible
+// bottom-nav tab (see PRIMARY_NAV_TABS comment), so repeating it in full on
+// the front screen was redundant clutter. SOS stays a single tap either way.
+const mergedHelp = indexOf('In immediate danger, call 112.');
+// Calm Sound and Community/Messages preview cards were removed from the front
+// page entirely -- both already have their own always-visible tab in the top
+// tab rail (headerNavTabs includes "tones" and "community"), so previewing
+// them again on the front page was redundant clutter, same reasoning as the
+// Help & Redress trim above.
 const dailyReportFront = indexOf('uiCopy.reportTitle');
 const testerFront = indexOf('Become an Aethon Beacon tester');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
-assert(mergedHelp < calmSound, 'Help and Redress must appear above Calm Sound');
-assert(calmSound < communityFront, 'Calm Sound must appear above Community/message section');
-assert(communityFront < dailyReportFront, 'Community/message must appear above Daily Snapshot/report');
+assert(mergedHelp < dailyReportFront, 'Help and Redress must appear above Daily Snapshot/report');
 assert(dailyReportFront < testerFront, 'Current tester page must be placed at the bottom of the front UI');
+assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
+assert(!source.includes('Moderated community support and private conversations'), 'Community/Messages preview must not remain on the front UI');
 indexOf('Open Help and Redress');
-indexOf('Access {frontToneTotal} organised sound modes');
-indexOf('homeRedressInfoGrid');
-indexOf('Verify / unlock chat');
-indexOf('Moderated community support and private conversations');
-indexOf('Community and Messages');
-indexOf('Open Calm Sound');
+// homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
+// safety strip was trimmed down to SOS + "Open Help and Redress" (the 4-number
+// grid they styled no longer exists in JSX) -- see mergedHelp marker above.
 indexOf('Platform.OS === "web" && (');
+indexOf('"tones",\n      "community"');
 indexOf('automatic multidimensional counselling engine');
 assert(!source.includes('What Aethon Beacon does'), 'Vision card must not remain on the front UI');
 assert(!source.includes('48-Dimension'), 'Public 48-Dimension terminology must remain hidden');
