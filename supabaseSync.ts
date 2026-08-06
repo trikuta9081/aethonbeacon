@@ -61,8 +61,13 @@ function getClient(): SupabaseClient | null {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-/** Simple deterministic ID from a verified identifier (phone or email) */
-function makeUserId(identifier: string): string {
+/**
+ * Simple deterministic ID from a verified identifier (phone or email).
+ * Exported so entitlements.ts (and anywhere else that needs to key off the
+ * same cross-device identity, e.g. Purchases.logIn(userId) for RevenueCat)
+ * uses this exact normalization instead of a second, driftable copy of it.
+ */
+export function makeUserId(identifier: string): string {
   // lowercase + strip spaces so "user@email.com" and "USER@EMAIL.COM" are the same
   return identifier.trim().toLowerCase().replace(/\s+/g, "");
 }

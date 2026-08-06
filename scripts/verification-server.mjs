@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { AsyncLocalStorage } from "node:async_hooks";
-import { randomUUID } from "node:crypto";
+import { randomUUID, createHmac, timingSafeEqual } from "node:crypto";
+import { createClient } from "@supabase/supabase-js";
 
 function parsePositiveInt(value, fallback) {
   const parsed = Number.parseInt(String(value ?? ""), 10);
@@ -70,6 +71,36 @@ const adminAuthConfigured = adminLoginIdentity.length > 0 && adminLoginCode.leng
 const adminSessionTtlMs = parsePositiveInt(process.env.ADMIN_SESSION_TTL_MS, 8 * 60 * 60 * 1000);
 const adminLockoutTtlMs = parsePositiveInt(process.env.ADMIN_LOCKOUT_TTL_MS, 5 * 60 * 1000);
 const adminMaxFailedAttempts = parsePositiveInt(process.env.ADMIN_MAX_FAILED_ATTEMPTS, 5);
+
+// ── RevenueCat webhook (entitlement sync) ──────────────────────────────────
+// See supabase_entitlements_schema.sql for the table this writes to, and
+// entitlements.ts for the client that reads it. SUPABASE_URL here is the
+// same project as EXPO_PUBLIC_SUPABASE_URL (that value isn't secret -- it's
+// already baked into the app bundle) but is named without the EXPO_PUBLIC_
+// prefix because this is a backend-only process, never bundled into the app.
+// SUPABASE_SERVICE_ROLE_KEY must never be given the EXPO_PUBLIC_ prefix or
+// shipped to the client -- it bypasses Row Level Security entirely, which is
+// exactly why only this server (never the app's anon key) is allowed to
+// write premium status.
+const supabaseUrl = (process.env.SUPABASE_URL ?? process.env.EXPO_PUBLIC_SUPABASE_URL ?? "").trim();
+const supabaseServiceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? "").trim();
+const revenueCatWebhookAuthHeader = (process.env.REVENUECAT_WEBHOOK_AUTH_HEADER ?? "").trim();
+const revenueCatWebhookSigningSecret = (process.env.REVENUECAT_WEBHOOK_SIGNING_SECRET ?? "").trim();
+const revenueCatWebhookConfigured =
+  supabaseUrl.length > 0 &&
+  supabaseServiceRoleKey.length > 0 &&
+  (revenueCatWebhookAuthHeader.length > 0 || revenueCatWebhookSigningSecret.length > 0);
+
+let supabaseAdminClient = null;
+function getSupabaseAdminClient() {
+  if (supabaseUrl.length === 0 || supabaseServiceRoleKey.length === 0) return null;
+  if (!supabaseAdminClient) {
+    supabaseAdminClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+  }
+  return supabaseAdminClient;
+}
 
 /** @type {Map<string, { code: string; expiresAt: number; deliveryId: string; destination: string; channel: "phone" | "email"; attempts: number }>} */
 const pendingVerifications = new Map();
@@ -847,6 +878,233 @@ async function callGeminiModelWithPrompt(model, prompt, minChars = 40) {
   return { source: "gemini", model, text };
 }
 
+// ── RevenueCat webhook helpers ──────────────────────────────────────────────
+
+function readRawBody(req) {
+  return new Promise((resolve, reject) => {
+    let raw = "";
+    req.on("data", (chunk) => {
+      raw += chunk;
+      if (raw.length > 1_000_000) {
+        reject(new Error("Request body too large."));
+        req.destroy();
+      }
+    });
+    req.on("end", () => resolve(raw));
+    req.on("error", reject);
+  });
+}
+
+function timingSafeEqualStrings(a, b) {
+  const bufA = Buffer.from(String(a ?? ""), "utf8");
+  const bufB = Buffer.from(String(b ?? ""), "utf8");
+  if (bufA.length !== bufB.length) return false;
+  try {
+    return timingSafeEqual(bufA, bufB);
+  } catch {
+    return false;
+  }
+}
+
+function verifyRevenueCatAuthHeader(req) {
+  if (revenueCatWebhookAuthHeader.length === 0) return null; // not configured
+  return timingSafeEqualStrings(req.headers["authorization"], revenueCatWebhookAuthHeader);
+}
+
+// Per RevenueCat's docs (Security and Best Practices → Webhook Signature
+// Verification), HMAC is computed over "<timestamp>.<raw_body>" with the
+// signing secret, header format "t=<unix_seconds>,v1=<hex_hmac_sha256>".
+// This is the "stronger verification" option RevenueCat recommends layering
+// on top of (not instead of) the plain Authorization header.
+function verifyRevenueCatHmacSignature(rawBody, signatureHeader) {
+  if (revenueCatWebhookSigningSecret.length === 0) return null; // not configured
+  const header = String(signatureHeader ?? "");
+  if (header.length === 0) return false;
+
+  const parts = {};
+  for (const piece of header.split(",")) {
+    const idx = piece.indexOf("=");
+    if (idx === -1) continue;
+    parts[piece.slice(0, idx)] = piece.slice(idx + 1);
+  }
+  const timestamp = parts.t;
+  const expectedSig = parts.v1;
+  if (!timestamp || !expectedSig) return false;
+
+  const computed = createHmac("sha256", revenueCatWebhookSigningSecret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest("hex");
+
+  let sigsMatch = false;
+  try {
+    sigsMatch = timingSafeEqual(Buffer.from(computed, "hex"), Buffer.from(expectedSig, "hex"));
+  } catch {
+    sigsMatch = false;
+  }
+  if (!sigsMatch) return false;
+
+  const toleranceSeconds = 300; // 5 minutes, matches RevenueCat's documented example
+  const ageSeconds = Math.abs(Date.now() / 1000 - Number.parseInt(timestamp, 10));
+  return Number.isFinite(ageSeconds) && ageSeconds <= toleranceSeconds;
+}
+
+function msToIso(ms) {
+  return typeof ms === "number" && Number.isFinite(ms) ? new Date(ms).toISOString() : null;
+}
+
+// Maps a RevenueCat event `type` to the status we store. Deliberately does
+// NOT try to revoke access on CANCELLATION -- RevenueCat's own docs say
+// access should only be removed on EXPIRATION ("In the case of refunds, a
+// subscription's auto-renewal setting may still be active" / cancellation
+// fires "when a user unsubscribes, not when the subscription expires"). The
+// person keeps access through the rest of the period they already paid for;
+// hasPremiumAccess() in entitlements.ts additionally checks expires_at so a
+// stale "active" row can never grant access past its real expiration even if
+// a webhook is ever missed.
+const LIFECYCLE_EVENT_STATUS = {
+  INITIAL_PURCHASE: "active",
+  RENEWAL: "active",
+  UNCANCELLATION: "active",
+  PRODUCT_CHANGE: "active",
+  SUBSCRIPTION_EXTENDED: "active",
+  NON_RENEWING_PURCHASE: "active",
+  REFUND_REVERSED: "active",
+  TEST: "active",
+  CANCELLATION: "cancelled",
+  BILLING_ISSUE: "billing_issue",
+  EXPIRATION: "expired"
+};
+
+// Events that should NOT change stored status/expiry at all -- just get
+// logged. SUBSCRIPTION_PAUSED explicitly per RevenueCat docs ("Don't revoke
+// access on this event. Revoke access only on EXPIRATION..."). Every other
+// event type not in LIFECYCLE_EVENT_STATUS either isn't about entitlement
+// state (PAYWALL_*, EXPERIMENT_ENROLLMENT, VIRTUAL_CURRENCY_TRANSACTION,
+// PRICE_INCREASE_CONSENT_*) or needs alias-resolution logic this first pass
+// doesn't implement yet (TRANSFER, SUBSCRIBER_ALIAS, PURCHASE_REDEEMED) --
+// see ENTITLEMENT_SETUP_CHECKLIST.md for that known gap. Doing nothing is
+// the safe default for an event type we don't have specific handling for,
+// rather than guessing.
+const NO_OP_EVENT_TYPES = new Set(["SUBSCRIPTION_PAUSED"]);
+
+async function handleRevenueCatWebhook(req, res) {
+  let rawBody = "";
+  try {
+    rawBody = await readRawBody(req);
+  } catch (error) {
+    json(res, 400, { message: error instanceof Error ? error.message : "Could not read request body." });
+    return;
+  }
+
+  if (!revenueCatWebhookConfigured) {
+    json(res, 503, {
+      message:
+        "RevenueCat webhook is not configured yet (needs SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and either REVENUECAT_WEBHOOK_AUTH_HEADER or REVENUECAT_WEBHOOK_SIGNING_SECRET)."
+    });
+    return;
+  }
+
+  // Prefer HMAC when configured (RevenueCat's "stronger verification");
+  // otherwise fall back to the plain Authorization header check. Both can be
+  // configured at once -- if HMAC is set up, its result decides; the header
+  // check only matters when HMAC isn't enabled on the dashboard integration.
+  const hmacResult = verifyRevenueCatHmacSignature(rawBody, req.headers["x-revenuecat-webhook-signature"]);
+  const authResult = hmacResult !== null ? hmacResult : verifyRevenueCatAuthHeader(req);
+
+  if (authResult !== true) {
+    json(res, 401, { message: "Webhook authentication failed." });
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(rawBody);
+  } catch {
+    json(res, 400, { message: "Body is not valid JSON." });
+    return;
+  }
+
+  const event = payload?.event ?? {};
+  const eventType = typeof event.type === "string" ? event.type : "";
+  const appUserId = typeof event.app_user_id === "string" ? event.app_user_id.trim().toLowerCase() : "";
+
+  // Respond 200 fast for anything we intentionally don't act on -- RevenueCat
+  // treats any non-200 as a failure and retries up to 5 times, which would
+  // just keep re-sending events we're always going to ignore.
+  if (appUserId.length === 0 || NO_OP_EVENT_TYPES.has(eventType)) {
+    json(res, 200, { received: true, applied: false });
+    return;
+  }
+
+  const status = LIFECYCLE_EVENT_STATUS[eventType];
+  if (!status) {
+    json(res, 200, { received: true, applied: false });
+    return;
+  }
+
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) {
+    json(res, 503, { message: "Supabase admin client is not configured." });
+    return;
+  }
+
+  const entitlementIds = Array.isArray(event.entitlement_ids) ? event.entitlement_ids : [];
+  const entitlementId = entitlementIds[0] ?? (typeof event.entitlement_id === "string" ? event.entitlement_id : null);
+  const expiresAt =
+    eventType === "BILLING_ISSUE"
+      ? msToIso(event.grace_period_expiration_at_ms ?? event.expiration_at_ms)
+      : msToIso(event.expiration_at_ms);
+  const willRenew = !["CANCELLATION", "EXPIRATION", "NON_RENEWING_PURCHASE"].includes(eventType);
+  const eventTimestampMs = typeof event.event_timestamp_ms === "number" ? event.event_timestamp_ms : Date.now();
+
+  try {
+    // Ordering guard: webhooks can arrive out of order (retries, network
+    // jitter), and applying a stale event after a newer one has already
+    // landed would incorrectly revert someone's entitlement. Only apply this
+    // event if it's not older than whatever is already stored.
+    const { data: existing, error: fetchError } = await supabase
+      .from("aethon_entitlements")
+      .select("last_event_timestamp_ms")
+      .eq("user_id", appUserId)
+      .maybeSingle();
+
+    if (fetchError) throw new Error(fetchError.message);
+
+    if (existing && typeof existing.last_event_timestamp_ms === "number" && existing.last_event_timestamp_ms > eventTimestampMs) {
+      json(res, 200, { received: true, applied: false, reason: "stale event, newer state already stored" });
+      return;
+    }
+
+    const { error: upsertError } = await supabase.from("aethon_entitlements").upsert(
+      {
+        user_id: appUserId,
+        product_id: typeof event.product_id === "string" ? event.product_id : null,
+        entitlement_id: entitlementId,
+        status,
+        store: typeof event.store === "string" ? event.store : null,
+        will_renew: willRenew,
+        expires_at: expiresAt,
+        latest_event_type: eventType,
+        last_event_timestamp_ms: eventTimestampMs,
+        raw_event: event,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: "user_id" }
+    );
+
+    if (upsertError) throw new Error(upsertError.message);
+
+    json(res, 200, { received: true, applied: true });
+  } catch (error) {
+    console.error("[revenuecat-webhook]", error instanceof Error ? error.message : error);
+    // Still worth a 200 here in most cases would suppress RevenueCat's retry
+    // for a transient DB error we'd actually want retried -- so this one
+    // path intentionally returns 500 to let RevenueCat's retry schedule
+    // (5, 10, 20, 40, 80 minutes) give the DB a chance to recover.
+    json(res, 500, { message: "Could not apply entitlement update." });
+  }
+}
+
 async function handleRequest(req, res) {
   if (!req.url) {
     json(res, 400, { message: "Missing URL." });
@@ -879,7 +1137,8 @@ async function handleRequest(req, res) {
       providers: {
         twilioSms: smsDeliveryConfigured && twilioAccountSid.length > 0,
         sendgridEmail: emailDeliveryConfigured && sendgridApiKey.length > 0,
-        geminiAi: geminiConfigured
+        geminiAi: geminiConfigured,
+        revenueCatWebhook: revenueCatWebhookConfigured
       },
       adminAuth: getAdminAuthSummary(),
       ai: {
@@ -1256,6 +1515,11 @@ async function handleRequest(req, res) {
     } catch (error) {
       json(res, 400, { verified: false, message: error instanceof Error ? error.message : "Could not confirm verification." });
     }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/webhooks/revenuecat") {
+    await handleRevenueCatWebhook(req, res);
     return;
   }
 

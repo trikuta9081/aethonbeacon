@@ -94,3 +94,25 @@ services:
         value: "300000"
       - key: ADMIN_MAX_FAILED_ATTEMPTS
         value: "5"
+      # ── RevenueCat entitlement webhook (see supabase_entitlements_schema.sql,
+      # entitlements.ts, and ENTITLEMENT_SETUP_CHECKLIST.md) ──
+      - key: SUPABASE_URL
+        sync: false
+        # Same project as EXPO_PUBLIC_SUPABASE_URL on the web service above --
+        # not secret, just kept unprefixed since this process is never bundled
+        # into the app.
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+        # Settings -> API -> service_role key in the Supabase dashboard.
+        # NEVER give this the EXPO_PUBLIC_ prefix or put it in the app -- it
+        # bypasses Row Level Security, which is exactly why only this backend
+        # process is allowed to write premium status.
+      - key: REVENUECAT_WEBHOOK_AUTH_HEADER
+        sync: false
+        # Set the same value in RevenueCat's dashboard: Project -> Integrations
+        # -> Webhooks -> your integration -> Authorization header.
+      - key: REVENUECAT_WEBHOOK_SIGNING_SECRET
+        sync: false
+        # Optional but recommended: RevenueCat dashboard -> your webhook
+        # integration -> toggle "HMAC webhook signing" -> copy the secret here.
+        # Shown only once at creation/rotation.

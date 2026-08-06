@@ -46,7 +46,9 @@ import * as Speech from "expo-speech";
 // true obliquity of the ecliptic (used for the real Ascendant formula).
 import * as Astronomy from "astronomy-engine";
 import Notifications, { notificationsAvailable } from "./notifications";
-import { supabaseConfigured, pushToSupabase, pullFromSupabase } from "./supabaseSync";
+import { supabaseConfigured, pushToSupabase, pullFromSupabase, makeUserId } from "./supabaseSync";
+import { fetchEntitlement, subscribeEntitlement, hasPremiumAccess, type Entitlement } from "./entitlements";
+import { configurePurchasesAndLogIn } from "./purchases";
 import * as Haptics from "expo-haptics";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -11849,6 +11851,13 @@ export default function App() {
   const [profileEmailOtpInput, setProfileEmailOtpInput] = useState("");
   const [profileVerificationNotice, setProfileVerificationNotice] = useState<string | null>(null);
   const [verificationRequestBusy, setVerificationRequestBusy] = useState<"phone" | "email" | null>(null);
+  // Premium entitlement (RevenueCat webhook -> aethon_entitlements -> here via
+  // Supabase Realtime, see entitlements.ts). null = no row yet / not premium.
+  // "unknown" during the very first fetch so gated UI doesn't flash a locked
+  // state for a split second before the real answer arrives on every launch.
+  const [entitlement, setEntitlement] = useState<Entitlement | null>(null);
+  const [entitlementLoadState, setEntitlementLoadState] = useState<"unknown" | "loaded">("unknown");
+  const isPremium = entitlementLoadState === "loaded" && hasPremiumAccess(entitlement);
   const [profileGender, setProfileGender] = useState<ProfileGenderId>("prefer_not_to_say");
   const [profileDOB, setProfileDOB] = useState(""); // "YYYY-MM-DD"
   const [profileBirthTime, setProfileBirthTime] = useState("");
@@ -12213,6 +12222,69 @@ export default function App() {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Premium entitlement sync -- fetch once, then subscribe to Realtime so a
+  // renewal/cancellation/purchase on any device reflects here within
+  // seconds, not just on next app launch. Keyed off the same normalized
+  // phone/email identity as beacon_sync (see supabaseSync.ts's makeUserId);
+  // recomputes and re-subscribes whenever verification state changes (e.g.
+  // right after someone completes phone/email verification for the first
+  // time). Purchases.logIn(userId) on the RevenueCat SDK side must use this
+  // exact same identifier for a purchase to ever show up here -- see
+  // purchases.ts and ENTITLEMENT_SETUP_CHECKLIST.md.
+  const entitlementUserId =
+    profilePhoneVerified && profilePhone.trim().length > 0
+      ? makeUserId(profilePhone)
+      : profileEmailVerified && profileEmail.trim().length > 0
+      ? makeUserId(profileEmail)
+      : "";
+
+  useEffect(() => {
+    if (entitlementUserId.length === 0) {
+      setEntitlement(null);
+      setEntitlementLoadState("unknown");
+      return;
+    }
+
+    let cancelled = false;
+    setEntitlementLoadState("unknown");
+
+    // No-ops today (purchasesConfigured is false until RevenueCat API keys
+    // are added) -- see purchases.ts. Called here, not deferred to some
+    // future paywall screen, so that if a purchase somehow already exists
+    // for this identity (e.g. restored on a fresh install) the SDK's local
+    // cache and this backend's Realtime row agree from the moment identity
+    // is known, not just from the moment someone opens a paywall.
+    configurePurchasesAndLogIn(entitlementUserId).catch(() => undefined);
+
+    fetchEntitlement(entitlementUserId).then((result) => {
+      if (cancelled) return;
+      if (result.ok) {
+        setEntitlement(result.entitlement);
+        setEntitlementLoadState("loaded");
+      } else {
+        // Fetch failed (offline, misconfigured) -- stay "unknown" rather than
+        // falsely reporting "not premium" to someone who actually is, and
+        // retry is implicit next time this effect re-runs (identifier
+        // change) or the app relaunches. The Realtime subscription below can
+        // still deliver a live update even if this one-shot fetch failed.
+      }
+    });
+
+    const subscription = subscribeEntitlement({
+      userId: entitlementUserId,
+      onChange: (next) => {
+        if (cancelled) return;
+        setEntitlement(next);
+        setEntitlementLoadState("loaded");
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  }, [entitlementUserId]);
 
   const communityReactionsByMessageId = useMemo(() => {
     const summary: Record<
