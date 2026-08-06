@@ -217,34 +217,31 @@ jobs:
 
       # ── Play Console publish (only runs if GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret is set) ──
       # Add the secret in: GitHub → Settings → Secrets and variables → Actions.
-      # Uses r0adkll/upload-google-play to submit the AAB to the internal track.
-      - name: Publish to Play Console (internal track)
-        if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: com.aethonbeacon.app
-          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
-          track: internal
-          status: completed
-
+      # Uses r0adkll/upload-google-play to submit the AAB.
+      #
       # Google Play's "Internal testing" and "Closed testing (Alpha)" are two
       # separate, unlinked tracks -- publishing to one never reaches testers
       # on the other. The real closed-testing tester lists (the ones synced
       # by the android-tester-auto-sync scheduled task) live on the alpha
-      # track, but this workflow only ever published to internal, so alpha
-      # silently fell multiple days and many commits behind internal/web
-      # every time until someone manually clicked "Promote release" in the
-      # Play Console UI -- which nobody was doing. Publishing the same AAB to
-      # both tracks in the same run keeps alpha permanently current with zero
-      # manual steps, matching how web (mirror-to-render.yml) and iOS
-      # (TestFlight internal auto-distribution) already behave.
-      - name: Publish to Play Console (alpha / closed testing track)
+      # track, so both need the same release.
+      #
+      # 2026-08-06 incident: this used to be two separate steps, each with
+      # its own `track:` (singular) input and both uploading the exact same
+      # AAB/versionCode. The first step (internal) succeeded and consumed
+      # the versionCode; the second step (alpha) then failed every single
+      # run with "Version code N has already been used" -- Play Console
+      # version codes are unique per app package, not per track, so the same
+      # number can never be uploaded twice even to a different track. The
+      # fix is the `tracks` (plural) input added in upload-google-play
+      # v1.1.4+, which assigns one uploaded release to multiple
+      # comma-separated tracks in a single API call/upload, so the
+      # versionCode is only ever consumed once.
+      - name: Publish to Play Console (internal + alpha tracks)
         if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.aethonbeacon.app
           releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
-          track: alpha
+          tracks: internal,alpha
           status: completed
