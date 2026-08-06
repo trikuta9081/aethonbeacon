@@ -37498,16 +37498,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: "48%",
     minWidth: 0,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.35)",
+    borderColor: "rgba(14,111,105,0.22)",
     backgroundColor: "#E1EEEC",
     padding: 10,
     gap: 6,
     shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
     elevation: 3
   },
   toneLibraryCardCompact: {
@@ -38756,12 +38756,17 @@ const styles = StyleSheet.create({
   playCard: {
     flexGrow: 1,
     flexBasis: 240,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(14,111,105,0.22)",
     backgroundColor: "#F4F8F7",
     padding: 14,
-    gap: 10
+    gap: 10,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 3
   },
   playCardHeader: {
     flexDirection: "row",
@@ -39030,17 +39035,17 @@ const styles = StyleSheet.create({
     gap: 10
   },
   communityCard: {
-    borderRadius: 14,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
+    borderColor: "rgba(14,111,105,0.18)",
     backgroundColor: "#F4F8F7",
     padding: 14,
     gap: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.09,
+    shadowRadius: 14,
+    elevation: 3
   },
   communityCardHeader: {
     flexDirection: "row",
@@ -39264,12 +39269,17 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   searchCard: {
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
     padding: 14,
-    gap: 8
+    gap: 8,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.07,
+    shadowRadius: 12,
+    elevation: 2
   },
   searchCardHeader: {
     flexDirection: "row",
@@ -39389,12 +39399,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 160,
     minHeight: 68,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
     padding: 10,
     gap: 4,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2,
     justifyContent: "center"
   },
   recommendLabel: {
@@ -43793,23 +43808,32 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   // ── Tab banner cards (Journal / Wellness / Wisdom / Community) ───────────
+  // Shared header banner used at the top of every single tab (Journal,
+  // Meditation, AI Help, Practice, Search, Community, Patterns, Settings,
+  // Language, Admin, Vedic -- one style, ~10 call sites). Upgraded to match
+  // the glassy elevated-card language introduced on the Home hero card:
+  // softer rounded corners, a lighter tinted shadow instead of flat black,
+  // and a visible-but-subtle tinted border (the old near-white border was
+  // essentially invisible against every tab's light pastel background).
+  // Because every tab shares this one style, this single change carries the
+  // premium redesign across the whole app without touching each tab file.
   tabBannerCard: {
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
     minWidth: 0,
     maxWidth: "100%",
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 14,
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 16,
     gap: 14,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.07)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
+    borderColor: "rgba(15,61,94,0.10)",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 18,
+    elevation: 5,
   },
   tabBannerEmoji: {
     fontSize: 32,
@@ -43819,11 +43843,11 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   tabBannerTitle: {
-    fontSize: 20,
-    lineHeight: 25,
+    fontSize: 21,
+    lineHeight: 26,
     fontWeight: "900",
     color: "#0D1F22",
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   tabBannerSub: {
     fontSize: 13,
