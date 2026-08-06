@@ -9270,6 +9270,15 @@ const GRAHA_LABELS: Record<GrahaId, string> = {
   ketu: "Ketu",
 };
 
+// Hindi labels for the same GrahaId keys -- kept separate from
+// DASHA_PLANET_HI (which is keyed by Sanskrit planet names like "Surya",
+// not GrahaIds like "sun") so the Yogas panel below can look planets up
+// directly by the id detectClassicalYogas already works with.
+const GRAHA_LABELS_HI: Record<GrahaId, string> = {
+  sun: "सूर्य", moon: "चंद्र", mars: "मंगल", mercury: "बुध",
+  jupiter: "गुरु", venus: "शुक्र", saturn: "शनि", rahu: "राहु", ketu: "केतु",
+};
+
 // Two-letter abbreviations for compact chart-wheel cells (standard Jyotish
 // software convention: Su/Mo/Ma/Me/Ju/Ve/Sa/Ra/Ke).
 const GRAHA_SHORT_LABELS: Record<GrahaId, string> = {
@@ -9585,8 +9594,10 @@ function houseFromLagna(rashiIndex: number, lagnaRashiIndex: number): number {
 type DetectedYoga = {
   id: string;
   name: string;
+  nameHi: string;
   grahasInvolved: (GrahaId | "lagna")[];
   meaning: string;
+  meaningHi: string;
 };
 
 function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
@@ -9600,9 +9611,12 @@ function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
       yogas.push({
         id: "gaja-kesari",
         name: "Gaja Kesari Yoga",
+        nameHi: "गज केसरी योग",
         grahasInvolved: ["moon", "jupiter"],
         meaning:
           "Moon and Jupiter support each other from angular houses -- classically linked to steady reputation, sound judgement, and resilience under pressure.",
+        meaningHi:
+          "चंद्र और गुरु एक-दूसरे को केंद्र भावों से सहारा देते हैं — शास्त्रीय रूप से यह स्थिर प्रतिष्ठा, सुदृढ़ निर्णय-क्षमता और दबाव में सहनशीलता से जुड़ा है।",
       });
     }
   }
@@ -9612,8 +9626,10 @@ function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
     yogas.push({
       id: "budhaditya",
       name: "Budhaditya Yoga",
+      nameHi: "बुधादित्य योग",
       grahasInvolved: ["sun", "mercury"],
       meaning: "Sun and Mercury share a sign -- linked to sharp intellect, communication skill, and analytical confidence.",
+      meaningHi: "सूर्य और बुध एक ही राशि में हैं — यह तीव्र बुद्धि, संवाद-कौशल और विश्लेषणात्मक आत्मविश्वास से जुड़ा है।",
     });
   }
 
@@ -9622,8 +9638,10 @@ function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
     yogas.push({
       id: "chandra-mangal",
       name: "Chandra-Mangal Yoga",
+      nameHi: "चंद्र-मंगल योग",
       grahasInvolved: ["moon", "mars"],
       meaning: "Moon and Mars share a sign -- classically a wealth-and-drive combination, though it can also run emotionally intense.",
+      meaningHi: "चंद्र और मंगल एक ही राशि में हैं — शास्त्रीय रूप से यह धन और प्रेरणा का संयोजन है, हालाँकि यह भावनात्मक रूप से तीव्र भी हो सकता है।",
     });
   }
 
@@ -9634,12 +9652,12 @@ function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
 
     // Pancha Mahapurusha Yogas -- Mars/Mercury/Jupiter/Venus/Saturn in its own
     // or exalted sign, angular (kendra: house 1, 4, 7, or 10) from Lagna.
-    const mahapurushaChecks: Array<{ id: GrahaId; name: string; theme: string }> = [
-      { id: "mars", name: "Ruchaka Yoga", theme: "bold, disciplined action" },
-      { id: "mercury", name: "Bhadra Yoga", theme: "sharp analytical skill" },
-      { id: "jupiter", name: "Hamsa Yoga", theme: "wisdom and ethical clarity" },
-      { id: "venus", name: "Malavya Yoga", theme: "charm, aesthetics, and comfort" },
-      { id: "saturn", name: "Shasha Yoga", theme: "discipline and long-term endurance" },
+    const mahapurushaChecks: Array<{ id: GrahaId; name: string; nameHi: string; theme: string; themeHi: string }> = [
+      { id: "mars", name: "Ruchaka Yoga", nameHi: "रुचक योग", theme: "bold, disciplined action", themeHi: "साहसी, अनुशासित कार्य" },
+      { id: "mercury", name: "Bhadra Yoga", nameHi: "भद्र योग", theme: "sharp analytical skill", themeHi: "तीव्र विश्लेषणात्मक कौशल" },
+      { id: "jupiter", name: "Hamsa Yoga", nameHi: "हंस योग", theme: "wisdom and ethical clarity", themeHi: "ज्ञान और नैतिक स्पष्टता" },
+      { id: "venus", name: "Malavya Yoga", nameHi: "मालव्य योग", theme: "charm, aesthetics, and comfort", themeHi: "आकर्षण, सौंदर्यबोध और सुख-सुविधा" },
+      { id: "saturn", name: "Shasha Yoga", nameHi: "शश योग", theme: "discipline and long-term endurance", themeHi: "अनुशासन और दीर्घकालिक सहनशक्ति" },
     ];
     for (const check of mahapurushaChecks) {
       const sign = rashiOf(check.id);
@@ -9650,8 +9668,10 @@ function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
         yogas.push({
           id: `mahapurusha-${check.id}`,
           name: check.name,
+          nameHi: check.nameHi,
           grahasInvolved: [check.id],
           meaning: `${GRAHA_LABELS[check.id]} is strong in its own or exalted sign, angular from the Ascendant -- one of the five classical Mahapurusha combinations, linked to ${check.theme}.`,
+          meaningHi: `${GRAHA_LABELS_HI[check.id]} अपनी स्वराशि या उच्च राशि में, लग्न से केंद्र में स्थित है — यह पाँच शास्त्रीय महापुरुष योगों में से एक है, जो ${check.themeHi} से जुड़ा है।`,
         });
       }
     }
@@ -9672,8 +9692,10 @@ function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
         yogas.push({
           id: `raja-${pairId}`,
           name: "Raja Yoga",
+          nameHi: "राज योग",
           grahasInvolved: [kLord, tLord],
           meaning: `${GRAHA_LABELS[kLord]} (an angular-house lord) and ${GRAHA_LABELS[tLord]} (a trine-house lord) share a sign -- a classical status-and-authority combination.`,
+          meaningHi: `${GRAHA_LABELS_HI[kLord]} (केंद्र भाव का स्वामी) और ${GRAHA_LABELS_HI[tLord]} (त्रिकोण भाव का स्वामी) एक ही राशि में हैं — यह प्रतिष्ठा और अधिकार का शास्त्रीय संयोजन है।`,
         });
       }
     }
@@ -9683,8 +9705,10 @@ function detectClassicalYogas(core: BirthChartCore): DetectedYoga[] {
       yogas.push({
         id: "dhana-2-11",
         name: "Dhana Yoga",
+        nameHi: "धन योग",
         grahasInvolved: [lord2, lord11],
         meaning: `${GRAHA_LABELS[lord2]} (2nd-house lord, saved wealth) and ${GRAHA_LABELS[lord11]} (11th-house lord, gains) share a sign -- a classical wealth-accumulation combination.`,
+        meaningHi: `${GRAHA_LABELS_HI[lord2]} (द्वितीय भाव का स्वामी, संचित धन) और ${GRAHA_LABELS_HI[lord11]} (एकादश भाव का स्वामी, लाभ) एक ही राशि में हैं — यह धन-संचय का शास्त्रीय संयोजन है।`,
       });
     }
   }
@@ -10885,6 +10909,59 @@ const DASHA_FORECAST_VERDICT_HI: Record<"Good" | "Mixed" | "Watch", string> = {
   Mixed: "मिश्रित दौर — बड़े जोखिमों से बेहतर है स्थिर प्रयास।",
   Watch: "एक कठिन दौर — धीरे चलें, जोखिम कम करें, और नीचे दिए उपाय का सहारा लें।",
 };
+
+// ── Shadbala bilingual labels + honest strongest/weakest narrative ─────────
+// Shadbala's own panel is numbers-only (rupas, coverage %) with no plain-
+// language "what does this mean" layer -- confirmed the new Drik Bala and
+// Drekkana Bala components (added earlier this session) feed only that raw
+// numbers panel and nothing narrative anywhere else in the app. This closes
+// that gap: netRupasWithDrik (the one figure that already folds in every
+// component this build computes, including the two new ones) ranks the
+// seven classical Shadbala planets, and the two extremes get a short,
+// classically-standard significations sentence -- not a fabricated
+// prediction, just the standard domain each graha classically governs.
+const SHADBALA_PLANET_LABEL_EN: Record<string, string> = {
+  sun: "Sun (Surya)", moon: "Moon (Chandra)", mars: "Mars (Mangal)",
+  mercury: "Mercury (Budha)", jupiter: "Jupiter (Guru)", venus: "Venus (Shukra)", saturn: "Saturn (Shani)",
+};
+const SHADBALA_PLANET_LABEL_HI: Record<string, string> = {
+  sun: "सूर्य", moon: "चंद्र", mars: "मंगल", mercury: "बुध", jupiter: "गुरु", venus: "शुक्र", saturn: "शनि",
+};
+const SHADBALA_DOMAIN_EN: Record<string, string> = {
+  sun: "confidence, leadership, and vitality",
+  moon: "emotional steadiness and adaptability",
+  mars: "courage, initiative, and physical drive",
+  mercury: "clear communication and analytical thinking",
+  jupiter: "wisdom, growth, and sound judgement",
+  venus: "relationships, creativity, and comfort",
+  saturn: "discipline, patience, and long-term stability",
+};
+const SHADBALA_DOMAIN_HI: Record<string, string> = {
+  sun: "आत्मविश्वास, नेतृत्व और जीवन-शक्ति",
+  moon: "भावनात्मक स्थिरता और अनुकूलनशीलता",
+  mars: "साहस, पहल और शारीरिक ऊर्जा",
+  mercury: "स्पष्ट संवाद और विश्लेषणात्मक सोच",
+  jupiter: "ज्ञान, विकास और उचित निर्णय",
+  venus: "रिश्ते, रचनात्मकता और सुख-सुविधा",
+  saturn: "अनुशासन, धैर्य और दीर्घकालिक स्थिरता",
+};
+
+function buildShadbalaStrengthNarrative(
+  planets: Record<string, { netRupasWithDrik: number }>,
+  lang: "en" | "hi"
+): string {
+  const entries = (["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const)
+    .map((id) => ({ id, net: planets[id].netRupasWithDrik }))
+    .sort((a, b) => b.net - a.net);
+  const strongest = entries[0];
+  const weakest = entries[entries.length - 1];
+  const label = lang === "hi" ? SHADBALA_PLANET_LABEL_HI : SHADBALA_PLANET_LABEL_EN;
+  const domain = lang === "hi" ? SHADBALA_DOMAIN_HI : SHADBALA_DOMAIN_EN;
+  if (lang === "hi") {
+    return `इस आंशिक गणना में आपका सबसे मजबूत ग्रह ${label[strongest.id]} है (${strongest.net.toFixed(2)} रूप, दृक बल सहित) — शास्त्रीय रूप से यह ${domain[strongest.id]} को सहारा देता है। सबसे कमजोर ${label[weakest.id]} है (${weakest.net.toFixed(2)} रूप) — इसका अर्थ है कि ${domain[weakest.id]} के क्षेत्र में सचेत प्रयास अधिक फल दे सकता है।`;
+  }
+  return `In this partial computation, your strongest planet is ${label[strongest.id]} at ${strongest.net.toFixed(2)} rupas (net, including aspects) — classically this supports ${domain[strongest.id]}. Your weakest is ${label[weakest.id]} at ${weakest.net.toFixed(2)} rupas — meaning deliberate, conscious effort around ${domain[weakest.id]} is likely to pay off more than it would for a planet that's already strong.`;
+}
 
 function buildLalKitabRemedies(
   currentDasha: string | null,
@@ -30749,27 +30826,43 @@ function BirthChartSection({
             </View>
           </View>
 
-          {/* Classical Yogas */}
+          {/* Classical Yogas -- bilingual via chartBriefLang, using the
+              nameHi/meaningHi fields detectClassicalYogas now attaches to
+              every entry (see DetectedYoga type). */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Classical Yogas detected</Text>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>
+              {chartBriefLang === "hi" ? "पहचाने गए शास्त्रीय योग" : "Classical Yogas detected"}
+            </Text>
             {detectedYogas.length > 0 ? (
               detectedYogas.map((yoga) => (
                 <View key={yoga.id} style={{ backgroundColor: "#FBFAF2", borderRadius: 10, padding: 10, borderWidth: 1, borderColor: "rgba(124,58,237,0.15)", gap: 3 }}>
-                  <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900" }}>{yoga.name}</Text>
-                  <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>{yoga.meaning}</Text>
+                  <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900" }}>{chartBriefLang === "hi" ? yoga.nameHi : yoga.name}</Text>
+                  <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>{chartBriefLang === "hi" ? yoga.meaningHi : yoga.meaning}</Text>
                 </View>
               ))
             ) : (
-              <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>No classical yogas from this curated set were detected in this chart.</Text>
+              <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>
+                {chartBriefLang === "hi"
+                  ? "इस चयनित सूची में से इस कुंडली में कोई शास्त्रीय योग नहीं पाया गया।"
+                  : "No classical yogas from this curated set were detected in this chart."}
+              </Text>
             )}
             <Text style={{ color: "#1F2937", fontSize: 12, fontStyle: "italic" }}>
-              Scoped to conjunction and fixed-angle yogas (Gaja Kesari, Budhaditya, Chandra-Mangal, the five Pancha Mahapurusha yogas, Raja Yoga, Dhana Yoga) — not full classical graha drishti (planetary aspect), which varies by text.
+              {chartBriefLang === "hi"
+                ? "यह संयोजन और निश्चित-कोण योगों तक सीमित है (गज केसरी, बुधादित्य, चंद्र-मंगल, पाँच पंच महापुरुष योग, राज योग, धन योग) — पूर्ण शास्त्रीय ग्रह दृष्टि (planetary aspect) शामिल नहीं है, जो ग्रंथ के अनुसार भिन्न होती है।"
+                : "Scoped to conjunction and fixed-angle yogas (Gaja Kesari, Budhaditya, Chandra-Mangal, the five Pancha Mahapurusha yogas, Raja Yoga, Dhana Yoga) — not full classical graha drishti (planetary aspect), which varies by text."}
             </Text>
           </View>
 
-          {/* Ashtakavarga */}
+          {/* Ashtakavarga -- bilingual via the same chartBriefLang toggle used
+              by the Plain Language card and the Next 15 Years forecast above.
+              Rashi names (Mesha, Vrishabha, ...) are already the Sanskrit
+              form used app-wide, not English, so they're left as-is in both
+              languages -- only the surrounding explanatory prose switches. */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Sarvashtakavarga — total bindus per sign</Text>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>
+              {chartBriefLang === "hi" ? "सर्वाष्टकवर्ग — प्रत्येक राशि में कुल बिंदु" : "Sarvashtakavarga — total bindus per sign"}
+            </Text>
             {ashtakavargaResult ? (
               <>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
@@ -30789,17 +30882,31 @@ function BirthChartSection({
                   ))}
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>
-                  Total {ashtakavargaResult.sarvaTotal} bindus across all 12 signs (classical invariant: always 337). 30+ bindus = very strong for transits through that sign; below 25 = weaker.
+                  {chartBriefLang === "hi"
+                    ? `सभी 12 राशियों में कुल ${ashtakavargaResult.sarvaTotal} बिंदु (शास्त्रीय नियम: सदैव 337)। 30+ बिंदु = उस राशि से गोचर के लिए बहुत मजबूत; 25 से कम = कमजोर।`
+                    : `Total ${ashtakavargaResult.sarvaTotal} bindus across all 12 signs (classical invariant: always 337). 30+ bindus = very strong for transits through that sign; below 25 = weaker.`}
                 </Text>
               </>
             ) : (
-              <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>Needs a precise Ascendant (exact birth time + geocoded place) — Lagna is one of Ashtakavarga's eight classical contributors.</Text>
+              <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>
+                {chartBriefLang === "hi"
+                  ? "इसके लिए सटीक लग्न चाहिए (सटीक जन्म समय + जियोकोडेड स्थान) — लग्न अष्टकवर्ग के आठ शास्त्रीय योगदानकर्ताओं में से एक है।"
+                  : "Needs a precise Ascendant (exact birth time + geocoded place) — Lagna is one of Ashtakavarga's eight classical contributors."}
+              </Text>
             )}
           </View>
 
-          {/* Shadbala */}
+          {/* Shadbala -- bilingual via chartBriefLang, plus a genuine
+              strongest/weakest narrative (buildShadbalaStrengthNarrative)
+              driven by netRupasWithDrik, the one figure that already folds
+              in Drik Bala and Drekkana Bala. Previously those two new
+              components only ever appeared as raw numbers here; this is
+              what "recalculating" them into real understanding looks like
+              without inventing anything not already computed. */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Shadbala — planetary strength (Rupas)</Text>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>
+              {chartBriefLang === "hi" ? "षड्बल — ग्रह शक्ति (रूप)" : "Shadbala — planetary strength (Rupas)"}
+            </Text>
             {shadbalaResult ? (
               <>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
@@ -30821,28 +30928,41 @@ function BirthChartSection({
                           borderWidth: 1, borderColor: tierBorder,
                         }}
                       >
-                        <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900", textTransform: "capitalize" }}>{planet}</Text>
+                        <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>
+                          {chartBriefLang === "hi" ? SHADBALA_PLANET_LABEL_HI[planet] : planet.charAt(0).toUpperCase() + planet.slice(1)}
+                        </Text>
                         <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "900" }}>{s.totalRupas.toFixed(2)}</Text>
-                        <Text style={{ color: "#25364D", fontSize: 12 }}>of {(s.includedMaxVirupas / 60).toFixed(2)} partial max</Text>
+                        <Text style={{ color: "#25364D", fontSize: 12 }}>
+                          {chartBriefLang === "hi" ? `${(s.includedMaxVirupas / 60).toFixed(2)} आंशिक अधिकतम में से` : `of ${(s.includedMaxVirupas / 60).toFixed(2)} partial max`}
+                        </Text>
                         <Text style={{ color: tierColor, fontSize: 12, fontWeight: "800" }}>
-                          {s.coveragePercent.toFixed(0)}% of partial scale
+                          {chartBriefLang === "hi" ? `आंशिक स्केल का ${s.coveragePercent.toFixed(0)}%` : `${s.coveragePercent.toFixed(0)}% of partial scale`}
                         </Text>
                         <Text style={{ color: s.drikBala >= 0 ? "#0D6B36" : "#B80000", fontSize: 12, fontWeight: "700", marginTop: 2 }}>
-                          Drik Bala {s.drikBala >= 0 ? "+" : ""}{(s.drikBala / 60).toFixed(2)} rupas
+                          {chartBriefLang === "hi" ? "दृक बल " : "Drik Bala "}{s.drikBala >= 0 ? "+" : ""}{(s.drikBala / 60).toFixed(2)} {chartBriefLang === "hi" ? "रूप" : "rupas"}
                         </Text>
                         <Text style={{ color: "#25364D", fontSize: 12 }}>
-                          Net w/ aspects: {s.netRupasWithDrik.toFixed(2)}
+                          {chartBriefLang === "hi" ? `दृष्टि सहित शुद्ध: ${s.netRupasWithDrik.toFixed(2)}` : `Net w/ aspects: ${s.netRupasWithDrik.toFixed(2)}`}
                         </Text>
                       </View>
                     );
                   })}
                 </View>
+                <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19 }}>
+                  {buildShadbalaStrengthNarrative(shadbalaResult.planets, chartBriefLang)}
+                </Text>
                 <Text style={{ color: "#1F2937", fontSize: 12, fontStyle: "italic", lineHeight: 16 }}>
-                  Includes Uchcha, Ojayugmarasyamsa, Kendradi, and Drekkana Bala (four of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, a motion-based Chesta Bala proxy, and Drik Bala (aspectual strength from the other six grahas, signed by benefic/malefic nature — this can be negative, unlike every other component here, which is why it's shown separately as "Net w/ aspects" rather than folded into the coverage percentage above). Kala Bala's day/night components and the last of Sthana Bala's five classical parts (Saptavargaja Bala, which needs several more divisional charts and a full planetary friend/enemy table this build doesn't compute) are still deferred. Because of that, the coverage percentage is each planet's strength within only the non-aspectual categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded "below min" against a full-total threshold.
+                  {chartBriefLang === "hi"
+                    ? "इसमें उच्च, ओजयुग्मराश्यंश, केंद्रादि और द्रेष्काण बल (स्थान बल के पाँच शास्त्रीय भागों में से चार), पूर्ण दिग् बल, पूर्ण नैसर्गिक बल, गति-आधारित चेष्टा बल अनुमान, और दृक बल (शेष छह ग्रहों से दृष्टि-आधारित शक्ति, शुभ/अशुभ स्वभाव के अनुसार चिह्नित — यह ऋणात्मक भी हो सकता है, इसलिए इसे कवरेज प्रतिशत में न जोड़कर अलग से \"दृष्टि सहित शुद्ध\" के रूप में दिखाया गया है) शामिल है। काल बल के दिन/रात वाले भाग और स्थान बल का पाँचवाँ शास्त्रीय भाग (सप्तवर्गज बल, जिसके लिए और भी वर्ग कुंडलियाँ और एक पूर्ण ग्रह मित्र/शत्रु तालिका चाहिए जो यह बिल्ड नहीं गणना करता) अभी भी शामिल नहीं हैं। इसलिए कवरेज प्रतिशत केवल गणना किए गए गैर-दृष्टि श्रेणियों में शक्ति दर्शाता है, पूर्ण शास्त्रीय न्यूनतम के विरुद्ध निर्णय नहीं — एक आंशिक योग को कभी भी पूर्ण-योग सीमा के विरुद्ध \"न्यूनतम से कम\" नहीं आँका जा सकता।"
+                    : "Includes Uchcha, Ojayugmarasyamsa, Kendradi, and Drekkana Bala (four of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, a motion-based Chesta Bala proxy, and Drik Bala (aspectual strength from the other six grahas, signed by benefic/malefic nature — this can be negative, unlike every other component here, which is why it's shown separately as \"Net w/ aspects\" rather than folded into the coverage percentage above). Kala Bala's day/night components and the last of Sthana Bala's five classical parts (Saptavargaja Bala, which needs several more divisional charts and a full planetary friend/enemy table this build doesn't compute) are still deferred. Because of that, the coverage percentage is each planet's strength within only the non-aspectual categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded \"below min\" against a full-total threshold."}
                 </Text>
               </>
             ) : (
-              <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>Needs a precise Ascendant (exact birth time + geocoded place) — Kendradi and Dig Bala are both house-position-dependent.</Text>
+              <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>
+                {chartBriefLang === "hi"
+                  ? "इसके लिए सटीक लग्न चाहिए (सटीक जन्म समय + जियोकोडेड स्थान) — केंद्रादि और दिग् बल दोनों भाव-स्थिति पर निर्भर हैं।"
+                  : "Needs a precise Ascendant (exact birth time + geocoded place) — Kendradi and Dig Bala are both house-position-dependent."}
+              </Text>
             )}
           </View>
         </View>

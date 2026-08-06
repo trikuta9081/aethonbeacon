@@ -85,6 +85,16 @@ const forecastPanelBlock = source.match(/Next 15 Years — Dasha Forecast[\s\S]{
 assert(forecastPanelBlock, 'Next 15 Years panel block not found for language-toggle check');
 assert(source.includes('setChartBriefLang("en")') && source.includes('setChartBriefLang("hi")'), 'Forecast language toggle must drive the shared chartBriefLang state');
 
+// ── Bilingual Yogas / Ashtakavarga / Shadbala + Shadbala strength narrative ──
+assert(source.includes('nameHi: string;') && source.includes('meaningHi: string;'), 'DetectedYoga type must carry Hindi name/meaning fields');
+assert(source.includes('const GRAHA_LABELS_HI'), 'Hindi graha label map for Yogas is missing');
+assert(source.includes('चंद्र और गुरु') || source.includes('गज केसरी योग'), 'Gaja Kesari Yoga Hindi text is missing');
+assert(source.includes('function buildShadbalaStrengthNarrative'), 'Shadbala strongest/weakest narrative builder is missing');
+assert(source.includes('SHADBALA_DOMAIN_EN') && source.includes('SHADBALA_DOMAIN_HI'), 'Shadbala planet-domain significance packs are missing');
+assert(source.includes('buildShadbalaStrengthNarrative(shadbalaResult.planets, chartBriefLang)'), 'Shadbala panel must render the strongest/weakest narrative, wiring Drik/Drekkana Bala into real understanding rather than leaving them as raw numbers only');
+assert(source.includes('सर्वाष्टकवर्ग') , 'Ashtakavarga Hindi title is missing');
+assert(source.includes('षड्बल'), 'Shadbala Hindi title is missing');
+
 // ── Gochar (current transits) foresight layer ───────────────────────────────
 assert(source.includes('function getGocharChart'), 'Gochar (current transits) chart builder is missing');
 assert(source.includes('function getGocharGuidance'), 'Gochar guidance builder is missing');
