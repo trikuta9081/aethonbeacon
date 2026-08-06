@@ -128,6 +128,12 @@ assert(!source.includes('48-dimension reading'), 'Public 48-dimension reading te
   // frame as the tap, reading like a form submit instead of a conversation.
   'isGuideTyping',
   'typingDotsAnim',
+  // Community/Redress/Tones premium pass: confirmation gates on destructive
+  // actions (previously single-tap-and-gone), and real haptic feedback on
+  // the highest-repeat taps in each section (reactions, send, save, report,
+  // evidence checklist, route select, tone play/loop/pause/preset/volume) --
+  // confirmed zero Haptics.* calls existed in any of the three before this.
+  'function confirmDestructive',
 ].forEach((marker) => indexOf(marker));
 
-console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, and a real typing beat on every counselling chat reply are present.');
+console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, and confirm-gated destructive actions with haptic feedback across Community/Redress/Tones are present.');

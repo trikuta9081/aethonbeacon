@@ -12647,6 +12647,12 @@ export default function App() {
         Alert.alert("Reactions", "Reactions need a live connection, which isn't configured on this build.");
         return;
       }
+      // Community had zero haptic feedback anywhere (confirmed) despite the
+      // rest of the app using it for exactly this kind of tap -- a reaction
+      // is the single most-repeated tap in the section, so it's the highest
+      // leverage place to add the tactile confirmation every mainstream
+      // chat/social app gives on a reaction tap.
+      void Haptics.selectionAsync();
       const existing = communityReactions.find(
         (item) => item.messageId === messageId && item.emoji === emoji && item.reactorClientId === presenceSessionId
       );
@@ -16936,6 +16942,7 @@ async function fetchGeminiAIHelp(
       Alert.alert("Community", "Write a short message first.");
       return;
     }
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!communityVerifiedAccess) {
       Alert.alert(
         "Community",
@@ -17060,6 +17067,7 @@ async function fetchGeminiAIHelp(
       Alert.alert("Community chat", "Write a short message first.");
       return;
     }
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!communityVerifiedAccess) {
       Alert.alert(
         "Community chat",
@@ -17645,6 +17653,7 @@ async function fetchGeminiAIHelp(
     reason: CommunityReportReason,
     snippet: string
   ) {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     const report: CommunityReport = {
       id: `${Date.now()}-${Math.floor(Math.random() * 100000)}`,
       createdAt: new Date().toISOString(),
@@ -17683,6 +17692,7 @@ async function fetchGeminiAIHelp(
   }
 
   function toggleSavedCommunityItem(target: CommunityReportTarget, targetId: string) {
+    void Haptics.selectionAsync();
     if (target === "feed") {
       setSavedCommunityMessageIds((current) =>
         current.includes(targetId) ? current.filter((id) => id !== targetId) : [targetId, ...current]
@@ -22550,14 +22560,16 @@ function ToneLibrarySection({
         <View style={{ flexDirection: "row", gap: 8, padding: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.04)" }}>
           <Pressable
             accessibilityRole="button"
-            onPress={() => { setLoopEnabled(false); setTonePaused(false); void playRelaxingToneCue(selectedTone); }}
+            onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setLoopEnabled(false); setTonePaused(false); void playRelaxingToneCue(selectedTone); }}
+            accessibilityLabel="Play once"
             style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: pressed ? "#C4E9E5" : "#DEF2F0", alignItems: "center", justifyContent: "center" })}
           >
             <Text style={{ color: "#059669", fontSize: 14, fontWeight: "900" }}>▶ Play once</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            onPress={() => { setTonePaused(false); setLoopEnabled((v) => !v); if (loopEnabled) setActiveProgram(null); }}
+            onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTonePaused(false); setLoopEnabled((v) => !v); if (loopEnabled) setActiveProgram(null); }}
+            accessibilityLabel={loopEnabled ? "Stop looping tone" : "Loop tone continuously"}
             style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: loopEnabled ? (pressed ? "#7F1D1D" : "#991B1B") : (pressed ? "#C4D5E9" : "#DEE7F2"), alignItems: "center", justifyContent: "center" })}
           >
             <Text style={{ color: loopEnabled ? "#FEE2E2" : "#0052B8", fontSize: 14, fontWeight: "900" }}>{loopEnabled ? "⏹ Stop" : "🔁 Loop"}</Text>
@@ -22565,7 +22577,8 @@ function ToneLibrarySection({
           {loopEnabled && (
             <Pressable
               accessibilityRole="button"
-              onPress={() => setTonePaused((v) => !v)}
+              onPress={() => { void Haptics.selectionAsync(); setTonePaused((v) => !v); }}
+              accessibilityLabel={tonePaused ? "Resume tone" : "Pause tone"}
               style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 12, backgroundColor: pressed ? "#E6E3C6" : "#F1EFDF", borderWidth: 1, borderColor: "#B45309", alignItems: "center", justifyContent: "center" })}
             >
               <Text style={{ color: "#B45309", fontSize: 16 }}>{tonePaused ? "▶" : "⏸"}</Text>
@@ -22611,6 +22624,7 @@ function ToneLibrarySection({
                   key={preset.id}
                   accessibilityRole="button"
                   onPress={() => {
+                    void Haptics.selectionAsync();
                     setSelectedSessionPresetId(preset.id);
                     setPresetMinutes(preset.minutes);
                     setToneVolume(preset.volume);
@@ -22635,13 +22649,28 @@ function ToneLibrarySection({
 
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             <Text style={{ color: "#263244", fontSize: 12, fontWeight: "800", width: 72 }}>Safe gain</Text>
-            <Pressable onPress={() => setToneVolume((v) => clampToneVolume(v - 0.02))} style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}>
+            <Pressable
+              onPress={() => { void Haptics.selectionAsync(); setToneVolume((v) => clampToneVolume(v - 0.02)); }}
+              accessibilityRole="button"
+              accessibilityLabel="Decrease volume"
+              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+            >
               <Text style={{ color: "#25364D", fontSize: 16, fontWeight: "900" }}>−</Text>
             </Pressable>
-            <View style={{ flex: 1, height: 8, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+            <View
+              accessibilityRole="adjustable"
+              accessibilityLabel="Tone volume"
+              accessibilityValue={{ min: 0, max: 100, now: toneVolumePercent }}
+              style={{ flex: 1, height: 8, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.07)", overflow: "hidden" }}
+            >
               <View style={{ height: 8, borderRadius: 999, backgroundColor: "#0891B2", width: `${Math.round((clampToneVolume(toneVolume) / 0.22) * 100)}%` as unknown as number }} />
             </View>
-            <Pressable onPress={() => setToneVolume((v) => clampToneVolume(v + 0.02))} style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}>
+            <Pressable
+              onPress={() => { void Haptics.selectionAsync(); setToneVolume((v) => clampToneVolume(v + 0.02)); }}
+              accessibilityRole="button"
+              accessibilityLabel="Increase volume"
+              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+            >
               <Text style={{ color: "#25364D", fontSize: 16, fontWeight: "900" }}>+</Text>
             </Pressable>
             <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "900", width: 36, textAlign: "right" }}>{toneVolumePercent}%</Text>
@@ -22747,7 +22776,9 @@ function ToneLibrarySection({
               <View key={cat.id} style={{ borderRadius: 14, overflow: "hidden", borderWidth: 1, borderColor: hasActive ? cat.color + "40" : "rgba(255,255,255,0.06)" }}>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={() => setExpandedCategory(isOpen ? null : cat.id)}
+                  accessibilityLabel={`${cat.label} category`}
+                  accessibilityState={{ expanded: isOpen }}
+                  onPress={() => { void Haptics.selectionAsync(); setExpandedCategory(isOpen ? null : cat.id); }}
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: hasActive ? cat.color + "10" : pressed ? "#060E18" : "#040C16", paddingHorizontal: 14, paddingVertical: 12 })}
                 >
                   <View style={{ flex: 1 }}>
@@ -22794,13 +22825,17 @@ function ToneLibrarySection({
                             ) : (
                               <>
                                 <Pressable
-                                  onPress={() => { setSelectedToneId(toneMode.id); setLoopEnabled(false); void playRelaxingToneCue(toneMode); }}
+                                  onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setSelectedToneId(toneMode.id); setLoopEnabled(false); void playRelaxingToneCue(toneMode); }}
+                                  accessibilityRole="button"
+                                  accessibilityLabel={`Play ${toneMode.label} once`}
                                   style={{ backgroundColor: "#DEF2F0", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
                                   <Text style={{ color: "#059669", fontSize: 12, fontWeight: "900" }}>▶</Text>
                                 </Pressable>
                                 <Pressable
-                                  onPress={() => { setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
+                                  onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
+                                  accessibilityRole="button"
+                                  accessibilityLabel={`Loop ${toneMode.label} continuously`}
                                   style={{ backgroundColor: "#DEE7F2", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
                                   <Text style={{ color: "#0052B8", fontSize: 12, fontWeight: "900" }}>🔁</Text>
@@ -23569,6 +23604,27 @@ function AIHelpSection({
   );
 }
 
+// Gates an irreversible local-data-wipe action (reset feed, clear thread,
+// clear a private room, clear saved items) behind an explicit Cancel/Confirm
+// choice, matching how Discord/WhatsApp/every mainstream messaging app
+// treats delete actions -- these previously fired on a single tap with only
+// an accessibilityHint ("This cannot be undone") that a sighted user would
+// never see. Also gives a light haptic on confirm so the action feels
+// deliberate, consistent with confirmDestructive's other tactile cues.
+function confirmDestructive(title: string, message: string, onConfirm: () => void) {
+  Alert.alert(title, message, [
+    { text: "Cancel", style: "cancel" },
+    {
+      text: "Clear",
+      style: "destructive",
+      onPress: () => {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        onConfirm();
+      },
+    },
+  ]);
+}
+
 function CommunitySection({
   communityMessages,
   communityRealtimeStatus,
@@ -24275,7 +24331,7 @@ function CommunitySection({
               accessibilityRole="button"
               accessibilityLabel="Reset chat thread"
               accessibilityHint="Clears your local chat conversation. This cannot be undone."
-              onPress={onClearCommunityChat}
+              onPress={() => confirmDestructive("Reset chat thread?", "This clears your local chat conversation. This cannot be undone.", onClearCommunityChat)}
               disabled={interactionLocked}
               style={({ pressed }) => [
                 styles.helpButtonSecondary,
@@ -24456,7 +24512,11 @@ function CommunitySection({
                     accessibilityRole="button"
                     accessibilityLabel={`Clear all messages in ${selectedPrivateRoom.title}`}
                     accessibilityHint="Deletes every message in this room from this device. This cannot be undone."
-                    onPress={() => onClearPrivateSpaceRoom(selectedPrivateRoom.id)}
+                    onPress={() => confirmDestructive(
+                      `Clear "${selectedPrivateRoom.title}"?`,
+                      "This deletes every message in this room from this device. This cannot be undone.",
+                      () => onClearPrivateSpaceRoom(selectedPrivateRoom.id)
+                    )}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
                     <Text style={styles.textButtonLabel}>Clear room</Text>
@@ -24579,7 +24639,7 @@ function CommunitySection({
             accessibilityRole="button"
             accessibilityLabel="Reset feed"
             accessibilityHint="Clears the community feed on this device. This cannot be undone."
-            onPress={onClearCommunityMessages}
+            onPress={() => confirmDestructive("Reset feed?", "This clears the community feed on this device. This cannot be undone.", onClearCommunityMessages)}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
             <Text style={styles.helpButtonSecondaryLabel}>Reset feed</Text>
@@ -24713,7 +24773,7 @@ function CommunitySection({
             accessibilityRole="button"
             accessibilityLabel="Clear all saved lines"
             accessibilityHint="Removes every saved feed post and chat message. This cannot be undone."
-            onPress={onClearSavedCommunityItems}
+            onPress={() => confirmDestructive("Clear all saved lines?", "This removes every saved feed post and chat message. This cannot be undone.", onClearSavedCommunityItems)}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
             <Text style={styles.helpButtonSecondaryLabel}>Clear saved</Text>
@@ -27105,7 +27165,10 @@ function RedressSection({
                 key={route.id}
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
-                onPress={() => setRedressRouteId(route.id)}
+                onPress={() => {
+                  void Haptics.selectionAsync();
+                  setRedressRouteId(route.id);
+                }}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
                 <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>
@@ -27305,7 +27368,10 @@ function RedressSection({
                 key={String(i)}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked }}
-                onPress={() => setCheckedEvidence((prev) => ({ ...prev, [String(i)]: !checked }))}
+                onPress={() => {
+                  void Haptics.selectionAsync();
+                  setCheckedEvidence((prev) => ({ ...prev, [String(i)]: !checked }));
+                }}
                 style={({ pressed }) => [{
                   flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 9,
                   borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)",
