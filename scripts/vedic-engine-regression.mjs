@@ -62,10 +62,12 @@ assert(source.includes('South Indian style: signs are fixed to position'), 'Sout
 assert(source.includes('askTheChartPanel={'), 'Ask-the-chart panel must be passed into BirthChartSection for correct placement');
 assert(source.includes('{askTheChartPanel}'), 'Ask-the-chart panel is not rendered inside BirthChartSection');
 assert(source.includes('return pairs.reverse().flat();'), 'Ask-the-chart history must render newest exchange first while preserving question→reply pairing');
-assert(source.includes("Kala Bala's day/night components and the remaining two of Sthana Bala's five classical parts"), 'Partial Shadbala limitations must remain disclosed until fully implemented');
+assert(source.includes("Kala Bala's day/night components and the last of Sthana Bala's five classical parts"), 'Partial Shadbala limitations must remain disclosed until fully implemented');
 assert(source.includes('drikBala'), 'Drik Bala (aspectual strength) calculation is missing');
 assert(source.includes('drishtiVirupas'), 'Drik Bala drishti virupa table is missing');
 assert(source.includes('netVirupasWithDrik'), 'Shadbala net-with-aspects figure is missing');
+assert(source.includes('function drekkanaBala'), 'Drekkana Bala calculation is missing');
+assert(source.includes('PLANET_GENDER'), 'Drekkana Bala planet gender table is missing');
 
 // ── Gochar (current transits) foresight layer ───────────────────────────────
 assert(source.includes('function getGocharChart'), 'Gochar (current transits) chart builder is missing');

@@ -9854,15 +9854,25 @@ function buildAshtakavarga(core: BirthChartCore): AshtakavargaResult | null {
 // Naisargika Bala, and Drik Bala. Two of the sub-formulas still need machinery
 // this app does not have yet and are DELIBERATELY OMITTED rather than
 // approximated with guessed numbers:
-//   - Saptavargaja Bala and Drekkana Bala (two of Sthana Bala's five parts)
-//     need the D2, D3, D7, D12, and D30 divisional charts -- only D1 (Rashi)
-//     and D9 (Navamsa) exist in this app so far.
+//   - Saptavargaja Bala (the last of Sthana Bala's five parts) needs the D2,
+//     D7, D12, and D30 divisional charts plus a full planetary friend/enemy
+//     relationship table -- only D1 (Rashi) and D9 (Navamsa) exist in this
+//     app so far. Drekkana Bala (the other previously-missing Sthana Bala
+//     part) is now implemented for real -- see drekkanaBala below -- since
+//     its rule (male/female/neuter planets strong in the 1st/2nd/3rd
+//     Drekkana of their sign) is cited identically everywhere, unlike
+//     Saptavargaja's more involved varga-by-varga relationship scoring.
 //   - Kala Bala's day/night-based parts (Nathonnatha, Tribhaga, Ayana Bala)
-//     need precise local sunrise/sunset and a ghati-based sinusoidal formula
-//     that no source we could verify gave in exact, checkable form.
+//     need a ghati-based sinusoidal formula that no source we could verify
+//     gave in exact, checkable form -- this stays deferred even though real
+//     local sunrise/sunset is now computable (astronomy-engine is already a
+//     dependency), because pairing accurate sunrise/sunset with a formula we
+//     can't verify would still produce an unverifiable number, just a more
+//     convincingly-computed one.
 // What IS included below is fully classical and verifiable: Uchcha Bala,
-// Ojayugmarasyamsa Bala, and Kendradi Bala (3 of Sthana Bala's 5 parts), the
-// full Dig Bala, the full fixed Naisargika Bala, a Chesta Bala PROXY (real
+// Ojayugmarasyamsa Bala, Kendradi Bala, and Drekkana Bala (4 of Sthana
+// Bala's 5 parts), the full Dig Bala, the full fixed Naisargika Bala, a
+// Chesta Bala PROXY (real
 // BPHS Chesta Bala uses each planet's Seeghrocha/mean-Sun conjunction angle,
 // which needs orbital-element machinery this app doesn't have; the proxy
 // below uses actual vs. mean daily motion, which tracks the same underlying
@@ -9952,6 +9962,36 @@ const OJA_YUGMA_PREFERENCE: Record<ShadbalaPlanet, "odd" | "even" | "always"> = 
   mercury: "always",
 };
 
+// Drekkana Bala (the 4th of Sthana Bala's five classical parts): a planet
+// gets full strength (15 virupas) when it falls in the "correct" one-third
+// division (Drekkana, 10 degrees each) of its own sign for its classical
+// gender -- male planets in the 1st Drekkana (0-10 deg into the sign),
+// female planets in the 2nd (10-20 deg), neuter planets in the 3rd
+// (20-30 deg); 0 virupas otherwise. Unlike Nathonnatha/Tribhaga/Ayana Bala
+// (still deferred -- see module comment), this rule is cited identically
+// across Parashari sources (e.g. B.V. Raman's Shadbala chapter) with no
+// disputed formula, so it's safe to implement for real.
+const PLANET_GENDER: Record<ShadbalaPlanet, "male" | "female" | "neuter"> = {
+  sun: "male",
+  mars: "male",
+  jupiter: "male",
+  moon: "female",
+  venus: "female",
+  mercury: "neuter",
+  saturn: "neuter",
+};
+
+function drekkanaBala(longitude: number, planet: ShadbalaPlanet): number {
+  const degreeInSign = normalizeDegrees(longitude) % 30;
+  const drekkanaIndex = Math.floor(degreeInSign / 10); // 0, 1, or 2
+  const gender = PLANET_GENDER[planet];
+  const matches =
+    (drekkanaIndex === 0 && gender === "male") ||
+    (drekkanaIndex === 1 && gender === "female") ||
+    (drekkanaIndex === 2 && gender === "neuter");
+  return matches ? 15 : 0;
+}
+
 // Classical mean daily motion (degrees/day) -- used only as the reference
 // point for the Chesta Bala proxy described above, not for ephemeris math
 // (the real position always comes from astronomy-engine).
@@ -10007,7 +10047,7 @@ function isNaturalBeneficForDrikBala(planet: ShadbalaPlanet, core: BirthChartCor
 }
 
 type ShadbalaComponents = {
-  sthanaBalaPartial: number; // Uchcha + Ojayugmarasyamsa + Kendradi only -- see module comment
+  sthanaBalaPartial: number; // Uchcha + Ojayugmarasyamsa + Kendradi + Drekkana -- see module comment
   digBala: number;
   chestaBala: number | null; // null for Sun/Moon -- never applicable classically
   naisargikaBala: number;
@@ -10077,7 +10117,10 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
     const houseFromAsc = houseFromLagna(rashiIndex, lagnaRashi);
     const kendradiBala = [1, 4, 7, 10].includes(houseFromAsc) ? 60 : [2, 5, 8, 11].includes(houseFromAsc) ? 30 : 15;
 
-    const sthanaBalaPartial = uchchaBala + ojaYugmaBala + kendradiBala;
+    // Drekkana Bala
+    const drekkanaBalaValue = drekkanaBala(longitude, planet);
+
+    const sthanaBalaPartial = uchchaBala + ojaYugmaBala + kendradiBala + drekkanaBalaValue;
 
     // Dig Bala
     const strongHouse = DIG_BALA_STRONG_HOUSE[planet];
@@ -10122,7 +10165,7 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
 
     const totalVirupas = sthanaBalaPartial + digBala + (chestaBala ?? 0) + naisargikaBala;
     const totalRupas = totalVirupas / 60;
-    const includedMaxVirupas = 150 + 60 + (chestaBala !== null ? 60 : 0) + naisargikaBala;
+    const includedMaxVirupas = 165 + 60 + (chestaBala !== null ? 60 : 0) + naisargikaBala;
     const coveragePercent = (totalVirupas / includedMaxVirupas) * 100;
     const netVirupasWithDrik = totalVirupas + drikBala;
     const netRupasWithDrik = netVirupasWithDrik / 60;
@@ -20261,6 +20304,25 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "insights")}</Text>
                 </View>
               )}
+              {/* ── Data-quality gap chip -- concrete, personal distance to
+                  the next real milestone (7 or 30 check-ins), instead of a
+                  generic "add more data" line. Uses the same weekEntries/
+                  monthEntries already computed for the trend bands below. ── */}
+              {weekEntries.length < 7 ? (
+                <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#EFEAF7", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(109,40,217,0.2)", flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>Building</Text>
+                  <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>
+                    {7 - weekEntries.length} more check-in{7 - weekEntries.length === 1 ? "" : "s"} this week and your weekly pattern read gets a lot sharper.
+                  </Text>
+                </View>
+              ) : monthEntries.length < 30 ? (
+                <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#EFEAF7", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(109,40,217,0.2)", flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>Deepening</Text>
+                  <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>
+                    {30 - monthEntries.length} more check-ins toward a full month — that's where the monthly rhythm becomes reliable.
+                  </Text>
+                </View>
+              ) : null}
               {/* ── Personal Pattern Summary ── */}
               <GeminiInsightsCard
                 apiBase={verificationApiBaseUrl}
@@ -30284,7 +30346,7 @@ function BirthChartSection({
                   })}
                 </View>
                 <Text style={{ color: "#1F2937", fontSize: 12, fontStyle: "italic", lineHeight: 16 }}>
-                  Includes Uchcha, Ojayugmarasyamsa and Kendradi Bala (three of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, a motion-based Chesta Bala proxy, and now Drik Bala (aspectual strength from the other six grahas, signed by benefic/malefic nature — this can be negative, unlike every other component here, which is why it's shown separately as "Net w/ aspects" rather than folded into the coverage percentage above). Kala Bala's day/night components and the remaining two of Sthana Bala's five classical parts (Saptavargaja and Drekkana Bala, which need divisional charts this build doesn't compute) are still deferred. Because of that, the coverage percentage is each planet's strength within only the non-aspectual categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded "below min" against a full-total threshold.
+                  Includes Uchcha, Ojayugmarasyamsa, Kendradi, and Drekkana Bala (four of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, a motion-based Chesta Bala proxy, and Drik Bala (aspectual strength from the other six grahas, signed by benefic/malefic nature — this can be negative, unlike every other component here, which is why it's shown separately as "Net w/ aspects" rather than folded into the coverage percentage above). Kala Bala's day/night components and the last of Sthana Bala's five classical parts (Saptavargaja Bala, which needs several more divisional charts and a full planetary friend/enemy table this build doesn't compute) are still deferred. Because of that, the coverage percentage is each planet's strength within only the non-aspectual categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded "below min" against a full-total threshold.
                 </Text>
               </>
             ) : (
