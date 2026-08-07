@@ -36553,6 +36553,14 @@ function DynamicHeroCard({
 
   return (
     <Animated.View style={[styles.dynamicHeroCard, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+      {/* Soft brand-colour glows behind the content -- gives the hero real
+          depth instead of a flat pale panel. Placed partially off-card so only
+          a soft arc shows; clipped by the card's overflow:hidden; pointerEvents
+          none so they never intercept taps. This is the premium-wellness "lit
+          from within" look without needing a gradient library. */}
+      <View pointerEvents="none" style={{ position: "absolute", top: -70, right: -50, width: 220, height: 220, borderRadius: 110, backgroundColor: "rgba(196,163,90,0.20)" }} />
+      <View pointerEvents="none" style={{ position: "absolute", bottom: -80, left: -60, width: 240, height: 240, borderRadius: 120, backgroundColor: "rgba(8,145,178,0.16)" }} />
+      <View pointerEvents="none" style={{ position: "absolute", top: 40, left: -30, width: 120, height: 120, borderRadius: 60, backgroundColor: "rgba(124,58,237,0.08)" }} />
       {/* Top strip — date + streak */}
       <View style={styles.dynamicHeroTopStrip}>
         <Text style={styles.dynamicHeroDate}>{emoji}  {liveDate}</Text>
@@ -45486,18 +45494,19 @@ const styles = StyleSheet.create({
   // ── Dynamic Hero Card ──────────────────────────────────────────────────────
   dynamicHeroCard: {
     borderRadius: 24,
-    backgroundColor: "#DEEFF2",
+    backgroundColor: "#E3F1F3",
     padding: 22,
     marginBottom: 14,
     overflow: "hidden",
-    // Deep layered shadow
-    shadowColor: "#0EA5E9",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 22,
+    // Deep layered shadow + a crisper gold frame so the hero reads as a
+    // premium, lit card rather than a flat pale panel.
+    shadowColor: "#0F7A8C",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.16,
+    shadowRadius: 24,
     elevation: 10,
     borderWidth: 1.5,
-    borderColor: "rgba(196,163,90,0.22)",
+    borderColor: "rgba(196,163,90,0.45)",
   },
   dynamicHeroTopStrip: {
     flexDirection: "row",
