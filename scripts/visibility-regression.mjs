@@ -143,9 +143,15 @@ mustNotMatch(
   /paddingTop: Platform\.OS === "ios" \? 54 : 40/,
   'Full-screen modal headers must use the real safe-area inset, not a hardcoded status-bar height'
 );
+// The ExitReport modal is still full-screen and must pad from the real top
+// inset. The Counselling modal is now an iOS page sheet (presentationStyle
+// "pageSheet"), which owns its own top chrome + grabber, so on iOS it uses a
+// small fixed header pad and only falls back to the inset formula on the
+// Android/web full-screen path -- hence at least one occurrence, not two.
 assert(
-  (source.match(/paddingTop: Math\.max\(insets\.top, 12\) \+ 12/g) ?? []).length >= 2,
-  'Both full-screen modal headers (ExitReport, Counselling) must pad from the real top inset'
+  (source.match(/paddingTop: Math\.max\(insets\.top, 12\) \+ 12/g) ?? []).length >= 1,
+  'Full-screen modal headers (e.g. ExitReport, and the Counselling sheet on its Android/web fallback) must pad from the real top inset'
 );
+mustInclude('presentationStyle="pageSheet"', 'Counselling chat must present as a native iOS page sheet');
 
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');

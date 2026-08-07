@@ -36978,6 +36978,11 @@ function CounselingChatModal({
       visible={visible}
       animationType="slide"
       transparent={false}
+      // iOS renders this as a native page sheet -- rounded top corners, a gap
+      // above showing the app behind, and swipe-down-to-dismiss -- the way
+      // Apple presents a focused sub-task like this chat. Android/web ignore it
+      // and keep the existing full-screen slide-up, so it's additive.
+      presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
@@ -36993,8 +36998,17 @@ function CounselingChatModal({
         keyboardVerticalOffset={0}
       >
       <View style={{ flex: 1, backgroundColor: "#EAF3F1" }}>
+        {/* Grabber -- the standard iOS sheet handle that signals swipe-to-
+            dismiss. Only on iOS, where presentationStyle="pageSheet" actually
+            renders a sheet; on the Android/web full-screen fallback there's no
+            sheet to grab, so it would just be a stray bar under the status bar. */}
+        {Platform.OS === "ios" && (
+          <View style={{ backgroundColor: "#FFFFFF", alignItems: "center", paddingTop: 8, paddingBottom: 2 }}>
+            <View style={{ width: 36, height: 5, borderRadius: 3, backgroundColor: "#D2DEDB" }} />
+          </View>
+        )}
         {/* Header */}
-        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Math.max(insets.top, 12) + 12, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#DCE9E6", backgroundColor: "#FFFFFF" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Platform.OS === "ios" ? 10 : Math.max(insets.top, 12) + 12, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#DCE9E6", backgroundColor: "#FFFFFF" }}>
           <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
             <Text style={{ color: "#0E9488", fontSize: 22 }}>←</Text>
           </Pressable>
