@@ -28701,7 +28701,7 @@ function RouteDecisionOverlay({
             padding: 14,
             gap: 6,
             borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.06)"
+            borderColor: "rgba(15,23,42,0.08)"
           }}>
             {/* #298F7F was 3.3:1 on this card's background -- darkened. */}
             <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
@@ -46202,7 +46202,7 @@ const styles = StyleSheet.create({
     flexBasis: 140,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(15,23,42,0.08)",
     backgroundColor: "#E7EFED",
     paddingHorizontal: 10,
     paddingVertical: 8,
