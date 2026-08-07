@@ -36558,9 +36558,10 @@ function DynamicHeroCard({
           a soft arc shows; clipped by the card's overflow:hidden; pointerEvents
           none so they never intercept taps. This is the premium-wellness "lit
           from within" look without needing a gradient library. */}
-      <View pointerEvents="none" style={{ position: "absolute", top: -70, right: -50, width: 220, height: 220, borderRadius: 110, backgroundColor: "rgba(196,163,90,0.20)" }} />
-      <View pointerEvents="none" style={{ position: "absolute", bottom: -80, left: -60, width: 240, height: 240, borderRadius: 120, backgroundColor: "rgba(8,145,178,0.16)" }} />
-      <View pointerEvents="none" style={{ position: "absolute", top: 40, left: -30, width: 120, height: 120, borderRadius: 60, backgroundColor: "rgba(124,58,237,0.08)" }} />
+      <View pointerEvents="none" style={{ position: "absolute", top: -80, right: -60, width: 260, height: 260, borderRadius: 130, backgroundColor: "rgba(196,163,90,0.32)" }} />
+      <View pointerEvents="none" style={{ position: "absolute", bottom: -90, left: -70, width: 280, height: 280, borderRadius: 140, backgroundColor: "rgba(8,145,178,0.26)" }} />
+      <View pointerEvents="none" style={{ position: "absolute", top: 30, left: -40, width: 160, height: 160, borderRadius: 80, backgroundColor: "rgba(124,58,237,0.14)" }} />
+      <View pointerEvents="none" style={{ position: "absolute", bottom: 60, right: -30, width: 130, height: 130, borderRadius: 65, backgroundColor: "rgba(236,72,153,0.10)" }} />
       {/* Top strip — date + streak */}
       <View style={styles.dynamicHeroTopStrip}>
         <Text style={styles.dynamicHeroDate}>{emoji}  {liveDate}</Text>
