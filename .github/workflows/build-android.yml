@@ -5,6 +5,14 @@ on:
     branches: [master]
   workflow_dispatch:
 
+# A batch push of several commits used to spawn one Android build per commit,
+# all racing to publish to the same Play tracks. Serialise them so a newer
+# push cancels any still-running/queued build and only the latest commit
+# publishes -- fewer wasted runner minutes and no overlapping Play uploads.
+concurrency:
+  group: android-play
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest

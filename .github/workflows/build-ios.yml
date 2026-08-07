@@ -46,6 +46,15 @@ on:
     branches: [master]
   workflow_dispatch:
 
+# Pushing several commits at once used to spawn one iOS build per commit, all
+# racing on the same TestFlight version. This serialises them: a newer push
+# cancels any still-running/queued iOS build so only the latest commit ships,
+# which also eliminates same-minute build-number collisions and saves the
+# scarce/slow macOS runner minutes.
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-latest
@@ -126,9 +135,23 @@ jobs:
           # Use a UTC timestamp instead of github.run_number. The app already
           # has build 148 in App Store Connect while this workflow's run
           # number is lower, so run_number alone can be rejected as a
-          # duplicate/older CFBundleVersion. YYMMDDHHMM is numeric, increases
+          # duplicate/older CFBundleVersion. A timestamp is numeric, increases
           # with every later run, and is safely above all historical builds.
-          NEW_BUILD_NUMBER="$(date -u +%y%m%d%H%M)"
+          #
+          # SECOND precision (YYMMDDHHMMSS), not minute (YYMMDDHHMM): a single
+          # push of several commits triggers several iOS builds at once, and
+          # with only minute precision two builds that hit this step in the
+          # same minute produced the SAME CFBundleVersion -- App Store Connect
+          # accepts the first upload and rejects the rest with
+          # "ENTITY_ERROR.ATTRIBUTE.INVALID.DUPLICATE" on cfBundleVersion
+          # (exactly the 2026-08-07 batch that failed three iOS runs in a row).
+          # 12 digits is still numerically far above the old 10-digit
+          # minute-precision builds already in App Store Connect, so it stays
+          # monotonic. The concurrency guard at the top of this file also now
+          # cancels superseded builds so a batch push only ships its latest
+          # commit -- the two fixes together make same-version collisions
+          # structurally impossible.
+          NEW_BUILD_NUMBER="$(date -u +%y%m%d%H%M%S)"
           echo "Setting iOS build number to $NEW_BUILD_NUMBER (UTC timestamp)"
           sed -i '' -E "s/CURRENT_PROJECT_VERSION = [0-9]+;/CURRENT_PROJECT_VERSION = ${NEW_BUILD_NUMBER};/" AethonBeacon.xcodeproj/project.pbxproj
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${NEW_BUILD_NUMBER}" AethonBeacon/Info.plist
