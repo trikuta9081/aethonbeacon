@@ -31636,6 +31636,28 @@ function BirthChartSection({
                       : ""}
                   </Text>
                 )}
+                {/* "You are here" -- pull the current period out on top so the
+                    person immediately sees the phase they're living now and
+                    what it's about, before scanning the full road ahead. */}
+                {(() => {
+                  const cur = dashaForecastTimeline.find((p) => p.isCurrent);
+                  if (!cur) return null;
+                  return (
+                    <View style={{ backgroundColor: "rgba(14,148,136,0.10)", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(14,148,136,0.35)" }}>
+                      <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", marginBottom: 3 }}>
+                        {isHi ? "अभी आप यहाँ हैं" : "Where you are right now"}
+                      </Text>
+                      <Text style={{ color: "#0D1F22", fontSize: 13.5, fontWeight: "800" }}>
+                        {yearSpan(cur)} · {isHi ? (DASHA_PLANET_HI[cur.mahadasha] ?? cur.mahadasha) : cur.mahadasha} / {isHi ? (DASHA_PLANET_HI[cur.antardasha] ?? cur.antardasha) : cur.antardasha}
+                      </Text>
+                      <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 3 }}>
+                        {isHi
+                          ? `अभी मुख्य फोकस: ${dashaPlanetFocus(cur.antardasha, true)}।`
+                          : `Your current focus: ${dashaPlanetFocus(cur.antardasha, false)}.`}
+                      </Text>
+                    </View>
+                  );
+                })()}
                 {dashaForecastTimeline.map((period, idx) => {
                   const remedyLine = period.verdict === "Watch"
                     ? (isHi ? DASHA_REMEDY_LINE_HI[period.antardasha] : DASHA_REMEDY_LINE_EN[period.antardasha])
@@ -36889,7 +36911,7 @@ function GuidedJourneyBar({
   const progress = steps.length > 0 ? completedCount / steps.length : 0;
 
   return (
-    <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#DEE8F2", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#0E3040" }}>
+    <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#FFFFFF", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#D7E3EE", shadowColor: "#0E3040", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}>
       {/* Progress bar */}
       <View style={{ height: 3, backgroundColor: "#E1EEEC", borderRadius: 2, marginBottom: 10 }}>
         <View style={{ height: 3, borderRadius: 2, backgroundColor: "#0E9488", width: `${Math.round(progress * 100)}%` as any }} />
