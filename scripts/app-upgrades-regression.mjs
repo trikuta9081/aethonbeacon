@@ -241,4 +241,17 @@ assert(source.includes('toLocaleTimeString([], { hour: "numeric", minute: "2-dig
   'plainHousesOpen',
 ].forEach((marker) => indexOf(marker));
 
-console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, and counselling personalization wired to real visit-recurrence and mood-trend history are present.');
+// Redress "My case" tracker: the one persistent piece of user state in the
+// otherwise-generated Redress tab -- reference number, filing office, status,
+// notes, and a follow-up date that doubles as a lightweight reminder. Must
+// survive restarts (persisted array) and stay confirm-gated on delete.
+assert(source.includes('type RedressCase'), 'RedressCase type is missing');
+assert(source.includes('redressCases: RedressCase[];'), 'redressCases must be part of the persisted app state');
+assert(source.includes('function normalizeRedressCases'), 'RedressCase load-normaliser is missing (persistence hardening)');
+assert(source.includes('setRedressCases(normalizeRedressCases(parsed.redressCases))'), 'redressCases must be rehydrated from storage on load');
+assert(source.includes('redressCases: redressCases.slice(0, 20)'), 'redressCases must be written back to storage');
+assert(source.includes('function redressFollowUpState'), 'Follow-up reminder state helper is missing');
+assert(source.includes('Start tracking this complaint'), 'Redress case tracker start affordance is missing');
+assert(/Alert\.alert\(\s*"Delete this case\?"/.test(source), 'Deleting a tracked case must stay confirm-gated');
+
+console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');
