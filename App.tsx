@@ -19766,8 +19766,8 @@ function isTrustedExternalUrl(url: string) {
                                 const chipColors = ["#059669", "#3730A3", "#B45309"];
                                 const color = chipColors[i % chipColors.length];
                                 return (
-                                  <View key={guide.id} style={{ flex: 1, backgroundColor: color + "12", borderRadius: 6, paddingVertical: 5, alignItems: "center", borderWidth: 1, borderColor: color + "30", flexDirection: "row", justifyContent: "center", gap: 4 }}>
-                                    <Text style={{ color, fontSize: 12, fontWeight: "900", textTransform: "capitalize", letterSpacing: 0.3 }} numberOfLines={1}>{guide.label}</Text>
+                                  <View key={guide.id} style={{ flex: 1, backgroundColor: color + "12", borderRadius: 8, paddingVertical: 6, paddingHorizontal: 6, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: color + "30" }}>
+                                    <Text style={{ color, fontSize: 12, lineHeight: 16, fontWeight: "800", textTransform: "capitalize", letterSpacing: 0.2, textAlign: "center" }} numberOfLines={2}>{guide.label}</Text>
                                   </View>
                                 );
                               })}
@@ -20651,9 +20651,9 @@ function isTrustedExternalUrl(url: string) {
                         accessibilityLabel={lng === "en" ? "Reply in English" : "उत्तर हिंदी में"}
                         accessibilityState={{ selected: chartBriefLang === lng }}
                         hitSlop={{ top: 12, bottom: 12, left: 6, right: 6 }}
-                        style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, backgroundColor: chartBriefLang === lng ? "#D97706" : "transparent" }}
+                        style={{ paddingHorizontal: 12, paddingVertical: 5, borderRadius: 999, backgroundColor: chartBriefLang === lng ? "#D97706" : "transparent" }}
                       >
-                        <Text style={{ color: chartBriefLang === lng ? "#FFFFFF" : "#B45309", fontSize: 12, fontWeight: "800" }}>{lng === "en" ? "EN" : "हिं"}</Text>
+                        <Text style={{ color: chartBriefLang === lng ? "#FFFFFF" : "#B45309", fontSize: 12, fontWeight: "800" }}>{lng === "en" ? "English" : "हिन्दी"}</Text>
                       </Pressable>
                     ))}
                   </View>
@@ -30960,13 +30960,13 @@ function BirthChartSection({
             <Text style={{ color: "#9A3412", fontSize: 15, fontWeight: "900" }}>
               {chartBriefLang === "hi" ? "आपकी कुंडली सरल भाषा में" : "Your Chart in Plain Language"}
             </Text>
-            <View style={{ flexDirection: "row", backgroundColor: "rgba(154,52,18,0.1)", borderRadius: 10, padding: 3 }}>
+            <View style={{ flexDirection: "row", backgroundColor: "rgba(154,52,18,0.1)", borderRadius: 999, padding: 3 }}>
               <Pressable
                 accessibilityRole="button"
                 accessibilityState={{ selected: chartBriefLang === "en" }}
                 onPress={() => setChartBriefLang("en")}
                 hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
-                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "en" ? "#9A3412" : "transparent" }}
+                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: chartBriefLang ==="en" ? "#9A3412" : "transparent" }}
               >
                 <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "en" ? "#FFFFFF" : "#9A3412" }}>English</Text>
               </Pressable>
@@ -30975,7 +30975,7 @@ function BirthChartSection({
                 accessibilityState={{ selected: chartBriefLang === "hi" }}
                 onPress={() => setChartBriefLang("hi")}
                 hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
-                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "hi" ? "#9A3412" : "transparent" }}
+                style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: chartBriefLang ==="hi" ? "#9A3412" : "transparent" }}
               >
                 <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "hi" ? "#FFFFFF" : "#9A3412" }}>हिन्दी</Text>
               </Pressable>
@@ -31161,13 +31161,13 @@ function BirthChartSection({
                   <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
                     {isHi ? "🔮 अगले 15 वर्ष — दशा पूर्वानुमान" : "🔮 Next 15 Years — Dasha Forecast"}
                   </Text>
-                  <View style={{ flexDirection: "row", backgroundColor: "rgba(192,132,252,0.12)", borderRadius: 8, padding: 2 }}>
+                  <View style={{ flexDirection: "row", backgroundColor: "rgba(192,132,252,0.12)", borderRadius: 999, padding: 2 }}>
                     <Pressable
                       accessibilityRole="button"
                       accessibilityState={{ selected: chartBriefLang === "en" }}
                       onPress={() => setChartBriefLang("en")}
                       hitSlop={{ top: 11, bottom: 11, left: 4, right: 4 }}
-                      style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6, backgroundColor: chartBriefLang === "en" ? "#5C00B8" : "transparent" }}
+                      style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: chartBriefLang ==="en" ? "#5C00B8" : "transparent" }}
                     >
                       <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "en" ? "#FFFFFF" : "#5C00B8" }}>English</Text>
                     </Pressable>
@@ -31176,7 +31176,7 @@ function BirthChartSection({
                       accessibilityState={{ selected: chartBriefLang === "hi" }}
                       onPress={() => setChartBriefLang("hi")}
                       hitSlop={{ top: 11, bottom: 11, left: 4, right: 4 }}
-                      style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6, backgroundColor: chartBriefLang === "hi" ? "#5C00B8" : "transparent" }}
+                      style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: chartBriefLang ==="hi" ? "#5C00B8" : "transparent" }}
                     >
                       <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "hi" ? "#FFFFFF" : "#5C00B8" }}>हिन्दी</Text>
                     </Pressable>
