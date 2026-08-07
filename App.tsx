@@ -28593,7 +28593,7 @@ function RedressSection({
             { num: "3", label: "Escalation path", text: selectedRedressRoute.escalation, color: "#B45309" },
             { num: "4", label: "Track & follow up", text: "Keep a copy of every acknowledgement number. Follow up every 7–15 days in writing. If stalled, use the escalation path above.", color: "#BE185D" },
           ].map((step) => (
-            <View key={step.num} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+            <View key={step.num} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
               <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: step.color, alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1, flexShrink: 0 }}>
                 <Text style={{ color: "#000", fontSize: 12, fontWeight: "800" }}>{step.num}</Text>
               </View>
@@ -28625,7 +28625,7 @@ function RedressSection({
                 }}
                 style={({ pressed }) => [{
                   flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 9,
-                  borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)",
+                  borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)",
                   backgroundColor: pressed ? "rgba(255,255,255,0.03)" : "transparent"
                 }]}
               >
@@ -28659,7 +28659,7 @@ function RedressSection({
               <Text style={{ color: "#B45309", fontSize: 12 }}>{showScript ? "▲ Hide" : "▼ Show"}</Text>
             </Pressable>
             {showScript && (
-              <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+              <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
                 <Text style={{ color: "#6A8899", fontSize: 12, marginTop: 8, marginBottom: 6 }}>Use this as a starting script. Replace [brackets] with your real details.</Text>
                 <View style={{ backgroundColor: "rgba(251,191,36,0.07)", borderRadius: 10, padding: 12 }}>
                   <Text style={{ color: "#A37E15", fontSize: 12, lineHeight: 20, fontStyle: "italic" }}>{firstScript}</Text>
@@ -28688,7 +28688,7 @@ function RedressSection({
               <Text style={{ color: "#3730A3", fontSize: 12 }}>{showDraftTemplate ? "▲ Hide" : "▼ Show"}</Text>
             </Pressable>
             {showDraftTemplate && (
-              <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.05)" }}>
+              <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
                 <Text style={{ color: "#6A8899", fontSize: 12, marginTop: 8, marginBottom: 6 }}>Fill in [brackets] with your real details before sending. Keep a signed copy for your records.</Text>
                 <View style={{ backgroundColor: "rgba(129,140,248,0.07)", borderRadius: 10, padding: 12 }}>
                   <Text style={{ color: "#0020B8", fontSize: 12, lineHeight: 19 }}>{draftTemplate}</Text>
@@ -28749,8 +28749,8 @@ function RedressSection({
                   </Pressable>
                 </View>
                 <View style={{ marginTop: 10, backgroundColor: "rgba(252,211,77,0.08)", borderRadius: 8, padding: 10, borderLeftWidth: 3, borderLeftColor: "#B45309" }}>
-                  <Text style={{ color: "#B89300", fontSize: 12, lineHeight: 17, fontWeight: "700" }}>💡 Tip</Text>
-                  <Text style={{ color: "rgba(253,230,138,0.85)", fontSize: 12, lineHeight: 17, marginTop: 2 }}>
+                  <Text style={{ color: "#8A6A00", fontSize: 12, lineHeight: 17, fontWeight: "700" }}>💡 Tip</Text>
+                  <Text style={{ color: "#5A4A1A", fontSize: 12, lineHeight: 17, marginTop: 2 }}>
                     Fill every [bracket] with your real details before sending. Attach evidence separately. Keep a signed hardcopy. Ask for a written acknowledgement number.
                   </Text>
                 </View>
@@ -35282,7 +35282,7 @@ function SupportDimensionLibraryPanel({
               onPress={() => setOpenDimensionId(isOpen ? null : guide.id)}
               style={({ pressed }) => [{
                 flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 8,
-                borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(255,255,255,0.05)",
+                borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(36,56,74,0.10)",
                 backgroundColor: pressed ? accentColor + "10" : relevant ? accentColor + "0C" : "transparent"
               }]}
             >
