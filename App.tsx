@@ -38979,6 +38979,7 @@ const styles = StyleSheet.create({
     position: "relative",
     overflow: "hidden",
     borderRadius: 18,
+    borderCurve: "continuous",
     backgroundColor: "#E1EEEC",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -39017,6 +39018,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 12,
+    borderCurve: "continuous",
     backgroundColor: "rgba(255,252,247,0.15)",
     borderWidth: 1.5,
     borderColor: "rgba(246,212,107,0.55)",
@@ -39032,12 +39034,14 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 12
+    borderRadius: 12,
+    borderCurve: "continuous",
   },
   brandMark: {
     width: 46,
     height: 46,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(255,255,255,0.5)",
     backgroundColor: "#DEF2F1",
@@ -39146,6 +39150,7 @@ const styles = StyleSheet.create({
   },
   topTabRail: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(246,212,107,0.18)",
     backgroundColor: "#DEEFF2",
@@ -39211,6 +39216,7 @@ const styles = StyleSheet.create({
     maxWidth: 220,
     minHeight: 48,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,204,184,0.24)",
     backgroundColor: "#F4F8F7",
@@ -39261,6 +39267,7 @@ const styles = StyleSheet.create({
     width: "100%",
     minHeight: 58,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 0,
     backgroundColor: "#B45309",
     paddingHorizontal: 16,
@@ -39371,6 +39378,7 @@ const styles = StyleSheet.create({
   routeFollowUpCard: {
     marginTop: 10,
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14, 204, 184, 0.2)",
     backgroundColor: "#E1EEEC",
@@ -39444,6 +39452,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -39458,6 +39467,7 @@ const styles = StyleSheet.create({
   },
   routePreviewCard: {
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
@@ -39529,6 +39539,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     minHeight: 84,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.18)",
     backgroundColor: "#F4F8F7",
@@ -39580,6 +39591,7 @@ const styles = StyleSheet.create({
     flexBasis: 180,
     minWidth: 0,
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
@@ -39610,6 +39622,7 @@ const styles = StyleSheet.create({
     flexBasis: 150,
     minWidth: 0,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(30,80,200,0.18)",
     backgroundColor: "#F5F7FF",
@@ -39834,6 +39847,7 @@ const styles = StyleSheet.create({
     flexBasis: 164,
     minWidth: 0,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     backgroundColor: "#F8FAFC",
     padding: 10,
@@ -39903,6 +39917,7 @@ const styles = StyleSheet.create({
   },
   homeToneFeaturedCard: {
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.25)",
     backgroundColor: "#E1EEEC",
@@ -39927,6 +39942,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#0E6F69"
@@ -39934,7 +39950,8 @@ const styles = StyleSheet.create({
   homeToneFeaturedMarkCompact: {
     width: 24,
     height: 24,
-    borderRadius: 12
+    borderRadius: 12,
+    borderCurve: "continuous",
   },
   homeToneFeaturedMarkText: {
     color: "#FFFFFF",
@@ -39997,6 +40014,7 @@ const styles = StyleSheet.create({
     width: 146,
     minHeight: 112,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.35)",
     backgroundColor: "#E1EEEC",
@@ -40027,6 +40045,7 @@ const styles = StyleSheet.create({
     minWidth: 24,
     minHeight: 24,
     borderRadius: 12,
+    borderCurve: "continuous",
     paddingHorizontal: 7,
     paddingVertical: 3,
     backgroundColor: "#E4F4EF",
@@ -40087,6 +40106,7 @@ const styles = StyleSheet.create({
     flexBasis: "48%",
     minWidth: 0,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.22)",
     backgroundColor: "#E1EEEC",
@@ -40174,6 +40194,7 @@ const styles = StyleSheet.create({
   },
   tonePresetChip: {
     borderRadius: 16,
+    borderCurve: "continuous",
     paddingHorizontal: 9,
     paddingVertical: 5,
     backgroundColor: "rgba(14,111,105,0.1)",
@@ -40198,6 +40219,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginBottom: 10,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 2,
     borderColor: "#C73F33",
     backgroundColor: "#FDE9E5",
@@ -40315,6 +40337,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
+    borderCurve: "continuous",
     backgroundColor: "#B45309",
     // Near-black text on this dark amber was 3:1, below AA even for this
     // bold single-character mark -- flipped to white (5:1).
@@ -41045,6 +41068,7 @@ const styles = StyleSheet.create({
     flexBasis: 180,
     minWidth: 0,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.26)",
     backgroundColor: "#FFFFFF",
@@ -41067,6 +41091,7 @@ const styles = StyleSheet.create({
   },
   institutionTimelineBox: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(180,83,9,0.24)",
     backgroundColor: "#FFF7ED",
@@ -41088,6 +41113,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(8,145,178,0.2)",
     backgroundColor: "#E6F6FA",
@@ -41119,6 +41145,7 @@ const styles = StyleSheet.create({
   },
   institutionComplaintBox: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(5,150,105,0.3)",
     backgroundColor: "#ECFDF5",
@@ -41201,6 +41228,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
     alignItems: "center",
@@ -41334,6 +41362,7 @@ const styles = StyleSheet.create({
   },
   playFeaturedCard: {
     borderRadius: 18,
+    borderCurve: "continuous",
     backgroundColor: "#F4F8F7",
     borderWidth: 1,
     borderColor: "rgba(14,199,189,0.2)",
@@ -41361,6 +41390,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 240,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.22)",
     backgroundColor: "#F4F8F7",
@@ -41381,6 +41411,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center"
   },
@@ -41489,6 +41520,7 @@ const styles = StyleSheet.create({
   searchInput: {
     minHeight: 60,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.4)",
     backgroundColor: "#E7EFED",
@@ -41506,6 +41538,7 @@ const styles = StyleSheet.create({
   searchSuggestionChip: {
     minHeight: 38,
     borderRadius: 19,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "#3F785D",
     backgroundColor: "#F4F8F7",
@@ -41640,6 +41673,7 @@ const styles = StyleSheet.create({
   },
   communityCard: {
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.18)",
     backgroundColor: "#F4F8F7",
@@ -41670,6 +41704,7 @@ const styles = StyleSheet.create({
   communityBadge: {
     minHeight: 28,
     borderRadius: 14,
+    borderCurve: "continuous",
     paddingHorizontal: 10,
     alignItems: "center",
     justifyContent: "center"
@@ -41736,6 +41771,7 @@ const styles = StyleSheet.create({
     flexBasis: "48%",
     minHeight: 72,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "#6D644A",
     backgroundColor: "#F4F8F7",
@@ -41819,6 +41855,7 @@ const styles = StyleSheet.create({
   privateRoomMemberChip: {
     minHeight: 28,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "#0033B8",
     backgroundColor: "#F4F8F7",
@@ -41879,6 +41916,7 @@ const styles = StyleSheet.create({
   },
   searchCard: {
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
@@ -41918,6 +41956,7 @@ const styles = StyleSheet.create({
   searchCardBadge: {
     minHeight: 24,
     borderRadius: 12,
+    borderCurve: "continuous",
     paddingHorizontal: 8,
     alignItems: "center",
     justifyContent: "center"
@@ -41966,6 +42005,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 220,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
@@ -42014,6 +42054,7 @@ const styles = StyleSheet.create({
     flexBasis: 160,
     minHeight: 68,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
@@ -42073,6 +42114,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 144,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "#2E4E8A",
     backgroundColor: "#F4F8F7",
@@ -42185,6 +42227,7 @@ const styles = StyleSheet.create({
     width: "92%",
     alignSelf: "center",
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(246,212,107,0.28)",
     backgroundColor: "#F4F8F7",
@@ -42234,6 +42277,7 @@ const styles = StyleSheet.create({
     flexBasis: 150,
     minHeight: 70,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
@@ -42254,6 +42298,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
+    borderCurve: "continuous",
     backgroundColor: "#E1EEEC",
     alignItems: "center",
     justifyContent: "center"
@@ -42306,6 +42351,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(246, 212, 107, 0.72)"
   },
@@ -42517,6 +42563,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(246, 212, 107, 0.34)",
     backgroundColor: "rgba(255,252,247,0.08)",
@@ -42530,17 +42577,20 @@ const styles = StyleSheet.create({
   topBeaconLogoBadgeCompact: {
     width: 54,
     height: 54,
-    borderRadius: 14
+    borderRadius: 14,
+    borderCurve: "continuous",
   },
   topBeaconLogoImage: {
     width: 62,
     height: 62,
-    borderRadius: 14
+    borderRadius: 14,
+    borderCurve: "continuous",
   },
   topBeaconLogoImageCompact: {
     width: 46,
     height: 46,
-    borderRadius: 12
+    borderRadius: 12,
+    borderCurve: "continuous",
   },
   topLanguageChip: {
     maxWidth: 160,
@@ -42626,6 +42676,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
+    borderCurve: "continuous",
     overflow: "hidden",
     backgroundColor: "#E1EEEC",
     color: "#0D1F22",
@@ -42667,6 +42718,7 @@ const styles = StyleSheet.create({
   },
   visionGuidanceBox: {
     borderRadius: 12,
+    borderCurve: "continuous",
     backgroundColor: "#E3EDE6",
     borderWidth: 1,
     borderColor: "rgba(196,163,90,0.3)",
@@ -42969,6 +43021,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     minHeight: 62,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(167,139,250,0.24)",
     backgroundColor: "#F4F8F7",
@@ -43132,6 +43185,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     minHeight: 82,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,204,184,0.22)",
     backgroundColor: "#E1EEEC",
@@ -43207,6 +43261,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     maxHeight: "90%",
     borderRadius: 20,
+    borderCurve: "continuous",
     backgroundColor: "#E7EFED",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
@@ -43359,6 +43414,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#F4F8F7",
@@ -43420,6 +43476,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
+    borderCurve: "continuous",
     backgroundColor: "#0E6F69",
     color: "#FFFFFF",
     textAlign: "center",
@@ -43541,6 +43598,7 @@ const styles = StyleSheet.create({
     flexBasis: "48%",
     minHeight: 64,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
@@ -43635,6 +43693,7 @@ const styles = StyleSheet.create({
   flowRailButton: {
     minHeight: 32,
     borderRadius: 20,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#F4F8F7",
@@ -43812,6 +43871,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     minHeight: 52,
     borderRadius: 12,
+    borderCurve: "continuous",
     paddingHorizontal: 10,
     paddingVertical: 6,
     flexDirection: "column",
@@ -43915,6 +43975,7 @@ const styles = StyleSheet.create({
   // ── Admin Auth UI ─────────────────────────────────────────────────────────
   adminAuthCard: {
     borderRadius: 20,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(196,163,90,0.4)",
     backgroundColor: "#E2EBEE",
@@ -43936,6 +43997,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
+    borderCurve: "continuous",
     backgroundColor: "rgba(196,163,90,0.12)",
     borderWidth: 1.5,
     borderColor: "rgba(196,163,90,0.4)",
@@ -43986,6 +44048,7 @@ const styles = StyleSheet.create({
   },
   adminLockoutBanner: {
     borderRadius: 12,
+    borderCurve: "continuous",
     backgroundColor: "rgba(200,93,74,0.12)",
     borderWidth: 1,
     borderColor: "rgba(200,93,74,0.4)",
@@ -43999,6 +44062,7 @@ const styles = StyleSheet.create({
   },
   adminAuthInput: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(196,163,90,0.35)",
     backgroundColor: "rgba(196,163,90,0.06)",
@@ -44024,6 +44088,7 @@ const styles = StyleSheet.create({
     minWidth: 68,
     height: 52,
     borderRadius: 14,
+    borderCurve: "continuous",
     backgroundColor: "rgba(196,163,90,0.08)",
     borderWidth: 1,
     borderColor: "rgba(196,163,90,0.25)",
@@ -44051,6 +44116,7 @@ const styles = StyleSheet.create({
   },
   adminAuthButton: {
     borderRadius: 14,
+    borderCurve: "continuous",
     backgroundColor: "#E2EEE8",
     borderWidth: 1.5,
     borderColor: "#2E7D52",
@@ -44107,6 +44173,7 @@ const styles = StyleSheet.create({
     minHeight: 26,
     paddingHorizontal: 10,
     borderRadius: 13,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1
@@ -44153,6 +44220,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
     alignItems: "center",
@@ -44226,6 +44294,7 @@ const styles = StyleSheet.create({
   },
   adminReportCard: {
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
@@ -44314,6 +44383,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     minWidth: 84,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.45)",
     backgroundColor: "#E1EEEC",
@@ -44330,6 +44400,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center"
   },
@@ -44380,6 +44451,7 @@ const styles = StyleSheet.create({
     gap: 6,
     backgroundColor: "#0E9488",
     borderRadius: 20,
+    borderCurve: "continuous",
     paddingHorizontal: 12,
     paddingVertical: 6,
     marginBottom: 10
@@ -44408,6 +44480,7 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: "#E1EEEC",
     borderRadius: 14,
+    borderCurve: "continuous",
     paddingHorizontal: 9,
     paddingVertical: 4,
     borderWidth: 1,
@@ -44466,6 +44539,7 @@ const styles = StyleSheet.create({
   journalInput: {
     minHeight: 168,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.35)",
     backgroundColor: "#E1EEEC",
@@ -44476,6 +44550,7 @@ const styles = StyleSheet.create({
   },
   journalInsightBand: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.28)",
     backgroundColor: "#E1EEEC",
@@ -44519,6 +44594,7 @@ const styles = StyleSheet.create({
   journalDraftInput: {
     minHeight: 136,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.28)",
     backgroundColor: "#E1EEEC",
@@ -44557,6 +44633,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     borderRadius: 16,
+    borderCurve: "continuous",
     paddingHorizontal: 10,
     paddingVertical: 6,
     backgroundColor: "rgba(255,255,255,0.05)",
@@ -44581,6 +44658,7 @@ const styles = StyleSheet.create({
   },
   dailyRoutineBand: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.25)",
     backgroundColor: "#E1EEEC",
@@ -44597,6 +44675,7 @@ const styles = StyleSheet.create({
     flexBasis: 240,
     minHeight: 82,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,199,189,0.2)",
     backgroundColor: "#DFEEF1",
@@ -44755,6 +44834,7 @@ const styles = StyleSheet.create({
     flexBasis: 220,
     minHeight: 92,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,204,184,0.24)",
     backgroundColor: "#E1EEEC",
@@ -44803,6 +44883,7 @@ const styles = StyleSheet.create({
   },
   calmVoiceBand: {
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
@@ -44851,6 +44932,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 210,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "#DAD8F0",
     backgroundColor: "#FFFFFF",
@@ -44927,6 +45009,7 @@ const styles = StyleSheet.create({
   },
   calmLensBand: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.25)",
     backgroundColor: "#E1EEEC",
@@ -44974,6 +45057,7 @@ const styles = StyleSheet.create({
   },
   calmLensDetail: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.25)",
     backgroundColor: "#E1EEEC",
@@ -44995,6 +45079,7 @@ const styles = StyleSheet.create({
   },
   calmPracticeBand: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(139,92,246,0.25)",
     backgroundColor: "#E1DEF2",
@@ -45087,6 +45172,7 @@ const styles = StyleSheet.create({
   routineButton: {
     minHeight: 78,
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
     backgroundColor: "#F4F8F7",
@@ -45127,6 +45213,7 @@ const styles = StyleSheet.create({
   focusCard: {
     minHeight: 170,
     borderRadius: 20,
+    borderCurve: "continuous",
     backgroundColor: "#E1EEEC",
     padding: 20,
     alignItems: "flex-start",
@@ -45378,6 +45465,7 @@ const styles = StyleSheet.create({
   },
   legalTrustCard: {
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,204,184,0.22)",
     backgroundColor: "#E1EEEC",
@@ -45436,6 +45524,7 @@ const styles = StyleSheet.create({
   },
   profileBanner: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.3)",
     backgroundColor: "#E1EEEC",
@@ -45452,6 +45541,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#E1EEEC"
@@ -45501,6 +45591,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     minWidth: 140,
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.2)",
     backgroundColor: "#E1EEEC",
@@ -45543,6 +45634,7 @@ const styles = StyleSheet.create({
   },
   accessFlowBand: {
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.25)",
     backgroundColor: "#E1EEEC",
@@ -45594,6 +45686,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: 10,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
@@ -45614,6 +45707,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
+    borderCurve: "continuous",
     backgroundColor: "#0E6F69",
     color: "#FFFFFF",
     textAlign: "center",
@@ -45754,6 +45848,7 @@ const styles = StyleSheet.create({
   },
   contactCard: {
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
@@ -45859,6 +45954,7 @@ const styles = StyleSheet.create({
     flexBasis: 118,
     minHeight: 72,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#E7EFED",
@@ -45906,6 +46002,7 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#DDE8E5"
@@ -46238,6 +46335,7 @@ const styles = StyleSheet.create({
     width: 58,
     height: 36,
     borderRadius: 18,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent"
@@ -46278,6 +46376,7 @@ const styles = StyleSheet.create({
   // ── Hero Route Card (Codex-style "What's happening?" ── */
   heroRouteCard: {
     borderRadius: 22,
+    borderCurve: "continuous",
     backgroundColor: "#DEECF2",
     padding: 22,
     gap: 14,
@@ -46302,6 +46401,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 2,
     borderColor: "rgba(56,189,248,0.7)",
     shadowColor: "#007FB8",
@@ -46372,6 +46472,7 @@ const styles = StyleSheet.create({
   // ── Dynamic Hero Card ──────────────────────────────────────────────────────
   dynamicHeroCard: {
     borderRadius: 24,
+    borderCurve: "continuous",
     backgroundColor: "#E3F1F3",
     padding: 22,
     marginBottom: 14,
@@ -46404,6 +46505,7 @@ const styles = StyleSheet.create({
   dynamicHeroStreakBadge: {
     backgroundColor: "rgba(255,140,0,0.18)",
     borderRadius: 12,
+    borderCurve: "continuous",
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderWidth: 1,
@@ -46425,6 +46527,7 @@ const styles = StyleSheet.create({
   dynamicHeroCTA: {
     backgroundColor: "#C4A35A",
     borderRadius: 14,
+    borderCurve: "continuous",
     paddingVertical: 16,
     alignItems: "center",
     marginTop: 4,
@@ -46457,6 +46560,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(196,163,90,0.4)",
     borderRadius: 20,
+    borderCurve: "continuous",
     paddingHorizontal: 14,
     paddingVertical: 8,
     marginBottom: 10,
@@ -46471,6 +46575,7 @@ const styles = StyleSheet.create({
   welcomeExplainerCard: {
     backgroundColor: "#F4F8F7",
     borderRadius: 18,
+    borderCurve: "continuous",
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
@@ -46513,6 +46618,7 @@ const styles = StyleSheet.create({
   welcomeExplainerPill: {
     backgroundColor: "rgba(46,125,154,0.18)",
     borderRadius: 12,
+    borderCurve: "continuous",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderWidth: 1,
@@ -46590,6 +46696,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: "#EAF1F0",
     borderRadius: 12,
+    borderCurve: "continuous",
     paddingHorizontal: 14,
     paddingVertical: 9,
     flexDirection: "row",
@@ -46629,6 +46736,7 @@ const styles = StyleSheet.create({
   },
   smartBriefCard: {
     borderRadius: 20,
+    borderCurve: "continuous",
     backgroundColor: "#DEF2EC",
     borderWidth: 1,
     borderColor: "rgba(16,185,129,0.24)",
@@ -46660,6 +46768,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 9,
     borderRadius: 22,
+    borderCurve: "continuous",
     marginTop: 4
   },
   smartBriefActionLabel: {
@@ -46674,6 +46783,7 @@ const styles = StyleSheet.create({
   profileFeaturesGrid: {
     backgroundColor: "#E1EEEC",
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1.5,
     borderColor: "rgba(14,199,189,0.28)",
     padding: 16,
@@ -46703,6 +46813,7 @@ const styles = StyleSheet.create({
     gap: 5,
     backgroundColor: "rgba(14,199,189,0.12)",
     borderRadius: 20,
+    borderCurve: "continuous",
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderWidth: 1,
@@ -46719,6 +46830,7 @@ const styles = StyleSheet.create({
   // ── Vedic Daily Prediction Card ────────────────────────────────────────────
   vedicCard: {
     borderRadius: 20,
+    borderCurve: "continuous",
     backgroundColor: "#E1E4EF",
     borderWidth: 1.5,
     borderColor: "rgba(139,92,246,0.45)",
@@ -46756,6 +46868,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(139,92,246,0.18)",
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(139,92,246,0.4)",
     paddingHorizontal: 10,
@@ -46778,6 +46891,7 @@ const styles = StyleSheet.create({
     gap: 10,
     backgroundColor: "rgba(255,255,255,0.04)",
     borderRadius: 12,
+    borderCurve: "continuous",
     padding: 10
   },
   vedicVaraEmoji: {
@@ -46931,6 +47045,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "rgba(139,92,246,0.12)",
     borderRadius: 12,
+    borderCurve: "continuous",
     padding: 12,
     alignItems: "center",
     gap: 4,
@@ -46968,6 +47083,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(139,92,246,0.35)",
     backgroundColor: "rgba(139,92,246,0.07)",
@@ -47070,6 +47186,7 @@ const styles = StyleSheet.create({
   },
   birthChartIntroCard: {
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(139,92,246,0.25)",
     backgroundColor: "#E1E3EF",
@@ -47141,6 +47258,7 @@ const styles = StyleSheet.create({
   },
   birthChartExactCard: {
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.28)",
     backgroundColor: "#E1EEEC",
@@ -47205,6 +47323,7 @@ const styles = StyleSheet.create({
   },
   birthChartGeminiCard: {
     borderRadius: 16,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(246,212,107,0.24)",
     backgroundColor: "#E1EEEC",
@@ -47264,6 +47383,7 @@ const styles = StyleSheet.create({
   vedicDOBResult: {
     backgroundColor: "rgba(139,92,246,0.1)",
     borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(139,92,246,0.3)",
     padding: 12,
@@ -47284,6 +47404,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     borderRadius: 14,
+    borderCurve: "continuous",
     backgroundColor: "#F2E6DE",
     borderWidth: 1.5,
     borderColor: "rgba(255,160,50,0.65)",
@@ -47330,6 +47451,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     borderRadius: 20,
+    borderCurve: "continuous",
     backgroundColor: "#F2EBDE",
     borderWidth: 1.5,
     borderColor: "rgba(251,191,36,0.55)",
