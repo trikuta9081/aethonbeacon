@@ -10316,14 +10316,18 @@ function buildAshtakavarga(core: BirthChartCore): AshtakavargaResult | null {
 //     Saptavargaja's more involved varga-by-varga relationship scoring.
 //   - Kala Bala's day/night-based parts (Nathonnatha, Tribhaga, Ayana Bala)
 //     need a ghati-based sinusoidal formula that no source we could verify
-//     gave in exact, checkable form -- this stays deferred even though real
+//     gave in exact, checkable form -- these stay deferred even though real
 //     local sunrise/sunset is now computable (astronomy-engine is already a
 //     dependency), because pairing accurate sunrise/sunset with a formula we
 //     can't verify would still produce an unverifiable number, just a more
-//     convincingly-computed one.
+//     convincingly-computed one. Kala Bala's PAKSHA part (lunar-phase
+//     strength) IS now implemented -- see pakshaBala below -- because its
+//     formula (Moon-Sun elongation / 3, doubled for the Moon) is unambiguous
+//     and source-verified, so Kala Bala is partial now, not fully omitted.
 // What IS included below is fully classical and verifiable: Uchcha Bala,
 // Ojayugmarasyamsa Bala, Kendradi Bala, and Drekkana Bala (4 of Sthana
-// Bala's 5 parts), the full Dig Bala, the full fixed Naisargika Bala, a
+// Bala's 5 parts), the full Dig Bala, the full fixed Naisargika Bala,
+// Paksha Bala (the lunar-phase part of Kala Bala), a
 // Chesta Bala PROXY (real
 // BPHS Chesta Bala uses each planet's Seeghrocha/mean-Sun conjunction angle,
 // which needs orbital-element machinery this app doesn't have; the proxy
@@ -10356,8 +10360,9 @@ const NAISARGIKA_BALA: Record<ShadbalaPlanet, number> = {
 // "strong enough" to deliver its full significations -- also a fixed,
 // per-planet constant, not something that varies by chart. NOT currently
 // compared against anything: it's a threshold for the FULL six-fold total,
-// and computeShadbala() below only produces a partial (4-of-6-category)
-// total, so the comparison would be invalid (see ShadbalaComponents comment).
+// and computeShadbala() below still produces only a partial total (Sthana
+// Bala missing Saptavargaja, Kala Bala having only its Paksha part), so the
+// comparison would be invalid (see ShadbalaComponents comment).
 // Kept here, correct and ready, for when Kala Bala + the remaining Sthana
 // Bala parts are implemented and a real full-total comparison becomes
 // possible (Drik Bala is now implemented -- see drikBala/netVirupasWithDrik
@@ -10498,11 +10503,30 @@ function isNaturalBeneficForDrikBala(planet: ShadbalaPlanet, core: BirthChartCor
   return false; // sun, mars, saturn
 }
 
+// Paksha Bala (the lunar-phase component of Kala Bala). Benefics (Jupiter,
+// Venus, Mercury, Moon) gain strength as the Moon waxes toward full; malefics
+// (Sun, Mars, Saturn) gain strength toward the new Moon -- the standard BPHS
+// rule. Mercury is taken as benefic by default here, matching the Drik Bala
+// note above. This is the ONE Kala Bala sub-part with an unambiguous, source-
+// verifiable formula (Moon-Sun elongation / 3, Moon's value doubled); Kala
+// Bala's day/night parts (Nathonnatha, Tribhaga, Ayana) stay deferred -- see
+// the Shadbala module comment -- so Kala Bala remains partial, but is no
+// longer entirely omitted.
+function isBeneficForPakshaBala(planet: ShadbalaPlanet): boolean {
+  return planet === "jupiter" || planet === "venus" || planet === "mercury" || planet === "moon";
+}
+
 type ShadbalaComponents = {
   sthanaBalaPartial: number; // Uchcha + Ojayugmarasyamsa + Kendradi + Drekkana -- see module comment
   digBala: number;
   chestaBala: number | null; // null for Sun/Moon -- never applicable classically
   naisargikaBala: number;
+  // Paksha Bala -- lunar-phase strength, the one classically-clean Kala Bala
+  // sub-part (see isBeneficForPakshaBala). Non-negative, so unlike Drik Bala
+  // it IS folded into totalVirupas/coveragePercent below. Doubled for the Moon
+  // per BPHS, so its ceiling is 120 virupas for the Moon and 60 for every
+  // other graha.
+  pakshaBala: number;
   // Aspectual strength -- CAN be negative (a planet hemmed by malefic
   // aspects is genuinely weakened, not just "not computed"). Kept separate
   // from totalVirupas/coveragePercent below rather than folded in, because
@@ -10600,6 +10624,16 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
 
     const naisargikaBala = NAISARGIKA_BALA[planet];
 
+    // Paksha Bala (Kala Bala, lunar-phase part). Moon-Sun angular separation
+    // (0 at new moon .. 180 at full) / 3 = 0..60 virupas for a benefic; a
+    // malefic gets the complement (60 - that); the Moon's own value is doubled
+    // per BPHS. Depends only on the Sun and Moon longitudes already computed,
+    // so it needs no extra ephemeris machinery.
+    const moonSunSeparation = angularSeparationDegrees(core.navagraha.moon, core.navagraha.sun);
+    const pakshaBeneficVirupas = moonSunSeparation / 3;
+    const pakshaRaw = isBeneficForPakshaBala(planet) ? pakshaBeneficVirupas : 60 - pakshaBeneficVirupas;
+    const pakshaBala = planet === "moon" ? pakshaRaw * 2 : pakshaRaw;
+
     // Drik Bala: sum of aspect virupas received from the other 6 grahas in
     // this same target set, signed by each aspecting planet's natural
     // benefic/malefic nature (see isNaturalBeneficForDrikBala above).
@@ -10615,9 +10649,9 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
       drikBala += isNaturalBeneficForDrikBala(other, core) ? virupas : -virupas;
     }
 
-    const totalVirupas = sthanaBalaPartial + digBala + (chestaBala ?? 0) + naisargikaBala;
+    const totalVirupas = sthanaBalaPartial + digBala + (chestaBala ?? 0) + naisargikaBala + pakshaBala;
     const totalRupas = totalVirupas / 60;
-    const includedMaxVirupas = 165 + 60 + (chestaBala !== null ? 60 : 0) + naisargikaBala;
+    const includedMaxVirupas = 165 + 60 + (chestaBala !== null ? 60 : 0) + naisargikaBala + (planet === "moon" ? 120 : 60);
     const coveragePercent = (totalVirupas / includedMaxVirupas) * 100;
     const netVirupasWithDrik = totalVirupas + drikBala;
     const netRupasWithDrik = netVirupasWithDrik / 60;
@@ -10627,6 +10661,7 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
       digBala,
       chestaBala,
       naisargikaBala,
+      pakshaBala,
       drikBala,
       totalVirupas,
       totalRupas,
@@ -11385,6 +11420,39 @@ const DASHA_FORECAST_VERDICT_HI: Record<"Good" | "Mixed" | "Watch", string> = {
   Mixed: "मिश्रित दौर — बड़े जोखिमों से बेहतर है स्थिर प्रयास।",
   Watch: "एक कठिन दौर — धीरे चलें, जोखिम कम करें, और नीचे दिए उपाय का सहारा लें।",
 };
+
+// Plain-language "what this period is mainly about" per ruling planet. Each
+// Dasha planet governs a recognisable cluster of life areas (its classical
+// karakatwa/significations); showing them turns an abstract "Guru/Shukra"
+// label into a life theme the person can actually plan around. Used for BOTH
+// the Mahadasha (the multi-year backdrop) and the Antardasha (the active
+// sub-chapter) so a period reads as one theme set against another.
+const DASHA_PLANET_FOCUS_EN: Record<string, string> = {
+  Surya: "authority, career direction, health and vitality, and your bond with father and elders",
+  Chandra: "emotions, home and mother, peace of mind, and connection with people",
+  Mangal: "energy and courage, property and land, drive, and how you handle conflict",
+  Budha: "communication, learning and skills, business, and clear thinking",
+  Guru: "growth and wisdom, wealth, children, teachers, and higher purpose",
+  Shukra: "relationships and marriage, comfort and beauty, money, and enjoyment",
+  Shani: "discipline and hard work, responsibility, patience, and long-term structure",
+  Rahu: "ambition, sudden change, foreign or unconventional paths, and material desire",
+  Ketu: "letting go, spirituality, research and depth, and endings that make room for the new",
+};
+const DASHA_PLANET_FOCUS_HI: Record<string, string> = {
+  Surya: "अधिकार, करियर की दिशा, स्वास्थ्य और ऊर्जा, तथा पिता व बड़ों से संबंध",
+  Chandra: "भावनाएँ, घर और माता, मन की शांति, तथा लोगों से जुड़ाव",
+  Mangal: "ऊर्जा और साहस, ज़मीन-जायदाद, प्रेरणा, तथा टकराव को संभालना",
+  Budha: "संवाद, सीखना और कौशल, व्यापार, तथा स्पष्ट सोच",
+  Guru: "वृद्धि और ज्ञान, धन, संतान, गुरु, तथा जीवन का उच्च उद्देश्य",
+  Shukra: "रिश्ते और विवाह, सुख-सुविधा और सौंदर्य, धन, तथा आनंद",
+  Shani: "अनुशासन और कठिन परिश्रम, ज़िम्मेदारी, धैर्य, तथा दीर्घकालिक ढाँचा",
+  Rahu: "महत्वाकांक्षा, अचानक बदलाव, विदेश या अपरंपरागत राह, तथा भौतिक इच्छा",
+  Ketu: "त्याग, अध्यात्म, गहन शोध, तथा ऐसे अंत जो नए के लिए जगह बनाते हैं",
+};
+function dashaPlanetFocus(planet: string, isHi: boolean): string {
+  const pack = isHi ? DASHA_PLANET_FOCUS_HI : DASHA_PLANET_FOCUS_EN;
+  return pack[planet] ?? (isHi ? "मिश्रित प्रभाव" : "mixed influences");
+}
 
 // ── Shadbala bilingual labels + honest strongest/weakest narrative ─────────
 // Shadbala's own panel is numbers-only (rupas, coverage %) with no plain-
@@ -31492,6 +31560,14 @@ function BirthChartSection({
           {dashaForecastTimeline.length > 0 && (() => {
             const forecastColor = "#5C00B8";
             const isHi = chartBriefLang === "hi";
+            // At-a-glance orientation over the whole 15-year window, so the
+            // person sees the shape of the road before reading each period.
+            const goodCount = dashaForecastTimeline.filter((p) => p.verdict === "Good").length;
+            const watchCount = dashaForecastTimeline.filter((p) => p.verdict === "Watch").length;
+            const mixedCount = dashaForecastTimeline.length - goodCount - watchCount;
+            const firstGood = dashaForecastTimeline.find((p) => p.verdict === "Good" && !p.isCurrent) ?? dashaForecastTimeline.find((p) => p.verdict === "Good");
+            const firstWatch = dashaForecastTimeline.find((p) => p.verdict === "Watch" && !p.isCurrent) ?? dashaForecastTimeline.find((p) => p.verdict === "Watch");
+            const yearSpan = (p: VimshottariForecastPeriod) => p.startYear === p.endYear ? `${p.startYear}` : `${p.startYear}–${p.endYear}`;
             const verdictColor = (v: "Good" | "Mixed" | "Watch") =>
               v === "Good" ? "#0D6B36" : v === "Watch" ? "#B42318" : "#B88400";
             const verdictBg = (v: "Good" | "Mixed" | "Watch") =>
@@ -31530,6 +31606,36 @@ function BirthChartSection({
                     ? "यह समयरेखा आपकी विंशोत्तरी दशा के अगले महादशा/अंतर्दशा चरणों को दिखाती है, ताकि आप समझ सकें कि किस समय क्या हो रहा है और क्यों — साथ ही कठिन दौर के लिए व्यावहारिक उपाय भी।"
                     : "This timeline walks your Vimshottari Mahadasha/Antardasha forward, period by period, so you can see what's shaping each stretch of time and why — with a practical remedy for the tougher stretches."}
                 </Text>
+                <Text style={{ color: "#3A2A6B", fontSize: 12, lineHeight: 17 }}>
+                  {isHi
+                    ? "कैसे पढ़ें: महादशा वह बड़ा अध्याय है (कई वर्षों की पृष्ठभूमि), और अंतर्दशा उसके भीतर का छोटा उप-अध्याय है जो अभी का सक्रिय विषय तय करता है। हर कार्ड नीचे दोनों दिखाता है — पहले वर्ष, फिर महादशा/अंतर्दशा, फिर उस दौर का जीवन-फोकस।"
+                    : "How to read it: the Mahadasha is the big chapter (a multi-year backdrop), and the Antardasha is the shorter sub-chapter inside it that sets the active theme right now. Each card below shows both — the years, the Mahadasha/Antardasha, then that period's life focus."}
+                </Text>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                  {[
+                    { label: isHi ? `${goodCount} अनुकूल` : `${goodCount} favourable`, c: "#0D6B36", bg: "rgba(16,185,129,0.12)" },
+                    { label: isHi ? `${mixedCount} मिश्रित` : `${mixedCount} mixed`, c: "#B88400", bg: "rgba(251,191,36,0.14)" },
+                    { label: isHi ? `${watchCount} सतर्क` : `${watchCount} to watch`, c: "#B42318", bg: "rgba(239,68,68,0.12)" },
+                  ].map((chip) => (
+                    <View key={chip.label} style={{ backgroundColor: chip.bg, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
+                      <Text style={{ color: chip.c, fontSize: 12, fontWeight: "800" }}>{chip.label}</Text>
+                    </View>
+                  ))}
+                </View>
+                {(firstGood || firstWatch) && (
+                  <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
+                    {firstGood
+                      ? (isHi
+                        ? `सबसे अनुकूल आगामी खिड़की: ${yearSpan(firstGood)} (${DASHA_PLANET_HI[firstGood.mahadasha] ?? firstGood.mahadasha}/${DASHA_PLANET_HI[firstGood.antardasha] ?? firstGood.antardasha})। `
+                        : `Most supportive window ahead: ${yearSpan(firstGood)} (${firstGood.mahadasha}/${firstGood.antardasha}). `)
+                      : ""}
+                    {firstWatch
+                      ? (isHi
+                        ? `सबसे सावधानी वाला दौर: ${yearSpan(firstWatch)} — तब उपाय पर ध्यान दें।`
+                        : `Handle with most care: ${yearSpan(firstWatch)} — lean on the remedy then.`)
+                      : ""}
+                  </Text>
+                )}
                 {dashaForecastTimeline.map((period, idx) => {
                   const remedyLine = period.verdict === "Watch"
                     ? (isHi ? DASHA_REMEDY_LINE_HI[period.antardasha] : DASHA_REMEDY_LINE_EN[period.antardasha])
@@ -31564,6 +31670,11 @@ function BirthChartSection({
                       </View>
                       <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, marginTop: 4 }}>
                         {qualityLine}. {isHi ? DASHA_FORECAST_VERDICT_HI[period.verdict] : DASHA_FORECAST_VERDICT_EN[period.verdict]}
+                      </Text>
+                      <Text style={{ color: "#3A2A6B", fontSize: 12, lineHeight: 17, marginTop: 3 }}>
+                        {isHi
+                          ? `मुख्य फोकस: ${dashaPlanetFocus(period.antardasha, true)}। पृष्ठभूमि: ${dashaPlanetFocus(period.mahadasha, true)}।`
+                          : `Main focus: ${dashaPlanetFocus(period.antardasha, false)}. Backdrop: ${dashaPlanetFocus(period.mahadasha, false)}.`}
                       </Text>
                       {remedyLine && (
                         <Text style={{ color: "#B42318", fontSize: 12, lineHeight: 17, marginTop: 4, fontWeight: "700" }}>
@@ -31983,6 +32094,9 @@ function BirthChartSection({
                         <Text style={{ color: tierColor, fontSize: 12, fontWeight: "800" }}>
                           {chartBriefLang === "hi" ? `आंशिक स्केल का ${s.coveragePercent.toFixed(0)}%` : `${s.coveragePercent.toFixed(0)}% of partial scale`}
                         </Text>
+                        <Text style={{ color: "#25364D", fontSize: 12, marginTop: 2 }}>
+                          {chartBriefLang === "hi" ? `पक्ष बल: ${(s.pakshaBala / 60).toFixed(2)} रूप` : `Paksha Bala: ${(s.pakshaBala / 60).toFixed(2)} rupas`}
+                        </Text>
                         <Text style={{ color: s.drikBala >= 0 ? "#0D6B36" : "#B80000", fontSize: 12, fontWeight: "700", marginTop: 2 }}>
                           {chartBriefLang === "hi" ? "दृक बल " : "Drik Bala "}{s.drikBala >= 0 ? "+" : ""}{(s.drikBala / 60).toFixed(2)} {chartBriefLang === "hi" ? "रूप" : "rupas"}
                         </Text>
@@ -31998,8 +32112,8 @@ function BirthChartSection({
                 </Text>
                 <Text style={{ color: "#1F2937", fontSize: 12, fontStyle: "italic", lineHeight: 16 }}>
                   {chartBriefLang === "hi"
-                    ? "इसमें उच्च, ओजयुग्मराश्यंश, केंद्रादि और द्रेष्काण बल (स्थान बल के पाँच शास्त्रीय भागों में से चार), पूर्ण दिग् बल, पूर्ण नैसर्गिक बल, गति-आधारित चेष्टा बल अनुमान, और दृक बल (शेष छह ग्रहों से दृष्टि-आधारित शक्ति, शुभ/अशुभ स्वभाव के अनुसार चिह्नित — यह ऋणात्मक भी हो सकता है, इसलिए इसे कवरेज प्रतिशत में न जोड़कर अलग से \"दृष्टि सहित शुद्ध\" के रूप में दिखाया गया है) शामिल है। काल बल के दिन/रात वाले भाग और स्थान बल का पाँचवाँ शास्त्रीय भाग (सप्तवर्गज बल, जिसके लिए और भी वर्ग कुंडलियाँ और एक पूर्ण ग्रह मित्र/शत्रु तालिका चाहिए जो यह बिल्ड नहीं गणना करता) अभी भी शामिल नहीं हैं। इसलिए कवरेज प्रतिशत केवल गणना किए गए गैर-दृष्टि श्रेणियों में शक्ति दर्शाता है, पूर्ण शास्त्रीय न्यूनतम के विरुद्ध निर्णय नहीं — एक आंशिक योग को कभी भी पूर्ण-योग सीमा के विरुद्ध \"न्यूनतम से कम\" नहीं आँका जा सकता।"
-                    : "Includes Uchcha, Ojayugmarasyamsa, Kendradi, and Drekkana Bala (four of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, a motion-based Chesta Bala proxy, and Drik Bala (aspectual strength from the other six grahas, signed by benefic/malefic nature — this can be negative, unlike every other component here, which is why it's shown separately as \"Net w/ aspects\" rather than folded into the coverage percentage above). Kala Bala's day/night components and the last of Sthana Bala's five classical parts (Saptavargaja Bala, which needs several more divisional charts and a full planetary friend/enemy table this build doesn't compute) are still deferred. Because of that, the coverage percentage is each planet's strength within only the non-aspectual categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded \"below min\" against a full-total threshold."}
+                    ? "इसमें उच्च, ओजयुग्मराश्यंश, केंद्रादि और द्रेष्काण बल (स्थान बल के पाँच शास्त्रीय भागों में से चार), पूर्ण दिग् बल, पूर्ण नैसर्गिक बल, पक्ष बल (काल बल का चंद्र-कला भाग), गति-आधारित चेष्टा बल अनुमान, और दृक बल (शेष छह ग्रहों से दृष्टि-आधारित शक्ति, शुभ/अशुभ स्वभाव के अनुसार चिह्नित — यह ऋणात्मक भी हो सकता है, इसलिए इसे कवरेज प्रतिशत में न जोड़कर अलग से \"दृष्टि सहित शुद्ध\" के रूप में दिखाया गया है) शामिल है। काल बल के दिन/रात वाले भाग और स्थान बल का पाँचवाँ शास्त्रीय भाग (सप्तवर्गज बल, जिसके लिए और भी वर्ग कुंडलियाँ और एक पूर्ण ग्रह मित्र/शत्रु तालिका चाहिए जो यह बिल्ड नहीं गणना करता) अभी भी शामिल नहीं हैं। इसलिए कवरेज प्रतिशत केवल गणना किए गए गैर-दृष्टि श्रेणियों में शक्ति दर्शाता है, पूर्ण शास्त्रीय न्यूनतम के विरुद्ध निर्णय नहीं — एक आंशिक योग को कभी भी पूर्ण-योग सीमा के विरुद्ध \"न्यूनतम से कम\" नहीं आँका जा सकता।"
+                    : "Includes Uchcha, Ojayugmarasyamsa, Kendradi, and Drekkana Bala (four of Sthana Bala's five classical parts), full Dig Bala, full Naisargika Bala, Paksha Bala (the lunar-phase part of Kala Bala), a motion-based Chesta Bala proxy, and Drik Bala (aspectual strength from the other six grahas, signed by benefic/malefic nature — this can be negative, unlike every other component here, which is why it's shown separately as \"Net w/ aspects\" rather than folded into the coverage percentage above). Kala Bala's day/night components and the last of Sthana Bala's five classical parts (Saptavargaja Bala, which needs several more divisional charts and a full planetary friend/enemy table this build doesn't compute) are still deferred. Because of that, the coverage percentage is each planet's strength within only the non-aspectual categories, not a verdict against the classical full-Shadbala minimum — a partial total can never fairly be graded \"below min\" against a full-total threshold."}
                 </Text>
               </>
             ) : (

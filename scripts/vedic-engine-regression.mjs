@@ -68,10 +68,25 @@ assert(source.includes('drishtiVirupas'), 'Drik Bala drishti virupa table is mis
 assert(source.includes('netVirupasWithDrik'), 'Shadbala net-with-aspects figure is missing');
 assert(source.includes('function drekkanaBala'), 'Drekkana Bala calculation is missing');
 assert(source.includes('PLANET_GENDER'), 'Drekkana Bala planet gender table is missing');
+// Paksha Bala -- the lunar-phase component of Kala Bala (moves Shadbala from
+// 4-of-6 to 5-of-6 categories; the day/night Kala Bala parts stay deferred).
+assert(source.includes('function isBeneficForPakshaBala'), 'Paksha Bala benefic/malefic classifier is missing');
+assert(source.includes('const pakshaBala ='), 'Paksha Bala calculation is missing');
+assert(source.includes('pakshaBala: number;'), 'Paksha Bala must be part of the ShadbalaComponents type');
+assert(source.includes('Paksha Bala:') && source.includes('पक्ष बल:'), 'Paksha Bala must be shown in the Shadbala panel in both languages');
+assert(source.includes('Paksha Bala (the lunar-phase part of Kala Bala)'), 'Shadbala disclosure must list Paksha Bala among the included components');
 
 // ── Next 15 Years — bilingual Dasha forecast timeline ───────────────────────
 assert(source.includes('function getVimshottariDashaTimeline'), 'Vimshottari forward-forecast timeline builder is missing');
 assert(source.includes('function overallPeriodVerdict'), 'Per-period overall verdict function is missing');
+// Forecast is explained, not just scored: each period names its life focus
+// (antardasha theme set against the mahadasha backdrop), plus a how-to-read
+// note and an at-a-glance favourable/mixed/watch summary of the 15 years.
+assert(source.includes('function dashaPlanetFocus'), 'Per-planet life-focus helper for the forecast is missing');
+assert(source.includes('DASHA_PLANET_FOCUS_EN') && source.includes('DASHA_PLANET_FOCUS_HI'), 'Bilingual Dasha planet life-focus packs are missing');
+assert(source.includes('Main focus:') && source.includes('मुख्य फोकस:'), 'Each forecast period must state its life focus in both languages');
+assert(source.includes('How to read it:') && source.includes('कैसे पढ़ें:'), 'Forecast must explain Mahadasha vs Antardasha in both languages');
+assert(source.includes('Most supportive window ahead') && source.includes('सबसे अनुकूल आगामी खिड़की'), 'Forecast must summarise the best upcoming window in both languages');
 assert(source.includes('Next 15 Years'), 'Next 15 Years forecast panel is not rendered');
 assert(source.includes('getVimshottariDashaTimeline(profileDOB, janmaNakshatra.lord, profileBirthTime, 15)'), '15-year forecast must be computed from real birth details, not a placeholder horizon');
 assert(source.includes('dashaForecastTimeline'), 'Forecast timeline state/memo is missing from BirthChartSection');
