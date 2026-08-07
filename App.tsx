@@ -42877,17 +42877,20 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     maxWidth: "100%",
-    borderRadius: 16,
+    borderRadius: 18,
     backgroundColor: "#DFEDF1",
     borderWidth: 1,
-    borderColor: "rgba(6,182,212,0.22)",
+    borderColor: "rgba(15,61,94,0.10)",
     padding: 20,
     gap: 16,
-    shadowColor: "#06B6D4",
+    // Apple-style depth: a soft, neutral, low-opacity shadow instead of a
+    // strong saturated-cyan one. Colored heavy shadows read as "designed"
+    // and dated; Apple cards float on a barely-there neutral shadow.
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-    elevation: 8
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 3
   },
   accessSummaryRow: {
     minHeight: 48,
@@ -43258,20 +43261,25 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     gap: 10
   },
+  // Apple-standard section header: an uppercase caption in a restrained weight
+  // and gentle tracking (SF "footnote/caption" feel) rather than an ultra-black
+  // 900 with heavy 2.0 tracking, which read as shouty on a premium screen.
   eyebrow: {
     color: "#0891B2",
     fontSize: 12,
     lineHeight: 16,
     textTransform: "uppercase",
-    fontWeight: "900",
-    letterSpacing: 2.0
+    fontWeight: "700",
+    letterSpacing: 0.8
   },
+  // Apple large-title feel: bold (not black) with slightly tight optical
+  // tracking, which is what makes SF titles read as premium rather than heavy.
   sectionTitle: {
     color: "#0D1F22",
     fontSize: 22,
     lineHeight: 29,
-    fontWeight: "900",
-    letterSpacing: 0.2,
+    fontWeight: "800",
+    letterSpacing: -0.3,
     flexShrink: 1,
     minWidth: 0
   },
@@ -45550,18 +45558,20 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   tabBannerTitle: {
-    fontSize: 21,
-    lineHeight: 26,
-    fontWeight: "900",
+    fontSize: 22,
+    lineHeight: 27,
+    fontWeight: "800",
     color: "#0D1F22",
-    letterSpacing: 0.2,
+    letterSpacing: -0.3,
   },
+  // Secondary text in a proper grey (Apple secondary-label style) rather than
+  // near-black #111827, which competed with the title for weight.
   tabBannerSub: {
     fontSize: 13,
     lineHeight: 18,
-    color: "#111827",
-    marginTop: 2,
-    letterSpacing: 0.2,
+    color: "#3A577D",
+    marginTop: 3,
+    letterSpacing: 0,
   },
   tabBannerDate: {
     fontSize: 12,
