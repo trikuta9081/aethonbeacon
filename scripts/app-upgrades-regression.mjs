@@ -222,4 +222,13 @@ assert(
 ].forEach((marker) => indexOf(marker));
 assert(!source.includes('>Your guide is listening<'), 'Counselling header must not regress to the inconsistent "Your guide" label');
 
+// Chat message timestamps: CounselingTurn now carries an optional ts, set at
+// all four construction sites and rendered as a local clock time under each
+// bubble, so the counselling exchange reads like a real conversation with a
+// timeline instead of a timeless wall of text. The Ask-the-chart bubbles
+// (which already carried ts) render a matching time for parity.
+assert(/interface CounselingTurn \{[\s\S]*?ts\?: string;/.test(source), 'CounselingTurn must carry an optional ts timestamp field');
+assert((source.match(/message: (?:openingMsg|text|synthesis|nextQ), ts: new Date\(\)\.toISOString\(\)/g) ?? []).length >= 4, 'All four CounselingTurn construction sites must set ts');
+assert(source.includes('toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })'), 'Counselling chat bubbles must render a local clock time per message');
+
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, and counselling personalization wired to real visit-recurrence and mood-trend history are present.');

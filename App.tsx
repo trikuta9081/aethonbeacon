@@ -20529,16 +20529,23 @@ function isTrustedExternalUrl(url: string) {
                         borderRadius: 12, padding: 12,
                         borderWidth: 1, borderColor: m.role === "user" ? "rgba(56,189,248,0.25)" : "rgba(252,211,77,0.25)"
                       }}>
-                        <Text style={{
-                          color: m.role === "user" ? "#007FB8" : "#B45309",
-                          fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4
-                        }}>
-                          {m.role === "user"
-                            ? (chartBriefLang === "hi" ? "आपने पूछा" : "You asked")
-                            : (chartBriefLang === "hi"
-                                ? `चार्ट उत्तर · ${astroCategoryLabel((m.category ?? "general") as AstroChatCategory, "hi")}`
-                                : `Chart reply · ${m.category ?? "general"}`)}
-                        </Text>
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                          <Text style={{
+                            color: m.role === "user" ? "#007FB8" : "#B45309",
+                            fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", flexShrink: 1
+                          }}>
+                            {m.role === "user"
+                              ? (chartBriefLang === "hi" ? "आपने पूछा" : "You asked")
+                              : (chartBriefLang === "hi"
+                                  ? `चार्ट उत्तर · ${astroCategoryLabel((m.category ?? "general") as AstroChatCategory, "hi")}`
+                                  : `Chart reply · ${m.category ?? "general"}`)}
+                          </Text>
+                          {m.ts && (
+                            <Text style={{ color: m.role === "user" ? "rgba(255,255,255,0.6)" : "#9A7B3A", fontSize: 12, marginLeft: 8 }}>
+                              {new Date(m.ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+                            </Text>
+                          )}
+                        </View>
                         <Text style={{ color: m.role === "user" ? "#FFFFFF" : "#0D1F22", fontSize: 13, lineHeight: 19, whiteSpace: "pre-wrap" } as any}>
                           {m.text}
                         </Text>
@@ -33222,6 +33229,10 @@ type CounselingStage = "listening" | "questioning" | "synthesizing" | "done";
 interface CounselingTurn {
   role: "friend" | "user";
   message: string;
+  // ISO timestamp of when the turn was created. Optional so any older
+  // persisted/loaded session without it still renders (the bubble just omits
+  // the time). New turns always set it -- see the four construction sites.
+  ts?: string;
 }
 
 interface JourneyStep {
@@ -35569,7 +35580,7 @@ function CounselingChatModal({
     typingTimeoutRef.current = setTimeout(() => {
       typingTimeoutRef.current = null;
       setIsGuideTyping(false);
-      setSession((prev) => ({ ...prev, turns: [{ role: "friend", message: openingMsg }] }));
+      setSession((prev) => ({ ...prev, turns: [{ role: "friend", message: openingMsg, ts: new Date().toISOString() }] }));
       scheduleSpeakRef.current(openingMsg, 150);
     }, 650);
 
@@ -35618,7 +35629,7 @@ function CounselingChatModal({
     stopSpeech();
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    const userTurn: CounselingTurn = { role: "user", message: text };
+    const userTurn: CounselingTurn = { role: "user", message: text, ts: new Date().toISOString() };
     const newTurns = [...session.turns, userTurn];
     const newQuestionIndex = session.questionIndex + 1;
 
@@ -35660,7 +35671,7 @@ function CounselingChatModal({
       typingTimeoutRef.current = setTimeout(() => {
         typingTimeoutRef.current = null;
         setIsGuideTyping(false);
-        const finalTurns: CounselingTurn[] = [...newTurns, { role: "friend", message: synthesis }];
+        const finalTurns: CounselingTurn[] = [...newTurns, { role: "friend", message: synthesis, ts: new Date().toISOString() }];
         const finalSession: CounselingSession = {
           ...updatedSession, turns: finalTurns, stage: "synthesizing", journeySteps: steps
         };
@@ -35693,7 +35704,7 @@ function CounselingChatModal({
       typingTimeoutRef.current = setTimeout(() => {
         typingTimeoutRef.current = null;
         setIsGuideTyping(false);
-        const friendTurn: CounselingTurn = { role: "friend", message: nextQ };
+        const friendTurn: CounselingTurn = { role: "friend", message: nextQ, ts: new Date().toISOString() };
         setSession((prev) => ({
           ...prev,
           turns: [...newTurns, friendTurn],
@@ -35889,25 +35900,40 @@ function CounselingChatModal({
 
         {/* Chat messages */}
         <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
-          {session.turns.map((turn, i) => (
+          {session.turns.map((turn, i) => {
+            // Local clock time under each bubble -- makes the exchange read
+            // like a real conversation with a timeline instead of a
+            // timeless wall of text. Omitted gracefully for any older turn
+            // that predates the ts field (ts is optional on CounselingTurn).
+            const turnTime = turn.ts
+              ? new Date(turn.ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+              : null;
+            return (
             <View key={i} style={{ alignItems: turn.role === "friend" ? "flex-start" : "flex-end" }}>
               {turn.role === "friend" && (
                 <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, maxWidth: "88%" }}>
                   <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Text style={{ fontSize: 16 }}>🌟</Text>
                   </View>
-                  <View style={{ backgroundColor: "#E1EEEC", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, flex: 1, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 }}>
-                    <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                  <View style={{ flex: 1 }}>
+                    <View style={{ backgroundColor: "#E1EEEC", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 }}>
+                      <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                    </View>
+                    {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginLeft: 4 }}>{turnTime}</Text>}
                   </View>
                 </View>
               )}
               {turn.role === "user" && (
-                <View style={{ backgroundColor: "#DEF2F2", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, maxWidth: "80%", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 1 }}>
-                  <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                <View style={{ maxWidth: "80%", alignItems: "flex-end" }}>
+                  <View style={{ backgroundColor: "#DEF2F2", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 1 }}>
+                    <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                  </View>
+                  {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginRight: 4 }}>{turnTime}</Text>}
                 </View>
               )}
             </View>
-          ))}
+            );
+          })}
 
           {/* Guide typing beat -- see isGuideTyping comment above. Same
               avatar-plus-bubble shape as a real friend turn so it reads as
