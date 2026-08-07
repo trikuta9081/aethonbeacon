@@ -35874,12 +35874,18 @@ function CounselingChatModal({
   const speakTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const isStartingVoiceInputRef = React.useRef(false);
   const scheduleSpeak = React.useCallback((text: string, delay: number) => {
+    // Speech is opt-in. Previously every reply -- including the very first
+    // opening line -- was spoken aloud regardless of the voice toggle, so the
+    // speaker started on its own the moment the chat opened even though the
+    // header said "Voice reply is muted". Now nothing is spoken unless the
+    // user has turned voice assistance on (voiceAssistEnabled defaults off).
+    if (!voiceAssistEnabled) return;
     if (speakTimeoutRef.current) clearTimeout(speakTimeoutRef.current);
     speakTimeoutRef.current = setTimeout(() => {
       speakTimeoutRef.current = null;
       speakText(text);
     }, delay);
-  }, [speakText]);
+  }, [speakText, voiceAssistEnabled]);
   // scheduleSpeak's identity changes whenever the parent re-renders, because
   // the speakText prop it closes over is a brand-new inline arrow function on
   // every App render (not memoized upstream). The app re-renders constantly
@@ -35943,7 +35949,14 @@ function CounselingChatModal({
     const themes = detectThemes(recentJournalNotesText ? `${initialIssue} ${recentJournalNotesText}` : initialIssue);
     const firstQuestion = buildCounselingQuestions(themes, 0);
     const opening = buildCounselingAcknowledgment(initialIssue, issueId, detectAIHelpRouteFromText(initialIssue));
-    const openingMsg = `${opening.heard}\n\nI'd like to understand a bit more before we figure out the best path for you. ${firstQuestion}`;
+    // Warm, personal welcome up front -- previously the chat opened straight
+    // into the clinical acknowledgment with no greeting, which read as cold
+    // and abrupt. Address the person by name when we have one.
+    const greetName = (identityLabel ?? "").trim();
+    const welcome = greetName.length > 0
+      ? `Hi ${greetName} — I'm really glad you reached out. Thank you for trusting me with this; I'm here with you, and we'll take it one step at a time.`
+      : `I'm really glad you reached out. Thank you for trusting me with this; I'm here with you, and we'll take it one step at a time.`;
+    const openingMsg = `${welcome}\n\n${opening.heard}\n\nI'd like to understand a bit more before we figure out the best path for you. ${firstQuestion}`;
 
     setSession({
       stage: "questioning",
