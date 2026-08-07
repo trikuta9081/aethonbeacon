@@ -5355,6 +5355,90 @@ const navLabelTranslations: Partial<Record<LanguageId, Record<string, string>>> 
     Meditation: "مراقبہ", Wellness: "تندرستی", "Birth Chart": "زائچہ",
     Help: "مدد", Patterns: "نمونے", Explore: "دریافت کریں", Practice: "مشق",
     Language: "زبان", Control: "کنٹرول", Profile: "پروفائل", More: "مزید", Settings: "ترتیبات"
+  },
+  gujarati: {
+    Home: "હોમ", Today: "આજ", Path: "માર્ગ", Insights: "સૂઝ", Chat: "ચેટ",
+    Community: "સમુદાય", Journal: "ડાયરી", Calm: "શાંતિ", Tones: "સ્વર",
+    Meditation: "ધ્યાન", Wellness: "સ્વાસ્થ્ય", "Birth Chart": "કુંડળી",
+    Help: "મદદ", Patterns: "પેટર્ન", Explore: "શોધો", Practice: "અભ્યાસ",
+    Language: "ભાષા", Control: "નિયંત્રણ", Profile: "પ્રોફાઇલ", More: "વધુ", Settings: "સેટિંગ્સ"
+  },
+  bengali: {
+    Home: "হোম", Today: "আজ", Path: "পথ", Insights: "অন্তর্দৃষ্টি", Chat: "চ্যাট",
+    Community: "সম্প্রদায়", Journal: "ডায়েরি", Calm: "শান্তি", Tones: "সুর",
+    Meditation: "ধ্যান", Wellness: "সুস্থতা", "Birth Chart": "কুণ্ডলী",
+    Help: "সাহায্য", Patterns: "প্যাটার্ন", Explore: "অন্বেষণ", Practice: "অনুশীলন",
+    Language: "ভাষা", Control: "নিয়ন্ত্রণ", Profile: "প্রোফাইল", More: "আরও", Settings: "সেটিংস"
+  },
+  odia: {
+    Home: "ହୋମ", Today: "ଆଜି", Path: "ପଥ", Insights: "ଅନ୍ତର୍ଦୃଷ୍ଟି", Chat: "ଚାଟ୍",
+    Community: "ସମ୍ପ୍ରଦାୟ", Journal: "ଡାଏରୀ", Calm: "ଶାନ୍ତି", Tones: "ସ୍ୱର",
+    Meditation: "ଧ୍ୟାନ", Wellness: "ସୁସ୍ଥତା", "Birth Chart": "କୁଣ୍ଡଳୀ",
+    Help: "ସାହାଯ୍ୟ", Patterns: "ପାଟର୍ନ", Explore: "ଅନ୍ୱେଷଣ", Practice: "ଅଭ୍ୟାସ",
+    Language: "ଭାଷା", Control: "ନିୟନ୍ତ୍ରଣ", Profile: "ପ୍ରୋଫାଇଲ", More: "ଅଧିକ", Settings: "ସେଟିଂସ୍"
+  },
+  assamese: {
+    Home: "হোম", Today: "আজি", Path: "পথ", Insights: "অন্তৰ্দৃষ্টি", Chat: "চেট",
+    Community: "সম্প্ৰদায়", Journal: "ডায়েৰী", Calm: "শান্তি", Tones: "সুৰ",
+    Meditation: "ধ্যান", Wellness: "সুস্থতা", "Birth Chart": "কুণ্ডলী",
+    Help: "সহায়", Patterns: "আৰ্হি", Explore: "অন্বেষণ", Practice: "অনুশীলন",
+    Language: "ভাষা", Control: "নিয়ন্ত্ৰণ", Profile: "প্ৰʼফাইল", More: "অধিক", Settings: "ছেটিংছ"
+  },
+  kannada: {
+    Home: "ಹೋಮ್", Today: "ಇಂದು", Path: "ಮಾರ್ಗ", Insights: "ಒಳನೋಟ", Chat: "ಚಾಟ್",
+    Community: "ಸಮುದಾಯ", Journal: "ಡೈರಿ", Calm: "ಶಾಂತಿ", Tones: "ಸ್ವರ",
+    Meditation: "ಧ್ಯಾನ", Wellness: "ಸ್ವಾಸ್ಥ್ಯ", "Birth Chart": "ಜಾತಕ",
+    Help: "ಸಹಾಯ", Patterns: "ಮಾದರಿ", Explore: "ಅನ್ವೇಷಿಸಿ", Practice: "ಅಭ್ಯಾಸ",
+    Language: "ಭಾಷೆ", Control: "ನಿಯಂತ್ರಣ", Profile: "ಪ್ರೊಫೈಲ್", More: "ಇನ್ನಷ್ಟು", Settings: "ಸೆಟ್ಟಿಂಗ್ಸ್"
+  },
+  malayalam: {
+    Home: "ഹോം", Today: "ഇന്ന്", Path: "വഴി", Insights: "ഉൾക്കാഴ്ച", Chat: "ചാറ്റ്",
+    Community: "സമൂഹം", Journal: "ഡയറി", Calm: "ശാന്തി", Tones: "സ്വരം",
+    Meditation: "ധ്യാനം", Wellness: "ആരോഗ്യം", "Birth Chart": "ജാതകം",
+    Help: "സഹായം", Patterns: "മാതൃകകൾ", Explore: "പര്യവേക്ഷണം", Practice: "അഭ്യാസം",
+    Language: "ഭാഷ", Control: "നിയന്ത്രണം", Profile: "പ്രൊഫൈൽ", More: "കൂടുതൽ", Settings: "ക്രമീകരണങ്ങൾ"
+  },
+  nepali: {
+    Home: "होम", Today: "आज", Path: "बाटो", Insights: "अन्तर्दृष्टि", Chat: "च्याट",
+    Community: "समुदाय", Journal: "डायरी", Calm: "शान्ति", Tones: "स्वर",
+    Meditation: "ध्यान", Wellness: "स्वास्थ्य", "Birth Chart": "कुण्डली",
+    Help: "मद्दत", Patterns: "ढाँचा", Explore: "अन्वेषण", Practice: "अभ्यास",
+    Language: "भाषा", Control: "नियन्त्रण", Profile: "प्रोफाइल", More: "थप", Settings: "सेटिङ"
+  },
+  sanskrit: {
+    Home: "गृहम्", Today: "अद्य", Path: "मार्गः", Insights: "अन्तर्दृष्टिः", Chat: "संलापः",
+    Community: "समुदायः", Journal: "दैनन्दिनी", Calm: "शान्तिः", Tones: "स्वराः",
+    Meditation: "ध्यानम्", Wellness: "स्वास्थ्यम्", "Birth Chart": "जन्मकुण्डली",
+    Help: "सहायता", Patterns: "प्रतिमानम्", Explore: "अन्वेषणम्", Practice: "अभ्यासः",
+    Language: "भाषा", Control: "नियन्त्रणम्", Profile: "परिचयः", More: "अधिकम्", Settings: "व्यवस्थाः"
+  },
+  konkani: {
+    Home: "घर", Today: "आयज", Path: "वाट", Insights: "अंतर्दृष्टी", Chat: "चॅट",
+    Community: "समुदाय", Journal: "डायरी", Calm: "शांती", Tones: "सूर",
+    Meditation: "ध्यान", Wellness: "भलायकी", "Birth Chart": "कुंडली",
+    Help: "मदत", Patterns: "नमुने", Explore: "सोदचें", Practice: "अभ्यास",
+    Language: "भास", Control: "नियंत्रण", Profile: "प्रोफायल", More: "चड", Settings: "सेटिंग्स"
+  },
+  maithili: {
+    Home: "घर", Today: "आइ", Path: "बाट", Insights: "अन्तर्दृष्टि", Chat: "गप्प",
+    Community: "समुदाय", Journal: "डायरी", Calm: "शान्ति", Tones: "स्वर",
+    Meditation: "ध्यान", Wellness: "स्वास्थ्य", "Birth Chart": "कुण्डली",
+    Help: "सहायता", Patterns: "बनौट", Explore: "खोज", Practice: "अभ्यास",
+    Language: "भाषा", Control: "नियन्त्रण", Profile: "प्रोफाइल", More: "आओर", Settings: "सेटिंग"
+  },
+  dogri: {
+    Home: "घर", Today: "अज्ज", Path: "राह", Insights: "अंतर्दृष्टि", Chat: "गल्लबात",
+    Community: "समुदाय", Journal: "डायरी", Calm: "शांति", Tones: "सुर",
+    Meditation: "ध्यान", Wellness: "सेहत", "Birth Chart": "कुंडली",
+    Help: "मदद", Patterns: "नमूने", Explore: "खोज", Practice: "अभ्यास",
+    Language: "भाशा", Control: "नियंत्रण", Profile: "प्रोफाइल", More: "होर", Settings: "सेटिंग"
+  },
+  kashmiri: {
+    Home: "گَر", Today: "اَز", Path: "راہ", Insights: "بصیرت", Chat: "چیٹ",
+    Community: "برادری", Journal: "ڈائری", Calm: "سکون", Tones: "آواز",
+    Meditation: "مراقبہ", Wellness: "تندرستی", "Birth Chart": "زٲچہ",
+    Help: "مدد", Patterns: "نمونہ", Explore: "تلاش", Practice: "مشق",
+    Language: "زبان", Control: "کنٹرول", Profile: "پروفائل", More: "زیادہ", Settings: "ترتیبات"
   }
 };
 
@@ -5899,6 +5983,140 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     patternLoopSummary: "Pattern review دکھائے کہ evidence کا مطلب کیا ہے اور آگے کہاں جانا ہے۔",
     settingsLanguageTitle: "زبان کی مدد",
     settingsLanguagePrompt: "وہ زبان منتخب کریں جو replies اور voice readout کی رہنمائی کرے۔"
+  },
+  gujarati: {
+    homeEyebrow: "મુખ્ય",
+    homeTitle: "શું ચાલી રહ્યું છે?",
+    homeStartMeta: "અહીંથી શરૂ કરો",
+    homePrompt:
+      "એક સ્પષ્ટ લીટી પૂરતી છે. ઍપ તમારી ભૂમિકા, સમસ્યા અને આગળનું શ્રેષ્ઠ પેજ જાતે ઓળખી લેશે.",
+    openRoute: "રસ્તો ખોલો",
+    dailyLoopEyebrow: "દૈનિક લૂપ",
+    dailyMeaning: "અર્થ",
+    dailyNextStep: "આગળનું પગલું",
+    dailyOpenNext: "આગળનું ખોલો",
+    reportEyebrow: "રિપોર્ટ",
+    reportTitle: "સાચવેલું પગલું અને દૈનિક સાર",
+    reportPrompt: "એક સાચવેલું પગલું ખાનગી રિપોર્ટ બને છે. અચકાસાયેલી રિપોર્ટ ફક્ત આ સત્ર પૂરતી રહે છે.",
+    visionEyebrow: "Vision",
+    visionTitle: "આ કોના માટે છે",
+    visionCopy:
+      "વિદ્યાર્થીઓ, શિક્ષકો, માતાપિતા, વ્યાવસાયિકો, સંભાળ રાખનારા, અને દરેક જે tabs માં ભટકવાને બદલે એક શાંત રસ્તો ઇચ્છે છે.",
+    openGuide: "Guide ખોલો",
+    openPath: "Path ખોલો",
+    communityEyebrow: "સમુદાય",
+    communityTitle: "સંદેશા અને ખાનગી રૂમ",
+    communityCopy:
+      "સમુદાયના સંદેશા આગળ દેખાય છે, અને નામવાળા ખાનગી રૂમ verified users માટે તૈયાર રહે છે.",
+    openCommunity: "Community ખોલો",
+    seeRooms: "Rooms જુઓ",
+    unlockChat: "Chat ખોલો",
+    quickExitEyebrow: "મદદ અને નિવારણ",
+    quickExitTitle: "કટોકટી અને ઔપચારિક સહાય",
+    quickExitPrompt:
+      "આ વિભાગનો ઉપયોગ કટોકટીની મદદ, ફરિયાદ માર્ગ, સત્તાવાર એસ્કેલેશન, અથવા માર્ગદર્શિત સહાય માટે કરો.",
+    sos: "SOS",
+    complaint: "ફરિયાદ",
+    help: "મદદ",
+    read: "વાંચો",
+    journalEyebrow: "ખાનગી ડાયરી",
+    journalTitle: "તમારી ખાનગી ડાયરી",
+    journalLoopEyebrow: "કેવી રીતે કામ કરે",
+    journalLoopTitle: "લખો, પછી તમારો રસ્તો શોધો.",
+    journalLoopSummary:
+      "શું ચાલી રહ્યું છે તેની એક પ્રામાણિક લીટી લખો. ઍપ તે વાંચીને તમારું શ્રેષ્ઠ આગળનું પગલું સૂચવે છે — એક guide, એક શાંત અભ્યાસ, અથવા આગળનો રસ્તો.",
+    oneClearLineTitle: "મુક્તપણે લખો",
+    oneClearLineMeta: "કોઈ ફોર્મેટ જરૂરી નથી. હમણાં શું ચાલી રહ્યું છે તેની ફક્ત એક પ્રામાણિક લીટી.",
+    useStarter: "લેખન સંકેત વાપરો",
+    openPathFromJournal: "મારો રસ્તો શોધો",
+    startCalm: "મન શાંત કરો",
+    clearHistory: "ઇતિહાસ સાફ કરો",
+    saveAndOpenPath: "સાચવો અને રસ્તો શોધો",
+    continuePath: "ચાલુ રાખો",
+    journalButton: "ડાયરી",
+    practiceButton: "અભ્યાસ",
+    patternButton: "પેટર્ન",
+    exportReport: "રિપોર્ટ નિકાસ કરો",
+    practiceEyebrow: "અભ્યાસ",
+    practiceTitle: "અભ્યાસ લેબ",
+    practiceLoopEyebrow: "અભ્યાસ લૂપ",
+    practiceLoopTitle: "એક કાર્ડ, પછી અસલી દુનિયા",
+    practiceLoopSummary:
+      "અભ્યાસ ત્યારે શ્રેષ્ઠ કામ કરે જ્યારે user એક ઉપયોગી કાર્ય પૂરું કરે અને એ જીતને મુખ્ય guidance flow માં પાછી લાવે.",
+    patternEyebrow: "પેટર્ન",
+    patternTitle: "પેટર્ન સમીક્ષા",
+    patternLoopEyebrow: "પેટર્ન લૂપ",
+    patternLoopTitle: "પેટર્ન વાંચો, પછી તેને રસ્તે વાળો",
+    patternLoopSummary: "પેટર્ન સમીક્ષા બતાવે કે પુરાવાનો અર્થ શું છે અને આગળ ક્યાં જવું.",
+    settingsLanguageTitle: "ભાષા સહાય",
+    settingsLanguagePrompt: "જે ભાષા replies અને voice readout ને માર્ગદર્શન આપે તે પસંદ કરો."
+  },
+  bengali: {
+    homeEyebrow: "মূল",
+    homeTitle: "কী ঘটছে?",
+    homeStartMeta: "এখান থেকে শুরু করুন",
+    homePrompt:
+      "একটি স্পষ্ট লাইনই যথেষ্ট। অ্যাপ আপনার ভূমিকা, সমস্যা এবং পরবর্তী সেরা পেজ নিজেই শনাক্ত করবে।",
+    openRoute: "পথ খুলুন",
+    dailyLoopEyebrow: "দৈনিক লুপ",
+    dailyMeaning: "অর্থ",
+    dailyNextStep: "পরবর্তী ধাপ",
+    dailyOpenNext: "পরেরটি খুলুন",
+    reportEyebrow: "রিপোর্ট",
+    reportTitle: "সংরক্ষিত ধাপ এবং দৈনিক সারাংশ",
+    reportPrompt: "একটি সংরক্ষিত ধাপ ব্যক্তিগত রিপোর্ট হয়। অযাচাইকৃত রিপোর্ট শুধু এই সেশনেই থাকে।",
+    visionEyebrow: "Vision",
+    visionTitle: "এটি কাদের জন্য",
+    visionCopy:
+      "শিক্ষার্থী, শিক্ষক, অভিভাবক, পেশাজীবী, সেবাদানকারী এবং যে কেউ tabs-এ ঘোরাঘুরির বদলে একটি শান্ত পথ চান।",
+    openGuide: "Guide খুলুন",
+    openPath: "Path খুলুন",
+    communityEyebrow: "সম্প্রদায়",
+    communityTitle: "বার্তা এবং ব্যক্তিগত রুম",
+    communityCopy:
+      "সম্প্রদায়ের বার্তা সামনে দৃশ্যমান থাকে, এবং নামযুক্ত ব্যক্তিগত রুম verified users-দের জন্য প্রস্তুত থাকে।",
+    openCommunity: "Community খুলুন",
+    seeRooms: "Rooms দেখুন",
+    unlockChat: "Chat খুলুন",
+    quickExitEyebrow: "সাহায্য ও প্রতিকার",
+    quickExitTitle: "জরুরি ও আনুষ্ঠানিক সহায়তা",
+    quickExitPrompt:
+      "জরুরি সহায়তা, অভিযোগের পথ, সরকারি এস্কেলেশন, বা নির্দেশিত সহায়তার জন্য এই বিভাগটি ব্যবহার করুন।",
+    sos: "SOS",
+    complaint: "অভিযোগ",
+    help: "সাহায্য",
+    read: "পড়ুন",
+    journalEyebrow: "ব্যক্তিগত ডায়েরি",
+    journalTitle: "আপনার ব্যক্তিগত ডায়েরি",
+    journalLoopEyebrow: "কীভাবে কাজ করে",
+    journalLoopTitle: "লিখুন, তারপর আপনার পথ খুঁজুন।",
+    journalLoopSummary:
+      "কী ঘটছে তার একটি সৎ লাইন লিখুন। অ্যাপ তা পড়ে আপনার সেরা পরবর্তী ধাপ সুপারিশ করে — একটি guide, একটি শান্ত অনুশীলন, বা এগিয়ে যাওয়ার পথ।",
+    oneClearLineTitle: "মুক্তভাবে লিখুন",
+    oneClearLineMeta: "কোনো ফরম্যাট লাগবে না। এখন কী ঘটছে তার শুধু একটি সৎ লাইন।",
+    useStarter: "লেখার প্রম্পট ব্যবহার করুন",
+    openPathFromJournal: "আমার পথ খুঁজুন",
+    startCalm: "মন শান্ত করুন",
+    clearHistory: "ইতিহাস মুছুন",
+    saveAndOpenPath: "সংরক্ষণ করে পথ খুঁজুন",
+    continuePath: "চালিয়ে যান",
+    journalButton: "ডায়েরি",
+    practiceButton: "অনুশীলন",
+    patternButton: "প্যাটার্ন",
+    exportReport: "রিপোর্ট রপ্তানি",
+    practiceEyebrow: "অনুশীলন",
+    practiceTitle: "অনুশীলন ল্যাব",
+    practiceLoopEyebrow: "অনুশীলন লুপ",
+    practiceLoopTitle: "একটি কার্ড, তারপর বাস্তব জগত",
+    practiceLoopSummary:
+      "অনুশীলন তখনই সবচেয়ে ভালো কাজ করে যখন user একটি কার্যকর কাজ শেষ করে এবং সেই জয়টি মূল guidance flow-এ ফিরিয়ে আনে।",
+    patternEyebrow: "প্যাটার্ন",
+    patternTitle: "প্যাটার্ন পর্যালোচনা",
+    patternLoopEyebrow: "প্যাটার্ন লুপ",
+    patternLoopTitle: "প্যাটার্ন পড়ুন, তারপর পথ নির্ধারণ করুন",
+    patternLoopSummary: "প্যাটার্ন পর্যালোচনা দেখায় প্রমাণের অর্থ কী এবং পরে কোথায় যেতে হবে।",
+    settingsLanguageTitle: "ভাষা সহায়তা",
+    settingsLanguagePrompt: "যে ভাষা replies এবং voice readout পরিচালনা করবে তা বেছে নিন।"
   }
 };
 
@@ -30234,11 +30452,33 @@ function LanguageSection({
         <View style={styles.languageGrid}>
           {visibleLanguages.map((option) => {
             const isSelected = option.id === languageId;
+            // Honest, per-language localisation depth so the user can see
+            // exactly what changes when they pick a language -- rather than
+            // 22 identical-looking options where most silently do nothing.
+            const hasFullInterface =
+              option.id === "english" ||
+              Object.keys(localizedUiCopyByLanguage[option.id] ?? {}).length > 0;
+            const hasMenus = navLabelTranslations[option.id] != null;
+            const supportTag =
+              option.id === "english"
+                ? "Default"
+                : hasFullInterface
+                ? "Full interface"
+                : hasMenus
+                ? "Menus + voice"
+                : "Voice + English text";
+            const supportTagColor =
+              option.id === "english" || hasFullInterface
+                ? "#0E6F69"
+                : hasMenus
+                ? "#3730A3"
+                : "#8A6D1A";
             return (
               <Pressable
                 key={option.id}
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
+                accessibilityLabel={`${option.label}, ${supportTag}`}
                 onPress={() => setLanguageId(option.id)}
                 style={[styles.languageButton, isSelected && styles.languageButtonActive]}
               >
@@ -30248,6 +30488,11 @@ function LanguageSection({
                 <Text style={[styles.languageButtonMeta, isSelected && styles.segmentLabelActive]} numberOfLines={2}>
                   {option.meta}
                 </Text>
+                <View style={{ marginTop: 6, alignSelf: "flex-start", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3, backgroundColor: isSelected ? "rgba(255,255,255,0.22)" : supportTagColor + "18" }}>
+                  <Text style={{ fontSize: 12, fontWeight: "700", color: isSelected ? "#FFFFFF" : supportTagColor }}>
+                    {supportTag}
+                  </Text>
+                </View>
               </Pressable>
             );
           })}
