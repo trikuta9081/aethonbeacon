@@ -36260,7 +36260,7 @@ function CounselingChatModal({
 
         {/* Input area */}
         {session.stage !== "synthesizing" && (
-          <View style={{ backgroundColor: "#E1EEEC", borderTopWidth: 1, borderTopColor: "#E1EEEC", paddingHorizontal: 16, paddingVertical: 12, paddingBottom: Platform.OS === "ios" ? 34 : 16, flexDirection: "row", alignItems: "flex-end", gap: 10 }}>
+          <View style={{ backgroundColor: "#E1EEEC", borderTopWidth: 1, borderTopColor: "#E1EEEC", paddingHorizontal: 16, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 12), flexDirection: "row", alignItems: "flex-end", gap: 10 }}>
             <View style={{ flex: 1 }}>
               <TextInput
                 value={draft}
