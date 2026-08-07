@@ -199,12 +199,6 @@ jobs:
             echo "HAS_ASC_KEY=false" >> "$GITHUB_ENV"
           fi
 
-      - name: Debug secret lengths (temporary — remove after diagnosis)
-        run: |
-          echo "IOS_DIST_CERT_P12_BASE64 length: ${#IOS_DIST_CERT_P12_BASE64}"
-          echo "IOS_DIST_CERT_PASSWORD length: ${#IOS_DIST_CERT_PASSWORD}"
-          echo "IOS_PROVISIONING_PROFILE_BASE64 length: ${#IOS_PROVISIONING_PROFILE_BASE64}"
-
       - name: Import signing certificate (reuse existing, never mint a new one)
         if: env.IOS_DIST_CERT_P12_BASE64 != '' && env.IOS_PROVISIONING_PROFILE_BASE64 != ''
         run: |
@@ -255,11 +249,28 @@ jobs:
           echo "Installed provisioning profile: $PROFILE_NAME ($PROFILE_UUID)"
           echo "Profile application identifier: $PROFILE_APP_ID"
           case "$PROFILE_APP_ID" in
-            *com.aethonbeacon.app) ;;
-            *) echo "::warning::Profile's application-identifier ('$PROFILE_APP_ID') doesn't end in com.aethonbeacon.app -- double-check this is the right profile." ;;
+            *com.aethonbeacon.app)
+              # Correct explicit App ID profile -- keep the manual-signing path
+              # and sign with this profile by name.
+              echo "Profile matches com.aethonbeacon.app -- using manual signing with it."
+              echo "PROVISIONING_PROFILE_SPECIFIER=$PROFILE_NAME" >> "$GITHUB_ENV"
+              ;;
+            *)
+              # WILDCARD (or wrong) PROFILE. A wildcard App Store profile
+              # (TEAMID.*) builds an .ipa fine but App Store Connect rejects it
+              # at the TestFlight upload step -- exactly the 27-minute-then-fail
+              # we hit on run #220. Instead of signing with it, drop the
+              # manual-profile path entirely and let the Archive step fall
+              # through to App-Store-Connect-API automatic signing
+              # (-allowProvisioningUpdates + the ASC key). That reuses the
+              # distribution certificate we already imported above (so it can't
+              # hit the cert-minting quota) and resolves the correct explicit
+              # com.aethonbeacon.app App Store profile itself -- removing the
+              # wildcard from the equation without needing any secret changed.
+              echo "::warning::Provisioning profile application-identifier ('$PROFILE_APP_ID') is not com.aethonbeacon.app (looks like a wildcard). Ignoring it and switching to ASC-API automatic signing so the correct explicit profile is used."
+              echo "HAS_MANUAL_CERT=false" >> "$GITHUB_ENV"
+              ;;
           esac
-
-          echo "PROVISIONING_PROFILE_SPECIFIER=$PROFILE_NAME" >> "$GITHUB_ENV"
 
       - name: Warm up CocoaPods Swift modules (clean-checkout race workaround)
         working-directory: ios
