@@ -44,7 +44,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0A0F1E"
+        "backgroundColor": "#077D90"
       },
       "package": "com.aethonbeacon.app",
       "versionCode": 21,
