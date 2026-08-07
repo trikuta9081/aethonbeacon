@@ -28973,7 +28973,7 @@ function RedressSection({
         )}
 
         {/* ── MY CASE TRACKER (persistent, local-only) ── */}
-        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#D9E5E2", padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}>
+        <View style={{ marginBottom: 14, borderRadius: 14, borderCurve: "continuous", backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#D9E5E2", padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>🗂 My case</Text>
             {activeCase && followUp && (
@@ -40966,6 +40966,7 @@ const styles = StyleSheet.create({
   institutionDetailCard: {
     marginTop: 12,
     borderRadius: 18,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
@@ -43855,6 +43856,10 @@ const styles = StyleSheet.create({
     minWidth: 0,
     maxWidth: "100%",
     borderRadius: 18,
+    // iOS renders this as the continuous "squircle" curve Apple uses on every
+    // system card, not the plain circular arc -- a subtle but authentically
+    // native corner. Ignored on Android/web, so it's purely additive.
+    borderCurve: "continuous",
     backgroundColor: "#DFEDF1",
     borderWidth: 1,
     borderColor: "rgba(15,61,94,0.10)",
@@ -46521,6 +46526,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     maxWidth: "100%",
     borderRadius: 20,
+    borderCurve: "continuous",
     padding: 16,
     marginBottom: 16,
     gap: 14,
