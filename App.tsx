@@ -22058,6 +22058,18 @@ function TodaySection({
         </View>
         )}
       </View>
+
+      {/* ── Premium footer — gives the front a proper, intentional ending
+          instead of just stopping after the last card. Centred wordmark,
+          a warm one-line reassurance, and version, the way a finished
+          consumer app closes its home screen. ── */}
+      <View style={{ alignItems: "center", paddingTop: 26, paddingBottom: 34, gap: 6 }}>
+        <View style={{ width: 42, height: 3, borderRadius: 2, backgroundColor: "rgba(15,61,94,0.12)", marginBottom: 10 }} />
+        <Image source={require("./assets/icon.png")} style={{ width: 36, height: 36, borderRadius: 10, opacity: 0.92 }} accessibilityLabel="Aethon Beacon" />
+        <Text style={{ color: "#0E7C74", fontSize: 14, fontWeight: "800", letterSpacing: 0.2 }}>Aethon Beacon</Text>
+        <Text style={{ color: "#6B7B88", fontSize: 12, textAlign: "center" }}>You don't have to carry it alone.</Text>
+        <Text style={{ color: "#9AA7B2", fontSize: 12, marginTop: 4 }}>Made with care · v1.0.4</Text>
+      </View>
     </View>
   );
 }
