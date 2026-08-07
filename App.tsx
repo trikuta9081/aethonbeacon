@@ -25135,15 +25135,15 @@ function CommunitySection({
           {/* ── Demo community posts preview ── */}
           <View style={{ gap: 10, marginBottom: 16 }}>
             {demoPosts.map((post, i) => (
-              <View key={i} style={{ backgroundColor: "#E0E8F0", borderRadius: 12, padding: 14, borderWidth: 1, borderColor: "#1E3A4A" }}>
+              <View key={i} style={{ backgroundColor: "#FFFFFF", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#E1E8F0", shadowColor: "#1E3A4A", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 }}>
                   <Text style={{ fontSize: 18 }}>{post.emoji}</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{post.role}</Text>
+                    <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "700" }}>{post.role}</Text>
                     <Text style={{ color: "#1F2937", fontSize: 12 }}>{post.time}</Text>
                   </View>
-                  <View style={{ backgroundColor: "#E1EAEF", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
-                    <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "600" }}>✓ Verified</Text>
+                  <View style={{ backgroundColor: "#E6F4F2", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
+                    <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "600" }}>✓ Verified</Text>
                   </View>
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 20 }}>{post.text}</Text>
@@ -25151,7 +25151,7 @@ function CommunitySection({
             ))}
           </View>
           {/* ── Verification unlock section ── */}
-          <View style={[styles.communitySafetyBand, { borderTopWidth: 1, borderTopColor: "#1E3A4A", paddingTop: 16 }]}>
+          <View style={[styles.communitySafetyBand, { borderTopWidth: 1, borderTopColor: "#DCE7EE", paddingTop: 16 }]}>
             <Text style={styles.communitySafetyTitle}>Join the conversation</Text>
             <Text style={styles.communitySafetyText}>
               Verify one contact method (phone or email) to post, reply, and open private rooms. Takes under a minute.
@@ -36744,6 +36744,15 @@ function CounselingChatModal({
                   <Text style={{ color: "#3A617D", fontSize: 13, lineHeight: 20 }}>{geminiEnrichment}</Text>
                 </View>
               )}
+              {/* Warm, forward-looking close before the path -- acknowledges
+                  the person did the real work of naming what's going on,
+                  without re-stating the distress (kept affirming, not
+                  amplifying). */}
+              <View style={{ backgroundColor: "#EAF6F4", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "#CFE7E2", marginBottom: 2 }}>
+                <Text style={{ color: "#0B6E67", fontSize: 13, lineHeight: 20, fontWeight: "600" }}>
+                  Thank you for talking this through — putting it into words is a real step, and it's the part most people never do. You don't have to fix everything at once. Here's a gentle path you can take from here, one step at a time.
+                </Text>
+              </View>
               <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Your recommended journey</Text>
               {journeySteps.map((step, i) => (
                 <View key={step.tabId} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "#E0EBE8", borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
