@@ -2516,6 +2516,18 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   { id: "admin", label: "Control", mark: "⚙️", icon: "settings" }
 ];
 
+// Concise labels for the top nav rail only. The rail pills are ~92px wide
+// (icon + text), so full labels like "Birth Chart" / "Messages" /
+// "Help and Redress" truncated to "Birth ..." / "Messa..." / "Help a...",
+// which reads as unfinished. These short forms fit cleanly; the full label is
+// still used everywhere else (bottom nav, page switcher) and as the pill's
+// accessibilityLabel, so screen readers and other surfaces are unchanged.
+const HEADER_NAV_SHORT_LABEL: Partial<Record<TabId, string>> = {
+  vedic: "Chart",
+  community: "Chat",
+  redress: "Help",
+};
+
 const launchNeeds: Array<{
   id: LaunchNeedId;
   label: string;
@@ -19367,7 +19379,7 @@ function isTrustedExternalUrl(url: string) {
                           style={[styles.topTabLabel, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
                           numberOfLines={1}
                         >
-                          {tab.label}
+                          {HEADER_NAV_SHORT_LABEL[tab.id] ?? tab.label}
                         </Text>
                       </Pressable>
                     );
@@ -19415,7 +19427,7 @@ function isTrustedExternalUrl(url: string) {
                           style={[styles.topTabLabel, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
                           numberOfLines={1}
                         >
-                          {tab.label}
+                          {HEADER_NAV_SHORT_LABEL[tab.id] ?? tab.label}
                         </Text>
                       </Pressable>
                     );
@@ -33489,7 +33501,7 @@ function PrivateIntakeOverlay({
 const PRIMARY_NAV_TABS: Array<{ id: TabId | "more"; label: string; icon: string }> = [
   { id: "today",      label: "Today",      icon: "🏠" },
   { id: "journal",    label: "Journal",    icon: "✍️" },
-  { id: "meditation", label: "Meditation", icon: "🪷" },
+  { id: "meditation", label: "Calm",       icon: "🪷" },
   { id: "redress",    label: "Help",       icon: "🛡️" },
   { id: "settings",   label: "Profile",    icon: "👤" },
 ];
