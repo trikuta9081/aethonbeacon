@@ -231,4 +231,14 @@ assert(/interface CounselingTurn \{[\s\S]*?ts\?: string;/.test(source), 'Counsel
 assert((source.match(/message: (?:openingMsg|text|synthesis|nextQ), ts: new Date\(\)\.toISOString\(\)/g) ?? []).length >= 4, 'All four CounselingTurn construction sites must set ts');
 assert(source.includes('toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })'), 'Counselling chat bubbles must render a local clock time per message');
 
+// Progressive disclosure: the three dense Vedic sections (48-dimension trace,
+// Advanced engine panel, plain-language house-by-house reading) each collapse
+// by default behind the same tap gesture, so the tab is scannable instead of
+// an endless scroll. Guards against a refactor silently re-expanding them.
+[
+  'expandedMoonDims',
+  'advancedVedicOpen',
+  'plainHousesOpen',
+].forEach((marker) => indexOf(marker));
+
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, and counselling personalization wired to real visit-recurrence and mood-trend history are present.');

@@ -30544,6 +30544,11 @@ function BirthChartSection({
   // very long, chart-heavy block. Collapsed by default so it doesn't bury the
   // rest of the tab; the reader opens it deliberately.
   const [advancedVedicOpen, setAdvancedVedicOpen] = React.useState(false);
+  // The plain-language house-by-house reading is up to ~12 stacked paragraph
+  // cards. Collapsed by default behind a toggle so the foundation + intro
+  // stay visible for context, matching the collapse pattern used by the
+  // 48-dimension trace and the Advanced engine panel (one consistent gesture).
+  const [plainHousesOpen, setPlainHousesOpen] = React.useState(false);
   // Gochar (current transits) read from the natal Moon — the "now" foresight
   // layer. Memoized per day so it is not recomputed on unrelated renders.
   const gocharDayKey = new Date().toISOString().slice(0, 10);
@@ -31003,7 +31008,23 @@ function BirthChartSection({
               <Text style={{ color: "#431407", fontSize: 13, lineHeight: 19 }}>
                 {chartBriefLang === "hi" ? PLAIN_LANGUAGE_HI.briefIntro : PLAIN_LANGUAGE_EN.briefIntro}
               </Text>
-              {housePlacementResult.houses.map((entry) => (
+              {housePlacementResult.houses.length > 0 && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded: plainHousesOpen }}
+                  accessibilityLabel={`House-by-house reading, ${housePlacementResult.houses.length} houses. ${plainHousesOpen ? "Tap to collapse" : "Tap to expand"}`}
+                  onPress={() => { void Haptics.selectionAsync(); setPlainHousesOpen((v) => !v); }}
+                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, paddingHorizontal: 12, paddingVertical: 9, borderRadius: 10, backgroundColor: pressed ? "#F3E4D8" : "#FBEFE3", borderWidth: 1, borderColor: "rgba(154,52,18,0.2)" })}
+                >
+                  <Text style={{ color: "#9A3412", fontSize: 12, fontWeight: "800", flex: 1 }}>
+                    {plainHousesOpen
+                      ? (chartBriefLang === "hi" ? "भाव-वार पठन छुपाएँ" : "Hide house-by-house reading")
+                      : (chartBriefLang === "hi" ? `भाव-वार पठन देखें (${housePlacementResult.houses.length} भाव)` : `Show house-by-house reading (${housePlacementResult.houses.length} houses)`)}
+                  </Text>
+                  <Text style={{ color: "#9A3412", fontSize: 13, fontWeight: "900", width: 14, textAlign: "center" }}>{plainHousesOpen ? "▾" : "▸"}</Text>
+                </Pressable>
+              )}
+              {plainHousesOpen && housePlacementResult.houses.map((entry) => (
                 <View key={`house-plain-${entry.house}`} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 10, borderWidth: 1, borderColor: "rgba(154,52,18,0.15)", gap: 4 }}>
                   {entry.cardTexts.map((text, idx) => (
                     <Text key={idx} style={{ color: "#3A2A1A", fontSize: 13, lineHeight: 19 }}>{text}</Text>
