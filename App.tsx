@@ -251,6 +251,7 @@ type PersistedAppState = {
   retentionReminderId: string | null;
   retentionReminderIssueId: IssueId | null;
   redressRouteId: RedressRouteId;
+  redressCases: RedressCase[];
   institutionSectorId: InstitutionSectorId;
   playProgress: Partial<Record<PlayChallengeId, [boolean, boolean, boolean]>>;
   playClaimed: Partial<Record<PlayChallengeId, boolean>>;
@@ -473,6 +474,26 @@ type RedressRoute = {
   website: string;
   trackWebsite?: string;
   urgentNote: string;
+};
+
+// A saved, ongoing complaint the person is actively pursuing. Everything else
+// in Redress is generated fresh each visit; this is the one piece of real
+// user state -- the reference number, who they filed with, and when to follow
+// up -- so the tab becomes a companion for the whole case, not just a one-time
+// guide. Local-only, persisted with the rest of the app state.
+type RedressCaseStatus = "open" | "awaiting" | "escalated" | "resolved";
+type RedressCase = {
+  id: string;
+  routeId: RedressRouteId;
+  routeLabel: string;
+  referenceNumber: string;
+  office: string;
+  filedDateIso: string | null;
+  nextFollowUpIso: string | null;
+  status: RedressCaseStatus;
+  notes: string;
+  createdIso: string;
+  updatedIso: string;
 };
 
 type InstitutionPortal = {
@@ -13026,6 +13047,7 @@ export default function App() {
   const [retentionReminderId, setRetentionReminderId] = useState<string | null>(null);
   const [retentionReminderIssueId, setRetentionReminderIssueId] = useState<IssueId | null>(null);
   const [redressRouteId, setRedressRouteId] = useState<RedressRouteId>("academic");
+  const [redressCases, setRedressCases] = useState<RedressCase[]>([]);
   const [institutionSectorId, setInstitutionSectorId] = useState<InstitutionSectorId>("university");
   const [playProgress, setPlayProgress] = useState<Partial<Record<PlayChallengeId, [boolean, boolean, boolean]>>>({});
   const [playClaimed, setPlayClaimed] = useState<Partial<Record<PlayChallengeId, boolean>>>({});
@@ -15624,6 +15646,9 @@ export default function App() {
       if (typeof parsed.redressRouteId === "string" && isRedressRouteId(parsed.redressRouteId)) {
         setRedressRouteId(parsed.redressRouteId);
       }
+      if (parsed.redressCases !== undefined) {
+        setRedressCases(normalizeRedressCases(parsed.redressCases));
+      }
       if (typeof parsed.institutionSectorId === "string" && isInstitutionSectorId(parsed.institutionSectorId)) {
         setInstitutionSectorId(parsed.institutionSectorId);
       }
@@ -16163,6 +16188,7 @@ export default function App() {
       communityTopicFilter,
       savedCommunityMessageIds: savedCommunityMessageIds.slice(0, 20),
       savedCommunityChatIds: savedCommunityChatIds.slice(0, 20),
+      redressCases: redressCases.slice(0, 20),
       launchNeedId,
       onboardingCompleted,
       onboardingCompletedAt,
@@ -16249,6 +16275,7 @@ export default function App() {
     communityTopicFilter,
     savedCommunityMessageIds,
     savedCommunityChatIds,
+    redressCases,
     localOnly,
     onboardingCompleted,
     onboardingCompletedAt,
@@ -21576,6 +21603,8 @@ function isTrustedExternalUrl(url: string) {
                 onReadRouteAloud={(text) => void speakGuidance(text)}
                 onFocusSelectedRedressLayout={captureFocusLayout}
                 profileDisplayName={profileDisplayName}
+                redressCases={redressCases}
+                setRedressCases={setRedressCases}
                 isWide={width >= 1280}
               />
             </View>
@@ -28115,6 +28144,48 @@ function StateOfficerDirectoryCard({
   );
 }
 
+function isRedressCaseStatus(v: unknown): v is RedressCaseStatus {
+  return v === "open" || v === "awaiting" || v === "escalated" || v === "resolved";
+}
+// Hardens whatever came out of persisted storage back into clean RedressCase
+// records, dropping anything malformed -- same defensive pattern used for the
+// other persisted arrays (visitReports, communityMessages, etc.).
+const REDRESS_ROUTE_IDS: ReadonlySet<string> = new Set([
+  "academic", "harassment", "ragging", "public", "private", "crime",
+  "financial", "domestic", "workplace", "cybercrime", "consumer",
+]);
+function normalizeRedressCases(raw: unknown): RedressCase[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((c): c is Record<string, unknown> => !!c && typeof c === "object" && typeof (c as any).routeId === "string" && REDRESS_ROUTE_IDS.has((c as any).routeId))
+    .slice(0, 20)
+    .map((c) => ({
+      id: typeof c.id === "string" ? c.id : `case-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      routeId: (c as any).routeId,
+      routeLabel: typeof c.routeLabel === "string" ? c.routeLabel : "",
+      referenceNumber: typeof c.referenceNumber === "string" ? c.referenceNumber : "",
+      office: typeof c.office === "string" ? c.office : "",
+      filedDateIso: typeof c.filedDateIso === "string" ? c.filedDateIso : null,
+      nextFollowUpIso: typeof c.nextFollowUpIso === "string" ? c.nextFollowUpIso : null,
+      status: isRedressCaseStatus(c.status) ? c.status : "open",
+      notes: typeof c.notes === "string" ? c.notes : "",
+      createdIso: typeof c.createdIso === "string" ? c.createdIso : new Date().toISOString(),
+      updatedIso: typeof c.updatedIso === "string" ? c.updatedIso : new Date().toISOString(),
+    }));
+}
+// Days until (or since) a follow-up date, rendered as a friendly status so the
+// tracker doubles as a lightweight reminder every time the tab is opened.
+function redressFollowUpState(iso: string | null): { label: string; tone: "due" | "soon" | "ok" } | null {
+  if (!iso) return null;
+  const then = new Date(iso).getTime();
+  if (!Number.isFinite(then)) return null;
+  const days = Math.round((then - Date.now()) / 86400000);
+  if (days < 0) return { label: `Follow-up overdue by ${Math.abs(days)} day${Math.abs(days) === 1 ? "" : "s"}`, tone: "due" };
+  if (days === 0) return { label: "Follow up today", tone: "due" };
+  if (days <= 3) return { label: `Follow up in ${days} day${days === 1 ? "" : "s"}`, tone: "soon" };
+  return { label: `Follow up in ${days} days`, tone: "ok" };
+}
+
 function RedressSection({
   redressRoutes,
   selectedRedressRoute,
@@ -28132,6 +28203,8 @@ function RedressSection({
   onReadRouteAloud,
   onFocusSelectedRedressLayout,
   profileDisplayName,
+  redressCases,
+  setRedressCases,
   isWide
 }: {
   redressRoutes: RedressRoute[];
@@ -28150,6 +28223,8 @@ function RedressSection({
   onReadRouteAloud?: (text: string) => void;
   onFocusSelectedRedressLayout?: (routeId: RedressRouteId) => (event: { nativeEvent: { layout: { y: number } } }) => void;
   profileDisplayName: string;
+  redressCases: RedressCase[];
+  setRedressCases: React.Dispatch<React.SetStateAction<RedressCase[]>>;
   isWide: boolean;
 }) {
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
@@ -28171,6 +28246,57 @@ function RedressSection({
   const evidenceItems = selectedRedressRoute.keepReady.split(",").map((item) => item.trim()).filter(Boolean);
   const checkedCount = evidenceItems.filter((_, i) => checkedEvidence[String(i)]).length;
   const redressReviewState = getRedressReviewState();
+
+  // ── Persistent "My case" tracker for the currently selected route ──
+  const activeCase = redressCases.find((c) => c.routeId === selectedRedressRoute.id) ?? null;
+  const updateActiveCase = (patch: Partial<RedressCase>) => {
+    if (!activeCase) return;
+    setRedressCases((prev) =>
+      prev.map((c) => (c.id === activeCase.id ? { ...c, ...patch, updatedIso: new Date().toISOString() } : c))
+    );
+  };
+  const startCase = () => {
+    void Haptics.selectionAsync();
+    const now = new Date();
+    const newCase: RedressCase = {
+      id: `case-${now.getTime()}-${Math.random().toString(36).slice(2, 8)}`,
+      routeId: selectedRedressRoute.id,
+      routeLabel: selectedRedressRoute.label,
+      referenceNumber: "",
+      office: "",
+      filedDateIso: now.toISOString(),
+      nextFollowUpIso: new Date(now.getTime() + 15 * 86400000).toISOString(), // default 15-day follow-up
+      status: "open",
+      notes: "",
+      createdIso: now.toISOString(),
+      updatedIso: now.toISOString(),
+    };
+    setRedressCases((prev) => [newCase, ...prev].slice(0, 20));
+  };
+  const deleteActiveCase = () => {
+    if (!activeCase) return;
+    Alert.alert(
+      "Delete this case?",
+      "This removes the saved reference number, office, follow-up date, and notes for this complaint. It cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: () => { void Haptics.selectionAsync(); setRedressCases((prev) => prev.filter((c) => c.id !== activeCase.id)); } },
+      ]
+    );
+  };
+  const bumpFollowUp = (days: number) => {
+    const base = activeCase?.nextFollowUpIso ? new Date(activeCase.nextFollowUpIso) : new Date();
+    updateActiveCase({ nextFollowUpIso: new Date(base.getTime() + days * 86400000).toISOString() });
+  };
+  const followUp = activeCase ? redressFollowUpState(activeCase.nextFollowUpIso) : null;
+  const CASE_STATUS_OPTIONS: { id: RedressCaseStatus; label: string }[] = [
+    { id: "open", label: "Filed" },
+    { id: "awaiting", label: "Awaiting reply" },
+    { id: "escalated", label: "Escalated" },
+    { id: "resolved", label: "Resolved" },
+  ];
+  const caseInputStyle = { backgroundColor: "#F1F6F5", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, color: "#213A4A", fontSize: 13, borderWidth: 1, borderColor: "#C4D8D4" as const, marginTop: 4 };
+  const caseFieldLabel = { color: "#0B6E67", fontSize: 12, fontWeight: "800" as const, marginTop: 10 };
 
   // Route-specific complaint draft template
   const DRAFT_TEMPLATES: Partial<Record<RedressRouteId, string>> = {
@@ -28595,7 +28721,7 @@ function RedressSection({
           ].map((step) => (
             <View key={step.num} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
               <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: step.color, alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1, flexShrink: 0 }}>
-                <Text style={{ color: "#000", fontSize: 12, fontWeight: "800" }}>{step.num}</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>{step.num}</Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ color: step.color, fontSize: 12, fontWeight: "700", marginBottom: 3 }}>{step.label}</Text>
@@ -28634,7 +28760,7 @@ function RedressSection({
                   borderColor: checked ? "#059669" : "#374151", backgroundColor: checked ? "#059669" : "transparent",
                   alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1
                 }}>
-                  {checked && <Text style={{ color: "#000", fontSize: 12, fontWeight: "900" }}>✓</Text>}
+                  {checked && <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "900" }}>✓</Text>}
                 </View>
                 <Text style={{ color: checked ? "#059669" : "#446573", fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: checked ? "line-through" : "none" }}>{item}</Text>
               </Pressable>
@@ -28778,6 +28904,118 @@ function RedressSection({
             </View>
           </View>
         )}
+
+        {/* ── MY CASE TRACKER (persistent, local-only) ── */}
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#D9E5E2", padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>🗂 My case</Text>
+            {activeCase && followUp && (
+              <View style={{ backgroundColor: followUp.tone === "due" ? "rgba(239,68,68,0.12)" : followUp.tone === "soon" ? "rgba(251,191,36,0.18)" : "rgba(5,150,105,0.12)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
+                <Text style={{ color: followUp.tone === "due" ? "#B42318" : followUp.tone === "soon" ? "#8A5A00" : "#0D6B36", fontSize: 12, fontWeight: "800" }}>{followUp.label}</Text>
+              </View>
+            )}
+          </View>
+          {!activeCase ? (
+            <>
+              <Text style={{ color: "#446573", fontSize: 12.5, lineHeight: 18, marginTop: 6, marginBottom: 10 }}>
+                Track this complaint in one place — your reference number, who you filed it with, and when to follow up. Saved on this device only.
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Start tracking this complaint"
+                onPress={startCase}
+                style={({ pressed }) => ({ backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 10, paddingVertical: 12, alignItems: "center" })}
+              >
+                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>Start tracking this complaint</Text>
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <Text style={{ color: "#6A8899", fontSize: 12, marginTop: 4 }}>
+                {activeCase.routeLabel}
+                {activeCase.filedDateIso ? ` · started ${new Date(activeCase.filedDateIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })}` : ""}
+              </Text>
+
+              <Text style={caseFieldLabel}>Reference / acknowledgement number</Text>
+              <TextInput
+                value={activeCase.referenceNumber}
+                onChangeText={(t) => updateActiveCase({ referenceNumber: t })}
+                placeholder="e.g. CPGRAMS docket / FIR / ticket no."
+                placeholderTextColor="#8AA0AE"
+                style={caseInputStyle}
+                accessibilityLabel="Reference or acknowledgement number"
+              />
+
+              <Text style={caseFieldLabel}>Filed with (office / authority)</Text>
+              <TextInput
+                value={activeCase.office}
+                onChangeText={(t) => updateActiveCase({ office: t })}
+                placeholder="e.g. SGRC, ICC, District Consumer Commission"
+                placeholderTextColor="#8AA0AE"
+                style={caseInputStyle}
+                accessibilityLabel="Office or authority filed with"
+              />
+
+              <Text style={caseFieldLabel}>Status</Text>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
+                {CASE_STATUS_OPTIONS.map((opt) => {
+                  const on = activeCase.status === opt.id;
+                  return (
+                    <Pressable
+                      key={opt.id}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: on }}
+                      onPress={() => { void Haptics.selectionAsync(); updateActiveCase({ status: opt.id }); }}
+                      style={{ borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: on ? "#0E6F69" : "#EAF3F1", borderWidth: 1, borderColor: on ? "#0E6F69" : "#CFE0DC" }}
+                    >
+                      <Text style={{ color: on ? "#FFFFFF" : "#0B6E67", fontSize: 12, fontWeight: "800" }}>{opt.label}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+
+              {activeCase.status !== "resolved" && (
+                <>
+                  <Text style={caseFieldLabel}>Next follow-up</Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 4 }}>
+                    <Text style={{ color: "#213A4A", fontSize: 13, fontWeight: "700" }}>
+                      {activeCase.nextFollowUpIso ? new Date(activeCase.nextFollowUpIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                    </Text>
+                    <Pressable accessibilityRole="button" accessibilityLabel="Move follow-up 7 days earlier" onPress={() => bumpFollowUp(-7)} hitSlop={8} style={{ borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
+                      <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "800" }}>−7d</Text>
+                    </Pressable>
+                    <Pressable accessibilityRole="button" accessibilityLabel="Move follow-up 7 days later" onPress={() => bumpFollowUp(7)} hitSlop={8} style={{ borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
+                      <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "800" }}>+7d</Text>
+                    </Pressable>
+                  </View>
+                  <Text style={{ color: "#6A8899", fontSize: 12, lineHeight: 16, marginTop: 6 }}>
+                    Open this tab near the follow-up date and you'll see how many days are left. The escalation flag above tells you when to push harder.
+                  </Text>
+                </>
+              )}
+
+              <Text style={caseFieldLabel}>Notes</Text>
+              <TextInput
+                value={activeCase.notes}
+                onChangeText={(t) => updateActiveCase({ notes: t })}
+                placeholder="Who you spoke to, what they said, next step…"
+                placeholderTextColor="#8AA0AE"
+                style={{ ...caseInputStyle, minHeight: 64, textAlignVertical: "top" }}
+                multiline
+                accessibilityLabel="Case notes"
+              />
+
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Delete this case"
+                onPress={deleteActiveCase}
+                style={({ pressed }) => ({ marginTop: 12, alignSelf: "flex-start", opacity: pressed ? 0.6 : 1 })}
+              >
+                <Text style={{ color: "#B42318", fontSize: 12, fontWeight: "700" }}>Delete this case</Text>
+              </Pressable>
+            </>
+          )}
+        </View>
 
         {/* ── OFFICIAL ACCESS: CALL + PORTALS ── */}
         <View style={styles.communityPreviewBand}>
