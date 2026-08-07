@@ -13880,6 +13880,24 @@ export default function App() {
     return stalest;
   }, [entries.length, lastTabViewedAt]);
 
+  // Cross-section continuity: the single most-recent meaningful section the
+  // person was in (excluding Home itself and the utility tabs), so Home can
+  // offer a one-tap "pick up where you left off". Complements neglectedTabNudge
+  // above -- that pulls toward what's gone stale, this returns to what's warm.
+  const resumeTab = useMemo(() => {
+    const skip = new Set<TabId>(["today", "settings", "admin", "language"]);
+    let best: { tab: TabId; ts: number } | null = null;
+    for (const key of Object.keys(lastTabViewedAt) as TabId[]) {
+      const iso = lastTabViewedAt[key];
+      if (skip.has(key) || !iso) continue;
+      const ts = new Date(iso).getTime();
+      if (Number.isFinite(ts) && (!best || ts > best.ts)) best = { tab: key, ts };
+    }
+    if (!best) return null;
+    const meta = PRIMARY_NAV_TABS.find((t) => t.id === best!.tab);
+    return meta ? { tab: best.tab, label: meta.label } : null;
+  }, [lastTabViewedAt]);
+
   useEffect(() => {
     if (Platform.OS !== "web" || typeof document === "undefined") return;
 
@@ -20303,6 +20321,23 @@ function isTrustedExternalUrl(url: string) {
                   </View>
                 );
               })()}
+
+              {/* ── CONTINUE WHERE YOU LEFT OFF ── cross-section continuity:
+                  one tap back into the last section you were actively in. ── */}
+              {resumeTab && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Continue in ${resumeTab.label}`}
+                  onPress={() => { void Haptics.selectionAsync(); handleTabPress(resumeTab.tab); }}
+                  style={({ pressed }) => ({ marginHorizontal: 16, marginBottom: 10, flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#EEF5F4", borderRadius: 12, borderCurve: "continuous", borderWidth: 1, borderColor: "#D6E6E3", paddingVertical: 11, paddingHorizontal: 14, opacity: pressed ? 0.75 : 1 })}
+                >
+                  <Text style={{ fontSize: 15 }}>↩</Text>
+                  <Text style={{ flex: 1, color: "#0B6E67", fontSize: 13, fontWeight: "700" }}>
+                    Pick up where you left off · {resumeTab.label}
+                  </Text>
+                  <Text style={{ color: "#0B6E67", fontSize: 15, fontWeight: "800" }}>›</Text>
+                </Pressable>
+              )}
 
               {/* ── First-run explainer card (shows once, dismissible) ── */}
               {!hasSeenWelcomeCard && (
