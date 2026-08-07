@@ -30515,6 +30515,19 @@ function BirthChartSection({
     ? buildMoonChartMultidimensionalEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara, lagnaId: lagnaInfo?.lagnaId ?? null, lang: chartBriefLang })
     : [];
   const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
+  // Progressive disclosure for the full 48-dimension trace: each card is
+  // collapsed to just its title + verdict + score by default, so the reader
+  // sees a scannable list instead of a wall of ~48 long explanations, and
+  // expands only the ones they care about. Empty set = all collapsed.
+  const [expandedMoonDims, setExpandedMoonDims] = React.useState<Set<string>>(new Set());
+  const toggleMoonDim = React.useCallback((id: string) => {
+    setExpandedMoonDims((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+  const allMoonDimsExpanded = moonChart48Readings.length > 0 && expandedMoonDims.size >= moonChart48Readings.length;
   // Gochar (current transits) read from the natal Moon — the "now" foresight
   // layer. Memoized per day so it is not recomputed on unrelated renders.
   const gocharDayKey = new Date().toISOString().slice(0, 10);
@@ -31393,20 +31406,53 @@ function BirthChartSection({
           </View>
 
           <View style={{ gap: 8 }}>
-            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>{chartBriefLang === "hi" ? "पूर्ण बहुआयामी गणना-विवरण" : "Complete multidimensional calculated trace"}</Text>
-            {moonChart48Readings.map((item) => (
-              <View key={item.id} style={{ backgroundColor: "#F4F8F7", borderRadius: 14, padding: 11, borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, gap: 5, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 8, transform: [{ perspective: 700 }, { translateY: item.verdict === "Excellent" ? -1 : 0 }] }}>
-                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+              <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", flexShrink: 1 }}>{chartBriefLang === "hi" ? "पूर्ण बहुआयामी गणना-विवरण" : "Complete multidimensional calculated trace"}</Text>
+              {/* Expand-all / collapse-all so a reader can open everything at
+                  once or clear it back to the scannable list in one tap. */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={allMoonDimsExpanded ? "Collapse all dimensions" : "Expand all dimensions"}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                onPress={() => {
+                  void Haptics.selectionAsync();
+                  setExpandedMoonDims(allMoonDimsExpanded ? new Set() : new Set(moonChart48Readings.map((r) => r.id)));
+                }}
+                style={({ pressed }) => ({ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: pressed ? "#D4E7E4" : "#E4EFEC", borderWidth: 1, borderColor: "rgba(14,148,136,0.25)" })}
+              >
+                <Text style={{ color: "#0E7C74", fontSize: 12, fontWeight: "800" }}>
+                  {allMoonDimsExpanded ? (chartBriefLang === "hi" ? "सब बंद करें" : "Collapse all") : (chartBriefLang === "hi" ? "सब खोलें" : "Expand all")}
+                </Text>
+              </Pressable>
+            </View>
+            <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 16 }}>{chartBriefLang === "hi" ? "किसी भी आयाम को खोलने के लिए उस पर टैप करें।" : "Tap any dimension to open its full reading."}</Text>
+            {moonChart48Readings.map((item) => {
+              const expanded = expandedMoonDims.has(item.id);
+              return (
+              <View key={item.id} style={{ backgroundColor: "#F4F8F7", borderRadius: 14, borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, overflow: "hidden", shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, transform: [{ perspective: 700 }, { translateY: item.verdict === "Excellent" ? -1 : 0 }] }}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded }}
+                  accessibilityLabel={`${item.label}, ${item.verdictLabel}, ${item.score} out of 100. ${expanded ? "Tap to collapse" : "Tap to expand"}`}
+                  onPress={() => { void Haptics.selectionAsync(); toggleMoonDim(item.id); }}
+                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, padding: 11, backgroundColor: pressed ? "#EAF1EF" : "transparent" })}
+                >
                   <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
                   <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdictLabel} · {item.score}</Text>
-                </View>
-                <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{item.prediction}</Text>
-                <Text style={{ color: "#006EB8", fontSize: 12, lineHeight: 17 }}>{item.interpretation}</Text>
-                <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{item.remedyTitle}: </Text>{item.remedySteps.join(" ")}</Text>
-                <Text style={{ color: "rgba(0,82,184,0.78)", fontSize: 12, lineHeight: 16 }}>{chartBriefLang === "hi" ? "गणना-विवरण: " : "Score trace: "}{item.scoreReason}</Text>
-                <Text style={{ color: "#111827", fontSize: 12, lineHeight: 16 }}>{item.calculationBasis}</Text>
+                  <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "900", width: 14, textAlign: "center" }}>{expanded ? "▾" : "▸"}</Text>
+                </Pressable>
+                {expanded && (
+                  <View style={{ paddingHorizontal: 11, paddingBottom: 11, gap: 5, borderTopWidth: 1, borderTopColor: `${moonChartVisualColor(item)}22`, paddingTop: 9 }}>
+                    <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{item.prediction}</Text>
+                    <Text style={{ color: "#006EB8", fontSize: 12, lineHeight: 17 }}>{item.interpretation}</Text>
+                    <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{item.remedyTitle}: </Text>{item.remedySteps.join(" ")}</Text>
+                    <Text style={{ color: "rgba(0,82,184,0.78)", fontSize: 12, lineHeight: 16 }}>{chartBriefLang === "hi" ? "गणना-विवरण: " : "Score trace: "}{item.scoreReason}</Text>
+                    <Text style={{ color: "#111827", fontSize: 12, lineHeight: 16 }}>{item.calculationBasis}</Text>
+                  </View>
+                )}
               </View>
-            ))}
+              );
+            })}
           </View>
         </View>
       )}
