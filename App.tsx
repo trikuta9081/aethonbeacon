@@ -23639,7 +23639,9 @@ function ToneLibrarySection({
                                     Alert.alert(toneMode.label, `Could not open external link.`)
                                   );
                                 }}
+                                accessibilityRole="button"
                                 accessibilityLabel={toneMode.externalLabel ?? "Open external link"}
+                                hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                                 style={{ backgroundColor: "#E6DEF2", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                               >
                                 <Text style={{ color: "#2600B8", fontSize: 12, fontWeight: "900" }}>↗</Text>
@@ -23650,6 +23652,7 @@ function ToneLibrarySection({
                                   onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setSelectedToneId(toneMode.id); setLoopEnabled(false); void playRelaxingToneCue(toneMode); }}
                                   accessibilityRole="button"
                                   accessibilityLabel={`Play ${toneMode.label} once`}
+                                  hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                                   style={{ backgroundColor: "#DEF2F0", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
                                   <Text style={{ color: "#059669", fontSize: 12, fontWeight: "900" }}>▶</Text>
@@ -23658,6 +23661,7 @@ function ToneLibrarySection({
                                   onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
                                   accessibilityRole="button"
                                   accessibilityLabel={`Loop ${toneMode.label} continuously`}
+                                  hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                                   style={{ backgroundColor: "#DEE7F2", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
                                   <Text style={{ color: "#0052B8", fontSize: 12, fontWeight: "900" }}>🔁</Text>
