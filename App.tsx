@@ -29,7 +29,7 @@ import {
   useWindowDimensions,
   View
 } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 // On web, metro.config.js aliases expo-audio to expo-audio-web-stub.js (no-op).
 // On native, the real expo-audio package is used.
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
@@ -12284,6 +12284,10 @@ function ExitReportModal({
   onClose: () => void;
   onShare: (report: DailyVisitReport) => void;
 }) {
+  // Real device safe-area inset instead of a hardcoded status-bar guess --
+  // a fixed 54 is wrong on Dynamic Island iPhones (~59) and non-notch/older
+  // devices (~20-24). Apple full-screen views read the actual inset.
+  const insets = useSafeAreaInsets();
   if (!report) return null;
 
   const scoreColor = report.moodScore !== null
@@ -12300,7 +12304,7 @@ function ExitReportModal({
       <View style={{ flex: 1, backgroundColor: "#E1EEEC" }}>
         {/* Header */}
         <View style={{
-          paddingTop: Platform.OS === "ios" ? 54 : 40,
+          paddingTop: Math.max(insets.top, 12) + 12,
           paddingHorizontal: 20,
           paddingBottom: 16,
           borderBottomWidth: 1,
@@ -35625,6 +35629,9 @@ function CounselingChatModal({
   // feeling.
   weeklyTrend?: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null;
 }) {
+  // Real device top inset for the full-screen header, instead of a hardcoded
+  // status-bar guess (see comment on the ExitReportModal header).
+  const insets = useSafeAreaInsets();
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
     originalIssue: initialIssue,
@@ -36050,7 +36057,7 @@ function CounselingChatModal({
       >
       <View style={{ flex: 1, backgroundColor: "#E1EEEC" }}>
         {/* Header */}
-        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Platform.OS === "ios" ? 54 : 40, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#E1EEEC", backgroundColor: "#E1EEEC" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Math.max(insets.top, 12) + 12, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#E1EEEC", backgroundColor: "#E1EEEC" }}>
           <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
             <Text style={{ color: "#0E9488", fontSize: 22 }}>←</Text>
           </Pressable>

@@ -134,4 +134,18 @@ mustNotMatch(
   'Active-focus strips must not regress to ad-hoc inline background colours'
 );
 
-console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, and all Active-focus strips share one design-system token.');
+// ── Apple safe-area correctness ──────────────────────────────────────────────
+// Full-screen modal headers must read the real device top inset, not a
+// hardcoded status-bar guess (a fixed 54 is wrong on Dynamic Island iPhones
+// and non-notch devices). Guards against regressing to the hardcoded value.
+mustInclude('useSafeAreaInsets', 'Safe-area inset hook must be imported/used for full-screen headers');
+mustNotMatch(
+  /paddingTop: Platform\.OS === "ios" \? 54 : 40/,
+  'Full-screen modal headers must use the real safe-area inset, not a hardcoded status-bar height'
+);
+assert(
+  (source.match(/paddingTop: Math\.max\(insets\.top, 12\) \+ 12/g) ?? []).length >= 2,
+  'Both full-screen modal headers (ExitReport, Counselling) must pad from the real top inset'
+);
+
+console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');
