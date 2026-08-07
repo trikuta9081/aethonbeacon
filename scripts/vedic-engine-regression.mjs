@@ -108,6 +108,10 @@ assert(source.includes('function buildShadbalaStrengthNarrative'), 'Shadbala str
 // Sarvashtakavarga must not be numbers-only: it names the strongest/most-
 // sensitive sign for transits, in both languages.
 assert(source.includes('function buildSarvashtakavargaNarrative'), 'Sarvashtakavarga plain-language narrative builder is missing');
+// Shadbala panel must give an at-a-glance "shape of the whole chart" summary,
+// not only per-planet numbers.
+assert(source.includes('function buildShadbalaOverallSummary'), 'Shadbala overall chart-strength summary builder is missing');
+assert(source.includes('buildShadbalaOverallSummary(shadbalaResult.planets, chartBriefLang)'), 'Shadbala panel must render the overall chart-strength summary');
 assert(source.includes('buildSarvashtakavargaNarrative(ashtakavargaResult.sarva, chartBriefLang)'), 'Sarvashtakavarga panel must render the strongest/most-sensitive-sign narrative');
 assert(source.includes('Your strongest sign is') && source.includes('सबसे मजबूत राशि'), 'Sarvashtakavarga narrative must be present in both languages');
 assert(source.includes('SHADBALA_DOMAIN_EN') && source.includes('SHADBALA_DOMAIN_HI'), 'Shadbala planet-domain significance packs are missing');

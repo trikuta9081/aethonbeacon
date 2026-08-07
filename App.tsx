@@ -11528,6 +11528,29 @@ function buildSarvashtakavargaNarrative(sarva: number[], lang: "en" | "hi"): str
   return `Your strongest sign is ${strongName} (${sarva[maxI]} bindus) — when planets transit through it, things tend to flow more smoothly. Your most sensitive sign is ${weakName} (${sarva[minI]} bindus) — when planets pass through it, move carefully and avoid big risks.`;
 }
 
+// One-line "shape of the whole chart" for the Shadbala panel: the per-planet
+// grid answers "how strong is each planet" but never "how strong is the chart
+// overall". This counts how many of the seven read strong / weak on the same
+// partial coverage scale the grid tiers on, so the person gets an at-a-glance
+// summary before scanning seven cards.
+function buildShadbalaOverallSummary(
+  planets: Record<string, { coveragePercent: number }>,
+  lang: "en" | "hi"
+): string {
+  const ids = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
+  let strong = 0;
+  let weak = 0;
+  for (const id of ids) {
+    const cp = planets[id]?.coveragePercent ?? 0;
+    if (cp >= 66) strong++;
+    else if (cp < 40) weak++;
+  }
+  if (lang === "hi") {
+    return `सात में से ${strong} ग्रह इस आंशिक पैमाने पर मजबूत हैं और ${weak} कमजोर — बाकी संतुलित। मजबूत ग्रह अपने क्षेत्रों में सहज परिणाम देते हैं; कमजोर ग्रहों के क्षेत्र में सचेत प्रयास सबसे अधिक फल देता है।`;
+  }
+  return `${strong} of 7 planets read strong on this partial scale and ${weak} read weak — the rest are balanced. Strong planets tend to deliver their areas more easily; the weaker ones are exactly where conscious, steady effort pays off most.`;
+}
+
 // Human-facing label for an astro-chat question category, in either language
 // (the raw category id like "career" is an internal enum, not display text).
 const ASTRO_CATEGORY_LABEL_EN: Record<AstroChatCategory, string> = {
@@ -32111,6 +32134,9 @@ function BirthChartSection({
             </Text>
             {shadbalaResult ? (
               <>
+                <Text style={{ color: "#1F2937", fontSize: 12.5, lineHeight: 18, fontWeight: "600" }}>
+                  {buildShadbalaOverallSummary(shadbalaResult.planets, chartBriefLang)}
+                </Text>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
                   {(["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const).map((planet) => {
                     const s = shadbalaResult.planets[planet];
