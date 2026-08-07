@@ -28362,7 +28362,7 @@ function RedressSection({
     { id: "escalated", label: "Escalated" },
     { id: "resolved", label: "Resolved" },
   ];
-  const caseInputStyle = { backgroundColor: "#F1F6F5", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, color: "#213A4A", fontSize: 13, borderWidth: 1, borderColor: "#C4D8D4" as const, marginTop: 4 };
+  const caseInputStyle = { backgroundColor: "#F1F6F5", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 12, minHeight: 44, color: "#213A4A", fontSize: 16, borderWidth: 1, borderColor: "#C4D8D4" as const, marginTop: 4 };
   const caseFieldLabel = { color: "#0B6E67", fontSize: 12, fontWeight: "800" as const, marginTop: 10 };
 
   // Route-specific complaint draft template
@@ -29033,7 +29033,7 @@ function RedressSection({
                       accessibilityRole="button"
                       accessibilityState={{ selected: on }}
                       onPress={() => { void Haptics.selectionAsync(); updateActiveCase({ status: opt.id }); }}
-                      style={{ borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: on ? "#0E6F69" : "#EAF3F1", borderWidth: 1, borderColor: on ? "#0E6F69" : "#CFE0DC" }}
+                      style={{ borderRadius: 999, paddingHorizontal: 14, paddingVertical: 9, minHeight: 40, alignItems: "center", justifyContent: "center", backgroundColor: on ? "#0E6F69" : "#EAF3F1", borderWidth: 1, borderColor: on ? "#0E6F69" : "#CFE0DC" }}
                     >
                       <Text style={{ color: on ? "#FFFFFF" : "#0B6E67", fontSize: 12, fontWeight: "800" }}>{opt.label}</Text>
                     </Pressable>
@@ -29048,11 +29048,11 @@ function RedressSection({
                     <Text style={{ color: "#213A4A", fontSize: 13, fontWeight: "700" }}>
                       {activeCase.nextFollowUpIso ? new Date(activeCase.nextFollowUpIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" }) : "—"}
                     </Text>
-                    <Pressable accessibilityRole="button" accessibilityLabel="Move follow-up 7 days earlier" onPress={() => bumpFollowUp(-7)} hitSlop={8} style={{ borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
-                      <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "800" }}>−7d</Text>
+                    <Pressable accessibilityRole="button" accessibilityLabel="Move follow-up 7 days earlier" onPress={() => bumpFollowUp(-7)} hitSlop={8} style={{ borderRadius: 10, paddingHorizontal: 14, minHeight: 44, minWidth: 44, alignItems: "center", justifyContent: "center", backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
+                      <Text style={{ color: "#0B6E67", fontSize: 13, fontWeight: "800" }}>−7d</Text>
                     </Pressable>
-                    <Pressable accessibilityRole="button" accessibilityLabel="Move follow-up 7 days later" onPress={() => bumpFollowUp(7)} hitSlop={8} style={{ borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
-                      <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "800" }}>+7d</Text>
+                    <Pressable accessibilityRole="button" accessibilityLabel="Move follow-up 7 days later" onPress={() => bumpFollowUp(7)} hitSlop={8} style={{ borderRadius: 10, paddingHorizontal: 14, minHeight: 44, minWidth: 44, alignItems: "center", justifyContent: "center", backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
+                      <Text style={{ color: "#0B6E67", fontSize: 13, fontWeight: "800" }}>+7d</Text>
                     </Pressable>
                   </View>
                   <Text style={{ color: "#6A8899", fontSize: 12, lineHeight: 16, marginTop: 6 }}>
@@ -29076,7 +29076,8 @@ function RedressSection({
                 accessibilityRole="button"
                 accessibilityLabel="Delete this case"
                 onPress={deleteActiveCase}
-                style={({ pressed }) => ({ marginTop: 12, alignSelf: "flex-start", opacity: pressed ? 0.6 : 1 })}
+                hitSlop={10}
+                style={({ pressed }) => ({ marginTop: 10, alignSelf: "flex-start", paddingVertical: 8, paddingHorizontal: 2, opacity: pressed ? 0.6 : 1 })}
               >
                 <Text style={{ color: "#B42318", fontSize: 12, fontWeight: "700" }}>Delete this case</Text>
               </Pressable>
@@ -37212,7 +37213,7 @@ function CounselingChatModal({
                 onChangeText={setDraft}
                 placeholder={isListening ? "Listening..." : "Reply here..."}
                 placeholderTextColor="#5B7480"
-                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, padding: 12, color: "#213A4A", fontSize: 14, lineHeight: 20, maxHeight: 120, borderWidth: 1, borderColor: isListening ? "#0E9488" : "#C4D8D4" }}
+                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, padding: 12, color: "#213A4A", fontSize: 16, lineHeight: 22, maxHeight: 120, borderWidth: 1, borderColor: isListening ? "#0E9488" : "#C4D8D4" }}
                 multiline
                 textAlignVertical="top"
               />
