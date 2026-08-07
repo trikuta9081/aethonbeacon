@@ -37253,10 +37253,18 @@ function CounselingChatModal({
                   the person did the real work of naming what's going on,
                   without re-stating the distress (kept affirming, not
                   amplifying). */}
-              <View style={{ backgroundColor: "#EAF6F4", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "#CFE7E2", marginBottom: 2 }}>
+              <View style={{ backgroundColor: "#EAF6F4", borderRadius: 12, borderCurve: "continuous", padding: 12, borderWidth: 1, borderColor: "#CFE7E2", marginBottom: 2 }}>
                 <Text style={{ color: "#0B6E67", fontSize: 13, lineHeight: 20, fontWeight: "600" }}>
                   Thank you for talking this through — putting it into words is a real step, and it's the part most people never do. You don't have to fix everything at once. Here's a gentle path you can take from here, one step at a time.
                 </Text>
+                {/* Ties the retention loop into the guide: if the person has a
+                    real check-in streak, acknowledge that steadiness -- warm and
+                    affirming, never pressure. */}
+                {streak >= 2 && (
+                  <Text style={{ color: "#0D6B36", fontSize: 12, lineHeight: 17, fontWeight: "700", marginTop: 8 }}>
+                    🔥 And you've shown up {streak} days running — that steadiness is its own kind of strength to build on.
+                  </Text>
+                )}
               </View>
               <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Your recommended journey</Text>
               {journeySteps.map((step, i) => (
