@@ -247,4 +247,23 @@ assert(/नौकरी|करियर/.test(source) && /classifyAstroQuestion/
 assert(source.includes('चार्ट से पूछें'), 'Ask-the-chart UI must render the Hindi title when chartBriefLang is hi');
 assert(source.includes('वैदिक + लाल किताब उपाय'), 'Ask-the-chart remedy header must be bilingual');
 
+// ── Bilingual 48-dimension Moon-chart engine ─────────────────────────────────
+// The shared reading engine now produces Hindi as well as English, driven by
+// the same chartBriefLang toggle. Done per-consumer: the chart-facing display
+// (BirthChartSection) and Ask-the-chart pass lang "hi"; the counselling
+// engine / Path complement / Insights keep the English canonical, so no Hindi
+// snippet ever leaks into the English counselling synthesis.
+assert(source.includes('MOON_CHART_48_BLUEPRINT_HI'), 'Hindi twin of the 48 blueprints must exist');
+assert((source.match(/"[a-z-]+": \{ label: "[^"]*[ऀ-ॿ]/g) ?? []).length >= 40, 'At least 40 of the 48 blueprints must carry real Devanagari Hindi label text');
+assert(source.includes('verdictLabel: string') && source.includes('moonChartVerdictLabel'), 'Readings must carry a localized verdictLabel');
+assert(source.includes('MOON_CHART_VERDICT_LABEL_HI'), 'Hindi verdict words (अति उत्तम/सहायक/मिश्रित/सावधानी) must exist');
+assert(/buildMoonChartMultidimensionalEngine\([\s\S]{0,400}lang: chartBriefLang/.test(source), 'BirthChartSection display must build readings in the toggled language');
+assert(source.includes('vedicMoonChart48ReadingsLocalized'), 'A language-aware readings copy must feed Ask-the-chart');
+assert(source.includes('moonChart48Readings: vedicMoonChart48ReadingsLocalized'), 'Ask-the-chart must receive the localized readings, not the English canonical');
+// The counselling modal must still receive the ENGLISH canonical, never the
+// localized copy -- guards against the "Hindi snippets in English synthesis"
+// regression the per-consumer split was designed to prevent.
+assert(source.includes('moonChart48Readings={vedicMoonChart48Readings}'), 'CounselingChatModal must keep the English canonical readings');
+assert(source.includes('item.verdictLabel') && !source.includes('{item.verdict} · {item.score}/100'), 'Chart-facing verdict displays must use the localized verdictLabel, not the raw English verdict enum');
+
 console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, Path/Guide Moon Chart + 48-axis complement, cross-section 48-dimension actionability, and all 48 dimensions carry a real path to resolution and conclusion.');

@@ -8722,13 +8722,13 @@ const NAKSHATRA_LORDS = [
 ];
 
 const VARA_INFO = [
-  { day: 0, name: "Ravivara", en: "Sunday",    planet: "Surya (Sun)",    color: "#F59E0B", emoji: "☀️", mantra: "Om Suryaya Namah",      guidance: "Ideal for self-confidence, leadership, and connecting with authority figures." },
-  { day: 1, name: "Somavara",  en: "Monday",   planet: "Chandra (Moon)", color: "#0020B8", emoji: "🌙", mantra: "Om Chandraya Namah",     guidance: "Favourable for intuition, family, mind healing, and emotional clarity." },
-  { day: 2, name: "Mangalavara",en:"Tuesday",  planet: "Mangal (Mars)",  color: "#DC2626", emoji: "🔴", mantra: "Om Mangalaya Namah",     guidance: "Day of courage and action. Good for physical work, property matters, and starting bold ventures." },
-  { day: 3, name: "Budhavara", en: "Wednesday",planet: "Budha (Mercury)",color: "#059669", emoji: "💚", mantra: "Om Budhaya Namah",       guidance: "Excellent for communication, trade, learning, writing, and contracts." },
-  { day: 4, name: "Guruvara",  en: "Thursday", planet: "Guru (Jupiter)", color: "#B88400", emoji: "🌟", mantra: "Om Brihaspataye Namah",  guidance: "Auspicious for spiritual growth, teaching, higher wisdom, and legal matters." },
-  { day: 5, name: "Shukravara",en: "Friday",   planet: "Shukra (Venus)", color: "#B80064", emoji: "💗", mantra: "Om Shukraya Namah",      guidance: "Day of beauty and love. Ideal for relationships, art, luxury, and celebration." },
-  { day: 6, name: "Shanivara", en: "Saturday", planet: "Shani (Saturn)", color: "#263244", emoji: "⬛", mantra: "Om Shanaye Namah",       guidance: "Day of discipline and karma. Good for service, hard work, and clearing debts." },
+  { day: 0, name: "Ravivara", en: "Sunday",    hi: "रविवार",   planet: "Surya (Sun)",    color: "#F59E0B", emoji: "☀️", mantra: "Om Suryaya Namah",      guidance: "Ideal for self-confidence, leadership, and connecting with authority figures." },
+  { day: 1, name: "Somavara",  en: "Monday",   hi: "सोमवार",   planet: "Chandra (Moon)", color: "#0020B8", emoji: "🌙", mantra: "Om Chandraya Namah",     guidance: "Favourable for intuition, family, mind healing, and emotional clarity." },
+  { day: 2, name: "Mangalavara",en:"Tuesday",  hi: "मंगलवार",  planet: "Mangal (Mars)",  color: "#DC2626", emoji: "🔴", mantra: "Om Mangalaya Namah",     guidance: "Day of courage and action. Good for physical work, property matters, and starting bold ventures." },
+  { day: 3, name: "Budhavara", en: "Wednesday",hi: "बुधवार",   planet: "Budha (Mercury)",color: "#059669", emoji: "💚", mantra: "Om Budhaya Namah",       guidance: "Excellent for communication, trade, learning, writing, and contracts." },
+  { day: 4, name: "Guruvara",  en: "Thursday", hi: "गुरुवार",  planet: "Guru (Jupiter)", color: "#B88400", emoji: "🌟", mantra: "Om Brihaspataye Namah",  guidance: "Auspicious for spiritual growth, teaching, higher wisdom, and legal matters." },
+  { day: 5, name: "Shukravara",en: "Friday",   hi: "शुक्रवार", planet: "Shukra (Venus)", color: "#B80064", emoji: "💗", mantra: "Om Shukraya Namah",      guidance: "Day of beauty and love. Ideal for relationships, art, luxury, and celebration." },
+  { day: 6, name: "Shanivara", en: "Saturday", hi: "शनिवार",   planet: "Shani (Saturn)", color: "#263244", emoji: "⬛", mantra: "Om Shanaye Namah",       guidance: "Day of discipline and karma. Good for service, hard work, and clearing debts." },
 ];
 
 const RASHI_DAILY_PREDICTIONS: Record<number, string[][]> = {
@@ -11430,6 +11430,9 @@ type MoonChart48Blueprint = { id: string; label: string; category: MoonChart48Ca
 type MoonChart48Reading = MoonChart48Blueprint & {
   score: number;
   verdict: MoonChart48Verdict;
+  // Localized display word for the verdict (English enum stays in `verdict`
+  // for color/score logic; this is what the UI shows).
+  verdictLabel: string;
   prediction: string;
   interpretation: string;
   scoreReason: string;
@@ -11502,6 +11505,63 @@ const MOON_CHART_48_BLUEPRINTS: MoonChart48Blueprint[] = [
   { id: "wish-fulfilment", label: "Wish fulfilment", category: "growth", house: 11, weight: 1.05, meaning: "how close a specific wish or goal is to actually landing", remedyFocus: "Write the wish down specifically enough that you'd recognise it arriving." },
 ];
 
+// Hindi twin of the 48 blueprints, keyed by id. Only the three human-facing
+// text fields need translating (label / meaning / remedyFocus); category,
+// house, and weight are numeric/enum and shared. Switched by lang in
+// buildMoonChartMultidimensionalEngine so the whole 48-axis lunar readout
+// (Vedic tab display + Ask-the-chart) can render in Hindi, not just the
+// surrounding narration.
+const MOON_CHART_48_BLUEPRINT_HI: Record<string, { label: string; meaning: string; remedyFocus: string }> = {
+  "mind-peace": { label: "मन की शांति", meaning: "आपका भीतरी मानसिक स्थान अभी कितना शांत और अविचलित महसूस होता है", remedyFocus: "आज एक शांत 10-मिनट का समय बिना फ़ोन, बिना सूचनाओं के सुरक्षित रखें।" },
+  "emotional-regulation": { label: "भावनात्मक नियंत्रण", meaning: "प्रतिक्रियाएँ, मनोदशा के उतार-चढ़ाव और भावनात्मक तीव्रता कितनी अच्छी तरह स्थिर की जा सकती हैं", remedyFocus: "किसी भी बात पर प्रतिक्रिया देने से पहले भावना को एक शब्द में ज़ोर से कहें।" },
+  "confidence": { label: "आत्मविश्वास", meaning: "आप अपनी उपस्थिति और अपने निर्णयों में कितने आश्वस्त और स्थिर महसूस करते हैं", remedyFocus: "आज सबसे पहले वही काम करें जिसे आप टाल रहे हैं।" },
+  "self-image": { label: "आत्म-छवि", meaning: "आप अभी अपने मूल्य, महत्व और आत्म-सम्मान को कैसे देखते हैं", remedyFocus: "इस सप्ताह आपने जो एक अच्छा काम किया उसे लिखें और उसे बिना विवाद स्वीकारें।" },
+  "decision-clarity": { label: "निर्णय की स्पष्टता", meaning: "आप विकल्पों को कितनी स्पष्टता से तौलकर एक दिशा पर टिक सकते हैं", remedyFocus: "निर्णय को एक वाक्य में लिखें, फिर कार्य से पहले एक रात सोचें।" },
+  "communication": { label: "संवाद", meaning: "शब्द, संदेश और रोज़मर्रा के आदान-प्रदान दूसरों तक कितनी स्पष्टता से पहुँचते हैं", remedyFocus: "जो एक बात आप कहने से बच रहे हैं उसे सरलता और दयालुता से कह दें।" },
+  "siblings-network": { label: "भाई-बहन और निकट मंडली", meaning: "भाई-बहनों और निकट मंडली से स्थिर सहयोग और सद्भाव कैसा महसूस होता है", remedyFocus: "आज किसी एक भाई-बहन या करीबी मित्र से संपर्क करें, भले संक्षेप में।" },
+  "home-peace": { label: "घर की शांति", meaning: "घर का वातावरण कितना शांत और स्थिर महसूस होता है", remedyFocus: "घर की एक छोटी चीज़ ठीक करें या व्यवस्थित करें जो चुपचाप आपको परेशान कर रही थी।" },
+  "mother-support": { label: "माता और पोषण", meaning: "आप कितने पोषित, देखभाल किए हुए और भावनात्मक रूप से संभाले हुए महसूस करते हैं", remedyFocus: "आज अपनी माता या माता-तुल्य किसी व्यक्ति से बात करें या हालचाल पूछें।" },
+  "education-learning": { label: "शिक्षा और सीख", meaning: "नया ज्ञान और अध्ययन कितनी सहजता से ग्रहण और स्मरण किया जा सकता है", remedyFocus: "अभी जो विषय सबसे ज़रूरी है उस पर 20 मिनट ध्यानपूर्वक पढ़ें।" },
+  "creativity": { label: "रचनात्मकता", meaning: "मौलिक विचार और रचनात्मक अभिव्यक्ति कितनी स्वतंत्रता से बह सकती है", remedyFocus: "कुछ छोटा और जानबूझकर अधूरा बनाएं — एक रेखाचित्र, एक मसौदा, एक टिप्पणी।" },
+  "children-parenting": { label: "संतान और पालन-पोषण", meaning: "संतान या जिन्हें आप मार्गदर्शन देते हैं उनसे संबंध कितने सहजता से चल रहे हैं", remedyFocus: "किसी एक बच्चे (या शिष्य) को 15 मिनट पूरा, बिना फ़ोन का ध्यान दें।" },
+  "health-vitality": { label: "स्वास्थ्य और जीवन-शक्ति", meaning: "शरीर के पास सहारा लेने के लिए कितनी शारीरिक ऊर्जा और सहनशक्ति है", remedyFocus: "दिन हाथ से निकलने से पहले कम-से-कम 15 मिनट शरीर को गति दें।" },
+  "stress-immunity": { label: "तनाव-प्रतिरोध", meaning: "शरीर बिना टूटे कितना दबाव सह सकता है", remedyFocus: "जो एक तनाव सबसे अधिक नुकसान कर रहा है उसे आज पहचानें और हटाएं या कम करें।" },
+  "habits-routine": { label: "आदतें और दिनचर्या", meaning: "दैनिक आदतें और दिनचर्या कितनी निरंतरता से बनाए रखी जा सकती हैं", remedyFocus: "जिस एक दिनचर्या को आप बार-बार छोड़ते हैं उसे आज एक बार, अपूर्ण ही सही, करें।" },
+  "debt-obligations": { label: "ऋण और दायित्व", meaning: "ऋण, बकाया और वित्तीय दायित्व कितने संभालने योग्य महसूस होते हैं", remedyFocus: "कुछ भी तय करने से पहले हर ऋण और नियत तिथि एक स्थान पर सूचीबद्ध करें।" },
+  "marriage-partnership": { label: "विवाह और साझेदारी", meaning: "जीवनसाथी के साथ लेन-देन कितना संतुलित महसूस होता है", remedyFocus: "अपने साथी से एक ईमानदार प्रश्न पूछें कि वे वास्तव में कैसे हैं।" },
+  "trust-bonding": { label: "विश्वास और जुड़ाव", meaning: "निकट रिश्तों में विश्वास करना और विश्वसनीय होना कितना सुरक्षित महसूस होता है", remedyFocus: "आज किसी विश्वसनीय व्यक्ति के साथ एक छोटी कमज़ोरी साझा करें।" },
+  "public-dealings": { label: "सार्वजनिक व्यवहार", meaning: "बातचीत, ग्राहक और सार्वजनिक व्यवहार कितनी सहजता से चलते हैं", remedyFocus: "अगली बातचीत या बैठक से पहले अपने मुख्य बिंदु लिखकर तैयार करें।" },
+  "transformation": { label: "रूपांतरण", meaning: "जो समाप्त हो रहा है उसे छोड़कर आगे कदम रखने के लिए आप कितने तैयार हैं", remedyFocus: "जिस एक चीज़ को छोड़ने के लिए आप तैयार हैं उसे ज़ोर से नाम दें।" },
+  "hidden-fears": { label: "छुपे भय", meaning: "कहाँ अनकहे भय या छुपा दबाव ईमानदार ध्यान माँगते हैं", remedyFocus: "भय को ठीक वैसा ही लिखें जैसा है, न नरम करके न बढ़ा-चढ़ाकर।" },
+  "inheritance-shared-assets": { label: "साझा संपत्ति", meaning: "साझा या विरासत में मिली धनराशि और संपत्ति को कैसे संभालना चाहिए", remedyFocus: "कुछ भी मान लेने से पहले साझा धन या संपत्ति के मामले लिखित में कर लें।" },
+  "dharma-faith": { label: "धर्म और आस्था", meaning: "आपके कर्म आपके गहरे उद्देश्य और आस्था से कितने संरेखित महसूस होते हैं", remedyFocus: "आज पाँच मिनट वह एक अभ्यास करें जो आपको उद्देश्य से पुनः जोड़ता है।" },
+  "luck-grace": { label: "भाग्य और कृपा", meaning: "बिना कमाए कितना सहयोग या सौभाग्य आपकी ओर बह रहा है", remedyFocus: "आज किसी सहज मिली चीज़ के लिए एक सच्चा धन्यवाद कहें।" },
+  "father-mentors": { label: "पिता और मार्गदर्शक", meaning: "पिता-तुल्य या मार्गदर्शकों से सहायक मार्गदर्शन कैसा महसूस होता है", remedyFocus: "किसी मार्गदर्शक या पिता-तुल्य व्यक्ति से एक विशिष्ट सलाह माँगें।" },
+  "career-direction": { label: "करियर की दिशा", meaning: "आपके करियर या व्यवसाय में आगे का रास्ता कितना स्पष्ट महसूस होता है", remedyFocus: "जो करियर दिशा आप वास्तव में चाहते हैं उसकी ओर अगला ठोस कदम लिखें।" },
+  "authority-recognition": { label: "अधिकार और मान्यता", meaning: "आपके प्रयास को दूसरों द्वारा कितना देखा, श्रेय दिया और सम्मान दिया जा रहा है", remedyFocus: "अपने एक हालिया योगदान को लिखित में दर्ज करें ताकि श्रेय स्मृति पर न छोड़ा जाए।" },
+  "workload-discipline": { label: "कार्यभार अनुशासन", meaning: "आपका वर्तमान कार्यभार अनुशासन के साथ कितने टिकाऊ ढंग से संभाला जा सकता है", remedyFocus: "सबसे ज़िम्मेदारी वाला एक काम चुनें और नया शुरू करने से पहले उसे पूरा करें।" },
+  "income-gains": { label: "आय और लाभ", meaning: "आय और भौतिक लाभ कितनी स्वतंत्रता से आ रहे हैं", remedyFocus: "नया स्रोत खोजने से पहले देखें कि पैसा वास्तव में कहाँ से आ रहा है।" },
+  "friends-community": { label: "मित्र और समुदाय", meaning: "मित्रों और व्यापक समुदाय से विश्वसनीय सहयोग कैसा महसूस होता है", remedyFocus: "किसी एक मित्र से संपर्क करें जिससे आपने काफ़ी समय से बात नहीं की।" },
+  "long-term-goals": { label: "दीर्घकालिक लक्ष्य", meaning: "आज की स्थिति से दीर्घकालिक महत्वाकांक्षाएँ कितनी यथार्थपूर्ण लगती हैं", remedyFocus: "दीर्घकालिक लक्ष्य को इस सप्ताह किए जाने योग्य एक ठोस कदम में बाँटें।" },
+  "expenses": { label: "खर्च", meaning: "आपके बाहर जाने वाले खर्च कितने नियंत्रित हैं या रिस रहे हैं", remedyFocus: "पूरे एक दिन हर खर्च को बिना अभी कोई निर्णय दिए दर्ज करें।" },
+  "sleep-dreams": { label: "नींद और स्वप्न", meaning: "पुनर्स्थापक नींद और भीतरी स्वप्न-मन कैसा महसूस होता है", remedyFocus: "आज रात एक निश्चित विश्राम-समय तय करें और तब स्क्रीन वास्तव में बंद कर दें।" },
+  "spiritual-release": { label: "आध्यात्मिक मुक्ति", meaning: "आप नियंत्रण छोड़कर किसी चीज़ को जाने देने में कितने सक्षम हैं", remedyFocus: "पाँच मिनट शांत बैठें और जिस एक चीज़ को पकड़े हैं उसे सचेत रूप से छोड़ें।" },
+  "foreign-distance": { label: "दूरी और विदेशी संबंध", meaning: "यात्रा, स्थानांतरण या दूरस्थ संबंध कितनी सहजता से खुल रहे हैं", remedyFocus: "यात्रा या स्थानांतरण के भावनात्मक पहलुओं से पहले व्यावहारिक विवरण तय करें।" },
+  "speech-family-values": { label: "वाणी और पारिवारिक मूल्य", meaning: "आपके शब्द उन मूल्यों को कितनी अच्छी तरह दर्शाते हैं जिनके साथ परिवार ने आपको पाला", remedyFocus: "जो एक बात आप आदतन कहते हैं उसे देखें और जाँचें कि क्या आप अब भी वही मानते हैं।" },
+  "savings": { label: "बचत", meaning: "आपकी संचित संपत्ति और वित्तीय सुरक्षा-कवच कितना सुरक्षित महसूस होता है", remedyFocus: "आज एक छोटी राशि बचत में डालें, भले प्रतीकात्मक हो।" },
+  "food-nourishment": { label: "भोजन और पोषण", meaning: "आपका भोजन, भूख और खाने की लय अभी कितनी पोषक है", remedyFocus: "आज जल्दी कुछ पकड़ने के बजाय एक असली, इत्मीनान से किया भोजन करें।" },
+  "courage-initiative": { label: "साहस और पहल", meaning: "आप प्रतीक्षा और अवलोकन के बजाय पहले कदम उठाने के लिए कितने तैयार महसूस करते हैं", remedyFocus: "सही क्षण की प्रतीक्षा के बजाय आज पहला छोटा कदम उठाएं।" },
+  "skills-practice": { label: "कौशल और अभ्यास", meaning: "दैनिक अभ्यास किसी विशिष्ट कौशल को कितना निखार रहा है", remedyFocus: "उस विशिष्ट कौशल का 15 मिनट अभ्यास करें, केवल अभ्यास के बारे में न सोचें।" },
+  "property-comforts": { label: "संपत्ति और सुख-सुविधा", meaning: "आपका घर, संपत्ति और रोज़मर्रा की सुविधाएँ कितनी सुरक्षित महसूस होती हैं", remedyFocus: "इस सप्ताह अपने रहने की जगह की एक छोटी चीज़ ठीक करें या संभालें।" },
+  "romance-joy": { label: "प्रेम और आनंद", meaning: "कितनी हल्कापन, प्रेम और साझा आनंद मौजूद है", remedyFocus: "आज एक छोटी, कम-मेहनत वाली चीज़ केवल इसलिए करें क्योंकि वह आनंद देती है।" },
+  "competition": { label: "प्रतिस्पर्धा", meaning: "प्रतिद्वंद्वियों, समयसीमाओं या प्रतिस्पर्धी दबाव के सामने आप कैसे टिके हैं", remedyFocus: "आज का प्रयास प्रतिद्वंद्वी से तुलना पर नहीं, अपनी प्रगति पर केंद्रित करें।" },
+  "legal-conflicts": { label: "कानूनी विवाद", meaning: "विवाद, शिकायतें या कानूनी मामले किस दिशा में बढ़ने की संभावना है", remedyFocus: "विवाद का उत्तर देने से पहले तथ्य, तिथियाँ और प्रमाण सुरक्षित रखें।" },
+  "intimacy": { label: "आत्मीयता", meaning: "शारीरिक और भावनात्मक आत्मीयता कितनी सुरक्षित और जुड़ी महसूस होती है", remedyFocus: "आत्मीयता को अभी क्या चाहिए, इस पर अनुमान नहीं, एक ईमानदार बातचीत करें।" },
+  "travel-pilgrimage": { label: "यात्रा और तीर्थ", meaning: "कोई यात्रा, एकांतवास या तीर्थ आपकी भीतरी अवस्था को कैसे सहारा दे सकता है", remedyFocus: "केवल कामना करने के बजाय यात्रा या एकांतवास का एक ठोस विवरण तय करें।" },
+  "status-impact": { label: "प्रतिष्ठा और प्रभाव", meaning: "आपकी स्थिति, प्रतिष्ठा और प्रभाव दूसरों को कितना दिखाई देता है", remedyFocus: "आज एक दृश्य कार्य चुनें जो दर्शाए कि आप वास्तव में कैसे देखे जाना चाहते हैं।" },
+  "wish-fulfilment": { label: "इच्छा-पूर्ति", meaning: "कोई विशिष्ट इच्छा या लक्ष्य वास्तव में साकार होने के कितने करीब है", remedyFocus: "इच्छा को इतना विशिष्ट लिखें कि उसके आने पर आप उसे पहचान लें।" },
+};
+
 function clampMoonScore(value: number): number {
   return Math.max(22, Math.min(98, Math.round(value)));
 }
@@ -11511,6 +11571,19 @@ function moonChartVerdict(score: number): MoonChart48Verdict {
   if (score >= 68) return "Supportive";
   if (score >= 50) return "Mixed";
   return "Careful";
+}
+
+// Localized display word for a verdict. The verdict enum itself stays English
+// (it keys color logic and score bands); this is only the word shown to the
+// user, so a Hindi reading shows अति उत्तम / सहायक / मिश्रित / सावधानी.
+const MOON_CHART_VERDICT_LABEL_HI: Record<MoonChart48Verdict, string> = {
+  Excellent: "अति उत्तम",
+  Supportive: "सहायक",
+  Mixed: "मिश्रित",
+  Careful: "सावधानी",
+};
+function moonChartVerdictLabel(verdict: MoonChart48Verdict, lang: "en" | "hi" = "en"): string {
+  return lang === "hi" ? MOON_CHART_VERDICT_LABEL_HI[verdict] : verdict;
 }
 
 function moonChartCategoryLabel(category: MoonChart48Category, lang: "en" | "hi" = "en"): string {
@@ -11569,7 +11642,7 @@ function moonChartCategoryMeaning(category: MoonChart48Category, lang: "en" | "h
   return (lang === "hi" ? meaningsHi : meanings)[category];
 }
 
-function moonChartCategoryRemedyPack(category: MoonChart48Category, rashiName: string): { title: string; steps: string[] } {
+function moonChartCategoryRemedyPack(category: MoonChart48Category, rashiName: string, lang: "en" | "hi" = "en"): { title: string; steps: string[] } {
   const packs: Record<MoonChart48Category, { title: string; steps: string[] }> = {
     self: {
       title: "Courage without heat",
@@ -11612,10 +11685,58 @@ function moonChartCategoryRemedyPack(category: MoonChart48Category, rashiName: s
       steps: ["Learn one page or practise one skill.", "Take one small reversible step toward the bigger path.", "Record what worked before expanding it."],
     },
   };
-  return packs[category];
+  const packsHi: Record<MoonChart48Category, { title: string; steps: string[] }> = {
+    self: {
+      title: "बिना उत्तेजना के साहस",
+      steps: [`${rashiName} को मन में स्थिर रखते हुए दोपहर से पहले एक स्पष्ट साहसी कार्य लिखें।`, "ॐ चंद्राय नमः 11 बार जपें।", "किसी को समझाने से पहले वह कार्य चुपचाप कर लें।"],
+    },
+    mind: {
+      title: "चंद्र को शांत करें",
+      steps: ["धीरे-धीरे पानी पिएं और एक अनावश्यक उत्तेजना का स्रोत घटाएं।", "लंबी साँस छोड़ते हुए 9 धीमी साँसें लें।", "सोने से पहले ॐ चंद्राय नमः 11 बार जपें।"],
+    },
+    body: {
+      title: "शरीर को स्थिर करें",
+      steps: ["गर्म, सरल भोजन चुनें और जल्दी पानी पिएं।", "आज एक शरीर-देखभाल दिनचर्या निरंतर रखें।", "थके या भावुक होने पर शरीर की परीक्षा न लें।"],
+    },
+    relationship: {
+      title: "कोमल सच, दृढ़ सीमा",
+      steps: ["बिना आरोप के एक कोमल सच कहें।", "क्रोध में एक चंद्र-घंटे तक प्रतिक्रियात्मक उत्तर से बचें।", "बिना सौदेबाज़ी के एक देखभाल का कार्य करें।"],
+    },
+    work: {
+      title: "पहले दृश्य कर्तव्य",
+      steps: ["सबसे ज़िम्मेदारी वाला काम पहले करें।", "शब्दों को तथ्यपरक और जहाँ संभव हो लिखित रखें।", "नया शुरू करने से पहले एक दृश्य कर्तव्य साफ़-सुथरे ढंग से पूरा करें।"],
+    },
+    money: {
+      title: "संसाधन की स्पष्टता",
+      steps: ["आय, व्यय और एक टालने योग्य खर्च लिखें।", "गैर-ज़रूरी खर्च को एक दिन टालें।", "अपनी सीमा के भीतर ही भोजन या मदद बाँटें।"],
+    },
+    family: {
+      title: "घर में गर्मी घटाएं",
+      steps: ["वाणी सम्मानजनक और सामान्य से छोटी रखें।", "घर के लिए एक पोषक कार्य करें।", "मन उत्तेजित हो तो पुराना पारिवारिक घाव न कुरेदें।"],
+    },
+    spiritual: {
+      title: "धर्म के साथ संरेखण",
+      steps: ["पाँच मिनट शांत बैठें।", "अपने इष्ट, गुरु या सर्वोच्च अंतरात्मा का स्मरण करें।", "एक व्यावहारिक कार्य अहंकार नहीं, धर्म को समर्पित करें।"],
+    },
+    risk: {
+      title: "उग्रता से पहले रुकें",
+      steps: ["भावुक अवस्था में मामला न बढ़ाएं।", "तथ्य, रसीदें, स्क्रीनशॉट और तिथियाँ सुरक्षित रखें।", "कठिन कदम से पहले शांत सलाह लें।"],
+    },
+    growth: {
+      title: "छोटी, वापस लेने योग्य प्रगति",
+      steps: ["एक पृष्ठ सीखें या एक कौशल का अभ्यास करें।", "बड़े रास्ते की ओर एक छोटा वापस लेने योग्य कदम उठाएं।", "विस्तार से पहले दर्ज करें कि क्या काम आया।"],
+    },
+  };
+  return (lang === "hi" ? packsHi : packs)[category];
 }
 
-function moonChartVerdictTone(verdict: MoonChart48Verdict): string {
+function moonChartVerdictTone(verdict: MoonChart48Verdict, lang: "en" | "hi" = "en"): string {
+  if (lang === "hi") {
+    if (verdict === "Excellent") return "यह एक प्रबल चंद्र-सहयोग है। इसका आत्मविश्वास से उपयोग करें, पर विनम्रता बनाए रखें।";
+    if (verdict === "Supportive") return "यह क्षेत्र तब अच्छा चल सकता है जब आप स्थिर और सचेत रहें।";
+    if (verdict === "Mixed") return "यह क्षेत्र उपयोग योग्य है, पर समय और भावनात्मक नियंत्रण मायने रखते हैं।";
+    return "इस क्षेत्र को पहले सावधानी चाहिए। कम करें, तथ्य जाँचें, और आवेगी उग्रता से बचें।";
+  }
   if (verdict === "Excellent") return "This is a strong lunar support. Use it confidently, but keep humility.";
   if (verdict === "Supportive") return "This area can work well when you stay steady and intentional.";
   if (verdict === "Mixed") return "This area is usable, but timing and emotional regulation matter.";
@@ -11641,20 +11762,38 @@ function buildMoonChartScoreReason(input: {
   lagnaLord?: string | null;
   lagnaLordScore?: number;
   lagnaElementBias?: number;
+  lang?: "en" | "hi";
 }): string {
-  const parts = [
-    `Moon-house ${input.house} contributes ${input.houseScore >= 0 ? "+" : ""}${input.houseScore.toFixed(1)}`,
-    `${input.maha} Mahadasha ${input.mahaScore >= 0 ? "supports" : "pressures"} ${moonChartCategoryLabel(input.category).toLowerCase()}`,
-    `${input.antar} Antardasha adds ${input.antarScore >= 0 ? "help" : "caution"}`,
-    `${input.nakshatraLord} Nakshatra-lord gives ${input.nakshatraScore >= 0 ? "tone" : "friction"}`,
-    `${input.varaPlanet} Vara influence ${input.varaScore >= 0 ? "+" : ""}${input.varaScore.toFixed(1)}`,
-    `Tithi adjustment ${input.tithiBalance >= 0 ? "+" : ""}${input.tithiBalance.toFixed(1)}`,
-    `Moon-sign element bias ${input.moonSignElementBias >= 0 ? "+" : ""}${input.moonSignElementBias.toFixed(1)}`,
-    `fine lunar pulse ${input.lunarFinePulse >= 0 ? "+" : ""}${input.lunarFinePulse.toFixed(1)}`,
-  ];
+  const lang = input.lang ?? "en";
+  const parts = lang === "hi"
+    ? [
+        `चंद्र-भाव ${input.house} का योगदान ${input.houseScore >= 0 ? "+" : ""}${input.houseScore.toFixed(1)}`,
+        `${input.maha} महादशा ${moonChartCategoryLabel(input.category, "hi")} को ${input.mahaScore >= 0 ? "सहारा देती है" : "दबाव देती है"}`,
+        `${input.antar} अंतर्दशा ${input.antarScore >= 0 ? "सहायता" : "सावधानी"} जोड़ती है`,
+        `${input.nakshatraLord} नक्षत्र-स्वामी ${input.nakshatraScore >= 0 ? "अनुकूल स्वर" : "घर्षण"} देता है`,
+        `${input.varaPlanet} वार प्रभाव ${input.varaScore >= 0 ? "+" : ""}${input.varaScore.toFixed(1)}`,
+        `तिथि समायोजन ${input.tithiBalance >= 0 ? "+" : ""}${input.tithiBalance.toFixed(1)}`,
+        `चंद्र-राशि तत्व झुकाव ${input.moonSignElementBias >= 0 ? "+" : ""}${input.moonSignElementBias.toFixed(1)}`,
+        `सूक्ष्म चंद्र स्पंदन ${input.lunarFinePulse >= 0 ? "+" : ""}${input.lunarFinePulse.toFixed(1)}`,
+      ]
+    : [
+        `Moon-house ${input.house} contributes ${input.houseScore >= 0 ? "+" : ""}${input.houseScore.toFixed(1)}`,
+        `${input.maha} Mahadasha ${input.mahaScore >= 0 ? "supports" : "pressures"} ${moonChartCategoryLabel(input.category).toLowerCase()}`,
+        `${input.antar} Antardasha adds ${input.antarScore >= 0 ? "help" : "caution"}`,
+        `${input.nakshatraLord} Nakshatra-lord gives ${input.nakshatraScore >= 0 ? "tone" : "friction"}`,
+        `${input.varaPlanet} Vara influence ${input.varaScore >= 0 ? "+" : ""}${input.varaScore.toFixed(1)}`,
+        `Tithi adjustment ${input.tithiBalance >= 0 ? "+" : ""}${input.tithiBalance.toFixed(1)}`,
+        `Moon-sign element bias ${input.moonSignElementBias >= 0 ? "+" : ""}${input.moonSignElementBias.toFixed(1)}`,
+        `fine lunar pulse ${input.lunarFinePulse >= 0 ? "+" : ""}${input.lunarFinePulse.toFixed(1)}`,
+      ];
   if (input.lagnaRashiName) {
-    parts.push(`Lagna ${input.lagnaRashiName} (lord ${input.lagnaLord}) overlay ${(input.lagnaLordScore ?? 0) >= 0 ? "+" : ""}${(input.lagnaLordScore ?? 0).toFixed(1)}`);
-    parts.push(`Ascendant-sign element bias ${(input.lagnaElementBias ?? 0) >= 0 ? "+" : ""}${(input.lagnaElementBias ?? 0).toFixed(1)}`);
+    if (lang === "hi") {
+      parts.push(`लग्न ${input.lagnaRashiName} (स्वामी ${input.lagnaLord}) आवरण ${(input.lagnaLordScore ?? 0) >= 0 ? "+" : ""}${(input.lagnaLordScore ?? 0).toFixed(1)}`);
+      parts.push(`लग्न-राशि तत्व झुकाव ${(input.lagnaElementBias ?? 0) >= 0 ? "+" : ""}${(input.lagnaElementBias ?? 0).toFixed(1)}`);
+    } else {
+      parts.push(`Lagna ${input.lagnaRashiName} (lord ${input.lagnaLord}) overlay ${(input.lagnaLordScore ?? 0) >= 0 ? "+" : ""}${(input.lagnaLordScore ?? 0).toFixed(1)}`);
+      parts.push(`Ascendant-sign element bias ${(input.lagnaElementBias ?? 0) >= 0 ? "+" : ""}${(input.lagnaElementBias ?? 0).toFixed(1)}`);
+    }
   }
   return parts.join(" · ");
 }
@@ -11706,7 +11845,7 @@ function getMoonChartHouseScore(category: MoonChart48Category, house: number): n
   return 0;
 }
 
-function describeMoonChartScore(score: number, category: MoonChart48Category): string {
+function describeMoonChartScore(score: number, category: MoonChart48Category, lang: "en" | "hi" = "en"): string {
   const categoryFocus: Record<MoonChart48Category, string> = {
     self: "identity and confidence",
     mind: "mental and emotional steadiness",
@@ -11719,6 +11858,25 @@ function describeMoonChartScore(score: number, category: MoonChart48Category): s
     risk: "caution, hidden pressure, and restraint",
     growth: "learning, courage, and future direction",
   };
+  const categoryFocusHi: Record<MoonChart48Category, string> = {
+    self: "पहचान और आत्मविश्वास",
+    mind: "मानसिक और भावनात्मक स्थिरता",
+    body: "शरीर की लय और दिनचर्या",
+    relationship: "जुड़ाव, विश्वास और संवाद",
+    work: "कर्तव्य, दृश्यता और निष्पादन",
+    money: "संसाधन, बचत और दायित्व",
+    family: "घर, वाणी और पोषण",
+    spiritual: "आस्था, मुक्ति और धर्म",
+    risk: "सावधानी, छुपा दबाव और संयम",
+    growth: "सीख, साहस और भविष्य की दिशा",
+  };
+  if (lang === "hi") {
+    const f = categoryFocusHi[category];
+    if (score >= 82) return `${f} को प्रबल सहयोग मिल रहा है`;
+    if (score >= 68) return `${f} स्थिर चुनावों के साथ संभव है`;
+    if (score >= 50) return `${f} को संतुलन और समय चाहिए`;
+    return `${f} को अतिरिक्त सावधानी और स्थिरता चाहिए`;
+  }
   if (score >= 82) return `${categoryFocus[category]} are strongly supported`;
   if (score >= 68) return `${categoryFocus[category]} are workable with steady choices`;
   if (score >= 50) return `${categoryFocus[category]} need balance and timing`;
@@ -11737,7 +11895,14 @@ function buildMoonChartMultidimensionalEngine(input: {
   // now adds a secondary confirming/tempering layer, since the Ascendant is
   // classically the chart of the physical self/body/personality specifically.
   lagnaId?: number | null;
+  // When "hi", the whole reading (blueprint label/meaning, interpretation,
+  // score reason, remedy, prediction, verdict word) is produced in Hindi.
+  // Defaults to "en" so every existing caller (counselling engine, Path
+  // complement, Insights) is unchanged -- only the chart-facing display and
+  // Ask-the-chart pass "hi" when the user's chartBriefLang is Hindi.
+  lang?: "en" | "hi";
 }): MoonChart48Reading[] {
+  const lang: "en" | "hi" = input.lang ?? "en";
   const rashi = VEDIC_RASHIS[input.rashiId] ?? VEDIC_RASHIS[0];
   const lagnaRashi = typeof input.lagnaId === "number" ? VEDIC_RASHIS[input.lagnaId] ?? null : null;
   const lagnaLord = lagnaRashi ? lagnaRashi.lord.split(" ")[0] : null;
@@ -11753,7 +11918,11 @@ function buildMoonChartMultidimensionalEngine(input: {
   const maha = input.dashaState?.currentMahadasha ?? nakshatraLord;
   const antar = input.dashaState?.currentAntardasha ?? nakshatraLord;
 
-  return MOON_CHART_48_BLUEPRINTS.map((dimension, index) => {
+  return MOON_CHART_48_BLUEPRINTS.map((dimensionEn, index) => {
+    // Swap in the Hindi label/meaning/remedyFocus for this blueprint when in
+    // Hindi mode; everything numeric (category/house/weight) stays shared.
+    const hiText = lang === "hi" ? MOON_CHART_48_BLUEPRINT_HI[dimensionEn.id] : null;
+    const dimension = hiText ? { ...dimensionEn, ...hiText } : dimensionEn;
     const houseScore = getMoonChartHouseScore(dimension.category, dimension.house);
     const mahaScore = getMoonChartPlanetCategoryScore(maha, dimension.category);
     const antarScore = getMoonChartPlanetCategoryScore(antar, dimension.category);
@@ -11795,8 +11964,10 @@ function buildMoonChartMultidimensionalEngine(input: {
 
     const score = clampMoonScore(raw);
     const verdict = moonChartVerdict(score);
-    const focus = describeMoonChartScore(score, dimension.category);
-    const dashaText = input.dashaState ? `${maha} Mahadasha / ${antar} Antardasha` : `${nakshatraLord} Nakshatra-lord phase`;
+    const focus = describeMoonChartScore(score, dimension.category, lang);
+    const dashaText = input.dashaState
+      ? (lang === "hi" ? `${maha} महादशा / ${antar} अंतर्दशा` : `${maha} Mahadasha / ${antar} Antardasha`)
+      : (lang === "hi" ? `${nakshatraLord} नक्षत्र-स्वामी चरण` : `${nakshatraLord} Nakshatra-lord phase`);
     // The category-level pack (title + generic steps) is shared by every
     // blueprint in the same category on purpose -- it names a real technique
     // (e.g. "Pause before escalation") -- but its first generic step is
@@ -11804,7 +11975,7 @@ function buildMoonChartMultidimensionalEngine(input: {
     // the same category (e.g. "Hidden fears" and "Legal conflicts", both
     // category "risk") no longer render identical steps end to end. Same
     // fix philosophy as the interpretation/meaning dedup above.
-    const categoryPack = moonChartCategoryRemedyPack(dimension.category, rashi.name);
+    const categoryPack = moonChartCategoryRemedyPack(dimension.category, rashi.name, lang);
     const remedyPack = { title: categoryPack.title, steps: [dimension.remedyFocus, ...categoryPack.steps.slice(1)] };
     const scoreReason = buildMoonChartScoreReason({
       houseScore,
@@ -11825,20 +11996,33 @@ function buildMoonChartMultidimensionalEngine(input: {
       lagnaLord,
       lagnaLordScore: lagnaLordScore * 0.5,
       lagnaElementBias: lagnaElementBias + lagnaSelfBodyEmphasis,
+      lang,
     });
-    const interpretation = `In plain language, ${dimension.label.toLowerCase()} belongs to ${dimension.meaning}. ${moonChartVerdictTone(verdict)}`;
+    // dimension.label/meaning are already Hindi in Hindi mode (see hiText
+    // swap above). Proper nouns (Rashi/Nakshatra names, Tithi/Vara) stay in
+    // their standard Sanskrit/Devanagari form; vara uses its .hi field in
+    // Hindi so the day-name reads naturally.
+    const varaName = lang === "hi" ? input.vara.hi : input.vara.en;
+    const interpretation = lang === "hi"
+      ? `सरल भाषा में, ${dimension.label} का संबंध इससे है: ${dimension.meaning}। ${moonChartVerdictTone(verdict, "hi")}`
+      : `In plain language, ${dimension.label.toLowerCase()} belongs to ${dimension.meaning}. ${moonChartVerdictTone(verdict)}`;
 
     return {
       ...dimension,
       score,
       verdict,
-      prediction: `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}${lagnaRashi ? `, with Lagna ${lagnaRashi.name}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. The reading is calculated through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}${lagnaRashi ? `, tempered by the Ascendant in ${lagnaRashi.name}` : ""}.`,
+      verdictLabel: moonChartVerdictLabel(verdict, lang),
+      prediction: lang === "hi"
+        ? `चंद्र राशि ${rashi.name}${nakshatra ? `, ${nakshatra.name} नक्षत्र पाद ${pada}` : ""}${lagnaRashi ? `, लग्न ${lagnaRashi.name} के साथ` : ""} से, ${dimension.label} आज ${focus}। यह पठन चंद्र-भाव ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, और ${varaName}${lagnaRashi ? `, लग्न ${lagnaRashi.name} द्वारा संतुलित` : ""} के माध्यम से गणना किया गया है।`
+        : `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}${lagnaRashi ? `, with Lagna ${lagnaRashi.name}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. The reading is calculated through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}${lagnaRashi ? `, tempered by the Ascendant in ${lagnaRashi.name}` : ""}.`,
       interpretation,
       scoreReason,
-      remedy: `Moon-chart remedy: ${remedyPack.steps.join(" ")}`,
+      remedy: lang === "hi" ? `चंद्र-चार्ट उपाय: ${remedyPack.steps.join(" ")}` : `Moon-chart remedy: ${remedyPack.steps.join(" ")}`,
       remedyTitle: remedyPack.title,
       remedySteps: remedyPack.steps,
-      calculationBasis: `Moon-chart basis (primary): sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.${lagnaRashi ? ` Ascendant overlay (secondary): Lagna ${lagnaRashi.name}, lord ${lagnaLord}.` : ""}`,
+      calculationBasis: lang === "hi"
+        ? `चंद्र-चार्ट आधार (प्राथमिक): सायडरियल चंद्र ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "उपलब्ध नहीं"}°; जन्म राशि ${rashi.name}; नक्षत्र ${nakshatra?.name ?? "अनुमानित"}; पाद ${pada}; चंद्र से भाव ${dimension.house}; दशा ${maha}/${antar}; तिथि ${input.tithi.number}।${lagnaRashi ? ` लग्न आवरण (द्वितीयक): लग्न ${lagnaRashi.name}, स्वामी ${lagnaLord}।` : ""}`
+        : `Moon-chart basis (primary): sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.${lagnaRashi ? ` Ascendant overlay (secondary): Lagna ${lagnaRashi.name}, lord ${lagnaLord}.` : ""}`,
       visualAngle: (index % 12) * 30,
       visualDepth: Math.max(0.12, Math.min(1, score / 100)),
     };
@@ -13858,6 +14042,29 @@ export default function App() {
         })
       : [],
     [vedicRashiInfo, vedicJanmaNakshatra, vedicDashaState, vedicTithi, vedicVara, vedicLagnaInfo]
+  );
+  // Language-aware copy of the 48-axis lunar readout for the chart-facing
+  // surfaces (Ask-the-chart). The English `vedicMoonChart48Readings` above is
+  // kept as the canonical for the counselling engine / Path complement /
+  // Insights (which stay English), so switching chartBriefLang never leaks
+  // Hindi snippets into the English counselling synthesis. When the toggle is
+  // English this is the exact same array (no double compute); only Hindi
+  // recomputes with lang: "hi".
+  const vedicMoonChart48ReadingsLocalized = useMemo(
+    () => chartBriefLang === "en"
+      ? vedicMoonChart48Readings
+      : (vedicRashiInfo
+          ? buildMoonChartMultidimensionalEngine({
+              rashiId: vedicRashiInfo.rashiId,
+              janmaNakshatra: vedicJanmaNakshatra,
+              dashaState: vedicDashaState,
+              tithi: vedicTithi,
+              vara: vedicVara,
+              lagnaId: vedicLagnaInfo?.lagnaId ?? null,
+              lang: "hi",
+            })
+          : []),
+    [chartBriefLang, vedicMoonChart48Readings, vedicRashiInfo, vedicJanmaNakshatra, vedicDashaState, vedicTithi, vedicVara, vedicLagnaInfo]
   );
   const hasExactBirthDetails =
     /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
@@ -17760,7 +17967,11 @@ async function fetchGeminiAIHelp(
         currentAntardashaEndsAtIso: dasha?.antardashaEndsAtIso ?? null,
         todayTithi: vedicTithi?.name ?? "today's Tithi",
         todayVara: vedicVara?.name ?? "today",
-        moonChart48Readings: vedicMoonChart48Readings,
+        // Localized readings so the embedded anchor/careful label +
+        // interpretation + scoreReason inside the Ask-the-chart reply are in
+        // the same language as the surrounding narration (closes the earlier
+        // English-snippets-in-Hindi partial).
+        moonChart48Readings: vedicMoonChart48ReadingsLocalized,
         lang: chartBriefLang,
       });
       const astroMsg = {
@@ -30288,7 +30499,7 @@ function BirthChartSection({
     /^\d{2}:\d{2}$/.test(profileBirthTime) &&
     profileBirthPlace.trim().length >= 3;
   const moonChart48Readings = rashiInfo
-    ? buildMoonChartMultidimensionalEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara, lagnaId: lagnaInfo?.lagnaId ?? null })
+    ? buildMoonChartMultidimensionalEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara, lagnaId: lagnaInfo?.lagnaId ?? null, lang: chartBriefLang })
     : [];
   const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
   // Gochar (current transits) read from the natal Moon — the "now" foresight
@@ -31126,8 +31337,8 @@ function BirthChartSection({
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                       <Text style={{ color, fontSize: 12, fontWeight: "900", width: 34 }}>{item.average}</Text>
                       <View style={{ flex: 1 }}>
-                        <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "900" }}>{moonChartCategoryLabel(item.category)}</Text>
-                        <Text style={{ color: "#263244", fontSize: 12, lineHeight: 16 }}>{item.anchor.label} · {item.anchor.verdict}</Text>
+                        <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "900" }}>{moonChartCategoryLabel(item.category, chartBriefLang)}</Text>
+                        <Text style={{ color: "#263244", fontSize: 12, lineHeight: 16 }}>{item.anchor.label} · {item.anchor.verdictLabel}</Text>
                       </View>
                     </View>
                   </View>
@@ -31137,24 +31348,24 @@ function BirthChartSection({
           </View>
 
           <View style={{ backgroundColor: "#F1EFDF", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,211,77,0.35)" }}>
-            <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Strongest lunar supports · with explanation</Text>
+            <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>{chartBriefLang === "hi" ? "सबसे प्रबल चंद्र-सहयोग · व्याख्या सहित" : "Strongest lunar supports · with explanation"}</Text>
             {moonChart48Summary.top.map((item) => (
               <View key={`top-${item.id}`} style={{ borderRadius: 13, backgroundColor: "#FBFAF2", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, padding: 10, gap: 5 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                   <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
-                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}/100</Text>
+                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdictLabel} · {item.score}/100</Text>
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{item.interpretation}</Text>
-                <Text style={{ color: "#0057B8", fontSize: 12, lineHeight: 16 }}>Why: {item.scoreReason}</Text>
+                <Text style={{ color: "#0057B8", fontSize: 12, lineHeight: 16 }}>{chartBriefLang === "hi" ? "क्यों: " : "Why: "}{item.scoreReason}</Text>
               </View>
             ))}
           </View>
 
           <View style={{ backgroundColor: "#FEECEC", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,165,165,0.4)" }}>
-            <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Care points · remedies made practical</Text>
+            <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>{chartBriefLang === "hi" ? "सावधानी बिंदु · व्यावहारिक उपाय" : "Care points · remedies made practical"}</Text>
             {moonChart48Summary.careful.map((item) => (
               <View key={`care-${item.id}`} style={{ gap: 6, borderRadius: 13, padding: 10, backgroundColor: "rgba(127,29,29,0.12)", borderWidth: 1, borderColor: "rgba(252,165,165,0.22)" }}>
-                <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900" }}>{item.label} · {item.verdict} · {item.score}/100</Text>
+                <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900" }}>{item.label} · {item.verdictLabel} · {item.score}/100</Text>
                 <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{item.interpretation}</Text>
                 <Text style={{ color: "#0CAC62", fontSize: 12, fontWeight: "900" }}>{item.remedyTitle}</Text>
                 {item.remedySteps.map((step, stepIndex) => (
@@ -31165,17 +31376,17 @@ function BirthChartSection({
           </View>
 
           <View style={{ gap: 8 }}>
-            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>Complete multidimensional calculated trace</Text>
+            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>{chartBriefLang === "hi" ? "पूर्ण बहुआयामी गणना-विवरण" : "Complete multidimensional calculated trace"}</Text>
             {moonChart48Readings.map((item) => (
               <View key={item.id} style={{ backgroundColor: "#F4F8F7", borderRadius: 14, padding: 11, borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, gap: 5, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 8, transform: [{ perspective: 700 }, { translateY: item.verdict === "Excellent" ? -1 : 0 }] }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                   <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
-                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}</Text>
+                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdictLabel} · {item.score}</Text>
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{item.prediction}</Text>
                 <Text style={{ color: "#006EB8", fontSize: 12, lineHeight: 17 }}>{item.interpretation}</Text>
                 <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{item.remedyTitle}: </Text>{item.remedySteps.join(" ")}</Text>
-                <Text style={{ color: "rgba(0,82,184,0.78)", fontSize: 12, lineHeight: 16 }}>Score trace: {item.scoreReason}</Text>
+                <Text style={{ color: "rgba(0,82,184,0.78)", fontSize: 12, lineHeight: 16 }}>{chartBriefLang === "hi" ? "गणना-विवरण: " : "Score trace: "}{item.scoreReason}</Text>
                 <Text style={{ color: "#111827", fontSize: 12, lineHeight: 16 }}>{item.calculationBasis}</Text>
               </View>
             ))}
