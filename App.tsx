@@ -20638,6 +20638,7 @@ function isTrustedExternalUrl(url: string) {
                         accessibilityRole="button"
                         accessibilityLabel={lng === "en" ? "Reply in English" : "उत्तर हिंदी में"}
                         accessibilityState={{ selected: chartBriefLang === lng }}
+                        hitSlop={{ top: 12, bottom: 12, left: 6, right: 6 }}
                         style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, backgroundColor: chartBriefLang === lng ? "#D97706" : "transparent" }}
                       >
                         <Text style={{ color: chartBriefLang === lng ? "#FFFFFF" : "#B45309", fontSize: 12, fontWeight: "800" }}>{lng === "en" ? "EN" : "हिं"}</Text>
@@ -23469,7 +23470,8 @@ function ToneLibrarySection({
               onPress={() => { void Haptics.selectionAsync(); setToneVolume((v) => clampToneVolume(v - 0.02)); }}
               accessibilityRole="button"
               accessibilityLabel="Decrease volume"
-              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(15,23,42,0.08)" }}
             >
               <Text style={{ color: "#25364D", fontSize: 16, fontWeight: "900" }}>−</Text>
             </Pressable>
@@ -23485,7 +23487,8 @@ function ToneLibrarySection({
               onPress={() => { void Haptics.selectionAsync(); setToneVolume((v) => clampToneVolume(v + 0.02)); }}
               accessibilityRole="button"
               accessibilityLabel="Increase volume"
-              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(15,23,42,0.08)" }}
             >
               <Text style={{ color: "#25364D", fontSize: 16, fontWeight: "900" }}>+</Text>
             </Pressable>
@@ -29651,7 +29654,8 @@ function SettingsSection({
               accessibilityRole="button"
               accessibilityLabel="Slower"
               onPress={() => setVoiceRate((v) => clampVoiceRate(v - 0.05))}
-              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(15,23,42,0.08)" }}
             >
               <Text style={{ color: "#263244", fontSize: 16, fontWeight: "900" }}>–</Text>
             </Pressable>
@@ -29669,7 +29673,8 @@ function SettingsSection({
               accessibilityRole="button"
               accessibilityLabel="Faster"
               onPress={() => setVoiceRate((v) => clampVoiceRate(v + 0.05))}
-              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(15,23,42,0.08)" }}
             >
               <Text style={{ color: "#263244", fontSize: 16, fontWeight: "900" }}>+</Text>
             </Pressable>
@@ -30935,6 +30940,7 @@ function BirthChartSection({
                 accessibilityRole="button"
                 accessibilityState={{ selected: chartBriefLang === "en" }}
                 onPress={() => setChartBriefLang("en")}
+                hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
                 style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "en" ? "#9A3412" : "transparent" }}
               >
                 <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "en" ? "#FFFFFF" : "#9A3412" }}>English</Text>
@@ -30943,6 +30949,7 @@ function BirthChartSection({
                 accessibilityRole="button"
                 accessibilityState={{ selected: chartBriefLang === "hi" }}
                 onPress={() => setChartBriefLang("hi")}
+                hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
                 style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: chartBriefLang === "hi" ? "#9A3412" : "transparent" }}
               >
                 <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "hi" ? "#FFFFFF" : "#9A3412" }}>हिन्दी</Text>
@@ -31134,6 +31141,7 @@ function BirthChartSection({
                       accessibilityRole="button"
                       accessibilityState={{ selected: chartBriefLang === "en" }}
                       onPress={() => setChartBriefLang("en")}
+                      hitSlop={{ top: 11, bottom: 11, left: 4, right: 4 }}
                       style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6, backgroundColor: chartBriefLang === "en" ? "#5C00B8" : "transparent" }}
                     >
                       <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "en" ? "#FFFFFF" : "#5C00B8" }}>English</Text>
@@ -31142,6 +31150,7 @@ function BirthChartSection({
                       accessibilityRole="button"
                       accessibilityState={{ selected: chartBriefLang === "hi" }}
                       onPress={() => setChartBriefLang("hi")}
+                      hitSlop={{ top: 11, bottom: 11, left: 4, right: 4 }}
                       style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6, backgroundColor: chartBriefLang === "hi" ? "#5C00B8" : "transparent" }}
                     >
                       <Text style={{ fontSize: 12, fontWeight: "800", color: chartBriefLang === "hi" ? "#FFFFFF" : "#5C00B8" }}>हिन्दी</Text>
