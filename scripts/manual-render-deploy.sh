@@ -13,6 +13,15 @@ cd "$(dirname "$0")/.."
 REPO_ROOT="$(pwd)"
 SRC_SHA="$(git rev-parse HEAD)"
 
+# Branches are shared across the whole repo (not per-worktree), so a
+# "render-deploy" branch left over from an earlier run of this script --
+# e.g. one that was interrupted, or whose worktree cleanup ran but the
+# branch ref itself was never deleted -- blocks the `git checkout --orphan
+# render-deploy` below with "fatal: a branch named 'render-deploy' already
+# exists". Clear it defensively before starting so every run is a clean
+# orphan branch, not just the first one.
+git branch -D render-deploy >/dev/null 2>&1 || true
+
 echo "==> Verifying (typecheck + regression suites) before building anything for production..."
 pnpm run typecheck
 pnpm run test:tone
@@ -33,6 +42,9 @@ git worktree add --detach "$WORKTREE_DIR" >/dev/null
 cleanup() {
   cd "$REPO_ROOT"
   git worktree remove "$WORKTREE_DIR" --force >/dev/null 2>&1 || true
+  # Also drop the branch itself (not just the worktree) so the next run
+  # doesn't hit the same "already exists" failure.
+  git branch -D render-deploy >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 

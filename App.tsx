@@ -36248,9 +36248,9 @@ function CounselingChatModal({
         behavior="padding"
         keyboardVerticalOffset={0}
       >
-      <View style={{ flex: 1, backgroundColor: "#E1EEEC" }}>
+      <View style={{ flex: 1, backgroundColor: "#EAF3F1" }}>
         {/* Header */}
-        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Math.max(insets.top, 12) + 12, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#E1EEEC", backgroundColor: "#E1EEEC" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Math.max(insets.top, 12) + 12, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#DCE9E6", backgroundColor: "#FFFFFF" }}>
           <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
             <Text style={{ color: "#0E9488", fontSize: 22 }}>←</Text>
           </Pressable>
@@ -36327,8 +36327,8 @@ function CounselingChatModal({
                     <Text style={{ fontSize: 16 }}>🌟</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <View style={{ backgroundColor: "#E1EEEC", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 }}>
-                      <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                    <View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, borderWidth: 1, borderColor: "#E0EBE8", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 }}>
+                      <Text style={{ color: "#213A4A", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
                     </View>
                     {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginLeft: 4 }}>{turnTime}</Text>}
                   </View>
@@ -36336,8 +36336,8 @@ function CounselingChatModal({
               )}
               {turn.role === "user" && (
                 <View style={{ maxWidth: "80%", alignItems: "flex-end" }}>
-                  <View style={{ backgroundColor: "#DEF2F2", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 1 }}>
-                    <Text style={{ color: "#3A617D", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                  <View style={{ backgroundColor: "#CDEBE5", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 1 }}>
+                    <Text style={{ color: "#123A38", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
                   </View>
                   {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginRight: 4 }}>{turnTime}</Text>}
                 </View>
@@ -36355,7 +36355,7 @@ function CounselingChatModal({
                 <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <Text style={{ fontSize: 16 }}>🌟</Text>
                 </View>
-                <Animated.View style={{ backgroundColor: "#E1EEEC", borderRadius: 16, borderBottomLeftRadius: 4, paddingVertical: 14, paddingHorizontal: 16, opacity: typingDotsAnim }}>
+                <Animated.View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, borderBottomLeftRadius: 4, paddingVertical: 14, paddingHorizontal: 16, borderWidth: 1, borderColor: "#E0EBE8", opacity: typingDotsAnim }}>
                   <Text style={{ color: "#3A617D", fontSize: 18, fontWeight: "900", letterSpacing: 2 }}>•••</Text>
                 </Animated.View>
               </View>
@@ -36387,7 +36387,7 @@ function CounselingChatModal({
               )}
               <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Your recommended journey</Text>
               {journeySteps.map((step, i) => (
-                <View key={step.tabId} style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", gap: 12, borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
+                <View key={step.tabId} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "#E0EBE8", borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
                   <Text style={{ fontSize: 22 }}>{step.emoji}</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "700" }}>{i + 1}. {step.label}</Text>
@@ -36399,7 +36399,7 @@ function CounselingChatModal({
               {synthText.trim().length > 0 && (
                 <Pressable
                   onPress={() => speakText(synthText)}
-                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#E1EEEC", borderRadius: 12, padding: 12, marginTop: 4, opacity: pressed ? 0.7 : 1, borderWidth: 1, borderColor: "#1E3A4A" })}
+                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 12, padding: 12, marginTop: 4, opacity: pressed ? 0.7 : 1, borderWidth: 1, borderColor: "#B7CEC9" })}
                   accessibilityLabel="Replay guide summary aloud"
                 >
                   <Text style={{ fontSize: 18 }}>🔊</Text>
@@ -36453,14 +36453,14 @@ function CounselingChatModal({
 
         {/* Input area */}
         {session.stage !== "synthesizing" && (
-          <View style={{ backgroundColor: "#E1EEEC", borderTopWidth: 1, borderTopColor: "#E1EEEC", paddingHorizontal: 16, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 12), flexDirection: "row", alignItems: "flex-end", gap: 10 }}>
+          <View style={{ backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#DCE9E6", paddingHorizontal: 16, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 12), flexDirection: "row", alignItems: "flex-end", gap: 10, shadowColor: "#0E9488", shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 }}>
             <View style={{ flex: 1 }}>
               <TextInput
                 value={draft}
                 onChangeText={setDraft}
                 placeholder={isListening ? "Listening..." : "Reply here..."}
-                placeholderTextColor="#334155"
-                style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 12, color: "#3A617D", fontSize: 14, lineHeight: 20, maxHeight: 120, borderWidth: 1, borderColor: isListening ? "#0E9488" : "#1E3A4A" }}
+                placeholderTextColor="#5B7480"
+                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, padding: 12, color: "#213A4A", fontSize: 14, lineHeight: 20, maxHeight: 120, borderWidth: 1, borderColor: isListening ? "#0E9488" : "#C4D8D4" }}
                 multiline
                 textAlignVertical="top"
               />
@@ -36484,9 +36484,9 @@ function CounselingChatModal({
               disabled={isGuideTyping}
               accessibilityRole="button"
               accessibilityLabel={isGuideTyping ? "Your guide is replying" : "Send message"}
-              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#E1EEEC", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
             >
-              <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#263244", fontSize: 20 }}>↑</Text>
+              <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068", fontSize: 20 }}>↑</Text>
             </Pressable>
           </View>
         )}
@@ -44080,14 +44080,14 @@ const styles = StyleSheet.create({
     flexBasis: 210,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#3000B8",
-    backgroundColor: "#F4F8F7",
-    padding: 10,
+    borderColor: "#DAD8F0",
+    backgroundColor: "#FFFFFF",
+    padding: 14,
     gap: 7,
-    shadowColor: "#3000B8",
+    shadowColor: "#3730A3",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
     elevation: 2
   },
   calmTeachingTop: {
@@ -44099,36 +44099,39 @@ const styles = StyleSheet.create({
   calmTeachingSource: {
     flex: 1,
     color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900"
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: -0.2
   },
   calmTeachingTheme: {
-    color: "#0891B2",
+    color: "#4338CA",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "800",
+    letterSpacing: 0.4,
     textTransform: "uppercase"
   },
   calmTeachingText: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "800",
+    color: "#1F2937",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "600",
     flexShrink: 1,
     minWidth: 0
   },
   calmTeachingPractice: {
-    color: "#111827",
+    color: "#374151",
     fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700",
+    lineHeight: 18,
+    fontWeight: "500",
     flexShrink: 1,
     minWidth: 0
   },
   calmTeachingRef: {
-    color: "#111827",
+    color: "#4338CA",
     fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "800"
+    lineHeight: 17,
+    fontWeight: "700",
+    marginTop: 2
   },
   // ── Wisdom share ─────────────────────────────────────────────────────────
   wisdomShareRow: {
@@ -44293,20 +44296,21 @@ const styles = StyleSheet.create({
     gap: 8
   },
   calmQuickActionButton: {
-    minHeight: 36,
+    minHeight: 40,
+    marginTop: 2,
     borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.4)",
-    backgroundColor: "rgba(14,111,105,0.12)",
+    borderColor: "rgba(14,111,105,0.28)",
+    backgroundColor: "#E6F4F2",
     alignItems: "center",
     justifyContent: "center"
   },
   calmQuickActionLabel: {
-    color: "#00B8A4",
+    color: "#0B6E67",
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "800"
   },
   routineButton: {
     minHeight: 78,
