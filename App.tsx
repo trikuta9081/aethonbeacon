@@ -19672,8 +19672,7 @@ function isTrustedExternalUrl(url: string) {
                       borderWidth: 1, borderColor: "rgba(99,222,208,0.18)", overflow: "hidden",
                       shadowColor: "#0F3D5E", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 22, elevation: 10
                     }}>
-                      <View pointerEvents="none" style={{ position: "absolute", right: -40, top: -55, width: 150, height: 150, borderRadius: 75, backgroundColor: "rgba(99,222,208,0.10)" }} />
-                      <View pointerEvents="none" style={{ position: "absolute", left: -35, bottom: -60, width: 130, height: 130, borderRadius: 65, backgroundColor: "rgba(129,140,248,0.08)" }} />
+                      <CardGlows />
                       {/* Row 1: greeting label */}
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
                         <Text style={{ fontSize: 13 }}>{greetEmoji}</Text>
@@ -19835,12 +19834,14 @@ function isTrustedExternalUrl(url: string) {
                   borderWidth: 1,
                   borderColor: hasExactBirthDetails ? "rgba(252,211,77,0.42)" : "rgba(148,163,184,0.22)",
                   padding: 14,
+                  overflow: "hidden",
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 12,
                   opacity: pressed ? 0.82 : 1,
                 })}
               >
+                <CardGlows />
                 <View style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: "rgba(252,211,77,0.1)", alignItems: "center", justifyContent: "center" }}>
                   <Text style={{ fontSize: 23 }}>🪐</Text>
                 </View>
@@ -36499,6 +36500,23 @@ const SMART_HINTS = [
 ];
 
 // ── Dynamic Hero Card ────────────────────────────────────────────────────────
+// Reusable soft brand-colour glow set for premium card depth. Drop <CardGlows/>
+// as the first child of any card that has overflow:"hidden" -- the absolutely
+// positioned circles sit behind the content (pointerEvents none, so taps and
+// text are unaffected) and read as a gradient glow on web and native. `strong`
+// is used on the primary hero; the default subtler set is for supporting cards
+// so the front feels consistently lit without becoming busy.
+function CardGlows({ strong = false }: { strong?: boolean }) {
+  const a = strong ? 1 : 0.6; // opacity multiplier for supporting cards
+  return (
+    <>
+      <View pointerEvents="none" style={{ position: "absolute", top: -70, right: -55, width: 220, height: 220, borderRadius: 110, backgroundColor: `rgba(196,163,90,${(0.30 * a).toFixed(3)})` }} />
+      <View pointerEvents="none" style={{ position: "absolute", bottom: -80, left: -60, width: 240, height: 240, borderRadius: 120, backgroundColor: `rgba(8,145,178,${(0.24 * a).toFixed(3)})` }} />
+      <View pointerEvents="none" style={{ position: "absolute", top: 30, left: -35, width: 140, height: 140, borderRadius: 70, backgroundColor: `rgba(124,58,237,${(0.12 * a).toFixed(3)})` }} />
+    </>
+  );
+}
+
 function DynamicHeroCard({
   homeIssueDraft,
   setHomeIssueDraft,
@@ -36558,9 +36576,7 @@ function DynamicHeroCard({
           a soft arc shows; clipped by the card's overflow:hidden; pointerEvents
           none so they never intercept taps. This is the premium-wellness "lit
           from within" look without needing a gradient library. */}
-      <View pointerEvents="none" style={{ position: "absolute", top: -80, right: -60, width: 260, height: 260, borderRadius: 130, backgroundColor: "rgba(196,163,90,0.32)" }} />
-      <View pointerEvents="none" style={{ position: "absolute", bottom: -90, left: -70, width: 280, height: 280, borderRadius: 140, backgroundColor: "rgba(8,145,178,0.26)" }} />
-      <View pointerEvents="none" style={{ position: "absolute", top: 30, left: -40, width: 160, height: 160, borderRadius: 80, backgroundColor: "rgba(124,58,237,0.14)" }} />
+      <CardGlows strong />
       <View pointerEvents="none" style={{ position: "absolute", bottom: 60, right: -30, width: 130, height: 130, borderRadius: 65, backgroundColor: "rgba(236,72,153,0.10)" }} />
       {/* Top strip — date + streak */}
       <View style={styles.dynamicHeroTopStrip}>
