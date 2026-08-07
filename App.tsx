@@ -13785,15 +13785,6 @@ export default function App() {
     return streak;
   }, [entries]);
 
-  const streakMilestoneLabel = useMemo(() => {
-    if (checkInStreak >= 30) return "🔥 30 days — unstoppable";
-    if (checkInStreak >= 14) return "⚡ 2 weeks strong — remarkable";
-    if (checkInStreak >= 7) return "🌟 7-day streak — real momentum";
-    if (checkInStreak >= 3) return "✅ 3 days in — habit forming";
-    if (checkInStreak === 1) return "👋 First step taken — keep going";
-    return null;
-  }, [checkInStreak]);
-
   // Reward "pop" on the Home hero's streak badge -- a real milestone moment
   // (Duolingo/Cred-style tasteful celebration) rather than the badge just
   // silently incrementing. One-shot spring, not a loop -- fires only the
@@ -20288,15 +20279,7 @@ function isTrustedExternalUrl(url: string) {
                   (nakQ?.quality ? nakQ.quality.split(". ")[0] + "." : "A steady day to act with intention.");
                 return (
                   <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#FFFFFF", borderRadius: 18, borderCurve: "continuous", borderWidth: 1, borderColor: "#E1E8F0", padding: 16, shadowColor: "#0F3D5E", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 14, elevation: 3 }}>
-                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                      <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Your day, one place to start</Text>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: checkInStreak > 0 ? "rgba(234,88,12,0.10)" : "#EEF3F1", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
-                        <Text style={{ fontSize: 13 }}>{checkInStreak > 0 ? "🔥" : "🌱"}</Text>
-                        <Text style={{ color: checkInStreak > 0 ? "#C2410C" : "#4A6068", fontSize: 12, fontWeight: "800" }}>
-                          {checkInStreak > 0 ? `${checkInStreak}-day streak` : "Start your streak"}
-                        </Text>
-                      </View>
-                    </View>
+                    <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 12 }}>Your day, one place to start</Text>
                     <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10, marginBottom: 12 }}>
                       <Text style={{ fontSize: 20 }}>🌙</Text>
                       <View style={{ flex: 1 }}>
@@ -20307,7 +20290,11 @@ function isTrustedExternalUrl(url: string) {
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 }}>
                       <Text style={{ fontSize: 20 }}>{checkedInToday ? "✅" : "📝"}</Text>
                       <Text style={{ flex: 1, color: checkedInToday ? "#0D6B36" : "#446573", fontSize: 13, fontWeight: checkedInToday ? "700" : "600" }}>
-                        {checkedInToday ? "You've checked in today — streak kept." : "One honest check-in keeps your streak going."}
+                        {checkedInToday
+                          ? "You've checked in today — streak kept."
+                          : checkInStreak > 0
+                          ? `One check-in keeps your ${checkInStreak}-day streak — ${hoursLeftInDay}h left today.`
+                          : "One honest check-in starts your streak."}
                       </Text>
                     </View>
                     <Pressable
@@ -20450,36 +20437,10 @@ function isTrustedExternalUrl(url: string) {
                 </Pressable>
               )}
 
-              {/* ── Streak Protection Banner ── */}
-              {checkInStreak > 0 && todayEntries.length === 0 && (
-                <View style={styles.streakProtectionBanner}>
-                  <Text style={styles.streakProtectionEmoji}>⚠️</Text>
-                  <View style={styles.streakProtectionText}>
-                    <Text style={styles.streakProtectionTitle}>Your {checkInStreak}-day streak ends in {hoursLeftInDay} hour{hoursLeftInDay === 1 ? "" : "s"}!</Text>
-                    <Text style={styles.streakProtectionSub}>Log one note today to keep it alive.</Text>
-                  </View>
-                  <Pressable onPress={() => handleTabPress("journal")} style={styles.streakProtectionCTA}>
-                    <Text style={styles.streakProtectionCTALabel}>Log now</Text>
-                  </Pressable>
-                </View>
-              )}
-
-              {/* ── Streak Card ── */}
-              {checkInStreak > 0 && (
-                <View style={styles.streakCard}>
-                  <View style={styles.streakLeft}>
-                    <Text style={styles.streakCount}>{checkInStreak}</Text>
-                    <Text style={styles.streakUnit}>day{checkInStreak !== 1 ? "s" : ""}</Text>
-                  </View>
-                  <View style={styles.streakRight}>
-                    <Text style={styles.streakTitle}>Check-in streak</Text>
-                    {streakMilestoneLabel ? (
-                      <Text style={styles.streakMilestone}>{streakMilestoneLabel}</Text>
-                    ) : null}
-                    <Text style={styles.streakHint}>Keep logging daily to grow your streak</Text>
-                  </View>
-                </View>
-              )}
+              {/* Streak Protection Banner and Streak Card removed — the daily
+                  anchor at the top now carries the streak, the check-in prompt,
+                  and the "hours left today" urgency in one place, so these two
+                  cards were pure duplication. Keeps the front page light. */}
 
               {/* ── Weekly Recap Card ── */}
               {(weeklyCheckInCount > 0 || vedicRashiInfo) && (
