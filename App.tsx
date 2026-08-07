@@ -30540,6 +30540,10 @@ function BirthChartSection({
     });
   }, []);
   const allMoonDimsExpanded = moonChart48Readings.length > 0 && expandedMoonDims.size >= moonChart48Readings.length;
+  // The Advanced Vedic engine (D1/Navamsa/Yogas/Ashtakavarga/Shadbala) is a
+  // very long, chart-heavy block. Collapsed by default so it doesn't bury the
+  // rest of the tab; the reader opens it deliberately.
+  const [advancedVedicOpen, setAdvancedVedicOpen] = React.useState(false);
   // Gochar (current transits) read from the natal Moon — the "now" foresight
   // layer. Memoized per day so it is not recomputed on unrelated renders.
   const gocharDayKey = new Date().toISOString().slice(0, 10);
@@ -31471,17 +31475,27 @@ function BirthChartSection({
 
       {birthChartCore && (
         <View style={{ backgroundColor: "#EDEAF7", borderRadius: 22, padding: 14, borderWidth: 1, borderColor: "rgba(124,58,237,0.28)", gap: 12 }}>
-          <View>
-            <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-              🕉️ Advanced Vedic Engine — D9 Navamsa · Yogas · Ashtakavarga · Shadbala
-            </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: advancedVedicOpen }}
+            accessibilityLabel={`Advanced Vedic engine. ${advancedVedicOpen ? "Tap to collapse" : "Tap to expand"}`}
+            onPress={() => { void Haptics.selectionAsync(); setAdvancedVedicOpen((v) => !v); }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
+              <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
+                🕉️ Advanced Vedic Engine — D9 Navamsa · Yogas · Ashtakavarga · Shadbala
+              </Text>
+              <Text style={{ color: "#5B21B6", fontSize: 13, fontWeight: "900", width: 16, textAlign: "center" }}>{advancedVedicOpen ? "▾" : "▸"}</Text>
+            </View>
             <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
               Built from a real navagraha ephemeris (all nine grahas, not just Sun and Moon) and{" "}
               {birthChartCore.precise
                 ? "your precise, coordinate-based Ascendant."
                 : "an estimated Ascendant — add your exact birth time and place above to unlock the house-dependent sections below (Kendradi/Dig Bala, Ashtakavarga, and the Lagna-based Yogas)."}
+              {!advancedVedicOpen ? (chartBriefLang === "hi" ? "  टैप करके खोलें।" : "  Tap to open.") : ""}
             </Text>
-          </View>
+          </Pressable>
+          {advancedVedicOpen && (<>
 
           {/* D1 Rashi chart wheel -- Lagna-anchored birth chart, distinct from
               the Moon-anchored radial map in the multidimensional engine above. */}
@@ -31657,6 +31671,7 @@ function BirthChartSection({
               </Text>
             )}
           </View>
+          </>)}
         </View>
       )}
 
