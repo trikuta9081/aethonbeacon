@@ -20253,6 +20253,57 @@ function isTrustedExternalUrl(url: string) {
                 );
               })()}
 
+              {/* ── DAILY ANCHOR ── one place to start the day: the streak, today's
+                  chart cue, and the day's single action, fused into one return
+                  loop. This is the retention centrepiece -- a reason to open the
+                  app each morning that also stitches the sections together. ── */}
+              {(() => {
+                const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+                const checkedInToday = entries.some((e) => {
+                  const d = new Date(e.createdAt); d.setHours(0, 0, 0, 0);
+                  return d.getTime() === todayStart.getTime();
+                });
+                const nak = vedicTodayNakshatra;
+                const nakQ = NAKSHATRA_QUALITIES[nak.id];
+                const cosmicLine =
+                  (vedicPredictionLines && vedicPredictionLines[0]) ||
+                  (nakQ?.quality ? nakQ.quality.split(". ")[0] + "." : "A steady day to act with intention.");
+                return (
+                  <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#FFFFFF", borderRadius: 18, borderCurve: "continuous", borderWidth: 1, borderColor: "#E1E8F0", padding: 16, shadowColor: "#0F3D5E", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 14, elevation: 3 }}>
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                      <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Your day, one place to start</Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: checkInStreak > 0 ? "rgba(234,88,12,0.10)" : "#EEF3F1", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+                        <Text style={{ fontSize: 13 }}>{checkInStreak > 0 ? "🔥" : "🌱"}</Text>
+                        <Text style={{ color: checkInStreak > 0 ? "#C2410C" : "#4A6068", fontSize: 12, fontWeight: "800" }}>
+                          {checkInStreak > 0 ? `${checkInStreak}-day streak` : "Start your streak"}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10, marginBottom: 12 }}>
+                      <Text style={{ fontSize: 20 }}>🌙</Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "800", marginBottom: 2 }}>Today · Moon in {nak.name}</Text>
+                        <Text style={{ color: "#446573", fontSize: 12, lineHeight: 18 }} numberOfLines={3}>{cosmicLine}</Text>
+                      </View>
+                    </View>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                      <Text style={{ fontSize: 20 }}>{checkedInToday ? "✅" : "📝"}</Text>
+                      <Text style={{ flex: 1, color: checkedInToday ? "#0D6B36" : "#446573", fontSize: 13, fontWeight: checkedInToday ? "700" : "600" }}>
+                        {checkedInToday ? "You've checked in today — streak kept." : "One honest check-in keeps your streak going."}
+                      </Text>
+                    </View>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={checkedInToday ? "Continue your path" : "Check in now"}
+                      onPress={() => { void Haptics.selectionAsync(); handleTabPress(checkedInToday ? "guide" : "journal"); }}
+                      style={({ pressed }) => ({ backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 12, borderCurve: "continuous", paddingVertical: 13, alignItems: "center" })}
+                    >
+                      <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>{checkedInToday ? "Continue your path →" : "Check in now →"}</Text>
+                    </Pressable>
+                  </View>
+                );
+              })()}
+
               {/* ── First-run explainer card (shows once, dismissible) ── */}
               {!hasSeenWelcomeCard && (
                 <View style={styles.welcomeExplainerCard}>
