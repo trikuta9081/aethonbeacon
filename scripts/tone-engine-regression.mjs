@@ -49,4 +49,15 @@ assert(app.includes("_aethonContinuousWindow.__aethonContinuous = undefined"), "
 // any tone actively looping elsewhere in the app.
 assert(!app.includes("useState(false); const [mindRestLoopEnabled") && !app.includes("const [mindRestLoopEnabled, setMindRestLoopEnabled] = useState"), "dead mindRestLoopEnabled Home tone-loop state must not be reintroduced -- it had no UI and silently killed unrelated active tones");
 
+// ── "Play matching sound" must be stoppable ──────────────────────────────────
+// The Meditation/Practice "Play matching sound" (and "Play audio") cue used
+// playRelaxingToneCue with no way to stop it -- once tapped it played out with
+// nothing to silence it. There is now a stopRelaxingToneCue() that halts both
+// the packaged native sound and the tracked web cue oscillator, the cue
+// stops any prior cue before starting (no overlap/buzz), and the buttons are
+// real Play/Stop toggles.
+assert(app.includes("function stopRelaxingToneCue"), "a stopRelaxingToneCue() must exist so the meditation 'matching sound' cue can be silenced");
+assert(/async function playRelaxingToneCue\(tone: RelaxingToneMode\) \{\s*\n\s*\/\/[\s\S]*?stopRelaxingToneCue\(\);/.test(app), "playRelaxingToneCue must stop any prior cue first so taps can't stack into a buzz");
+assert(app.includes('"⏹ Stop sound"') && app.includes('"⏹ Stop audio"'), "the meditation matching-sound / play-audio buttons must be Play/Stop toggles");
+
 console.log("Tone engine regression passed: pristine presets, safe limiter, native WAV, UI controls, reliable audio-clock-scheduled stop, and no dead cross-tab-interfering tone state verified.");

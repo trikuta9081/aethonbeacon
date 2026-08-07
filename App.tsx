@@ -2588,7 +2588,34 @@ const launchNeeds: Array<{
   }
 ];
 
+// The last one-shot web cue oscillator + gain, tracked so stopRelaxingToneCue
+// can silence the cue immediately. The cue is short and self-stops, but a user
+// who wants it quiet now (see the Meditation "matching sound" toggle) should
+// never have to sit and wait it out with no stop control.
+let activeCueOscillator: OscillatorNode | null = null;
+let activeCueGain: GainNode | null = null;
+
+// Stop whatever playRelaxingToneCue is currently playing -- the packaged
+// native sound and/or the web oscillator -- so any "Play matching sound"
+// control can offer a real Stop.
+function stopRelaxingToneCue() {
+  try {
+    relaxingToneSoundInstance?.pause();
+    relaxingToneSoundInstance?.seekTo?.(0);
+  } catch {
+    // player may already be stopped/unloaded
+  }
+  try { activeCueOscillator?.stop(); } catch { /* already stopped */ }
+  try { activeCueOscillator?.disconnect(); } catch {}
+  try { activeCueGain?.disconnect(); } catch {}
+  activeCueOscillator = null;
+  activeCueGain = null;
+}
+
 async function playRelaxingToneCue(tone: RelaxingToneMode) {
+  // Never stack cues -- silence any previous one first so taps don't pile up
+  // into an overlapping buzz.
+  stopRelaxingToneCue();
   const targetVolume = tone.id === "reset-gamma" ? 0.85 : tone.id.startsWith("binaural") ? 0.78 : 0.72;
   try {
     const sound = await ensureRelaxingToneSoundLoaded(tone.id);
@@ -2654,10 +2681,13 @@ async function playRelaxingToneCue(tone: RelaxingToneMode) {
           gainNode.gain.linearRampToValueAtTime(0.0001, end);
         }
 
+        activeCueOscillator = oscillator;
+        activeCueGain = gainNode;
         oscillator.stop(now + durationSeconds + 0.15);
         oscillator.onended = () => {
           oscillator.disconnect();
           gainNode.disconnect();
+          if (activeCueOscillator === oscillator) { activeCueOscillator = null; activeCueGain = null; }
         };
         return;
       }
@@ -23744,6 +23774,14 @@ function MeditationSection({
 }) {
   const compact = !isWide;
   const [selectedChakraId, setSelectedChakraId] = useState<ChakraId>(() => getMeditationStartChakra(selectedIssueGuide.id));
+  // Which method's "matching sound" is currently playing, so the button
+  // becomes a real Play/Stop toggle. Previously the cue had no stop control at
+  // all -- once tapped it played out with nothing to silence it.
+  const [playingMethodId, setPlayingMethodId] = useState<string | null>(null);
+  useEffect(() => {
+    // Leaving the tab / unmounting must silence any playing cue.
+    return () => { stopRelaxingToneCue(); };
+  }, []);
   useEffect(() => {
     setSelectedChakraId(getMeditationStartChakra(selectedIssueGuide.id));
   }, [selectedIssueGuide.id]);
@@ -23821,10 +23859,22 @@ function MeditationSection({
                 <Text style={styles.calmTeachingRef}>{method.result}</Text>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={() => void playRelaxingToneCue(methodTone)}
+                  accessibilityLabel={playingMethodId === method.id ? `Stop ${method.label} sound` : `Play matching sound for ${method.label}`}
+                  onPress={() => {
+                    void Haptics.selectionAsync();
+                    if (playingMethodId === method.id) {
+                      stopRelaxingToneCue();
+                      setPlayingMethodId(null);
+                    } else {
+                      // playRelaxingToneCue stops any prior cue first, so
+                      // switching methods never overlaps into a buzz.
+                      void playRelaxingToneCue(methodTone);
+                      setPlayingMethodId(method.id);
+                    }
+                  }}
                   style={styles.calmQuickActionButton}
                 >
-                  <Text style={styles.calmQuickActionLabel}>Play matching sound</Text>
+                  <Text style={styles.calmQuickActionLabel}>{playingMethodId === method.id ? "⏹ Stop sound" : "▶ Play matching sound"}</Text>
                 </Pressable>
               </View>
             );
@@ -23966,10 +24016,20 @@ function MeditationSection({
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                onPress={() => void playRelaxingToneCue(selectedTone)}
+                accessibilityLabel={playingMethodId === "__chakra__" ? "Stop audio" : "Play audio"}
+                onPress={() => {
+                  void Haptics.selectionAsync();
+                  if (playingMethodId === "__chakra__") {
+                    stopRelaxingToneCue();
+                    setPlayingMethodId(null);
+                  } else {
+                    void playRelaxingToneCue(selectedTone);
+                    setPlayingMethodId("__chakra__");
+                  }
+                }}
                 style={styles.calmQuickActionButton}
               >
-                <Text style={styles.calmQuickActionLabel}>Play audio</Text>
+                <Text style={styles.calmQuickActionLabel}>{playingMethodId === "__chakra__" ? "⏹ Stop audio" : "▶ Play audio"}</Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
