@@ -20286,9 +20286,9 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={styles.tabBannerDate}>{getLiveDateLabel()}</Text>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1E8EF", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "journal")}</Text></Text>
+                <View style={styles.activeFocusStrip}>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "journal")}</Text></Text>
                 </View>
               )}
 
@@ -20334,9 +20334,9 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "tones")}</Text></Text>
+                <View style={styles.activeFocusStrip}>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"tones")}</Text></Text>
                 </View>
               )}
 
@@ -20407,9 +20407,9 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#EBE2EE", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "meditation")}</Text></Text>
+                <View style={styles.activeFocusStrip}>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"meditation")}</Text></Text>
                 </View>
               )}
 
@@ -20510,9 +20510,9 @@ function isTrustedExternalUrl(url: string) {
                   used to live behind a separate "Calm" tab render right
                   after the meditation library instead of needing a switch. */}
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#EBE2EE", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "focus")}</Text></Text>
+                <View style={styles.activeFocusStrip}>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"focus")}</Text></Text>
                 </View>
               )}
 
@@ -20795,9 +20795,9 @@ function isTrustedExternalUrl(url: string) {
                     </View>
                   </View>
                   {selectedIssueGuide.id !== "general" && (
-                    <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E4EFE1", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                      <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                      <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "play")}</Text></Text>
+                    <View style={styles.activeFocusStrip}>
+                      <Text style={{ fontSize: 12 }}>🎯</Text>
+                      <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "play")}</Text></Text>
                     </View>
                   )}
                   {/* Practice was the one tab excluded from the guided-journey
@@ -20854,9 +20854,9 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1E1EF", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "wisdom")}</Text></Text>
+                <View style={styles.activeFocusStrip}>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"wisdom")}</Text></Text>
                 </View>
               )}
 
@@ -20894,8 +20894,8 @@ function isTrustedExternalUrl(url: string) {
             <View onLayout={captureSectionLayout("aihelp")}>
               {selectedIssueGuide.id !== "general" && (
                 <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "aihelp")}</Text></Text>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"aihelp")}</Text></Text>
                 </View>
               )}
               {/* ── First-visit hint ── */}
@@ -20959,9 +20959,9 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "community")}</Text></Text>
+                <View style={styles.activeFocusStrip}>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"community")}</Text></Text>
                 </View>
               )}
 
@@ -21078,9 +21078,9 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "guide")}</Text></Text>
+                <View style={styles.activeFocusStrip}>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"guide")}</Text></Text>
                 </View>
               )}
               {selectedIssueGuide.id !== "general" && selectedIssueRecurrenceCount >= 2 && (
@@ -21096,7 +21096,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               )}
               {crossSectionSignal.recentMoodTrend === "declining" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={styles.activeFocusStrip}>
                   <Text style={{ color: "#0E9488", fontSize: 12 }}>📉</Text>
                   <Text style={{ color: "#263244", fontSize: 12, fontWeight: "600", flex: 1 }}>Your recent check-ins have trended heavier — consider starting with a grounding step before working through the path below.</Text>
                 </View>
@@ -21167,9 +21167,9 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
-                <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#E8E3ED", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "redress")}</Text></Text>
+                <View style={styles.activeFocusStrip}>
+                  <Text style={{ fontSize: 12 }}>🎯</Text>
+                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"redress")}</Text></Text>
                 </View>
               )}
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "redress" && (
@@ -45567,6 +45567,39 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#111827",
     textAlign: "right",
+  },
+  // Shared "Active focus" strip -- previously duplicated inline on ~10 tabs
+  // with five different ad-hoc background colours (#E1E8EF / #EBE2EE /
+  // #E1EEEC / #E5EEE2 ...) and no elevation, which read as slightly
+  // different components tab to tab. One token now gives every tab the same
+  // glassy chip with a subtle shadow, matching the rest of the design system.
+  activeFocusStrip: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    backgroundColor: "#EAF1F0",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "rgba(15,61,94,0.08)",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  activeFocusLabel: {
+    color: "#0E9488",
+    fontSize: 12,
+    fontWeight: "700",
+    flex: 1,
+  },
+  activeFocusValue: {
+    color: "#263244",
+    fontWeight: "400",
   },
   // ── Community crisis notice ──
   communityCrisisNotice: {

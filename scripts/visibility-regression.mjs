@@ -119,4 +119,19 @@ mustNotInclude(
   'Tone Library category rows must not regress to near-black backgrounds that clash with the rest of the light glassy design system'
 );
 
-console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, and the Tones player/program/category dark-on-dark contrast bug stays fixed.');
+// ── Design-system consistency: shared "Active focus" strip ───────────────────
+// Every tab's Active-focus strip must use the one shared styles.activeFocusStrip
+// token, not ad-hoc inline backgrounds (previously 5 different colours across
+// tabs with no elevation). Guards against re-introducing the divergence.
+mustInclude('activeFocusStrip: {', 'Shared Active-focus strip style token must exist');
+mustInclude('activeFocusLabel: {', 'Shared Active-focus label style must exist');
+assert(
+  (source.match(/styles\.activeFocusStrip/g) ?? []).length >= 10,
+  'All ~10 tab Active-focus strips must use the shared styles.activeFocusStrip token'
+);
+mustNotMatch(
+  /marginBottom: 8, backgroundColor: "#(?:E1EEEC|EBE2EE|E4EFE1|E1E1EF|E8E3ED|E1E8EF)", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 \}\}>\s*<Text/,
+  'Active-focus strips must not regress to ad-hoc inline background colours'
+);
+
+console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, and all Active-focus strips share one design-system token.');
