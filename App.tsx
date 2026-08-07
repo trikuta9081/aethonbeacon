@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
+  AccessibilityInfo,
   Alert,
   Animated,
   AppState,
@@ -91,6 +92,22 @@ const APP_TEXT_WRAP_GUARD = {
   maxWidth: "100%" as const,
   flexShrink: 1 as const,
 };
+
+// Apple HIG accessibility: honour the system "Reduce Motion" setting. Returns
+// true when the user has asked the OS to minimise animation, so the decorative
+// looping pulses (loading shimmers, the typing-dots beat, CTA breathing) can
+// hold still instead of animating. Defaults to false, so if detection is
+// unavailable the app behaves exactly as before -- purely additive.
+function useReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    let mounted = true;
+    AccessibilityInfo.isReduceMotionEnabled?.().then((v) => { if (mounted) setReduced(!!v); }).catch(() => {});
+    const sub = AccessibilityInfo.addEventListener?.("reduceMotionChanged", (v: boolean) => setReduced(!!v));
+    return () => { mounted = false; sub?.remove?.(); };
+  }, []);
+  return reduced;
+}
 
 function Text({ style, ...props }: TextProps) {
   return <RNText {...props} style={[APP_TEXT_WRAP_GUARD, style]} />;
@@ -13177,8 +13194,9 @@ export default function App() {
   // answer just materializing the instant Send is tapped.
   const [astroChatLoading, setAstroChatLoading] = useState(false);
   const astroChatPulseAnim = React.useRef(new Animated.Value(1)).current;
+  const astroChatReduceMotion = useReducedMotion();
   React.useEffect(() => {
-    if (!astroChatLoading) return;
+    if (!astroChatLoading || astroChatReduceMotion) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(astroChatPulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
@@ -13187,7 +13205,7 @@ export default function App() {
     );
     loop.start();
     return () => loop.stop();
-  }, [astroChatLoading, astroChatPulseAnim]);
+  }, [astroChatLoading, astroChatPulseAnim, astroChatReduceMotion]);
   const [aiHelpProvider, setAIHelpProvider] = useState<AIHelpProvider>("local");
   // ── Personal guidance state ────────────────────────────────────────────────
   const [geminiDailyBrief, setGeminiDailyBrief] = useState<string | null>(null);
@@ -31207,8 +31225,9 @@ function BirthChartSection({
   // anticipated moment (the personal Moon-chart reading). Purely cosmetic;
   // idle at full opacity whenever nothing is loading.
   const horoscopePulseAnim = React.useRef(new Animated.Value(1)).current;
+  const horoscopeReduceMotion = useReducedMotion();
   React.useEffect(() => {
-    if (!geminiHoroscopeLoading) return;
+    if (!geminiHoroscopeLoading || horoscopeReduceMotion) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(horoscopePulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
@@ -31217,7 +31236,7 @@ function BirthChartSection({
     );
     loop.start();
     return () => loop.stop();
-  }, [geminiHoroscopeLoading, horoscopePulseAnim]);
+  }, [geminiHoroscopeLoading, horoscopePulseAnim, horoscopeReduceMotion]);
 
   // Derived combined values for validation/save
   const dobDraft = dobYYYY.length === 4 && dobMM.length >= 1 && dobDD.length >= 1
@@ -36577,8 +36596,9 @@ function CounselingChatModal({
   // pattern already used on the Home hero card's CTA, not a generic spinner,
   // to stay consistent with the app's house motion style.
   const enrichmentPulseAnim = React.useRef(new Animated.Value(1)).current;
+  const chatReduceMotion = useReducedMotion();
   React.useEffect(() => {
-    if (!geminiEnrichmentLoading) return;
+    if (!geminiEnrichmentLoading || chatReduceMotion) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(enrichmentPulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
@@ -36587,7 +36607,7 @@ function CounselingChatModal({
     );
     loop.start();
     return () => loop.stop();
-  }, [geminiEnrichmentLoading, enrichmentPulseAnim]);
+  }, [geminiEnrichmentLoading, enrichmentPulseAnim, chatReduceMotion]);
   const [isListening, setIsListening] = React.useState(false);
   const [speechInputNotice, setSpeechInputNotice] = React.useState("");
   const [synthText, setSynthText] = React.useState("");
@@ -36612,7 +36632,7 @@ function CounselingChatModal({
   const typingTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const typingDotsAnim = React.useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
-    if (!isGuideTyping) return;
+    if (!isGuideTyping || chatReduceMotion) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(typingDotsAnim, { toValue: 0.3, duration: 420, useNativeDriver: true }),
@@ -36621,7 +36641,7 @@ function CounselingChatModal({
     );
     loop.start();
     return () => loop.stop();
-  }, [isGuideTyping, typingDotsAnim]);
+  }, [isGuideTyping, typingDotsAnim, chatReduceMotion]);
   // Tracks the pending "speak after a short delay" timeout so it can be
   // cancelled if the modal closes or resets before it fires — without this,
   // speakText() would still play after the user has already dismissed the
