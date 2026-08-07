@@ -105,6 +105,11 @@ assert(source.includes('nameHi: string;') && source.includes('meaningHi: string;
 assert(source.includes('const GRAHA_LABELS_HI'), 'Hindi graha label map for Yogas is missing');
 assert(source.includes('चंद्र और गुरु') || source.includes('गज केसरी योग'), 'Gaja Kesari Yoga Hindi text is missing');
 assert(source.includes('function buildShadbalaStrengthNarrative'), 'Shadbala strongest/weakest narrative builder is missing');
+// Sarvashtakavarga must not be numbers-only: it names the strongest/most-
+// sensitive sign for transits, in both languages.
+assert(source.includes('function buildSarvashtakavargaNarrative'), 'Sarvashtakavarga plain-language narrative builder is missing');
+assert(source.includes('buildSarvashtakavargaNarrative(ashtakavargaResult.sarva, chartBriefLang)'), 'Sarvashtakavarga panel must render the strongest/most-sensitive-sign narrative');
+assert(source.includes('Your strongest sign is') && source.includes('सबसे मजबूत राशि'), 'Sarvashtakavarga narrative must be present in both languages');
 assert(source.includes('SHADBALA_DOMAIN_EN') && source.includes('SHADBALA_DOMAIN_HI'), 'Shadbala planet-domain significance packs are missing');
 assert(source.includes('buildShadbalaStrengthNarrative(shadbalaResult.planets, chartBriefLang)'), 'Shadbala panel must render the strongest/weakest narrative, wiring Drik/Drekkana Bala into real understanding rather than leaving them as raw numbers only');
 assert(source.includes('सर्वाष्टकवर्ग') , 'Ashtakavarga Hindi title is missing');

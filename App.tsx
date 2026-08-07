@@ -11507,6 +11507,27 @@ function buildShadbalaStrengthNarrative(
   return `In this partial computation, your strongest planet is ${label[strongest.id]} at ${strongest.net.toFixed(2)} rupas (net, including aspects) — classically this supports ${domain[strongest.id]}. Your weakest is ${label[weakest.id]} at ${weakest.net.toFixed(2)} rupas — meaning deliberate, conscious effort around ${domain[weakest.id]} is likely to pay off more than it would for a planet that's already strong.`;
 }
 
+// Turns the Sarvashtakavarga bindu grid (which was numbers-only) into a plain-
+// language "which of your signs is strongest / most sensitive for transits"
+// line -- the same interpret-what-you-already-computed move the Shadbala
+// narrative above makes, using the exact classical transit reading already
+// stated under the grid (30+ strong, <25 weaker).
+function buildSarvashtakavargaNarrative(sarva: number[], lang: "en" | "hi"): string {
+  if (!sarva || sarva.length !== 12) return "";
+  let maxI = 0;
+  let minI = 0;
+  for (let i = 1; i < 12; i++) {
+    if (sarva[i] > sarva[maxI]) maxI = i;
+    if (sarva[i] < sarva[minI]) minI = i;
+  }
+  const strongName = VEDIC_RASHIS[maxI]?.name ?? "";
+  const weakName = VEDIC_RASHIS[minI]?.name ?? "";
+  if (lang === "hi") {
+    return `आपकी सबसे मजबूत राशि ${strongName} है (${sarva[maxI]} बिंदु) — जब ग्रह इससे होकर गोचर करते हैं, तो चीज़ें अधिक सहज रहती हैं। सबसे संवेदनशील राशि ${weakName} है (${sarva[minI]} बिंदु) — जब ग्रह इससे गुज़रें, तो सोच-समझकर चलें और बड़े जोखिम टालें।`;
+  }
+  return `Your strongest sign is ${strongName} (${sarva[maxI]} bindus) — when planets transit through it, things tend to flow more smoothly. Your most sensitive sign is ${weakName} (${sarva[minI]} bindus) — when planets pass through it, move carefully and avoid big risks.`;
+}
+
 // Human-facing label for an astro-chat question category, in either language
 // (the raw category id like "career" is an internal enum, not display text).
 const ASTRO_CATEGORY_LABEL_EN: Record<AstroChatCategory, string> = {
@@ -32063,6 +32084,9 @@ function BirthChartSection({
                   {chartBriefLang === "hi"
                     ? `सभी 12 राशियों में कुल ${ashtakavargaResult.sarvaTotal} बिंदु (शास्त्रीय नियम: सदैव 337)। 30+ बिंदु = उस राशि से गोचर के लिए बहुत मजबूत; 25 से कम = कमजोर।`
                     : `Total ${ashtakavargaResult.sarvaTotal} bindus across all 12 signs (classical invariant: always 337). 30+ bindus = very strong for transits through that sign; below 25 = weaker.`}
+                </Text>
+                <Text style={{ color: "#1F2937", fontSize: 12.5, lineHeight: 18, fontWeight: "600" }}>
+                  {buildSarvashtakavargaNarrative(ashtakavargaResult.sarva, chartBriefLang)}
                 </Text>
               </>
             ) : (
