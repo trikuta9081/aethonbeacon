@@ -31688,9 +31688,16 @@ function BirthChartSection({
                   if (!cur) return null;
                   return (
                     <View style={{ backgroundColor: "rgba(14,148,136,0.10)", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(14,148,136,0.35)" }}>
-                      <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", marginBottom: 3 }}>
-                        {isHi ? "अभी आप यहाँ हैं" : "Where you are right now"}
-                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6, marginBottom: 3 }}>
+                        <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>
+                          {isHi ? "अभी आप यहाँ हैं" : "Where you are right now"}
+                        </Text>
+                        <View style={{ backgroundColor: verdictBg(cur.verdict), borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}>
+                          <Text style={{ color: verdictColor(cur.verdict), fontSize: 12, fontWeight: "900" }}>
+                            {isHi ? verdictLabelHi(cur.verdict) : cur.verdict}
+                          </Text>
+                        </View>
+                      </View>
                       <Text style={{ color: "#0D1F22", fontSize: 13.5, fontWeight: "800" }}>
                         {yearSpan(cur)} · {isHi ? (DASHA_PLANET_HI[cur.mahadasha] ?? cur.mahadasha) : cur.mahadasha} / {isHi ? (DASHA_PLANET_HI[cur.antardasha] ?? cur.antardasha) : cur.antardasha}
                       </Text>
