@@ -36534,6 +36534,9 @@ function buildJourneySteps(
 // COUNSELING CHAT MODAL
 // ─────────────────────────────────────────────────────────────────────────────
 
+const COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES = 30;
+const COUNSELING_NEXT_STEP_READY_USER_RESPONSES = 6;
+
 function CounselingChatModal({
   visible,
   onClose,
@@ -36845,6 +36848,64 @@ function CounselingChatModal({
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
   }, [session.turns, isGuideTyping]);
 
+  function synthesizeAndPrepareJourney(
+    turnsForSynthesis: CounselingTurn[],
+    questionIndexForSynthesis: number,
+    themesForSynthesis: SupportDimensionId[],
+    allUserTextForSynthesis: string
+  ) {
+    stopSpeech();
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    const route = detectAIHelpRouteFromText(session.originalIssue + " " + allUserTextForSynthesis);
+    const updatedSession: CounselingSession = {
+      ...session,
+      turns: turnsForSynthesis,
+      stage: "synthesizing",
+      questionIndex: questionIndexForSynthesis,
+      detectedThemes: themesForSynthesis
+    };
+    const currentIssueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? null;
+    const recurrenceCount = currentIssueLabel
+      ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
+      : 0;
+    const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount, sadeSatiNote, weeklyTrend);
+    const steps = buildJourneySteps(themesForSynthesis, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
+
+    setSession(updatedSession);
+    setIsGuideTyping(true);
+    typingTimeoutRef.current = setTimeout(() => {
+      typingTimeoutRef.current = null;
+      setIsGuideTyping(false);
+      const finalTurns: CounselingTurn[] = [...turnsForSynthesis, { role: "friend", message: synthesis, ts: new Date().toISOString() }];
+      const finalSession: CounselingSession = {
+        ...updatedSession, turns: finalTurns, stage: "synthesizing", journeySteps: steps
+      };
+      setSession(finalSession);
+      setSynthText(synthesis);
+      setJourneySteps(steps);
+      scheduleSpeak(synthesis, 150);
+    }, 700 + Math.random() * 350);
+
+    // Optional cloud-AI enrichment layered on top of the offline synthesis
+    // above, which has already fully completed and is never blocked or
+    // delayed by this. Self-guards: onFetchGuideEnrichment resolves to
+    // null immediately server-side when Gemini isn't configured, and any
+    // network failure is swallowed the same way GeminiInsightsCard does
+    // elsewhere in the app -- the card this powers just never appears.
+    if (onFetchGuideEnrichment) {
+      setGeminiEnrichment(null);
+      setGeminiEnrichmentLoading(true);
+      const enrichmentIssueGuide = issueGuides.find((guide) => guide.id === issueId) ?? issueGuides[0];
+      onFetchGuideEnrichment(session.originalIssue + " " + allUserTextForSynthesis, route, identityLabel, enrichmentIssueGuide)
+        .then((result) => {
+          if (result && result.text.trim().length > 0) setGeminiEnrichment(result.text.trim());
+        })
+        .catch(() => undefined)
+        .finally(() => setGeminiEnrichmentLoading(false));
+    }
+  }
+
   function handleSend() {
     const text = draft.trim();
     if (!text || isGuideTyping) return;
@@ -36873,60 +36934,42 @@ function CounselingChatModal({
     setIsGuideTyping(true);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
-    // After 6 user responses, synthesize (deep counseling — covers all dimensions)
-    if (userResponses >= 6) {
-      const route = detectAIHelpRouteFromText(session.originalIssue + " " + allUserText);
-      const updatedSession: CounselingSession = {
-        ...session, turns: newTurns, stage: "synthesizing",
-        questionIndex: newQuestionIndex, detectedThemes: mergedThemes
-      };
-      // How many prior visit reports already exist for this same issue --
-      // real history, not a guess -- so the synthesis and journey steps can
-      // acknowledge a repeat pattern instead of treating every session fresh.
-      const currentIssueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? null;
-      const recurrenceCount = currentIssueLabel
-        ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
-        : 0;
-      const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount, sadeSatiNote, weeklyTrend);
-      const steps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
-
-      typingTimeoutRef.current = setTimeout(() => {
-        typingTimeoutRef.current = null;
-        setIsGuideTyping(false);
-        const finalTurns: CounselingTurn[] = [...newTurns, { role: "friend", message: synthesis, ts: new Date().toISOString() }];
-        const finalSession: CounselingSession = {
-          ...updatedSession, turns: finalTurns, stage: "synthesizing", journeySteps: steps
-        };
-        setSession(finalSession);
-        setSynthText(synthesis);
-        setJourneySteps(steps);
-        scheduleSpeak(synthesis, 150);
-      }, 700 + Math.random() * 350);
-
-      // Optional cloud-AI enrichment layered on top of the offline synthesis
-      // above, which has already fully completed and is never blocked or
-      // delayed by this. Self-guards: onFetchGuideEnrichment resolves to
-      // null immediately server-side when Gemini isn't configured, and any
-      // network failure is swallowed the same way GeminiInsightsCard does
-      // elsewhere in the app -- the card this powers just never appears.
-      if (onFetchGuideEnrichment) {
-        setGeminiEnrichment(null);
-        setGeminiEnrichmentLoading(true);
-        const enrichmentIssueGuide = issueGuides.find((guide) => guide.id === issueId) ?? issueGuides[0];
-        onFetchGuideEnrichment(session.originalIssue + " " + allUserText, route, identityLabel, enrichmentIssueGuide)
-          .then((result) => {
-            if (result && result.text.trim().length > 0) setGeminiEnrichment(result.text.trim());
-          })
-          .catch(() => undefined)
-          .finally(() => setGeminiEnrichmentLoading(false));
-      }
+    // Let a counselling session breathe. The earlier hard stop after 6 user
+    // replies made deeper issues feel cut short. The guide now supports a
+    // 30-reply counselling arc before it automatically prepares the summary
+    // and route, while the user can still choose "Prepare next step now" once
+    // enough context has been heard.
+    if (userResponses >= COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES) {
+      synthesizeAndPrepareJourney(newTurns, newQuestionIndex, mergedThemes, allUserText);
     } else {
       // Ask next adaptive question using updated merged themes
       const nextQ = buildCounselingQuestions(mergedThemes, newQuestionIndex, allUserText);
+      const shouldOfferCheckpoint =
+        userResponses >= COUNSELING_NEXT_STEP_READY_USER_RESPONSES &&
+        userResponses % COUNSELING_NEXT_STEP_READY_USER_RESPONSES === 0;
+      const checkpointQuestion = shouldOfferCheckpoint
+        ? (() => {
+            const route = detectAIHelpRouteFromText(session.originalIssue + " " + allUserText);
+            const currentIssueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? null;
+            const recurrenceCount = currentIssueLabel
+              ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
+              : 0;
+            const previewSteps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
+            const firstStep = previewSteps[0];
+            const previewLine = firstStep
+              ? `${firstStep.emoji} ${firstStep.label} — ${firstStep.reason}`
+              : "a practical next step matched to what you have shared.";
+            return [
+              `Checkpoint after ${userResponses} replies: based on the conversation so far, the most useful next step appears to be ${previewLine}`,
+              "You remain in control: tap “Prepare next step now” if you want to move forward, or continue here if more needs to be understood.",
+              nextQ
+            ].join("\n\n");
+          })()
+        : nextQ;
       typingTimeoutRef.current = setTimeout(() => {
         typingTimeoutRef.current = null;
         setIsGuideTyping(false);
-        const friendTurn: CounselingTurn = { role: "friend", message: nextQ, ts: new Date().toISOString() };
+        const friendTurn: CounselingTurn = { role: "friend", message: checkpointQuestion, ts: new Date().toISOString() };
         setSession((prev) => ({
           ...prev,
           turns: [...newTurns, friendTurn],
@@ -36934,7 +36977,7 @@ function CounselingChatModal({
           stage: "questioning",
           detectedThemes: mergedThemes,
         }));
-        scheduleSpeak(nextQ, 150);
+        scheduleSpeak(checkpointQuestion, 150);
       }, 550 + Math.random() * 300);
     }
   }
@@ -37039,6 +37082,23 @@ function CounselingChatModal({
   }
 
   const showJourneyOptions = session.stage === "synthesizing" && journeySteps.length > 0;
+  const counselingUserResponseCount = session.turns.filter((turn) => turn.role === "user").length;
+  const counselingRepliesUntilAutoSummary = Math.max(
+    0,
+    COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES - counselingUserResponseCount
+  );
+  const canPrepareNextStepNow =
+    session.stage === "questioning" &&
+    !isGuideTyping &&
+    counselingUserResponseCount >= COUNSELING_NEXT_STEP_READY_USER_RESPONSES;
+  const prepareNextStepFromCurrentConversation = () => {
+    if (!canPrepareNextStepNow) return;
+    void Haptics.selectionAsync();
+    const allUserText = session.turns.filter((turn) => turn.role === "user").map((turn) => turn.message).join(" ");
+    const updatedThemes = detectThemes(session.originalIssue + " " + allUserText);
+    const mergedThemes = Array.from(new Set([...session.detectedThemes, ...updatedThemes]));
+    synthesizeAndPrepareJourney(session.turns, session.questionIndex, mergedThemes, allUserText);
+  };
 
   return (
     <Modal
@@ -37187,6 +37247,37 @@ function CounselingChatModal({
             </View>
           )}
 
+          {/* Mid-session choice: the engine has enough signal for a practical
+              route, but the conversation no longer forces a premature close.
+              People can continue up to the full counselling depth or choose
+              the next step themselves when it feels right. */}
+          {canPrepareNextStepNow && (
+            <View style={{ backgroundColor: "#F6FBFA", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#B9D8D2", gap: 10 }}>
+              <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 19, fontWeight: "700" }}>
+                I have enough context to prepare a practical next step, and you can also continue the counselling conversation.
+              </Text>
+              <Text style={{ color: "#34515B", fontSize: 12, lineHeight: 18 }}>
+                {counselingRepliesUntilAutoSummary > 0
+                  ? `${counselingRepliesUntilAutoSummary} guided replies remain before an automatic summary.`
+                  : "I can prepare your summary and route now."}
+              </Text>
+              <Pressable
+                onPress={prepareNextStepFromCurrentConversation}
+                accessibilityRole="button"
+                accessibilityLabel="Prepare my next step from this counselling conversation"
+                style={({ pressed }) => ({
+                  backgroundColor: pressed ? "#0E4A46" : "#0E6F69",
+                  borderRadius: 12,
+                  paddingVertical: 12,
+                  paddingHorizontal: 14,
+                  alignItems: "center"
+                })}
+              >
+                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "900" }}>Prepare next step now</Text>
+              </Pressable>
+            </View>
+          )}
+
           {/* Journey options */}
           {showJourneyOptions && (
             <View style={{ marginTop: 8, gap: 8 }}>
@@ -37297,6 +37388,9 @@ function CounselingChatModal({
         {session.stage !== "synthesizing" && (
           <View style={{ backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#DCE9E6", paddingHorizontal: 16, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 12), flexDirection: "row", alignItems: "flex-end", gap: 10, shadowColor: "#0E9488", shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 }}>
             <View style={{ flex: 1 }}>
+              <Text style={{ color: "#34515B", fontSize: 11, lineHeight: 15, fontWeight: "700", marginBottom: 6 }}>
+                Counselling depth: {counselingUserResponseCount}/{COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step available after context is ready.
+              </Text>
               <TextInput
                 value={draft}
                 onChangeText={setDraft}

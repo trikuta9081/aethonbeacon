@@ -223,13 +223,24 @@ assert(
 assert(!source.includes('>Your guide is listening<'), 'Counselling header must not regress to the inconsistent "Your guide" label');
 
 // Chat message timestamps: CounselingTurn now carries an optional ts, set at
-// all four construction sites and rendered as a local clock time under each
-// bubble, so the counselling exchange reads like a real conversation with a
-// timeline instead of a timeless wall of text. The Ask-the-chart bubbles
+// every visible construction site and rendered as a local clock time under
+// each bubble, so the counselling exchange reads like a real conversation with
+// a timeline instead of a timeless wall of text. The Ask-the-chart bubbles
 // (which already carried ts) render a matching time for parity.
 assert(/interface CounselingTurn \{[\s\S]*?ts\?: string;/.test(source), 'CounselingTurn must carry an optional ts timestamp field');
-assert((source.match(/message: (?:openingMsg|text|synthesis|nextQ), ts: new Date\(\)\.toISOString\(\)/g) ?? []).length >= 4, 'All four CounselingTurn construction sites must set ts');
+assert((source.match(/message: (?:openingMsg|text|synthesis|checkpointQuestion), ts: new Date\(\)\.toISOString\(\)/g) ?? []).length >= 4, 'All CounselingTurn construction sites must set ts');
 assert(source.includes('toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })'), 'Counselling chat bubbles must render a local clock time per message');
+
+// Counselling depth: the guide must not force-close after six replies. It
+// should offer a user-controlled next-step checkpoint every six replies, while
+// allowing a full 30-reply counselling arc before automatic synthesis.
+[
+  'COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES = 30',
+  'COUNSELING_NEXT_STEP_READY_USER_RESPONSES = 6',
+  'userResponses % COUNSELING_NEXT_STEP_READY_USER_RESPONSES === 0',
+  'Prepare next step now',
+  'You remain in control',
+].forEach((marker) => indexOf(marker));
 
 // Progressive disclosure: the three dense Vedic sections (48-dimension trace,
 // Advanced engine panel, plain-language house-by-house reading) each collapse
