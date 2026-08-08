@@ -24,18 +24,18 @@ assert(source.includes('SIDEREAL_YEAR_MS'), 'Dasha timing should use sidereal-ye
 const blueprintBlock = source.match(/const MOON_CHART_48_BLUEPRINTS[\s\S]*?\n\];/);
 assert(blueprintBlock, 'Moon Chart 48 blueprint block missing');
 const blueprintCount = [...blueprintBlock[0].matchAll(/\{ id: "/g)].length;
-assert(blueprintCount === 48, `Moon Chart engine must contain exactly 48 dimensions; got ${blueprintCount}`);
+assert(blueprintCount === 48, `Moon Chart engine must contain exactly multi-dimensional signals; got ${blueprintCount}`);
 
 const userFacingSource = source.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
 assert(!/sun chart|solar chart|surya chart/i.test(userFacingSource), 'User-facing Sun/Solar/Surya chart phrase detected');
 
-assert(source.includes('COUNSELING_THEME_TO_MOON48_CATEGORIES'), 'Counselling theme to Moon Chart 48D category mapping is missing');
-assert(source.includes('buildMoonChartCounselingOverlay'), 'Counselling synthesis Moon Chart 48D overlay is missing');
-assert(source.includes('shouldAddMoonChartJourneyStep'), 'Counselling journey Moon Chart 48D step guard is missing');
-assert(source.includes('moonChart48Readings={vedicMoonChart48Readings}'), 'Counselling modal is not receiving current Moon Chart 48D readings');
-assert(source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount, sadeSatiNote, weeklyTrend)'), 'Counselling synthesis is not using Moon Chart 48D readings');
-assert(source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend })'), 'Counselling journey is not using Moon Chart 48D readings');
-assert(source.includes('Multidimensional Moon Chart counselling layer'), 'User-facing Multidimensional counselling layer text is missing');
+assert(source.includes('COUNSELING_THEME_TO_MOON48_CATEGORIES'), 'Counselling theme to Moon Chart insight category mapping is missing');
+assert(source.includes('buildMoonChartCounselingOverlay'), 'Counselling synthesis Moon Chart insight overlay is missing');
+assert(source.includes('shouldAddMoonChartJourneyStep'), 'Counselling journey Moon Chart insight step guard is missing');
+assert(source.includes('moonChartInsightReadings={vedicMoonChartInsightReadings}'), 'Counselling modal is not receiving current Moon Chart insight readings');
+assert(source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend)'), 'Counselling synthesis is not using Moon Chart insight readings');
+assert(source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend })'), 'Counselling journey is not using Moon Chart insight readings');
+assert(source.includes('Multi-dimensional Vedic counselling layer'), 'User-facing Multidimensional counselling layer text is missing');
 
 assert(source.includes('interpretation: string'), 'Moon Chart readings must include plain-language interpretation');
 assert(source.includes('scoreReason: string'), 'Moon Chart readings must include explainable score reason');
@@ -48,12 +48,12 @@ assert(source.includes('Score trace:'), 'All-dimensions score trace UI is missin
 assert(source.includes('Care points · remedies made practical'), 'Practical remedy panel is missing');
 assert(source.includes('No Sun-chart prediction is shown'), 'Moon-only no-Sun-chart assurance text is missing');
 
-assert(source.includes('getNavagrahaLongitudes'), 'Advanced Vedic engine must compute all 9 graha longitudes');
+assert(source.includes('getNavagrahaLongitudes'), 'Detailed Vedic insight system must compute all 9 graha longitudes');
 assert(source.includes('buildNavamsaEntries'), 'D9 Navamsa calculation layer is missing');
 assert(source.includes('detectClassicalYogas'), 'Classical Yoga detection layer is missing');
 assert(source.includes('buildAshtakavarga'), 'Ashtakavarga calculation layer is missing');
 assert(source.includes('computeShadbala'), 'Shadbala calculation layer is missing');
-assert(source.includes('Advanced Vedic Engine — D9 Navamsa · Yogas · Ashtakavarga · Shadbala'), 'Advanced Vedic Engine panel is missing');
+assert(source.includes('Detailed Calculation Panel — D9 Navamsa · Yogas · Ashtakavarga · Shadbala'), 'Detailed Vedic calculation panel is missing');
 assert(source.includes('D1 Rashi Chart — Lagna and all 9 grahas'), 'D1 Rashi chart wheel panel is missing');
 assert(source.includes('D9 Navamsa Chart'), 'D9 Navamsa chart wheel panel is missing');
 assert(source.includes('Rashi → Navamsa detail'), 'Rashi-to-Navamsa detail list is missing');
@@ -167,14 +167,14 @@ const sampleNakshatraElapsed = 0.25;
 const expectedBalance = dashaYears[sampleBirthLord] * (1 - sampleNakshatraElapsed);
 assert(expectedBalance === 7.5, `Sample Chandra balance should be 7.5 years; got ${expectedBalance}`);
 
-// ── Path/Guide × Moon Chart 48D complement ──────────────────────────────────
+// ── Path/Guide × Moon Chart insight complement ──────────────────────────────────
 // Path used to be a text-only 5-lens system with no link to the personal
 // Moon Chart. It must now draw on the same multidimensional engine the
 // Automatic Counselling chat overlays, mirroring COUNSELING_THEME_TO_MOON48_CATEGORIES.
 assert(source.includes('const ISSUE_TO_MOON48_CATEGORIES'), 'Issue-to-Moon-Chart category map is missing from Path');
 assert(source.includes('function buildPathMoonChartComplement'), 'Path Moon Chart complement builder is missing');
 assert(source.includes('moonChartComplement = useMemo'), 'Path does not memoize its Moon Chart complement');
-assert(source.includes('moonChart48Readings={vedicMoonChart48Readings}'), 'Path is not receiving the live Moon Chart 48D readings');
+assert(source.includes('moonChartInsightReadings={vedicMoonChartInsightReadings}'), 'Path is not receiving the live Moon Chart insight readings');
 assert(source.includes('Moon Chart complement'), 'Moon Chart complement panel is not rendered on Path');
 assert(source.includes('Add your date of birth, time, and place in Vedic Insights to see how your personal Moon Chart connects'), 'Path is missing the no-birth-data fallback for the Moon Chart complement');
 // All 17 Path issues must have an explicit Moon Chart category mapping — no
@@ -187,29 +187,29 @@ for (const id of allIssueIds) {
   assert(mappedIssueIds.includes(id), `ISSUE_TO_MOON48_CATEGORIES is missing an explicit mapping for issue "${id}"`);
 }
 
-// ── Path/Guide × 48-axis support library complement ─────────────────────────
-// Tones and Meditation already surface the real 48-axis support library;
+// ── Path/Guide × multi-axis support library complement ─────────────────────────
+// Tones and Meditation already surface the real multi-axis support library;
 // Path is the tab most relevant to it and must too.
-assert(source.includes('🧭 Path frame'), 'Path is missing the 48-axis SupportDimensionLibraryPanel complement');
+assert(source.includes('🧭 Path frame'), 'Path is missing the multi-axis SupportDimensionLibraryPanel complement');
 
-// ── Cross-section 48-dimension actionability ────────────────────────────────
-// The 48-axis library used to be read-only in every section except the
+// ── Cross-section multi-dimensional actionability ────────────────────────────────
+// The multi-axis library used to be read-only in every section except the
 // counselling chat. Every section that renders it must now let a tap reveal
 // the real escalation guidance, its Moon Chart complement, and a working
 // route button -- not just a label and a first action.
 assert(source.includes('function buildMoonChartComplementForCategories'), 'Shared category-based Moon Chart complement builder is missing');
-assert(source.includes('function buildDimensionMoonChartComplement'), '48-dimension-scoped Moon Chart complement builder is missing');
+assert(source.includes('function buildDimensionMoonChartComplement'), 'multi-dimensional-scoped Moon Chart complement builder is missing');
 assert(source.includes('openDimensionMoonChart'), 'SupportDimensionLibraryPanel does not compute a per-dimension Moon Chart complement');
 assert(source.includes('routeLabel(guide.route)'), 'SupportDimensionLibraryPanel does not surface each dimension\'s route');
 assert(/Escalate when: /.test(source), 'SupportDimensionLibraryPanel does not surface each dimension\'s escalation guidance');
 assert(source.includes('const routeToTab = (tab: TabId)'), 'Search does not adapt the panel\'s route buttons onto its own onOpenGuide/onOpenRedress/onOpenCommunity routing');
 
-// Every section already known to render the 48-axis panel (Tones banner,
+// Every section already known to render the multi-axis panel (Tones banner,
 // Path banner + Path itself, Journal, Tones library, Meditation, Search,
 // Practice/Play, Insights) must feed it the live Moon Chart readings -- a
 // panel with the prop wired to nothing would silently stay read-only.
-const moonChartWiredCount = (source.match(/moonChart48Readings=\{(vedicMoonChart48Readings|moonChart48Readings)\}/g) ?? []).length;
-assert(moonChartWiredCount >= 10, `Expected at least 10 live moonChart48Readings wire-ups across sections; found ${moonChartWiredCount}`);
+const moonChartWiredCount = (source.match(/moonChartInsightReadings=\{(vedicMoonChartInsightReadings|moonChartInsightReadings)\}/g) ?? []).length;
+assert(moonChartWiredCount >= 10, `Expected at least 10 live moonChartInsightReadings wire-ups across sections; found ${moonChartWiredCount}`);
 
 // ── All 48 support dimensions resolve to an actual conclusion ───────────────
 // Each of the 48 used to be a one-line nudge (firstAction) plus a one-line
@@ -236,7 +236,7 @@ const allDimensionIds = [
   'procrastination', 'motivation', 'confidence', 'boundaries', 'communication', 'trust', 'intimacy', 'caregiving', 'elder-care', 'pregnancy-postpartum',
   'identity-values', 'spirituality-faith', 'cultural-belonging', 'decision-making', 'habit-routine', 'environment', 'documentation-evidence', 'direction'
 ];
-assert(allDimensionIds.length === 48, 'Test fixture drifted from the real 48-dimension id list');
+assert(allDimensionIds.length === 48, 'Test fixture drifted from the real multi-dimensional id list');
 for (const id of allDimensionIds) {
   const chunk = entryChunks.find((c) => c.startsWith(`  "${id}": {`) || c.startsWith(`  ${id}: {`));
   assert(chunk, `No supportDimensionGuides entry found for "${id}"`);
@@ -271,7 +271,7 @@ assert(/नौकरी|करियर/.test(source) && /classifyAstroQuestion/
 assert(source.includes('चार्ट से पूछें'), 'Ask-the-chart UI must render the Hindi title when chartBriefLang is hi');
 assert(source.includes('वैदिक + लाल किताब उपाय'), 'Ask-the-chart remedy header must be bilingual');
 
-// ── Bilingual 48-dimension Moon-chart engine ─────────────────────────────────
+// ── Bilingual multi-dimensional Moon-chart calculation layer ──────────────────────
 // The shared reading engine now produces Hindi as well as English, driven by
 // the same chartBriefLang toggle. Done per-consumer: the chart-facing display
 // (BirthChartSection) and Ask-the-chart pass lang "hi"; the counselling
@@ -282,12 +282,12 @@ assert((source.match(/"[a-z-]+": \{ label: "[^"]*[ऀ-ॿ]/g) ?? []).length >= 4
 assert(source.includes('verdictLabel: string') && source.includes('moonChartVerdictLabel'), 'Readings must carry a localized verdictLabel');
 assert(source.includes('MOON_CHART_VERDICT_LABEL_HI'), 'Hindi verdict words (अति उत्तम/सहायक/मिश्रित/सावधानी) must exist');
 assert(/buildMoonChartMultidimensionalEngine\([\s\S]{0,400}lang: chartBriefLang/.test(source), 'BirthChartSection display must build readings in the toggled language');
-assert(source.includes('vedicMoonChart48ReadingsLocalized'), 'A language-aware readings copy must feed Ask-the-chart');
-assert(source.includes('moonChart48Readings: vedicMoonChart48ReadingsLocalized'), 'Ask-the-chart must receive the localized readings, not the English canonical');
+assert(source.includes('vedicMoonChartInsightReadingsLocalized'), 'A language-aware readings copy must feed Ask-the-chart');
+assert(source.includes('moonChartInsightReadings: vedicMoonChartInsightReadingsLocalized'), 'Ask-the-chart must receive the localized readings, not the English canonical');
 // The counselling modal must still receive the ENGLISH canonical, never the
 // localized copy -- guards against the "Hindi snippets in English synthesis"
 // regression the per-consumer split was designed to prevent.
-assert(source.includes('moonChart48Readings={vedicMoonChart48Readings}'), 'CounselingChatModal must keep the English canonical readings');
+assert(source.includes('moonChartInsightReadings={vedicMoonChartInsightReadings}'), 'CounselingChatModal must keep the English canonical readings');
 assert(source.includes('item.verdictLabel') && !source.includes('{item.verdict} · {item.score}/100'), 'Chart-facing verdict displays must use the localized verdictLabel, not the raw English verdict enum');
 
-console.log('Vedic engine regression checks passed: Moon longitude, dasha balance, 48 dimensions, explainable remedies, 2D/3D UI, Advanced D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, Path/Guide Moon Chart + 48-axis complement, cross-section 48-dimension actionability, and all 48 dimensions carry a real path to resolution and conclusion.');
+console.log('Vedic insight regression checks passed: Moon longitude, dasha balance, multi-dimensional signals, explainable remedies, 2D/3D UI, D1/D9/Navamsa/Yoga/Ashtakavarga/Shadbala panel, ask-chat ordering, antardasha totals, no sun-chart user-facing text, Path/Guide Moon Chart + multi-axis complement, cross-section multi-dimensional actionability, and all multi-dimensional signals carry a real path to resolution and conclusion.');

@@ -80,10 +80,10 @@ services:
         sync: false
       - key: SENDGRID_FROM_NAME
         value: Aethon Beacon
-      - key: GEMINI_API_KEY
+      - key: GUIDANCE_SERVICE_KEY
         sync: false
-      - key: GEMINI_MODEL
-        value: gemini-2.5-flash
+      - key: GUIDANCE_MODEL
+        sync: false
       - key: ADMIN_LOGIN_ID
         sync: false
       - key: ADMIN_LOGIN_CODE

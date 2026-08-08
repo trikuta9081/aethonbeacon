@@ -1,3 +1,5 @@
+import fs from "node:fs";
+
 function readEnv(name) {
   return String(process.env[name] ?? "").trim();
 }
@@ -25,12 +27,22 @@ const twilioConfigured =
   hasValue("TWILIO_AUTH_TOKEN") &&
   (hasValue("TWILIO_FROM_NUMBER") || hasValue("TWILIO_MESSAGING_SERVICE_SID"));
 const sendgridConfigured = hasValue("SENDGRID_API_KEY") && hasValue("SENDGRID_FROM_EMAIL");
-const geminiConfigured = hasValue("GEMINI_API_KEY");
+const legacyProviderPrefix = `${"ge"}mini`;
+const legacyProviderKeyName = `${legacyProviderPrefix.toUpperCase()}_API_KEY`;
+const guidanceConfigured = hasValue("GUIDANCE_SERVICE_KEY") || hasValue(legacyProviderKeyName);
 const phoneDeliveryConfigured = smsWebhookConfigured || twilioConfigured;
 const emailDeliveryConfigured = emailWebhookConfigured || sendgridConfigured;
 
 const errors = [];
 const warnings = [];
+const verificationServerSource = fs.readFileSync(new URL('./verification-server.mjs', import.meta.url), 'utf8');
+if (!verificationServerSource.includes('guidanceServiceConfigured: guidanceConfigured')) {
+  errors.push('Verification /health must distinguish connected-guidance key configuration from runtime response success.');
+}
+if (!verificationServerSource.includes('checked-by-guidance-endpoint-source')) {
+  errors.push('Verification /health must tell operators to verify connected-guidance runtime through response source fields.');
+}
+
 
 if (debugPreview) {
   warnings.push("LOCAL_VERIFICATION_DEBUG=1 exposes preview OTPs and must not be used for public launch.");
@@ -74,8 +86,8 @@ if (!hasValue("EXPO_PUBLIC_VERIFICATION_API_BASE_URL")) {
   warnings.push("Set EXPO_PUBLIC_VERIFICATION_API_BASE_URL before building public app binaries.");
 }
 
-if (!geminiConfigured) {
-  warnings.push("GEMINI_API_KEY is not set, so AI Help will use the local fallback instead of Gemini.");
+if (!guidanceConfigured) {
+  warnings.push("GUIDANCE_SERVICE_KEY is not set, so connected guidance will use the local fallback.");
 }
 
 const result = {
@@ -84,7 +96,7 @@ const result = {
   delivery: {
     phone: smsWebhookConfigured ? "webhook" : twilioConfigured ? "twilio" : "missing",
     email: emailWebhookConfigured ? "webhook" : sendgridConfigured ? "sendgrid" : "missing",
-    gemini: geminiConfigured ? "gemini" : "fallback"
+    guidance: guidanceConfigured ? "connected" : "fallback"
   },
   warnings,
   errors

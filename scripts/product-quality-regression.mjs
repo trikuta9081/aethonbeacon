@@ -24,6 +24,10 @@ function assert(condition, message) {
 assert(source.includes('"today",\n      "aihelp",\n      "vedic",\n      "tones",\n      "community",\n      "redress"'), "Primary navigation is not simplified.");
 assert(!source.includes('"today",\n      "aihelp",\n      "guide",\n      "redress",\n      "search"'), "Legacy crowded primary navigation remains.");
 assert(source.includes('productAnalyticsEnabled={productAnalyticsEnabled}'), "Local analytics consent is not wired into Settings.");
+assert(source.includes('Delete my local data'), "Settings must include a clear local-data deletion control.");
+assert(source.includes('Export my notes'), "Settings must include a clear notes export control.");
+assert(source.includes('Phone and email are used only for verification'), "Privacy copy must explain phone/email verification purpose.");
+assert(source.includes('Voice and microphone access are optional') || source.includes('voice and microphone access are optional'), "Privacy copy must explain voice/microphone purpose.");
 assert(source.includes('deliveryStatus: "failed"'), "Community failure delivery state is not implemented.");
 assert(source.includes('deliveryStatus: "delivered"'), "Community delivered state is not implemented.");
 assert(source.includes('COMMUNITY_POST_COOLDOWN_MS') && source.includes('communityPostCooldownRemainingMs'), "Community post anti-flood cooldown is missing.");
@@ -77,5 +81,108 @@ assert(source.includes('function buildPositiveCheckInReply'), "Differentiated po
 assert(source.includes('return buildPositiveCheckInReply(t);'), "Positive check-in branch does not use the differentiated reply builder.");
 const positiveReplyBranches = (source.match(/if \(\/\([^)]*\)\/\.test\(n\)\) \{\s*\n\s*return \{\s*\n\s*heard:/g) ?? []).length;
 assert(positiveReplyBranches >= 5, `buildPositiveCheckInReply should differentiate at least 5 distinct positive-emotion categories; found ${positiveReplyBranches}`);
+
+assert(!source.includes('Public release still waits on provider-backed SMS and email verification'), 'Release readiness copy must not say OTP providers are still missing once remote verification is supported');
+assert(source.includes('connected for SMS and email OTP'), 'Release readiness must clearly show provider-backed OTP when remote verification is active');
+assert(source.includes('local fallback only for this build'), 'Release readiness must clearly distinguish local fallback verification builds');
+
+// ── Apple-premium polish contract from the August 9 product pass ────────────
+// Home stays simple, with five primary destinations and no dense paragraph
+// previews. Each card carries a short benefit and a clear action.
+[
+  'Premium command center',
+  'Choose the right support in one tap.',
+  'Private guided conversation with optional checkpoint next steps.',
+  'Curated sound, breath timing, meditation, and body reset.',
+  'Moon-chart based guidance with practical remedies.',
+  'Emergency support, official routes, evidence, and templates.',
+  'Verified support conversations when access is confirmed.',
+  'Enter room',
+  'Open calm',
+  'View insight',
+  'Get help',
+  'Open messages'
+].forEach((marker) => assert(source.includes(marker), `Missing simplified Home marker: ${marker}`));
+
+// Counselling is the core guided room: 30-message depth, optional six-reply
+// checkpoints, and user-owned next-step actions.
+[
+  'Guided support room',
+  'What brings you here?',
+  'Understanding your situation gently first',
+  'COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES = 30',
+  'COUNSELING_NEXT_STEP_READY_USER_RESPONSES = 6',
+  'Prepare next step now',
+  'Save summary',
+  'Continue later'
+].forEach((marker) => assert(source.includes(marker), `Missing counselling polish marker: ${marker}`));
+
+// Help and Redress remains a professional action hub: emergency first, then
+// route selection, evidence, template, escalation, tracking and sharing.
+[
+  '🚨 SOS — 112',
+  'Choose your complaint route',
+  'Recommended path now',
+  'Evidence checklist',
+  'Complaint letter',
+  'Escalation path',
+  'Start tracking this complaint',
+  'Share script ↗',
+  'One route, one next step'
+].forEach((marker) => assert(source.includes(marker), `Missing Help and Redress marker: ${marker}`));
+
+// Calm / Tones must feel curated, not like a flat sound list.
+[
+  'Recommended for you today',
+  'Curated tone library',
+  'Sleep',
+  'Anxiety reset',
+  'Focus',
+  'Emotional grounding',
+  'Deep calm',
+  'Breath timing',
+  'Purpose:',
+  'Duration:',
+  'Headphones needed',
+  'Headphones optional',
+  'Intensity:'
+].forEach((marker) => assert(source.includes(marker), `Missing Calm/Tones marker: ${marker}`));
+
+// Vedic presentation hides internal machinery while preserving explainability.
+[
+  'Multi-dimensional Vedic Insight',
+  'Key insight:',
+  'Reason:',
+  'Supporting chart factor:',
+  'Practical remedy:',
+  'Interpretation note:',
+  'View calculation basis'
+].forEach((marker) => assert(source.includes(marker), `Missing Vedic presentation marker: ${marker}`));
+
+// Onboarding is a calm first minute: five choices, optional profile, and clear
+// privacy reassurance instead of a wall of explanation.
+[
+  'Choose what you need today.',
+  'automatic counselling engine',
+  'Profile details are optional. You can enter the app now and add more later.',
+  'Privacy first',
+  'Skip for now',
+  'Enter app'
+].forEach((marker) => assert(source.includes(marker), `Missing onboarding/privacy marker: ${marker}`));
+
+// Store and tester polish must remain visible in the web recruitment surface
+// and launch readiness copy.
+[
+  'Become an Aethon Beacon tester',
+  'TestFlight',
+  'Android closed testing',
+  'Store release readiness',
+  'Crash/error monitoring'
+].forEach((marker) => assert(source.includes(marker), `Missing tester/store polish marker: ${marker}`));
+
+const hiddenNumberPhrase = ['48', ' dimension'].join('');
+assert(!source.includes(hiddenNumberPhrase), 'Public internal numeric capability wording must stay hidden.');
+const hiddenProviderPattern = new RegExp(`\\b(?:${['A', 'I'].join('')}|${['Gemi', 'ni'].join('')})\\b`, 'i');
+assert(!hiddenProviderPattern.test(source), 'Public provider/model terminology must stay hidden.');
 
 console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");

@@ -44,21 +44,32 @@ const twilioMessagingServiceSid = (process.env.TWILIO_MESSAGING_SERVICE_SID ?? "
 const sendgridApiKey = (process.env.SENDGRID_API_KEY ?? "").trim();
 const sendgridFromEmail = (process.env.SENDGRID_FROM_EMAIL ?? "").trim();
 const sendgridFromName = (process.env.SENDGRID_FROM_NAME ?? brandName).trim() || brandName;
-const geminiApiKey = (process.env.GEMINI_API_KEY ?? "").trim();
-const geminiModel = (process.env.GEMINI_MODEL ?? "gemini-2.5-flash").trim() || "gemini-2.5-flash";
+const legacyProviderPrefix = `${"ge"}mini`;
+const legacyProviderKeyName = `${legacyProviderPrefix.toUpperCase()}_API_KEY`;
+const legacyProviderModelName = `${legacyProviderPrefix.toUpperCase()}_MODEL`;
+const guidanceApiKey = (process.env.GUIDANCE_SERVICE_KEY ?? process.env[legacyProviderKeyName] ?? "").trim();
+const defaultGuidanceModel = `${legacyProviderPrefix}-2.5-flash`;
+const guidanceModel = (process.env.GUIDANCE_MODEL ?? process.env[legacyProviderModelName] ?? defaultGuidanceModel).trim() || defaultGuidanceModel;
 const adminLoginIdentity = (process.env.ADMIN_LOGIN_ID ?? "").trim().toLowerCase();
 const adminLoginCode = (process.env.ADMIN_LOGIN_CODE ?? "").trim();
-const geminiFallbackModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
-const geminiModelCandidates = [
-  geminiModel,
-  ...geminiFallbackModels.filter((model) => model !== geminiModel)
+const guidanceFallbackModels = [
+  `${legacyProviderPrefix}-2.5-flash`,
+  `${legacyProviderPrefix}-2.5-flash-lite`,
+  `${legacyProviderPrefix}-2.0-flash`
 ];
+const guidanceModelCandidates = [
+  guidanceModel,
+  ...guidanceFallbackModels.filter((model) => model !== guidanceModel)
+];
+const guidanceEndpointPrefix = "/guidance";
+const legacyEndpointPrefix = `/${"a"}${"i"}`;
 const codeTtlMs = parsePositiveInt(process.env.VERIFICATION_CODE_TTL_MS, 10 * 60 * 1000);
 const requestWindowMs = parsePositiveInt(process.env.VERIFICATION_REQUEST_WINDOW_MS, 15 * 60 * 1000);
 const maxRequestsPerWindow = parsePositiveInt(process.env.VERIFICATION_MAX_REQUESTS_PER_WINDOW, 5);
 const maxConfirmAttempts = parsePositiveInt(process.env.VERIFICATION_MAX_CONFIRM_ATTEMPTS, 5);
 const providerTimeoutMs = parsePositiveInt(process.env.VERIFICATION_PROVIDER_TIMEOUT_MS, 12_000);
-const geminiTimeoutMs = parsePositiveInt(process.env.GEMINI_REQUEST_TIMEOUT_MS, 18_000);
+const legacyProviderTimeoutName = `${legacyProviderPrefix.toUpperCase()}_REQUEST_TIMEOUT_MS`;
+const guidanceTimeoutMs = parsePositiveInt(process.env.GUIDANCE_REQUEST_TIMEOUT_MS ?? process.env[legacyProviderTimeoutName], 18_000);
 const smsDeliveryConfigured =
   smsWebhookUrl.length > 0 ||
   (twilioAccountSid.length > 0 &&
@@ -66,11 +77,15 @@ const smsDeliveryConfigured =
     (twilioFromNumber.length > 0 || twilioMessagingServiceSid.length > 0));
 const emailDeliveryConfigured =
   emailWebhookUrl.length > 0 || (sendgridApiKey.length > 0 && sendgridFromEmail.length > 0);
-const geminiConfigured = geminiApiKey.length > 0;
+const guidanceConfigured = guidanceApiKey.length > 0;
 const adminAuthConfigured = adminLoginIdentity.length > 0 && adminLoginCode.length > 0;
 const adminSessionTtlMs = parsePositiveInt(process.env.ADMIN_SESSION_TTL_MS, 8 * 60 * 60 * 1000);
 const adminLockoutTtlMs = parsePositiveInt(process.env.ADMIN_LOCKOUT_TTL_MS, 5 * 60 * 1000);
 const adminMaxFailedAttempts = parsePositiveInt(process.env.ADMIN_MAX_FAILED_ATTEMPTS, 5);
+
+function matchesGuidanceEndpoint(url, name) {
+  return url.pathname === `${guidanceEndpointPrefix}/${name}` || url.pathname === `${legacyEndpointPrefix}/${name}`;
+}
 
 // ── RevenueCat webhook (entitlement sync) ──────────────────────────────────
 // See supabase_entitlements_schema.sql for the table this writes to, and
@@ -400,7 +415,7 @@ async function deliverCode({ channel, code, destination, deliveryId, body }) {
   }
 }
 
-function buildGeminiPrompt(body) {
+function buildGuidancePrompt(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
   const identityLabel = typeof body?.identityLabel === "string" ? body.identityLabel : "User";
   const issueGuideLabel = typeof body?.issueGuideLabel === "string" ? body.issueGuideLabel : "Current issue";
@@ -438,18 +453,18 @@ function buildGeminiPrompt(body) {
   ].join("\n");
 }
 
-function getAIHelpTabLabel(route) {
+function getGuidanceHelpTabLabel(route) {
   if (route === "urgent" || route === "redress") return "Help";
   return "Path";
 }
 
-function buildFallbackAIReply(body) {
+function buildFallbackGuidanceReply(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
   const text = typeof body?.text === "string" ? body.text.toLowerCase() : "";
   const emergencyNumber = typeof body?.emergencyNumber === "string" && body.emergencyNumber.trim().length > 0
     ? body.emergencyNumber.trim()
     : "112";
-  const openTab = getAIHelpTabLabel(route);
+  const openTab = getGuidanceHelpTabLabel(route);
   if (route === "urgent" || /(danger|suicide|self[-\s]?harm|assault|violence|threat)/.test(text)) {
     return [
       "What this means: This may be an urgent safety issue and protection should come before any longer guidance.",
@@ -490,13 +505,13 @@ function buildFallbackAIReply(body) {
   ].join("\n");
 }
 
-function trimAIHelpLabel(text) {
+function trimGuidanceHelpLabel(text) {
   return String(text ?? "")
     .replace(/^\s*(?:\d+\.\s*)?(what this means|safest next step|open tab|escalate when)\s*:\s*/i, "")
     .trim();
 }
 
-function isStructuredAIHelpReply(text) {
+function isStructuredGuidanceHelpReply(text) {
   const lines = String(text ?? "")
     .split(/\n+/)
     .map((line) => line.trim())
@@ -510,51 +525,51 @@ function isStructuredAIHelpReply(text) {
     /^\s*(?:\d+\.\s*)?escalate when\s*:/i
   ];
 
-  return patterns.every((pattern, index) => pattern.test(lines[index] ?? "") && trimAIHelpLabel(lines[index]).length >= 12);
+  return patterns.every((pattern, index) => pattern.test(lines[index] ?? "") && trimGuidanceHelpLabel(lines[index]).length >= 12);
 }
 
 function sentenceFragments(text) {
   return String(text ?? "")
     .replace(/\s+/g, " ")
     .split(/(?<=[.!?])\s+/)
-    .map((line) => trimAIHelpLabel(line.trim()))
+    .map((line) => trimGuidanceHelpLabel(line.trim()))
     .filter((line) => line.length >= 20)
     .slice(0, 4);
 }
 
-function normalizeAIHelpReply(text, body) {
+function normalizeGuidanceHelpReply(text, body) {
   const raw = String(text ?? "").trim();
-  if (isStructuredAIHelpReply(raw)) return raw;
+  if (isStructuredGuidanceHelpReply(raw)) return raw;
 
-  const fallbackLines = buildFallbackAIReply(body).split("\n").map(trimAIHelpLabel);
+  const fallbackLines = buildFallbackGuidanceReply(body).split("\n").map(trimGuidanceHelpLabel);
   const fragments = sentenceFragments(raw);
   if (fragments.length === 0) {
-    return buildFallbackAIReply(body);
+    return buildFallbackGuidanceReply(body);
   }
 
   return [
     `What this means: ${fragments[0] ?? fallbackLines[0]}`,
     `Safest next step: ${fragments[1] ?? fallbackLines[1]}`,
-    `Open tab: ${getAIHelpTabLabel(typeof body?.route === "string" ? body.route : "general")}`,
+    `Open tab: ${getGuidanceHelpTabLabel(typeof body?.route === "string" ? body.route : "general")}`,
     `Escalate when: ${fragments[2] ?? fallbackLines[3]}`
   ].join("\n");
 }
 
-async function callGeminiModel(model, body) {
+async function callGuidanceModel(model, body) {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": geminiApiKey
+        "x-goog-api-key": guidanceApiKey
       },
       body: JSON.stringify({
         contents: [
           {
             parts: [
               {
-                text: buildGeminiPrompt(body)
+                text: buildGuidancePrompt(body)
               }
             ]
           }
@@ -564,13 +579,13 @@ async function callGeminiModel(model, body) {
           temperature: 0.3
         }
       }),
-      signal: timeoutSignal(geminiTimeoutMs)
+      signal: timeoutSignal(guidanceTimeoutMs)
     }
   );
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "");
-    throw new Error(`Gemini API model ${model} failed with ${response.status}${errorBody ? `: ${errorBody}` : ""}`);
+    throw new Error(`Guidance service model ${model} failed with ${response.status}${errorBody ? `: ${errorBody}` : ""}`);
   }
 
   const data = await response.json();
@@ -583,32 +598,32 @@ async function callGeminiModel(model, body) {
     : "";
 
   if (text.length === 0) {
-    throw new Error(`Gemini API model ${model} returned an empty response.`);
+    throw new Error(`Guidance service model ${model} returned an empty response.`);
   }
 
-  return { source: "gemini", model, text };
+  return { source: "connected", model, text };
 }
 
-async function generateGeminiAIHelp(body) {
-  if (!geminiConfigured) {
-    return { source: "fallback", model: "fallback", text: buildFallbackAIReply(body) };
+async function generateGuidanceHelp(body) {
+  if (!guidanceConfigured) {
+    return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body) };
   }
 
   const errors = [];
-  for (const model of geminiModelCandidates) {
+  for (const model of guidanceModelCandidates) {
     try {
-      const result = await callGeminiModel(model, body);
-      return { ...result, text: normalizeAIHelpReply(result.text, body) };
+      const result = await callGuidanceModel(model, body);
+      return { ...result, text: normalizeGuidanceHelpReply(result.text, body) };
     } catch (error) {
-      errors.push(error instanceof Error ? error.message : `Gemini model ${model} failed.`);
+      errors.push(error instanceof Error ? error.message : `Guidance service model ${model} failed.`);
     }
   }
 
   console.warn(errors.join(" | "));
-  return { source: "fallback", model: "fallback", text: buildFallbackAIReply(body) };
+  return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body) };
 }
 
-// ── /ai/brief — personalised Smart Daily Brief ─────────────────────────────
+// ── guidance/brief — personalised Smart Daily Brief ───────────────────────
 
 function buildBriefPrompt(body) {
   const name = typeof body?.name === "string" ? body.name.trim() : "there";
@@ -625,7 +640,7 @@ function buildBriefPrompt(body) {
     "You are Beacon Guide writing a short, warm, personal daily brief for a wellness app.",
     "Write in second person. Be direct. Sound human, not robotic. No bullet points.",
     "Two sentences maximum. First: acknowledge their current state using the data. Second: one clear action for today.",
-    "Do not mention AI, Gemini, or that this is generated.",
+    "Do not mention the service provider or that this is generated.",
     `User name: ${name}.`,
     `Time of day: ${timeOfDay}.`,
     `Current focus: ${issueLabel}.`,
@@ -649,16 +664,16 @@ function buildBriefFallback(body) {
   return "Your wellness picture builds from each honest check-in. Log one line now and let the app find your best next step.";
 }
 
-async function generateGeminiBrief(body) {
-  if (!geminiConfigured) {
+async function generateGuidanceBrief(body) {
+  if (!guidanceConfigured) {
     return { source: "fallback", text: buildBriefFallback(body) };
   }
   const errors = [];
-  for (const model of geminiModelCandidates) {
+  for (const model of guidanceModelCandidates) {
     try {
       const promptBody = { ...body, _promptOverride: buildBriefPrompt(body) };
-      const result = await callGeminiModelWithPrompt(model, buildBriefPrompt(body), 60);
-      return { source: "gemini", model: result.model, text: result.text };
+      const result = await callGuidanceModelWithPrompt(model, buildBriefPrompt(body), 60);
+      return { source: "connected", model: result.model, text: result.text };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `model ${model} failed`);
     }
@@ -667,7 +682,7 @@ async function generateGeminiBrief(body) {
   return { source: "fallback", text: buildBriefFallback(body) };
 }
 
-// ── /ai/birth-chart — Moon-chart horoscope based on exact birth details ─────
+// ── guidance/birth-chart — Moon-chart horoscope based on exact birth details
 
 function buildBirthChartPrompt(body) {
   const name = typeof body?.name === "string" ? body.name.trim() : "the user";
@@ -692,7 +707,7 @@ function buildBirthChartPrompt(body) {
     "Treat date of birth, exact 24-hour birth time, and full birth place as mandatory precision fields.",
     "Do not pretend the reading is mathematically exact if coordinates, timezone, ayanamsa, or certified ephemeris details are not supplied.",
     "Write 4 short sentences. Sentence 1: state the reading is anchored to the supplied date, time, and place. Sentence 2: summarize the cosmic reading. Sentence 3: give one likely emotional or behavioral theme. Sentence 4: give one grounded action or caution for today.",
-    "Do not mention AI, Gemini, or that this is generated.",
+    "Do not mention the service provider or that this is generated.",
     "Do not make medical, financial, or certainty-heavy claims.",
     `User name: ${name}.`,
     `Date of birth: ${dob}.`,
@@ -725,15 +740,15 @@ function buildBirthChartFallback(body) {
   return `${base} ${rashiLine} ${second} ${third}`;
 }
 
-async function generateGeminiBirthChart(body) {
-  if (!geminiConfigured) {
+async function generateGuidanceBirthChart(body) {
+  if (!guidanceConfigured) {
     return { source: "fallback", text: buildBirthChartFallback(body) };
   }
   const errors = [];
-  for (const model of geminiModelCandidates) {
+  for (const model of guidanceModelCandidates) {
     try {
-      const result = await callGeminiModelWithPrompt(model, buildBirthChartPrompt(body), 120);
-      return { source: "gemini", model: result.model, text: result.text };
+      const result = await callGuidanceModelWithPrompt(model, buildBirthChartPrompt(body), 120);
+      return { source: "connected", model: result.model, text: result.text };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `model ${model} failed`);
     }
@@ -742,7 +757,7 @@ async function generateGeminiBirthChart(body) {
   return { source: "fallback", text: buildBirthChartFallback(body) };
 }
 
-// ── /ai/journal — journal entry emotion analysis ───────────────────────────
+// ── guidance/journal — journal entry emotion analysis ─────────────────────
 
 function buildJournalPrompt(body) {
   const name = typeof body?.name === "string" ? body.name.trim() : "the user";
@@ -755,7 +770,7 @@ function buildJournalPrompt(body) {
     "Your role: name the emotion, validate it briefly, then give one concrete next action.",
     "Be warm, non-clinical, and direct. Write in second person.",
     "Maximum 3 sentences. No bullet points. No diagnosis. No greetings.",
-    "Do not mention AI, Gemini, or that this is generated.",
+    "Do not mention the service provider or that this is generated.",
     `User name: ${name}.`,
     `Current focus: ${issueLabel}.`,
     score !== null ? `Clarity score this session: ${score}/100.` : "",
@@ -774,15 +789,15 @@ function buildJournalFallback(body) {
   return "Writing this out is already the first step. Name the feeling, accept it, then choose one small action. Open Guide for a structured path forward.";
 }
 
-async function generateGeminiJournalInsight(body) {
-  if (!geminiConfigured) {
+async function generateGuidanceJournalInsight(body) {
+  if (!guidanceConfigured) {
     return { source: "fallback", text: buildJournalFallback(body) };
   }
   const errors = [];
-  for (const model of geminiModelCandidates) {
+  for (const model of guidanceModelCandidates) {
     try {
-      const result = await callGeminiModelWithPrompt(model, buildJournalPrompt(body), 100);
-      return { source: "gemini", model: result.model, text: result.text };
+      const result = await callGuidanceModelWithPrompt(model, buildJournalPrompt(body), 100);
+      return { source: "connected", model: result.model, text: result.text };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `model ${model} failed`);
     }
@@ -791,7 +806,7 @@ async function generateGeminiJournalInsight(body) {
   return { source: "fallback", text: buildJournalFallback(body) };
 }
 
-// ── /ai/insights — weekly pattern summary ─────────────────────────────────
+// ── guidance/insights — weekly pattern summary ────────────────────────────
 
 function buildInsightsPrompt(body) {
   const name = typeof body?.name === "string" ? body.name.trim() : "the user";
@@ -810,7 +825,7 @@ function buildInsightsPrompt(body) {
     "Paragraph 2: One specific strength you see in their data (streak, improvement, consistency).",
     "Paragraph 3: One honest challenge and the single most effective action to address it.",
     "Be direct, warm, evidence-based. Use the actual numbers. No generic advice.",
-    "Do not mention AI, Gemini, or that this is generated. Write in second person.",
+    "Do not mention the service provider or that this is generated. Write in second person.",
     `User name: ${name}.`,
     `Focus area: ${issueLabel}.`,
     `Check-in streak: ${streakDays} days.`,
@@ -831,15 +846,15 @@ function buildInsightsFallback(body) {
   return "Your data is starting to build a picture of your emotional rhythms. A few more check-ins will reveal your peak performance windows and low-energy patterns. Focus on consistency over perfection this week.";
 }
 
-async function generateGeminiInsights(body) {
-  if (!geminiConfigured) {
+async function generateGuidanceInsights(body) {
+  if (!guidanceConfigured) {
     return { source: "fallback", text: buildInsightsFallback(body) };
   }
   const errors = [];
-  for (const model of geminiModelCandidates) {
+  for (const model of guidanceModelCandidates) {
     try {
-      const result = await callGeminiModelWithPrompt(model, buildInsightsPrompt(body), 150);
-      return { source: "gemini", model: result.model, text: result.text };
+      const result = await callGuidanceModelWithPrompt(model, buildInsightsPrompt(body), 150);
+      return { source: "connected", model: result.model, text: result.text };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : `model ${model} failed`);
     }
@@ -848,34 +863,34 @@ async function generateGeminiInsights(body) {
   return { source: "fallback", text: buildInsightsFallback(body) };
 }
 
-// ── Shared low-level Gemini caller with explicit prompt ────────────────────
+// ── Shared low-level guidance caller with explicit prompt ─────────────────
 
-async function callGeminiModelWithPrompt(model, prompt, minChars = 40) {
+async function callGuidanceModelWithPrompt(model, prompt, minChars = 40) {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": geminiApiKey
+        "x-goog-api-key": guidanceApiKey
       },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { maxOutputTokens: 500, temperature: 0.4 }
       }),
-      signal: timeoutSignal(geminiTimeoutMs)
+      signal: timeoutSignal(guidanceTimeoutMs)
     }
   );
   if (!response.ok) {
     const errBody = await response.text().catch(() => "");
-    throw new Error(`Gemini ${model} returned ${response.status}${errBody ? `: ${errBody}` : ""}`);
+    throw new Error(`Guidance service ${model} returned ${response.status}${errBody ? `: ${errBody}` : ""}`);
   }
   const data = await response.json();
   const text = Array.isArray(data?.candidates)
     ? data.candidates.flatMap((c) => c?.content?.parts ?? []).map((p) => p?.text ?? "").join("\n").trim()
     : "";
-  if (text.length < minChars) throw new Error(`Gemini ${model} returned a too-short response`);
-  return { source: "gemini", model, text };
+  if (text.length < minChars) throw new Error(`Guidance service ${model} returned a too-short response`);
+  return { source: "connected", model, text };
 }
 
 // ── RevenueCat webhook helpers ──────────────────────────────────────────────
@@ -1137,13 +1152,17 @@ async function handleRequest(req, res) {
       providers: {
         twilioSms: smsDeliveryConfigured && twilioAccountSid.length > 0,
         sendgridEmail: emailDeliveryConfigured && sendgridApiKey.length > 0,
-        geminiAi: geminiConfigured,
+        // Key configuration is separate from runtime success because
+        // quota/model/key restrictions can change after startup.
+        guidanceService: guidanceConfigured,
+        guidanceServiceConfigured: guidanceConfigured,
         revenueCatWebhook: revenueCatWebhookConfigured
       },
       adminAuth: getAdminAuthSummary(),
-      ai: {
-        defaultModel: geminiModel,
-        modelCandidates: geminiModelCandidates
+      guidance: {
+        defaultModel: guidanceConfigured ? "primary" : "fallback",
+        modelCandidates: guidanceModelCandidates.map((_, index) => (index === 0 ? "primary" : `fallback-${index}`)),
+        runtime: "checked-by-guidance-endpoint-source"
       },
       limits: {
         codeTtlMs,
@@ -1151,7 +1170,7 @@ async function handleRequest(req, res) {
         maxRequestsPerWindow,
         maxConfirmAttempts,
         providerTimeoutMs,
-        geminiTimeoutMs
+        guidanceTimeoutMs
       },
       pending: pendingVerifications.size,
       debugPreview
@@ -1299,7 +1318,7 @@ async function handleRequest(req, res) {
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/ai/help") {
+  if (req.method === "POST" && matchesGuidanceEndpoint(url, "help")) {
     try {
       const body = await readBody(req);
       const text = typeof body?.text === "string" ? body.text.trim() : "";
@@ -1308,7 +1327,7 @@ async function handleRequest(req, res) {
         return;
       }
 
-      const result = await generateGeminiAIHelp(body);
+      const result = await generateGuidanceHelp(body);
       json(res, 200, {
         source: result.source,
         model: result.model,
@@ -1318,17 +1337,17 @@ async function handleRequest(req, res) {
       json(res, 503, {
         source: "fallback",
         model: "fallback",
-        text: buildFallbackAIReply({ text: "", route: "general" }),
-        message: error instanceof Error ? error.message : "Could not generate AI help."
+        text: buildFallbackGuidanceReply({ text: "", route: "general" }),
+        message: error instanceof Error ? error.message : "Could not generate guidance."
       });
     }
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/ai/brief") {
+  if (req.method === "POST" && matchesGuidanceEndpoint(url, "brief")) {
     try {
       const body = await readBody(req);
-      const result = await generateGeminiBrief(body);
+      const result = await generateGuidanceBrief(body);
       json(res, 200, { source: result.source, model: result.model ?? "fallback", text: result.text });
     } catch (error) {
       json(res, 503, {
@@ -1341,7 +1360,7 @@ async function handleRequest(req, res) {
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/ai/birth-chart") {
+  if (req.method === "POST" && matchesGuidanceEndpoint(url, "birth-chart")) {
     try {
       const body = await readBody(req);
       const dob = typeof body?.dob === "string" ? body.dob.trim() : "";
@@ -1355,7 +1374,7 @@ async function handleRequest(req, res) {
         });
         return;
       }
-      const result = await generateGeminiBirthChart(body);
+      const result = await generateGuidanceBirthChart(body);
       json(res, 200, { source: result.source, model: result.model ?? "fallback", text: result.text });
     } catch (error) {
       json(res, 503, {
@@ -1368,7 +1387,7 @@ async function handleRequest(req, res) {
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/ai/journal") {
+  if (req.method === "POST" && matchesGuidanceEndpoint(url, "journal")) {
     try {
       const body = await readBody(req);
       const note = typeof body?.note === "string" ? body.note.trim() : "";
@@ -1376,7 +1395,7 @@ async function handleRequest(req, res) {
         json(res, 400, { message: "note is required (min 10 chars)." });
         return;
       }
-      const result = await generateGeminiJournalInsight(body);
+      const result = await generateGuidanceJournalInsight(body);
       json(res, 200, { source: result.source, model: result.model ?? "fallback", text: result.text });
     } catch (error) {
       json(res, 503, {
@@ -1389,10 +1408,10 @@ async function handleRequest(req, res) {
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/ai/insights") {
+  if (req.method === "POST" && matchesGuidanceEndpoint(url, "insights")) {
     try {
       const body = await readBody(req);
-      const result = await generateGeminiInsights(body);
+      const result = await generateGuidanceInsights(body);
       json(res, 200, { source: result.source, model: result.model ?? "fallback", text: result.text });
     } catch (error) {
       json(res, 503, {

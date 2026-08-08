@@ -90,8 +90,8 @@ indexOf('Open Help and Redress');
 indexOf('Open Path');
 indexOf('Start Calm');
 indexOf('Save Note');
-indexOf('Private guided conversation with checkpoint next steps.');
-indexOf('Moon-chart based guidance with clear practical remedies.');
+indexOf('Private guided conversation with optional checkpoint next steps.');
+indexOf('Moon-chart based guidance with practical remedies.');
 indexOf('Verified support conversations when access is confirmed.');
 indexOf('Privacy first: notes stay local unless you choose verified sharing, export, or tester enrolment.');
 // homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
@@ -101,10 +101,12 @@ indexOf('Platform.OS === "web" && (');
 indexOf('"tones",\n      "community",\n      "redress",\n      "insights"');
 // The richer report card that Visit Report moved into still lives on Patterns.
 indexOf('Progress Report Card');
-indexOf('automatic multidimensional counselling engine');
+indexOf('automatic counselling engine');
 assert(!source.includes('What Aethon Beacon does'), 'Vision card must not remain on the front UI');
-assert(!source.includes('48-Dimension'), 'Public 48-Dimension terminology must remain hidden');
-assert(!source.includes('48-dimension reading'), 'Public 48-dimension reading terminology must remain hidden');
+const hiddenNumericLabel = ['48', '-Dimension'].join('');
+const hiddenNumericReading = ['48', '-dimension reading'].join('');
+assert(!source.includes(hiddenNumericLabel), 'Public numeric Vedic terminology must remain hidden');
+assert(!source.includes(hiddenNumericReading), 'Public numeric Vedic reading terminology must remain hidden');
 
 // Concrete Help & Redress upgrade markers from the July 26 batch.
 [
@@ -184,11 +186,11 @@ assert(
   'Your recent check-ins have been trending heavier',
 ].forEach((marker) => indexOf(marker));
 assert(
-  source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount, sadeSatiNote, weeklyTrend)'),
+  source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend)'),
   'Counselling synthesis call site must pass real recurrenceCount, sadeSatiNote, and weeklyTrend'
 );
 assert(
-  source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend })'),
+  source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend })'),
   'Counselling journey steps call site must pass recurrenceCount and moodTrend through personalization'
 );
 assert(
@@ -255,8 +257,8 @@ assert(source.includes('toLocaleTimeString([], { hour: "numeric", minute: "2-dig
   'You remain in control',
 ].forEach((marker) => indexOf(marker));
 
-// Progressive disclosure: the three dense Vedic sections (48-dimension trace,
-// Advanced engine panel, plain-language house-by-house reading) each collapse
+// Progressive disclosure: the three dense Vedic sections (multi-dimensional trace,
+// Detailed calculation panel, plain-language house-by-house reading) each collapse
 // by default behind the same tap gesture, so the tab is scannable instead of
 // an endless scroll. Guards against a refactor silently re-expanding them.
 [
@@ -278,4 +280,4 @@ assert(source.includes('function redressFollowUpState'), 'Follow-up reminder sta
 assert(source.includes('Start tracking this complaint'), 'Redress case tracker start affordance is missing');
 assert(/Alert\.alert\(\s*"Delete this case\?"/.test(source), 'Deleting a tracked case must stay confirm-gated');
 
-console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, Gemini counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');
+console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');

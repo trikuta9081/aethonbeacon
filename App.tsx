@@ -277,7 +277,7 @@ type PersistedAppState = {
   communityChatPersona: CommunityChatPersonaId;
   privateSpaceThreads: PrivateSpaceThread[];
   privateSpaceSelectedThreadId: string | null;
-  aiHelpMessages: AIHelpMessage[];
+  aiHelpMessages: GuidedSupportMessage[];
   privateIntakeDraft: PrivateIntakeDraft;
   privateIntakeSavedAt: string | null;
   visitReports: VisitReport[];
@@ -363,7 +363,7 @@ type TabId =
   | "admin"
   | "settings";
 type GuidedAction = "profile" | "sos" | TabId;
-type LaunchNeedId = "calm" | "guide" | "complaint" | "aihelp" | "community" | "journal" | "search";
+type LaunchNeedId = "guide" | "calm" | "vedic" | "complaint" | "community";
 type AccessRole = "guest" | "member" | "verified" | "admin";
 type ReminderMode = "morning" | "midday" | "evening";
 type ReminderAccess = "loading" | "granted" | "prompt" | "denied" | "unsupported";
@@ -592,7 +592,7 @@ type PrivateSpaceThread = {
   members: string[];
   messages: PrivateSpaceMessage[];
 };
-type AIHelpRoute = "general" | "guide" | "redress" | "professional" | "urgent";
+type GuidedSupportRoute = "general" | "guide" | "redress" | "professional" | "urgent";
 type SupportDimensionId =
   | "self-image"
   | "grief"
@@ -648,7 +648,7 @@ type PendingRouteDecision = {
   issueId: IssueId;
   issueLabel: string;
   identityLabel: string;
-  route: AIHelpRoute;
+  route: GuidedSupportRoute;
   redressRouteId: RedressRouteId;
 };
 type RouteFollowUpStatus = "open" | "resolved" | "more-guidance" | "reminder-set";
@@ -658,7 +658,7 @@ type ActiveRouteFollowUp = {
   issueId: IssueId;
   issueLabel: string;
   identityLabel: string;
-  route: AIHelpRoute;
+  route: GuidedSupportRoute;
   choice: RouteChoiceId;
   choiceLabel: string;
   openedAt: string;
@@ -709,15 +709,15 @@ type PendingPrivateIntakeRoute = {
   issueId: IssueId;
   redressRouteId: RedressRouteId;
 };
-type AIHelpMessage = {
+type GuidedSupportMessage = {
   id: string;
   createdAt: string;
   author: string;
   role: "user" | "assistant";
   text: string;
-  route: AIHelpRoute;
+  route: GuidedSupportRoute;
 };
-type AIHelpProvider = "gemini" | "local";
+type GuideReplyProvider = "connected" | "local";
 type UserReview = {
   id: string;
   createdAt: string;
@@ -2576,53 +2576,37 @@ const launchNeeds: Array<{
   routineId?: string;
 }> = [
   {
+    id: "guide",
+    label: "Counselling",
+    meta: "Start a private guided support room.",
+    tab: "aihelp"
+  },
+  {
     id: "calm",
-    label: "Calm / reset",
-    meta: "Open Reset and settle the body first.",
-    tab: "focus",
+    label: "Calm / Tones",
+    meta: "Settle the body with breath and sound.",
+    tab: "tones",
     issueId: "general",
     routineId: "calm"
   },
   {
-    id: "guide",
-    label: "Guidance",
-    meta: "Open Path for the next clean step.",
-    tab: "guide"
+    id: "vedic",
+    label: "Vedic Insight",
+    meta: "Open moon-chart based guidance and remedies.",
+    tab: "vedic"
   },
   {
     id: "complaint",
-    label: "Complaint",
-    meta: "Open Help and build the redress route.",
+    label: "Help and Redress",
+    meta: "Emergency support, routes, evidence, and templates.",
     tab: "redress",
     redressRouteId: "academic"
   },
   {
-    id: "aihelp",
-    // Was also "Guidance" -- identical to the "guide" card three lines up,
-    // on the same onboarding screen, pointing at two different tabs. A new
-    // user's very first choice on the app had two cards with the same
-    // headline. Matches the "Ask" label now used in the tabs array.
-    label: "Ask",
-    meta: "Open Ask and type what's on your mind in your own words.",
-    tab: "aihelp"
-  },
-  {
     id: "community",
-    label: "Messaging",
-    meta: "Open verified chat when phone or email is confirmed.",
+    label: "Community",
+    meta: "Open verified support messages when access is confirmed.",
     tab: "community"
-  },
-  {
-    id: "journal",
-    label: "Journal",
-    meta: "Capture the moment before it disappears.",
-    tab: "journal"
-  },
-  {
-    id: "search",
-    label: "Explore",
-    meta: "Open trusted help, official sites, and nearby support.",
-    tab: "search"
   }
 ];
 
@@ -3670,11 +3654,11 @@ function buildRoutePreview(
   selectedIdentityLabel: string
 ): RoutePreview {
   const routeText = text.trim().length > 0 ? text : `${selectedIdentityLabel} ${selectedIssueGuide.label}`;
-  const route = detectAIHelpRouteFromText(routeText);
-  const issueId = findAIHelpIssueIdFromText(routeText) ?? "general";
+  const route = detectGuidedSupportRouteFromText(routeText);
+  const issueId = findGuidedSupportIssueIdFromText(routeText) ?? "general";
   const issueLabel = aiHelpIssueLabelMap[issueId] ?? selectedIssueGuide.label;
   if (route === "redress" || route === "urgent") {
-    const routeId = findAIHelpRedressRouteFromText(routeText);
+    const routeId = findGuidedSupportRedressRouteFromText(routeText);
     const routeLabel = redressRoutes.find((item) => item.id === routeId)?.label ?? "Help";
     return {
       title: "Help route",
@@ -3750,7 +3734,7 @@ const calmIssueIds = new Set<IssueId>([
 // Canonical urgent-safety keyword detector — the single source of truth for
 // "does this text describe an immediate safety risk" (self-harm, suicide,
 // assault, abuse, violence, emergency). Previously this lived as two
-// separately-maintained regexes (one in detectAIHelpRouteFromText, one in
+// separately-maintained regexes (one in detectGuidedSupportRouteFromText, one in
 // buildPrivateIntakeReport's hasSafetyCue) that had quietly drifted apart --
 // e.g. one had "dangerous" and "crisis"/"panic", the other didn't; one had
 // "rape"/"assaulted" phrasing, the other didn't. A future edit to one would
@@ -3889,7 +3873,7 @@ function buildPositiveCheckInReply(text: string): { heard: string; nextStep: str
   };
 }
 
-function detectAIHelpRouteFromText(text: string): AIHelpRoute {
+function detectGuidedSupportRouteFromText(text: string): GuidedSupportRoute {
   const n = text.toLowerCase();
 
   // ── 1. URGENT — immediate safety risk ──────────────────────────────────────
@@ -3932,7 +3916,7 @@ function detectAIHelpRouteFromText(text: string): AIHelpRoute {
   return "general";
 }
 
-function findAIHelpIssueIdFromText(text: string): IssueId | null {
+function findGuidedSupportIssueIdFromText(text: string): IssueId | null {
   const n = text.toLowerCase();
 
   // Order: most specific / clinical first, then emotional, then broad
@@ -3962,7 +3946,7 @@ function findAIHelpIssueIdFromText(text: string): IssueId | null {
  * This is shown as the counseling "heard" step before routing.
  * Supreme-level: covers all 17 issue dimensions.
  */
-function buildCounselingAcknowledgment(text: string, issueId: IssueId, route: AIHelpRoute): { heard: string; nextStep: string } {
+function buildCounselingAcknowledgment(text: string, issueId: IssueId, route: GuidedSupportRoute): { heard: string; nextStep: string } {
   const t = text.toLowerCase();
 
   // ── Positive / neutral check-in ─────────────────────────────────────────────
@@ -4145,7 +4129,7 @@ function buildCounselingAcknowledgment(text: string, issueId: IssueId, route: AI
   };
 }
 
-function findAIHelpRedressRouteFromText(text: string): RedressRouteId {
+function findGuidedSupportRedressRouteFromText(text: string): RedressRouteId {
   const normalized = text.toLowerCase();
   if (/(ragging|hostel|senior|junior|batch|fresher)/.test(normalized)) return "ragging";
   if (/(harass|sexual harassment|gender|women|female|stalk|posh|icc)/.test(normalized)) return "harassment";
@@ -8530,18 +8514,18 @@ const privateSpaceSeedThreads: PrivateSpaceThread[] = [
   }
 ];
 
-const aiHelpSeed: AIHelpMessage[] = [
+const aiHelpSeed: GuidedSupportMessage[] = [
   {
-    id: "ai-help-welcome",
+    id: "guide-help-welcome",
     createdAt: new Date("2026-06-03T09:02:00.000Z").toISOString(),
     author: "Beacon Guide",
     role: "assistant",
-    text: buildAIHelpSeedReply(),
+    text: buildGuidedSupportSeedReply(),
     route: "general"
   }
 ];
 
-function buildAIHelpSeedReply() {
+function buildGuidedSupportSeedReply() {
   return [
     "What this means: Tell me what is on your mind — in one sentence or a few words — and I will understand what dimension of your life it is touching, then build you a clear path forward.",
     "Safest next step: Go back to Home, type or speak what you are carrying, and let your guide do the rest. Everything stays private on your device.",
@@ -8802,7 +8786,7 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
   return issueHints[tab] ?? issueHints["journal"];
 }
 
-function buildAIHelpQuickStarters(route: AIHelpRoute, issueLabel: string, identityLabel: string) {
+function buildGuidedSupportQuickStarters(route: GuidedSupportRoute, issueLabel: string, identityLabel: string) {
   const safeIssueLabel = issueLabel.trim().length > 0 ? issueLabel.trim().toLowerCase() : "this issue";
   const safeIdentityLabel = identityLabel.trim().length > 0 ? identityLabel.trim() : "my role";
 
@@ -9058,7 +9042,7 @@ function buildMeditationVideoUrl(chakra: MeditationChakra) {
 const VEDIC_RASHIS = [
   { id: 0, name: "Mesha",     symbol: "♈", en: "Aries",       lord: "Mangal (Mars)",    element: "Agni (Fire)",  nature: "Chara (Movable)" },
   { id: 1, name: "Vrishabha", symbol: "♉", en: "Taurus",      lord: "Shukra (Venus)",   element: "Prithvi (Earth)", nature: "Sthira (Fixed)" },
-  { id: 2, name: "Mithuna",   symbol: "♊", en: "Gemini",      lord: "Budha (Mercury)",  element: "Vayu (Air)",   nature: "Dwisvabhava (Dual)" },
+  { id: 2, name: "Mithuna",   symbol: "♊", en: "Mithuna",      lord: "Budha (Mercury)",  element: "Vayu (Air)",   nature: "Dwisvabhava (Dual)" },
   { id: 3, name: "Karka",     symbol: "♋", en: "Cancer",      lord: "Chandra (Moon)",   element: "Jal (Water)",  nature: "Chara (Movable)" },
   { id: 4, name: "Simha",     symbol: "♌", en: "Leo",         lord: "Surya (Sun)",      element: "Agni (Fire)",  nature: "Sthira (Fixed)" },
   { id: 5, name: "Kanya",     symbol: "♍", en: "Virgo",       lord: "Budha (Mercury)",  element: "Prithvi (Earth)", nature: "Dwisvabhava (Dual)" },
@@ -9403,7 +9387,7 @@ function nextAstroChatReply(question: string, ctx: {
   currentAntardashaEndsAtIso: string | null;
   todayTithi: string;
   todayVara: string;
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   // Shares the chartBriefLang "en"|"hi" toggle lifted to App(), so a reply
   // comes back in the same language the user set the chart brief to. Defaults
   // to English so any legacy caller without it is unaffected.
@@ -9497,7 +9481,7 @@ function nextAstroChatReply(question: string, ctx: {
   // elsewhere in the Vedic tab, filtered to the dimensions relevant to this
   // question's category. Computed FIRST so the reply can open with a real,
   // calculated verdict for this specific question instead of a canned line.
-  const moon48 = ctx.moonChart48Readings ?? [];
+  const moon48 = ctx.moonChartInsightReadings ?? [];
   const primaryMoonCategory = ASTRO_CHAT_CATEGORY_TO_MOON48[cat][0];
   let moon48Verdict: { average: number; verdictWord: string; anchor: MoonChart48Reading; careful: MoonChart48Reading } | null = null;
   if (moon48.length > 0) {
@@ -9518,7 +9502,7 @@ function nextAstroChatReply(question: string, ctx: {
   // NOTE: the anchor/careful reading's own label + interpretation +
   // scoreReason come from buildMoonChartMultidimensionalEngine, which is
   // still English-only (it feeds the whole Vedic tab + counselling engine;
-  // translating all 48 dimensions' interpretation/scoreReason/remedy text is
+  // translating all multi-dimensional support areas' interpretation/scoreReason/remedy text is
   // a separate, much larger pass). So in Hindi mode these few embedded
   // reading strings stay English while the surrounding narration is Hindi --
   // an honest partial, not a claim of full translation.
@@ -9758,7 +9742,7 @@ function getApproxTropicalMoonLongitude(date: Date): number {
 }
 
 function getApproxTropicalSunLongitude(date: Date): number {
-  // VSOP87 solar theory via astronomy-engine (apparent geocentric true
+  // VSOP87 solar theory via astronomy-insight system (apparent geocentric true
   // ecliptic longitude of date, including aberration and nutation) — the
   // same established model used by professional ephemeris software.
   return normalizeDegrees(Astronomy.SunPosition(date).elon);
@@ -9781,7 +9765,7 @@ function getGreenwichSiderealTimeDegrees(date: Date): number {
 // ════════════════════════════════════════════════════════════════════════════
 // Sun and Moon already have dedicated, established-model longitude functions
 // above (VSOP87 solar theory / ELP2000-82B lunar theory via astronomy-engine).
-// Everything below this Vedic engine had built so far -- Rashi, Nakshatra,
+// Everything below this Vedic insight system had built so far -- Rashi, Nakshatra,
 // Dasha, Panchang, the real geocoded Ascendant -- only ever needed those two
 // bodies. Divisional charts, Yoga detection, Ashtakavarga, and Shadbala all
 // need the other five classical grahas too, which the app never computed.
@@ -10080,7 +10064,7 @@ const OWN_SIGN_INDICES: Partial<Record<GrahaId, number[]>> = {
   sun: [4], // Leo
   moon: [3], // Cancer
   mars: [0, 7], // Aries, Scorpio
-  mercury: [2, 5], // Gemini, Virgo
+  mercury: [2, 5], // Mithuna, Virgo
   jupiter: [8, 11], // Sagittarius, Pisces
   venus: [1, 6], // Taurus, Libra
   saturn: [9, 10], // Capricorn, Aquarius
@@ -10101,7 +10085,7 @@ const EXALTATION_SIGN_INDEX: Partial<Record<GrahaId, number>> = {
 const SIGN_LORD: GrahaId[] = [
   "mars", // 0 Aries
   "venus", // 1 Taurus
-  "mercury", // 2 Gemini
+  "mercury", // 2 Mithuna
   "moon", // 3 Cancer
   "sun", // 4 Leo
   "mercury", // 5 Virgo
@@ -10510,7 +10494,7 @@ const DIG_BALA_STRONG_HOUSE: Record<ShadbalaPlanet, number> = {
 
 // Ojayugmarasyamsa Bala: "odd/even sign" strength. Sun/Mars/Jupiter/Saturn
 // (classically treated as masculine) are strong in odd signs (Aries=1,
-// Gemini=3, ... i.e. 0-indexed EVEN sign positions); Moon/Venus (feminine)
+// Mithuna=3, ... i.e. 0-indexed EVEN sign positions); Moon/Venus (feminine)
 // are strong in even signs (0-indexed ODD positions). Mercury (neuter) is
 // always strong regardless of sign. Checked separately for Rashi (D1) and
 // Navamsa (D9) -- 15 virupas each, so max 30.
@@ -10781,7 +10765,7 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
 }
 
 // ── Plain-language house placements (layman graha-in-bhava reading) ────────
-// The rest of this file's Vedic engine intentionally stays terse and
+// The rest of this file's Vedic insight system intentionally stays terse and
 // classical (Rupas, Virupas, Bindus) for people who already read charts.
 // This section is the opposite: it is written for someone who has never
 // looked at a horoscope before and just wants to know, in one or two plain
@@ -10797,7 +10781,7 @@ function computeShadbala(core: BirthChartCore): ShadbalaResult | null {
 // expressed through a bhava's "domain"), and it means every one of the up to
 // 9 cards a person sees is built from a distinct pairing, never a copy-pasted
 // paragraph reused across different placements (that was a real bug fixed
-// elsewhere in this file for the Moon Chart 48-dimension engine).
+// elsewhere in this file for the Moon Chart multi-dimensional engine).
 type PlainLanguageStrings = {
   houseDomain: Record<number, { title: string; life: string }>;
   grahaNature: Record<GrahaId, { name: string; brings: string }>;
@@ -11985,7 +11969,7 @@ const MOON_CHART_48_BLUEPRINTS: MoonChart48Blueprint[] = [
 // Hindi twin of the 48 blueprints, keyed by id. Only the three human-facing
 // text fields need translating (label / meaning / remedyFocus); category,
 // house, and weight are numeric/enum and shared. Switched by lang in
-// buildMoonChartMultidimensionalEngine so the whole 48-axis lunar readout
+// buildMoonChartMultidimensionalEngine so the whole multi-axis lunar readout
 // (Vedic tab display + Ask-the-chart) can render in Hindi, not just the
 // surrounding narration.
 const MOON_CHART_48_BLUEPRINT_HI: Record<string, { label: string; meaning: string; remedyFocus: string }> = {
@@ -12374,7 +12358,7 @@ function buildMoonChartMultidimensionalEngine(input: {
   lagnaId?: number | null;
   // When "hi", the whole reading (blueprint label/meaning, interpretation,
   // score reason, remedy, prediction, verdict word) is produced in Hindi.
-  // Defaults to "en" so every existing caller (counselling engine, Path
+  // Defaults to "en" so every existing caller (counselling insight system, Path
   // complement, Insights) is unchanged -- only the chart-facing display and
   // Ask-the-chart pass "hi" when the user's chartBriefLang is Hindi.
   lang?: "en" | "hi";
@@ -13169,14 +13153,14 @@ export default function App() {
   const [counselingInitialText, setCounselingInitialText] = useState("");
   const [activeJourney, setActiveJourney] = useState<CounselingSession | null>(null);
   const [journeyStepIndex, setJourneyStepIndex] = useState(0);
-  const [aiHelpMessages, setAIHelpMessages] = useState<AIHelpMessage[]>(aiHelpSeed);
-  const [aiHelpDraft, setAIHelpDraft] = useState("");
-  const [aiHelpLoading, setAIHelpLoading] = useState(false);
+  const [aiHelpMessages, setGuidedSupportMessages] = useState<GuidedSupportMessage[]>(aiHelpSeed);
+  const [aiHelpDraft, setGuidedSupportDraft] = useState("");
+  const [aiHelpLoading, setGuidedSupportLoading] = useState(false);
   const [vedicEngineIssueContext, setVedicEngineIssueContext] = useState<VedicEngineIssueContext | null>(null);
   // Plain-language chart language toggle -- lifted here from BirthChartSection
   // so BOTH the chart-brief content (Plain Language card, Yogas, Ashtakavarga,
   // Shadbala -- still rendered inside BirthChartSection, now driven by this
-  // prop) AND the Ask-the-chart answer engine (submitAstroQuestion/
+  // prop) AND the Ask-the-chart answer insight system (submitAstroQuestion/
   // nextAstroChatReply, which live here in App()) can read the same toggle.
   // Previously the toggle was local to BirthChartSection, so a Hindi-speaking
   // user could switch the chart brief to Hindi but every Ask-the-chart reply
@@ -13206,15 +13190,15 @@ export default function App() {
     loop.start();
     return () => loop.stop();
   }, [astroChatLoading, astroChatPulseAnim, astroChatReduceMotion]);
-  const [aiHelpProvider, setAIHelpProvider] = useState<AIHelpProvider>("local");
+  const [aiHelpProvider, setGuideReplyProvider] = useState<GuideReplyProvider>("local");
   // ── Personal guidance state ────────────────────────────────────────────────
-  const [geminiDailyBrief, setGeminiDailyBrief] = useState<string | null>(null);
-  const [geminiDailyBriefLoading, setGeminiDailyBriefLoading] = useState(false);
-  const [geminiJournalInsight, setGeminiJournalInsight] = useState<string | null>(null);
-  const [geminiInsightText, setGeminiInsightText] = useState<string | null>(null);
-  const [geminiInsightLoading, setGeminiInsightLoading] = useState(false);
-  const [geminiBirthChartHoroscope, setGeminiBirthChartHoroscope] = useState<string | null>(null);
-  const [geminiBirthChartHoroscopeLoading, setGeminiBirthChartHoroscopeLoading] = useState(false);
+  const [guidanceDailyBrief, setGuidanceDailyBrief] = useState<string | null>(null);
+  const [guidanceDailyBriefLoading, setGuidanceDailyBriefLoading] = useState(false);
+  const [guidanceJournalInsight, setGuidanceJournalInsight] = useState<string | null>(null);
+  const [guidanceInsightText, setGuidanceInsightText] = useState<string | null>(null);
+  const [guidanceInsightLoading, setGuidanceInsightLoading] = useState(false);
+  const [guidanceBirthChartHoroscope, setGuidanceBirthChartHoroscope] = useState<string | null>(null);
+  const [guidanceBirthChartHoroscopeLoading, setGuidanceBirthChartHoroscopeLoading] = useState(false);
   const [privateIntakeDraft, setPrivateIntakeDraft] = useState<PrivateIntakeDraft>(() =>
     createPrivateIntakeDraft()
   );
@@ -13988,7 +13972,7 @@ export default function App() {
   const isPrivateIntakeOpen = showPrivateIntakePanel;
   const isDevBuild = typeof __DEV__ !== "undefined" && __DEV__;
 
-  // ── Gemini Daily Brief — refresh when entries change or on first load ──────
+  // ── Connected Daily Brief — refresh when entries change or on first load ──────
   useEffect(() => {
     if (!hasLoaded) return;
     let cancelled = false;
@@ -13998,11 +13982,11 @@ export default function App() {
         return typeof v === "string" ? v.trim().replace(/\/$/, "") : "";
       })();
       if (apiBase.length === 0) return;
-      setGeminiDailyBriefLoading(true);
+      setGuidanceDailyBriefLoading(true);
       try {
         const recent = [...entries].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 7);
         const avgScore = recent.length > 0 ? Math.round(recent.reduce((s, e) => s + e.score, 0) / recent.length) : null;
-        const res = await fetch(`${apiBase}/ai/brief`, {
+        const res = await fetch(`${apiBase}/guidance/brief`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -14019,11 +14003,11 @@ export default function App() {
         if (!res.ok || cancelled) return;
         const payload = await res.json().catch(() => null);
         const text = typeof payload?.text === "string" ? payload.text.trim() : "";
-        if (text.length > 0 && !cancelled) setGeminiDailyBrief(text);
+        if (text.length > 0 && !cancelled) setGuidanceDailyBrief(text);
       } catch {
         // silently fall back to rule-based
       } finally {
-        if (!cancelled) setGeminiDailyBriefLoading(false);
+        if (!cancelled) setGuidanceDailyBriefLoading(false);
       }
     }
     void fetchBrief();
@@ -14490,7 +14474,7 @@ export default function App() {
   // ── Vedic Daily Prediction ─────────────────────────────────────────────────
   // Janma Rashi (Moon sign, from Nakshatra) is the primary prediction anchor;
   // the real Ascendant (Lagna), once geocoded, adds a secondary confirming
-  // layer in the multidimensional engine below (self/body categories especially).
+  // layer in the multidimensional insight system below (self/body categories especially).
   const vedicRashiInfo = useMemo(() => getMoonRashiFromDOB(profileDOB, profileBirthTime), [profileDOB, profileBirthTime]);
   // Current transits (Gochar) were already fully computed and displayed on
   // the Vedic tab (getGocharChart/getGocharGuidance) but never reached the
@@ -14522,7 +14506,7 @@ export default function App() {
     () => vedicRashiInfo ? getVedicDailyPrediction(vedicRashiInfo.rashiId, vedicDashaState) : null,
     [vedicRashiInfo, vedicDashaState]
   );
-  const vedicMoonChart48Readings = useMemo(
+  const vedicMoonChartInsightReadings = useMemo(
     () => vedicRashiInfo
       ? buildMoonChartMultidimensionalEngine({
           rashiId: vedicRashiInfo.rashiId,
@@ -14535,16 +14519,16 @@ export default function App() {
       : [],
     [vedicRashiInfo, vedicJanmaNakshatra, vedicDashaState, vedicTithi, vedicVara, vedicLagnaInfo]
   );
-  // Language-aware copy of the 48-axis lunar readout for the chart-facing
-  // surfaces (Ask-the-chart). The English `vedicMoonChart48Readings` above is
-  // kept as the canonical for the counselling engine / Path complement /
+  // Language-aware copy of the multi-axis lunar readout for the chart-facing
+  // surfaces (Ask-the-chart). The English `vedicMoonChartInsightReadings` above is
+  // kept as the canonical for the counselling insight system / Path complement /
   // Insights (which stay English), so switching chartBriefLang never leaks
   // Hindi snippets into the English counselling synthesis. When the toggle is
   // English this is the exact same array (no double compute); only Hindi
   // recomputes with lang: "hi".
-  const vedicMoonChart48ReadingsLocalized = useMemo(
+  const vedicMoonChartInsightReadingsLocalized = useMemo(
     () => chartBriefLang === "en"
-      ? vedicMoonChart48Readings
+      ? vedicMoonChartInsightReadings
       : (vedicRashiInfo
           ? buildMoonChartMultidimensionalEngine({
               rashiId: vedicRashiInfo.rashiId,
@@ -14556,7 +14540,7 @@ export default function App() {
               lang: "hi",
             })
           : []),
-    [chartBriefLang, vedicMoonChart48Readings, vedicRashiInfo, vedicJanmaNakshatra, vedicDashaState, vedicTithi, vedicVara, vedicLagnaInfo]
+    [chartBriefLang, vedicMoonChartInsightReadings, vedicRashiInfo, vedicJanmaNakshatra, vedicDashaState, vedicTithi, vedicVara, vedicLagnaInfo]
   );
   const hasExactBirthDetails =
     /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
@@ -14604,23 +14588,23 @@ export default function App() {
   useEffect(() => {
     if (!hasLoaded) return;
     if (!hasExactBirthDetails) {
-      setGeminiBirthChartHoroscope(null);
-      setGeminiBirthChartHoroscopeLoading(false);
+      setGuidanceBirthChartHoroscope(null);
+      setGuidanceBirthChartHoroscopeLoading(false);
       return;
     }
 
     let cancelled = false;
     async function fetchBirthChartHoroscope() {
       if (verificationApiBaseUrl.length === 0) {
-        setGeminiBirthChartHoroscope(
+        setGuidanceBirthChartHoroscope(
           `Your chart is anchored in ${vedicRashiInfo?.rashi.name ?? "your birth details"} and the day’s ${vedicVara.name} rhythm. The current ${vedicDashaState?.currentMahadasha ?? "Mahadasha"} / ${vedicDashaState?.currentAntardasha ?? "Antardasha"} phase suggests the bigger theme is ${vedicDashaState?.currentMahadasha ? summarizePlanetQuality(vedicDashaState.currentMahadasha).toLowerCase() : "still forming"}, while the live sub-period adds ${vedicDashaState?.currentAntardasha ? summarizePlanetQuality(vedicDashaState.currentAntardasha).toLowerCase() : "nuance"}.`
         );
         return;
       }
 
-      setGeminiBirthChartHoroscopeLoading(true);
+      setGuidanceBirthChartHoroscopeLoading(true);
       try {
-        const response = await fetch(`${verificationApiBaseUrl}/ai/birth-chart`, {
+        const response = await fetch(`${verificationApiBaseUrl}/guidance/birth-chart`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -14646,16 +14630,16 @@ export default function App() {
         const payload = (await response.json().catch(() => null)) as { text?: string } | null;
         const text = typeof payload?.text === "string" ? payload.text.trim() : "";
         if (!cancelled && text.length > 0) {
-          setGeminiBirthChartHoroscope(text);
+          setGuidanceBirthChartHoroscope(text);
         }
       } catch {
         if (!cancelled) {
-          setGeminiBirthChartHoroscope(
+          setGuidanceBirthChartHoroscope(
             `Your chart is anchored in ${vedicRashiInfo?.rashi.name ?? "your birth details"} and the day’s ${vedicVara.name} rhythm.`
           );
         }
       } finally {
-        if (!cancelled) setGeminiBirthChartHoroscopeLoading(false);
+        if (!cancelled) setGuidanceBirthChartHoroscopeLoading(false);
       }
     }
 
@@ -15080,17 +15064,17 @@ export default function App() {
     ]
   );
   const compactHomeBadge = getProfileSurfaceLabel(languageId);
-  const latestAIHelpMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
-  const aiHelpProviderLabel = aiHelpProvider === "gemini" ? "guided reply" : "offline reply";
+  const latestGuidedSupportMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
+  const aiHelpProviderLabel = aiHelpProvider === "connected" ? "guided reply" : "offline reply";
   const voiceGuidanceText = useMemo(
     () =>
       [
         homeGuidance.title,
         homeGuidance.detail,
         `Recommended next step: ${homeGuidance.primaryLabel}.`,
-        `Latest guide reply: ${latestAIHelpMessage.text}`
+        `Latest guide reply: ${latestGuidedSupportMessage.text}`
       ].join(" "),
-    [homeGuidance.detail, homeGuidance.primaryLabel, homeGuidance.title, latestAIHelpMessage.text]
+    [homeGuidance.detail, homeGuidance.primaryLabel, homeGuidance.title, latestGuidedSupportMessage.text]
   );
   const showOnboarding = hasLoaded && showOnboardingPanel;
 
@@ -15273,12 +15257,95 @@ export default function App() {
     const text = JSON.stringify(payload, null, 2);
     try {
       await Share.share({
-        title: "Aethon Beacon backup",
+        title: "Aethon Beacon notes export",
         message: text
       });
     } catch {
-      Alert.alert("Export backup", text);
+      Alert.alert("Export my notes", text);
     }
+  }
+
+  async function resetLocalDataNow() {
+    setEntries([]);
+    setVisitReports([]);
+    setPrivateIntakeDraft(createPrivateIntakeDraft());
+    setPrivateIntakeSavedAt(null);
+    setCommunityMessages([]);
+    setCommunityChatMessages([]);
+    setCommunityReports([]);
+    setHiddenCommunityMessageIds([]);
+    setHiddenCommunityChatIds([]);
+    setSavedCommunityMessageIds([]);
+    setSavedCommunityChatIds([]);
+    setCommunitySafetyStrikeCount(0);
+    setCommunitySafetyBlockedCount(0);
+    setCommunitySafetyLockReason(null);
+    setCommunityPostingLocked(false);
+    setRedressCases([]);
+    setUserReviews([]);
+    setLocalProductMetrics([]);
+    setProductAnalyticsEnabled(false);
+    setTrustedContacts([]);
+    setAccessRole("guest");
+    setAccessName("");
+    setProfilePhone("");
+    setProfileEmail("");
+    setProfileLocation("");
+    setProfilePhoneVerified(false);
+    setProfileEmailVerified(false);
+    setProfilePhoneOtp("");
+    setProfileEmailOtp("");
+    setProfilePhoneOtpInput("");
+    setProfileEmailOtpInput("");
+    setProfileVerificationNotice(null);
+    setProfileGender("prefer_not_to_say");
+    setProfileDOB("");
+    setProfileBirthTime("");
+    setProfileBirthPlace("");
+    setProfileBirthLat(null);
+    setProfileBirthLon(null);
+    setProfileRoleId("other");
+    setOnboardingCompleted(false);
+    setOnboardingCompletedAt(null);
+    setHasSeenWelcomeCard(false);
+    setLastVedicViewDate(null);
+    setLastWeeklyVedicCheck(null);
+    setLastTabViewedAt({});
+    setDismissedHintTabs([]);
+    setJourneyCardDismissed(false);
+    setFeatureNudgeDismissed(false);
+    setReviewDraft("");
+    setReviewContact("");
+    setReviewRating(5);
+    setShowAccessPanel(false);
+    setShowOnboardingPanel(true);
+    setShowAccessVerificationSection(false);
+    await AsyncStorage.multiRemove([
+      STORAGE_KEY,
+      LEGACY_STORAGE_KEY,
+      "aethon-beacon:community:feedLastSeenId",
+      "aethon-beacon:community:chatLastSeenId"
+    ]).catch(() => undefined);
+    handleTabPress("today", { recordHistory: false });
+  }
+
+  function handleDeleteLocalData() {
+    Alert.alert(
+      "Delete my local data",
+      "This clears notes, reports, profile details, verification status, saved messages, case tracking, local measurements, and community state from this device. Export first if you need a copy.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            void resetLocalDataNow().then(() => {
+              Alert.alert("Local data deleted", "This device has been reset. You can start again from Home.");
+            });
+          }
+        }
+      ]
+    );
   }
 
   async function handleShareDailyReport() {
@@ -15769,9 +15836,9 @@ export default function App() {
         setPrivateSpaceSelectedThreadId(nextSelectedThreadId);
       }
       if (Array.isArray(parsed.aiHelpMessages) && loadedSensitiveHistoryEnabled) {
-        setAIHelpMessages(normalizeAIHelpMessages(parsed.aiHelpMessages).slice(0, 18));
+        setGuidedSupportMessages(normalizeGuidedSupportMessages(parsed.aiHelpMessages).slice(0, 18));
       } else {
-        setAIHelpMessages(aiHelpSeed.slice());
+        setGuidedSupportMessages(aiHelpSeed.slice());
       }
       if (parsed.privateIntakeDraft && typeof parsed.privateIntakeDraft === "object" && loadedSensitiveHistoryEnabled) {
         setPrivateIntakeDraft(normalizePrivateIntakeDraft(parsed.privateIntakeDraft));
@@ -16822,8 +16889,8 @@ export default function App() {
       return;
     }
     const routeText = note.length > 0 ? note : `${profileDisplayName} ${selectedIssueGuide.label}`;
-    const route = detectAIHelpRoute(routeText);
-    const issue = findAIHelpIssue(routeText);
+    const route = detectGuidedSupportRoute(routeText);
+    const issue = findGuidedSupportIssue(routeText);
     const smartNote = buildGuidedJournalNote(
       note,
       selectedTone,
@@ -16917,10 +16984,10 @@ export default function App() {
     // Auto-dismiss after 12 seconds
     setTimeout(() => setPostCheckInSuggest(null), 12000);
 
-    // ── Gemini journal insight (async, non-blocking) ───────────────────────
+    // ── Connected journal insight (async, non-blocking) ───────────────────────
     if (note.length >= 30 && verificationApiBaseUrl.length > 0) {
-      setGeminiJournalInsight(null);
-      fetch(`${verificationApiBaseUrl}/ai/journal`, {
+      setGuidanceJournalInsight(null);
+      fetch(`${verificationApiBaseUrl}/guidance/journal`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -16933,13 +17000,13 @@ export default function App() {
         .then((r) => r.json().catch(() => null))
         .then((payload) => {
           const text = typeof payload?.text === "string" ? payload.text.trim() : "";
-          if (text.length > 0) setGeminiJournalInsight(text);
+          if (text.length > 0) setGuidanceJournalInsight(text);
         })
         .catch(() => undefined);
     }
 
     if (route === "redress" || route === "urgent") {
-      const redressRoute = findAIHelpRedressRoute(routeText);
+      const redressRoute = findGuidedSupportRedressRoute(routeText);
       openRedressTab(redressRoute);
       return;
     }
@@ -17583,7 +17650,7 @@ export default function App() {
     return null;
   }
 
-  function inspectAIHelpPrompt(text: string): { reason: CommunityReportReason; message: string } | null {
+  function inspectGuidedSupportPrompt(text: string): { reason: CommunityReportReason; message: string } | null {
     const normalized = text.toLowerCase();
     const seriousContext =
       /(abuse|assault|blackmail|complaint|harass|police|professor|ragging|redress|teacher|workplace)/.test(
@@ -17601,8 +17668,8 @@ export default function App() {
     return null;
   }
 
-  function detectAIHelpRoute(text: string): AIHelpRoute {
-    return detectAIHelpRouteFromText(text);
+  function detectGuidedSupportRoute(text: string): GuidedSupportRoute {
+    return detectGuidedSupportRouteFromText(text);
   }
 
   // ── Aggravated-abuse detector — inspects any counselling input for
@@ -17737,7 +17804,7 @@ export default function App() {
   function buildAbuseGuidanceMessage(
     detection: NonNullable<ReturnType<typeof detectAggravatedAbuse>>,
     createdAt: string
-  ): AIHelpMessage {
+  ): GuidedSupportMessage {
     const severityLabel = detection.severity === "critical" ? "CRITICAL SAFETY SIGNAL" : "AGGRAVATED SIGNAL";
     const parts: string[] = [
       `${severityLabel} — ${detection.category.toUpperCase()} abuse.`,
@@ -17770,8 +17837,8 @@ export default function App() {
     };
   }
 
-  function findAIHelpIssue(text: string) {
-    const issueId = findAIHelpIssueIdFromText(text);
+  function findGuidedSupportIssue(text: string) {
+    const issueId = findGuidedSupportIssueIdFromText(text);
     if (!issueId) {
       return issueGuides.find((guide) => guide.id === "general") ?? issueGuides[0];
     }
@@ -17780,37 +17847,37 @@ export default function App() {
     return issueGuides.find((guide) => guide.id === "general") ?? issueGuides[0];
   }
 
-  function findAIHelpRedressRoute(text: string): RedressRouteId {
-    return findAIHelpRedressRouteFromText(text);
+  function findGuidedSupportRedressRoute(text: string): RedressRouteId {
+    return findGuidedSupportRedressRouteFromText(text);
   }
 
-  function applyAIHelpRoute(text: string, route: AIHelpRoute) {
+  function applyGuidedSupportRoute(text: string, route: GuidedSupportRoute) {
     if (route === "guide" || route === "professional") {
-      setIssueGuideId(findAIHelpIssue(text).id);
+      setIssueGuideId(findGuidedSupportIssue(text).id);
       return;
     }
     if (route === "redress" || route === "urgent") {
-      setRedressRouteId(findAIHelpRedressRoute(text));
+      setRedressRouteId(findGuidedSupportRedressRoute(text));
     }
   }
 
-  function getAIHelpOpenTab(route: AIHelpRoute): TabId {
+  function getGuidedSupportOpenTab(route: GuidedSupportRoute): TabId {
     if (route === "redress" || route === "urgent") return "redress";
     return "guide";
   }
 
-  function getAIHelpOpenTabLabel(route: AIHelpRoute): string {
+  function getGuidedSupportOpenTabLabel(route: GuidedSupportRoute): string {
     if (route === "redress" || route === "urgent") return "Help";
     return "Path";
   }
 
-  function buildAIHelpReply(text: string, route: AIHelpRoute) {
-    const issue = findAIHelpIssue(text);
+  function buildGuidedSupportReply(text: string, route: GuidedSupportRoute) {
+    const issue = findGuidedSupportIssue(text);
     const dimensionPlan = getSupportDimensionPlan(text, issue.id);
     const primaryDimension = dimensionPlan[0] ?? supportDimensionGuides.direction;
     const dimensionLabels = formatSupportDimensionLabels(dimensionPlan);
     const emergencyLabel = emergencyNumber.trim().length > 0 ? emergencyNumber.trim() : "112";
-    const openTabLabel = getAIHelpOpenTabLabel(route);
+    const openTabLabel = getGuidedSupportOpenTabLabel(route);
     const whatThisMeans =
       route === "urgent"
         ? `This has an immediate safety signal. The app should move you to emergency help before any normal guidance.`
@@ -17850,13 +17917,13 @@ export default function App() {
     ].join("\n");
   }
 
-  function trimAIHelpPrefix(text: string) {
+  function trimGuidedSupportPrefix(text: string) {
     return text
       .replace(/^\s*(?:\d+\.\s*)?(what this means|safest next step|open tab|escalate when)\s*:\s*/i, "")
       .trim();
   }
 
-  function isUsableAIHelpSection(text: string) {
+  function isUsableGuidedSupportSection(text: string) {
     const cleaned = text.trim();
     if (cleaned.length < 12) return false;
     if (/^(?:\d+\.\s*)?(what this means|safest next step|open tab|escalate when)\b/i.test(cleaned)) {
@@ -17865,20 +17932,20 @@ export default function App() {
     return /[a-z]/i.test(cleaned);
   }
 
-  function formatAIHelpReply(
+  function formatGuidedSupportReply(
     text: string,
-    route: AIHelpRoute,
+    route: GuidedSupportRoute,
     rawReply?: string | null
   ) {
-    const fallbackLines = buildAIHelpReply(text, route).split("\n");
-    const openTabLabel = getAIHelpOpenTabLabel(route);
+    const fallbackLines = buildGuidedSupportReply(text, route).split("\n");
+    const openTabLabel = getGuidedSupportOpenTabLabel(route);
     const reply = typeof rawReply === "string" ? rawReply.trim() : "";
     if (reply.length === 0) {
       return fallbackLines.join("\n");
     }
-    const fallbackMeaning = trimAIHelpPrefix(fallbackLines[0] ?? "");
-    const fallbackStep = trimAIHelpPrefix(fallbackLines[1] ?? "");
-    const fallbackEscalate = trimAIHelpPrefix(fallbackLines[3] ?? "");
+    const fallbackMeaning = trimGuidedSupportPrefix(fallbackLines[0] ?? "");
+    const fallbackStep = trimGuidedSupportPrefix(fallbackLines[1] ?? "");
+    const fallbackEscalate = trimGuidedSupportPrefix(fallbackLines[3] ?? "");
 
     const replyLines = reply
       .split(/\n+/)
@@ -17893,21 +17960,21 @@ export default function App() {
 
     for (const line of replyLines) {
       if (/^\s*(?:\d+\.\s*)?what this means\s*:/i.test(line) && sections.meaning.length === 0) {
-        sections.meaning = trimAIHelpPrefix(line);
+        sections.meaning = trimGuidedSupportPrefix(line);
         continue;
       }
       if (/^\s*(?:\d+\.\s*)?safest next step\s*:/i.test(line) && sections.step.length === 0) {
-        sections.step = trimAIHelpPrefix(line);
+        sections.step = trimGuidedSupportPrefix(line);
         continue;
       }
       if (/^\s*(?:\d+\.\s*)?escalate when\s*:/i.test(line) && sections.escalate.length === 0) {
-        sections.escalate = trimAIHelpPrefix(line);
+        sections.escalate = trimGuidedSupportPrefix(line);
         continue;
       }
     }
 
     if (sections.meaning.length === 0 || sections.step.length === 0 || sections.escalate.length === 0) {
-      const replyParagraphs = replyLines.map(trimAIHelpPrefix);
+      const replyParagraphs = replyLines.map(trimGuidedSupportPrefix);
       const firstLine = replyParagraphs[0] ?? "";
       const secondLine = replyParagraphs[1] ?? "";
       const thirdLine = replyParagraphs[2] ?? "";
@@ -17917,9 +17984,9 @@ export default function App() {
       sections.escalate = sections.escalate.length > 0 ? sections.escalate : thirdLine || fallbackEscalate;
     }
 
-    sections.meaning = isUsableAIHelpSection(sections.meaning) ? sections.meaning : fallbackMeaning;
-    sections.step = isUsableAIHelpSection(sections.step) ? sections.step : fallbackStep;
-    sections.escalate = isUsableAIHelpSection(sections.escalate) ? sections.escalate : fallbackEscalate;
+    sections.meaning = isUsableGuidedSupportSection(sections.meaning) ? sections.meaning : fallbackMeaning;
+    sections.step = isUsableGuidedSupportSection(sections.step) ? sections.step : fallbackStep;
+    sections.escalate = isUsableGuidedSupportSection(sections.escalate) ? sections.escalate : fallbackEscalate;
 
     return [
       `What this means: ${sections.meaning}`,
@@ -17929,14 +17996,14 @@ export default function App() {
     ].join("\n");
   }
 
-  function buildGeminiAIHelpPrompt(
+  function buildGuidanceHelpPrompt(
     text: string,
-    route: AIHelpRoute,
+    route: GuidedSupportRoute,
     profileAddressLabel: string,
     issueGuide: IssueGuide
   ) {
     const emergencyLabel = emergencyNumber.trim().length > 0 ? emergencyNumber.trim() : "112";
-    const openTabLabel = getAIHelpOpenTabLabel(route);
+    const openTabLabel = getGuidedSupportOpenTabLabel(route);
     const dimensionPlan = getSupportDimensionPlan(text, issueGuide.id);
     const primaryDimension = dimensionPlan[0] ?? supportDimensionGuides.direction;
     const dimensionLabels = formatSupportDimensionLabels(dimensionPlan);
@@ -17973,9 +18040,9 @@ export default function App() {
     ].join("\n");
   }
 
-async function fetchGeminiAIHelp(
+async function fetchGuidanceHelp(
     text: string,
-    route: AIHelpRoute,
+    route: GuidedSupportRoute,
     profileAddressLabel: string,
     issueGuide: IssueGuide
   ) {
@@ -17987,7 +18054,7 @@ async function fetchGeminiAIHelp(
     const timeoutId = setTimeout(() => controller.abort(), 9000);
 
     try {
-      const response = await fetch(`${verificationApiBaseUrl}/ai/help`, {
+      const response = await fetch(`${verificationApiBaseUrl}/guidance/help`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -18001,7 +18068,7 @@ async function fetchGeminiAIHelp(
           issueGuideId: issueGuide.id,
           issueGuideLabel: issueGuide.label,
           emergencyNumber: emergencyNumber.trim() || "112",
-          prompt: buildGeminiAIHelpPrompt(text, route, profileAddressLabel, issueGuide)
+          prompt: buildGuidanceHelpPrompt(text, route, profileAddressLabel, issueGuide)
         })
       });
 
@@ -18020,7 +18087,7 @@ async function fetchGeminiAIHelp(
 
       return {
         text: reply,
-        source: payload?.source ?? "gemini"
+        source: payload?.source ?? "connected"
       };
     } catch {
       return null;
@@ -18430,7 +18497,7 @@ async function fetchGeminiAIHelp(
     if (!hasExactBirthDetails) {
       Alert.alert(
         "Exact birth details required",
-        "Add your exact birth date, 24-hour birth time, and full birth place before the Vedic engine can calculate a response."
+        "Add your exact birth date, 24-hour birth time, and full birth place before the Vedic insight system can calculate a response."
       );
       handleTabPress("vedic");
       return;
@@ -18468,7 +18535,7 @@ async function fetchGeminiAIHelp(
         // interpretation + scoreReason inside the Ask-the-chart reply are in
         // the same language as the surrounding narration (closes the earlier
         // English-snippets-in-Hindi partial).
-        moonChart48Readings: vedicMoonChart48ReadingsLocalized,
+        moonChartInsightReadings: vedicMoonChartInsightReadingsLocalized,
         lang: chartBriefLang,
       });
       const astroMsg = {
@@ -18523,7 +18590,7 @@ async function fetchGeminiAIHelp(
     submitAstroQuestion(vedicEngineIssueContext.issueText);
   }, [hasLoaded, hasExactBirthDetails, vedicEngineIssueContext]);
 
-  async function submitAIHelpText(rawText?: string, issueOverride?: IssueId) {
+  async function submitGuidedSupportText(rawText?: string, issueOverride?: IssueId) {
     const requestedText = (rawText ?? aiHelpDraft).trim();
     const issueGuide =
       issueOverride !== undefined
@@ -18533,7 +18600,7 @@ async function fetchGeminiAIHelp(
       requestedText.length > 0
         ? requestedText
         : `I am ${profileDisplayName}. Guide me through ${issueGuide.label} with practical, emotional, psychological, reflective, and cultural next steps.`;
-    const safetyViolation = inspectAIHelpPrompt(text);
+    const safetyViolation = inspectGuidedSupportPrompt(text);
     if (safetyViolation) {
       const nextStrikeCount = communitySafetyStrikeCount + 1;
       logBlockedCommunityContent("chat", safetyViolation.reason, text);
@@ -18547,10 +18614,10 @@ async function fetchGeminiAIHelp(
     // Aggravated-abuse check FIRST — if it fires, force redress routing regardless
     // of what the general classifier would pick.
     const abuseDetection = detectAggravatedAbuse(text);
-    const route: AIHelpRoute = abuseDetection ? "urgent" : detectAIHelpRoute(text);
-    const issueFocus = findAIHelpIssue(text);
+    const route: GuidedSupportRoute = abuseDetection ? "urgent" : detectGuidedSupportRoute(text);
+    const issueFocus = findGuidedSupportIssue(text);
     queueVedicEngineIssue(text, issueFocus, "aihelp");
-    const redressFocus: RedressRouteId = abuseDetection ? abuseDetection.routeId : findAIHelpRedressRoute(text);
+    const redressFocus: RedressRouteId = abuseDetection ? abuseDetection.routeId : findGuidedSupportRedressRoute(text);
 
     if (abuseDetection) {
       // Direct-set the redress route so the Help tab pre-lands on the correct
@@ -18559,7 +18626,7 @@ async function fetchGeminiAIHelp(
       // conversational engine — so help is never delayed behind questions.
       setRedressRouteId(abuseDetection.routeId);
       void scheduleUrgentSafetyCheckIn(issueFocus.label);
-      setAIHelpDraft("");
+      setGuidedSupportDraft("");
       openRedressTab(redressFocus);
       return;
     }
@@ -18572,25 +18639,25 @@ async function fetchGeminiAIHelp(
       // flow, and never a delay behind intake questions. Before this branch
       // existed, such messages fell through into the counselling chat below.
       void scheduleUrgentSafetyCheckIn(issueFocus.label);
-      setAIHelpDraft("");
+      setGuidedSupportDraft("");
       setCrisisSupportVisible(true);
       return;
     }
     if (route === "redress") {
       // Non-urgent grievance/redress reports also skip straight to the Help
       // tab — reporting/legal routes, not conversation, are what's needed.
-      applyAIHelpRoute(text, route);
-      setAIHelpDraft("");
+      applyGuidedSupportRoute(text, route);
+      setGuidedSupportDraft("");
       openRedressTab(redressFocus);
       return;
     }
     if (isPositiveCheckIn(text)) {
       // A genuinely positive, no-distress message (e.g. "I am feeling
-      // energetic") should never be pulled into the counselling engine below
+      // energetic") should never be pulled into the counselling insight system below
       // — every question bank and acknowledgment in it assumes something is
       // wrong, which is exactly what produced the "confused, unrelated
       // reply" reported by testers. Answer it directly and stop here.
-      setAIHelpDraft("");
+      setGuidedSupportDraft("");
       Alert.alert(
         "Good to hear",
         "That's genuinely good to hear — glad it's landing that way today. If anything specific is on your mind, tell me and I'll help; otherwise, enjoy the moment."
@@ -18607,7 +18674,7 @@ async function fetchGeminiAIHelp(
     // the person can steer. Short/vague inputs still flow straight to the chat.
     const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
     if (route === "general" && wordCount >= 6) {
-      setAIHelpDraft("");
+      setGuidedSupportDraft("");
       openRouteDecision(text, issueFocus, route, redressFocus, profileDisplayName);
       return;
     }
@@ -18620,22 +18687,22 @@ async function fetchGeminiAIHelp(
     // gets a real back-and-forth that gets to the core of the issue first.
     setIssueGuideId(issueFocus.id);
     setCounselingInitialText(text);
-    setAIHelpDraft("");
+    setGuidedSupportDraft("");
     setShowCounselingChat(true);
   }
 
-  function postAIHelpMessage() {
-    submitAIHelpText();
+  function postGuidedSupportMessage() {
+    submitGuidedSupportText();
   }
 
-  function useAIHelpStarter(prompt: string) {
-    submitAIHelpText(prompt);
+  function useGuidedSupportStarter(prompt: string) {
+    submitGuidedSupportText(prompt);
   }
 
-  function clearAIHelpChat() {
-    setAIHelpMessages(aiHelpSeed);
-    setAIHelpDraft("");
-    setAIHelpLoading(false);
+  function clearGuidedSupportChat() {
+    setGuidedSupportMessages(aiHelpSeed);
+    setGuidedSupportDraft("");
+    setGuidedSupportLoading(false);
   }
 
   function normalizeSpeechLocale(locale: string) {
@@ -19118,7 +19185,7 @@ async function fetchGeminiAIHelp(
   function openRouteDecision(
     rawText: string,
     issue: IssueGuide,
-    route: AIHelpRoute,
+    route: GuidedSupportRoute,
     redressRouteId: RedressRouteId,
     identityLabel: string
   ) {
@@ -19253,7 +19320,7 @@ async function fetchGeminiAIHelp(
     const nextFollowUp = { ...followUp, status: "more-guidance" as RouteFollowUpStatus };
     setActiveRouteFollowUp(nextFollowUp);
     writeRouteFollowUpReport(nextFollowUp, "more-guidance");
-    startAIHelpFlow(`Follow up on this issue: ${followUp.rawText}`, followUp.issueId);
+    startGuidedSupportFlow(`Follow up on this issue: ${followUp.rawText}`, followUp.issueId);
   }
 
   function remindRouteFollowUpTomorrow() {
@@ -19287,7 +19354,7 @@ async function fetchGeminiAIHelp(
     }
 
     if (choice === "path") {
-      startAIHelpFlow(decision.rawText, decision.issueId);
+      startGuidedSupportFlow(decision.rawText, decision.issueId);
       return;
     }
 
@@ -19304,9 +19371,9 @@ async function fetchGeminiAIHelp(
     handleTabPress("journal");
   }
 
-  function startAIHelpFlow(prompt?: string, issueOverride?: IssueId) {
+  function startGuidedSupportFlow(prompt?: string, issueOverride?: IssueId) {
     handleTabPress("aihelp");
-    void submitAIHelpText(prompt, issueOverride);
+    void submitGuidedSupportText(prompt, issueOverride);
   }
 
   function routeHomeIssue() {
@@ -19320,8 +19387,8 @@ async function fetchGeminiAIHelp(
       setIssueGuideId(getDefaultIssueForIdentity(inferredIdentity));
       setRedressRouteId(getDefaultRedressRouteForIdentity(inferredIdentity));
     }
-    const route = detectAIHelpRouteFromText(routeText);
-    const issue = findAIHelpIssue(routeText);
+    const route = detectGuidedSupportRouteFromText(routeText);
+    const issue = findGuidedSupportIssue(routeText);
     if (text.length > 0) {
       queueVedicEngineIssue(routeText, issue, "home");
     }
@@ -19334,7 +19401,7 @@ async function fetchGeminiAIHelp(
           : calmIssueIds.has(issue.id)
             ? "Reset"
             : "Path";
-    const nextRedressRouteId = route === "urgent" ? "crime" : findAIHelpRedressRouteFromText(routeText);
+    const nextRedressRouteId = route === "urgent" ? "crime" : findGuidedSupportRedressRouteFromText(routeText);
 
     if (text.length > 0 && isPositiveCheckIn(routeText)) {
       // A clearly positive, no-distress message (e.g. "I am feeling
@@ -19390,7 +19457,7 @@ async function fetchGeminiAIHelp(
       return;
     }
     // Any typed life issue should be heard first, then routed through the app.
-    // The two-way multidimensional counselling engine is now the single issue-resolution
+    // The two-way multidimensional counselling insight system is now the single issue-resolution
     // surface, so any non-empty typed text opens it — not just the subset the
     // keyword classifier happened to recognize as "professional" or themed.
     const shouldCounselFirst = text.length > 0;
@@ -19406,7 +19473,7 @@ async function fetchGeminiAIHelp(
       setTimeout(() => openCalmRoute(issue.id), 600);
       return;
     }
-    setTimeout(() => startAIHelpFlow(routeText, issue.id), 600);
+    setTimeout(() => startGuidedSupportFlow(routeText, issue.id), 600);
   }
 
   function handleJourneyReady(session: CounselingSession) {
@@ -19415,7 +19482,7 @@ async function fetchGeminiAIHelp(
     setJourneyStepIndex(0);
     const counselingIssueText = session.originalIssue?.trim() ?? "";
     if (counselingIssueText.length > 0) {
-      const counselingIssue = findAIHelpIssue(counselingIssueText);
+      const counselingIssue = findGuidedSupportIssue(counselingIssueText);
       queueVedicEngineIssue(counselingIssueText, counselingIssue, "counseling");
     }
     // Log counseling completion for exit report
@@ -20145,7 +20212,7 @@ function isTrustedExternalUrl(url: string) {
                   <View style={{ marginHorizontal: 16, marginTop: 10, marginBottom: 10 }}>
                     {/* ── Hero greeting panel — glassy elevated card (same
                         layered-shadow + soft blob technique already used on
-                        the Moon Chart Engine card), replacing the previous
+                        the Moon-chart insight card), replacing the previous
                         flat edge-to-edge strip, for a premium-app feel
                         consistent across Home and Vedic. ── */}
                     <View style={{
@@ -20219,7 +20286,7 @@ function isTrustedExternalUrl(url: string) {
                           </View>
                         )}
                       </View>
-                      {/* Real 48-dim redressal snapshot — compact one-line
+                      {/* Real multidimensional redressal snapshot — compact one-line
                           strip. Signature of the app; stays on Home but
                           tightened. Was mislabeled "48-dim" over a hardcoded
                           5-field table; now shows the top 3 of the ACTUAL
@@ -20230,7 +20297,7 @@ function isTrustedExternalUrl(url: string) {
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                             <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
-                              Multidimensional redressal
+                              Multi-dimensional redressal
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
                               <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>Details →</Text>
@@ -20262,493 +20329,7 @@ function isTrustedExternalUrl(url: string) {
                 );
               })()}
 
-              {/* ── DAILY ANCHOR ── one place to start the day: the streak, today's
-                  chart cue, and the day's single action, fused into one return
-                  loop. This is the retention centrepiece -- a reason to open the
-                  app each morning that also stitches the sections together. ── */}
-              {(() => {
-                const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-                const checkedInToday = entries.some((e) => {
-                  const d = new Date(e.createdAt); d.setHours(0, 0, 0, 0);
-                  return d.getTime() === todayStart.getTime();
-                });
-                const nak = vedicTodayNakshatra;
-                const nakQ = NAKSHATRA_QUALITIES[nak.id];
-                const cosmicLine =
-                  (vedicPredictionLines && vedicPredictionLines[0]) ||
-                  (nakQ?.quality ? nakQ.quality.split(". ")[0] + "." : "A steady day to act with intention.");
-                return (
-                  <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#FFFFFF", borderRadius: 18, borderCurve: "continuous", borderWidth: 1, borderColor: "#E1E8F0", padding: 16, shadowColor: "#0F3D5E", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.06, shadowRadius: 14, elevation: 3 }}>
-                    <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 12 }}>Your day, one place to start</Text>
-                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10, marginBottom: 12 }}>
-                      <Text style={{ fontSize: 20 }}>🌙</Text>
-                      <View style={{ flex: 1 }}>
-                        <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "800", marginBottom: 2 }}>Today · Moon in {nak.name}</Text>
-                        <Text style={{ color: "#446573", fontSize: 12, lineHeight: 18 }} numberOfLines={3}>{cosmicLine}</Text>
-                      </View>
-                    </View>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                      <Text style={{ fontSize: 20 }}>{checkedInToday ? "✅" : "📝"}</Text>
-                      <Text style={{ flex: 1, color: checkedInToday ? "#0D6B36" : "#446573", fontSize: 13, fontWeight: checkedInToday ? "700" : "600" }}>
-                        {checkedInToday
-                          ? "You've checked in today — streak kept."
-                          : checkInStreak > 0
-                          ? `One check-in keeps your ${checkInStreak}-day streak — ${hoursLeftInDay}h left today.`
-                          : "One honest check-in starts your streak."}
-                      </Text>
-                    </View>
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel={checkedInToday ? "Continue your path" : "Check in now"}
-                      onPress={() => { void Haptics.selectionAsync(); handleTabPress(checkedInToday ? "guide" : "journal"); }}
-                      style={({ pressed }) => ({ backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 12, borderCurve: "continuous", paddingVertical: 13, alignItems: "center" })}
-                    >
-                      <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>{checkedInToday ? "Continue your path →" : "Check in now →"}</Text>
-                    </Pressable>
-                  </View>
-                );
-              })()}
-
-              {/* ── CONTINUE WHERE YOU LEFT OFF ── cross-section continuity:
-                  one tap back into the last section you were actively in. ── */}
-              {resumeTab && (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`Continue in ${resumeTab.label}`}
-                  onPress={() => { void Haptics.selectionAsync(); handleTabPress(resumeTab.tab); }}
-                  style={({ pressed }) => ({ marginHorizontal: 16, marginBottom: 10, flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#EEF5F4", borderRadius: 12, borderCurve: "continuous", borderWidth: 1, borderColor: "#D6E6E3", paddingVertical: 11, paddingHorizontal: 14, opacity: pressed ? 0.75 : 1 })}
-                >
-                  <Text style={{ fontSize: 15 }}>↩</Text>
-                  <Text style={{ flex: 1, color: "#0B6E67", fontSize: 13, fontWeight: "700" }}>
-                    Pick up where you left off · {resumeTab.label}
-                  </Text>
-                  <Text style={{ color: "#0B6E67", fontSize: 15, fontWeight: "800" }}>›</Text>
-                </Pressable>
-              )}
-
-              {/* ── First-run explainer card (shows once, dismissible) ── */}
-              {!hasSeenWelcomeCard && (
-                <View style={styles.welcomeExplainerCard}>
-                  <View style={styles.welcomeExplainerRow}>
-                    <Text style={styles.welcomeExplainerTitle}>Welcome to Aethon Beacon</Text>
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => setHasSeenWelcomeCard(true)}
-                      style={({ pressed }) => [styles.welcomeExplainerClose, pressed && styles.pressed]}
-                    >
-                      <Text style={styles.welcomeExplainerCloseText}>✕</Text>
-                    </Pressable>
-                  </View>
-                  <Text style={styles.welcomeExplainerBody}>
-                    {"Tell Aethon Beacon what is on your mind — in one sentence or a few words. Your guide will listen deeply, understand every dimension of what you are carrying, and build a personalised path forward."}
-                  </Text>
-                  <View style={styles.welcomeExplainerPills}>
-                    {["Share", "Understand", "Guide", "Resolve"].map((label) => (
-                      <View key={label} style={styles.welcomeExplainerPill}>
-                        <Text style={styles.welcomeExplainerPillText}>{label}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              )}
-
-              {/* ── HERO: Dynamic landing card ── */}
-              <DynamicHeroCard
-                homeIssueDraft={homeIssueDraft}
-                setHomeIssueDraft={setHomeIssueDraft}
-                routeHomeIssue={routeHomeIssue}
-                onOpenCounselingChat={() => setShowCounselingChat(true)}
-                homeRoutePreview={homeRoutePreview}
-                checkInStreak={checkInStreak}
-                onOpenTab={handleTabPress}
-              />
-
-              {/* Compact entry point; the full calculated reading opens on tap.
-                  Not gated behind payment -- see "Aethon Beacon is free" notice
-                  in the profile tab. Labelling this "Premium" contradicted that
-                  and confused testers, so it's named for what it does instead. */}
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Open full Vedic answer engine"
-                onPress={() => handleTabPress("vedic")}
-                style={({ pressed }) => ({
-                  marginHorizontal: 16,
-                  marginBottom: 12,
-                  backgroundColor: pressed ? "#D2C8E4" : "#E6E0F0",
-                  borderRadius: 16,
-                  borderWidth: 1,
-                  borderColor: hasExactBirthDetails ? "rgba(252,211,77,0.42)" : "rgba(148,163,184,0.22)",
-                  padding: 14,
-                  overflow: "hidden",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 12,
-                  opacity: pressed ? 0.82 : 1,
-                })}
-              >
-                <CardGlows />
-                <View style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: "rgba(252,211,77,0.1)", alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ fontSize: 23 }}>🪐</Text>
-                </View>
-                <View style={{ flex: 1, minWidth: 0 }}>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 7, marginBottom: 3 }}>
-                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
-                      Full Vedic engine
-                    </Text>
-                    <View style={{ backgroundColor: hasExactBirthDetails ? "rgba(52,211,153,0.12)" : "rgba(148,163,184,0.1)", borderRadius: 8, paddingHorizontal: 7, paddingVertical: 2 }}>
-                      <Text style={{ color: hasExactBirthDetails ? "#059669" : "#263244", fontSize: 12, fontWeight: "900" }}>
-                        {hasExactBirthDetails ? "READY" : "DETAILS NEEDED"}
-                      </Text>
-                    </View>
-                  </View>
-                  <Text style={{ color: "#325C86", fontSize: 15, fontWeight: "900" }} numberOfLines={1}>
-                    {vedicEngineIssueContext ? `Chart answer for ${vedicEngineIssueContext.issueLabel}` : "Ask your chart. Understand the phase."}
-                  </Text>
-                  <Text style={{ color: "#263244", fontSize: 12, lineHeight: 16, marginTop: 2 }} numberOfLines={2}>
-                    {hasExactBirthDetails
-                      ? "Mahadasha + Antardasha timing, life-area outlook, Vedic and Lal Kitab remedies."
-                      : "Enter exact date, time, and birth place to unlock calculated answers."}
-                  </Text>
-                </View>
-                <Text style={{ color: "#B45309", fontSize: 22, fontWeight: "700" }}>›</Text>
-              </Pressable>
-
-              {/* ── Weekly / monthly vedic banner ── */}
-              {showWeeklyVedicBanner && (
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => { setShowWeeklyVedicBanner(false); handleTabPress("vedic"); }}
-                  style={({ pressed }) => ({ marginHorizontal: 16, marginBottom: 12, backgroundColor: "#E7E0F0", borderRadius: 14, padding: 16, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "rgba(180,120,255,0.3)", opacity: pressed ? 0.8 : 1 })}
-                >
-                  <Text style={{ fontSize: 28 }}>🪐</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#4200B8", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>Weekly cosmic guidance</Text>
-                    <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "700", marginTop: 2 }}>Your weekly & monthly prediction is ready</Text>
-                    <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>Tap to see your Rashi reading, Nakshatra, and what this week holds</Text>
-                  </View>
-                  <Pressable
-                    onPress={(e) => { e.stopPropagation?.(); setShowWeeklyVedicBanner(false); }}
-                    hitSlop={10}
-                    accessibilityRole="button"
-                    accessibilityLabel="Dismiss weekly guidance banner"
-                  >
-                    <Text style={{ color: "#1F2937", fontSize: 16 }}>✕</Text>
-                  </Pressable>
-                </Pressable>
-              )}
-
-              {/* Streak Protection Banner and Streak Card removed — the daily
-                  anchor at the top now carries the streak, the check-in prompt,
-                  and the "hours left today" urgency in one place, so these two
-                  cards were pure duplication. Keeps the front page light. */}
-
-              {/* ── Weekly Recap Card ── */}
-              {(weeklyCheckInCount > 0 || vedicRashiInfo) && (
-                <View style={{
-                  marginHorizontal: 16, marginBottom: 12,
-                  backgroundColor: "#E1E9F0", borderRadius: 16, padding: 16,
-                  borderWidth: 1, borderColor: "rgba(99,222,208,0.18)", gap: 10
-                }}>
-                  <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                    Your Week
-                  </Text>
-                  <View style={{ flexDirection: "row", gap: 10 }}>
-                    <View style={{ flex: 1, backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "#111827", fontSize: 12, fontWeight: "700", textTransform: "uppercase" }}>Mood</Text>
-                      <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
-                        {weeklyMoodAverage !== null ? `${weeklyMoodAverage}/100` : "No entries yet"}
-                      </Text>
-                      {weeklyMoodDirection && (
-                        // All three colors here were leftover dark-theme values
-                        // (a light green, a washed-out amber, and translucent
-                        // white) sitting on this card's light background
-                        // (#E1EEEC) at 1.1-2.8:1 contrast -- effectively
-                        // unreadable. Darkened all three to 4.2:1+.
-                        <Text style={{ color: weeklyMoodDirection === "up" ? "#0D6B36" : weeklyMoodDirection === "down" ? "#8A4B00" : "#263244", fontSize: 12, marginTop: 2 }}>
-                          {weeklyMoodDirection === "up" ? "↑ trending up" : weeklyMoodDirection === "down" ? "↓ dipped this week" : "→ holding steady"}
-                        </Text>
-                      )}
-                    </View>
-                    <View style={{ flex: 1, backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "#111827", fontSize: 12, fontWeight: "700", textTransform: "uppercase" }}>Check-ins</Text>
-                      <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
-                        {weeklyCheckInCount} this week
-                      </Text>
-                      <Text style={{ color: "#2F4358", fontSize: 12, marginTop: 2 }}>
-                        {weeklyCheckInCount >= 5 ? "Great consistency" : weeklyCheckInCount >= 2 ? "Good start — keep going" : "Log a note to build momentum"}
-                      </Text>
-                    </View>
-                  </View>
-                  {vedicRashiInfo && vedicPredictionLines?.[0] && (
-                    <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 10 }}>
-                      <Text style={{ color: "#111827", fontSize: 12, fontWeight: "700", textTransform: "uppercase" }}>
-                        {vedicRashiInfo.rashi.name} highlight
-                      </Text>
-                      <Text style={{ color: "#0D1F22", fontSize: 13, marginTop: 2, lineHeight: 18 }} numberOfLines={2}>
-                        {vedicPredictionLines[0]}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              )}
-
-              {/* ── Missed-day empathy card ── */}
-              {daysSinceLastCheckIn !== null && daysSinceLastCheckIn >= 2 && !dismissedHintTabs.includes("empathy") && (
-                <View style={{
-                  marginHorizontal: 16, marginBottom: 10,
-                  backgroundColor: "#E1EEEC", borderRadius: 16,
-                  borderWidth: 1, borderColor: "#1E3A50",
-                  padding: 16,
-                }}>
-                  <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                    <Text style={{ fontSize: 22, marginRight: 10, marginTop: 1 }}>🤗</Text>
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ color: "#3A577D", fontSize: 14, fontWeight: "700", marginBottom: 4 }}>
-                        {daysSinceLastCheckIn === 2 ? "You were missed yesterday" : `Welcome back after ${daysSinceLastCheckIn} days`}
-                      </Text>
-                      <Text style={{ color: "#263244", fontSize: 13, lineHeight: 19 }}>
-                        Life pulls hard sometimes. You don't need a perfect streak — just one honest moment today is enough to keep the path alive.
-                      </Text>
-                    </View>
-                    <Pressable
-                      onPress={() => setDismissedHintTabs((p) => [...p, "empathy"])}
-                      hitSlop={8}
-                      style={{ marginLeft: 8 }}
-                      accessibilityRole="button"
-                      accessibilityLabel="Dismiss this message"
-                    >
-                      <Text style={{ color: "#1F2937", fontSize: 13 }}>✕</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              )}
-
-              {/* ── Post check-in practice suggestion ──────────────────────── */}
-              {postCheckInSuggest && (
-                <View style={{
-                  marginHorizontal: 16, marginBottom: 10,
-                  backgroundColor: "#E1EEEC", borderRadius: 14,
-                  borderWidth: 1, borderColor: "#1E3A50",
-                  padding: 14, flexDirection: "row", alignItems: "center"
-                }}>
-                  <Text style={{ fontSize: 22, marginRight: 12 }}>{postCheckInSuggest.icon}</Text>
-                  <Text style={{ color: "#263244", fontSize: 13, flex: 1, lineHeight: 18 }}>{postCheckInSuggest.text}</Text>
-                  <Pressable
-                    onPress={() => { setPostCheckInSuggest(null); handleTabPress(postCheckInSuggest.tab); }}
-                    style={{ backgroundColor: "#E1E9EF", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, marginLeft: 8 }}
-                    accessibilityRole="button"
-                  >
-                    <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{postCheckInSuggest.cta}</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setPostCheckInSuggest(null)}
-                    hitSlop={8}
-                    style={{ marginLeft: 6 }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Dismiss suggestion"
-                  >
-                    <Text style={{ color: "#1F2937", fontSize: 13 }}>✕</Text>
-                  </Pressable>
-                </View>
-              )}
-
-              {/* ── View Today's Visit Report (manual trigger) ── */}
-              {entries.some(e => {
-                const d = new Date(e.createdAt);
-                return d.toDateString() === new Date().toDateString();
-              }) && !showExitReport && (
-                <Pressable
-                  onPress={() => {
-                    const todayEntries = entries.filter(e => {
-                      const d = new Date(e.createdAt);
-                      return d.toDateString() === new Date().toDateString();
-                    });
-                    const report = generateDailyVisitReport(
-                      profileDisplayName,
-                      sessionStartTsRef.current,
-                      sessionEventsRef.current,
-                      issueGuideId,
-                      todayEntries,
-                    );
-                    setCurrentVisitReport(report);
-                    setShowExitReport(true);
-                  }}
-                  style={({ pressed }) => ({
-                    marginHorizontal: 16, marginBottom: 10,
-                    backgroundColor: pressed ? "#C4D8E9" : "#DEE9F2",
-                    borderRadius: 14, borderWidth: 1,
-                    borderColor: "rgba(34,211,238,0.25)",
-                    padding: 13, flexDirection: "row", alignItems: "center", gap: 10,
-                  })}
-                  accessibilityRole="button"
-                  accessibilityLabel="View today's visit report"
-                >
-                  <Text style={{ fontSize: 20 }}>📋</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#0891B2", fontSize: 13, fontWeight: "700" }}>View Today's Visit Report</Text>
-                    <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>Session summary · issues · guidance · tomorrow's focus</Text>
-                  </View>
-                  <Text style={{ color: "#0891B2", fontSize: 14 }}>›</Text>
-                </Pressable>
-              )}
-
-              {/* ── Gemini journal insight card (appears after check-in with a note) ── */}
-              {geminiJournalInsight && (
-                <View style={{
-                  marginHorizontal: 16, marginBottom: 10,
-                  backgroundColor: "#DEE9F2", borderRadius: 14,
-                  borderWidth: 1, borderColor: "#1A3A55",
-                  padding: 14
-                }}>
-                  <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 6 }}>
-                    <Text style={{ fontSize: 16, marginRight: 8 }}>✦</Text>
-                    <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>Beacon insight</Text>
-                  </View>
-                  <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 20 }}>{geminiJournalInsight}</Text>
-                  <Pressable
-                    onPress={() => setGeminiJournalInsight(null)}
-                    hitSlop={8}
-                    style={{ position: "absolute", top: 10, right: 12 }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Dismiss insight"
-                  >
-                    <Text style={{ color: "#1F2937", fontSize: 13 }}>✕</Text>
-                  </Pressable>
-                </View>
-              )}
-
-              {/* ── Journey Guide Card ─────────────────────────────────────── */}
-              {!journeyCardDismissed && journeyNextStep && journeyProgress.done < journeyProgress.total && (
-                <View style={{
-                  marginHorizontal: 16, marginBottom: 12,
-                  backgroundColor: "#E1EEEC", borderRadius: 16,
-                  borderWidth: 1, borderColor: "#1E3A50",
-                  padding: 16, overflow: "hidden"
-                }}>
-                  {/* Progress bar */}
-                  <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
-                    <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1, flex: 1 }}>
-                      🗺️  YOUR JOURNEY  ·  {journeyProgress.done}/{journeyProgress.total}
-                    </Text>
-                    <Pressable onPress={() => setJourneyCardDismissed(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss journey card">
-                      <Text style={{ color: "#1F2937", fontSize: 13 }}>✕</Text>
-                    </Pressable>
-                  </View>
-                  <View style={{ height: 4, backgroundColor: "#E1EEEC", borderRadius: 2, marginBottom: 12 }}>
-                    <View style={{ height: 4, borderRadius: 2, backgroundColor: "#0E9488", width: `${journeyProgress.pct}%` as any }} />
-                  </View>
-                  {/* Completed milestones (last 2) */}
-                  {journeyMilestones.filter((m) => m.done).slice(-2).map((m) => (
-                    <View key={m.id} style={{ flexDirection: "row", alignItems: "center", marginBottom: 4 }}>
-                      <Text style={{ color: "#10B981", fontSize: 12, marginRight: 6 }}>✅</Text>
-                      <Text style={{ color: "#1F2937", fontSize: 12 }}>{m.label}</Text>
-                    </View>
-                  ))}
-                  {/* Next step */}
-                  <View style={{ flexDirection: "row", alignItems: "center", marginTop: 8, backgroundColor: "#E1EEEC", borderRadius: 12, padding: 12 }}>
-                    <Text style={{ fontSize: 20, marginRight: 10 }}>{journeyNextStep.icon}</Text>
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ color: "#263244", fontSize: 12, letterSpacing: 0.8, marginBottom: 2 }}>NEXT STEP</Text>
-                      <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "600" }}>{journeyNextStep.label}</Text>
-                    </View>
-                    <Pressable
-                      onPress={() => handleTabPress(journeyNextStep.tab)}
-                      style={{ backgroundColor: "#0E9488", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}
-                      accessibilityRole="button"
-                    >
-                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>{journeyNextStep.cta}</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              )}
-
-              {/* ── Feature discovery nudge (after 3+ check-ins) ──────────── */}
-              {!featureNudgeDismissed && (
-                <View style={{
-                  marginHorizontal: 16, marginBottom: 10,
-                  backgroundColor: "#DEE9F2", borderRadius: 16,
-                  borderWidth: 1, borderColor: "#1A3A50",
-                  padding: 14, flexDirection: "row", alignItems: "flex-start"
-                }}>
-                  <Text style={{ fontSize: 20, marginRight: 10, marginTop: 1 }}>💡</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 0.6, marginBottom: 3 }}>AVAILABLE FEATURES</Text>
-                    <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18 }}>
-                      Aethon includes guided practices, breathing and body-calming exercises, therapeutic sound programmes, and guided meditation. Open Pages to review every feature.
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={() => setFeatureNudgeDismissed(true)}
-                    hitSlop={8}
-                    style={{ marginLeft: 8 }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Dismiss tip"
-                  >
-                    <Text style={{ color: "#1F2937", fontSize: 13 }}>✕</Text>
-                  </Pressable>
-                </View>
-              )}
-
-              {/* ── Neglected-tab nudge -- real recency signal (lastTabViewedAt),
-                  not a guess. Points at whichever of a few real features has
-                  actually gone unopened longest, instead of a generic
-                  "explore more" line. ── */}
-              {neglectedTabNudge && !neglectedTabNudgeDismissed && (
-                <View style={{
-                  marginHorizontal: 16, marginBottom: 10,
-                  backgroundColor: "#F3E8FF", borderRadius: 16,
-                  borderWidth: 1, borderColor: "rgba(109,40,217,0.22)",
-                  padding: 14, flexDirection: "row", alignItems: "flex-start",
-                  shadowColor: "#6D28D9", shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 3
-                }}>
-                  <Text style={{ fontSize: 20, marginRight: 10, marginTop: 1 }}>{neglectedTabNudge.emoji}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 0.6, marginBottom: 3 }}>
-                      {neglectedTabNudge.days === Infinity ? "STILL UNEXPLORED" : `${neglectedTabNudge.days} DAYS SINCE YOU CHECKED THIS`}
-                    </Text>
-                    <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, marginBottom: 10 }}>
-                      {neglectedTabNudge.days === Infinity
-                        ? `You haven't opened ${neglectedTabNudge.label} yet — it's built from your own real check-in history.`
-                        : `It's been a while since you looked at ${neglectedTabNudge.label}. Worth a quick check.`}
-                    </Text>
-                    <Pressable
-                      onPress={() => handleTabPress(neglectedTabNudge.tab)}
-                      style={{ alignSelf: "flex-start", backgroundColor: "#6D28D9", borderRadius: 8, paddingHorizontal: 14, paddingVertical: 7 }}
-                      accessibilityRole="button"
-                    >
-                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>Open {neglectedTabNudge.label} →</Text>
-                    </Pressable>
-                  </View>
-                  <Pressable
-                    onPress={() => setNeglectedTabNudgeDismissed(true)}
-                    hitSlop={8}
-                    style={{ marginLeft: 8 }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Dismiss"
-                  >
-                    <Text style={{ color: "#1F2937", fontSize: 13 }}>✕</Text>
-                  </Pressable>
-                </View>
-              )}
-
-              {/* ── Notification priming card ── */}
-              {!reminderEnabled && entries.length >= 1 && (
-                <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#DEE7F2", borderRadius: 16, borderWidth: 1, borderColor: "#1A3050", padding: 14, flexDirection: "row", alignItems: "flex-start" }}>
-                  <Text style={{ fontSize: 20, marginRight: 10, marginTop: 2 }}>🔔</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700", marginBottom: 4 }}>Schedule a daily check-in</Text>
-                    <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, marginBottom: 10 }}>
-                      A daily reminder supports consistent check-ins and more meaningful clarity trends.
-                    </Text>
-                    <Pressable
-                      onPress={() => handleTabPress("settings" as TabId)}
-                      style={{ alignSelf: "flex-start", backgroundColor: "#DEE8F2", borderRadius: 8, paddingHorizontal: 14, paddingVertical: 7 }}
-                    >
-                      <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>Enable reminders →</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              )}
+              {/* Home stays intentionally simple: detailed previews live inside their own pages. */}
 
               <TodaySection
                 clarityScore={clarityScore}
@@ -20851,7 +20432,7 @@ function isTrustedExternalUrl(url: string) {
                 onEmergencyCall={handleEmergencyCall}
                 openWebsite={openWebsite}
                 buildNearbySearchUrl={buildNearbySearchUrl}
-                moonChart48Readings={vedicMoonChart48Readings}
+                moonChartInsightReadings={vedicMoonChartInsightReadings}
                 routePreview={journalRoutePreview}
                 languageId={languageId}
               />
@@ -20882,7 +20463,7 @@ function isTrustedExternalUrl(url: string) {
                 eyebrow="🎵 Tone guide"
                 actionLabel="Try"
                 accentColor="#0891B2"
-                moonChart48Readings={vedicMoonChart48Readings}
+                moonChartInsightReadings={vedicMoonChartInsightReadings}
                 onOpenTab={handleTabPress}
                 onEmergencyCall={handleEmergencyCall}
                 openWebsite={openWebsite}
@@ -20920,7 +20501,7 @@ function isTrustedExternalUrl(url: string) {
               onEmergencyCall={handleEmergencyCall}
               openWebsite={openWebsite}
               buildNearbySearchUrl={buildNearbySearchUrl}
-              moonChart48Readings={vedicMoonChart48Readings}
+              moonChartInsightReadings={vedicMoonChartInsightReadings}
               isWide={isWide}
               onNowPlayingChange={setToneNowPlaying}
               onControlsReady={(controls) => { toneControlsRef.current = controls; }}
@@ -21036,7 +20617,7 @@ function isTrustedExternalUrl(url: string) {
                 voiceAssistEnabled={voiceAssistEnabled}
                 voiceAssistStatus={voiceAssistStatus}
                 buildNearbySearchUrl={buildNearbySearchUrl}
-                moonChart48Readings={vedicMoonChart48Readings}
+                moonChartInsightReadings={vedicMoonChartInsightReadings}
                 isWide={isWide}
               />
 
@@ -21114,8 +20695,8 @@ function isTrustedExternalUrl(url: string) {
                 todayNakshatra={vedicTodayNakshatra}
                 tithi={vedicTithi}
                 vara={vedicVara}
-                geminiHoroscope={geminiBirthChartHoroscope}
-                geminiHoroscopeLoading={geminiBirthChartHoroscopeLoading}
+                guidanceHoroscope={guidanceBirthChartHoroscope}
+                guidanceHoroscopeLoading={guidanceBirthChartHoroscopeLoading}
                 profileDOB={profileDOB}
                 profileBirthTime={profileBirthTime}
                 profileBirthPlace={profileBirthPlace}
@@ -21243,7 +20824,7 @@ function isTrustedExternalUrl(url: string) {
                     onPress={() => handleTabPress("vedic")}
                     style={{ backgroundColor: "rgba(251,191,36,0.08)", borderRadius: 10, borderWidth: 1, borderColor: "rgba(251,191,36,0.22)", padding: 11 }}
                   >
-                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800" }}>{chartBriefLang === "hi" ? "इंजन सक्रिय करने के लिए ऊपर तिथि, समय और जन्म-स्थान भरें।" : "Complete date, time, and birth place above to activate the engine."}</Text>
+                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800" }}>{chartBriefLang === "hi" ? "इंजन सक्रिय करने के लिए ऊपर तिथि, समय और जन्म-स्थान भरें।" : "Complete date, time, and birth place above to activate the reading."}</Text>
                   </Pressable>
                 )}
 
@@ -21369,7 +20950,7 @@ function isTrustedExternalUrl(url: string) {
                     onEmergencyCall={handleEmergencyCall}
                     openWebsite={openWebsite}
                     buildNearbySearchUrl={buildNearbySearchUrl}
-                    moonChart48Readings={vedicMoonChart48Readings}
+                    moonChartInsightReadings={vedicMoonChartInsightReadings}
                     isWide={isWide}
                     onFocusFeaturedPlayLayout={captureFocusLayout}
                     languageId={languageId}
@@ -21418,7 +20999,7 @@ function isTrustedExternalUrl(url: string) {
                 onGovernmentCall={handleGovernmentCall}
                 onEmergencyCall={handleEmergencyCall}
                 buildNearbySearchUrl={buildNearbySearchUrl}
-                moonChart48Readings={vedicMoonChart48Readings}
+                moonChartInsightReadings={vedicMoonChartInsightReadings}
                 selectedIdentity={selectedIdentity}
                 selectedIssueGuide={selectedIssueGuide}
                 isWide={isWide}
@@ -21457,17 +21038,17 @@ function isTrustedExternalUrl(url: string) {
                   onEndJourney={endJourney}
                 />
               )}
-              <AIHelpSection
+              <GuidedSupportSection
                 aiHelpMessages={aiHelpMessages}
                 aiHelpDraft={aiHelpDraft}
-                setAIHelpDraft={setAIHelpDraft}
+                setGuidedSupportDraft={setGuidedSupportDraft}
                 aiHelpLoading={aiHelpLoading}
                 aiHelpProviderLabel={aiHelpProviderLabel}
                 privateIntakeSavedAt={privateIntakeSavedAt}
                 routePreview={aiHelpRoutePreview}
-                onPostAIHelp={postAIHelpMessage}
-                onUseAIHelpStarter={useAIHelpStarter}
-                onClearAIHelp={clearAIHelpChat}
+                onPostGuidedSupport={postGuidedSupportMessage}
+                onUseGuidedSupportStarter={useGuidedSupportStarter}
+                onClearGuidedSupport={clearGuidedSupportChat}
                 onOpenGuide={() => handleTabPress("guide")}
                 onOpenRedress={() => handleTabPress("redress")}
                 onOpenPrivateIntake={() => setShowPrivateIntakePanel(true)}
@@ -21574,13 +21155,13 @@ function isTrustedExternalUrl(url: string) {
                 onClearPrivateSpaceRoom={clearPrivateSpaceRoom}
                 aiHelpMessages={aiHelpMessages}
                 aiHelpDraft={aiHelpDraft}
-                setAIHelpDraft={setAIHelpDraft}
+                setGuidedSupportDraft={setGuidedSupportDraft}
               aiHelpLoading={aiHelpLoading}
               aiHelpProvider={aiHelpProvider}
                 aiHelpProviderLabel={aiHelpProviderLabel}
-                onPostAIHelp={postAIHelpMessage}
-                onUseAIHelpStarter={useAIHelpStarter}
-                onClearAIHelp={clearAIHelpChat}
+                onPostGuidedSupport={postGuidedSupportMessage}
+                onUseGuidedSupportStarter={useGuidedSupportStarter}
+                onClearGuidedSupport={clearGuidedSupportChat}
                 onOpenGuide={() => handleTabPress("guide")}
                 onOpenRedress={() => handleTabPress("redress")}
                 onEmergencyCall={handleEmergencyCall}
@@ -21656,7 +21237,7 @@ function isTrustedExternalUrl(url: string) {
                 eyebrow="🧭 Path frame"
                 actionLabel="Try"
                 accentColor="#2563EB"
-                moonChart48Readings={vedicMoonChart48Readings}
+                moonChartInsightReadings={vedicMoonChartInsightReadings}
                 onOpenTab={handleTabPress}
                 onEmergencyCall={handleEmergencyCall}
                 openWebsite={openWebsite}
@@ -21687,7 +21268,7 @@ function isTrustedExternalUrl(url: string) {
                 onEmergencyCall={handleEmergencyCall}
                 onOpenRedress={() => handleTabPress("redress")}
                 onFocusSelectedIssueLayout={captureFocusLayout}
-                moonChart48Readings={vedicMoonChart48Readings}
+                moonChartInsightReadings={vedicMoonChartInsightReadings}
                 isWide={isWide}
               />
             </View>
@@ -21780,7 +21361,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               ) : null}
               {/* ── Personal Pattern Summary ── */}
-              <GeminiInsightsCard
+              <GuidanceInsightsCard
                 apiBase={verificationApiBaseUrl}
                 name={profileDisplayName || accessName || ""}
                 issueLabel={selectedIssueGuide.label}
@@ -21790,13 +21371,13 @@ function isTrustedExternalUrl(url: string) {
                 entryCount={entries.length}
                 topTone={entries[0]?.toneLabel ?? ""}
                 recentNotes={entries.slice(0, 5).map((e) => e.note.slice(0, 80))}
-                insightText={geminiInsightText}
-                loading={geminiInsightLoading}
+                insightText={guidanceInsightText}
+                loading={guidanceInsightLoading}
                 onFetch={() => {
-                  if (verificationApiBaseUrl.length === 0 || geminiInsightLoading) return;
-                  setGeminiInsightLoading(true);
+                  if (verificationApiBaseUrl.length === 0 || guidanceInsightLoading) return;
+                  setGuidanceInsightLoading(true);
                   const topToneLabel = entries.length > 0 ? entries[0].toneLabel : "";
-                  fetch(`${verificationApiBaseUrl}/ai/insights`, {
+                  fetch(`${verificationApiBaseUrl}/guidance/insights`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -21813,10 +21394,10 @@ function isTrustedExternalUrl(url: string) {
                     .then((r) => r.json().catch(() => null))
                     .then((payload) => {
                       const text = typeof payload?.text === "string" ? payload.text.trim() : "";
-                      if (text.length > 0) setGeminiInsightText(text);
+                      if (text.length > 0) setGuidanceInsightText(text);
                     })
                     .catch(() => undefined)
-                    .finally(() => setGeminiInsightLoading(false));
+                    .finally(() => setGuidanceInsightLoading(false));
                 }}
               />
 
@@ -21849,7 +21430,7 @@ function isTrustedExternalUrl(url: string) {
                 onEmergencyCall={handleEmergencyCall}
                 openWebsite={openWebsite}
                 buildNearbySearchUrl={buildNearbySearchUrl}
-                moonChart48Readings={vedicMoonChart48Readings}
+                moonChartInsightReadings={vedicMoonChartInsightReadings}
                 isWide={isWide}
                 languageId={languageId}
               />
@@ -21978,6 +21559,7 @@ function isTrustedExternalUrl(url: string) {
                 onGovernmentCall={handleGovernmentCall}
                 onGovernmentOpen={openWebsite}
                 onExportBackup={handleExportData}
+                onDeleteLocalData={handleDeleteLocalData}
                 onRestartOnboarding={restartOnboarding}
                 onOpenAccessPanel={openProfileAccessPanel}
                 onOpenAdminLogin={() => handleTabPress("admin")}
@@ -22252,10 +21834,10 @@ function isTrustedExternalUrl(url: string) {
           speakText={(text) => { void speakGuidance(text); }}
           stopSpeech={stopVoiceGuidance}
           speechLocale={selectedLanguage.speechLang}
-          moonChart48Readings={vedicMoonChart48Readings}
+          moonChartInsightReadings={vedicMoonChartInsightReadings}
           voiceAssistEnabled={voiceAssistEnabled}
           onToggleVoiceAssist={() => setVoiceAssistEnabled((prev) => !prev)}
-          onFetchGuideEnrichment={fetchGeminiAIHelp}
+          onFetchGuideEnrichment={fetchGuidanceHelp}
           streak={checkInStreak}
           moodTagLeaning={crossSectionSignal.recentMoodTagLeaning}
           visitReports={visitReports}
@@ -22592,31 +22174,35 @@ function TodaySection({
                 id: "ask",
                 icon: "sparkles" as keyof typeof Ionicons.glyphMap,
                 title: "Counselling",
-                body: "Private guided conversation with checkpoint next steps.",
+                body: "Private guided conversation with optional checkpoint next steps.",
+                cta: "Enter room",
                 tab: "aihelp" as TabId,
                 accent: "#0E9488"
               },
               {
                 id: "calm",
                 icon: "flower" as keyof typeof Ionicons.glyphMap,
-                title: "Calm",
-                body: "Breath, meditation, body reset, and selected tones.",
-                tab: "meditation" as TabId,
+                title: "Calm / Tones",
+                body: "Curated sound, breath timing, meditation, and body reset.",
+                cta: "Open calm",
+                tab: "tones" as TabId,
                 accent: "#7C3AED"
               },
               {
                 id: "chart",
                 icon: "planet" as keyof typeof Ionicons.glyphMap,
                 title: "Vedic Insight",
-                body: "Moon-chart based guidance with clear practical remedies.",
+                body: "Moon-chart based guidance with practical remedies.",
+                cta: "View insight",
                 tab: "vedic" as TabId,
                 accent: "#B45309"
               },
               {
                 id: "redress",
                 icon: "shield-checkmark" as keyof typeof Ionicons.glyphMap,
-                title: "Help & Redress",
-                body: "Emergency help, official routes, evidence, and templates.",
+                title: "Help and Redress",
+                body: "Emergency support, official routes, evidence, and templates.",
+                cta: "Get help",
                 tab: "redress" as TabId,
                 accent: "#DC2626"
               },
@@ -22625,6 +22211,7 @@ function TodaySection({
                 icon: "chatbubbles" as keyof typeof Ionicons.glyphMap,
                 title: "Community",
                 body: "Verified support conversations when access is confirmed.",
+                cta: "Open messages",
                 tab: "community" as TabId,
                 accent: "#2563EB"
               }
@@ -22657,12 +22244,15 @@ function TodaySection({
                     <Text style={{ color: "#0D1F22", fontSize: 16, lineHeight: 20, fontWeight: "900" }} numberOfLines={1}>
                       {item.title}
                     </Text>
-                    <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900", marginTop: 2 }}>Open page →</Text>
+                    <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900", marginTop: 2 }}>{item.cta}</Text>
                   </View>
                 </View>
-                <Text style={{ color: "#334155", fontSize: 13, lineHeight: 19, fontWeight: "700" }} numberOfLines={3}>
+                <Text style={{ color: "#334155", fontSize: 13, lineHeight: 19, fontWeight: "700" }} numberOfLines={2}>
                   {item.body}
                 </Text>
+                <View style={{ marginTop: 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: 11, paddingVertical: 7 }}>
+                  <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900" }}>Continue</Text>
+                </View>
               </Pressable>
             ))}
           </View>
@@ -22805,7 +22395,7 @@ function JournalSection({
   onEmergencyCall,
   openWebsite,
   buildNearbySearchUrl,
-  moonChart48Readings,
+  moonChartInsightReadings,
   routePreview,
   languageId
 }: {
@@ -22822,7 +22412,7 @@ function JournalSection({
   onEmergencyCall?: () => Promise<void>;
   openWebsite?: (url: string, title: string) => void | Promise<void>;
   buildNearbySearchUrl?: (query: string) => string;
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   routePreview: RoutePreview;
   languageId: LanguageId;
 }) {
@@ -22917,7 +22507,7 @@ function JournalSection({
         eyebrow="📝 Journal prompts"
         actionLabel="Write about"
         accentColor="#0891B2"
-        moonChart48Readings={moonChart48Readings}
+        moonChartInsightReadings={moonChartInsightReadings}
         onOpenTab={onOpenTab}
         onEmergencyCall={onEmergencyCall}
         openWebsite={openWebsite}
@@ -23810,6 +23400,12 @@ function getToneDefaultDuration(tone: RelaxingToneMode): number {
   return 10;
 }
 
+function getToneIntensityLabel(tone: RelaxingToneMode): "Low" | "Medium" | "High" {
+  if (tone.id === "reset-gamma" || tone.id.includes("gamma") || tone.id.startsWith("iso-40")) return "High";
+  if (tone.id.startsWith("iso-") || tone.id.startsWith("bilateral") || tone.id.includes("theta")) return "Medium";
+  return "Low";
+}
+
 function getPristineToneBadges(tone: RelaxingToneMode): string[] {
   const badges = [
     tone.qualityGrade ?? (tone.externalUrl ? "External" : "Pristine"),
@@ -23885,14 +23481,13 @@ const BREATH_GUIDE: Record<string, string[]> = {
 };
 // Tone category groupings
 const TONE_CATEGORIES = [
-  { id: "trending", label: "🌟 Trending & Social", color: "#BE185D", desc: "Popular external playlists and sound styles for focus, rest, breath, and reflection.", ids: ["trend-lofi","trend-tibetan-bowl","trend-schumann","trend-krishna-flute","trend-rain-tent","trend-cafe","trend-fireplace","trend-432-guitar","trend-om-chant","trend-forest-birds","trend-deep-sleep","trend-528-miracle"] },
-  { id: "binaural", label: "🧠 Binaural Beats", color: "#3730A3", desc: "Two-tone headphone cues for focus, rest, and breath pacing.", ids: ["binaural-theta-4","binaural-theta-5","binaural-alpha-6","binaural-alpha-7","binaural-alpha-8","binaural-alpha-10","binaural-alpha-12","binaural-reset-14","binaural-release-16","binaural-delta-1","binaural-delta-2","binaural-gamma-40"] },
-  { id: "nature", label: "🌊 Nature & Ambient", color: "#059669", desc: "Natural sounds for decompression, breath pacing, and background calm.", ids: ["ambient-rain","ambient-ocean","ambient-wind","ambient-softdrone","ambient-breath","noise-brown","noise-pink","noise-white"] },
-  { id: "solfege", label: "🔔 Frequency tones", color: "#B45309", desc: "Sustained tone sessions for breath pacing, reflection, and calm background focus.", ids: ["aum-136","sol-396","sol-417","sol-432","sol-528","sol-639","sol-741","sol-852","sol-963"] },
-  { id: "iso", label: "🎵 Isochronic Pulses", color: "#B85300", desc: "Single-tone rhythmic pulses — usable without headphones.", ids: ["iso-1","iso-2","iso-3","iso-4","iso-6","iso-8","iso-10"] },
-  { id: "bilateral", label: "🔄 Bilateral cues", color: "#B80064", desc: "Left-right audio tapping for grounding and present-time orientation.", ids: ["bilateral-soft-1","bilateral-soft-2","bilateral-soft-3"] },
-  { id: "special", label: "⚡ Specialised Sessions", color: "#0052B8", desc: "Deep sleep, quiet sessions, and gamma-frequency programmes.", ids: ["reset-quiet","reset-gamma"] },
-];
+  { id: "sleep", label: "🌙 Sleep", color: "#4C1D95", desc: "Low-intensity sound beds for night rest, decompression, and closing mental loops.", ids: ["reset-quiet","ambient-rain","ambient-ocean","ambient-softdrone","binaural-delta-1","binaural-delta-2","trend-deep-sleep","noise-brown"] },
+  { id: "anxiety", label: "🫁 Anxiety reset", color: "#0E9488", desc: "Grounding cues with slow breath pacing for overwhelm, panic, and urgent tension.", ids: ["bilateral-soft-1","bilateral-soft-2","ambient-breath","ambient-rain","sol-396","binaural-alpha-7","iso-4"] },
+  { id: "focus", label: "🎯 Focus", color: "#2563EB", desc: "Steady background tones for study, planning, numbers, and clear next-step work.", ids: ["binaural-alpha-12","binaural-reset-14","binaural-gamma-40","reset-gamma","trend-lofi","trend-cafe","noise-pink","iso-8"] },
+  { id: "grounding", label: "🤲 Emotional grounding", color: "#B80064", desc: "Warm, regulating tracks for grief, loneliness, relationship stress, and self-respect.", ids: ["ambient-ocean","ambient-softdrone","sol-639","sol-528","binaural-alpha-8","bilateral-soft-3","trend-krishna-flute","trend-432-guitar"] },
+  { id: "deep", label: "🪷 Deep calm", color: "#B45309", desc: "Quiet reflection sessions for stillness, recovery, and slower inner pacing.", ids: ["binaural-theta-4","binaural-theta-5","aum-136","sol-432","sol-852","sol-963","trend-tibetan-bowl","trend-om-chant"] },
+  { id: "breath", label: "⏱ Breath timing", color: "#059669", desc: "Rhythmic pulses and ambient cues that make inhale/exhale patterns easier to follow.", ids: ["ambient-breath","iso-1","iso-2","iso-3","iso-4","iso-6","iso-10","sol-417","trend-schumann","trend-forest-birds"] },
+]
 
 // Reported up to App() so a persistent mini-player can show/control playback
 // from any tab -- see the ToneLibrarySection mount-persistence comment below
@@ -23914,7 +23509,7 @@ function ToneLibrarySection({
   onEmergencyCall,
   openWebsite,
   buildNearbySearchUrl,
-  moonChart48Readings,
+  moonChartInsightReadings,
   isWide,
   onNowPlayingChange,
   onControlsReady
@@ -23926,7 +23521,7 @@ function ToneLibrarySection({
   onEmergencyCall?: () => Promise<void>;
   openWebsite?: (url: string, title: string) => void | Promise<void>;
   buildNearbySearchUrl?: (query: string) => string;
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   isWide: boolean;
   // Optional -- both are additive reporting/control hooks for the App()-level
   // mini-player. Neither changes any of this section's own behavior when
@@ -24251,7 +23846,7 @@ function ToneLibrarySection({
               accessibilityRole="adjustable"
               accessibilityLabel="Tone volume"
               accessibilityValue={{ min: 0, max: 100, now: toneVolumePercent }}
-              style={{ flex: 1, height: 8, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.07)", overflow: "hidden" }}
+              style={{ flex: 1, height: 8, borderRadius: 999, backgroundColor: "rgba(15,23,42,0.12)", overflow: "hidden" }}
             >
               <View style={{ height: 8, borderRadius: 999, backgroundColor: "#0891B2", width: `${Math.round((clampToneVolume(toneVolume) / 0.22) * 100)}%` as unknown as number }} />
             </View>
@@ -24272,8 +23867,8 @@ function ToneLibrarySection({
         <View style={{ flexDirection: "row", gap: 6, paddingHorizontal: 14, paddingBottom: 14, alignItems: "center" }}>
           <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>Timer:</Text>
           {([0, 5, 10, 15, 20, 30] as const).map((min) => (
-            <Pressable key={min} onPress={() => { setPresetMinutes(min); setActiveProgram(null); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#070F1A", borderWidth: 1, borderColor: presetMinutes === min ? "#0891B2" : "rgba(255,255,255,0.08)" }}>
-              <Text style={{ color: presetMinutes === min ? "#0D1F22" : "#1F2937", fontSize: 12, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
+            <Pressable key={min} onPress={() => { setPresetMinutes(min); setActiveProgram(null); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#F8FBFA", borderWidth: 1, borderColor: presetMinutes === min ? "#0891B2" : "rgba(15,23,42,0.12)" }}>
+              <Text style={{ color: presetMinutes === min ? "#FFFFFF" : "#1F2937", fontSize: 12, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
             </Pressable>
           ))}
         </View>
@@ -24284,7 +23879,7 @@ function ToneLibrarySection({
         eyebrow="🎵 Tone map"
         actionLabel="Try"
         accentColor="#0891B2"
-        moonChart48Readings={moonChart48Readings}
+        moonChartInsightReadings={moonChartInsightReadings}
         onOpenTab={onOpenTab}
         onEmergencyCall={onEmergencyCall}
         openWebsite={openWebsite}
@@ -24294,7 +23889,7 @@ function ToneLibrarySection({
       {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
       <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
         <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
-          🎯 Healing Programs — {selectedIssueGuide.label}
+          Recommended for you today — {selectedIssueGuide.label}
         </Text>
         <View style={{ gap: 8 }}>
           {programs.map((prog) => {
@@ -24355,7 +23950,7 @@ function ToneLibrarySection({
       {/* ── TONE LIBRARY — by category ── */}
       <View style={{ marginHorizontal: 16 }}>
         <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
-          📚 Tone Library
+          Curated tone library
         </Text>
         <View style={{ gap: 6 }}>
           {TONE_CATEGORIES.map((cat) => {
@@ -24385,6 +23980,9 @@ function ToneLibrarySection({
                   <View style={{ backgroundColor: "#DEE7F2", padding: 10, gap: 6 }}>
                     {catTones.map((toneMode) => {
                       const isActive = toneMode.id === selectedTone.id;
+                      const toneDuration = getToneDefaultDuration(toneMode);
+                      const headphoneLabel = toneRequiresHeadphones(toneMode) ? "Headphones needed" : "Headphones optional";
+                      const intensityLabel = getToneIntensityLabel(toneMode);
                       return (
                         <Pressable
                           key={toneMode.id}
@@ -24402,6 +24000,9 @@ function ToneLibrarySection({
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: isActive ? cat.color : "#3A577D", fontSize: 13, fontWeight: isActive ? "900" : "700" }}>{toneMode.label}</Text>
                             <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 1 }}>{toneMode.use}</Text>
+                            <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16, marginTop: 4, fontWeight: "800" }}>
+                              Purpose: {getToneBrainState(toneMode)} · Duration: {toneDuration}m · {headphoneLabel} · Intensity: {intensityLabel}
+                            </Text>
                           </View>
                           <View style={{ flexDirection: "row", gap: 6 }}>
                             {toneMode.externalUrl ? (
@@ -24485,7 +24086,7 @@ function MeditationSection({
   voiceAssistEnabled,
   voiceAssistStatus,
   buildNearbySearchUrl,
-  moonChart48Readings,
+  moonChartInsightReadings,
   isWide
 }: {
   selectedIssueGuide: IssueGuide;
@@ -24498,7 +24099,7 @@ function MeditationSection({
   voiceAssistEnabled: boolean;
   voiceAssistStatus: string;
   buildNearbySearchUrl?: (query: string) => string;
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   isWide: boolean;
 }) {
   const compact = !isWide;
@@ -24611,12 +24212,12 @@ function MeditationSection({
         </View>
       </View>
 
-      {/* Multidimensional library, not a 5-field table pretending to be complete. */}
+      {/* Multi-dimensional library, not a 5-field table pretending to be complete. */}
       <SupportDimensionLibraryPanel
         eyebrow="Meditation guidance"
         actionLabel="Try"
         accentColor="#3730A3"
-        moonChart48Readings={moonChart48Readings}
+        moonChartInsightReadings={moonChartInsightReadings}
         onOpenTab={onOpenTab}
         onEmergencyCall={onEmergencyCall}
         openWebsite={onOpenWebsite}
@@ -24872,16 +24473,16 @@ function MeditationSection({
   );
 }
 
-function AIHelpSection({
+function GuidedSupportSection({
   aiHelpMessages,
   aiHelpDraft,
-  setAIHelpDraft,
+  setGuidedSupportDraft,
   aiHelpLoading,
   aiHelpProviderLabel,
   privateIntakeSavedAt,
-  onPostAIHelp,
-  onUseAIHelpStarter,
-  onClearAIHelp,
+  onPostGuidedSupport,
+  onUseGuidedSupportStarter,
+  onClearGuidedSupport,
   onOpenGuide,
   onOpenRedress,
   onOpenPrivateIntake,
@@ -24896,15 +24497,15 @@ function AIHelpSection({
   birthChartDashaState,
   birthChartHasDetails,
 }: {
-  aiHelpMessages: AIHelpMessage[];
+  aiHelpMessages: GuidedSupportMessage[];
   aiHelpDraft: string;
-  setAIHelpDraft: (value: string) => void;
+  setGuidedSupportDraft: (value: string) => void;
   aiHelpLoading: boolean;
   aiHelpProviderLabel: string;
   privateIntakeSavedAt: string | null;
-  onPostAIHelp: () => void;
-  onUseAIHelpStarter: (prompt: string) => void;
-  onClearAIHelp: () => void;
+  onPostGuidedSupport: () => void;
+  onUseGuidedSupportStarter: (prompt: string) => void;
+  onClearGuidedSupport: () => void;
   onOpenGuide: () => void;
   onOpenRedress: () => void;
   onOpenPrivateIntake: () => void;
@@ -24919,19 +24520,19 @@ function AIHelpSection({
   birthChartDashaState?: VimshottariDashaState | null;
   birthChartHasDetails?: boolean;
 }) {
-  const latestAIHelpMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
+  const latestGuidedSupportMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
   const compact = !isWide;
   const [useBirthChart, setUseBirthChart] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const visibleMessages = showHistory ? aiHelpMessages : aiHelpMessages.slice(0, 1);
   const hiddenMessageCount = Math.max(0, aiHelpMessages.length - visibleMessages.length);
-  const routeIsRedress = latestAIHelpMessage.route === "redress" || latestAIHelpMessage.route === "urgent";
-  const needsPrivateIntake = latestAIHelpMessage.route !== "urgent" && !privateIntakeSavedAt;
+  const routeIsRedress = latestGuidedSupportMessage.route === "redress" || latestGuidedSupportMessage.route === "urgent";
+  const needsPrivateIntake = latestGuidedSupportMessage.route !== "urgent" && !privateIntakeSavedAt;
   const routePrimaryLabel = needsPrivateIntake ? "Open intake" : routeIsRedress ? "Open Help" : "Open Path";
   const routePrimaryAction = needsPrivateIntake ? onOpenPrivateIntake : routeIsRedress ? onOpenRedress : onOpenGuide;
-  const latestReplyText = latestAIHelpMessage.text.trim().length > 0
-    ? latestAIHelpMessage.text.trim()
-    : buildAIHelpSeedReply();
+  const latestReplyText = latestGuidedSupportMessage.text.trim().length > 0
+    ? latestGuidedSupportMessage.text.trim()
+    : buildGuidedSupportSeedReply();
   const latestReplySections = latestReplyText.split("\n").map((line) => line.trim()).filter(Boolean);
   const latestReplySummary =
     latestReplySections
@@ -24945,7 +24546,7 @@ function AIHelpSection({
     latestReplySections
       .find((line) => line.toLowerCase().startsWith("escalate when:"))?.replace(/^escalate when:\s*/i, "")
       ?? "Move to Help or SOS if the issue is bigger than one reply.";
-  const visibleStarters = buildAIHelpQuickStarters(latestAIHelpMessage.route, selectedIssueGuideLabel, selectedIdentityLabel);
+  const visibleStarters = buildGuidedSupportQuickStarters(latestGuidedSupportMessage.route, selectedIssueGuideLabel, selectedIdentityLabel);
   const starterButtons = compact ? visibleStarters.slice(0, 2) : visibleStarters;
   const visibleMessagesForRender = visibleMessages.map((message) => ({
     ...message,
@@ -25055,7 +24656,7 @@ function AIHelpSection({
       <View style={[styles.communityActions, compact && styles.aiHelpActionRow]}>
         <Pressable
           accessibilityRole="button"
-          onPress={onClearAIHelp}
+          onPress={onClearGuidedSupport}
           style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
         >
           <Text style={styles.helpButtonSecondaryLabel}>Reset</Text>
@@ -25067,7 +24668,7 @@ function AIHelpSection({
           <Pressable
             key={starter.id}
             accessibilityRole="button"
-            onPress={() => onUseAIHelpStarter(starter.prompt)}
+            onPress={() => onUseGuidedSupportStarter(starter.prompt)}
             style={({ pressed }) => [
               styles.aiStarterChip,
               compact && styles.aiStarterChipCompact,
@@ -25182,7 +24783,7 @@ function AIHelpSection({
         <TextInput
         multiline
         value={aiHelpDraft}
-        onChangeText={setAIHelpDraft}
+        onChangeText={setGuidedSupportDraft}
         placeholder="Type the problem in one line and press Get next step."
         placeholderTextColor="#9A8F82"
         editable={!inputLocked}
@@ -25190,9 +24791,9 @@ function AIHelpSection({
         blurOnSubmit
         onSubmitEditing={() => {
           if (birthChartContextPrefix.length > 0 && aiHelpDraft.trim().length > 0) {
-            setAIHelpDraft(`${birthChartContextPrefix}${aiHelpDraft.trim()}`);
+            setGuidedSupportDraft(`${birthChartContextPrefix}${aiHelpDraft.trim()}`);
           }
-          setTimeout(onPostAIHelp, 0);
+          setTimeout(onPostGuidedSupport, 0);
         }}
         style={[
           styles.communityInput,
@@ -25208,10 +24809,10 @@ function AIHelpSection({
           accessibilityRole="button"
           onPress={() => {
             if (birthChartContextPrefix.length > 0 && aiHelpDraft.trim().length > 0) {
-              setAIHelpDraft(`${birthChartContextPrefix}${aiHelpDraft.trim()}`);
-              setTimeout(onPostAIHelp, 0);
+              setGuidedSupportDraft(`${birthChartContextPrefix}${aiHelpDraft.trim()}`);
+              setTimeout(onPostGuidedSupport, 0);
             } else {
-              onPostAIHelp();
+              onPostGuidedSupport();
             }
           }}
           disabled={inputLocked}
@@ -25227,7 +24828,7 @@ function AIHelpSection({
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          onPress={onClearAIHelp}
+          onPress={onClearGuidedSupport}
           style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
         >
           <Text style={styles.helpButtonSecondaryLabel}>Reset</Text>
@@ -25303,13 +24904,13 @@ function CommunitySection({
   onClearPrivateSpaceRoom,
   aiHelpMessages,
   aiHelpDraft,
-  setAIHelpDraft,
+  setGuidedSupportDraft,
   aiHelpLoading,
   aiHelpProvider,
   aiHelpProviderLabel,
-  onPostAIHelp,
-  onUseAIHelpStarter,
-  onClearAIHelp,
+  onPostGuidedSupport,
+  onUseGuidedSupportStarter,
+  onClearGuidedSupport,
   onOpenGuide,
   onOpenRedress,
   onEmergencyCall,
@@ -25369,15 +24970,15 @@ function CommunitySection({
   onCreatePrivateSpaceRoom: () => void;
   onSendPrivateSpaceMessage: () => void;
   onClearPrivateSpaceRoom: (roomId: string) => void;
-  aiHelpMessages: AIHelpMessage[];
+  aiHelpMessages: GuidedSupportMessage[];
   aiHelpDraft: string;
-  setAIHelpDraft: (value: string) => void;
+  setGuidedSupportDraft: (value: string) => void;
   aiHelpLoading: boolean;
-  aiHelpProvider: AIHelpProvider;
+  aiHelpProvider: GuideReplyProvider;
   aiHelpProviderLabel: string;
-  onPostAIHelp: () => void;
-  onUseAIHelpStarter: (prompt: string) => void;
-  onClearAIHelp: () => void;
+  onPostGuidedSupport: () => void;
+  onUseGuidedSupportStarter: (prompt: string) => void;
+  onClearGuidedSupport: () => void;
   onOpenGuide: () => void;
   onOpenRedress: () => void;
   onEmergencyCall: () => Promise<void>;
@@ -26516,7 +26117,7 @@ function SearchSection({
   onGovernmentCall,
   onEmergencyCall,
   buildNearbySearchUrl,
-  moonChart48Readings,
+  moonChartInsightReadings,
   selectedIdentity,
   selectedIssueGuide,
   isWide
@@ -26538,7 +26139,7 @@ function SearchSection({
   onGovernmentCall: (resource: (typeof governmentHelplines)[number]) => void;
   onEmergencyCall?: () => Promise<void>;
   buildNearbySearchUrl?: (query: string) => string;
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   selectedIdentity: (typeof identityProfiles)[number];
   selectedIssueGuide: IssueGuide;
   isWide: boolean;
@@ -26740,7 +26341,7 @@ function SearchSection({
           eyebrow="🔍 Where to look"
           actionLabel="Search for"
           accentColor="#0891B2"
-          moonChart48Readings={moonChart48Readings}
+          moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={routeToTab}
           onEmergencyCall={onEmergencyCall}
           openWebsite={onOpenWebsite}
@@ -26932,7 +26533,7 @@ function PlaySection({
   onEmergencyCall,
   openWebsite,
   buildNearbySearchUrl,
-  moonChart48Readings,
+  moonChartInsightReadings,
   isWide,
   onFocusFeaturedPlayLayout,
   languageId
@@ -26954,7 +26555,7 @@ function PlaySection({
   onEmergencyCall?: () => Promise<void>;
   openWebsite?: (url: string, title: string) => void | Promise<void>;
   buildNearbySearchUrl?: (query: string) => string;
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   isWide: boolean;
   onFocusFeaturedPlayLayout?: (key: string) => (event: { nativeEvent: { layout: { y: number } } }) => void;
   languageId: LanguageId;
@@ -27050,7 +26651,7 @@ function PlaySection({
           eyebrow="🎯 Practice focus"
           actionLabel="Try"
           accentColor="#059669"
-          moonChart48Readings={moonChart48Readings}
+          moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={onOpenTab}
           onEmergencyCall={onEmergencyCall}
           openWebsite={openWebsite}
@@ -27390,7 +26991,7 @@ function IssueGuideSection({
   onEmergencyCall,
   onOpenRedress,
   onFocusSelectedIssueLayout,
-  moonChart48Readings,
+  moonChartInsightReadings,
   isWide
 }: {
   issueGuides: IssueGuide[];
@@ -27416,7 +27017,7 @@ function IssueGuideSection({
   onEmergencyCall: () => Promise<void>;
   onOpenRedress: () => void;
   onFocusSelectedIssueLayout?: (issueId: IssueId) => (event: { nativeEvent: { layout: { y: number } } }) => void;
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   isWide: boolean;
 }) {
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
@@ -27425,8 +27026,8 @@ function IssueGuideSection({
   const issueDisplayLabel = selectedIssueGuide.id === "anxiety" ? "Calm route" : selectedIssueGuide.label;
   const pathDepth = getIssuePathDepth(selectedIssueGuide.id);
   const moonChartComplement = useMemo(
-    () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChart48Readings ?? []),
-    [selectedIssueGuide.id, moonChart48Readings]
+    () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChartInsightReadings ?? []),
+    [selectedIssueGuide.id, moonChartInsightReadings]
   );
 
   useEffect(() => {
@@ -27563,7 +27164,7 @@ function IssueGuideSection({
           {moonChartComplement ? (
             <>
               <Text style={styles.promptText}>
-                Multidimensional Moon Chart reading for {selectedIssueGuide.label.toLowerCase()}: the {moonChartComplement.categories.join(", ")} dimensions of your chart average {moonChartComplement.average}/100 ({moonChartComplement.verdict.toLowerCase()}) right now.
+                Multi-dimensional Vedic reading for {selectedIssueGuide.label.toLowerCase()}: the {moonChartComplement.categories.join(", ")} dimensions of your chart average {moonChartComplement.average}/100 ({moonChartComplement.verdict.toLowerCase()}) right now.
               </Text>
               <View style={styles.issueChipGrid}>
                 {moonChartComplement.strongest.map((item) => (
@@ -29852,7 +29453,7 @@ function InsightsSection({
   onEmergencyCall,
   openWebsite,
   buildNearbySearchUrl,
-  moonChart48Readings,
+  moonChartInsightReadings,
   isWide,
   languageId
 }: {
@@ -29875,7 +29476,7 @@ function InsightsSection({
   onEmergencyCall?: () => Promise<void>;
   openWebsite?: (url: string, title: string) => void | Promise<void>;
   buildNearbySearchUrl?: (query: string) => string;
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   isWide: boolean;
   languageId: LanguageId;
 }) {
@@ -30111,7 +29712,7 @@ function InsightsSection({
           eyebrow="📊 Watch for"
           actionLabel="Signal"
           accentColor="#3730A3"
-          moonChart48Readings={moonChart48Readings}
+          moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={onOpenTab}
           onEmergencyCall={onEmergencyCall}
           openWebsite={openWebsite}
@@ -30171,6 +29772,7 @@ function SettingsSection({
   onGovernmentCall,
   onGovernmentOpen,
   onExportBackup,
+  onDeleteLocalData,
   onRestartOnboarding,
   onOpenAccessPanel,
   onOpenAdminLogin,
@@ -30258,6 +29860,7 @@ function SettingsSection({
   onGovernmentCall: (resource: (typeof governmentHelplines)[number]) => void;
   onGovernmentOpen: (url: string, title: string) => void;
   onExportBackup: () => void;
+  onDeleteLocalData: () => void;
   onRestartOnboarding: () => void;
   onOpenAccessPanel: () => void;
   onOpenAdminLogin: () => void;
@@ -30430,15 +30033,15 @@ function SettingsSection({
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>Release readiness</Text>
         <Text style={styles.promptText}>
-          The app is in feature freeze and ready for beta or soft launch. Public release still waits on provider-backed SMS and email verification.
+          The app is in feature freeze and ready for beta or soft launch. Verification is provider-backed when the production service is connected, and local preview builds clearly mark fallback delivery.
         </Text>
         <View style={styles.launchSummaryList}>
           <Text style={styles.launchSummaryItem}>
-            Verification provider: {verificationDeliveryMode === "remote" ? "connected" : "not connected yet"}.
+            Verification provider: {verificationDeliveryMode === "remote" ? "connected for SMS and email OTP" : "local fallback only for this build"}.
           </Text>
-          <Text style={styles.launchSummaryItem}>Feature freeze active: only launch blockers and polish should change now.</Text>
+          <Text style={styles.launchSummaryItem}>Feature freeze active: only launch blockers, evidence-backed corrections, and premium polish should change now.</Text>
           <Text style={styles.launchSummaryItem}>Community chat is verified-only and blocks adult or explicit content.</Text>
-          <Text style={styles.launchSummaryItem}>Public launch still needs a real OTP delivery provider before store submission.</Text>
+          <Text style={styles.launchSummaryItem}>Store release readiness still depends on final listing assets, reviewer notes, and tester evidence—not on placeholder OTP copy.</Text>
         </View>
       </View>
       <View style={styles.settingsBlock}>
@@ -31025,6 +30628,12 @@ function SettingsSection({
         <Text style={styles.promptText}>
           Aethon Beacon is local-first. Your data never leaves your device unless you choose to export it.
         </Text>
+        <Text style={styles.promptText}>
+          Phone and email are used only for verification. Voice and microphone access are optional and only support spoken guidance or dictated input when you turn them on.
+        </Text>
+        <Text style={styles.promptText}>
+          You can skip optional profile details, export your notes, or delete local data whenever you choose.
+        </Text>
         <Pressable accessibilityRole="button" onPress={onShowPrivacyPolicy} style={[styles.dangerButton, { backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "#334155" }]}>
           <Text style={[styles.dangerButtonLabel, { color: "#0E9488" }]}>📄 Read privacy policy</Text>
         </Pressable>
@@ -31036,7 +30645,7 @@ function SettingsSection({
         </Text>
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onExportBackup} style={styles.dangerButton}>
-            <Text style={styles.dangerButtonLabel}>Export local backup</Text>
+            <Text style={styles.dangerButtonLabel}>Export my notes</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -31048,6 +30657,9 @@ function SettingsSection({
         </View>
         <Pressable accessibilityRole="button" onPress={clearEntries} style={styles.dangerButton}>
           <Text style={styles.dangerButtonLabel}>Clear local entries</Text>
+        </Pressable>
+        <Pressable accessibilityRole="button" onPress={onDeleteLocalData} style={styles.secondaryDangerButton}>
+          <Text style={styles.secondaryDangerButtonLabel}>Delete my local data</Text>
         </Pressable>
       </View>
       <View style={styles.settingsBlock}>
@@ -31255,7 +30867,7 @@ function VedicDailyCard({
   // Memoized: recomputing all lunar dimensions on every render (e.g. window
   // resize, unrelated state) is wasteful. Keyed on the birth-derived inputs so
   // it only recomputes when the chart actually changes.
-  const moonChart48Readings = React.useMemo(
+  const moonChartInsightReadings = React.useMemo(
     () => buildMoonChartMultidimensionalEngine({
       rashiId: rashi.id,
       janmaNakshatra,
@@ -31266,10 +30878,10 @@ function VedicDailyCard({
     }),
     [rashi.id, janmaNakshatra, dashaState, tithi, vara, lagnaId]
   );
-  const moonChart48Summary = React.useMemo(() => summarizeMoonChart48(moonChart48Readings), [moonChart48Readings]);
+  const moonChart48Summary = React.useMemo(() => summarizeMoonChart48(moonChartInsightReadings), [moonChartInsightReadings]);
   const lunarHousePreview = Array.from({ length: 12 }, (_, houseIndex) => {
     const house = houseIndex + 1;
-    const items = moonChart48Readings.filter((item) => item.house === house);
+    const items = moonChartInsightReadings.filter((item) => item.house === house);
     const avg = items.length ? Math.round(items.reduce((sum, item) => sum + item.score, 0) / items.length) : 0;
     const anchor = items.sort((a, b) => b.score - a.score)[0];
     return { house, avg, anchor };
@@ -31392,9 +31004,9 @@ function VedicDailyCard({
         })}
       </View>
 
-      {/* Multidimensional Moon chart snapshot */}
+      {/* Multi-dimensional Moon chart snapshot */}
       <View style={styles.vedicPredSection}>
-        <Text style={styles.vedicPredTitle}>Multidimensional Moon Chart Engine · Explainable Score {moonChart48Summary.average}/100</Text>
+        <Text style={styles.vedicPredTitle}>Multi-dimensional Vedic Insight · Explainable score {moonChart48Summary.average}/100</Text>
         <Text style={[styles.vedicDisclaimer, { marginTop: 0, marginBottom: 8 }]}>Calculated from Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara only — lunar-chart prediction only.</Text>
         {moonChart48Summary.top.slice(0, 4).map((item) => (
           <View key={item.id} style={{ borderRadius: 14, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}44`, padding: 11, gap: 6 }}>
@@ -31403,8 +31015,11 @@ function VedicDailyCard({
               <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
               <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}</Text>
             </View>
-            <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{item.interpretation}</Text>
-            <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{item.remedyTitle}: </Text>{item.remedySteps[0]}</Text>
+            <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>Key insight: </Text>{item.interpretation}</Text>
+            <Text style={{ color: "#0057B8", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>Reason: </Text>{item.scoreReason}</Text>
+            <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>Supporting chart factor: </Text>{item.house}H · {item.category} · {item.verdict}</Text>
+            <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>Practical remedy: </Text>{item.remedySteps[0]}</Text>
+            <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>Interpretation note: </Text>Use this as reflective guidance, not a deterministic promise.</Text>
           </View>
         ))}
       </View>
@@ -31431,8 +31046,8 @@ function BirthChartSection({
   todayNakshatra,
   tithi,
   vara,
-  geminiHoroscope,
-  geminiHoroscopeLoading,
+  guidanceHoroscope,
+  guidanceHoroscopeLoading,
   profileDOB,
   profileBirthTime,
   profileBirthPlace,
@@ -31456,8 +31071,8 @@ function BirthChartSection({
   todayNakshatra: ReturnType<typeof getTodayNakshatra>;
   tithi: ReturnType<typeof getTodayTithi>;
   vara: typeof VARA_INFO[0];
-  geminiHoroscope: string | null;
-  geminiHoroscopeLoading: boolean;
+  guidanceHoroscope: string | null;
+  guidanceHoroscopeLoading: boolean;
   profileDOB: string;
   profileBirthTime: string;
   profileBirthPlace: string;
@@ -31475,7 +31090,7 @@ function BirthChartSection({
   // state (astroChatDraft, astroChatMessages, submitAstroQuestion) is owned
   // by App(), not by BirthChartSection.
   askTheChartPanel?: React.ReactNode;
-  // Lifted to App() so the Ask-the-chart answer engine shares this toggle.
+  // Lifted to App() so the Ask-the-chart answer insight system shares this toggle.
   chartBriefLang: "en" | "hi";
   setChartBriefLang: (v: "en" | "hi") => void;
 }) {
@@ -31500,7 +31115,7 @@ function BirthChartSection({
   const horoscopePulseAnim = React.useRef(new Animated.Value(1)).current;
   const horoscopeReduceMotion = useReducedMotion();
   React.useEffect(() => {
-    if (!geminiHoroscopeLoading || horoscopeReduceMotion) return;
+    if (!guidanceHoroscopeLoading || horoscopeReduceMotion) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(horoscopePulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
@@ -31509,7 +31124,7 @@ function BirthChartSection({
     );
     loop.start();
     return () => loop.stop();
-  }, [geminiHoroscopeLoading, horoscopePulseAnim, horoscopeReduceMotion]);
+  }, [guidanceHoroscopeLoading, horoscopePulseAnim, horoscopeReduceMotion]);
 
   // Derived combined values for validation/save
   const dobDraft = dobYYYY.length === 4 && dobMM.length >= 1 && dobDD.length >= 1
@@ -31551,11 +31166,11 @@ function BirthChartSection({
     /^\d{4}-\d{2}-\d{2}$/.test(profileDOB) &&
     /^\d{2}:\d{2}$/.test(profileBirthTime) &&
     profileBirthPlace.trim().length >= 3;
-  const moonChart48Readings = rashiInfo
+  const moonChartInsightReadings = rashiInfo
     ? buildMoonChartMultidimensionalEngine({ rashiId: rashiInfo.rashiId, janmaNakshatra, dashaState, tithi, vara, lagnaId: lagnaInfo?.lagnaId ?? null, lang: chartBriefLang })
     : [];
-  const moonChart48Summary = summarizeMoonChart48(moonChart48Readings);
-  // Progressive disclosure for the full 48-dimension trace: each card is
+  const moonChart48Summary = summarizeMoonChart48(moonChartInsightReadings);
+  // Progressive disclosure for the full multi-dimensional trace: each card is
   // collapsed to just its title + verdict + score by default, so the reader
   // sees a scannable list instead of a wall of ~48 long explanations, and
   // expands only the ones they care about. Empty set = all collapsed.
@@ -31567,15 +31182,15 @@ function BirthChartSection({
       return next;
     });
   }, []);
-  const allMoonDimsExpanded = moonChart48Readings.length > 0 && expandedMoonDims.size >= moonChart48Readings.length;
-  // The Advanced Vedic engine (D1/Navamsa/Yogas/Ashtakavarga/Shadbala) is a
+  const allMoonDimsExpanded = moonChartInsightReadings.length > 0 && expandedMoonDims.size >= moonChartInsightReadings.length;
+  // The Detailed calculation panel (D1/Navamsa/Yogas/Ashtakavarga/Shadbala) is a
   // very long, chart-heavy block. Collapsed by default so it doesn't bury the
   // rest of the tab; the reader opens it deliberately.
   const [advancedVedicOpen, setAdvancedVedicOpen] = React.useState(false);
   // The plain-language house-by-house reading is up to ~12 stacked paragraph
   // cards. Collapsed by default behind a toggle so the foundation + intro
   // stay visible for context, matching the collapse pattern used by the
-  // 48-dimension trace and the Advanced engine panel (one consistent gesture).
+  // multi-dimensional trace and the Detailed calculation panel (one consistent gesture).
   const [plainHousesOpen, setPlainHousesOpen] = React.useState(false);
   // Gochar (current transits) read from the natal Moon — the "now" foresight
   // layer. Memoized per day so it is not recomputed on unrelated renders.
@@ -31590,7 +31205,7 @@ function BirthChartSection({
   );
   const moonChartCategorySummary = (["mind", "relationship", "work", "money", "body", "spiritual", "risk", "growth"] as MoonChart48Category[])
     .map((category) => {
-      const items = moonChart48Readings.filter((item) => item.category === category);
+      const items = moonChartInsightReadings.filter((item) => item.category === category);
       const average = items.length ? Math.round(items.reduce((sum, item) => sum + item.score, 0) / items.length) : 0;
       const anchor = items.sort((a, b) => b.score - a.score)[0];
       return { category, average, anchor };
@@ -31598,14 +31213,14 @@ function BirthChartSection({
     .filter((item) => item.anchor);
   const moonChartHouseSummary = Array.from({ length: 12 }, (_, houseIndex) => {
     const house = houseIndex + 1;
-    const items = moonChart48Readings.filter((item) => item.house === house);
+    const items = moonChartInsightReadings.filter((item) => item.house === house);
     const average = items.length ? Math.round(items.reduce((sum, item) => sum + item.score, 0) / items.length) : 0;
     const carefulCount = items.filter((item) => item.verdict === "Careful").length;
     const anchor = items.sort((a, b) => b.score - a.score)[0];
     return { house, average, carefulCount, anchor };
   });
 
-  // Advanced Vedic engine (D9 Navamsa, classical Yogas, Ashtakavarga,
+  // Detailed calculation panel (D9 Navamsa, classical Yogas, Ashtakavarga,
   // Shadbala) -- all four read from one shared BirthChartCore so the real
   // navagraha ephemeris and precise Ascendant are computed once, not per
   // system. Recomputes only when the underlying birth details change.
@@ -31623,7 +31238,7 @@ function BirthChartSection({
   // separate from the app's general 22-language settings (which govern UI
   // chrome/voice, not this specific reading). NOTE: chartBriefLang/
   // setChartBriefLang are now props lifted up to App() so the Ask-the-chart
-  // engine (which lives in App()) shares this exact same toggle -- see the
+  // insight system (which lives in App()) shares this exact same toggle -- see the
   // comment on the App()-level useState.
   const housePlacementResult = useMemo(
     () => (birthChartCore ? computeHousePlacements(birthChartCore, chartBriefLang) : null),
@@ -32404,20 +32019,20 @@ function BirthChartSection({
 
       {/* "Ask the chart" rendered here -- directly above the visual chart
           map below, not scrolled below every detail panel (Lagna,
-          Samvatsara, Dasha, Nakshatra, Advanced Vedic Engine, Gemini
+          Samvatsara, Dasha, Nakshatra, Detailed Calculation Panel, Mithuna
           analysis) -- so a question about what you're looking at is always
           right next to the chart itself, and it stays visible even before
           hasReading is true (same as before this reposition). */}
       {askTheChartPanel}
 
-      {hasReading && moonChart48Readings.length === 48 && (
+      {hasReading && moonChartInsightReadings.length === 48 && (
         <View style={{ backgroundColor: "#DEE6F2", borderRadius: 22, padding: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.34)", gap: 12, overflow: "hidden", shadowColor: "#0891B2", shadowOffset: { width: 0, height: 14 }, shadowOpacity: 0.24, shadowRadius: 28, elevation: 16 }}>
           <View pointerEvents="none" style={{ position: "absolute", left: -50, top: -70, width: 190, height: 190, borderRadius: 95, backgroundColor: "rgba(99,102,241,0.16)" }} />
           <View pointerEvents="none" style={{ position: "absolute", right: -55, top: 80, width: 175, height: 175, borderRadius: 88, backgroundColor: "rgba(34,211,238,0.12)" }} />
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                🌙 Multidimensional Vedic Moon Chart Engine
+                🌙 Multi-dimensional Vedic Insight
               </Text>
               <Text style={{ color: "#325C86", fontSize: 19, fontWeight: "900", marginTop: 3 }}>
                 Explainable lunar score {moonChart48Summary.average}/100
@@ -32553,17 +32168,17 @@ function BirthChartSection({
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 onPress={() => {
                   void Haptics.selectionAsync();
-                  setExpandedMoonDims(allMoonDimsExpanded ? new Set() : new Set(moonChart48Readings.map((r) => r.id)));
+                  setExpandedMoonDims(allMoonDimsExpanded ? new Set() : new Set(moonChartInsightReadings.map((r) => r.id)));
                 }}
                 style={({ pressed }) => ({ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: pressed ? "#D4E7E4" : "#E4EFEC", borderWidth: 1, borderColor: "rgba(14,148,136,0.25)" })}
               >
                 <Text style={{ color: "#0E7C74", fontSize: 12, fontWeight: "800" }}>
-                  {allMoonDimsExpanded ? (chartBriefLang === "hi" ? "सब बंद करें" : "Collapse all") : (chartBriefLang === "hi" ? "सब खोलें" : "Expand all")}
+                  {allMoonDimsExpanded ? (chartBriefLang === "hi" ? "सब बंद करें" : "Collapse calculation basis") : (chartBriefLang === "hi" ? "गणना आधार देखें" : "View calculation basis")}
                 </Text>
               </Pressable>
             </View>
             <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 16 }}>{chartBriefLang === "hi" ? "किसी भी आयाम को खोलने के लिए उस पर टैप करें।" : "Tap any dimension to open its full reading."}</Text>
-            {moonChart48Readings.map((item) => {
+            {moonChartInsightReadings.map((item) => {
               const expanded = expandedMoonDims.has(item.id);
               return (
               <View key={item.id} style={{ backgroundColor: "#F4F8F7", borderRadius: 14, borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, overflow: "hidden", shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, transform: [{ perspective: 700 }, { translateY: item.verdict === "Excellent" ? -1 : 0 }] }}>
@@ -32599,12 +32214,12 @@ function BirthChartSection({
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: advancedVedicOpen }}
-            accessibilityLabel={`Advanced Vedic engine. ${advancedVedicOpen ? "Tap to collapse" : "Tap to expand"}`}
+            accessibilityLabel={`Detailed calculation panel. ${advancedVedicOpen ? "Tap to collapse" : "Tap to expand"}`}
             onPress={() => { void Haptics.selectionAsync(); setAdvancedVedicOpen((v) => !v); }}
           >
             <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
               <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
-                🕉️ Advanced Vedic Engine — D9 Navamsa · Yogas · Ashtakavarga · Shadbala
+                🕉️ Detailed Calculation Panel — D9 Navamsa · Yogas · Ashtakavarga · Shadbala
               </Text>
               <Text style={{ color: "#5B21B6", fontSize: 13, fontWeight: "900", width: 16, textAlign: "center" }}>{advancedVedicOpen ? "▾" : "▸"}</Text>
             </View>
@@ -32624,7 +32239,7 @@ function BirthChartSection({
             <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>D1 Rashi Chart — Lagna and all 9 grahas</Text>
             {renderVedicChartWheel(rashiWheelOccupants, "#6D28D9", "RASHI")}
             <Text style={{ color: "#1F2937", fontSize: 12, fontStyle: "italic", textAlign: "center" }}>
-              South Indian style: signs are fixed to position (Aries, Taurus, Gemini across the top, then clockwise). The shaded sign is your Lagna (Ascendant).
+              South Indian style: signs are fixed to position (Aries, Taurus, Mithuna across the top, then clockwise). The shaded sign is your Lagna (Ascendant).
             </Text>
           </View>
 
@@ -32805,17 +32420,17 @@ function BirthChartSection({
         </View>
       )}
 
-      <View style={styles.birthChartGeminiCard}>
-        <View style={styles.birthChartGeminiHeader}>
-          <Text style={styles.birthChartGeminiTitle}>Personal Moon Chart Analysis</Text>
-          <Animated.Text style={[styles.birthChartGeminiBadge, geminiHoroscopeLoading && { opacity: horoscopePulseAnim }]}>
-            {geminiHoroscopeLoading ? "Reading…" : hasExactBirthDetails ? "Ready" : "Waiting"}
+      <View style={styles.birthChartGuidanceCard}>
+        <View style={styles.birthChartGuidanceHeader}>
+          <Text style={styles.birthChartGuidanceTitle}>Personal Moon Chart Analysis</Text>
+          <Animated.Text style={[styles.birthChartGuidanceBadge, guidanceHoroscopeLoading && { opacity: horoscopePulseAnim }]}>
+            {guidanceHoroscopeLoading ? "Reading…" : hasExactBirthDetails ? "Ready" : "Waiting"}
           </Animated.Text>
         </View>
-        <Animated.Text style={[styles.birthChartGeminiText, geminiHoroscopeLoading && { opacity: horoscopePulseAnim }]}>
-          {geminiHoroscopeLoading
+        <Animated.Text style={[styles.birthChartGuidanceText, guidanceHoroscopeLoading && { opacity: horoscopePulseAnim }]}>
+          {guidanceHoroscopeLoading
             ? "Analysing your Moon-chart birth details…"
-            : geminiHoroscope ?? (hasExactBirthDetails ? "Tap 'Save & Analyse' above to generate your reading." : "Enter date, time, and place of birth above to unlock your Moon-chart analysis.")}
+            : guidanceHoroscope ?? (hasExactBirthDetails ? "Tap 'Save & Analyse' above to generate your reading." : "Enter date, time, and place of birth above to unlock your Moon-chart analysis.")}
         </Animated.Text>
       </View>
 
@@ -32851,7 +32466,7 @@ function BirthChartSection({
       <View style={styles.birthChartFactGrid}>
         {[
           "Janma Rashi (Moon sign) prediction anchor",
-          "Multidimensional Moon-chart engine",
+          "Multi-dimensional Vedic Insight",
           "Calculated predictions and remedies",
           "Lagna / Ascendant from birth time",
           "Janma Nakshatra · deity · gana · symbol",
@@ -34309,27 +33924,21 @@ function OnboardingOverlay({
           <>
             <View style={styles.onboardingHeader}>
               <Text style={styles.eyebrow}>Welcome to Aethon Beacon</Text>
-              <Text style={styles.onboardingTitle}>Find your next step. Always.</Text>
+              <Text style={styles.onboardingTitle}>Choose what you need today.</Text>
               <Text style={styles.onboardingText}>
-                Tell the app what's happening in one line. It identifies your situation and opens the right support path — instantly.
+                Start with counselling, calm, Vedic insight, help and redress, or community. Optional details can be skipped, and private notes stay on this device unless you choose to export or share them.
               </Text>
-              <Text style={[styles.onboardingText, { marginTop: 10 }]}>
-                Aethon Beacon brings guidance, protection, Help and Redress, Calm Sound, community support, and Moon-chart Vedic insight into one coordinated experience.
-              </Text>
-              <Text style={[styles.onboardingText, { marginTop: 8 }]}>
-                Receive spoken guidance, private notes, emergency and formal support options, an automatic multidimensional counselling engine, and calculated Moon-chart guidance with remedies.
-              </Text>
-              <View style={{ marginTop: 16, gap: 12 }}>
+              <View style={{ marginTop: 16, gap: 10 }}>
                 {[
-                  { icon: "🧭", text: "Smart routing — one line tells the app exactly where to take you next" },
-                  { icon: "📓", text: "Private journal with mood tracking that turns notes into action" },
-                  { icon: "🪐", text: "Daily Vedic guidance personalised to your birth chart" },
-                  { icon: "🌿", text: "Calm practices, tones, and guided meditations for hard moments" },
-                  { icon: "🤝", text: "Verified peer community — real people, moderated and safe" },
+                  { icon: "🧭", text: "Guided support room with an automatic counselling engine and practical next steps." },
+                  { icon: "🌿", text: "Curated calm practices, tones, breath timing, and meditation." },
+                  { icon: "🪐", text: "Moon-chart based Vedic insight with remedies and a hidden calculation basis." },
+                  { icon: "🛡️", text: "Emergency support, official redress routes, checklists, and templates." },
+                  { icon: "🤝", text: "Verified community messages after contact verification." },
                 ].map((item) => (
-                  <View key={item.icon} style={{ flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#DEE6F2", borderRadius: 10, padding: 12 }}>
+                  <View key={item.icon} style={{ flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#F8FBFA", borderRadius: 16, padding: 12, borderWidth: 1, borderColor: "rgba(15,61,94,0.12)" }}>
                     <Text style={{ fontSize: 20 }}>{item.icon}</Text>
-                    <Text style={[styles.onboardingText, { marginTop: 0, flex: 1, fontSize: 13, lineHeight: 19 }]}>{item.text}</Text>
+                    <Text style={[styles.onboardingText, { marginTop: 0, flex: 1, fontSize: 14, lineHeight: 20, color: "#1F2937", fontWeight: "700" }]}>{item.text}</Text>
                   </View>
                 ))}
               </View>
@@ -34366,7 +33975,7 @@ function OnboardingOverlay({
             >
               <Text style={styles.settingsTitle}>Where do you want to start?</Text>
               <Text style={styles.promptText}>
-                Tap one — the app opens your best starting point right away. You can always switch later.
+                Tap one path. The app opens that page directly, and you can switch any time.
               </Text>
               <View style={styles.launchNeedGrid}>
                 {launchNeeds.map((need) => {
@@ -34408,10 +34017,10 @@ function OnboardingOverlay({
                   <Text style={styles.onboardingButtonLabel}>Enter app</Text>
                 </Pressable>
                 <Pressable accessibilityRole="button" onPress={onExit} style={styles.onboardingButtonSecondary}>
-                  <Text style={styles.onboardingButtonSecondaryLabel}>Exit</Text>
+                  <Text style={styles.onboardingButtonSecondaryLabel}>Skip for now</Text>
                 </Pressable>
               </View>
-              <Text style={styles.smallMeta}>Tap a path to go there directly.</Text>
+              <Text style={styles.smallMeta}>Profile details are optional. You can enter the app now and add more later.</Text>
             </View>
           </>
         ) : null}
@@ -34840,7 +34449,7 @@ type SupportDimensionGuide = {
   id: SupportDimensionId;
   label: string;
   issueId: IssueId;
-  route: AIHelpRoute;
+  route: GuidedSupportRoute;
   // Why this dimension matters, before jumping to action -- grounds the
   // person in what is actually happening instead of only what to do.
   context: string;
@@ -35813,7 +35422,7 @@ function SupportDimensionLibraryPanel({
   eyebrow,
   actionLabel,
   accentColor = "#0891B2",
-  moonChart48Readings,
+  moonChartInsightReadings,
   onOpenTab,
   onEmergencyCall,
   openWebsite,
@@ -35825,7 +35434,7 @@ function SupportDimensionLibraryPanel({
   // Only passed by Path today -- when present, tapping open a dimension also
   // shows its personal Moon Chart complement and a direct route button, so
   // the full multidimensional library becomes actionable, not just readable.
-  moonChart48Readings?: MoonChart48Reading[];
+  moonChartInsightReadings?: MoonChart48Reading[];
   onOpenTab?: (tab: TabId) => void;
   onEmergencyCall?: () => Promise<void>;
   openWebsite?: (url: string, title: string) => void | Promise<void>;
@@ -35845,11 +35454,11 @@ function SupportDimensionLibraryPanel({
   const openDimensionMoonChart = useMemo(
     () =>
       openDimensionId
-        ? buildDimensionMoonChartComplement(openDimensionId, moonChart48Readings ?? [])
+        ? buildDimensionMoonChartComplement(openDimensionId, moonChartInsightReadings ?? [])
         : null,
-    [openDimensionId, moonChart48Readings]
+    [openDimensionId, moonChartInsightReadings]
   );
-  const routeLabel = (route: AIHelpRoute) =>
+  const routeLabel = (route: GuidedSupportRoute) =>
     route === "redress" ? "Formal remedy · Redress" :
     route === "professional" ? "Professional support" :
     route === "urgent" ? "Urgent safety support" :
@@ -36064,15 +35673,15 @@ function getCounselingMoonChartCategories(themes: SupportDimensionId[]): MoonCha
 
 function buildMoonChartCounselingOverlay(
   themes: SupportDimensionId[],
-  moonChart48Readings: MoonChart48Reading[] = []
+  moonChartInsightReadings: MoonChart48Reading[] = []
 ): string {
-  if (moonChart48Readings.length === 0) {
+  if (moonChartInsightReadings.length === 0) {
     return "";
   }
 
   const categories = getCounselingMoonChartCategories(themes);
-  const relevant = moonChart48Readings.filter((reading) => categories.includes(reading.category));
-  const pool = relevant.length > 0 ? relevant : moonChart48Readings;
+  const relevant = moonChartInsightReadings.filter((reading) => categories.includes(reading.category));
+  const pool = relevant.length > 0 ? relevant : moonChartInsightReadings;
   const strongest = [...pool].sort((a, b) => b.score - a.score).slice(0, 3);
   const careful = [...pool].sort((a, b) => a.score - b.score).slice(0, 3);
   const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
@@ -36081,7 +35690,7 @@ function buildMoonChartCounselingOverlay(
   const primaryRemedy = careful[0]?.remedy ?? strongest[0]?.remedy ?? "Moon-chart remedy: keep the next step small, calm, and repeatable today.";
 
   return [
-    `Multidimensional Moon Chart counselling layer: I also checked the lunar pattern connected to this issue. The relevant support average is ${average}/100.`,
+    `Multi-dimensional Vedic counselling layer: I also checked the lunar pattern connected to this issue. The relevant support average is ${average}/100.`,
     `Supported capacities: ${topLine}.`,
     `Care points: ${carefulLine}.`,
     `How to use this today: treat the supported areas as resources, and protect the careful areas before making a big decision. ${primaryRemedy}`,
@@ -36089,10 +35698,10 @@ function buildMoonChartCounselingOverlay(
   ].join("\n");
 }
 
-function shouldAddMoonChartJourneyStep(themes: SupportDimensionId[], moonChart48Readings: MoonChart48Reading[] = []): boolean {
-  if (moonChart48Readings.length === 0) return false;
+function shouldAddMoonChartJourneyStep(themes: SupportDimensionId[], moonChartInsightReadings: MoonChart48Reading[] = []): boolean {
+  if (moonChartInsightReadings.length === 0) return false;
   const categories = getCounselingMoonChartCategories(themes);
-  return moonChart48Readings.some((reading) => categories.includes(reading.category));
+  return moonChartInsightReadings.some((reading) => categories.includes(reading.category));
 }
 
 // Maps each Path/Guide issue onto the multidimensional Moon Chart categories most
@@ -36138,11 +35747,11 @@ type PathMoonChartComplement = {
 // wherever a category set needs a personal-chart complement.
 function buildMoonChartComplementForCategories(
   categories: MoonChart48Category[],
-  moonChart48Readings: MoonChart48Reading[]
+  moonChartInsightReadings: MoonChart48Reading[]
 ): PathMoonChartComplement | null {
-  if (moonChart48Readings.length === 0) return null;
-  const relevant = moonChart48Readings.filter((reading) => categories.includes(reading.category));
-  const pool = relevant.length > 0 ? relevant : moonChart48Readings;
+  if (moonChartInsightReadings.length === 0) return null;
+  const relevant = moonChartInsightReadings.filter((reading) => categories.includes(reading.category));
+  const pool = relevant.length > 0 ? relevant : moonChartInsightReadings;
   const strongest = [...pool].sort((a, b) => b.score - a.score).slice(0, 3);
   const careful = [...pool].sort((a, b) => a.score - b.score).slice(0, 3);
   const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
@@ -36160,10 +35769,10 @@ function buildMoonChartComplementForCategories(
 
 function buildPathMoonChartComplement(
   issueId: IssueId,
-  moonChart48Readings: MoonChart48Reading[]
+  moonChartInsightReadings: MoonChart48Reading[]
 ): PathMoonChartComplement | null {
   const categories = ISSUE_TO_MOON48_CATEGORIES[issueId] ?? ["mind", "growth"];
-  return buildMoonChartComplementForCategories(categories, moonChart48Readings);
+  return buildMoonChartComplementForCategories(categories, moonChartInsightReadings);
 }
 
 // Same complement, scoped to one of the 48 fine-grained support dimensions
@@ -36173,10 +35782,10 @@ function buildPathMoonChartComplement(
 // Moon Chart read inside a counselling reply are always the same numbers.
 function buildDimensionMoonChartComplement(
   dimensionId: SupportDimensionId,
-  moonChart48Readings: MoonChart48Reading[]
+  moonChartInsightReadings: MoonChart48Reading[]
 ): PathMoonChartComplement | null {
   const categories = getCounselingMoonChartCategories([dimensionId]);
-  return buildMoonChartComplementForCategories(categories, moonChart48Readings);
+  return buildMoonChartComplementForCategories(categories, moonChartInsightReadings);
 }
 
 function buildCounselingReflectionCue(theme: SupportDimensionId, turnIndex: number): string {
@@ -36449,11 +36058,11 @@ function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: numbe
 function buildCounselingSynthesis(
   session: CounselingSession,
   issueId: IssueId,
-  moonChart48Readings: MoonChart48Reading[] = [],
+  moonChartInsightReadings: MoonChart48Reading[] = [],
   // How many prior visit reports (real, timestamped daily/step reports --
   // see VisitReport, App-level `visitReports`) already carry this same
   // issue label. Previously computed and stored across the app (Insights
-  // tab reads it) but never reached the counselling engine, so every
+  // tab reads it) but never reached the counselling insight system, so every
   // conversation about a recurring issue was treated as a first-time
   // disclosure even when the person had raised it repeatedly. 0 by default
   // -- purely additive, only adds one paragraph, never changes theme
@@ -36519,7 +36128,7 @@ function buildCounselingSynthesis(
     // to fall through to fully generic boilerplate that said nothing
     // specific to what the person actually described. supportDimensionGuides
     // already has a real, specifically-authored `context` sentence for every
-    // one of the 48 dimensions (see that type's comment) -- using it here
+    // one of the multi-dimensional support areas (see that type's comment) -- using it here
     // means even the "no bespoke branch yet" case still reflects back
     // something concrete instead of a templated placeholder.
     const primaryGuide = supportDimensionGuides[themes[0]];
@@ -36539,7 +36148,7 @@ function buildCounselingSynthesis(
   }
 
   // ── Multidimensional Moon Chart counselling overlay ─────────────────────────
-  const moonChartCounselingOverlay = buildMoonChartCounselingOverlay(themes, moonChart48Readings);
+  const moonChartCounselingOverlay = buildMoonChartCounselingOverlay(themes, moonChartInsightReadings);
   if (moonChartCounselingOverlay.length > 0) {
     synthesis += `${moonChartCounselingOverlay}\n\n`;
   }
@@ -36570,8 +36179,8 @@ function buildCounselingSynthesis(
 function buildJourneySteps(
   themes: SupportDimensionId[],
   issueId: IssueId,
-  route: AIHelpRoute,
-  moonChart48Readings: MoonChart48Reading[] = [],
+  route: GuidedSupportRoute,
+  moonChartInsightReadings: MoonChart48Reading[] = [],
   // Optional and additive only -- deliberately never changes which steps are
   // included or their order (the calm/grounding, professional-support, and
   // redress steps above are safety-relevant and stay driven purely by
@@ -36684,13 +36293,13 @@ function buildJourneySteps(
   });
 
   // ── 6. Multidimensional Moon Chart layer — when birth details make it operational ─
-  if (shouldAddMoonChartJourneyStep(themes, moonChart48Readings) && !steps.some((step) => step.tabId === "vedic")) {
+  if (shouldAddMoonChartJourneyStep(themes, moonChartInsightReadings) && !steps.some((step) => step.tabId === "vedic")) {
     const categories = getCounselingMoonChartCategories(themes);
-    const focused = moonChart48Readings.filter((reading) => categories.includes(reading.category));
-    const careful = [...(focused.length > 0 ? focused : moonChart48Readings)].sort((a, b) => a.score - b.score)[0];
+    const focused = moonChartInsightReadings.filter((reading) => categories.includes(reading.category));
+    const careful = [...(focused.length > 0 ? focused : moonChartInsightReadings)].sort((a, b) => a.score - b.score)[0];
     steps.push({
       tabId: "vedic",
-      label: "Check Multidimensional Moon Chart",
+      label: "View multi-dimensional basis",
       emoji: "🌙",
       reason: careful
         ? `Use the Moon-chart layer for timing and remedies; today it flags ${careful.label.toLowerCase()} as the main care point.`
@@ -36773,7 +36382,7 @@ function CounselingChatModal({
   speakText,
   stopSpeech,
   speechLocale,
-  moonChart48Readings,
+  moonChartInsightReadings,
   voiceAssistEnabled,
   onToggleVoiceAssist,
   onFetchGuideEnrichment,
@@ -36794,7 +36403,7 @@ function CounselingChatModal({
   speakText: (text: string) => void;
   stopSpeech: () => void;
   speechLocale: string;
-  moonChart48Readings: MoonChart48Reading[];
+  moonChartInsightReadings: MoonChart48Reading[];
   // Every friend/guide turn is spoken aloud automatically as it arrives
   // (see scheduleSpeak below) -- there was previously no way to silence
   // that from inside the chat itself short of leaving to find the Settings
@@ -36802,18 +36411,18 @@ function CounselingChatModal({
   // button below to that same app-wide switch.
   voiceAssistEnabled: boolean;
   onToggleVoiceAssist: () => void;
-  // Optional cloud-AI enrichment on top of the offline synthesis. This reuses
-  // App()'s existing fetchGeminiAIHelp (already wired to a real, deployed
-  // /ai/help route on the verification backend, complete with a graceful
+  // Optional connected guidance enrichment on top of the offline synthesis. This reuses
+  // App()'s existing fetchGuidanceHelp (already wired to a real, deployed
+  // /guidance/help route on the verification backend, complete with a graceful
   // offline fallback server-side) -- it was written months ago for an older
-  // one-shot AIHelp flow that has since been replaced by this two-way chat,
+  // one-shot GuidedSupport flow that has since been replaced by this two-way chat,
   // and was never actually called from anywhere. The offline synthesis below
   // remains the safety-critical baseline and is never blocked or replaced by
   // this; when it's not configured (or the network call fails) the card
   // this powers simply never appears.
   onFetchGuideEnrichment?: (
     text: string,
-    route: AIHelpRoute,
+    route: GuidedSupportRoute,
     profileAddressLabel: string,
     issueGuide: IssueGuide
   ) => Promise<{ text: string; source: string } | null>;
@@ -36860,11 +36469,11 @@ function CounselingChatModal({
     journeySteps: [],
   }));
   const [draft, setDraft] = React.useState("");
-  const [geminiEnrichment, setGeminiEnrichment] = React.useState<string | null>(null);
-  const [geminiEnrichmentLoading, setGeminiEnrichmentLoading] = React.useState(false);
-  // Subtle pulse for the "looking a little deeper" line below -- geminiEnrichmentLoading
+  const [guidanceEnrichment, setGuidanceEnrichment] = React.useState<string | null>(null);
+  const [guidanceEnrichmentLoading, setGuidanceEnrichmentLoading] = React.useState(false);
+  // Subtle pulse for the "looking a little deeper" line below -- guidanceEnrichmentLoading
   // was already being tracked but never rendered anywhere, so during an actual
-  // Gemini fetch (when it IS configured) the person saw nothing happen for a
+  // connected-service fetch (when it IS configured) the person saw nothing happen for a
   // couple seconds after the synthesis appeared, then a new card just showed
   // up unexplained. This keeps the original "no clutter if it never appears"
   // intent (renders null the instant loading finishes with no content) while
@@ -36874,7 +36483,7 @@ function CounselingChatModal({
   const enrichmentPulseAnim = React.useRef(new Animated.Value(1)).current;
   const chatReduceMotion = useReducedMotion();
   React.useEffect(() => {
-    if (!geminiEnrichmentLoading || chatReduceMotion) return;
+    if (!guidanceEnrichmentLoading || chatReduceMotion) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(enrichmentPulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
@@ -36883,7 +36492,7 @@ function CounselingChatModal({
     );
     loop.start();
     return () => loop.stop();
-  }, [geminiEnrichmentLoading, enrichmentPulseAnim, chatReduceMotion]);
+  }, [guidanceEnrichmentLoading, enrichmentPulseAnim, chatReduceMotion]);
   const [isListening, setIsListening] = React.useState(false);
   const [speechInputNotice, setSpeechInputNotice] = React.useState("");
   const [synthText, setSynthText] = React.useState("");
@@ -37000,7 +36609,7 @@ function CounselingChatModal({
     setSafetyNoticeExpanded(true);
     const themes = detectThemes(recentJournalNotesText ? `${initialIssue} ${recentJournalNotesText}` : initialIssue);
     const firstQuestion = buildCounselingQuestions(themes, 0);
-    const opening = buildCounselingAcknowledgment(initialIssue, issueId, detectAIHelpRouteFromText(initialIssue));
+    const opening = buildCounselingAcknowledgment(initialIssue, issueId, detectGuidedSupportRouteFromText(initialIssue));
     // Warm, personal welcome up front -- previously the chat opened straight
     // into the clinical acknowledgment with no greeting, which read as cold
     // and abrupt. Address the person by name when we have one.
@@ -37022,8 +36631,8 @@ function CounselingChatModal({
     setSynthText("");
     setSpeechInputNotice("");
     setJourneySteps([]);
-    setGeminiEnrichment(null);
-    setGeminiEnrichmentLoading(false);
+    setGuidanceEnrichment(null);
+    setGuidanceEnrichmentLoading(false);
 
     // Hold the opening line behind a brief typing beat instead of dumping it
     // in the instant the modal opens -- see isGuideTyping comment above.
@@ -37083,7 +36692,7 @@ function CounselingChatModal({
     stopSpeech();
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
-    const route = detectAIHelpRouteFromText(session.originalIssue + " " + allUserTextForSynthesis);
+    const route = detectGuidedSupportRouteFromText(session.originalIssue + " " + allUserTextForSynthesis);
     const updatedSession: CounselingSession = {
       ...session,
       turns: turnsForSynthesis,
@@ -37095,8 +36704,8 @@ function CounselingChatModal({
     const recurrenceCount = currentIssueLabel
       ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
       : 0;
-    const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChart48Readings, recurrenceCount, sadeSatiNote, weeklyTrend);
-    const steps = buildJourneySteps(themesForSynthesis, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
+    const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend);
+    const steps = buildJourneySteps(themesForSynthesis, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
 
     setSession(updatedSession);
     setIsGuideTyping(true);
@@ -37113,22 +36722,22 @@ function CounselingChatModal({
       scheduleSpeak(synthesis, 150);
     }, 700 + Math.random() * 350);
 
-    // Optional cloud-AI enrichment layered on top of the offline synthesis
+    // Optional connected guidance enrichment layered on top of the offline synthesis
     // above, which has already fully completed and is never blocked or
     // delayed by this. Self-guards: onFetchGuideEnrichment resolves to
-    // null immediately server-side when Gemini isn't configured, and any
-    // network failure is swallowed the same way GeminiInsightsCard does
+    // null immediately server-side when the connected service is not configured, and any
+    // network failure is swallowed the same way GuidanceInsightsCard does
     // elsewhere in the app -- the card this powers just never appears.
     if (onFetchGuideEnrichment) {
-      setGeminiEnrichment(null);
-      setGeminiEnrichmentLoading(true);
+      setGuidanceEnrichment(null);
+      setGuidanceEnrichmentLoading(true);
       const enrichmentIssueGuide = issueGuides.find((guide) => guide.id === issueId) ?? issueGuides[0];
       onFetchGuideEnrichment(session.originalIssue + " " + allUserTextForSynthesis, route, identityLabel, enrichmentIssueGuide)
         .then((result) => {
-          if (result && result.text.trim().length > 0) setGeminiEnrichment(result.text.trim());
+          if (result && result.text.trim().length > 0) setGuidanceEnrichment(result.text.trim());
         })
         .catch(() => undefined)
-        .finally(() => setGeminiEnrichmentLoading(false));
+        .finally(() => setGuidanceEnrichmentLoading(false));
     }
   }
 
@@ -37175,12 +36784,12 @@ function CounselingChatModal({
         userResponses % COUNSELING_NEXT_STEP_READY_USER_RESPONSES === 0;
       const checkpointQuestion = shouldOfferCheckpoint
         ? (() => {
-            const route = detectAIHelpRouteFromText(session.originalIssue + " " + allUserText);
+            const route = detectGuidedSupportRouteFromText(session.originalIssue + " " + allUserText);
             const currentIssueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? null;
             const recurrenceCount = currentIssueLabel
               ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
               : 0;
-            const previewSteps = buildJourneySteps(mergedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
+            const previewSteps = buildJourneySteps(mergedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
             const firstStep = previewSteps[0];
             const previewLine = firstStep
               ? `${firstStep.emoji} ${firstStep.label} — ${firstStep.reason}`
@@ -37269,12 +36878,12 @@ function CounselingChatModal({
   }
 
   function skipToRoute() {
-    const route = detectAIHelpRouteFromText(session.originalIssue);
+    const route = detectGuidedSupportRouteFromText(session.originalIssue);
     const currentIssueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? null;
     const recurrenceCount = currentIssueLabel
       ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
       : 0;
-    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChart48Readings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
+    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
     const finalSession: CounselingSession = { ...session, stage: "done", journeySteps: steps };
     onJourneyReady(finalSession);
   }
@@ -37324,6 +36933,46 @@ function CounselingChatModal({
     const updatedThemes = detectThemes(session.originalIssue + " " + allUserText);
     const mergedThemes = Array.from(new Set([...session.detectedThemes, ...updatedThemes]));
     synthesizeAndPrepareJourney(session.turns, session.questionIndex, mergedThemes, allUserText);
+  };
+  const buildCounsellingSessionSummary = () => {
+    const issueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? "Selected focus";
+    const replyCount = session.turns.filter((turn) => turn.role === "user").length;
+    const nextStepsText = journeySteps.length
+      ? journeySteps.map((step, index) => `${index + 1}. ${step.label}: ${step.reason}`).join("\n")
+      : "Next step is not prepared yet.";
+    const latestSummary = synthText.trim() || session.turns.filter((turn) => turn.role === "friend").at(-1)?.message || "Session is still in progress.";
+    return [
+      "Aethon Beacon counselling summary",
+      `Focus: ${issueLabel}`,
+      `Replies completed: ${replyCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES}`,
+      "",
+      "Summary:",
+      latestSummary,
+      "",
+      "Recommended next step:",
+      nextStepsText,
+      "",
+      "Privacy note: share this only with someone you trust."
+    ].join("\n");
+  };
+
+  const saveCounsellingSummary = async () => {
+    void Haptics.selectionAsync();
+    const summary = buildCounsellingSessionSummary();
+    try {
+      await Share.share({ title: "Aethon Beacon counselling summary", message: summary });
+    } catch {
+      Alert.alert("Save summary", summary);
+    }
+  };
+
+  const continueCounsellingLater = () => {
+    void Haptics.selectionAsync();
+    Alert.alert(
+      "Continue later",
+      "Your counselling progress remains in this private room until you close or start a new session. You can return when you are ready."
+    );
+    onClose();
   };
 
   return (
@@ -37422,6 +37071,13 @@ function CounselingChatModal({
 
         {/* Chat messages */}
         <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
+          <View style={{ backgroundColor: "#FFFFFF", borderRadius: 18, borderCurve: "continuous", padding: 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
+            <Text style={{ color: "#0E9488", fontSize: 12, lineHeight: 16, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Guided support room</Text>
+            <Text style={{ color: "#0D1F22", fontSize: 20, lineHeight: 25, fontWeight: "900", marginTop: 4 }}>What brings you here?</Text>
+            <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginTop: 6 }}>
+              Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies.
+            </Text>
+          </View>
           {session.turns.map((turn, i) => {
             // Local clock time under each bubble -- makes the exchange read
             // like a real conversation with a timeline instead of a
@@ -37507,24 +37163,24 @@ function CounselingChatModal({
           {/* Journey options */}
           {showJourneyOptions && (
             <View style={{ marginTop: 8, gap: 8 }}>
-              {/* Optional cloud-AI enrichment -- purely additive on top of the
+              {/* Optional connected guidance enrichment -- purely additive on top of the
                   offline synthesis above, which is already fully complete by
-                  the time this ever appears. Nothing at all if Gemini isn't
+                  the time this ever appears. Nothing at all if the connected service is not
                   configured or the call fails -- only ever appears once
                   there's real text to show. While an actual fetch is in
                   flight, a brief pulsing line replaces total silence; it
                   unmounts the instant loading finishes either way. */}
-              {geminiEnrichmentLoading && (
+              {guidanceEnrichmentLoading && (
                 <Animated.View style={{ opacity: enrichmentPulseAnim, paddingVertical: 2, paddingHorizontal: 2 }}>
                   <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700" }}>
                     Beacon Guide is looking a little deeper…
                   </Text>
                 </Animated.View>
               )}
-              {geminiEnrichment && geminiEnrichment.trim().length > 0 && (
+              {guidanceEnrichment && guidanceEnrichment.trim().length > 0 && (
                 <View style={{ backgroundColor: "#F2F1E8", borderRadius: 12, padding: 14, borderLeftWidth: 3, borderLeftColor: "#B45309", marginBottom: 4 }}>
                   <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>A closer look</Text>
-                  <Text style={{ color: "#3A617D", fontSize: 13, lineHeight: 20 }}>{geminiEnrichment}</Text>
+                  <Text style={{ color: "#3A617D", fontSize: 13, lineHeight: 20 }}>{guidanceEnrichment}</Text>
                 </View>
               )}
               {/* Warm, forward-looking close before the path -- acknowledges
@@ -37565,6 +37221,24 @@ function CounselingChatModal({
                   <Text style={{ color: "#0E9488", fontSize: 13, fontWeight: "700" }}>Replay guide summary aloud</Text>
                 </Pressable>
               )}
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                <Pressable
+                  onPress={saveCounsellingSummary}
+                  accessibilityRole="button"
+                  accessibilityLabel="Save counselling summary"
+                  style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, borderWidth: 1, borderColor: "#0E9488", backgroundColor: pressed ? "#E1F3F0" : "#FFFFFF", paddingVertical: 12, paddingHorizontal: 12, alignItems: "center" })}
+                >
+                  <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Save summary</Text>
+                </Pressable>
+                <Pressable
+                  onPress={continueCounsellingLater}
+                  accessibilityRole="button"
+                  accessibilityLabel="Continue counselling later"
+                  style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, backgroundColor: pressed ? "#DDEAE7" : "#EEF6F4", paddingVertical: 12, paddingHorizontal: 12, alignItems: "center" })}
+                >
+                  <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Continue later</Text>
+                </Pressable>
+              </View>
               <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 12, marginBottom: 2 }}>
                 What would help most right now?
               </Text>
@@ -38746,9 +38420,9 @@ function getRespectfulAddressLabel(
   return prefix.length > 0 ? `${prefix} ${cleanedName}` : cleanedName;
 }
 
-// ── GeminiInsightsCard ── personal pattern summary on the Patterns tab ─────────
+// ── GuidanceInsightsCard ── personal pattern summary on the Patterns tab ─────────
 
-function GeminiInsightsCard({
+function GuidanceInsightsCard({
   apiBase,
   name,
   issueLabel,
@@ -39207,26 +38881,26 @@ function normalizePrivateSpaceMessage(value: unknown): PrivateSpaceMessage | nul
   };
 }
 
-function normalizeAIHelpMessages(value: unknown): AIHelpMessage[] {
+function normalizeGuidedSupportMessages(value: unknown): GuidedSupportMessage[] {
   if (!Array.isArray(value)) return aiHelpSeed.slice();
 
   const normalized = value
-    .map(normalizeAIHelpMessage)
-    .filter((message): message is AIHelpMessage => message !== null)
+    .map(normalizeGuidedSupportMessage)
+    .filter((message): message is GuidedSupportMessage => message !== null)
     .slice(0, 50);
 
   return normalized.length > 0 ? normalized : aiHelpSeed.slice();
 }
 
-function normalizeAIHelpMessage(value: unknown): AIHelpMessage | null {
+function normalizeGuidedSupportMessage(value: unknown): GuidedSupportMessage | null {
   if (!value || typeof value !== "object") return null;
-  const message = value as Partial<AIHelpMessage>;
+  const message = value as Partial<GuidedSupportMessage>;
   let text = typeof message.text === "string" ? message.text.trim() : "";
   if (
-    message.id === "ai-help-welcome" &&
+    message.id === "guide-help-welcome" &&
     /Tell me what happened in one or two lines/i.test(text)
   ) {
-    text = buildAIHelpSeedReply();
+    text = buildGuidedSupportSeedReply();
   }
   const seriousContext =
     /(abuse|assault|blackmail|complaint|harass|police|professor|ragging|redress|teacher|workplace)/i.test(
@@ -39246,8 +38920,8 @@ function normalizeAIHelpMessage(value: unknown): AIHelpMessage | null {
     typeof message.author === "string" && message.author.trim().length > 0
       ? message.author
           .trim()
-          .replace(/^Gemini Help$/i, "Beacon Guide")
-          .replace(/^Gemini Router$/i, "Beacon Guide")
+          .replace(/^Connected Help$/i, "Beacon Guide")
+          .replace(/^Connected Router$/i, "Beacon Guide")
           .replace(/^Aethon Help$/i, "Beacon Guide")
           .replace(/^Aethon Router$/i, "Beacon Guide")
       : role === "user"
@@ -39258,7 +38932,7 @@ function normalizeAIHelpMessage(value: unknown): AIHelpMessage | null {
     id:
       typeof message.id === "string" && message.id.trim().length > 0
         ? message.id
-        : `ai-help-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+        : `guide-help-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     createdAt:
       typeof message.createdAt === "string" && message.createdAt.trim().length > 0
         ? message.createdAt
@@ -47026,7 +46700,7 @@ const styles = StyleSheet.create({
   },
   // ── Tab banner cards (Journal / Wellness / Wisdom / Community) ───────────
   // Shared header banner used at the top of every single tab (Journal,
-  // Meditation, AI Help, Practice, Search, Community, Patterns, Settings,
+  // Meditation, Beacon Guide, Practice, Search, Community, Patterns, Settings,
   // Language, Admin, Vedic -- one style, ~10 call sites). Upgraded to match
   // the glassy elevated-card language introduced on the Home hero card:
   // softer rounded corners, a lighter tinted shadow instead of flat black,
@@ -47716,7 +47390,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: "800"
   },
-  birthChartGeminiCard: {
+  birthChartGuidanceCard: {
     borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,
@@ -47725,18 +47399,18 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 8
   },
-  birthChartGeminiHeader: {
+  birthChartGuidanceHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 10
   },
-  birthChartGeminiTitle: {
+  birthChartGuidanceTitle: {
     fontSize: 13,
     fontWeight: "900",
     color: "#B45309"
   },
-  birthChartGeminiBadge: {
+  birthChartGuidanceBadge: {
     fontSize: 12,
     fontWeight: "900",
     color: "#B45309",
@@ -47748,7 +47422,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     overflow: "hidden"
   },
-  birthChartGeminiText: {
+  birthChartGuidanceText: {
     color: "rgba(13,31,34,0.82)",
     fontSize: 12,
     lineHeight: 18,
