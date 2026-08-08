@@ -79,7 +79,7 @@ secondary "Pages" switcher. Main surfaces:
   chat that synthesises a personalised plan (see §4).
 - **Help & Redress** — SOS, helplines, directories, complaint templates,
   first-office routing, evidence checklist.
-- **Vedic** — `BirthChartSection`: birth chart, 48-dimension Moon-chart engine,
+- **Vedic** — `BirthChartSection`: birth chart, multi-dimensional Moon-chart insight system,
   Dasha timeline + 15-year forecast, Yogas, Ashtakavarga, Shadbala, and the
   bilingual "Ask the chart" flow.
 - **Patterns (Insights)** — weekly/monthly trend, pattern critique, report card.
@@ -109,16 +109,16 @@ secondary "Pages" switcher. Main surfaces:
   already-present steps — never which steps appear or which route is recommended.
 
 Design principle: personalisation is additive and honest. The offline synthesis
-is the safety-critical baseline; optional Gemini enrichment (`onFetchGuideEnrichment`)
+is the safety-critical baseline; optional connected guidance enrichment (`onFetchGuideEnrichment`)
 is layered on top and silently absent when unconfigured.
 
-### Vedic / Moon-chart engine
+### Vedic / Moon-chart insight system
 
 Real sidereal astronomy (Lahiri ayanamsa) via `astronomy-engine`:
 
 - `getMoonRashiFromDOB`, `getJanmaNakshatra`, `getVimshottariDashaState`,
   `getGocharChart` (transits / Sade Sati), `getLagnaFromBirthDetails`.
-- `buildMoonChartMultidimensionalEngine({ ..., lang })` — the 48-dimension
+- `buildMoonChartMultidimensionalEngine({ ..., lang })` — the multi-dimensional
   "explainable score" engine. Each of 48 life dimensions gets a score, verdict,
   interpretation, score trace, and a practical remedy, computed from
   Moon-house + Mahadasha + Antardasha + Nakshatra + Vara + Tithi (+ optional
@@ -136,7 +136,7 @@ secondary confirming layer. No Sun-chart prediction is shown.
 1. **App chrome** — the 22-language `languageId` / `getUiCopy` system governs UI
    labels and voice. It never touches prediction content.
 2. **Chart content** — a separate `chartBriefLang: "en" | "hi"` toggle (lifted to
-   `App()`) drives the Vedic Plain-Language card, the 48-dimension explorer, and
+   `App()`) drives the Vedic Plain-Language card, the multi-dimensional explorer, and
    the **Ask-the-chart** answer engine. Hindi packs mirror the English strings
    (`*_HI` / `MOON_CHART_48_BLUEPRINT_HI` / `RASHI_CATEGORY_LENSES_HI`, etc.).
 
@@ -159,7 +159,7 @@ Five regression suites (literal string/regex assertions against `App.tsx`):
 
 ```bash
 pnpm run test:tone            # tone engine: presets, safe limiter, reliable stop
-pnpm run test:vedic           # Vedic engine: dasha math, 48 dims, bilingual, no Sun-chart text
+pnpm run test:vedic           # Vedic insight system: dasha math, 48 dims, bilingual, no Sun-chart text
 pnpm run test:visibility      # contrast, min font sizes, design-system tokens
 pnpm run test:product-quality # navigation, safeguards, crisis lifelines, redress governance
 pnpm run test:upgrades        # section order, feature markers, personalization wiring

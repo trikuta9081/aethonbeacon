@@ -35,7 +35,7 @@ local backup and delete the app to remove this data.
 - **Entitlements/purchases:** if in-app purchases are ever enabled, purchase
   status is processed via the app store and our entitlement service. (Purchases
   are disabled in the current free-launch release.)
-- **Optional AI enrichment:** if configured, an optional cloud AI may generate
+- **Optional connected guidance enrichment:** if configured, an optional connected guidance service may generate
   additional guidance text from the words you share in counselling. The offline
   guidance always works without it.
 

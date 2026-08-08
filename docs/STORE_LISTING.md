@@ -47,7 +47,7 @@ wording, evidence checklists, and the right first office and escalation path for
 your situation.
 
 **A plain-language birth chart (Vedic Jyotish)**
-Real sidereal astronomy — not a generic daily horoscope. Get a 48-dimension
+Real sidereal astronomy — not a generic daily horoscope. Get a multi-dimensional
 Moon-chart reading with clear scores, explanations, and practical remedies; your
 Dasha timeline and a 15-year forecast; classical Yogas, Ashtakavarga, and
 Shadbala; and an **Ask the chart** feature for any question. Fully available in
@@ -70,7 +70,7 @@ substitute for professional or emergency care.
 
 - Counselling now reflects your real history: repeat-issue awareness, mood
   trend, journal themes, and current transits.
-- "Ask the chart" and the full 48-dimension Vedic reading are now available in
+- "Ask the chart" and the full multi-dimensional Vedic reading are now available in
   Hindi as well as English.
 - Reliable tone playback with a background mini-player; fixed a rare case where
   a tone could keep playing after Stop.
@@ -106,7 +106,7 @@ substitute for professional or emergency care.
 - App icon (already in `assets/icon.png`).
 - Feature graphic (Play, 1024×500).
 - Phone screenshots (min 2, both stores) — recommend: Today, Counselling chat,
-  Tones, Vedic 48-dimension reading, Help & Redress.
+  Tones, Vedic multi-dimensional reading, Help & Redress.
 - iPad screenshots only if you enable tablet support (currently
   `supportsTablet: false`).
 - Short promo video (optional).

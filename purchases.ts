@@ -8,7 +8,7 @@
  * and a guessed pin would be worse than an honest gap). Every function below
  * no-ops safely if the package isn't installed or the public API keys below
  * aren't set, using the same "configured" boolean pattern as
- * supabaseConfigured / geminiConfigured elsewhere in this codebase.
+ * supabaseConfigured / connected guidanceConfigured elsewhere in this codebase.
  *
  * Deliberately no purchase/paywall UI in this file or anywhere else yet --
  * Settings currently promises "no paywall" for the app's first year, and the

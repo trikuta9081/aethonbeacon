@@ -30,7 +30,7 @@ auto-publish) are the `*.md` files at the repository root.
 - Local-first journaling and check-ins via AsyncStorage (no account required).
 - **Counselling engine** — adaptive two-way chat that builds a personalised
   reflection + journey from your real history (never fabricated).
-- **Vedic engine** — real sidereal astronomy: 48-dimension Moon-chart reading,
+- **Vedic insight system** — real sidereal astronomy: multi-dimensional Moon-chart reading,
   Dasha timeline + 15-year forecast, Yogas/Ashtakavarga/Shadbala, and a bilingual
   "Ask the chart" flow (English + Hindi).
 - **Tones** — Pristine Tone Engine with a hearing-safety limiter, session
@@ -50,7 +50,7 @@ Run before every commit:
 ```bash
 pnpm run typecheck            # tsc --noEmit — must be clean
 pnpm run test:tone            # tone engine
-pnpm run test:vedic           # Vedic engine (incl. bilingual)
+pnpm run test:vedic           # Vedic insight system (incl. bilingual)
 pnpm run test:visibility      # contrast + design-system tokens
 pnpm run test:product-quality # navigation, safeguards, redress governance
 pnpm run test:upgrades        # feature markers + personalization wiring

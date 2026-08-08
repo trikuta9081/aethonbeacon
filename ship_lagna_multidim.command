@@ -6,7 +6,7 @@ git add -A -- App.tsx package.json pnpm-lock.yaml
 if git diff --cached --quiet; then
   echo "Nothing new to commit (already committed) -- skipping straight to push."
 else
-  git commit -m "feat(astro): astronomy-engine + geocoded Ascendant, and weave Lagna into the 48-dimension predictions
+  git commit -m "feat(astro): astronomy-engine + geocoded Ascendant, and weave Lagna into the multi-dimensional predictions
 
 Two changes landed together here:
 
@@ -22,7 +22,7 @@ Two changes landed together here:
    geocoding is automatic and debounced, no separate coordinate entry exists
    anywhere in the UI.
 
-2) The 48-Dimension engine was Moon-chart only (Rashi, Nakshatra, Dasha,
+2) The multi-dimensional engine was Moon-chart only (Rashi, Nakshatra, Dasha,
    Tithi, Vara) -- a legitimate traditional technique (Chandra Kundali is the
    primary predictive chart in most Vedic systems) -- but it left the new
    precise Lagna calculation as display-only, unused by the actual

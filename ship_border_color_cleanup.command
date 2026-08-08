@@ -13,7 +13,7 @@ blocks had a dark backgroundColor (#0D1F22 / #091A1D, the standard dark
 card fill) paired with a borderColor left over from an earlier light-theme
 pass (#D9CDBD, #CFC4B8, #D6E0F4, #E5ECF7, #DDD3C2, #C7D8F4, #D8E3DB) --
 producing a washed-out pastel outline around otherwise dark cards across
-the footer, issue/play steps, AI help input/bubble, hero artifacts, guided
+the footer, issue/play steps, guided help input/bubble, hero artifacts, guided
 steps, onboarding/profile sheets and their close buttons, launch need
 cards, admin quick actions, calm situation/voice bands, private-intake flow
 cards, access-flow pills, and the settings input.

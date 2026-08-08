@@ -24,7 +24,7 @@ jobs:
       # Expo inlines EXPO_PUBLIC_* vars into the JS bundle at build time (not
       # runtime), so it has to be present here, not just in deploy_aethon.command
       # (web) and eas.json (unused EAS profiles). Without it, the app silently
-      # falls back to a fake local OTP code and disables every Gemini-powered
+      # falls back to a fake local OTP code and disables every connected-guidance
       # card on every Android build this workflow produces -- which is exactly
       # what testers have been running.
       EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://aethon-beacon-verification.onrender.com"

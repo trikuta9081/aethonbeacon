@@ -33582,7 +33582,7 @@ function AccessOverlay({
           }}
         >
           <View style={styles.sectionHeader}>
-            <View>
+            <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Verification</Text>
               <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
                 Verification stays out of the way unless chat or private rooms need it. {verificationModeNote}

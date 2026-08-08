@@ -70,7 +70,7 @@ jobs:
       IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
       # Same reasoning as build-android.yml: Expo inlines EXPO_PUBLIC_* at JS
       # bundle time, so without this here the TestFlight build ships with fake
-      # local OTP and disabled Gemini cards too.
+      # local OTP and disabled connected guidance cards too.
       EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://aethon-beacon-verification.onrender.com"
       # Community feed/chat realtime sync -- see build-android.yml for why the
       # anon/publishable key is safe to hardcode here (RLS-protected, not a

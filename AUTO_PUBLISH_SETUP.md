@@ -59,5 +59,5 @@ The current push is building at `github.com/trikuta9081/aethonbeacon/actions`. I
 ## Security note
 
 - The three iOS secrets and one Android secret above are API keys, not passwords. They can be scoped and revoked from their respective consoles at any time.
-- Never paste any of these values into chat with anyone — including AI assistants. Paste them straight from your file/clipboard into the GitHub Secrets input.
+- Never paste any of these values into chat with anyone — including automation assistants. Paste them straight from your file/clipboard into the GitHub Secrets input.
 - If a `.p8` or service-account `.json` is ever exposed, revoke it at the console and generate a new one. GitHub Secrets are encrypted at rest and never displayed after entry.

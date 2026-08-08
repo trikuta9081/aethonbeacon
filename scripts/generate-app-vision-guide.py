@@ -53,7 +53,7 @@ CONTENT = {
             "bullets": [
                 "One clear intake question appears first: What is happening?",
                 "The app uses that first line to infer the likely profile, issue type, and urgency.",
-                "The app then opens one next destination only: Path, Calm, Help / Redress, Explore, or AI Guide.",
+                "The app then opens one next destination only: Path, Calm, Help / Redress, Explore, or Guided Support.",
                 "The user does not need to hunt across tabs to figure out where to go."
             ],
         },

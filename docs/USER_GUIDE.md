@@ -73,7 +73,7 @@ Your birth chart, read in plain language. Enter your exact date, time, and place
 of birth to unlock:
 
 - A **plain-language chart brief** (house-by-house).
-- The **48-dimension Moon-chart** reading — a score, verdict, explanation, and a
+- The **multi-dimensional Moon-chart** reading — a score, verdict, explanation, and a
   practical remedy for 48 areas of life, with a full calculation trace.
 - Your **Dasha timeline** and a **15-year forecast**.
 - Classical layers: Yogas, Ashtakavarga, and Shadbala strengths.
