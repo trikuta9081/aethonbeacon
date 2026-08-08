@@ -22459,6 +22459,105 @@ function TodaySection({
           </View>
         </View>
 
+        {/* ── Recommended next step — one calm decision before the page grid ──
+            Premium-app rule: reduce choice pressure. This uses the app's
+            existing routePreview signal and offers three clear actions. */}
+        <View
+          style={{
+            marginBottom: 14,
+            borderRadius: 22,
+            borderWidth: 1,
+            borderColor: "rgba(180,83,9,0.24)",
+            backgroundColor: "#FFFDF7",
+            padding: compact ? 14 : 16,
+            shadowColor: "#B45309",
+            shadowOpacity: 0.08,
+            shadowRadius: 18,
+            shadowOffset: { width: 0, height: 8 },
+            elevation: 4
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
+            <View style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: "rgba(180,83,9,0.14)", alignItems: "center", justifyContent: "center" }}>
+              <Ionicons name="navigate" size={20} color="#B45309" />
+            </View>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={{ color: "#B45309", fontSize: 12, lineHeight: 16, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
+                Recommended next step
+              </Text>
+              <Text style={{ color: "#0D1F22", fontSize: compact ? 18 : 20, lineHeight: compact ? 23 : 25, fontWeight: "900", marginBottom: 5 }} numberOfLines={2}>
+                {routePreview.title}
+              </Text>
+              <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700" }} numberOfLines={3}>
+                {routePreview.detail}
+              </Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: compact ? "column" : "row", gap: 9, marginTop: 14 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open recommended path"
+              onPress={() => onOpenTab("guide")}
+              style={({ pressed }) => [
+                {
+                  minHeight: 46,
+                  borderRadius: 14,
+                  backgroundColor: "#0E9488",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 14,
+                  flex: compact ? undefined : 1
+                },
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Open Path</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Start calm reset"
+              onPress={onOpenCalm}
+              style={({ pressed }) => [
+                {
+                  minHeight: 46,
+                  borderRadius: 14,
+                  backgroundColor: "#EEF4F3",
+                  borderWidth: 1,
+                  borderColor: "rgba(14,148,136,0.28)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 14,
+                  flex: compact ? undefined : 1
+                },
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Start Calm</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open journal note"
+              onPress={() => onOpenTab("journal")}
+              style={({ pressed }) => [
+                {
+                  minHeight: 46,
+                  borderRadius: 14,
+                  backgroundColor: "#F8FAFC",
+                  borderWidth: 1,
+                  borderColor: "rgba(15,61,94,0.16)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 14,
+                  flex: compact ? undefined : 1
+                },
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Save Note</Text>
+            </Pressable>
+          </View>
+        </View>
+
         {/* ── Premium command center — compact Home entry points ───────────
             Apple-style Home polish: one calm surface, five clear choices,
             short professional copy, and no duplicated full-page previews. */}
@@ -22566,6 +22665,23 @@ function TodaySection({
                 </Text>
               </Pressable>
             ))}
+          </View>
+          <View style={{
+            marginTop: 12,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: "rgba(14,148,136,0.16)",
+            backgroundColor: "#EEF8F6",
+            paddingHorizontal: 12,
+            paddingVertical: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 9
+          }}>
+            <Ionicons name="lock-closed" size={15} color="#0E6F69" />
+            <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 17, fontWeight: "800", flex: 1 }}>
+              Privacy first: notes stay local unless you choose verified sharing, export, or tester enrolment.
+            </Text>
           </View>
         </View>
 {/* Daily Loop section removed */}

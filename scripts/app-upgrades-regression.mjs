@@ -75,19 +75,25 @@ const mergedHelp = indexOf('In immediate danger, call 112.');
 // was redundant clutter, same reasoning as the Help & Redress trim above.
 // The Patterns/insights tab's own "Progress Report Card" is a richer version
 // of what the front-page report card used to show.
+const recommendedNextStep = indexOf('/* ── Recommended next step');
 const premiumCommandCenter = indexOf('Premium command center');
 const premiumCommandTitle = indexOf('Choose the right support in one tap.');
 const testerFront = indexOf('Become an Aethon Beacon tester');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
-assert(mergedHelp < premiumCommandCenter, 'Help and Redress must remain the first Home action surface');
+assert(mergedHelp < recommendedNextStep, 'Help and Redress must remain the first Home action surface');
+assert(recommendedNextStep < premiumCommandCenter, 'Recommended next step must guide the user before the broader command center');
 assert(premiumCommandCenter < testerFront, 'Premium command center must appear before the web-only tester page');
 assert(premiumCommandTitle < testerFront, 'Premium command copy must remain on the Home surface');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
 assert(!source.includes('Moderated community support and private conversations'), 'Community/Messages preview must not remain on the front UI');
 indexOf('Open Help and Redress');
+indexOf('Open Path');
+indexOf('Start Calm');
+indexOf('Save Note');
 indexOf('Private guided conversation with checkpoint next steps.');
 indexOf('Moon-chart based guidance with clear practical remedies.');
 indexOf('Verified support conversations when access is confirmed.');
+indexOf('Privacy first: notes stay local unless you choose verified sharing, export, or tester enrolment.');
 // homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
 // safety strip was trimmed down to SOS + "Open Help and Redress" (the 4-number
 // grid they styled no longer exists in JSX) -- see mergedHelp marker above.
