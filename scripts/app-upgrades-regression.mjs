@@ -75,12 +75,19 @@ const mergedHelp = indexOf('In immediate danger, call 112.');
 // was redundant clutter, same reasoning as the Help & Redress trim above.
 // The Patterns/insights tab's own "Progress Report Card" is a richer version
 // of what the front-page report card used to show.
+const premiumCommandCenter = indexOf('Premium command center');
+const premiumCommandTitle = indexOf('Choose the right support in one tap.');
 const testerFront = indexOf('Become an Aethon Beacon tester');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
-assert(mergedHelp < testerFront, 'Help and Redress must appear above the tester page');
+assert(mergedHelp < premiumCommandCenter, 'Help and Redress must remain the first Home action surface');
+assert(premiumCommandCenter < testerFront, 'Premium command center must appear before the web-only tester page');
+assert(premiumCommandTitle < testerFront, 'Premium command copy must remain on the Home surface');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
 assert(!source.includes('Moderated community support and private conversations'), 'Community/Messages preview must not remain on the front UI');
 indexOf('Open Help and Redress');
+indexOf('Private guided conversation with checkpoint next steps.');
+indexOf('Moon-chart based guidance with clear practical remedies.');
+indexOf('Verified support conversations when access is confirmed.');
 // homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
 // safety strip was trimmed down to SOS + "Open Help and Redress" (the 4-number
 // grid they styled no longer exists in JSX) -- see mergedHelp marker above.

@@ -22458,6 +22458,116 @@ function TodaySection({
             </Pressable>
           </View>
         </View>
+
+        {/* ── Premium command center — compact Home entry points ───────────
+            Apple-style Home polish: one calm surface, five clear choices,
+            short professional copy, and no duplicated full-page previews. */}
+        <View
+          style={{
+            marginBottom: 14,
+            borderRadius: 24,
+            borderWidth: 1,
+            borderColor: "rgba(14,148,136,0.22)",
+            backgroundColor: "#F8FBFA",
+            padding: compact ? 14 : 18,
+            shadowColor: "#0F3D5E",
+            shadowOpacity: 0.1,
+            shadowRadius: 20,
+            shadowOffset: { width: 0, height: 10 },
+            elevation: 6
+          }}
+        >
+          <View style={[styles.sectionHeader, { marginBottom: 12 }]}>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={[styles.eyebrow, { color: "#0E9488" }]}>Start here</Text>
+              <Text style={[styles.sectionTitleSmall, { color: "#0D1F22" }]}>Choose the right support in one tap.</Text>
+            </View>
+            <Text style={styles.smallMeta}>Premium flow</Text>
+          </View>
+          <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginBottom: 14 }}>
+            Aethon keeps the surface simple: counselling, calm, Vedic insight, redress, and verified community each open on their own page.
+          </Text>
+          <View style={{ flexDirection: compact ? "column" : "row", flexWrap: "wrap", gap: 10 }}>
+            {[
+              {
+                id: "ask",
+                icon: "sparkles" as keyof typeof Ionicons.glyphMap,
+                title: "Counselling",
+                body: "Private guided conversation with checkpoint next steps.",
+                tab: "aihelp" as TabId,
+                accent: "#0E9488"
+              },
+              {
+                id: "calm",
+                icon: "flower" as keyof typeof Ionicons.glyphMap,
+                title: "Calm",
+                body: "Breath, meditation, body reset, and selected tones.",
+                tab: "meditation" as TabId,
+                accent: "#7C3AED"
+              },
+              {
+                id: "chart",
+                icon: "planet" as keyof typeof Ionicons.glyphMap,
+                title: "Vedic Insight",
+                body: "Moon-chart based guidance with clear practical remedies.",
+                tab: "vedic" as TabId,
+                accent: "#B45309"
+              },
+              {
+                id: "redress",
+                icon: "shield-checkmark" as keyof typeof Ionicons.glyphMap,
+                title: "Help & Redress",
+                body: "Emergency help, official routes, evidence, and templates.",
+                tab: "redress" as TabId,
+                accent: "#DC2626"
+              },
+              {
+                id: "community",
+                icon: "chatbubbles" as keyof typeof Ionicons.glyphMap,
+                title: "Community",
+                body: "Verified support conversations when access is confirmed.",
+                tab: "community" as TabId,
+                accent: "#2563EB"
+              }
+            ].map((item) => (
+              <Pressable
+                key={item.id}
+                accessibilityRole="button"
+                accessibilityLabel={`Open ${item.title}`}
+                onPress={() => onOpenTab(item.tab)}
+                style={({ pressed }) => [
+                  {
+                    flexBasis: compact ? undefined : "48%",
+                    flexGrow: 1,
+                    minHeight: 116,
+                    borderRadius: 20,
+                    borderWidth: 1,
+                    borderColor: "rgba(15,61,94,0.12)",
+                    backgroundColor: "#FFFFFF",
+                    padding: 14,
+                    overflow: "hidden"
+                  },
+                  pressed && styles.pressed
+                ]}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <View style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: item.accent + "18", alignItems: "center", justifyContent: "center" }}>
+                    <Ionicons name={item.icon} size={19} color={item.accent} />
+                  </View>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={{ color: "#0D1F22", fontSize: 16, lineHeight: 20, fontWeight: "900" }} numberOfLines={1}>
+                      {item.title}
+                    </Text>
+                    <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900", marginTop: 2 }}>Open page →</Text>
+                  </View>
+                </View>
+                <Text style={{ color: "#334155", fontSize: 13, lineHeight: 19, fontWeight: "700" }} numberOfLines={3}>
+                  {item.body}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
 {/* Daily Loop section removed */}
         {/* Beacon Guide / Vision card removed */}
         {/* Calm Sound, Community/Messages, and Visit Report preview cards removed
