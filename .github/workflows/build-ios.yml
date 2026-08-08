@@ -36,10 +36,10 @@ name: Build iOS → TestFlight (App Store Connect API)
 #                                is fine even while the certificate quota is
 #                                maxed out.
 #
-# If the three IOS_* secrets above aren't set yet, this workflow falls back
-# to the old automatic/ASC-managed signing path so it doesn't hard-fail --
-# but that path is exactly what caused the certificate exhaustion, so it
-# will eventually fail again the same way.
+# If the three IOS_* secrets above are missing or point to the wrong app, this
+# workflow fails early. Do not fall back to Xcode automatic signing here: that
+# path can create new certificates and has already exhausted the Apple account
+# certificate quota.
 
 on:
   push:
@@ -93,7 +93,7 @@ jobs:
           version: 9
 
       - name: Install JS dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       # Gate the build on the app's own checks so a broken commit can never reach
       # TestFlight. Fast, and catches engine regressions before the long native
@@ -256,19 +256,8 @@ jobs:
               echo "PROVISIONING_PROFILE_SPECIFIER=$PROFILE_NAME" >> "$GITHUB_ENV"
               ;;
             *)
-              # WILDCARD (or wrong) PROFILE. A wildcard App Store profile
-              # (TEAMID.*) builds an .ipa fine but App Store Connect rejects it
-              # at the TestFlight upload step -- exactly the 27-minute-then-fail
-              # we hit on run #220. Instead of signing with it, drop the
-              # manual-profile path entirely and let the Archive step fall
-              # through to App-Store-Connect-API automatic signing
-              # (-allowProvisioningUpdates + the ASC key). That reuses the
-              # distribution certificate we already imported above (so it can't
-              # hit the cert-minting quota) and resolves the correct explicit
-              # com.aethonbeacon.app App Store profile itself -- removing the
-              # wildcard from the equation without needing any secret changed.
-              echo "::warning::Provisioning profile application-identifier ('$PROFILE_APP_ID') is not com.aethonbeacon.app (looks like a wildcard). Ignoring it and switching to ASC-API automatic signing so the correct explicit profile is used."
-              echo "HAS_MANUAL_CERT=false" >> "$GITHUB_ENV"
+              echo "::error::Provisioning profile application-identifier ('$PROFILE_APP_ID') is not com.aethonbeacon.app. Replace IOS_PROVISIONING_PROFILE_BASE64 with an explicit App Store profile for 846YFF8Z98.com.aethonbeacon.app that uses the imported distribution certificate."
+              exit 1
               ;;
           esac
 
@@ -299,8 +288,8 @@ jobs:
       - name: Archive iOS
         working-directory: ios
         run: |
-          if [ "${HAS_MANUAL_CERT:-false}" = "true" ]; then
-            # Preferred path: sign with the one imported, reused certificate --
+          if [ "${HAS_MANUAL_CERT:-false}" = "true" ] && [ -n "${PROVISIONING_PROFILE_SPECIFIER:-}" ]; then
+            # Sign with the one imported, reused certificate --
             # never asks Apple for a new one, so it can't hit the certificate
             # quota that broke every build from run #97 onward.
             xcodebuild \
@@ -315,36 +304,9 @@ jobs:
               DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
               archive 2>&1 | tee archive.log | tail -300
             ARCHIVE_STATUS=${PIPESTATUS[0]}
-          elif [ "${HAS_ASC_KEY:-false}" = "true" ]; then
-            # Fallback: old auto-provisioning path. Works, but each run may
-            # ask Apple to mint a certificate -- this is what exhausted the
-            # account's quota before. Only used when the IOS_DIST_CERT_*
-            # secrets above aren't set yet.
-            xcodebuild \
-              -workspace AethonBeacon.xcworkspace \
-              -scheme AethonBeacon \
-              -configuration Release \
-              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
-              -destination "generic/platform=iOS" \
-              -allowProvisioningUpdates \
-              -authenticationKeyID "$APPSTORE_API_KEY_ID" \
-              -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID" \
-              -authenticationKeyPath "$APPSTORE_KEY_PATH" \
-              CODE_SIGN_STYLE=Automatic \
-              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-              archive 2>&1 | tee archive.log | tail -300
-            ARCHIVE_STATUS=${PIPESTATUS[0]}
           else
-            xcodebuild \
-              -workspace AethonBeacon.xcworkspace \
-              -scheme AethonBeacon \
-              -configuration Release \
-              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
-              -destination "generic/platform=iOS" \
-              CODE_SIGN_STYLE=Automatic \
-              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-              archive 2>&1 | tee archive.log | tail -300
-            ARCHIVE_STATUS=${PIPESTATUS[0]}
+            echo "::error::Manual iOS signing is not fully configured. IOS_DIST_CERT_P12_BASE64, IOS_DIST_CERT_PASSWORD, and IOS_PROVISIONING_PROFILE_BASE64 must all be valid before archiving."
+            exit 1
           fi
           if [ "$ARCHIVE_STATUS" != "0" ]; then
             echo "::error::Archive failed (exit $ARCHIVE_STATUS). Last 300 lines shown above; full log in archive.log artifact."
@@ -365,7 +327,7 @@ jobs:
       - name: Export .ipa
         working-directory: ios
         run: |
-          if [ "${HAS_MANUAL_CERT:-false}" = "true" ]; then
+          if [ "${HAS_MANUAL_CERT:-false}" = "true" ] && [ -n "${PROVISIONING_PROFILE_SPECIFIER:-}" ]; then
             cat > ExportOptions.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -392,48 +354,14 @@ jobs:
           </plist>
           EOF
           else
-            cat > ExportOptions.plist <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store</string>
-            <key>teamID</key>
-            <string>${APPLE_TEAM_ID}</string>
-            <key>uploadBitcode</key>
-            <false/>
-            <key>uploadSymbols</key>
-            <true/>
-            <key>signingStyle</key>
-            <string>automatic</string>
-          </dict>
-          </plist>
-          EOF
+            echo "::error::Cannot export IPA because manual signing profile was not installed."
+            exit 1
           fi
-          if [ "${HAS_MANUAL_CERT:-false}" = "true" ]; then
-            xcodebuild \
-              -exportArchive \
-              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
-              -exportOptionsPlist ExportOptions.plist \
-              -exportPath "$PWD/build"
-          elif [ "${HAS_ASC_KEY:-false}" = "true" ]; then
-            xcodebuild \
-              -exportArchive \
-              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
-              -exportOptionsPlist ExportOptions.plist \
-              -exportPath "$PWD/build" \
-              -allowProvisioningUpdates \
-              -authenticationKeyID "$APPSTORE_API_KEY_ID" \
-              -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID" \
-              -authenticationKeyPath "$APPSTORE_KEY_PATH"
-          else
-            xcodebuild \
-              -exportArchive \
-              -archivePath "$PWD/build/AethonBeacon.xcarchive" \
-              -exportOptionsPlist ExportOptions.plist \
-              -exportPath "$PWD/build"
-          fi
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$PWD/build/AethonBeacon.xcarchive" \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath "$PWD/build"
 
       - name: Upload .ipa artifact
         uses: actions/upload-artifact@v4
@@ -451,18 +379,17 @@ jobs:
 
       - name: Upload to TestFlight
         run: |
-          if [ "${HAS_ASC_KEY:-false}" = "true" ]; then
-            IPA=$(ls ios/build/*.ipa 2>/dev/null | head -1)
-            if [ -z "$IPA" ]; then
-              echo "No .ipa found in ios/build/ — skipping upload"
-              exit 0
-            fi
-            echo "Uploading $IPA to TestFlight via App Store Connect API..."
-            xcrun altool --upload-app -f "$IPA" -t ios \
-              --apiKey "$APPSTORE_API_KEY_ID" \
-              --apiIssuer "$APPSTORE_API_ISSUER_ID" \
-              --verbose
-          else
-            echo "ASC API key not configured — skipping TestFlight upload."
-            echo "Download the .ipa artifact and use Transporter for manual upload."
+          if [ "${HAS_ASC_KEY:-false}" != "true" ]; then
+            echo "::error::ASC API key is required for automatic TestFlight upload."
+            exit 1
           fi
+          IPA=$(ls ios/build/*.ipa 2>/dev/null | head -1)
+          if [ -z "$IPA" ]; then
+            echo "::error::No .ipa found in ios/build; TestFlight upload cannot proceed."
+            exit 1
+          fi
+          echo "Uploading $IPA to TestFlight via App Store Connect API..."
+          xcrun altool --upload-app -f "$IPA" -t ios \
+            --apiKey "$APPSTORE_API_KEY_ID" \
+            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
+            --verbose
