@@ -37388,7 +37388,7 @@ function CounselingChatModal({
         {session.stage !== "synthesizing" && (
           <View style={{ backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#DCE9E6", paddingHorizontal: 16, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 12), flexDirection: "row", alignItems: "flex-end", gap: 10, shadowColor: "#0E9488", shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#34515B", fontSize: 11, lineHeight: 15, fontWeight: "700", marginBottom: 6 }}>
+              <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "800", marginBottom: 6 }}>
                 Counselling depth: {counselingUserResponseCount}/{COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step available after context is ready.
               </Text>
               <TextInput
