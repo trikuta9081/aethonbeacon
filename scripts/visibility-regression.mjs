@@ -70,6 +70,8 @@ function mustNotMatch(pattern, message) {
 [
   'const APP_TEXT_WRAP_GUARD = {',
   'function Text({ style, ...props }: TextProps)',
+  'allowFontScaling: true',
+  'maxFontSizeMultiplier: 1.35',
   `topTabLabel: {
     minWidth: 0,
     flexShrink: 1,`,
@@ -95,6 +97,11 @@ function mustNotMatch(pattern, message) {
     maxWidth: "100%",`,
   'flexDirection: "row", flexWrap: "wrap", alignItems: "flex-start", paddingHorizontal: 14'
 ].forEach((marker) => mustInclude(marker, `Expected mobile overflow guard missing: ${marker}`));
+
+mustNotInclude(
+  'allowFontScaling: false',
+  'Dynamic Type must remain enabled for text and input controls'
+);
 
 // ── Tones player header visibility fix ───────────────────────────────────────
 // The now-playing/idle player header used to be near-black

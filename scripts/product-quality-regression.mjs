@@ -121,7 +121,9 @@ assert(source.includes('local fallback only for this build'), 'Release readiness
 // route selection, evidence, template, escalation, tracking and sharing.
 [
   '🚨 SOS — 112',
-  'Choose your complaint route',
+  'Emergency first',
+  'Choose your situation',
+  'Your route',
   'Recommended path now',
   'Evidence checklist',
   'Complaint letter',

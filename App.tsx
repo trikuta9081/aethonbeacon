@@ -118,14 +118,14 @@ const TextInputWithDefaults = TextInput as unknown as { defaultProps?: Record<st
 
 TextWithDefaults.defaultProps = {
   ...(TextWithDefaults.defaultProps ?? {}),
-  allowFontScaling: false,
-  maxFontSizeMultiplier: 1.12
+  allowFontScaling: true,
+  maxFontSizeMultiplier: 1.35
 };
 
 TextInputWithDefaults.defaultProps = {
   ...(TextInputWithDefaults.defaultProps ?? {}),
-  allowFontScaling: false,
-  maxFontSizeMultiplier: 1.12
+  allowFontScaling: true,
+  maxFontSizeMultiplier: 1.35
 };
 
 type Tone = {
@@ -28364,13 +28364,13 @@ function RedressSection({
       <View style={[styles.panel, !isWide && { flexGrow: 0, flexBasis: "auto" }]}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Help and Redress</Text>
-            <Text style={styles.sectionTitle}>Choose your complaint route</Text>
+            <Text style={styles.eyebrow}>Emergency first</Text>
+            <Text style={styles.sectionTitle}>Help and Redress</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
-          Select the route that best matches your situation. Each route identifies the appropriate first office, recommended initial action, and formal escalation path.
+          Choose your situation first. The app then shows your route with the appropriate first office, recommended initial action, and formal escalation path.
         </Text>
         <View style={{ marginBottom: 14, borderRadius: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
           <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>
@@ -28490,7 +28490,7 @@ function RedressSection({
 
         {/* ── ROUTE CHIPS ── */}
         <View style={{ marginBottom: 8 }}>
-          <Text style={styles.eyebrow}>Select route type</Text>
+          <Text style={styles.eyebrow}>Choose your situation</Text>
         </View>
         <View style={styles.issueChipGrid}>
           {redressRoutes.map((route) => {
@@ -28653,7 +28653,7 @@ function RedressSection({
 
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Active route</Text>
+            <Text style={styles.eyebrow}>Your route</Text>
             <Text style={styles.sectionTitle}>{selectedRedressRoute.label}</Text>
           </View>
           <Text style={styles.smallMeta}>One paper trail</Text>
