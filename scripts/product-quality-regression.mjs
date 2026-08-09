@@ -87,22 +87,22 @@ assert(source.includes('connected for SMS and email OTP'), 'Release readiness mu
 assert(source.includes('local fallback only for this build'), 'Release readiness must clearly distinguish local fallback verification builds');
 
 // ── Apple-premium polish contract from the August 9 product pass ────────────
-// Home stays simple, with five primary destinations and no dense paragraph
-// previews. Each card carries a short benefit and a clear action.
+// Home stays simple: emergency access remains a separate priority strip and
+// Start Here contains four non-duplicated destinations. Counselling is the
+// primary card; each entry carries a short benefit and clear action.
 [
   'Premium command center',
   'Choose the right support in one tap.',
-  'Private guided conversation with optional checkpoint next steps.',
+  'A private guided room with a 30-message arc and optional next-step checkpoints.',
   'Curated sound, breath timing, meditation, and body reset.',
   'Moon-chart based guidance with practical remedies.',
-  'Emergency support, official routes, evidence, and templates.',
   'Verified support conversations when access is confirmed.',
-  'Enter room',
+  'Start counselling',
   'Open calm',
   'View insight',
-  'Get help',
   'Open messages'
 ].forEach((marker) => assert(source.includes(marker), `Missing simplified Home marker: ${marker}`));
+assert(!source.includes('title: "Help and Redress",\n                body:'), 'Help and Redress must not be duplicated inside Start Here.');
 
 // Counselling is the core guided room: 30-message depth, optional six-reply
 // checkpoints, and user-owned next-step actions.

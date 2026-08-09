@@ -19714,17 +19714,21 @@ function isTrustedExternalUrl(url: string) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.bgDeepest, alignItems: "center", justifyContent: "center" }}>
         <View style={{ alignItems: "center" }}>
-          {/* Vibrant animated logo mark */}
-          <View style={{
-            width: 88, height: 88, borderRadius: 24,
-            backgroundColor: activeColorScheme === "light" ? "#DCEEFB" : "#0F2A3A",
-            alignItems: "center", justifyContent: "center",
-            shadowColor: "#007FB8", shadowOpacity: 0.5, shadowRadius: 24, shadowOffset: { width: 0, height: 0 },
-            borderWidth: 1.5, borderColor: activeColorScheme === "light" ? "#0057B8" : "#1E4D6B",
-            marginBottom: 20
-          }}>
-            <Text style={{ fontSize: 44, lineHeight: 52 }}>🔱</Text>
-          </View>
+          <Image
+            source={require("./assets/aethon-beacon-icon-vibrant.png")}
+            style={{
+              width: 96,
+              height: 96,
+              borderRadius: 24,
+              marginBottom: 20,
+              shadowColor: "#27D6C5",
+              shadowOpacity: 0.42,
+              shadowRadius: 26,
+              shadowOffset: { width: 0, height: 8 }
+            }}
+            resizeMode="cover"
+            accessibilityLabel="Aethon Beacon logo"
+          />
           <Text
             style={{
               color: "#007FB8",
@@ -19815,7 +19819,7 @@ function isTrustedExternalUrl(url: string) {
             >
               <View style={[styles.brandBadge, isCompact && styles.brandBadgeCompact]}>
                 <Image
-                  source={require("./assets/icon.png")}
+                  source={require("./assets/aethon-beacon-icon-vibrant.png")}
                   style={[styles.brandMark, isCompact && styles.brandMarkCompact]}
                   resizeMode="cover"
                   accessibilityLabel="Aethon Beacon logo"
@@ -19894,7 +19898,7 @@ function isTrustedExternalUrl(url: string) {
             </>
           )}
           {/* End home-only chrome. Tab rail below stays visible on every page. */}
-            <View style={[styles.topTabRail, { backgroundColor: theme.bgDarker }]}>
+            <View style={[styles.topTabRail, isCompact && { display: "none" }, { backgroundColor: theme.bgDarker }]}>
               {isCompact ? (
                 <ScrollView
                   horizontal
@@ -21229,21 +21233,6 @@ function isTrustedExternalUrl(url: string) {
                 />
               )}
 
-              {/* Real multidimensional support library, the same one Automatic
-                  Counselling and the Tones/Meditation tabs draw on — Path is
-                  the natural home for it, so it now complements this tab too
-                  instead of only living behind the chat. */}
-              <SupportDimensionLibraryPanel
-                eyebrow="🧭 Path frame"
-                actionLabel="Try"
-                accentColor="#2563EB"
-                moonChartInsightReadings={vedicMoonChartInsightReadings}
-                onOpenTab={handleTabPress}
-                onEmergencyCall={handleEmergencyCall}
-                openWebsite={openWebsite}
-                buildNearbySearchUrl={buildNearbySearchUrl}
-              />
-
               <IssueGuideSection
                 issueGuides={issueGuides}
                 selectedIssueGuide={selectedIssueGuide}
@@ -22041,107 +22030,8 @@ function TodaySection({
           </View>
         </View>
 
-        {/* ── Recommended next step — one calm decision before the page grid ──
-            Premium-app rule: reduce choice pressure. This uses the app's
-            existing routePreview signal and offers three clear actions. */}
-        <View
-          style={{
-            marginBottom: 14,
-            borderRadius: 22,
-            borderWidth: 1,
-            borderColor: "rgba(180,83,9,0.24)",
-            backgroundColor: "#FFFDF7",
-            padding: compact ? 14 : 16,
-            shadowColor: "#B45309",
-            shadowOpacity: 0.08,
-            shadowRadius: 18,
-            shadowOffset: { width: 0, height: 8 },
-            elevation: 4
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
-            <View style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: "rgba(180,83,9,0.14)", alignItems: "center", justifyContent: "center" }}>
-              <Ionicons name="navigate" size={20} color="#B45309" />
-            </View>
-            <View style={{ flex: 1, minWidth: 0 }}>
-              <Text style={{ color: "#B45309", fontSize: 12, lineHeight: 16, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
-                Recommended next step
-              </Text>
-              <Text style={{ color: "#0D1F22", fontSize: compact ? 18 : 20, lineHeight: compact ? 23 : 25, fontWeight: "900", marginBottom: 5 }} numberOfLines={2}>
-                {routePreview.title}
-              </Text>
-              <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700" }} numberOfLines={3}>
-                {routePreview.detail}
-              </Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: compact ? "column" : "row", gap: 9, marginTop: 14 }}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Open recommended path"
-              onPress={() => onOpenTab("guide")}
-              style={({ pressed }) => [
-                {
-                  minHeight: 46,
-                  borderRadius: 14,
-                  backgroundColor: "#0E9488",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingHorizontal: 14,
-                  flex: compact ? undefined : 1
-                },
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={{ color: "#FFFFFF", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Open Path</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Start calm reset"
-              onPress={onOpenCalm}
-              style={({ pressed }) => [
-                {
-                  minHeight: 46,
-                  borderRadius: 14,
-                  backgroundColor: "#EEF4F3",
-                  borderWidth: 1,
-                  borderColor: "rgba(14,148,136,0.28)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingHorizontal: 14,
-                  flex: compact ? undefined : 1
-                },
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Start Calm</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Open journal note"
-              onPress={() => onOpenTab("journal")}
-              style={({ pressed }) => [
-                {
-                  minHeight: 46,
-                  borderRadius: 14,
-                  backgroundColor: "#F8FAFC",
-                  borderWidth: 1,
-                  borderColor: "rgba(15,61,94,0.16)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingHorizontal: 14,
-                  flex: compact ? undefined : 1
-                },
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Save Note</Text>
-            </Pressable>
-          </View>
-        </View>
-
         {/* ── Premium command center — compact Home entry points ───────────
-            Apple-style Home polish: one calm surface, five clear choices,
+            Apple-style Home polish: one calm surface, four clear choices,
             short professional copy, and no duplicated full-page previews. */}
         <View
           style={{
@@ -22166,7 +22056,7 @@ function TodaySection({
             <Text style={styles.smallMeta}>Premium flow</Text>
           </View>
           <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginBottom: 14 }}>
-            Aethon keeps the surface simple: counselling, calm, Vedic insight, redress, and verified community each open on their own page.
+            Begin with private counselling, or open calm support, Vedic insight, or verified community on its own focused page.
           </Text>
           <View style={{ flexDirection: compact ? "column" : "row", flexWrap: "wrap", gap: 10 }}>
             {[
@@ -22174,8 +22064,8 @@ function TodaySection({
                 id: "ask",
                 icon: "sparkles" as keyof typeof Ionicons.glyphMap,
                 title: "Counselling",
-                body: "Private guided conversation with optional checkpoint next steps.",
-                cta: "Enter room",
+                body: "A private guided room with a 30-message arc and optional next-step checkpoints.",
+                cta: "Primary support",
                 tab: "aihelp" as TabId,
                 accent: "#0E9488"
               },
@@ -22198,15 +22088,6 @@ function TodaySection({
                 accent: "#B45309"
               },
               {
-                id: "redress",
-                icon: "shield-checkmark" as keyof typeof Ionicons.glyphMap,
-                title: "Help and Redress",
-                body: "Emergency support, official routes, evidence, and templates.",
-                cta: "Get help",
-                tab: "redress" as TabId,
-                accent: "#DC2626"
-              },
-              {
                 id: "community",
                 icon: "chatbubbles" as keyof typeof Ionicons.glyphMap,
                 title: "Community",
@@ -22225,13 +22106,18 @@ function TodaySection({
                   {
                     flexBasis: compact ? undefined : "48%",
                     flexGrow: 1,
-                    minHeight: 116,
+                    minHeight: item.id === "ask" ? 132 : 116,
                     borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: "rgba(15,61,94,0.12)",
-                    backgroundColor: "#FFFFFF",
-                    padding: 14,
-                    overflow: "hidden"
+                    borderWidth: item.id === "ask" ? 2 : 1,
+                    borderColor: item.id === "ask" ? "#0E9488" : "rgba(15,61,94,0.12)",
+                    backgroundColor: item.id === "ask" ? "#EAF8F5" : "#FFFFFF",
+                    padding: item.id === "ask" ? 16 : 14,
+                    overflow: "hidden",
+                    shadowColor: item.id === "ask" ? "#0E9488" : "transparent",
+                    shadowOpacity: item.id === "ask" ? 0.12 : 0,
+                    shadowRadius: item.id === "ask" ? 16 : 0,
+                    shadowOffset: { width: 0, height: 8 },
+                    elevation: item.id === "ask" ? 4 : 0
                   },
                   pressed && styles.pressed
                 ]}
@@ -22241,17 +22127,19 @@ function TodaySection({
                     <Ionicons name={item.icon} size={19} color={item.accent} />
                   </View>
                   <View style={{ flex: 1, minWidth: 0 }}>
-                    <Text style={{ color: "#0D1F22", fontSize: 16, lineHeight: 20, fontWeight: "900" }} numberOfLines={1}>
+                    <Text style={{ color: "#0D1F22", fontSize: item.id === "ask" ? 18 : 16, lineHeight: item.id === "ask" ? 23 : 20, fontWeight: "900" }} numberOfLines={1}>
                       {item.title}
                     </Text>
                     <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900", marginTop: 2 }}>{item.cta}</Text>
                   </View>
                 </View>
-                <Text style={{ color: "#334155", fontSize: 13, lineHeight: 19, fontWeight: "700" }} numberOfLines={2}>
+                <Text style={{ color: "#334155", fontSize: item.id === "ask" ? 14 : 13, lineHeight: item.id === "ask" ? 21 : 19, fontWeight: "700" }} numberOfLines={item.id === "ask" ? 3 : 2}>
                   {item.body}
                 </Text>
                 <View style={{ marginTop: 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: 11, paddingVertical: 7 }}>
-                  <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900" }}>Continue</Text>
+                  <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900" }}>
+                    {item.id === "ask" ? "Start counselling" : "Continue"}
+                  </Text>
                 </View>
               </Pressable>
             ))}
@@ -22372,7 +22260,7 @@ function TodaySection({
           consumer app closes its home screen. ── */}
       <View style={{ alignItems: "center", paddingTop: 26, paddingBottom: 34, gap: 6 }}>
         <View style={{ width: 42, height: 3, borderRadius: 2, backgroundColor: "rgba(15,61,94,0.12)", marginBottom: 10 }} />
-        <Image source={require("./assets/icon.png")} style={{ width: 36, height: 36, borderRadius: 10, opacity: 0.92 }} accessibilityLabel="Aethon Beacon" />
+        <Image source={require("./assets/aethon-beacon-icon-vibrant.png")} style={{ width: 36, height: 36, borderRadius: 10 }} accessibilityLabel="Aethon Beacon" />
         <Text style={{ color: "#0E7C74", fontSize: 14, fontWeight: "800", letterSpacing: 0.2 }}>Aethon Beacon</Text>
         <Text style={{ color: "#6B7B88", fontSize: 12, textAlign: "center" }}>You don't have to carry it alone.</Text>
         <Text style={{ color: "#9AA7B2", fontSize: 12, marginTop: 4 }}>Made with care · v1.0.4</Text>
@@ -23664,6 +23552,17 @@ function ToneLibrarySection({
 
   return (
     <View style={{ paddingBottom: 20 }}>
+      <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 20, borderWidth: 1, borderColor: "rgba(14,148,136,0.24)", backgroundColor: "#F4FAF8", padding: 16, gap: 6 }}>
+        <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
+          Calm for {selectedIssueGuide.label}
+        </Text>
+        <Text style={{ color: "#0D1F22", fontSize: 19, lineHeight: 24, fontWeight: "900" }}>
+          Begin with one recommended session.
+        </Text>
+        <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700" }}>
+          Choose a guided sound or breathing rhythm for the way you feel now. Nothing starts until you press Play.
+        </Text>
+      </View>
       {/* ── NOW PLAYING / IDLE PLAYER ── */}
       {/* Visibility fix: this card previously opened with a near-black header
           (#071C2E/#040C18) while its own text underneath (tone name,
@@ -23774,9 +23673,9 @@ function ToneLibrarySection({
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
-                Pristine Tone Engine
+                Playback quality &amp; safety
               </Text>
-              <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>Limiter + warm filter + smooth ramp + safe gain cap</Text>
+              <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>Comfort limiter · smooth start and stop · safe listening level</Text>
             </View>
             <View style={{ backgroundColor: selectedToneHeadphones ? "rgba(251,191,36,0.13)" : "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: selectedToneHeadphones ? "rgba(251,191,36,0.4)" : "rgba(52,211,153,0.35)" }}>
               <Text style={{ color: selectedToneHeadphones ? "#B45309" : "#059669", fontSize: 12, fontWeight: "900" }}>
@@ -23873,18 +23772,6 @@ function ToneLibrarySection({
           ))}
         </View>
       </View>
-
-      {/* Real multidimensional library, not a 5-field table pretending to be one. */}
-      <SupportDimensionLibraryPanel
-        eyebrow="🎵 Tone map"
-        actionLabel="Try"
-        accentColor="#0891B2"
-        moonChartInsightReadings={moonChartInsightReadings}
-        onOpenTab={onOpenTab}
-        onEmergencyCall={onEmergencyCall}
-        openWebsite={openWebsite}
-        buildNearbySearchUrl={buildNearbySearchUrl}
-      />
 
       {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
       <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
@@ -24587,7 +24474,6 @@ function GuidedSupportSection({
           <Text style={styles.aiHelpSummaryLabel}>Meaning</Text>
           <Text
             style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}
-            numberOfLines={2}
           >
             {latestReplySummary}
           </Text>
@@ -24596,7 +24482,6 @@ function GuidedSupportSection({
           <Text style={styles.aiHelpSummaryLabel}>Next step</Text>
           <Text
             style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}
-            numberOfLines={2}
           >
             {latestReplyStep}
           </Text>
@@ -24615,7 +24500,6 @@ function GuidedSupportSection({
           <Text style={styles.aiHelpSummaryLabel}>Escalate when</Text>
           <Text
             style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}
-            numberOfLines={2}
           >
             {latestReplyEscalate}
           </Text>
@@ -24626,7 +24510,7 @@ function GuidedSupportSection({
         <Text style={[styles.routePreviewTitle, compact && styles.routePreviewTitleCompact]} numberOfLines={1}>
           {routePreview.title}
         </Text>
-        <Text style={[styles.routePreviewDetail, compact && styles.routePreviewDetailCompact]} numberOfLines={2}>
+        <Text style={[styles.routePreviewDetail, compact && styles.routePreviewDetailCompact]}>
           {routePreview.detail}
         </Text>
       </View>
@@ -24717,7 +24601,6 @@ function GuidedSupportSection({
                     isUser ? styles.communityChatTextUser : styles.communityChatTextVerified,
                     compact && styles.aiHelpChatTextCompact
                   ]}
-                  numberOfLines={compact ? 5 : undefined}
                 >
                   {message.text}
                 </Text>
@@ -27039,14 +26922,14 @@ function IssueGuideSection({
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>{l("Issue path", { hindi: "समस्या पथ", punjabi: "ਮੁੱਦਾ ਰਾਹ", marathi: "समस्या मार्ग", telugu: "సమస్య మార్గం", tamil: "பிரச்சனை பாதை", urdu: "مسئلہ راستہ" })}</Text>
-            <Text style={styles.sectionTitle}>{l("Start with the closest issue", { hindi: "सबसे नज़दीकी समस्या से शुरू करें", punjabi: "ਸਭ ਤੋਂ ਨੇੜਲੇ ਮੁੱਦੇ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋ", marathi: "सर्वात जवळच्या समस्येपासून सुरू करा", telugu: "అత్యంత దగ్గరి సమస్యతో ప్రారంభించండి", tamil: "அருகிலுள்ள பிரச்சினையிலிருந்து தொடங்குங்கள்", urdu: "قریب ترین مسئلے سے شروع کریں" })}</Text>
+            <Text style={styles.eyebrow}>{l("Choose your focus", { hindi: "अपना विषय चुनें", punjabi: "ਆਪਣਾ ਕੇਂਦਰ ਚੁਣੋ", marathi: "तुमचा केंद्रबिंदू निवडा", telugu: "మీ దృష్టిని ఎంచుకోండి", tamil: "உங்கள் கவனத்தைத் தேர்ந்தெடுக்கவும்", urdu: "اپنی توجہ منتخب کریں" })}</Text>
+            <Text style={styles.sectionTitle}>{l("What needs attention now?", { hindi: "अभी किस बात पर ध्यान चाहिए?", punjabi: "ਹੁਣ ਕਿਸ ਗੱਲ ਨੂੰ ਧਿਆਨ ਚਾਹੀਦਾ ਹੈ?", marathi: "आत्ता कशाकडे लक्ष द्यायचे आहे?", telugu: "ఇప్పుడు దేనిపై దృష్టి అవసరం?", tamil: "இப்போது எதற்கு கவனம் தேவை?", urdu: "اب کس بات پر توجہ درکار ہے؟" })}</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
           {l(
-            "Pick the issue that feels closest now. The guide turns it into one route and one next step with practical, emotional, reflective, cultural, and evidence-aware support.",
+            "Choose the concern that feels most present. Aethon will organise it into one clear support plan without showing every layer at once.",
             {
               hindi: "अभी जो समस्या सबसे नज़दीक लगे उसे चुनें। यह guide उसे एक route और एक अगले कदम में बदल देता है, practical, emotional, reflective, cultural, और evidence-aware support के साथ।",
               punjabi: "ਹੁਣ ਜੋ ਮੁੱਦਾ ਸਭ ਤੋਂ ਨੇੜੇ ਲੱਗੇ, ਉਹ ਚੁਣੋ। ਇਹ guide ਉਸਨੂੰ ਇੱਕ ਰਾਹ ਅਤੇ ਇੱਕ ਅਗਲੇ ਕਦਮ ਵਿੱਚ ਬਦਲ ਦਿੰਦਾ ਹੈ, practical, emotional, reflective, cultural, ਅਤੇ evidence-aware support ਨਾਲ।",
@@ -27057,29 +26940,6 @@ function IssueGuideSection({
             }
           )}
         </Text>
-        <View style={styles.issueRouteSnapshotBand}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>{l("Route snapshot", { hindi: "रूट स्नैपशॉट", punjabi: "ਰਾਹ ਸਨੈਪਸ਼ਾਟ", marathi: "रूट स्नॅपशॉट", telugu: "రూట్ స్నాప్‌షాట్", tamil: "பாதை காட்சி", urdu: "راستہ جھلک" })}</Text>
-              <Text style={styles.sectionTitleSmall}>{l("What this page is doing for you", { hindi: "यह पेज आपके लिए क्या कर रहा है", punjabi: "ਇਹ ਪੇਜ ਤੁਹਾਡੇ ਲਈ ਕੀ ਕਰ ਰਿਹਾ ਹੈ", marathi: "हे पेज तुमच्यासाठी काय करत आहे", telugu: "ఈ పేజీ మీ కోసం ఏమి చేస్తోంది", tamil: "இந்த பக்கம் உங்களுக்காக என்ன செய்கிறது", urdu: "یہ صفحہ آپ کے لیے کیا کر رہا ہے" })}</Text>
-            </View>
-            <Text style={styles.smallMeta}>{l("One issue, one route", { hindi: "एक समस्या, एक route", punjabi: "ਇੱਕ ਮੁੱਦਾ, ਇੱਕ ਰਾਹ", marathi: "एक समस्या, एक route", telugu: "ఒక సమస్య, ఒక route", tamil: "ஒரு பிரச்சினை, ஒரு route", urdu: "ایک مسئلہ، ایک route" })}</Text>
-          </View>
-          <View style={styles.profileSummaryGrid}>
-            <View style={styles.profileSummaryCard}>
-              <Text style={styles.profileSummaryLabel}>{l("Meaning", { hindi: "अर्थ", punjabi: "ਅਰਥ", marathi: "अर्थ", telugu: "అర్థం", tamil: "அர்த்தம்", urdu: "مطلب" })}</Text>
-              <Text style={styles.profileSummaryValue}>{selectedIssueGuide.summary}</Text>
-            </View>
-            <View style={styles.profileSummaryCard}>
-              <Text style={styles.profileSummaryLabel}>{l("Next step", { hindi: "अगला कदम", punjabi: "ਅਗਲਾ ਕਦਮ", marathi: "पुढचे पाऊल", telugu: "తదుపరి అడుగు", tamil: "அடுத்த படி", urdu: "اگلا قدم" })}</Text>
-              <Text style={styles.profileSummaryValue}>{selectedIssueGuide.action}</Text>
-            </View>
-            <View style={styles.profileSummaryCard}>
-              <Text style={styles.profileSummaryLabel}>{l("Escalate when", { hindi: "कब आगे बढ़ाएँ", punjabi: "ਕਦੋਂ ਅੱਗੇ ਵਧਾਓ", marathi: "कधी escalate करायचे", telugu: "ఎప్పుడు escalate చేయాలి", tamil: "எப்போது escalate செய்ய வேண்டும்", urdu: "کب escalate کریں" })}</Text>
-              <Text style={styles.profileSummaryValue}>{selectedIssueGuide.urgentNote}</Text>
-            </View>
-          </View>
-        </View>
         <View style={styles.issueChipGrid}>
           {issueGuides.map((guide) => {
             const isSelected = guide.id === selectedIssueGuide.id;
@@ -27109,13 +26969,13 @@ function IssueGuideSection({
       >
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>{l("Current path", { hindi: "वर्तमान पथ", punjabi: "ਮੌਜੂਦਾ ਰਾਹ", marathi: "सध्याचा मार्ग", telugu: "ప్రస్తుత మార్గం", tamil: "தற்போதைய பாதை", urdu: "موجودہ راستہ" })}</Text>
+            <Text style={styles.eyebrow}>{l("Your support plan", { hindi: "आपकी सहायता योजना", punjabi: "ਤੁਹਾਡੀ ਸਹਾਇਤਾ ਯੋਜਨਾ", marathi: "तुमची सहाय्य योजना", telugu: "మీ సహాయ ప్రణాళిక", tamil: "உங்கள் ஆதரவு திட்டம்", urdu: "آپ کا معاون منصوبہ" })}</Text>
             <Text style={styles.sectionTitle}>{issueDisplayLabel}</Text>
           </View>
           <Text style={styles.smallMeta}>{l("One route / one next step", { hindi: "एक route / एक next step", punjabi: "ਇੱਕ ਰਾਹ / ਇੱਕ ਅਗਲਾ ਕਦਮ", marathi: "एक route / एक पुढचे पाऊल", telugu: "ఒక route / ఒక తదుపరి అడుగు", tamil: "ஒரு route / ஒரு அடுத்த படி", urdu: "ایک راستہ / ایک اگلا قدم" })}</Text>
         </View>
         <Text style={styles.promptText}>{selectedIssueGuide.summary}</Text>
-        <View style={styles.issueSupportBand}>
+        <View style={[styles.issueSupportBand, !showFullPathDetails && styles.hiddenSection]}>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.eyebrow}>Clarity discipline</Text>
@@ -27151,7 +27011,7 @@ function IssueGuideSection({
         {/* Moon Chart complement — the same multidimensional Vedic layer the
             Automatic Counselling chat already overlays, now surfaced directly
             on the Path itself instead of only inside the chat. */}
-        <View style={styles.issueSupportBand}>
+        <View style={[styles.issueSupportBand, !showFullPathDetails && styles.hiddenSection]}>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.eyebrow}>Moon Chart complement</Text>
@@ -27313,8 +27173,7 @@ function IssueGuideSection({
           <View style={styles.issueSupportBand}>
             <Text style={styles.visionGuidanceTitle}>Focused path</Text>
             <Text style={styles.visionGuidanceText}>
-              Extra theory, nearby support, urgent notes, and reminders are hidden until needed.
-              Stay with the route, the start action, and the three follow-up steps.
+              Start with the action and the three follow-up steps below. Deeper reasoning, chart context, nearby support, urgent notes, and reminders remain available under full details.
             </Text>
           </View>
         ) : null}
@@ -28190,12 +28049,14 @@ function RedressSection({
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const routePhone = normalizePhoneNumber(selectedRedressRoute.phone);
   const [showFullRedress, setShowFullRedress] = useState(false);
+  const [showEmergencyDirectory, setShowEmergencyDirectory] = useState(false);
   const [showDraftTemplate, setShowDraftTemplate] = useState(false);
   const [showScript, setShowScript] = useState(false);
   const [checkedEvidence, setCheckedEvidence] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setShowFullRedress(false);
+    setShowEmergencyDirectory(false);
     setShowDraftTemplate(false);
     setShowScript(false);
     setCheckedEvidence({});
@@ -28421,6 +28282,44 @@ function RedressSection({
           </View>
         </View>
 
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: showEmergencyDirectory }}
+          accessibilityLabel={`${showEmergencyDirectory ? "Hide" : "Show"} additional emergency contacts and official directories`}
+          onPress={() => {
+            void Haptics.selectionAsync();
+            setShowEmergencyDirectory((value) => !value);
+          }}
+          style={({ pressed }) => ({
+            minHeight: 48,
+            marginBottom: showEmergencyDirectory ? 10 : 14,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: "#B9CDD2",
+            backgroundColor: pressed ? "#DCEBE9" : "#F7FAFC",
+            paddingHorizontal: 14,
+            paddingVertical: 11,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+          })}
+        >
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 18, fontWeight: "900" }}>
+              More emergency contacts and official directories
+            </Text>
+            <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, marginTop: 2 }}>
+              Open verified helplines, legal aid, government grievance and police resources only when needed.
+            </Text>
+          </View>
+          <Text style={{ color: "#0E6F69", fontSize: 20, fontWeight: "900" }}>
+            {showEmergencyDirectory ? "−" : "+"}
+          </Text>
+        </Pressable>
+
+        {showEmergencyDirectory ? (
+          <>
         {/* ── QUICK HELP NUMBERS STRIP ── */}
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(239,68,68,0.3)", overflow: "hidden" }}>
           <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 6, flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -28487,6 +28386,8 @@ function RedressSection({
             "where to seek help." Health directory moved to the Wellness tab
             where mental-health resources belong. */}
         <RedressDirectoriesHub openWebsite={openWebsite} defaultLocality={supportLocality} />
+          </>
+        ) : null}
 
         {/* ── ROUTE CHIPS ── */}
         <View style={{ marginBottom: 8 }}>
@@ -31406,14 +31307,14 @@ function BirthChartSection({
                   if (digits.length === 2) refDobMM.current?.focus();
                 }}
                 placeholder="DD"
-                placeholderTextColor="rgba(255,255,255,0.25)"
+                placeholderTextColor="#52656B"
                 keyboardType="number-pad"
                 maxLength={2}
                 returnKeyType="next"
                 onSubmitEditing={() => refDobMM.current?.focus()}
                 style={{
-                  backgroundColor: "#E1EEEC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: dobDD.length === 2 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: dobDD.length === 2 ? "#0891B2" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -31431,14 +31332,14 @@ function BirthChartSection({
                   if (digits.length === 2) refDobYYYY.current?.focus();
                 }}
                 placeholder="MM"
-                placeholderTextColor="rgba(255,255,255,0.25)"
+                placeholderTextColor="#52656B"
                 keyboardType="number-pad"
                 maxLength={2}
                 returnKeyType="next"
                 onSubmitEditing={() => refDobYYYY.current?.focus()}
                 style={{
-                  backgroundColor: "#E1EEEC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: dobMM.length === 2 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: dobMM.length === 2 ? "#0891B2" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -31456,14 +31357,14 @@ function BirthChartSection({
                   if (digits.length === 4) refTimeMM.current?.focus();
                 }}
                 placeholder="YYYY"
-                placeholderTextColor="rgba(255,255,255,0.25)"
+                placeholderTextColor="#52656B"
                 keyboardType="number-pad"
                 maxLength={4}
                 returnKeyType="next"
                 onSubmitEditing={() => refTimeMM.current?.focus()}
                 style={{
-                  backgroundColor: "#E1EEEC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: dobYYYY.length === 4 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: dobYYYY.length === 4 ? "#0891B2" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -31492,14 +31393,14 @@ function BirthChartSection({
                   if (digits.length === 2) refTimeMM.current?.focus();
                 }}
                 placeholder="HH"
-                placeholderTextColor="rgba(255,255,255,0.25)"
+                placeholderTextColor="#52656B"
                 keyboardType="number-pad"
                 maxLength={2}
                 returnKeyType="next"
                 onSubmitEditing={() => refTimeMM.current?.focus()}
                 style={{
-                  backgroundColor: "#E1EEEC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: timeHH.length === 2 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: timeHH.length === 2 ? "#0891B2" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -31516,14 +31417,14 @@ function BirthChartSection({
                   if (digits.length === 2) refPlace.current?.focus();
                 }}
                 placeholder="MM"
-                placeholderTextColor="rgba(255,255,255,0.25)"
+                placeholderTextColor="#52656B"
                 keyboardType="number-pad"
                 maxLength={2}
                 returnKeyType="next"
                 onSubmitEditing={() => refPlace.current?.focus()}
                 style={{
-                  backgroundColor: "#E1EEEC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: timeMM.length === 2 ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+                  backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
+                  borderColor: timeMM.length === 2 ? "#0891B2" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -31546,14 +31447,14 @@ function BirthChartSection({
             value={placeDraft}
             onChangeText={setPlaceDraft}
             placeholder="City, State, Country — e.g. Mumbai, Maharashtra, India"
-            placeholderTextColor="rgba(255,255,255,0.3)"
+            placeholderTextColor="#52656B"
             autoCorrect={false}
             autoCapitalize="words"
             returnKeyType="done"
             onSubmitEditing={handleSave}
             style={{
-              backgroundColor: "#E1EEEC", borderRadius: 10, borderWidth: 1.5,
-              borderColor: isValidPlace ? "rgba(34,211,238,0.5)" : "rgba(255,255,255,0.15)",
+              backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
+              borderColor: isValidPlace ? "#0891B2" : "#B9CDD2",
               color: "#0D1F22", fontSize: 15, padding: 13
             }}
           />
@@ -31567,12 +31468,12 @@ function BirthChartSection({
           accessibilityRole="button"
           onPress={handleSave}
           style={({ pressed }) => ({
-            backgroundColor: saved ? "#0E6F69" : pressed ? "#0E4A46" : canSaveBirthDetails ? "#0F3D5E" : "#10202A",
+            backgroundColor: saved ? "#0E6F69" : pressed && canSaveBirthDetails ? "#0E4A46" : canSaveBirthDetails ? "#0F3D5E" : "#D8E4E6",
             borderRadius: 12, paddingVertical: 14, alignItems: "center",
-            borderWidth: 1, borderColor: saved ? "#0891B2" : canSaveBirthDetails ? "rgba(99,222,208,0.3)" : "rgba(255,255,255,0.12)"
+            borderWidth: 1, borderColor: saved ? "#0E6F69" : canSaveBirthDetails ? "#0F3D5E" : "#B9CDD2"
           })}
         >
-          <Text style={{ color: saved ? "#0891B2" : "#0E9488", fontSize: 16, fontWeight: "900" }}>
+          <Text style={{ color: saved || canSaveBirthDetails ? "#FFFFFF" : "#52656B", fontSize: 16, fontWeight: "900" }}>
             {saved ? "✓ Saved" : canSaveBirthDetails ? "Save & Analyse" : "Complete details to analyse"}
           </Text>
         </Pressable>
@@ -31580,11 +31481,11 @@ function BirthChartSection({
         {/* Status chip */}
         <View style={{
           flexDirection: "row", alignItems: "center", gap: 8,
-          backgroundColor: hasExactBirthDetails ? "rgba(14,111,105,0.15)" : canSaveBirthDetails ? "rgba(34,211,238,0.08)" : "rgba(255,255,255,0.04)",
+          backgroundColor: hasExactBirthDetails ? "#DDF4EF" : canSaveBirthDetails ? "#E3F3F7" : "#EEF3F4",
           borderRadius: 8, padding: 10
         }}>
           <Text style={{ fontSize: 14 }}>{hasExactBirthDetails ? "✅" : canSaveBirthDetails ? "📝" : "⏳"}</Text>
-          <Text style={{ color: hasExactBirthDetails ? "#0891B2" : canSaveBirthDetails ? "#0057B8" : "rgba(255,255,255,0.45)", fontSize: 13, fontWeight: "700" }}>
+          <Text style={{ color: hasExactBirthDetails ? "#0E6F69" : canSaveBirthDetails ? "#0057B8" : "#475569", fontSize: 13, fontWeight: "700", flex: 1 }}>
             {hasExactBirthDetails
               ? "Exact birth details saved - reading generated below"
               : canSaveBirthDetails
@@ -33550,7 +33451,7 @@ function AccessOverlay({
 
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
           <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Gender</Text>
-          <View style={styles.segmentRow}>
+          <View style={[styles.segmentRow, styles.profileGenderGrid]}>
             {genderOptions.map((option) => {
               const isSelected = profileGender === option.id;
               return (
@@ -33559,9 +33460,9 @@ function AccessOverlay({
                   accessibilityRole="button"
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => setProfileGender(option.id)}
-                  style={[styles.segmentButton, isSelected && styles.segmentButtonActive]}
+                  style={[styles.segmentButton, styles.profileGenderButton, isSelected && styles.segmentButtonActive]}
                 >
-                  <Text style={[styles.segmentLabel, isSelected && styles.segmentLabelActive]}>
+                  <Text style={[styles.segmentLabel, styles.profileGenderLabel, isSelected && styles.segmentLabelActive]}>
                     {option.label}
                   </Text>
                 </Pressable>
@@ -36404,11 +36305,8 @@ function CounselingChatModal({
   stopSpeech: () => void;
   speechLocale: string;
   moonChartInsightReadings: MoonChart48Reading[];
-  // Every friend/guide turn is spoken aloud automatically as it arrives
-  // (see scheduleSpeak below) -- there was previously no way to silence
-  // that from inside the chat itself short of leaving to find the Settings
-  // toggle. voiceAssistEnabled/onToggleVoiceAssist wire the header mute
-  // button below to that same app-wide switch.
+  // Read-aloud is manual: opening the room and receiving replies remain
+  // silent. This switch enables the explicit replay control when requested.
   voiceAssistEnabled: boolean;
   onToggleVoiceAssist: () => void;
   // Optional connected guidance enrichment on top of the offline synthesis. This reuses
@@ -36527,40 +36425,7 @@ function CounselingChatModal({
     loop.start();
     return () => loop.stop();
   }, [isGuideTyping, typingDotsAnim, chatReduceMotion]);
-  // Tracks the pending "speak after a short delay" timeout so it can be
-  // cancelled if the modal closes or resets before it fires — without this,
-  // speakText() would still play after the user has already dismissed the
-  // chat (e.g. closing within 400ms of the opening message, or re-opening
-  // with a new issue while a previous speak was still queued).
-  const speakTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const isStartingVoiceInputRef = React.useRef(false);
-  const scheduleSpeak = React.useCallback((text: string, delay: number) => {
-    // Speech is opt-in. Previously every reply -- including the very first
-    // opening line -- was spoken aloud regardless of the voice toggle, so the
-    // speaker started on its own the moment the chat opened even though the
-    // header said "Voice reply is muted". Now nothing is spoken unless the
-    // user has turned voice assistance on (voiceAssistEnabled defaults off).
-    if (!voiceAssistEnabled) return;
-    if (speakTimeoutRef.current) clearTimeout(speakTimeoutRef.current);
-    speakTimeoutRef.current = setTimeout(() => {
-      speakTimeoutRef.current = null;
-      speakText(text);
-    }, delay);
-  }, [speakText, voiceAssistEnabled]);
-  // scheduleSpeak's identity changes whenever the parent re-renders, because
-  // the speakText prop it closes over is a brand-new inline arrow function on
-  // every App render (not memoized upstream). The app re-renders constantly
-  // in the background (30s presence heartbeat, etc.), so if scheduleSpeak
-  // were a dependency of the "reset conversation" effect below, that effect
-  // would re-fire every few seconds while this chat is open and silently
-  // wipe the whole conversation back to just the opening line -- which is
-  // exactly the "no two-way reply ever happens" bug reported by testers.
-  // Routing calls through a ref lets the effect call the *latest* speak
-  // function without needing it in its own dependency array.
-  const scheduleSpeakRef = React.useRef(scheduleSpeak);
-  React.useEffect(() => {
-    scheduleSpeakRef.current = scheduleSpeak;
-  }, [scheduleSpeak]);
 
   useSpeechRecognitionEvent("start", () => {
     if (!visible) return;
@@ -36641,23 +36506,16 @@ function CounselingChatModal({
       typingTimeoutRef.current = null;
       setIsGuideTyping(false);
       setSession((prev) => ({ ...prev, turns: [{ role: "friend", message: openingMsg, ts: new Date().toISOString() }] }));
-      scheduleSpeakRef.current(openingMsg, 150);
     }, 650);
 
     return () => {
-      if (speakTimeoutRef.current) {
-        clearTimeout(speakTimeoutRef.current);
-        speakTimeoutRef.current = null;
-      }
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = null;
       }
     };
-    // Intentionally NOT depending on scheduleSpeak here (see the ref comment
-    // above) -- this effect must only reset the conversation when the modal
-    // actually opens or the issue text changes, not on every unrelated
-    // re-render of the parent app.
+    // This effect must only reset the conversation when the modal actually
+    // opens or the issue text changes, not on unrelated parent re-renders.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, initialIssue]);
 
@@ -36719,7 +36577,6 @@ function CounselingChatModal({
       setSession(finalSession);
       setSynthText(synthesis);
       setJourneySteps(steps);
-      scheduleSpeak(synthesis, 150);
     }, 700 + Math.random() * 350);
 
     // Optional connected guidance enrichment layered on top of the offline synthesis
@@ -36812,7 +36669,6 @@ function CounselingChatModal({
           stage: "questioning",
           detectedThemes: mergedThemes,
         }));
-        scheduleSpeak(checkpointQuestion, 150);
       }, 550 + Math.random() * 300);
     }
   }
@@ -37021,13 +36877,11 @@ function CounselingChatModal({
                 different guides in the same conversation. */}
             <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800" }}>Beacon Guide is listening</Text>
             <Text style={{ color: "#1F2937", fontSize: 12 }}>
-              {voiceAssistEnabled ? "Private · Replies are read aloud" : "Private · Voice reply is muted"}
+              {voiceAssistEnabled ? "Private · Read-aloud available on request" : "Private · Speaker is off"}
             </Text>
           </View>
-          {/* Mutes the automatic spoken reply right where it happens, instead
-              of forcing the person to leave this chat and dig through
-              Settings > Voice assistance to stop it. Also stops whatever is
-              speaking right now, not just future turns. */}
+          {/* Read-aloud is always manual. This control only enables or disables
+              the speaker; opening the room and receiving replies stay silent. */}
           <Pressable
             onPress={() => {
               stopSpeech();
@@ -37035,7 +36889,7 @@ function CounselingChatModal({
             }}
             hitSlop={12}
             accessibilityRole="button"
-            accessibilityLabel={voiceAssistEnabled ? "Mute spoken replies" : "Unmute spoken replies"}
+            accessibilityLabel={voiceAssistEnabled ? "Disable read aloud" : "Enable read aloud"}
             accessibilityState={{ selected: !voiceAssistEnabled }}
             style={{ marginRight: 14, flexDirection: "row", alignItems: "center", gap: 4 }}
           >
@@ -37044,7 +36898,7 @@ function CounselingChatModal({
                 glyph alone) -- a short label next to it makes the tap target
                 self-explanatory without the person needing to guess. */}
             <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
-              {voiceAssistEnabled ? "Stop speaker" : "Unmute speaker"}
+              {voiceAssistEnabled ? "Disable speaker" : "Enable speaker"}
             </Text>
           </Pressable>
           <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
@@ -37512,7 +37366,7 @@ function DynamicHeroCard({
       {/* Brand row */}
       <View style={styles.heroRouteHeaderRow}>
         <Image
-          source={require("./assets/icon.png")}
+          source={require("./assets/aethon-beacon-icon-vibrant.png")}
           style={styles.heroRouteLogo}
           resizeMode="cover"
           accessibilityLabel="Aethon Beacon logo"
@@ -37577,7 +37431,7 @@ function DynamicHeroCard({
         <Text style={{ color: "#0E9488", fontSize: 14, fontWeight: "700" }}>Talk it through with your guide</Text>
       </Pressable>
       <Text style={{ color: "#1F2937", fontSize: 12, textAlign: "center", marginTop: 6 }}>
-        Listens deeply, asks up to 6 questions across every dimension, then builds your personalised path
+        Supports a 30-message counselling arc and offers an optional next-step checkpoint every 6 replies.
       </Text>
 
       {/* Route preview */}
@@ -37618,17 +37472,11 @@ function BottomNavBar({
   // AND incorrectly light up the Profile pill (since "focus" would no
   // longer match any primary id, tripping the secondaryTabActive fallback).
   const navActiveTab: TabId = activeTab === "focus" ? "meditation" : activeTab;
-  const primaryIds = PRIMARY_NAV_TABS.map(t => t.id as string);
-  const secondaryTabActive = !primaryIds.includes(navActiveTab) && navActiveTab !== "settings";
-
   return (
     <View style={[styles.bottomNav, Platform.OS === "ios" && { paddingBottom: 28 }]}>
       {PRIMARY_NAV_TABS.map((item) => {
         const label = translateNavLabel(languageId, item.label);
-        const isActive =
-          item.id === "settings"
-            ? navActiveTab === "settings" || secondaryTabActive
-            : navActiveTab === item.id;
+        const isActive = navActiveTab === item.id;
         const hasBadge =
           (item.id === "insights" && insightsBadge && !isActive);
         return (
@@ -46216,6 +46064,19 @@ const styles = StyleSheet.create({
   segmentRow: {
     flexDirection: "row",
     gap: 8
+  },
+  profileGenderGrid: {
+    flexWrap: "wrap"
+  },
+  profileGenderButton: {
+    flexGrow: 1,
+    flexBasis: "46%",
+    minHeight: 48,
+    paddingHorizontal: 10,
+    paddingVertical: 9
+  },
+  profileGenderLabel: {
+    textAlign: "center"
   },
   communityTopicRowCompact: {
     flexWrap: "wrap"

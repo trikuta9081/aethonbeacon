@@ -187,10 +187,12 @@ for (const id of allIssueIds) {
   assert(mappedIssueIds.includes(id), `ISSUE_TO_MOON48_CATEGORIES is missing an explicit mapping for issue "${id}"`);
 }
 
-// ── Path/Guide × multi-axis support library complement ─────────────────────────
-// Tones and Meditation already surface the real multi-axis support library;
-// Path is the tab most relevant to it and must too.
-assert(source.includes('🧭 Path frame'), 'Path is missing the multi-axis SupportDimensionLibraryPanel complement');
+// ── Path/Guide information hierarchy ───────────────────────────────────────────
+// Path keeps the personalised Moon Chart complement but no longer repeats the
+// large multi-axis library at the top. That library remains available in the
+// focused sections where it is actionable; removing the duplicate keeps Path
+// oriented around one plan and one next action.
+assert(!source.includes('🧭 Path frame'), 'Path must not reintroduce the duplicated multi-axis library above its support plan');
 
 // ── Cross-section multi-dimensional actionability ────────────────────────────────
 // The multi-axis library used to be read-only in every section except the

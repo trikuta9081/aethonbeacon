@@ -4,7 +4,7 @@
     "slug": "aethon-beacon",
     "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/aethon-beacon-icon-vibrant.png",
     "userInterfaceStyle": "light",
     "scheme": "aethonbeacon",
     "backgroundColor": "#0A0F1E",
@@ -39,12 +39,12 @@
           }
         ]
       },
-      "icon": "./assets/icon.png"
+      "icon": "./assets/aethon-beacon-icon-vibrant.png"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#077D90"
+        "backgroundColor": "#07182A"
       },
       "package": "com.aethonbeacon.app",
       "versionCode": 21,
@@ -57,7 +57,7 @@
       "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
-      "favicon": "./assets/icon.png",
+      "favicon": "./assets/aethon-beacon-icon-vibrant.png",
       "bundler": "metro"
     },
     "plugins": [

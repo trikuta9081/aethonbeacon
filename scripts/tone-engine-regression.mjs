@@ -22,7 +22,7 @@ assert(app.includes("exponentialRampToValueAtTime(targetGain"), "engine must fad
 assert(!app.includes("linearRampToValueAtTime(0.82"), "old unsafe 0.82 continuous gain must be removed");
 assert(app.includes("aethon-pristine-tone.wav"), "native/audio cue must use the upgraded packaged WAV");
 assert(asset.size > 500_000, "upgraded WAV asset should be a real stereo tone, not a tiny placeholder");
-assert(app.includes("Pristine Tone Engine"), "tone UI must show the upgraded engine controls");
+assert(app.includes("Playback quality &amp; safety"), "tone UI must show the upgraded playback quality and safety controls");
 assert(app.includes("Session preset"), "tone UI must expose session presets");
 assert(app.includes("Safe gain"), "tone UI must expose safe gain control");
 assert(app.includes("getToneContraindication"), "tone safety copy must be generated per tone family");

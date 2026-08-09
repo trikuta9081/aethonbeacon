@@ -64,6 +64,8 @@ function mustNotMatch(pattern, message) {
     width: "94%",
     maxWidth: 680,`,
   `homeSafetyStrip: {\n    maxWidth: "100%",\n    overflow: "hidden",\n    marginTop: 0,`,
+  `profileGenderGrid: {\n    flexWrap: "wrap"`,
+  `profileGenderButton: {\n    flexGrow: 1,\n    flexBasis: "46%"`,
 ].forEach((marker) => mustInclude(marker));
 
 

@@ -50,11 +50,13 @@ indexOf('safety, SOS, complaint route, and immediate support must be one tap awa
 // is seen first instead of buried below route selection.
 const redressSectionStart = indexOf('function RedressSection({');
 const immediateSafety = indexOf('{/* ── IMMEDIATE SAFETY ACTIONS ── */}');
+const directoryDisclosure = indexOf('More emergency contacts and official directories');
 const importantNumbers = indexOf('{/* ── QUICK HELP NUMBERS STRIP ── */}');
 const directoriesHub = indexOf('{/* ── UNIFIED DIRECTORIES HUB ── */}');
 const routeChips = indexOf('{/* ── ROUTE CHIPS ── */}');
 assert(redressSectionStart < immediateSafety, 'Immediate safety actions must live inside RedressSection');
-assert(immediateSafety < importantNumbers, 'Immediate safety actions must appear before important numbers');
+assert(immediateSafety < directoryDisclosure, 'Immediate safety actions must appear before the optional directory disclosure');
+assert(directoryDisclosure < importantNumbers, 'Optional emergency directories must remain behind their disclosure control');
 assert(importantNumbers < directoriesHub, 'Important numbers must appear before directories hub');
 assert(directoriesHub < routeChips, 'Directories hub must appear before route chips/general route selection');
 
@@ -75,13 +77,11 @@ const mergedHelp = indexOf('In immediate danger, call 112.');
 // was redundant clutter, same reasoning as the Help & Redress trim above.
 // The Patterns/insights tab's own "Progress Report Card" is a richer version
 // of what the front-page report card used to show.
-const recommendedNextStep = indexOf('/* ── Recommended next step');
 const premiumCommandCenter = indexOf('Premium command center');
 const premiumCommandTitle = indexOf('Choose the right support in one tap.');
 const testerFront = indexOf('Become an Aethon Beacon tester');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
-assert(mergedHelp < recommendedNextStep, 'Help and Redress must remain the first Home action surface');
-assert(recommendedNextStep < premiumCommandCenter, 'Recommended next step must guide the user before the broader command center');
+assert(mergedHelp < premiumCommandCenter, 'Help and Redress must remain the first Home action surface');
 assert(premiumCommandCenter < testerFront, 'Premium command center must appear before the web-only tester page');
 assert(premiumCommandTitle < testerFront, 'Premium command copy must remain on the Home surface');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
@@ -89,8 +89,7 @@ assert(!source.includes('Moderated community support and private conversations')
 indexOf('Open Help and Redress');
 indexOf('Open Path');
 indexOf('Start Calm');
-indexOf('Save Note');
-indexOf('Private guided conversation with optional checkpoint next steps.');
+indexOf('A private guided room with a 30-message arc and optional next-step checkpoints.');
 indexOf('Moon-chart based guidance with practical remedies.');
 indexOf('Verified support conversations when access is confirmed.');
 indexOf('Privacy first: notes stay local unless you choose verified sharing, export, or tester enrolment.');
@@ -134,8 +133,8 @@ assert(!source.includes(hiddenNumericReading), 'Public numeric Vedic reading ter
   'Admin center',
   'Admin tools',
   'Too many failed attempts',
-  'Stop speaker',
-  'Unmute speaker',
+  'Disable speaker',
+  'Enable speaker',
   'onFetchGuideEnrichment',
   // Counselling chat "typing…" beat -- replies are computed instantly from
   // local logic, so without this every guide message (opening line, each
