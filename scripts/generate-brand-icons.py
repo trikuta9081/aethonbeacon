@@ -1,37 +1,13 @@
 from pathlib import Path
 from PIL import Image
-from collections import deque
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "assets"
 BG = (10, 15, 30, 255)
 RESAMPLE = Image.Resampling.LANCZOS
 
-source = Image.open(ASSETS / "adaptive-icon.png").convert("RGBA")
-
-# Remove the old white matte surrounding the rounded mark while preserving the
-# disconnected white/gold artwork inside it. Only transparent/near-white pixels
-# connected to the image boundary are cleared.
-pixels = source.load()
-w, h = source.size
-queue = deque()
-seen = set()
-for x in range(w):
-    queue.append((x, 0)); queue.append((x, h - 1))
-for y in range(h):
-    queue.append((0, y)); queue.append((w - 1, y))
-while queue:
-    x, y = queue.popleft()
-    if (x, y) in seen: continue
-    seen.add((x, y))
-    r, g, b, a = pixels[x, y]
-    traversable = a == 0 or (r >= 242 and g >= 242 and b >= 242)
-    if not traversable: continue
-    pixels[x, y] = (r, g, b, 0)
-    if x: queue.append((x - 1, y))
-    if x + 1 < w: queue.append((x + 1, y))
-    if y: queue.append((x, y - 1))
-    if y + 1 < h: queue.append((x, y + 1))
+source = Image.open(ASSETS / "aethon-beacon-icon-vibrant.png").convert("RGBA")
+adaptive_source = Image.open(ASSETS / "adaptive-icon.png").convert("RGBA")
 
 def square_icon(size: int) -> Image.Image:
     foreground = source.resize((size, size), RESAMPLE)
@@ -59,7 +35,7 @@ for density, (legacy_size, foreground_size) in densities.items():
     legacy = square_icon(legacy_size)
     legacy.save(folder / "ic_launcher.webp", "WEBP", quality=100, method=6)
     legacy.save(folder / "ic_launcher_round.webp", "WEBP", quality=100, method=6)
-    source.resize((foreground_size, foreground_size), RESAMPLE).save(
+    adaptive_source.resize((foreground_size, foreground_size), RESAMPLE).save(
         folder / "ic_launcher_foreground.webp", "WEBP", lossless=True, method=6
     )
 
@@ -79,4 +55,4 @@ mark = square_icon(820)
 splash.paste(mark, ((1284 - 820)//2, (2778 - 820)//2))
 splash.save(ASSETS / "splash.png", optimize=True)
 
-print("Generated consistent Aethon Beacon gold-A icons for Expo, Android, iOS, web, and splash.")
+print("Generated the vibrant Aethon Beacon identity for Expo, Android, iOS, web, and splash.")
