@@ -363,7 +363,7 @@ type TabId =
   | "admin"
   | "settings";
 type GuidedAction = "profile" | "sos" | TabId;
-type LaunchNeedId = "guide" | "calm" | "vedic" | "complaint" | "community";
+type LaunchNeedId = "guide" | "calm" | "vedic" | "community";
 type AccessRole = "guest" | "member" | "verified" | "admin";
 type ReminderMode = "morning" | "midday" | "evening";
 type ReminderAccess = "loading" | "granted" | "prompt" | "denied" | "unsupported";
@@ -2594,13 +2594,6 @@ const launchNeeds: Array<{
     label: "Vedic Insight",
     meta: "Open moon-chart based guidance and remedies.",
     tab: "vedic"
-  },
-  {
-    id: "complaint",
-    label: "Help and Redress",
-    meta: "Emergency support, routes, evidence, and templates.",
-    tab: "redress",
-    redressRouteId: "academic"
   },
   {
     id: "community",
@@ -18665,26 +18658,11 @@ async function fetchGuidanceHelp(
       return;
     }
 
-    // Low-confidence clarifier. The classifier only returns "general" when NO
-    // emotional, redress, urgent, professional, or calm signal matched at all —
-    // i.e. it is genuinely unsure what the person needs. On a substantive
-    // message (not a one-word greeting), rather than silently committing to the
-    // counselling engine with a possibly-wrong read — the exact situation that
-    // historically produced off-target replies — surface the route decision so
-    // the person can steer. Short/vague inputs still flow straight to the chat.
-    const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
-    if (route === "general" && wordCount >= 6) {
-      setGuidedSupportDraft("");
-      openRouteDecision(text, issueFocus, route, redressFocus, profileDisplayName);
-      return;
-    }
-
-    // Everything else — the vast majority of what people type here — now goes
-    // through the single real two-way multidimensional counselling engine instead of a
-    // shallow one-shot canned reply. That old path often ignored what was
-    // actually typed; the adaptive chat modal below is now the ONE
-    // issue-resolution surface in the app, so every non-emergency message
-    // gets a real back-and-forth that gets to the core of the issue first.
+    // Every non-emergency concern now enters the two-way counselling room
+    // directly. An earlier low-confidence route chooser interrupted longer
+    // opening messages before a conversation could begin. The guided room is
+    // the right place to clarify ambiguity: it listens, asks focused follow-up
+    // questions, and only then offers an optional practical route.
     setIssueGuideId(issueFocus.id);
     setCounselingInitialText(text);
     setGuidedSupportDraft("");
@@ -21020,19 +20998,6 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"aihelp")}</Text></Text>
                 </View>
               )}
-              {/* ── First-visit hint ── */}
-              {!dismissedHintTabs.includes("aihelp") && (
-                <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#E1EEEC", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center" }}>
-                  <Text style={{ fontSize: 18, marginRight: 10 }}>✨</Text>
-                  <Text style={{ color: "#263244", fontSize: 12, flex: 1, lineHeight: 18 }}>
-                    Type what's on your mind, in your own words. It reads your check-ins and birth chart for context and gives you a concrete next step -- not just a reply.
-                  </Text>
-                  <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "aihelp"])} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss hint">
-                    <Text style={{ color: "#1F2937", fontSize: 14, marginLeft: 8 }}>✕</Text>
-                  </Pressable>
-                </View>
-              )}
-
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "aihelp" && (
                 <GuidedJourneyBar
                   steps={activeJourney.journeySteps}
@@ -21195,8 +21160,8 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#E1E6EF" }]}>
                 <Text style={styles.tabBannerEmoji}>🧭</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Your Path</Text>
-                  <Text style={styles.tabBannerSub}>Practical · Emotional · Psychological · Reflective · Cultural · Vedic</Text>
+                  <Text style={styles.tabBannerTitle}>Your Action Plan</Text>
+                  <Text style={styles.tabBannerSub}>One concern · three practical steps · connected support</Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -24407,320 +24372,327 @@ function GuidedSupportSection({
   birthChartDashaState?: VimshottariDashaState | null;
   birthChartHasDetails?: boolean;
 }) {
-  const latestGuidedSupportMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
   const compact = !isWide;
   const [useBirthChart, setUseBirthChart] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const visibleMessages = showHistory ? aiHelpMessages : aiHelpMessages.slice(0, 1);
-  const hiddenMessageCount = Math.max(0, aiHelpMessages.length - visibleMessages.length);
-  const routeIsRedress = latestGuidedSupportMessage.route === "redress" || latestGuidedSupportMessage.route === "urgent";
-  const needsPrivateIntake = latestGuidedSupportMessage.route !== "urgent" && !privateIntakeSavedAt;
-  const routePrimaryLabel = needsPrivateIntake ? "Open intake" : routeIsRedress ? "Open Help" : "Open Path";
-  const routePrimaryAction = needsPrivateIntake ? onOpenPrivateIntake : routeIsRedress ? onOpenRedress : onOpenGuide;
-  const latestReplyText = latestGuidedSupportMessage.text.trim().length > 0
-    ? latestGuidedSupportMessage.text.trim()
-    : buildGuidedSupportSeedReply();
-  const latestReplySections = latestReplyText.split("\n").map((line) => line.trim()).filter(Boolean);
+  const hasSubmittedCounsellingPrompt = aiHelpMessages.some((message) => message.role === "user");
+  const latestGuidedSupportMessage =
+    aiHelpMessages.find((message) => message.role === "assistant") ?? aiHelpSeed[0];
+  const routeIsRedress =
+    latestGuidedSupportMessage.route === "redress" || latestGuidedSupportMessage.route === "urgent";
+  const needsPrivateIntake =
+    latestGuidedSupportMessage.route !== "urgent" && !privateIntakeSavedAt;
+  const routePrimaryLabel = needsPrivateIntake
+    ? "Open intake"
+    : routeIsRedress
+      ? "Open Help"
+      : "Open Path";
+  const routePrimaryAction = needsPrivateIntake
+    ? onOpenPrivateIntake
+    : routeIsRedress
+      ? onOpenRedress
+      : onOpenGuide;
+  const latestReplyText =
+    latestGuidedSupportMessage.text.trim().length > 0
+      ? latestGuidedSupportMessage.text.trim()
+      : buildGuidedSupportSeedReply();
+  const latestReplySections = latestReplyText
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
   const latestReplySummary =
     latestReplySections
-      .find((line) => line.toLowerCase().startsWith("what this means:"))?.replace(/^what this means:\s*/i, "")
-      ?? "One clear step is ready below.";
+      .find((line) => line.toLowerCase().startsWith("what this means:"))
+      ?.replace(/^what this means:\s*/i, "") ?? "One clear step is ready below.";
   const latestReplyStep =
     latestReplySections
-      .find((line) => line.toLowerCase().startsWith("safest next step:"))?.replace(/^safest next step:\s*/i, "")
-      ?? "Open the right tab and take the smallest useful step.";
+      .find((line) => line.toLowerCase().startsWith("safest next step:"))
+      ?.replace(/^safest next step:\s*/i, "") ??
+    "Open the right section and take the smallest useful step.";
   const latestReplyEscalate =
     latestReplySections
-      .find((line) => line.toLowerCase().startsWith("escalate when:"))?.replace(/^escalate when:\s*/i, "")
-      ?? "Move to Help or SOS if the issue is bigger than one reply.";
-  const visibleStarters = buildGuidedSupportQuickStarters(latestGuidedSupportMessage.route, selectedIssueGuideLabel, selectedIdentityLabel);
+      .find((line) => line.toLowerCase().startsWith("escalate when:"))
+      ?.replace(/^escalate when:\s*/i, "") ??
+    "Move to Help or SOS if the situation becomes urgent or unsafe.";
+  const visibleStarters = buildGuidedSupportQuickStarters(
+    latestGuidedSupportMessage.route,
+    selectedIssueGuideLabel,
+    selectedIdentityLabel
+  );
   const starterButtons = compact ? visibleStarters.slice(0, 2) : visibleStarters;
-  const visibleMessagesForRender = visibleMessages.map((message) => ({
-    ...message,
-    text: message.text.trim().length > 0 ? message.text : latestReplyText
-  }));
   const birthChartContextPrefix =
     useBirthChart && birthChartRashiInfo
-      ? `[Birth chart context — Janma Rashi: ${birthChartRashiInfo.rashi.name} (${birthChartRashiInfo.rashi.en})${birthChartNakshatra ? `, Nakshatra: ${birthChartNakshatra.name} (lord: ${birthChartNakshatra.lord})` : ""}${birthChartDashaState ? `, Mahadasha: ${birthChartDashaState.currentMahadasha} (left: ${formatPhaseSpan(birthChartDashaState.mahadashaYearsLeft)}), Antardasha: ${birthChartDashaState.currentAntardasha} (left: ${formatPhaseSpan(birthChartDashaState.antardashaYearsLeft)})` : ""}]\n`
+      ? "[Birth chart context — Janma Rashi: " + birthChartRashiInfo.rashi.name + " (" + birthChartRashiInfo.rashi.en + ")" +
+        (birthChartNakshatra ? ", Nakshatra: " + birthChartNakshatra.name + " (lord: " + birthChartNakshatra.lord + ")" : "") +
+        (birthChartDashaState ? ", Mahadasha: " + birthChartDashaState.currentMahadasha + " (left: " + formatPhaseSpan(birthChartDashaState.mahadashaYearsLeft) + "), Antardasha: " + birthChartDashaState.currentAntardasha + " (left: " + formatPhaseSpan(birthChartDashaState.antardashaYearsLeft) + ")" : "") +
+        "]\n"
       : "";
-
   const inputLocked = aiHelpLoading || isPrivateIntakeOpen;
+  const startDisabled = inputLocked || aiHelpDraft.trim().length === 0;
+
+  // Keep technical service details out of the public counselling surface. The
+  // experience should feel like one coherent support room.
+  void aiHelpProviderLabel;
+
+  function startCounsellingConversation() {
+    if (startDisabled) return;
+    if (birthChartContextPrefix.length > 0) {
+      setGuidedSupportDraft(birthChartContextPrefix + aiHelpDraft.trim());
+      setTimeout(onPostGuidedSupport, 0);
+      return;
+    }
+    onPostGuidedSupport();
+  }
 
   return (
     <View
-      style={[styles.aiQuickPanel, compact && styles.aiQuickPanelCompact]}
+      style={[styles.aiQuickPanel, styles.aiHelpEntrySurface, compact && styles.aiQuickPanelCompact]}
       pointerEvents={isPrivateIntakeOpen ? "none" : "auto"}
     >
-      <View style={[styles.sectionHeader, styles.sectionHeaderCompact, compact && styles.aiHelpHeaderCompact]}>
-        <View>
-          <Text style={[styles.eyebrow, compact && styles.aiHelpEyebrowCompact]}>Beacon Guide</Text>
-          <Text style={[styles.sectionTitleSmall, compact && styles.aiHelpTitleCompact]}>
-            Every dimension. One clear next step.
-          </Text>
-        </View>
-        <Text style={[styles.smallMeta, compact && styles.aiHelpMetaCompact]} numberOfLines={1}>
-          Next route ready
+      <View style={[styles.aiHelpEntryCard, compact && styles.aiHelpEntryCardCompact]}>
+        <Text style={styles.aiHelpEntryEyebrow}>Private counselling</Text>
+        <Text style={[styles.aiHelpEntryTitle, compact && styles.aiHelpEntryTitleCompact]}>
+          What brings you here?
         </Text>
-      </View>
+        <Text style={[styles.aiHelpEntryLead, compact && styles.aiHelpEntryLeadCompact]}>
+          Describe what is happening in your own words. A private two-way conversation will begin immediately, ask focused follow-up questions, and help you reach the core issue before suggesting action.
+        </Text>
 
-      <View style={[styles.aiHelpSummaryBand, compact && styles.aiHelpSummaryBandCompact]}>
-        <View style={[styles.aiHelpSummaryRow, { borderLeftWidth: 3, borderLeftColor: "#0E9488", paddingLeft: 10 }]}>
-          <Text style={styles.aiHelpSummaryLabel}>Scope and safety</Text>
-          <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
-            {COUNSELLING_SAFETY_COPY["supported-self-care"]}
-          </Text>
-        </View>
-        <View style={styles.aiHelpSummaryRow}>
-          <Text style={styles.aiHelpSummaryLabel}>Meaning</Text>
-          <Text
-            style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}
-          >
-            {latestReplySummary}
-          </Text>
-        </View>
-        <View style={styles.aiHelpSummaryRow}>
-          <Text style={styles.aiHelpSummaryLabel}>Next step</Text>
-          <Text
-            style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}
-          >
-            {latestReplyStep}
-          </Text>
-        </View>
-        <View style={styles.aiHelpSummaryRow}>
-          <Text style={styles.aiHelpSummaryLabel}>Open tab</Text>
+        <TextInput
+          multiline
+          value={aiHelpDraft}
+          onChangeText={setGuidedSupportDraft}
+          placeholder="Enter what you would like help with…"
+          placeholderTextColor="#5B6F78"
+          editable={!inputLocked}
+          returnKeyType="send"
+          blurOnSubmit
+          onSubmitEditing={startCounsellingConversation}
+          accessibilityLabel="Enter what you would like counselling support with"
+          style={[
+            styles.communityInput,
+            styles.aiHelpInput,
+            styles.aiHelpEntryInput,
+            compact && styles.aiHelpInputCompact,
+            inputLocked && styles.communityInputDisabled
+          ]}
+          textAlignVertical="top"
+        />
+
+        <View style={[styles.communityActions, styles.aiHelpEntryActions, compact && styles.aiHelpActionRow]}>
           <Pressable
             accessibilityRole="button"
-            onPress={() => routePrimaryAction()}
-            style={({ pressed }) => [styles.helpButton, compact && styles.aiHelpOutcomeButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.helpButtonLabel}>{routePrimaryLabel}</Text>
-          </Pressable>
-        </View>
-        <View style={styles.aiHelpSummaryRow}>
-          <Text style={styles.aiHelpSummaryLabel}>Escalate when</Text>
-          <Text
-            style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}
-          >
-            {latestReplyEscalate}
-          </Text>
-        </View>
-      </View>
-
-      <View style={[styles.routePreviewCard, styles.routePreviewCardSecondary, compact && styles.routePreviewCardCompact]}>
-        <Text style={[styles.routePreviewTitle, compact && styles.routePreviewTitleCompact]} numberOfLines={1}>
-          {routePreview.title}
-        </Text>
-        <Text style={[styles.routePreviewDetail, compact && styles.routePreviewDetailCompact]}>
-          {routePreview.detail}
-        </Text>
-      </View>
-
-      <View style={[styles.visionGuidanceBox, compact && styles.visionGuidanceBoxCompact]}>
-        <Text style={[styles.visionGuidanceTitle, compact && styles.visionGuidanceTitleCompact]}>
-          Private intake next
-        </Text>
-        <Text style={[styles.visionGuidanceText, compact && styles.visionGuidanceTextCompact]}>
-          Share the family, relatives, friends, coworker, and behavior context that matters most.
-          The next page stays focused and simple.
-        </Text>
-      </View>
-
-      <Text style={[styles.promptText, compact && styles.aiHelpPromptCompact]} numberOfLines={2}>
-        {selectedIdentityLabel} • {selectedIssueGuideLabel}
-      </Text>
-      <Text style={[styles.smallMeta, compact && styles.aiHelpMetaCompact]} numberOfLines={2}>
-        The next page will take over from here.
-      </Text>
-      <Text style={[styles.smallMeta, compact && styles.aiHelpMetaCompact]} numberOfLines={1}>
-        {hiddenMessageCount > 0
-          ? `${hiddenMessageCount} older ${hiddenMessageCount === 1 ? "reply" : "replies"} tucked away`
-          : "Fresh guide view"}
-      </Text>
-
-      <View style={[styles.communityActions, compact && styles.aiHelpActionRow]}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onClearGuidedSupport}
-          style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-        >
-          <Text style={styles.helpButtonSecondaryLabel}>Reset</Text>
-        </Pressable>
-      </View>
-
-      <View style={[styles.aiStarterRow, compact && styles.aiStarterRowCompact]}>
-        {starterButtons.map((starter) => (
-          <Pressable
-            key={starter.id}
-            accessibilityRole="button"
-            onPress={() => onUseGuidedSupportStarter(starter.prompt)}
+            accessibilityLabel="Start counselling conversation"
+            onPress={startCounsellingConversation}
+            disabled={startDisabled}
             style={({ pressed }) => [
-              styles.aiStarterChip,
-              compact && styles.aiStarterChipCompact,
-              pressed && styles.pressed
+              styles.helpButton,
+              styles.aiHelpStartButton,
+              startDisabled && styles.helpButtonDisabled,
+              pressed && !startDisabled && styles.pressed
             ]}
           >
-            <Text style={[styles.aiStarterChipText, compact && styles.aiStarterChipTextCompact]}>
-              {starter.label}
+            <Text style={[styles.helpButtonLabel, startDisabled && styles.helpButtonLabelDisabled]}>
+              {aiHelpLoading
+                ? "Opening counselling…"
+                : isPrivateIntakeOpen
+                  ? "Intake open"
+                  : "Start counselling"}
             </Text>
           </Pressable>
-        ))}
+        </View>
+
+        <View style={styles.aiHelpEntryTrustRow}>
+          <Text style={styles.aiHelpEntryTrustText}>Private on this device</Text>
+          <Text style={styles.aiHelpEntryTrustDot}>•</Text>
+          <Text style={styles.aiHelpEntryTrustText}>Up to 30 replies</Text>
+          <Text style={styles.aiHelpEntryTrustDot}>•</Text>
+          <Text style={styles.aiHelpEntryTrustText}>Optional next step every 6 replies</Text>
+        </View>
       </View>
 
-      <View style={[styles.communityChatList, compact && styles.aiHelpChatList]}>
-        {visibleMessagesForRender.map((message) => {
-          const isUser = message.role === "user";
-          return (
-            <View
-              key={message.id}
-              style={[
-                styles.communityChatRow,
-                isUser ? styles.communityChatRowRight : styles.communityChatRowLeft
+      <View style={styles.aiHelpStarterBlock}>
+        <Text style={styles.aiHelpStarterHeading}>Or begin with one of these</Text>
+        <View style={[styles.aiStarterRow, compact && styles.aiStarterRowCompact]}>
+          {starterButtons.map((starter) => (
+            <Pressable
+              key={starter.id}
+              accessibilityRole="button"
+              onPress={() => onUseGuidedSupportStarter(starter.prompt)}
+              style={({ pressed }) => [
+                styles.aiStarterChip,
+                compact && styles.aiStarterChipCompact,
+                pressed && styles.pressed
               ]}
             >
-              <View
-                style={[
-                  styles.communityChatBubble,
-                  isUser ? styles.communityChatBubbleUser : styles.communityChatBubbleVerified,
-                  !isUser && styles.aiHelpBubble,
-                  compact && styles.aiHelpBubbleCompact
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.communityChatAuthor,
-                    isUser ? styles.communityChatAuthorUser : styles.communityChatAuthorVerified,
-                    compact && styles.aiHelpChatAuthorCompact
-                  ]}
-                  numberOfLines={1}
-                >
-                  {message.author}
-                </Text>
-                <Text
-                  style={[
-                    styles.communityChatText,
-                    isUser ? styles.communityChatTextUser : styles.communityChatTextVerified,
-                    compact && styles.aiHelpChatTextCompact
-                  ]}
-                >
-                  {message.text}
-                </Text>
-                <Text
-                  style={[
-                    styles.communityChatMeta,
-                    isUser ? styles.communityChatMetaUser : styles.communityChatMetaVerified,
-                    compact && styles.aiHelpChatMetaCompact
-                  ]}
-                  numberOfLines={1}
-                >
-                  {formatDate(message.createdAt)} / {message.route}
-                </Text>
-              </View>
-            </View>
-          );
-        })}
+              <Text style={[styles.aiStarterChipText, compact && styles.aiStarterChipTextCompact]}>
+                {starter.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
 
-      {hiddenMessageCount > 0 ? (
+      {birthChartHasDetails && birthChartRashiInfo ? (
         <Pressable
-          accessibilityRole="button"
-          onPress={() => setShowHistory((value) => !value)}
-          style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: useBirthChart }}
+          onPress={() => setUseBirthChart((value) => !value)}
+          style={[
+            styles.aiHelpOptionalContext,
+            useBirthChart && styles.aiHelpOptionalContextActive
+          ]}
         >
-          <Text style={styles.helpButtonSecondaryLabel}>
-            {showHistory ? "Hide older replies" : `Show ${hiddenMessageCount} older replies`}
-          </Text>
+          <View
+            style={[
+              styles.aiHelpOptionalCheck,
+              useBirthChart && styles.aiHelpOptionalCheckActive
+            ]}
+          >
+            {useBirthChart ? <Text style={styles.aiHelpOptionalCheckLabel}>✓</Text> : null}
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.aiHelpOptionalTitle}>Include my Moon-chart context</Text>
+            <Text style={styles.aiHelpOptionalMeta}>
+              {"Janma Rashi: " + birthChartRashiInfo.rashi.name +
+                (birthChartNakshatra ? " · Nakshatra: " + birthChartNakshatra.name : "") +
+                (birthChartDashaState ? " · Mahadasha: " + birthChartDashaState.currentMahadasha + " · Antardasha: " + birthChartDashaState.currentAntardasha : "")}
+            </Text>
+          </View>
         </Pressable>
       ) : null}
 
-      {/* Birth chart context toggle */}
-      {birthChartHasDetails && birthChartRashiInfo && (
+      <View style={styles.aiHelpSafetyLine}>
+        <Text style={styles.aiHelpSafetyText}>
+          If you are in immediate danger, use emergency support instead of waiting for counselling.
+        </Text>
         <Pressable
           accessibilityRole="button"
-          onPress={() => setUseBirthChart((v) => !v)}
-          style={{
-            flexDirection: "row", alignItems: "center", gap: 10,
-            backgroundColor: useBirthChart ? "rgba(34,211,238,0.1)" : "rgba(255,255,255,0.04)",
-            borderRadius: 10, padding: 12, marginBottom: 4,
-            borderWidth: 1, borderColor: useBirthChart ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.1)"
-          }}
+          accessibilityLabel="Call emergency services at 112"
+          onPress={() => { void onEmergencyCall(); }}
+          style={({ pressed }) => [styles.aiHelpSafetyButton, pressed && styles.pressed]}
         >
-          <View style={{
-            width: 20, height: 20, borderRadius: 4, borderWidth: 1.5,
-            borderColor: useBirthChart ? "#0891B2" : "rgba(255,255,255,0.3)",
-            backgroundColor: useBirthChart ? "#0891B2" : "transparent",
-            alignItems: "center", justifyContent: "center"
-          }}>
-            {useBirthChart && <Text style={{ color: "#000", fontSize: 12, fontWeight: "900" }}>✓</Text>}
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: useBirthChart ? "#0891B2" : "#263244", fontSize: 13, fontWeight: "800" }}>
-              🪐 Include my birth chart in this session
-            </Text>
-            <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>
-              {`Janma Rashi: ${birthChartRashiInfo.rashi.name}${birthChartNakshatra ? ` · Nakshatra: ${birthChartNakshatra.name}` : ""}${birthChartDashaState ? ` · Mahadasha: ${birthChartDashaState.currentMahadasha} · Antardasha: ${birthChartDashaState.currentAntardasha}` : ""}`}
-            </Text>
-          </View>
-        </Pressable>
-      )}
-
-        <TextInput
-        multiline
-        value={aiHelpDraft}
-        onChangeText={setGuidedSupportDraft}
-        placeholder="Type the problem in one line and press Get next step."
-        placeholderTextColor="#9A8F82"
-        editable={!inputLocked}
-        returnKeyType="send"
-        blurOnSubmit
-        onSubmitEditing={() => {
-          if (birthChartContextPrefix.length > 0 && aiHelpDraft.trim().length > 0) {
-            setGuidedSupportDraft(`${birthChartContextPrefix}${aiHelpDraft.trim()}`);
-          }
-          setTimeout(onPostGuidedSupport, 0);
-        }}
-        style={[
-          styles.communityInput,
-          styles.aiHelpInput,
-          compact && styles.aiHelpInputCompact,
-          inputLocked && styles.communityInputDisabled
-        ]}
-        textAlignVertical="top"
-      />
-
-      <View style={[styles.communityActions, compact && styles.aiHelpActionRow]}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => {
-            if (birthChartContextPrefix.length > 0 && aiHelpDraft.trim().length > 0) {
-              setGuidedSupportDraft(`${birthChartContextPrefix}${aiHelpDraft.trim()}`);
-              setTimeout(onPostGuidedSupport, 0);
-            } else {
-              onPostGuidedSupport();
-            }
-          }}
-          disabled={inputLocked}
-          style={({ pressed }) => [
-            styles.helpButton,
-            inputLocked && styles.helpButtonDisabled,
-            pressed && styles.pressed
-          ]}
-        >
-          <Text style={[styles.helpButtonLabel, inputLocked && styles.helpButtonLabelDisabled]}>
-            {aiHelpLoading ? "Finding the next step..." : isPrivateIntakeOpen ? "Intake open" : "Get next step"}
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onClearGuidedSupport}
-          style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-        >
-          <Text style={styles.helpButtonSecondaryLabel}>Reset</Text>
+          <Text style={styles.aiHelpSafetyButtonLabel}>SOS 112</Text>
         </Pressable>
       </View>
-      {!isWide ? (
-        <Text style={[styles.smallMeta, styles.aiHelpFooterNoteCompact]}>
-          Your response will open the most relevant section.
-        </Text>
+
+      {hasSubmittedCounsellingPrompt ? (
+        <View style={styles.aiHelpPreviousBlock}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showHistory }}
+            onPress={() => setShowHistory((value) => !value)}
+            style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+          >
+            <Text style={styles.helpButtonSecondaryLabel}>
+              {showHistory ? "Hide previous guidance" : "View previous guidance"}
+            </Text>
+          </Pressable>
+
+          {showHistory ? (
+            <View style={styles.aiHelpPreviousContent}>
+              <View style={[styles.aiHelpSummaryBand, compact && styles.aiHelpSummaryBandCompact]}>
+                <View style={[styles.aiHelpSummaryRow, styles.aiHelpSafetySummaryRow]}>
+                  <Text style={styles.aiHelpSummaryLabel}>Scope and safety</Text>
+                  <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
+                    {COUNSELLING_SAFETY_COPY["supported-self-care"]}
+                  </Text>
+                </View>
+                <View style={styles.aiHelpSummaryRow}>
+                  <Text style={styles.aiHelpSummaryLabel}>Meaning</Text>
+                  <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
+                    {latestReplySummary}
+                  </Text>
+                </View>
+                <View style={styles.aiHelpSummaryRow}>
+                  <Text style={styles.aiHelpSummaryLabel}>Next step</Text>
+                  <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
+                    {latestReplyStep}
+                  </Text>
+                </View>
+                <View style={styles.aiHelpSummaryRow}>
+                  <Text style={styles.aiHelpSummaryLabel}>Escalate when</Text>
+                  <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
+                    {latestReplyEscalate}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={[styles.routePreviewCard, styles.routePreviewCardSecondary, compact && styles.routePreviewCardCompact]}>
+                <Text style={[styles.routePreviewTitle, compact && styles.routePreviewTitleCompact]}>
+                  {routePreview.title}
+                </Text>
+                <Text style={[styles.routePreviewDetail, compact && styles.routePreviewDetailCompact]}>
+                  {routePreview.detail}
+                </Text>
+              </View>
+
+              <View style={styles.communityActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => routePrimaryAction()}
+                  style={({ pressed }) => [styles.helpButton, pressed && styles.pressed]}
+                >
+                  <Text style={styles.helpButtonLabel}>{routePrimaryLabel}</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onClearGuidedSupport}
+                  style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+                >
+                  <Text style={styles.helpButtonSecondaryLabel}>Clear previous guidance</Text>
+                </Pressable>
+              </View>
+
+              <View style={[styles.communityChatList, compact && styles.aiHelpChatList]}>
+                {aiHelpMessages.map((message) => {
+                  const isUser = message.role === "user";
+                  return (
+                    <View
+                      key={message.id}
+                      style={[
+                        styles.communityChatRow,
+                        isUser ? styles.communityChatRowRight : styles.communityChatRowLeft
+                      ]}
+                    >
+                      <View
+                        style={[
+                          styles.communityChatBubble,
+                          isUser
+                            ? styles.communityChatBubbleUser
+                            : styles.communityChatBubbleVerified,
+                          !isUser && styles.aiHelpBubble,
+                          compact && styles.aiHelpBubbleCompact
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.communityChatAuthor,
+                            isUser
+                              ? styles.communityChatAuthorUser
+                              : styles.communityChatAuthorVerified
+                          ]}
+                        >
+                          {message.author}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.communityChatText,
+                            isUser
+                              ? styles.communityChatTextUser
+                              : styles.communityChatTextVerified
+                          ]}
+                        >
+                          {message.text}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          ) : null}
+        </View>
       ) : null}
     </View>
   );
@@ -26906,42 +26878,167 @@ function IssueGuideSection({
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const [showFullPathDetails, setShowFullPathDetails] = useState(false);
-  const issueDisplayLabel = selectedIssueGuide.id === "anxiety" ? "Calm route" : selectedIssueGuide.label;
+  const [showAllIssues, setShowAllIssues] = useState(false);
+  const issueDisplayLabel = selectedIssueGuide.id === "general"
+    ? "A clear starting point"
+    : selectedIssueGuide.label;
   const pathDepth = getIssuePathDepth(selectedIssueGuide.id);
   const moonChartComplement = useMemo(
     () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChartInsightReadings ?? []),
     [selectedIssueGuide.id, moonChartInsightReadings]
   );
+  const visibleIssueGuides = useMemo(() => {
+    if (showAllIssues) return issueGuides;
+    const preferredIds: IssueId[] = [
+      selectedIssueGuide.id,
+      "anxiety",
+      "burnout",
+      "relationship",
+      "financial",
+      "academic",
+      "general"
+    ];
+    const uniqueIds = [...new Set(preferredIds)].slice(0, 6);
+    return uniqueIds
+      .map((id) => issueGuides.find((guide) => guide.id === id))
+      .filter((guide): guide is IssueGuide => Boolean(guide));
+  }, [issueGuides, selectedIssueGuide.id, showAllIssues]);
+
+  const planCards = [
+    {
+      id: "steady",
+      number: "1",
+      eyebrow: "Stabilise now",
+      title: "Create enough space to think",
+      text: selectedIssueGuide.action,
+      action: "Open Calm",
+      onPress: onOpenCalm,
+      accent: "#0E6F69"
+    },
+    {
+      id: "understand",
+      number: "2",
+      eyebrow: "Understand the core",
+      title: "Name what this situation is asking from you",
+      text: pathDepth.discernmentQuestion,
+      action: "Continue counselling",
+      onPress: () => onOpenTab("aihelp"),
+      accent: "#6D28D9"
+    },
+    {
+      id: "act",
+      number: "3",
+      eyebrow: "Act with care",
+      title: "Protect the boundary and take one measured step",
+      text: pathDepth.boundary,
+      action: "Open Help if needed",
+      onPress: onOpenRedress,
+      accent: "#9A3412"
+    }
+  ];
+
+  const connectedRoutes: Array<{
+    id: string;
+    icon: string;
+    title: string;
+    benefit: string;
+    action: string;
+    onPress: () => void;
+  }> = [
+    {
+      id: "counselling",
+      icon: "🤝",
+      title: "Counselling",
+      benefit: "Clarify the core issue through a private two-way conversation.",
+      action: "Refine this concern",
+      onPress: () => onOpenTab("aihelp")
+    },
+    {
+      id: "calm",
+      icon: "🌿",
+      title: "Calm",
+      benefit: "Settle the body before making a difficult decision.",
+      action: "Begin a reset",
+      onPress: onOpenCalm
+    },
+    {
+      id: "journal",
+      icon: "✍️",
+      title: "Journal",
+      benefit: "Record facts, feelings, and the next commitment privately.",
+      action: "Write a note",
+      onPress: () => onOpenTab("journal")
+    },
+    {
+      id: "vedic",
+      icon: "🌙",
+      title: "Vedic Insight",
+      benefit: "Add neutral Moon-chart context and a practical remedy.",
+      action: "View insight",
+      onPress: () => onOpenTab("vedic")
+    },
+    {
+      id: "help",
+      icon: "🛡️",
+      title: "Help and Redress",
+      benefit: "Use official support, evidence, complaint, and escalation routes.",
+      action: "Open action hub",
+      onPress: onOpenRedress
+    },
+    {
+      id: "community",
+      icon: "💬",
+      title: "Community",
+      benefit: "Seek moderated peer perspective without replacing professional care.",
+      action: "Open messages",
+      onPress: () => onOpenTab("community")
+    }
+  ];
 
   useEffect(() => {
     setShowFullPathDetails(false);
+    setShowAllIssues(false);
   }, [selectedIssueGuide.id, selectedIdentity.id, languageId]);
 
   return (
-    <View style={[styles.grid, isWide && styles.gridWide]}>
-      <View style={styles.panel}>
+    <View style={styles.issuePlanShell}>
+      <View
+        style={[styles.issuePlanHero, isWide && styles.issuePlanHeroWide]}
+        onLayout={onFocusSelectedIssueLayout ? onFocusSelectedIssueLayout(selectedIssueGuide.id) : undefined}
+      >
+        <View style={styles.issuePlanHeroHeader}>
+          <View style={styles.issuePlanHeroCopy}>
+            <Text style={styles.eyebrow}>Your coordinated plan</Text>
+            <Text style={styles.issuePlanHeroTitle}>{issueDisplayLabel}</Text>
+            <Text style={styles.issuePlanHeroLead}>{selectedIssueGuide.summary}</Text>
+          </View>
+          <View style={styles.issuePlanStatusPill}>
+            <Text style={styles.issuePlanStatusValue}>{issueCompletionCount}/3</Text>
+            <Text style={styles.issuePlanStatusLabel}>steps complete</Text>
+          </View>
+        </View>
+        <View style={styles.issuePlanPrincipleBand}>
+          <Text style={styles.issuePlanPrincipleLabel}>Guiding principle</Text>
+          <Text style={styles.issuePlanPrincipleText}>{pathDepth.principle}</Text>
+        </View>
+        <Text style={styles.issuePlanHeroMeta}>
+          One concern. Three practical steps. Connected support when you need it.
+        </Text>
+      </View>
+
+      <View style={styles.issueFocusCard}>
         <View style={styles.sectionHeader}>
-          <View>
-            <Text style={styles.eyebrow}>{l("Choose your focus", { hindi: "अपना विषय चुनें", punjabi: "ਆਪਣਾ ਕੇਂਦਰ ਚੁਣੋ", marathi: "तुमचा केंद्रबिंदू निवडा", telugu: "మీ దృష్టిని ఎంచుకోండి", tamil: "உங்கள் கவனத்தைத் தேர்ந்தெடுக்கவும்", urdu: "اپنی توجہ منتخب کریں" })}</Text>
-            <Text style={styles.sectionTitle}>{l("What needs attention now?", { hindi: "अभी किस बात पर ध्यान चाहिए?", punjabi: "ਹੁਣ ਕਿਸ ਗੱਲ ਨੂੰ ਧਿਆਨ ਚਾਹੀਦਾ ਹੈ?", marathi: "आत्ता कशाकडे लक्ष द्यायचे आहे?", telugu: "ఇప్పుడు దేనిపై దృష్టి అవసరం?", tamil: "இப்போது எதற்கு கவனம் தேவை?", urdu: "اب کس بات پر توجہ درکار ہے؟" })}</Text>
+          <View style={styles.issuePlanHeaderCopy}>
+            <Text style={styles.eyebrow}>Focus</Text>
+            <Text style={styles.sectionTitleSmall}>Is this the right concern?</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
-          {l(
-            "Choose the concern that feels most present. Aethon will organise it into one clear support plan without showing every layer at once.",
-            {
-              hindi: "अभी जो समस्या सबसे नज़दीक लगे उसे चुनें। यह guide उसे एक route और एक अगले कदम में बदल देता है, practical, emotional, reflective, cultural, और evidence-aware support के साथ।",
-              punjabi: "ਹੁਣ ਜੋ ਮੁੱਦਾ ਸਭ ਤੋਂ ਨੇੜੇ ਲੱਗੇ, ਉਹ ਚੁਣੋ। ਇਹ guide ਉਸਨੂੰ ਇੱਕ ਰਾਹ ਅਤੇ ਇੱਕ ਅਗਲੇ ਕਦਮ ਵਿੱਚ ਬਦਲ ਦਿੰਦਾ ਹੈ, practical, emotional, reflective, cultural, ਅਤੇ evidence-aware support ਨਾਲ।",
-              marathi: "सध्या जी समस्या सर्वात जवळची वाटते ती निवडा. हा guide तिला एका route आणि एका पुढच्या पावलात बदलतो, practical, emotional, reflective, cultural, आणि evidence-aware support सह.",
-              telugu: "ఇప్పుడే దగ్గరగా అనిపించే సమస్యను ఎంచుకోండి. ఈ guide దాన్ని ఒక route మరియు ఒక next step గా మార్చుతుంది, practical, emotional, reflective, cultural, మరియు evidence-aware support తో.",
-              tamil: "இப்போது மிகவும் அருகில் தோன்றும் பிரச்சினையைத் தேர்ந்தெடுக்கவும். இந்த guide அதை ஒரு route மற்றும் ஒரு next step-ஆக மாற்றுகிறது, practical, emotional, reflective, cultural, மற்றும் evidence-aware support உடன்.",
-              urdu: "اب جو مسئلہ سب سے قریب لگے اسے چنیں۔ یہ guide اسے ایک route اور ایک اگلے قدم میں بدل دیتا ہے، practical، emotional، reflective، cultural، اور evidence-aware support کے ساتھ۔"
-            }
-          )}
+          Keep this focus or choose another. Counselling can refine an unclear concern without forcing a label.
         </Text>
         <View style={styles.issueChipGrid}>
-          {issueGuides.map((guide) => {
+          {visibleIssueGuides.map((guide) => {
             const isSelected = guide.id === selectedIssueGuide.id;
             return (
               <Pressable
@@ -26951,187 +27048,92 @@ function IssueGuideSection({
                 onPress={() => setIssueGuideId(guide.id)}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
-                <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>
-                  {guide.label}
-                </Text>
-                <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>
-                  {guide.subtitle}
-                </Text>
+                <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>{guide.label}</Text>
+                <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>{guide.subtitle}</Text>
               </Pressable>
             );
           })}
         </View>
+        <View style={styles.issueFocusActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showAllIssues }}
+            onPress={() => setShowAllIssues((value) => !value)}
+            style={({ pressed }) => [styles.issueSubtleButton, pressed && styles.pressed]}
+          >
+            <Text style={styles.issueSubtleButtonLabel}>
+              {showAllIssues ? "Show fewer concerns" : `Show all ${issueGuides.length} concerns`}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => onOpenTab("aihelp")}
+            style={({ pressed }) => [styles.issuePrimaryInlineButton, pressed && styles.pressed]}
+          >
+            <Text style={styles.issuePrimaryInlineButtonLabel}>Refine this in counselling</Text>
+          </Pressable>
+        </View>
       </View>
 
-        <View
-        style={styles.panel}
-        onLayout={onFocusSelectedIssueLayout ? onFocusSelectedIssueLayout(selectedIssueGuide.id) : undefined}
-      >
+      <View style={styles.issuePlanSection}>
         <View style={styles.sectionHeader}>
-          <View>
-            <Text style={styles.eyebrow}>{l("Your support plan", { hindi: "आपकी सहायता योजना", punjabi: "ਤੁਹਾਡੀ ਸਹਾਇਤਾ ਯੋਜਨਾ", marathi: "तुमची सहाय्य योजना", telugu: "మీ సహాయ ప్రణాళిక", tamil: "உங்கள் ஆதரவு திட்டம்", urdu: "آپ کا معاون منصوبہ" })}</Text>
-            <Text style={styles.sectionTitle}>{issueDisplayLabel}</Text>
+          <View style={styles.issuePlanHeaderCopy}>
+            <Text style={styles.eyebrow}>Start with what helps most</Text>
+            <Text style={styles.sectionTitle}>Your next-step plan</Text>
           </View>
-          <Text style={styles.smallMeta}>{l("One route / one next step", { hindi: "एक route / एक next step", punjabi: "ਇੱਕ ਰਾਹ / ਇੱਕ ਅਗਲਾ ਕਦਮ", marathi: "एक route / एक पुढचे पाऊल", telugu: "ఒక route / ఒక తదుపరి అడుగు", tamil: "ஒரு route / ஒரு அடுத்த படி", urdu: "ایک راستہ / ایک اگلا قدم" })}</Text>
+          <Text style={styles.smallMeta}>Work at your pace</Text>
         </View>
-        <Text style={styles.promptText}>{selectedIssueGuide.summary}</Text>
-        <View style={[styles.issueSupportBand, !showFullPathDetails && styles.hiddenSection]}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>Clarity discipline</Text>
-              <Text style={styles.sectionTitleSmall}>How to work with this issue</Text>
+        <View style={[styles.issuePlanCardGrid, isWide && styles.issuePlanCardGridWide]}>
+          {planCards.map((card) => (
+            <View key={card.id} style={[styles.issuePlanCard, isWide && styles.issuePlanCardWide]}>
+              <View style={[styles.issuePlanNumber, { backgroundColor: card.accent }]}>
+                <Text style={styles.issuePlanNumberText}>{card.number}</Text>
+              </View>
+              <Text style={[styles.issuePlanCardEyebrow, { color: card.accent }]}>{card.eyebrow}</Text>
+              <Text style={styles.issuePlanCardTitle}>{card.title}</Text>
+              <Text style={styles.issuePlanCardText}>{card.text}</Text>
+              <Pressable
+                accessibilityRole="button"
+                onPress={card.onPress}
+                style={({ pressed }) => [styles.issuePlanCardButton, { borderColor: card.accent }, pressed && styles.pressed]}
+              >
+                <Text style={[styles.issuePlanCardButtonLabel, { color: card.accent }]}>{card.action}</Text>
+              </Pressable>
             </View>
-            <Text style={styles.smallMeta}>Neutral practice</Text>
-          </View>
-          <Text style={styles.promptText}>{pathDepth.principle}</Text>
-          <View style={styles.profileSummaryGrid}>
-            <View style={styles.profileSummaryCard}>
-              <Text style={styles.profileSummaryLabel}>Ask</Text>
-              <Text style={styles.profileSummaryValue}>{pathDepth.discernmentQuestion}</Text>
-            </View>
-            <View style={styles.profileSummaryCard}>
-              <Text style={styles.profileSummaryLabel}>Practice</Text>
-              <Text style={styles.profileSummaryValue}>{pathDepth.practice}</Text>
-            </View>
-            <View style={styles.profileSummaryCard}>
-              <Text style={styles.profileSummaryLabel}>Boundary</Text>
-              <Text style={styles.profileSummaryValue}>{pathDepth.boundary}</Text>
-            </View>
-          </View>
-          <Text style={styles.issueActionText}>Completion marker: {pathDepth.completion}</Text>
+          ))}
         </View>
-        <View style={[styles.issueLensList, !showFullPathDetails && styles.hiddenSection]}>
-          <IssueLensRow label={l("Logical", { hindi: "तार्किक", punjabi: "ਤਰਕਸੰਗਤ", marathi: "तार्किक", telugu: "తార్కిక", tamil: "தர்க்கம்", urdu: "منطقی" })} text={selectedIssueGuide.logicalLens} />
-          <IssueLensRow label={l("Theoretical", { hindi: "सैद्धांतिक", punjabi: "ਸਿਧਾਂਤਕ", marathi: "सैद्धांतिक", telugu: "సిద్ధాంతపరమైన", tamil: "கோட்பாட்டு", urdu: "نظریاتی" })} text={selectedIssueGuide.theoreticalLens} />
-          <IssueLensRow label={l("Emotional", { hindi: "भावनात्मक", punjabi: "ਭਾਵਨਾਤਮਕ", marathi: "भावनिक", telugu: "భావోద్వేగ", tamil: "உணர்ச்சி", urdu: "جذباتی" })} text={selectedIssueGuide.emotionalLens} />
-          <IssueLensRow label={l("Reflective", { hindi: "चिंतन", punjabi: "ਚਿੰਤਨ", marathi: "चिंतन", telugu: "పరిశీలన", tamil: "பரிசீலனை", urdu: "غور و فکر" })} text={selectedIssueGuide.spiritualLens} />
-          <IssueLensRow label={l("Cultural", { hindi: "सांस्कृतिक", punjabi: "ਸੱਭਿਆਚਾਰਕ", marathi: "सांस्कृतिक", telugu: "సాంస్కృతిక", tamil: "கலாசார", urdu: "ثقافتی" })} text={selectedIssueGuide.culturalLens} />
+        <View style={styles.issuePracticeBand}>
+          <Text style={styles.issuePracticeLabel}>Practice now</Text>
+          <Text style={styles.issuePracticeText}>{pathDepth.practice}</Text>
+          <Text style={styles.issuePracticeCompletion}>You will know this step is complete when: {pathDepth.completion}</Text>
         </View>
+      </View>
 
-        {/* Moon Chart complement — the same multidimensional Vedic layer the
-            Automatic Counselling chat already overlays, now surfaced directly
-            on the Path itself instead of only inside the chat. */}
-        <View style={[styles.issueSupportBand, !showFullPathDetails && styles.hiddenSection]}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>Moon Chart complement</Text>
-              <Text style={styles.sectionTitleSmall}>How your personal chart intersects this issue</Text>
-            </View>
-            {moonChartComplement ? (
-              <Text style={styles.smallMeta}>{moonChartComplement.average}/100 · {moonChartComplement.verdict}</Text>
-            ) : null}
-          </View>
-          {moonChartComplement ? (
-            <>
-              <Text style={styles.promptText}>
-                Multi-dimensional Vedic reading for {selectedIssueGuide.label.toLowerCase()}: the {moonChartComplement.categories.join(", ")} dimensions of your chart average {moonChartComplement.average}/100 ({moonChartComplement.verdict.toLowerCase()}) right now.
-              </Text>
-              <View style={styles.issueChipGrid}>
-                {moonChartComplement.strongest.map((item) => (
-                  <View
-                    key={`strong-${item.id}`}
-                    style={{
-                      borderRadius: 10, borderWidth: 1, borderColor: moonChartVisualColor(item) + "55",
-                      backgroundColor: moonChartVisualColor(item) + "12", paddingHorizontal: 10, paddingVertical: 6, marginRight: 8, marginBottom: 8
-                    }}
-                  >
-                    <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "800" }}>{item.label} · {item.score}</Text>
-                  </View>
-                ))}
-                {moonChartComplement.careful.map((item) => (
-                  <View
-                    key={`careful-${item.id}`}
-                    style={{
-                      borderRadius: 10, borderWidth: 1, borderColor: "#B45309" + "55",
-                      backgroundColor: "#B45309" + "12", paddingHorizontal: 10, paddingVertical: 6, marginRight: 8, marginBottom: 8
-                    }}
-                  >
-                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "800" }}>{item.label} · {item.score}</Text>
-                  </View>
-                ))}
-              </View>
-              <Text style={styles.issueActionText}>{moonChartComplement.remedyTitle}: {moonChartComplement.remedy}</Text>
-              <View style={styles.issueCalloutActions}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => onOpenTab("vedic")}
-                  style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-                >
-                  <Text style={styles.helpButtonSecondaryLabel}>Open full Moon Chart</Text>
-                </Pressable>
-              </View>
-              <Text style={styles.smallMeta}>Reflective Vedic timing layer — not medical, legal, or emergency advice.</Text>
-            </>
-          ) : (
-            <>
-              <Text style={styles.promptText}>
-                Add your date of birth, time, and place in Vedic Insights to see how your personal Moon Chart connects to {selectedIssueGuide.label.toLowerCase()}.
-              </Text>
-              <View style={styles.issueCalloutActions}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => onOpenTab("vedic")}
-                  style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-                >
-                  <Text style={styles.helpButtonSecondaryLabel}>Open Vedic Insights</Text>
-                </Pressable>
-              </View>
-            </>
-          )}
-        </View>
-
-        <View style={styles.issueActionBand}>
-          <Text style={styles.issueActionTitle}>{l("Start here", { hindi: "यहाँ से शुरू करें", punjabi: "ਇੱਥੋਂ ਸ਼ੁਰੂ ਕਰੋ", marathi: "इथून सुरू करा", telugu: "ఇక్కడి నుంచే ప్రారంభించండి", tamil: "இங்கிருந்து தொடங்குங்கள்", urdu: "یہاں سے شروع کریں" })}</Text>
-          <Text style={styles.issueActionText}>{selectedIssueGuide.action}</Text>
-          <View style={styles.issueCalloutActions}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onOpenCalm}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Open Calm", { hindi: "शांत पेज खोलें", punjabi: "ਸ਼ਾਂਤ ਪੇਜ ਖੋਲ੍ਹੋ", marathi: "शांत पेज उघडा", telugu: "శాంతి పేజీ తెరవండి", tamil: "அமைதி பக்கத்தைத் திறக்கவும்", urdu: "پرسکون صفحہ کھولیں" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => onOpenTab("aihelp")}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Open Guide", { hindi: "मार्गदर्शक खोलें", punjabi: "ਮਾਰਗਦਰਸ਼ਕ ਖੋਲ੍ਹੋ", marathi: "मार्गदर्शक उघडा", telugu: "గైడ్ తెరవండి", tamil: "வழிகாட்டியைத் திறக்கவும்", urdu: "رہنما کھولیں" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onOpenRedress}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Open Redress", { hindi: "शिकायत पथ खोलें", punjabi: "ਸ਼ਿਕਾਇਤ ਰਾਹ ਖੋਲ੍ਹੋ", marathi: "तक्रार मार्ग उघडा", telugu: "ఫిర్యాదు మార్గం తెరవండి", tamil: "புகார் பாதையைத் திறக்கவும்", urdu: "شکایت راستہ کھولیں" })}</Text>
-            </Pressable>
-          </View>
-        </View>
+      <View style={styles.issuePlanSection}>
         <View style={styles.issueStepBand}>
           <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>{l("Saved progress", { hindi: "सहेजा गया progress", punjabi: "ਸੰਭਾਲਿਆ progress", marathi: "जतन केलेली प्रगती", telugu: "సేవ్ చేసిన progress", tamil: "சேமித்த முன்னேற்றம்", urdu: "محفوظ شدہ پیش رفت" })}</Text>
-              <Text style={styles.sectionTitle}>{l("Follow-up steps", { hindi: "फॉलो-अप कदम", punjabi: "ਫਾਲੋ-ਅਪ ਕਦਮ", marathi: "फॉलो-अप पावले", telugu: "ఫాలో-అప్ దశలు", tamil: "பின்தொடர் படிகள்", urdu: "فالو اپ steps" })}</Text>
+            <View style={styles.issuePlanHeaderCopy}>
+              <Text style={styles.eyebrow}>Practical steps</Text>
+              <Text style={styles.sectionTitle}>Move forward without rushing</Text>
             </View>
-            <Text style={styles.smallMeta}>
-              {issueCompletionCount}/3 done
-            </Text>
+            <Text style={styles.smallMeta}>{issueCompletionCount}/3 complete</Text>
           </View>
-          <Text style={styles.promptText}>{l("Keep the steps short. Return later if more context appears.", { hindi: "कदम छोटे रखें। अगर बाद में और context आए तो वापस लौटें।", punjabi: "ਕਦਮ ਛੋਟੇ ਰੱਖੋ। ਜੇ ਬਾਅਦ ਵਿੱਚ ਹੋਰ context ਆਵੇ ਤਾਂ ਮੁੜ ਆ ਜਾਓ।", marathi: "पावले लहान ठेवा. नंतर अधिक context मिळाल्यास परत या.", telugu: "దశలను చిన్నగా ఉంచండి. తర్వాత మరింత context వస్తే తిరిగి రండి.", tamil: "படிகளைச் சிறியதாக வைத்துக்கொள்ளுங்கள். பின்னர் கூடுதல் context வந்தால் திரும்பவும்.", urdu: "steps کو مختصر رکھیں۔ اگر بعد میں مزید context آئے تو واپس آئیں۔" })}</Text>
+          <Text style={styles.promptText}>Complete only what feels useful today. Your progress is saved on this device.</Text>
           <View style={styles.issueStepList}>
             {selectedIssueGuide.steps.map((step, index) => {
               const done = selectedIssueProgress[index];
+              const reason = index === 0
+                ? "Reduce immediate pressure and create enough room to think."
+                : index === 1
+                  ? "Clarify the need, pattern, or boundary beneath the situation."
+                  : "Turn understanding into one safe and measurable action.";
               return (
                 <Pressable
                   key={step}
                   accessibilityRole="button"
                   accessibilityState={{ selected: done }}
                   onPress={() => toggleIssueStep(selectedIssueGuide.id, index as 0 | 1 | 2)}
-                  style={({ pressed }) => [
-                    styles.issueStepButton,
-                    done && styles.issueStepButtonActive,
-                    pressed && styles.pressed
-                  ]}
+                  style={({ pressed }) => [styles.issueStepButton, done && styles.issueStepButtonActive, pressed && styles.pressed]}
                 >
                   <View style={[styles.issueStepCheck, done && styles.issueStepCheckActive]}>
                     <Text style={[styles.issueStepCheckText, done && styles.issueStepCheckTextActive]}>
@@ -27139,9 +27141,8 @@ function IssueGuideSection({
                     </Text>
                   </View>
                   <View style={styles.issueStepCopy}>
-                    <Text style={[styles.issueStepText, done && styles.issueStepTextActive]}>
-                      {step}
-                    </Text>
+                    <Text style={[styles.issueStepText, done && styles.issueStepTextActive]}>{step}</Text>
+                    <Text style={styles.issueStepReason}>{done ? "Completed" : reason}</Text>
                   </View>
                 </Pressable>
               );
@@ -27153,150 +27154,197 @@ function IssueGuideSection({
               onPress={() => resetIssueProgress(selectedIssueGuide.id)}
               style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
             >
-              <Text style={styles.textButtonLabel}>{l("Reset progress", { hindi: "प्रगति रीसेट करें", punjabi: "ਪ੍ਰਗਤੀ ਰੀਸੈਟ ਕਰੋ", marathi: "प्रगती रीसेट करा", telugu: "ప్రగతిని రీసెట్ చేయండి", tamil: "முன்னேற்றத்தை மீட்டமைக்கவும்", urdu: "پیش رفت reset کریں" })}</Text>
+              <Text style={styles.textButtonLabel}>{l("Reset progress")}</Text>
             </Pressable>
           </View>
         </View>
-        <View style={styles.issueCalloutActions}>
+      </View>
+
+      <View style={styles.issuePlanSection}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.issuePlanHeaderCopy}>
+            <Text style={styles.eyebrow}>Connected support</Text>
+            <Text style={styles.sectionTitle}>Continue without losing context</Text>
+          </View>
+          <Text style={styles.smallMeta}>Each section supports this plan</Text>
+        </View>
+        <Text style={styles.promptText}>
+          Choose the support that fits this moment. Your active focus remains {selectedIssueGuide.label.toLowerCase()} across the app.
+        </Text>
+        <View style={[styles.issueConnectedGrid, isWide && styles.issueConnectedGridWide]}>
+          {connectedRoutes.map((route) => (
+            <Pressable
+              key={route.id}
+              accessibilityRole="button"
+              onPress={route.onPress}
+              style={({ pressed }) => [styles.issueConnectedCard, isWide && styles.issueConnectedCardWide, pressed && styles.pressed]}
+            >
+              <Text style={styles.issueConnectedIcon}>{route.icon}</Text>
+              <View style={styles.issueConnectedCopy}>
+                <Text style={styles.issueConnectedTitle}>{route.title}</Text>
+                <Text style={styles.issueConnectedBenefit}>{route.benefit}</Text>
+                <Text style={styles.issueConnectedAction}>{route.action} →</Text>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.issueSafetyBar}>
+        <View style={styles.issueSafetyCopy}>
+          <Text style={styles.issueSafetyTitle}>Safety remains available at every step</Text>
+          <Text style={styles.issueSafetyText}>If there is immediate danger, call 112. For a complaint, evidence, or formal escalation route, open Help and Redress.</Text>
+        </View>
+        <View style={styles.issueSafetyActions}>
+          <Pressable accessibilityRole="button" onPress={onEmergencyCall} style={styles.issueSafetyPrimaryButton}>
+            <Text style={styles.issueSafetyPrimaryLabel}>Call 112</Text>
+          </Pressable>
+          <Pressable accessibilityRole="button" onPress={onOpenRedress} style={styles.issueSafetySecondaryButton}>
+            <Text style={styles.issueSafetySecondaryLabel}>Open Help</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.issuePlanSection}>
+        <View style={styles.issueDetailToggleRow}>
+          <View style={styles.issuePlanHeaderCopy}>
+            <Text style={styles.eyebrow}>Further context</Text>
+            <Text style={styles.sectionTitleSmall}>Reasoning, nearby support, insight, and follow-up</Text>
+          </View>
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: showFullPathDetails }}
             onPress={() => setShowFullPathDetails((value) => !value)}
-            style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+            style={({ pressed }) => [styles.issueSubtleButton, pressed && styles.pressed]}
           >
-            <Text style={styles.helpButtonSecondaryLabel}>
-              {showFullPathDetails ? "Hide full path details" : "Show full path details"}
-            </Text>
+            <Text style={styles.issueSubtleButtonLabel}>{showFullPathDetails ? "Hide details" : "View full reasoning"}</Text>
           </Pressable>
         </View>
-        {!showFullPathDetails ? (
+
+        {showFullPathDetails ? (
+          <View style={styles.issueDetailStack}>
+            <View style={styles.issueSupportBand}>
+              <Text style={styles.eyebrow}>Five complementary lenses</Text>
+              <Text style={styles.sectionTitleSmall}>A fuller view of this concern</Text>
+              <View style={styles.issueLensList}>
+                <IssueLensRow label={l("Logical")} text={selectedIssueGuide.logicalLens} />
+                <IssueLensRow label={l("Psychological")} text={selectedIssueGuide.theoreticalLens} />
+                <IssueLensRow label={l("Emotional")} text={selectedIssueGuide.emotionalLens} />
+                <IssueLensRow label={l("Reflective")} text={selectedIssueGuide.spiritualLens} />
+                <IssueLensRow label={l("Cultural")} text={selectedIssueGuide.culturalLens} />
+              </View>
+            </View>
+
+            <View style={styles.issueSupportBand}>
+              <View style={styles.sectionHeader}>
+                <View style={styles.issuePlanHeaderCopy}>
+                  <Text style={styles.eyebrow}>Moon-chart complement</Text>
+                  <Text style={styles.sectionTitleSmall}>Optional timing and remedy context</Text>
+                </View>
+                {moonChartComplement ? <Text style={styles.smallMeta}>{moonChartComplement.average}/100 · {moonChartComplement.verdict}</Text> : null}
+              </View>
+              {moonChartComplement ? (
+                <>
+                  <Text style={styles.promptText}>
+                    The relevant {moonChartComplement.categories.join(", ")} factors average {moonChartComplement.average}/100. Use this as reflective context, not as medical, legal, or emergency advice.
+                  </Text>
+                  <Text style={styles.issuePracticeText}>{moonChartComplement.remedyTitle}: {moonChartComplement.remedy}</Text>
+                  <Pressable accessibilityRole="button" onPress={() => onOpenTab("vedic")} style={styles.issueSubtleButton}>
+                    <Text style={styles.issueSubtleButtonLabel}>Open full Moon Chart</Text>
+                  </Pressable>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.promptText}>Add birth details in Vedic Insight to connect this plan with a neutral Moon-chart reading.</Text>
+                  <Pressable accessibilityRole="button" onPress={() => onOpenTab("vedic")} style={styles.issueSubtleButton}>
+                    <Text style={styles.issueSubtleButtonLabel}>Open Vedic Insight</Text>
+                  </Pressable>
+                </>
+              )}
+            </View>
+
+            <View style={styles.issueSupportBand}>
+              <Text style={styles.eyebrow}>Nearby and professional support</Text>
+              <Text style={styles.sectionTitleSmall}>Use a real person when the issue needs one</Text>
+              <View style={styles.issueSupportGrid}>
+                {selectedIssueGuide.supportPath.map((path) => (
+                  <Pressable
+                    key={path.label}
+                    accessibilityRole="button"
+                    onPress={() => openWebsite(buildNearbySearchUrl(path.query), `Nearby ${path.label}`)}
+                    style={({ pressed }) => [styles.issueSupportButton, pressed && styles.pressed]}
+                  >
+                    <Text style={styles.issueSupportButtonLabel}>{path.label}</Text>
+                    <Text style={styles.issueSupportButtonMeta}>{supportLocality.trim() || "Local search"}</Text>
+                  </Pressable>
+                ))}
+              </View>
+              <View style={styles.recommendList}>
+                {recommendedCarePaths.map((path) => (
+                  <Pressable
+                    key={path.id}
+                    accessibilityRole="button"
+                    onPress={() => openWebsite(buildNearbySearchUrl(path.query), `Nearby ${path.label}`)}
+                    style={({ pressed }) => [styles.recommendCard, pressed && styles.pressed]}
+                  >
+                    <Text style={styles.recommendLabel}>{path.label}</Text>
+                    <Text style={styles.recommendDetail}>{path.detail}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.issueCallout}>
+              <Text style={styles.issueCalloutTitle}>When to seek urgent support</Text>
+              <Text style={styles.issueCalloutText}>{selectedIssueGuide.urgentNote}</Text>
+              <View style={styles.issueCalloutActions}>
+                <Pressable accessibilityRole="button" onPress={onEmergencyCall} style={styles.helpButton}>
+                  <Text style={styles.helpButtonLabel}>SOS 112</Text>
+                </Pressable>
+                <Pressable accessibilityRole="button" onPress={onExportSafetyPlan} style={styles.helpButtonSecondary}>
+                  <Text style={styles.helpButtonSecondaryLabel}>Share plan</Text>
+                </Pressable>
+              </View>
+            </View>
+
+            <View style={styles.issueReminderBand}>
+              <View style={styles.sectionHeader}>
+                <View style={styles.issuePlanHeaderCopy}>
+                  <Text style={styles.eyebrow}>Follow-up</Text>
+                  <Text style={styles.sectionTitleSmall}>Return when you have more distance</Text>
+                </View>
+                <Text style={styles.smallMeta}>
+                  {issueReminderIssueId === selectedIssueGuide.id
+                    ? issueReminderMode === "tomorrow"
+                      ? "Tomorrow"
+                      : issueReminderMode === "week"
+                        ? "Next week"
+                        : "Not set"
+                    : "Not set"}
+                </Text>
+              </View>
+              <Text style={styles.promptText}>{selectedIssueGuide.followUp}</Text>
+              <View style={styles.issueReminderActions}>
+                <Pressable accessibilityRole="button" onPress={() => onScheduleIssueReminder("tomorrow")} style={styles.helpButton}>
+                  <Text style={styles.helpButtonLabel}>Remind tomorrow</Text>
+                </Pressable>
+                <Pressable accessibilityRole="button" onPress={() => onScheduleIssueReminder("week")} style={styles.helpButtonSecondary}>
+                  <Text style={styles.helpButtonSecondaryLabel}>Remind next week</Text>
+                </Pressable>
+                <Pressable accessibilityRole="button" onPress={onClearIssueReminder} style={styles.textButton}>
+                  <Text style={styles.textButtonLabel}>Clear reminder</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        ) : (
           <View style={styles.issueSupportBand}>
-            <Text style={styles.visionGuidanceTitle}>Focused path</Text>
+            <Text style={styles.visionGuidanceTitle}>Details stay available without crowding your plan</Text>
             <Text style={styles.visionGuidanceText}>
-              Start with the action and the three follow-up steps below. Deeper reasoning, chart context, nearby support, urgent notes, and reminders remain available under full details.
+              Open this only when you want the full reasoning, Moon-chart context, nearby support, urgent guidance, export, or reminder controls.
             </Text>
           </View>
-        ) : null}
-        <View style={[styles.issueSupportGrid, !showFullPathDetails && styles.hiddenSection]}>
-          {selectedIssueGuide.supportPath.map((path) => (
-            <Pressable
-              key={path.label}
-              accessibilityRole="button"
-              onPress={() => openWebsite(buildNearbySearchUrl(path.query), `Nearby ${path.label}`)}
-              style={({ pressed }) => [styles.issueSupportButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.issueSupportButtonLabel}>{path.label}</Text>
-              <Text style={styles.issueSupportButtonMeta}>
-                {supportLocality.trim() || l("Local search", { hindi: "स्थानीय खोज", punjabi: "ਸਥਾਨਕ ਖੋਜ", marathi: "स्थानिक शोध", telugu: "స్థానిక శోధన", tamil: "உள்ளூர் தேடல்", urdu: "مقامی تلاش" })}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-        <View style={[styles.issueCallout, !showFullPathDetails && styles.hiddenSection]}>
-          <Text style={styles.issueCalloutTitle}>{l("When to seek urgent support", { hindi: "तुरंत मदद कब लेनी है", punjabi: "ਤੁਰੰਤ ਮਦਦ ਕਦੋਂ ਲੈਣੀ ਹੈ", marathi: "तत्काळ मदत कधी घ्यावी", telugu: "తక్షణ సహాయం ఎప్పుడు తీసుకోవాలి", tamil: "அவசர உதவி எப்போது தேவை", urdu: "فوری مدد کب لینی ہے" })}</Text>
-          <Text style={styles.issueCalloutText}>{selectedIssueGuide.urgentNote}</Text>
-          <View style={styles.issueCalloutActions}>
-            <Pressable accessibilityRole="button" onPress={onEmergencyCall} style={styles.helpButton}>
-              <Text style={styles.helpButtonLabel}>{l("SOS", { hindi: "SOS", punjabi: "SOS", marathi: "SOS", telugu: "SOS", tamil: "SOS", urdu: "SOS" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => openWebsite(buildNearbySearchUrl("counselor psychologist"), "Nearby support")}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Nearby help", { hindi: "नज़दीकी मदद", punjabi: "ਨੇੜਲੀ ਮਦਦ", marathi: "जवळची मदत", telugu: "సమీప సహాయం", tamil: "அருகிலுள்ள உதவி", urdu: "قریبی مدد" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onOpenRedress}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Complaint path", { hindi: "शिकायत पथ", punjabi: "ਸ਼ਿਕਾਇਤ ਰਾਹ", marathi: "तक्रार मार्ग", telugu: "ఫిర్యాదు మార్గం", tamil: "புகார் பாதை", urdu: "شکایت راستہ" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onExportSafetyPlan}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Share plan", { hindi: "योजना साझा करें", punjabi: "ਯੋਜਨਾ ਸਾਂਝੀ ਕਰੋ", marathi: "योजना शेअर करा", telugu: "ప్లాన్ పంచుకోండి", tamil: "திட்டத்தைப் பகிரவும்", urdu: "منصوبہ شیئر کریں" })}</Text>
-            </Pressable>
-          </View>
-        </View>
-        <View style={[styles.issueSupportBand, !showFullPathDetails && styles.hiddenSection]}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>{l("Next route", { hindi: "अगला मार्ग", punjabi: "ਅਗਲਾ ਰਾਹ", marathi: "पुढचा मार्ग", telugu: "తదుపరి మార్గం", tamil: "அடுத்த பாதை", urdu: "اگلا راستہ" })}</Text>
-              <Text style={styles.sectionTitle}>{l("Recommended support", { hindi: "सुझाया गया support", punjabi: "ਸੁਝਾਇਆ ਗਿਆ support", marathi: "सुचवलेला support", telugu: "సూచించిన సహాయం", tamil: "பரிந்துரைக்கப்பட்ட உதவி", urdu: "تجویز کردہ مدد" })}</Text>
-            </View>
-            <Text style={styles.smallMeta}>{l("Profile-aware guidance", { hindi: "प्रोफ़ाइल-आधारित मार्गदर्शन", punjabi: "ਪ੍ਰੋਫ਼ਾਈਲ-ਅਧਾਰਿਤ ਮਾਰਗਦਰਸ਼ਨ", marathi: "प्रोफाइल-आधारित मार्गदर्शन", telugu: "ప్రొఫైల్-ఆధారిత మార్గదర్శనం", tamil: "சுயவிவர-அறிந்த வழிகாட்டல்", urdu: "پروفائل کے مطابق رہنمائی" })}</Text>
-          </View>
-          <View style={styles.recommendList}>
-            {recommendedCarePaths.map((path) => (
-              <Pressable
-                key={path.id}
-                accessibilityRole="button"
-                onPress={() => openWebsite(buildNearbySearchUrl(path.query), `Nearby ${path.label}`)}
-                style={({ pressed }) => [styles.recommendCard, pressed && styles.pressed]}
-              >
-                <Text style={styles.recommendLabel}>{path.label}</Text>
-                <Text style={styles.recommendDetail}>{path.detail}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-        <View style={[styles.issueReminderBand, !showFullPathDetails && styles.hiddenSection]}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.eyebrow}>{l("Reminder", { hindi: "रिमाइंडर", punjabi: "ਰਿਮਾਈਂਡਰ", marathi: "रिमाइंडर", telugu: "రిమైండర్", tamil: "நினைவூட்டல்", urdu: "یاد دہانی" })}</Text>
-              <Text style={styles.sectionTitle}>{l("Bring this back later", { hindi: "इसे बाद में फिर लाएँ", punjabi: "ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਮੁੜ ਲਿਆਓ", marathi: "हे नंतर पुन्हा आणा", telugu: "దీనిని తర్వాత మళ్లీ తెచ్చుకోండి", tamil: "இதை பின்னர் மீண்டும் கொண்டு வாருங்கள்", urdu: "اسے بعد میں دوبارہ لائیں" })}</Text>
-            </View>
-            <Text style={styles.smallMeta}>
-              {issueReminderIssueId === selectedIssueGuide.id
-                ? issueReminderMode === "tomorrow"
-                  ? "Tomorrow"
-                  : issueReminderMode === "week"
-                    ? "Next week"
-                    : "Not set"
-                : "Not set"}
-            </Text>
-          </View>
-          <Text style={styles.promptText}>
-            {l(
-              "Set a follow-up reminder so the guide returns when there is more distance and room to notice change.",
-              {
-                hindi: "फॉलो-अप reminder सेट करें ताकि कुछ दूरी और बदलाव देखने की जगह मिलने पर यह guide फिर लौट आए।",
-                punjabi: "ਫਾਲੋ-ਅਪ reminder ਸੈੱਟ ਕਰੋ ਤਾਂ ਕਿ ਕੁਝ ਦੂਰੀ ਅਤੇ ਬਦਲਾਅ ਦੇਖਣ ਦੀ ਥਾਂ ਮਿਲਣ 'ਤੇ ਇਹ guide ਮੁੜ ਆ ਸਕੇ।",
-                marathi: "फॉलो-अप reminder सेट करा, म्हणजे थोडे अंतर आणि बदल दिसण्यासाठी जागा मिळाल्यावर हा guide परत येईल.",
-                telugu: "ఫాలో-అప్ reminder ను సెట్ చేయండి, అప్పుడు కొంత దూరం వచ్చి మార్పు గమనించడానికి చోటు ఉన్నప్పుడు guide మళ్లీ వస్తుంది.",
-                tamil: "பின்னர் மீண்டும் வர reminder-ஐ அமைக்கவும், அப்போது சிறிது தூரமும் மாற்றத்தை கவனிக்க இடமும் இருக்கும்.",
-                urdu: "فالو اپ reminder سیٹ کریں تاکہ کچھ فاصلے اور تبدیلی دیکھنے کی گنجائش آنے پر یہ guide دوبارہ آئے۔"
-              }
-            )}
-          </Text>
-          <View style={styles.issueReminderActions}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => onScheduleIssueReminder("tomorrow")}
-              style={({ pressed }) => [styles.helpButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonLabel}>{l("Remind tomorrow", { hindi: "कल याद दिलाएँ", punjabi: "ਕੱਲ੍ਹ ਯਾਦ ਦਿਵਾਓ", marathi: "उद्या आठवण करून द्या", telugu: "రేపు గుర్తు చేయండి", tamil: "நாளை நினைவூட்டவும்", urdu: "کل یاد دلائیں" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => onScheduleIssueReminder("week")}
-              style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.helpButtonSecondaryLabel}>{l("Remind next week", { hindi: "अगले हफ़्ते याद दिलाएँ", punjabi: "ਅਗਲੇ ਹਫ਼ਤੇ ਯਾਦ ਦਿਵਾਓ", marathi: "पुढच्या आठवड्यात आठवण करून द्या", telugu: "తదుపరి వారం గుర్తు చేయండి", tamil: "அடுத்த வாரம் நினைவூட்டவும்", urdu: "اگلے ہفتے یاد دلائیں" })}</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={onClearIssueReminder}
-              style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
-            >
-              <Text style={styles.textButtonLabel}>{l("Clear reminder", { hindi: "रिमाइंडर हटाएँ", punjabi: "ਰਿਮਾਈਂਡਰ ਹਟਾਓ", marathi: "रिमाइंडर काढा", telugu: "రిమైండర్ తొలగించండి", tamil: "நினைவூட்டலை நீக்கவும்", urdu: "یاد دہانی صاف کریں" })}</Text>
-            </Pressable>
-          </View>
-        </View>
+        )}
       </View>
     </View>
   );
@@ -33326,49 +33374,24 @@ function AccessOverlay({
             textContentType="telephoneNumber"
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-            <Pressable
-              accessibilityRole="button"
-              disabled={verificationRequestBusy !== null || profilePhone.trim().length === 0}
-              onPress={async () => {
-                setVerificationChannel("phone");
-                const sent = await onRequestVerificationCode("phone");
-                if (sent) jumpToVerification();
-              }}
-              style={({ pressed }) => [
-                styles.onboardingButtonSecondary,
-                { flexGrow: 1, flexBasis: 150, minWidth: 0 },
-                (verificationRequestBusy !== null || profilePhone.trim().length === 0) && { opacity: 0.5 },
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={styles.onboardingButtonSecondaryLabel}>
-                {verificationRequestBusy === "phone" ? "Sending phone OTP…" : "Send phone OTP"}
-              </Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              disabled={verificationRequestBusy !== null || profileEmail.trim().length === 0}
-              onPress={async () => {
-                setVerificationChannel("email");
-                const sent = await onRequestVerificationCode("email");
-                if (sent) jumpToVerification();
-              }}
-              style={({ pressed }) => [
-                styles.onboardingButtonSecondary,
-                { flexGrow: 1, flexBasis: 150, minWidth: 0 },
-                (verificationRequestBusy !== null || profileEmail.trim().length === 0) && { opacity: 0.5 },
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={styles.onboardingButtonSecondaryLabel}>
-                {verificationRequestBusy === "email" ? "Sending email OTP…" : "Send email OTP"}
-              </Text>
-            </Pressable>
-          </View>
-          <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-            Enter a phone number or email above, send its OTP, then enter the received six-digit code in Verification below.
-          </Text>
+          <Pressable
+            accessibilityRole="button"
+            disabled={verificationRequestBusy !== null || profilePhone.trim().length === 0}
+            onPress={async () => {
+              setVerificationChannel("phone");
+              const sent = await onRequestVerificationCode("phone");
+              if (sent) jumpToVerification();
+            }}
+            style={({ pressed }) => [
+              styles.onboardingButtonSecondary,
+              (verificationRequestBusy !== null || profilePhone.trim().length === 0) && { opacity: 0.5 },
+              pressed && styles.pressed
+            ]}
+          >
+            <Text style={styles.onboardingButtonSecondaryLabel}>
+              {verificationRequestBusy === "phone" ? "Sending phone OTP…" : "Send phone OTP"}
+            </Text>
+          </Pressable>
           <TextInput
             value={profileEmail}
             onChangeText={setProfileEmail}
@@ -33379,6 +33402,27 @@ function AccessOverlay({
             textContentType="emailAddress"
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
+          <Pressable
+            accessibilityRole="button"
+            disabled={verificationRequestBusy !== null || profileEmail.trim().length === 0}
+            onPress={async () => {
+              setVerificationChannel("email");
+              const sent = await onRequestVerificationCode("email");
+              if (sent) jumpToVerification();
+            }}
+            style={({ pressed }) => [
+              styles.onboardingButtonSecondary,
+              (verificationRequestBusy !== null || profileEmail.trim().length === 0) && { opacity: 0.5 },
+              pressed && styles.pressed
+            ]}
+          >
+            <Text style={styles.onboardingButtonSecondaryLabel}>
+              {verificationRequestBusy === "email" ? "Sending email OTP…" : "Send email OTP"}
+            </Text>
+          </Pressable>
+          <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
+            Choose one contact method, send its OTP, then enter the received six-digit code in Verification below.
+          </Text>
           <TextInput
             value={profileLocation}
             onChangeText={setProfileLocation}
@@ -33827,14 +33871,13 @@ function OnboardingOverlay({
               <Text style={styles.eyebrow}>Welcome to Aethon Beacon</Text>
               <Text style={styles.onboardingTitle}>Choose what you need today.</Text>
               <Text style={styles.onboardingText}>
-                Start with counselling, calm, Vedic insight, help and redress, or community. Optional details can be skipped, and private notes stay on this device unless you choose to export or share them.
+                Start with counselling, calm, Vedic insight, or community. Optional details can be skipped, and private notes stay on this device unless you choose to export or share them.
               </Text>
               <View style={{ marginTop: 16, gap: 10 }}>
                 {[
                   { icon: "🧭", text: "Guided support room with an automatic counselling engine and practical next steps." },
                   { icon: "🌿", text: "Curated calm practices, tones, breath timing, and meditation." },
                   { icon: "🪐", text: "Moon-chart based Vedic insight with remedies and a hidden calculation basis." },
-                  { icon: "🛡️", text: "Emergency support, official redress routes, checklists, and templates." },
                   { icon: "🤝", text: "Verified community messages after contact verification." },
                 ].map((item) => (
                   <View key={item.icon} style={{ flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#F8FBFA", borderRadius: 16, padding: 12, borderWidth: 1, borderColor: "rgba(15,61,94,0.12)" }}>
@@ -33842,6 +33885,15 @@ function OnboardingOverlay({
                     <Text style={[styles.onboardingText, { marginTop: 0, flex: 1, fontSize: 14, lineHeight: 20, color: "#1F2937", fontWeight: "700" }]}>{item.text}</Text>
                   </View>
                 ))}
+                <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#FFF3F0", borderRadius: 16, padding: 12, borderWidth: 1, borderColor: "#E45A47" }}>
+                  <Text style={{ fontSize: 20 }}>🛡️</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: "#8D2318", fontSize: 14, lineHeight: 19, fontWeight: "900" }}>Help and Redress is always available</Text>
+                    <Text style={{ color: "#4B1F1A", fontSize: 13, lineHeight: 19, fontWeight: "700", marginTop: 3 }}>
+                      Use the dedicated Help tab for emergency support, official routes, evidence, and templates. In immediate danger, call 112.
+                    </Text>
+                  </View>
+                </View>
               </View>
             </View>
 
@@ -35719,6 +35771,50 @@ function buildCounselingReflectionCue(theme: SupportDimensionId, turnIndex: numb
   return `As you answer, ${byTheme[theme] ?? commonCues[Math.min(turnIndex, commonCues.length - 1)]}`;
 }
 
+function buildCounselingCoreProbe(allUserText: string, turnIndex: number): string | null {
+  const text = allUserText.trim().toLowerCase();
+  if (!text) return null;
+
+  // A premium guided conversation should not walk through a fixed interview
+  // regardless of what the person has already explained. These signals detect
+  // which core layer is still missing, then select one warm, focused question.
+  // Rotating the starting point by turn prevents the guide from repeating the
+  // same unanswered prompt while still working toward a complete picture.
+  const probes: Array<{ seen: RegExp; question: string }> = [
+    {
+      seen: /\b(because|after|when|since|started|happened|trigger|due to|led to)\b/,
+      question: "What was happening around the time this began or became harder? One specific moment or pattern is enough."
+    },
+    {
+      seen: /\b(today|yesterday|recent|day|week|month|year|ago|for a while|long time|since)\b/,
+      question: "How long has this been affecting you, and has it been steady, improving, or becoming more difficult?"
+    },
+    {
+      seen: /\b(sleep|appetite|eat|body|work|study|focus|relationship|daily|avoid|function|energy|concentrat)\w*\b/,
+      question: "Where is this affecting daily life most right now — sleep, concentration, work or study, relationships, or your body?"
+    },
+    {
+      seen: /\b(told|spoke|talked|support|friend|family|counsellor|counselor|doctor|teacher|mentor|colleague|alone)\b/,
+      question: "Who, if anyone, understands what you are carrying? Tell me whether you feel supported, partly understood, or mostly alone with it."
+    },
+    {
+      seen: /\b(tried|attempted|helped|worked|practice|spoke to|asked|changed|stopped|started doing)\b/,
+      question: "What have you already tried, even briefly, and what made it help, fail, or feel difficult to continue?"
+    },
+    {
+      seen: /\b(want|need|hope|would help|outcome|change|clarity|decision|relief|next step)\b/,
+      question: "What would a useful outcome from this conversation look like for you today — relief, clarity, a decision, a boundary, or a practical plan?"
+    },
+    {
+      seen: /\b(core|main issue|hardest part|most painful|underneath|really about)\b/,
+      question: "If you had to name the hardest part beneath everything else, what feels most painful, unsafe, unfair, or unresolved?"
+    }
+  ];
+  const start = Math.min(turnIndex, probes.length - 1);
+  const ordered = [...probes.slice(start), ...probes.slice(0, start)];
+  return ordered.find((probe) => !probe.seen.test(text))?.question ?? null;
+}
+
 /**
  * Supreme-level adaptive counseling question builder.
  * Full multidimensional coverage: bespoke banks for core themes plus generated
@@ -35933,6 +36029,9 @@ function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: numbe
   const composeQuestion = (question: string, theme: SupportDimensionId) =>
     `${question}\n\n${buildCounselingReflectionCue(theme, turnIndex)}`;
 
+  const coreProbe = allUserText ? buildCounselingCoreProbe(allUserText, turnIndex) : null;
+  if (coreProbe) return composeQuestion(coreProbe, primaryTheme);
+
   // Cross-theme adaptive branching
   if (turnIndex >= 2 && themes.length > 1) {
     const secondTheme = themes[1];
@@ -36118,18 +36217,15 @@ function buildJourneySteps(
     });
   }
 
-  // ── 1.5. Structured issue path — the Path tab's principle/practice/boundary
-  // framework was never once recommended by this journey builder before, even
-  // though every other content tab (tones, meditation, search, aihelp, journal,
-  // vedic, redress, community, play, insights) is. Only makes sense once a
-  // specific issue has actually been identified (not the "general" default) --
-  // that structured plan doesn't exist for an unclassified concern.
+  // The coordinated action plan follows the conversation that identified the
+  // concern. It keeps the issue context active while handing the person to a
+  // stabilising practice, saved steps, and the other relevant sections.
   if (issueId !== "general") {
     steps.push({
       tabId: "guide",
-      label: "See your structured path",
+      label: "Open your action plan",
       emoji: "🧭",
-      reason: "A concrete principle, practice, and boundary for exactly this issue — not general advice.",
+      reason: "Use one coordinated plan with a clear principle, three saved steps, and direct handoffs to the support that fits next.",
       completed: false, skipped: false
     });
   }
@@ -36167,21 +36263,8 @@ function buildJourneySteps(
     });
   }
 
-  // ── 4. Guided personalised path ──────────────────────────────────────────────
-  steps.push({
-    tabId: "aihelp",
-    label: "Get personalised guidance",
-    emoji: "🤝",
-    reason:
-      recurrenceCount >= 2
-        ? `This is the ${recurrenceCount + 1}${recurrenceCount + 1 === 3 ? "rd" : "th"} time this has come up — talking it through properly now can break the repeat cycle instead of just easing this instance.`
-        : streak >= 7
-          ? `Talk through your specific situation — you've already shown up ${streak} days running, so bring that same consistency here.`
-          : "Talk through your specific situation and get tailored next steps — not generic advice.",
-    completed: false, skipped: false
-  });
-
-  // ── 5. Journal — write to process ────────────────────────────────────────────
+  // The journey is created by counselling, so it must not route straight back
+  // into the same room. Journal is the next reflective handoff after action.
   steps.push({
     tabId: "journal",
     label: "Write it out",
@@ -36473,7 +36556,7 @@ function CounselingChatModal({
     if (!visible) return;
     setSafetyNoticeExpanded(true);
     const themes = detectThemes(recentJournalNotesText ? `${initialIssue} ${recentJournalNotesText}` : initialIssue);
-    const firstQuestion = buildCounselingQuestions(themes, 0);
+    const firstQuestion = buildCounselingQuestions(themes, 0, initialIssue);
     const opening = buildCounselingAcknowledgment(initialIssue, issueId, detectGuidedSupportRouteFromText(initialIssue));
     // Warm, personal welcome up front -- previously the chat opened straight
     // into the clinical acknowledgment with no greeting, which read as cold
@@ -36635,7 +36718,11 @@ function CounselingChatModal({
       synthesizeAndPrepareJourney(newTurns, newQuestionIndex, mergedThemes, allUserText);
     } else {
       // Ask next adaptive question using updated merged themes
-      const nextQ = buildCounselingQuestions(mergedThemes, newQuestionIndex, allUserText);
+      const nextQ = buildCounselingQuestions(
+        mergedThemes,
+        newQuestionIndex,
+        session.originalIssue + " " + allUserText
+      );
       const shouldOfferCheckpoint =
         userResponses >= COUNSELING_NEXT_STEP_READY_USER_RESPONSES &&
         userResponses % COUNSELING_NEXT_STEP_READY_USER_RESPONSES === 0;
@@ -40868,6 +40955,429 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 0
   },
+  issuePlanShell: {
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    gap: 14
+  },
+  issuePlanHero: {
+    borderRadius: 22,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.24)",
+    backgroundColor: "#E7F2EF",
+    padding: 18,
+    gap: 14,
+    shadowColor: "#0E3040",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.09,
+    shadowRadius: 18,
+    elevation: 4
+  },
+  issuePlanHeroWide: {
+    padding: 22
+  },
+  issuePlanHeroHeader: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 14
+  },
+  issuePlanHeroCopy: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 260,
+    minWidth: 0,
+    gap: 6
+  },
+  issuePlanHeroTitle: {
+    color: "#0D1F22",
+    fontSize: 27,
+    lineHeight: 33,
+    fontWeight: "900",
+    letterSpacing: -0.5
+  },
+  issuePlanHeroLead: {
+    color: "#1F3B41",
+    fontSize: 15,
+    lineHeight: 23,
+    fontWeight: "600"
+  },
+  issuePlanStatusPill: {
+    minWidth: 96,
+    borderRadius: 16,
+    borderCurve: "continuous",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.22)",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    alignItems: "center",
+    gap: 1
+  },
+  issuePlanStatusValue: {
+    color: "#0E6F69",
+    fontSize: 20,
+    lineHeight: 24,
+    fontWeight: "900"
+  },
+  issuePlanStatusLabel: {
+    color: "#35565C",
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "800"
+  },
+  issuePlanPrincipleBand: {
+    borderRadius: 16,
+    borderCurve: "continuous",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.18)",
+    padding: 14,
+    gap: 5
+  },
+  issuePlanPrincipleLabel: {
+    color: "#0E6F69",
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+    textTransform: "uppercase"
+  },
+  issuePlanPrincipleText: {
+    color: "#0D1F22",
+    fontSize: 15,
+    lineHeight: 23,
+    fontWeight: "700"
+  },
+  issuePlanHeroMeta: {
+    color: "#45666B",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "700"
+  },
+  issueFocusCard: {
+    borderRadius: 18,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "rgba(148,163,184,0.28)",
+    backgroundColor: "#F7FAFA",
+    padding: 16,
+    gap: 12
+  },
+  issuePlanHeaderCopy: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 220,
+    minWidth: 0
+  },
+  issueFocusActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 9
+  },
+  issueSubtleButton: {
+    minHeight: 46,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 150,
+    minWidth: 0,
+    borderRadius: 12,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "#0E6F69",
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 13,
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  issueSubtleButtonLabel: {
+    color: "#0E6F69",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "900",
+    textAlign: "center"
+  },
+  issuePrimaryInlineButton: {
+    minHeight: 46,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 190,
+    minWidth: 0,
+    borderRadius: 12,
+    borderCurve: "continuous",
+    backgroundColor: "#0E6F69",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  issuePrimaryInlineButtonLabel: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "900",
+    textAlign: "center"
+  },
+  issuePlanSection: {
+    borderRadius: 20,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "rgba(148,163,184,0.26)",
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    gap: 14,
+    shadowColor: "#0E3040",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.055,
+    shadowRadius: 14,
+    elevation: 2
+  },
+  issuePlanCardGrid: {
+    gap: 10
+  },
+  issuePlanCardGridWide: {
+    flexDirection: "row",
+    flexWrap: "wrap"
+  },
+  issuePlanCard: {
+    minWidth: 0,
+    borderRadius: 18,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "rgba(148,163,184,0.28)",
+    backgroundColor: "#F7FAFA",
+    padding: 15,
+    gap: 8
+  },
+  issuePlanCardWide: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 250
+  },
+  issuePlanNumber: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderCurve: "continuous",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  issuePlanNumberText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  issuePlanCardEyebrow: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+    textTransform: "uppercase"
+  },
+  issuePlanCardTitle: {
+    color: "#0D1F22",
+    fontSize: 17,
+    lineHeight: 22,
+    fontWeight: "900"
+  },
+  issuePlanCardText: {
+    color: "#253E44",
+    fontSize: 14,
+    lineHeight: 21,
+    fontWeight: "600",
+    flexGrow: 1
+  },
+  issuePlanCardButton: {
+    minHeight: 44,
+    borderRadius: 12,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  issuePlanCardButtonLabel: {
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "900",
+    textAlign: "center"
+  },
+  issuePracticeBand: {
+    borderRadius: 16,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.24)",
+    backgroundColor: "#EAF5F2",
+    padding: 14,
+    gap: 6
+  },
+  issuePracticeLabel: {
+    color: "#0E6F69",
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+    textTransform: "uppercase"
+  },
+  issuePracticeText: {
+    color: "#0D1F22",
+    fontSize: 15,
+    lineHeight: 23,
+    fontWeight: "800"
+  },
+  issuePracticeCompletion: {
+    color: "#35565C",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "700"
+  },
+  issueStepReason: {
+    color: "#486268",
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "600",
+    marginTop: 4
+  },
+  issueConnectedGrid: {
+    gap: 10
+  },
+  issueConnectedGridWide: {
+    flexDirection: "row",
+    flexWrap: "wrap"
+  },
+  issueConnectedCard: {
+    minWidth: 0,
+    minHeight: 112,
+    borderRadius: 17,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "rgba(14,111,105,0.2)",
+    backgroundColor: "#F7FAFA",
+    padding: 14,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 11
+  },
+  issueConnectedCardWide: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 260
+  },
+  issueConnectedIcon: {
+    fontSize: 22,
+    lineHeight: 28
+  },
+  issueConnectedCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 3
+  },
+  issueConnectedTitle: {
+    color: "#0D1F22",
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: "900"
+  },
+  issueConnectedBenefit: {
+    color: "#334F55",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "600"
+  },
+  issueConnectedAction: {
+    color: "#0E6F69",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "900",
+    marginTop: 3
+  },
+  issueSafetyBar: {
+    borderRadius: 18,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "rgba(190,18,60,0.28)",
+    backgroundColor: "#FFF1F2",
+    padding: 15,
+    gap: 12,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "space-between"
+  },
+  issueSafetyCopy: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 260,
+    minWidth: 0,
+    gap: 4
+  },
+  issueSafetyTitle: {
+    color: "#881337",
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: "900"
+  },
+  issueSafetyText: {
+    color: "#4C1D2B",
+    fontSize: 13,
+    lineHeight: 20,
+    fontWeight: "700"
+  },
+  issueSafetyActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8
+  },
+  issueSafetyPrimaryButton: {
+    minHeight: 44,
+    borderRadius: 12,
+    borderCurve: "continuous",
+    backgroundColor: "#BE123C",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  issueSafetyPrimaryLabel: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "900"
+  },
+  issueSafetySecondaryButton: {
+    minHeight: 44,
+    borderRadius: 12,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "#9F1239",
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  issueSafetySecondaryLabel: {
+    color: "#9F1239",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "900"
+  },
+  issueDetailToggleRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12
+  },
+  issueDetailStack: {
+    gap: 12
+  },
   issueCompassBand: {
     borderRadius: 8,
     borderWidth: 1,
@@ -42696,6 +43206,196 @@ const styles = StyleSheet.create({
     padding: 8,
     gap: 6,
     marginBottom: 8
+  },
+  aiHelpEntrySurface: {
+    backgroundColor: "#F7FAF9",
+    borderColor: "#B9D8D2",
+    borderRadius: 20,
+    borderCurve: "continuous",
+    padding: 16,
+    gap: 14
+  },
+  aiHelpEntryCard: {
+    borderRadius: 20,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "#B8D9D3",
+    backgroundColor: "#FFFFFF",
+    padding: 18,
+    gap: 12,
+    shadowColor: "#0E6F69",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 4
+  },
+  aiHelpEntryCardCompact: {
+    borderRadius: 17,
+    padding: 14,
+    gap: 10
+  },
+  aiHelpEntryEyebrow: {
+    color: "#0E6F69",
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "900",
+    letterSpacing: 1.1,
+    textTransform: "uppercase"
+  },
+  aiHelpEntryTitle: {
+    color: "#0D1F22",
+    fontSize: 26,
+    lineHeight: 32,
+    fontWeight: "900"
+  },
+  aiHelpEntryTitleCompact: {
+    fontSize: 23,
+    lineHeight: 29
+  },
+  aiHelpEntryLead: {
+    color: "#263B43",
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: "600"
+  },
+  aiHelpEntryLeadCompact: {
+    fontSize: 15,
+    lineHeight: 22
+  },
+  aiHelpEntryInput: {
+    minHeight: 112,
+    borderRadius: 15,
+    borderColor: "#8BBDB5",
+    backgroundColor: "#F4F8F7",
+    color: "#0D1F22",
+    fontSize: 16,
+    lineHeight: 23,
+    paddingHorizontal: 14,
+    paddingVertical: 13
+  },
+  aiHelpEntryActions: {
+    marginTop: 0
+  },
+  aiHelpStartButton: {
+    flexGrow: 1,
+    minHeight: 48,
+    borderRadius: 14
+  },
+  aiHelpEntryTrustRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 6
+  },
+  aiHelpEntryTrustText: {
+    color: "#39545B",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700"
+  },
+  aiHelpEntryTrustDot: {
+    color: "#0E9488",
+    fontSize: 12,
+    fontWeight: "900"
+  },
+  aiHelpStarterBlock: {
+    gap: 8
+  },
+  aiHelpStarterHeading: {
+    color: "#243940",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "900"
+  },
+  aiHelpOptionalContext: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderRadius: 14,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "#C6D9D5",
+    backgroundColor: "#FFFFFF",
+    padding: 12
+  },
+  aiHelpOptionalContextActive: {
+    borderColor: "#0891B2",
+    backgroundColor: "#EFFBFD"
+  },
+  aiHelpOptionalCheck: {
+    width: 22,
+    height: 22,
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: "#71848A",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  aiHelpOptionalCheckActive: {
+    borderColor: "#0891B2",
+    backgroundColor: "#0891B2"
+  },
+  aiHelpOptionalCheckLabel: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  aiHelpOptionalTitle: {
+    color: "#0D1F22",
+    fontSize: 14,
+    lineHeight: 19,
+    fontWeight: "900"
+  },
+  aiHelpOptionalMeta: {
+    color: "#3E5961",
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 2
+  },
+  aiHelpSafetyLine: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+    borderRadius: 14,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "#F0B4AA",
+    backgroundColor: "#FFF6F4",
+    padding: 12
+  },
+  aiHelpSafetyText: {
+    flex: 1,
+    minWidth: 190,
+    color: "#55241E",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "700"
+  },
+  aiHelpSafetyButton: {
+    minHeight: 38,
+    borderRadius: 11,
+    backgroundColor: "#C93424",
+    paddingHorizontal: 14,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  aiHelpSafetyButtonLabel: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  aiHelpPreviousBlock: {
+    gap: 10
+  },
+  aiHelpPreviousContent: {
+    gap: 10
+  },
+  aiHelpSafetySummaryRow: {
+    borderLeftWidth: 3,
+    borderLeftColor: "#0E9488",
+    paddingLeft: 10
   },
   aiHelpHeaderCompact: {
     gap: 6

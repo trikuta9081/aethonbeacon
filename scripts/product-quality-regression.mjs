@@ -161,16 +161,33 @@ assert(!source.includes('title: "Help and Redress",\n                body:'), 'H
   'View calculation basis'
 ].forEach((marker) => assert(source.includes(marker), `Missing Vedic presentation marker: ${marker}`));
 
-// Onboarding is a calm first minute: five choices, optional profile, and clear
-// privacy reassurance instead of a wall of explanation.
+// Onboarding is a calm first minute: four primary choices, a separate
+// always-available safety route, optional profile, and clear privacy assurance.
 [
   'Choose what you need today.',
   'automatic counselling engine',
+  'Help and Redress is always available',
   'Profile details are optional. You can enter the app now and add more later.',
   'Privacy first',
   'Skip for now',
   'Enter app'
 ].forEach((marker) => assert(source.includes(marker), `Missing onboarding/privacy marker: ${marker}`));
+
+// Counselling opens on the prompt entry rather than a text-heavy summary and
+// the Action Plan keeps all supporting sections coordinated around one issue.
+[
+  'Enter what you would like help with…',
+  'Start counselling',
+  'A private two-way conversation will begin immediately',
+  'function buildCounselingCoreProbe',
+  'Your coordinated plan',
+  'Your next-step plan',
+  'Practice now',
+  'Continue without losing context',
+  'Safety remains available at every step',
+  'View full reasoning'
+].forEach((marker) => assert(source.includes(marker), `Missing coordinated counselling/action-plan marker: ${marker}`));
+assert(!source.includes('id: "complaint",\n    label: "Help and Redress"'), 'Help and Redress must remain outside the onboarding choice grid.');
 
 // Store and tester polish must remain visible in the web recruitment surface
 // and launch readiness copy.

@@ -176,7 +176,7 @@ assert(source.includes('function buildPathMoonChartComplement'), 'Path Moon Char
 assert(source.includes('moonChartComplement = useMemo'), 'Path does not memoize its Moon Chart complement');
 assert(source.includes('moonChartInsightReadings={vedicMoonChartInsightReadings}'), 'Path is not receiving the live Moon Chart insight readings');
 assert(source.includes('Moon Chart complement'), 'Moon Chart complement panel is not rendered on Path');
-assert(source.includes('Add your date of birth, time, and place in Vedic Insights to see how your personal Moon Chart connects'), 'Path is missing the no-birth-data fallback for the Moon Chart complement');
+assert(source.includes('Add birth details in Vedic Insight to connect this plan with a neutral Moon-chart reading.'), 'Path is missing the no-birth-data fallback for the Moon Chart complement');
 // All 17 Path issues must have an explicit Moon Chart category mapping — no
 // issue should silently fall through to a hardcoded default.
 const issueMoon48Block = source.match(/const ISSUE_TO_MOON48_CATEGORIES: Record<IssueId, MoonChart48Category\[\]> = \{[\s\S]*?\n\};/);
