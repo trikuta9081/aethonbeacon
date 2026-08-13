@@ -200,4 +200,41 @@ assert(
   'disclosure carets must use the iOS pair ("\u25B8" collapsed / "\u25BE" expanded), not up/down triangles -- two conventions for one gesture is exactly what makes a screen feel unowned'
 );
 
+// ── 44pt minimum touch target ────────────────────────────────────────────────
+// Apple HIG requires 44x44pt; Material asks for 48dp. Earlier commits in this
+// repo applied the rule to individual surfaces ("Apple HIG: 44pt targets +
+// 16px inputs on Redress case tracker + counselling"), which left 26 tappable
+// controls elsewhere between 28pt and 42pt -- including a language chip whose
+// own twin beside it was already 44. Checked across the whole stylesheet now
+// rather than per screen.
+{
+  const stylesBlock = source.slice(
+    source.indexOf("const styles = StyleSheet.create({"),
+    source.lastIndexOf("});")
+  );
+  const tooSmall = [];
+  for (const m of stylesBlock.matchAll(/^  ([a-zA-Z][A-Za-z0-9_]*): \{([^}]*)\}/gms)) {
+    const [, name, block] = m;
+    if (!/Chip|Button|Action|Tab|Pill|Toggle|Item/.test(name)) continue;
+    const mh = block.match(/minHeight: (\d+)/);
+    if (!mh) continue;
+    // Only styles actually rendered on a pressable element are targets. Walk
+    // back to the NEAREST opening tag rather than accepting any <Pressable
+    // within a window -- a loose window matches an unrelated pressable
+    // further up the tree and reports badges as untappable controls.
+    let usedOnPressable = false;
+    for (const use of source.matchAll(new RegExp(`styles\\.${name}\\b`, "g"))) {
+      const before = source.slice(Math.max(0, use.index - 1400), use.index);
+      const tags = [...before.matchAll(/<([A-Za-z][A-Za-z0-9_.]*)/g)];
+      const nearest = tags.length ? tags[tags.length - 1][1] : "";
+      if (nearest === "Pressable" || nearest === "TouchableOpacity") { usedOnPressable = true; break; }
+    }
+    if (usedOnPressable && Number(mh[1]) < 44) tooSmall.push(`${name} (${mh[1]}pt)`);
+  }
+  assert(
+    tooSmall.length === 0,
+    `tappable controls below the 44pt minimum: ${tooSmall.join(", ")}`
+  );
+}
+
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');

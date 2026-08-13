@@ -40150,7 +40150,7 @@ const styles = StyleSheet.create({
     paddingRight: 4
   },
   topTabButton: {
-    minHeight: 40,
+    minHeight: 44,
     minWidth: 0,
     flexGrow: 1,
     flexShrink: 1,
@@ -40487,7 +40487,7 @@ const styles = StyleSheet.create({
     flexBasis: 120,
     minWidth: 0,
     maxWidth: "100%",
-    minHeight: 42,
+    minHeight: 44,
     borderRadius: 8,
     backgroundColor: "#E1EEEC",
     paddingHorizontal: 14,
@@ -40509,7 +40509,7 @@ const styles = StyleSheet.create({
     flexBasis: 120,
     minWidth: 0,
     maxWidth: "100%",
-    minHeight: 42,
+    minHeight: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "rgba(14,204,184,0.45)",
@@ -41769,7 +41769,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   searchSuggestionChip: {
-    minHeight: 38,
+    minHeight: 44,
     borderRadius: 19,
     borderCurve: "continuous",
     borderWidth: 1,
@@ -42476,9 +42476,9 @@ const styles = StyleSheet.create({
     flexBasis: 0,
     maxWidth: "100%",
     width: "auto",
-    minHeight: 32,
-    paddingHorizontal: 7,
-    paddingVertical: 4
+    minHeight: 44,
+    paddingHorizontal: 9,
+    paddingVertical: 7
   },
   topLanguageChipLabel: {
     color: "#B45309",
@@ -42732,7 +42732,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   aiHelpSafetyButton: {
-    minHeight: 38,
+    minHeight: 44,
     borderRadius: 11,
     backgroundColor: "#C93424",
     paddingHorizontal: 14,
@@ -42826,7 +42826,7 @@ const styles = StyleSheet.create({
     gap: 5
   },
   aiStarterChip: {
-    minHeight: 32,
+    minHeight: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "rgba(46,125,154,0.28)",
@@ -42837,7 +42837,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   aiStarterChipCompact: {
-    minHeight: 28,
+    minHeight: 44,
     paddingHorizontal: 7,
     paddingVertical: 5
   },
@@ -43137,7 +43137,7 @@ const styles = StyleSheet.create({
 
   profileSheetExitButton: {
     flex: 1,
-    minHeight: 34,
+    minHeight: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#8C432B",
@@ -43156,7 +43156,7 @@ const styles = StyleSheet.create({
   },
   profileSheetJumpButton: {
     flex: 1,
-    minHeight: 34,
+    minHeight: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#3F785D",
@@ -43226,7 +43226,7 @@ const styles = StyleSheet.create({
 
   onboardingCloseButton: {
     minWidth: 64,
-    minHeight: 34,
+    minHeight: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
@@ -43238,7 +43238,7 @@ const styles = StyleSheet.create({
   },
   onboardingCloseButtonCompact: {
     minWidth: 56,
-    minHeight: 32,
+    minHeight: 44,
     paddingHorizontal: 10,
     paddingVertical: 5
   },
@@ -43336,7 +43336,7 @@ const styles = StyleSheet.create({
     paddingTop: 0
   },
   onboardingButton: {
-    minHeight: 42,
+    minHeight: 44,
     borderRadius: 8,
     backgroundColor: "#E1EEEC",
     paddingHorizontal: 16,
@@ -43344,7 +43344,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   onboardingButtonCompact: {
-    minHeight: 38,
+    minHeight: 44,
     paddingHorizontal: 14
   },
   onboardingButtonLabel: {
@@ -43353,7 +43353,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   onboardingButtonSecondary: {
-    minHeight: 36,
+    minHeight: 44,
     borderRadius: 8,
     backgroundColor: "#F4F8F7",
     borderWidth: 1,
@@ -43363,7 +43363,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   onboardingButtonSecondaryCompact: {
-    minHeight: 34,
+    minHeight: 44,
     paddingHorizontal: 12,
     paddingVertical: 6
   },
@@ -43471,7 +43471,7 @@ const styles = StyleSheet.create({
     gap: 6
   },
   flowRailButton: {
-    minHeight: 32,
+    minHeight: 44,
     borderRadius: 20,
     borderCurve: "continuous",
     borderWidth: 1,
@@ -43483,13 +43483,13 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   flowRailButtonBack: {
-    minHeight: 30,
+    minHeight: 44,
     paddingHorizontal: 10,
     paddingVertical: 6,
     alignSelf: "flex-start"
   },
   flowRailButtonNext: {
-    minHeight: 30,
+    minHeight: 44,
     paddingHorizontal: 10,
     paddingVertical: 6,
     alignSelf: "flex-start"
@@ -43519,7 +43519,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start"
   },
   flowRailButtonHome: {
-    minHeight: 30,
+    minHeight: 44,
     paddingHorizontal: 10,
     paddingVertical: 6,
     alignSelf: "flex-start"
@@ -44769,7 +44769,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   calmQuickActionButton: {
-    minHeight: 40,
+    minHeight: 44,
     marginTop: 2,
     borderRadius: 10,
     paddingHorizontal: 14,
@@ -44981,7 +44981,7 @@ const styles = StyleSheet.create({
     lineHeight: 21
   },
   textButton: {
-    minHeight: 36,
+    minHeight: 44,
     paddingHorizontal: 12,
     borderRadius: 8,
     borderWidth: 1,
@@ -45499,7 +45499,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap"
   },
   contactButton: {
-    minHeight: 38,
+    minHeight: 44,
     borderRadius: 8,
     paddingHorizontal: 14,
     alignItems: "center",
@@ -45512,7 +45512,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   contactButtonSecondary: {
-    minHeight: 38,
+    minHeight: 44,
     borderRadius: 8,
     paddingHorizontal: 14,
     alignItems: "center",
@@ -45528,7 +45528,7 @@ const styles = StyleSheet.create({
   },
   ratingChip: {
     minWidth: 42,
-    minHeight: 38,
+    minHeight: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#1F4799",
@@ -45823,7 +45823,7 @@ const styles = StyleSheet.create({
   },
   communityTopicButtonCompact: {
     flexBasis: "48%",
-    minHeight: 42,
+    minHeight: 44,
     paddingHorizontal: 10,
     paddingVertical: 8
   },
