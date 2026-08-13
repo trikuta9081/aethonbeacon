@@ -339,4 +339,21 @@ for (const [bad, good] of [
   );
 }
 
+// Accent values that reach text indirectly. Replacing `color: "#hex"` misses
+// anything stored first -- a theme constant read as color={theme.accentGold},
+// an `accent:` field on a data object, a ternary picking a score colour. Two
+// colours survived a literal sweep that way and kept failing on the rendered
+// page. These may still appear as backgroundColor/borderColor/shadowColor,
+// where the requirement is different.
+for (const bad of ["#B45309", "#0E9488"]) {
+  const nonSurface = [...source.matchAll(new RegExp(`"${bad}"`, "g"))].filter(m => {
+    const pre = source.slice(Math.max(0, m.index - 40), m.index);
+    return !/(backgroundColor|borderColor|shadowColor|borderLeftColor|borderTopColor)\s*[:=]\s*$/.test(pre);
+  });
+  assert(
+    nonSurface.length === 0,
+    `${bad} still reaches text through ${nonSurface.length} non-surface reference(s) -- it fails WCAG AA on the tinted cards`
+  );
+}
+
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');

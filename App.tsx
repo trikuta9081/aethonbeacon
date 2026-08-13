@@ -229,7 +229,7 @@ const ChatComposer = React.memo(function ChatComposer({
           accessibilityRole="button"
           accessibilityState={{ disabled: !canSend }}
           style={({ pressed }) => ({
-            backgroundColor: !canSend ? "#334155" : (pressed ? "#B45309" : "#D97706"),
+            backgroundColor: !canSend ? "#334155" : (pressed ? "#A14A08" : "#D97706"),
             borderRadius: 10, paddingHorizontal: 16, paddingVertical: 9
           })}
         >
@@ -1639,7 +1639,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "Calm Indian classical, acoustic, and vocal playlists with a reflective pace.",
     use: "Morning routine, grief processing, cultural comfort, or quiet reflection.",
     safety: "Safe for all ages. Pause if nostalgia or lyrics feel overwhelming.",
-    accent: "#B45309",
+    accent: "#A14A08",
     mark: "CM",
     externalUrl: "https://www.youtube.com/results?search_query=indian+classical+contemplative+music+calm+mix",
     externalLabel: "Open contemplative mixes"
@@ -1892,7 +1892,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "Brushed drums, upright bass, soft piano at roughly 70–90 bpm with low café room tone.",
     use: "Long writing or admin sessions. Warm without demanding attention.",
     safety: "Safe for extended use.",
-    accent: "#B45309",
+    accent: "#A14A08",
     mark: "JZ",
     intent: "Focus",
     brainState: "Relaxed alert",
@@ -2658,9 +2658,9 @@ const LIGHT_COLORS = {
   accentCyan: "#0891B2",
   accentTeal: "#0B6F66",
   accentTealDeep: "#0E6F69",
-  accentGold: "#B45309",
+  accentGold: "#A14A08",
   success: "#059669",
-  warning: "#B45309",
+  warning: "#A14A08",
   danger: "#DC2626",
 } as const;
 
@@ -12915,7 +12915,7 @@ function buildMoonChartScoreReason(input: {
 function moonChartVisualColor(reading: Pick<MoonChart48Reading, "verdict" | "score">): string {
   if (reading.verdict === "Excellent") return "#00A2B8";
   if (reading.verdict === "Supportive") return "#059669";
-  if (reading.verdict === "Mixed") return "#B45309";
+  if (reading.verdict === "Mixed") return "#A14A08";
   return "#B80000";
 }
 
@@ -20984,7 +20984,7 @@ function isTrustedExternalUrl(url: string) {
                 const greetEmoji = hour < 5 ? "🌌" : hour < 12 ? "☀️" : hour < 17 ? "🌤" : hour < 21 ? "🌙" : "⭐";
                 const bgGrad = hour < 12 ? "#F4F8F7" : hour < 17 ? "#EFF3EC" : "#EDEFF6";
                 const issueActive = selectedIssueGuide.id !== "general";
-                const scoreColor = clarityScore >= 75 ? "#059669" : clarityScore >= 55 ? "#B45309" : "#DC2626";
+                const scoreColor = clarityScore >= 75 ? "#059669" : clarityScore >= 55 ? "#A14A08" : "#DC2626";
                 const scoreLabel = clarityScore >= 75 ? "Strong" : clarityScore >= 55 ? "Growing" : "Building";
                 const motivations = [
                   "Every small step is progress.", "You are not your struggle.", "Clarity comes with consistency.",
@@ -21109,7 +21109,7 @@ function isTrustedExternalUrl(url: string) {
                             {orderSupportDimensionsByRelevance(selectedIssueGuide.id, crossSectionSignal.detectedThemes)
                               .slice(0, 3)
                               .map((guide, i) => {
-                                const chipColors = ["#059669", "#3730A3", "#B45309"];
+                                const chipColors = ["#059669", "#3730A3", "#A14A08"];
                                 const color = chipColors[i % chipColors.length];
                                 return (
                                   <View key={guide.id} style={{ flex: 1, backgroundColor: color + "12", borderRadius: 8, paddingVertical: 6, paddingHorizontal: 6, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: color + "30" }}>
@@ -21553,7 +21553,7 @@ function isTrustedExternalUrl(url: string) {
                         hitSlop={{ top: 12, bottom: 12, left: 6, right: 6 }}
                         style={{ paddingHorizontal: 12, paddingVertical: 5, borderRadius: 999, backgroundColor: chartBriefLang === lng ? "#D97706" : "transparent" }}
                       >
-                        <Text style={{ color: chartBriefLang === lng ? "#FFFFFF" : "#B45309", fontSize: 12, fontWeight: "800" }}>{lng === "en" ? "English" : "हिन्दी"}</Text>
+                        <Text style={{ color: chartBriefLang === lng ? "#FFFFFF" : "#A14A08", fontSize: 12, fontWeight: "800" }}>{lng === "en" ? "English" : "हिन्दी"}</Text>
                       </Pressable>
                     ))}
                   </View>
@@ -21636,7 +21636,7 @@ function isTrustedExternalUrl(url: string) {
                       }}>
                         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                           <Text style={{
-                            color: m.role === "user" ? "#007FB8" : "#B45309",
+                            color: m.role === "user" ? "#007FB8" : "#A14A08",
                             fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", flexShrink: 1
                           }}>
                             {m.role === "user"
@@ -22824,7 +22824,7 @@ function TodaySection({
                 body: "A private guided room with a 30-message arc and optional next-step checkpoints.",
                 cta: "Primary support",
                 tab: "aihelp" as TabId,
-                accent: "#0E9488"
+                accent: "#0B6F66"
               },
               {
                 id: "calm",
@@ -22842,7 +22842,7 @@ function TodaySection({
                 body: "Moon-chart based guidance with practical remedies.",
                 cta: "View insight",
                 tab: "vedic" as TabId,
-                accent: "#B45309"
+                accent: "#A14A08"
               },
               {
                 id: "community",
@@ -22866,11 +22866,11 @@ function TodaySection({
                     minHeight: item.id === "ask" ? 132 : 116,
                     borderRadius: 20,
                     borderWidth: item.id === "ask" ? 2 : 1,
-                    borderColor: item.id === "ask" ? "#0E9488" : "rgba(15,61,94,0.12)",
+                    borderColor: item.id === "ask" ? "#0B6F66" : "rgba(15,61,94,0.12)",
                     backgroundColor: item.id === "ask" ? "#EAF8F5" : "#FFFFFF",
                     padding: item.id === "ask" ? 16 : 14,
                     overflow: "hidden",
-                    shadowColor: item.id === "ask" ? "#0E9488" : "transparent",
+                    shadowColor: item.id === "ask" ? "#0B6F66" : "transparent",
                     shadowOpacity: item.id === "ask" ? 0.12 : 0,
                     shadowRadius: item.id === "ask" ? 16 : 0,
                     shadowOffset: { width: 0, height: 8 },
@@ -24073,32 +24073,32 @@ const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number
   anger: [
     { name: "Cool-down", duration: 5, toneId: "binaural-alpha-6", dim: "Psychological", dimColor: "#3730A3", purpose: "Creates a pause before speech so the response can be cleaner.", breathPattern: "4-7-8 Exhale" },
     { name: "Heart Reset", duration: 10, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Uses a slow rhythm to soften the body before a boundary or repair conversation.", breathPattern: "Slow 6-6" },
-    { name: "Stillness", duration: 15, toneId: "reset-quiet", dim: "Reflective", dimColor: "#B45309", purpose: "A quiet close for letting the heat pass before deciding.", breathPattern: "Natural breath" }
+    { name: "Stillness", duration: 15, toneId: "reset-quiet", dim: "Reflective", dimColor: "#A14A08", purpose: "A quiet close for letting the heat pass before deciding.", breathPattern: "Natural breath" }
   ],
   grief: [
     { name: "Gentle Hold", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Provides a soft container for grief without forcing an explanation.", breathPattern: "Slow 5-5" },
     { name: "Deep Process", duration: 15, toneId: "binaural-theta-4", dim: "Psychological", dimColor: "#3730A3", purpose: "Supports quiet reflection and a slower inner pace.", breathPattern: "4-4-4-4 Box" },
-    { name: "Reconnect", duration: 10, toneId: "ambient-softdrone", dim: "Reflective", dimColor: "#B45309", purpose: "Helps mark remembrance, continuity, and one small act of care.", breathPattern: "Natural breath" }
+    { name: "Reconnect", duration: 10, toneId: "ambient-softdrone", dim: "Reflective", dimColor: "#A14A08", purpose: "Helps mark remembrance, continuity, and one small act of care.", breathPattern: "Natural breath" }
   ],
   burnout: [
     { name: "Recovery", duration: 15, toneId: "binaural-alpha-10", dim: "Practical", dimColor: "#059669", purpose: "Supports calm planning after load, sleep, and recovery are named.", breathPattern: "Slow 6-6" },
     { name: "System Reset", duration: 20, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Gives the body a slower rhythm before adding any new demand.", breathPattern: "4-7-8 Exhale" },
-    { name: "Deep Rest", duration: 10, toneId: "reset-quiet", dim: "Reflective", dimColor: "#B45309", purpose: "Closes open loops and protects rest as a legitimate next step.", breathPattern: "Natural breath" }
+    { name: "Deep Rest", duration: 10, toneId: "reset-quiet", dim: "Reflective", dimColor: "#A14A08", purpose: "Closes open loops and protects rest as a legitimate next step.", breathPattern: "Natural breath" }
   ],
   trauma: [
     { name: "Safe Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Pairs gentle alternating sound with present-time grounding; stop if it feels activating.", breathPattern: "4-4-4-4 Box" },
     { name: "Safety Cue", duration: 15, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Supports orientation to the room, the body, and current safety.", breathPattern: "Slow 5-5" },
-    { name: "Integration", duration: 10, toneId: "binaural-theta-5", dim: "Reflective", dimColor: "#B45309", purpose: "Use only for gentle reflection after grounding, not exposure work.", breathPattern: "Natural breath" }
+    { name: "Integration", duration: 10, toneId: "binaural-theta-5", dim: "Reflective", dimColor: "#A14A08", purpose: "Use only for gentle reflection after grounding, not exposure work.", breathPattern: "Natural breath" }
   ],
   loneliness: [
     { name: "Connection", duration: 10, toneId: "binaural-alpha-8", dim: "Emotional", dimColor: "#B80064", purpose: "Supports a calm state before one real outreach step.", breathPattern: "Slow 5-5" },
     { name: "Belonging", duration: 15, toneId: "ambient-ocean", dim: "Cultural", dimColor: "#B85300", purpose: "Uses a spacious sound bed while you choose a shared place or person.", breathPattern: "4-7-8 Exhale" },
-    { name: "Self-Respect", duration: 10, toneId: "iso-6", dim: "Reflective", dimColor: "#B45309", purpose: "Supports a kinder inner tone before community action.", breathPattern: "Natural breath" }
+    { name: "Self-Respect", duration: 10, toneId: "iso-6", dim: "Reflective", dimColor: "#A14A08", purpose: "Supports a kinder inner tone before community action.", breathPattern: "Natural breath" }
   ],
   relationship: [
     { name: "Empathy Mode", duration: 10, toneId: "binaural-alpha-7", dim: "Emotional", dimColor: "#B80064", purpose: "Creates space to hold care and self-respect together before speaking.", breathPattern: "Slow 6-6" },
     { name: "Boundary Sync", duration: 10, toneId: "bilateral-soft-2", dim: "Psychological", dimColor: "#3730A3", purpose: "Pairs alternating sound with a clear request or boundary sentence.", breathPattern: "4-4-4-4 Box" },
-    { name: "Repair Tone", duration: 15, toneId: "ambient-softdrone", dim: "Reflective", dimColor: "#B45309", purpose: "Supports a slower tone for repair, apology, or careful listening.", breathPattern: "Natural breath" }
+    { name: "Repair Tone", duration: 15, toneId: "ambient-softdrone", dim: "Reflective", dimColor: "#A14A08", purpose: "Supports a slower tone for repair, apology, or careful listening.", breathPattern: "Natural breath" }
   ],
   financial: [
     { name: "Focus Block", duration: 15, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#059669", purpose: "Supports structured review of numbers, deadlines, and options.", breathPattern: "Slow 5-5" },
@@ -24107,13 +24107,13 @@ const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number
   ],
   identity: [
     { name: "Inner Mirror", duration: 10, toneId: "binaural-alpha-10", dim: "Psychological", dimColor: "#3730A3", purpose: "Supports self-inquiry without turning uncertainty into panic.", breathPattern: "Slow 6-6" },
-    { name: "Core Still", duration: 15, toneId: "reset-quiet", dim: "Reflective", dimColor: "#B45309", purpose: "Creates a quiet window for values, roles, and purpose to separate.", breathPattern: "Natural breath" },
+    { name: "Core Still", duration: 15, toneId: "reset-quiet", dim: "Reflective", dimColor: "#A14A08", purpose: "Creates a quiet window for values, roles, and purpose to separate.", breathPattern: "Natural breath" },
     { name: "Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Cultural", dimColor: "#B85300", purpose: "Uses body rhythm to return identity questions to one practical step.", breathPattern: "4-4-4-4 Box" }
   ],
   general: [
     { name: "Morning Set", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Supports a clear-headed start and one chosen action.", breathPattern: "Slow 5-5" },
     { name: "Stress Drop", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "A general downshift for breath, posture, and review.", breathPattern: "4-7-8 Exhale" },
-    { name: "Deep Rest", duration: 10, toneId: "binaural-theta-4", dim: "Reflective", dimColor: "#B45309", purpose: "Supports quiet reflection before closing the loop.", breathPattern: "Natural breath" }
+    { name: "Deep Rest", duration: 10, toneId: "binaural-theta-4", dim: "Reflective", dimColor: "#A14A08", purpose: "Supports quiet reflection before closing the loop.", breathPattern: "Natural breath" }
   ],
 };
 // Breathing pattern guide text
@@ -24407,7 +24407,7 @@ function ToneLibrarySection({
             {/* Timer */}
             {loopEnabled && (
               <View style={{ alignItems: "center" }}>
-                <Text style={{ color: tonePaused ? "#B45309" : "#0891B2", fontSize: 20, fontWeight: "900", fontVariant: ["tabular-nums"] }}>{sessionLabel}</Text>
+                <Text style={{ color: tonePaused ? "#A14A08" : "#0891B2", fontSize: 20, fontWeight: "900", fontVariant: ["tabular-nums"] }}>{sessionLabel}</Text>
                 {presetMinutes > 0 && <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "600" }}>/ {presetMinutes}m</Text>}
               </View>
             )}
@@ -24503,7 +24503,7 @@ function ToneLibrarySection({
               <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>Comfort limiter · smooth start and stop · safe listening level</Text>
             </View>
             <View style={{ backgroundColor: selectedToneHeadphones ? "rgba(251,191,36,0.13)" : "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: selectedToneHeadphones ? "rgba(251,191,36,0.4)" : "rgba(52,211,153,0.35)" }}>
-              <Text style={{ color: selectedToneHeadphones ? "#B45309" : "#059669", fontSize: 12, fontWeight: "700" }}>
+              <Text style={{ color: selectedToneHeadphones ? "#A14A08" : "#059669", fontSize: 12, fontWeight: "700" }}>
                 {selectedToneHeadphones ? "🎧 Headphones" : "🔊 Speaker OK"}
               </Text>
             </View>
@@ -30418,7 +30418,7 @@ function InsightsSection({
           const gradeLabel =
             grade === "A" ? "Excellent" : grade === "B" ? "Good progress" : grade === "C" ? "Building steadily" : grade === "D" ? "Developing" : "Starting out";
           const gradeColor =
-            grade === "A" ? "#059669" : grade === "B" ? "#0052B8" : grade === "C" ? "#B45309" : grade === "D" ? "#B85300" : "#DC2626";
+            grade === "A" ? "#059669" : grade === "B" ? "#0052B8" : grade === "C" ? "#A14A08" : grade === "D" ? "#B85300" : "#DC2626";
           const activityScore = Math.min(100, Math.round((weekEntries.length / 7) * 100));
           const consistencyScore = Math.min(100, Math.round(checkInStreak * 14));
           const progressScore = Math.min(100, Math.round(((weeklyAverage + monthlyAverage) / 2)));
@@ -33251,7 +33251,7 @@ function BirthChartSection({
           {/* D9 Navamsa */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
             <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>D9 Navamsa Chart</Text>
-            {renderVedicChartWheel(navamsaWheelOccupants, "#B45309", "NAVAMSA")}
+            {renderVedicChartWheel(navamsaWheelOccupants, "#A14A08", "NAVAMSA")}
             <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>Rashi → Navamsa detail</Text>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
               {navamsaEntries.map((entry) => (
@@ -33369,7 +33369,7 @@ function BirthChartSection({
                     // is within the components we actually compute. Not a
                     // classical pass/fail verdict; see ShadbalaComponents comment.
                     const tier = s.coveragePercent >= 66 ? "high" : s.coveragePercent >= 40 ? "mid" : "low";
-                    const tierColor = tier === "high" ? "#0D6B36" : tier === "mid" ? "#B45309" : "#B80000";
+                    const tierColor = tier === "high" ? "#0D6B36" : tier === "mid" ? "#A14A08" : "#B80000";
                     const tierBg = tier === "high" ? "rgba(5,150,105,0.14)" : tier === "mid" ? "rgba(180,83,9,0.1)" : "rgba(220,38,38,0.1)";
                     const tierBorder = tier === "high" ? "rgba(5,150,105,0.4)" : tier === "mid" ? "rgba(180,83,9,0.35)" : "rgba(220,38,38,0.3)";
                     return (
@@ -38293,12 +38293,12 @@ function CounselingChatModal({
                 onChangeText={setDraft}
                 placeholder={isListening ? "Listening..." : "Reply here..."}
                 placeholderTextColor="#5B7480"
-                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, padding: 12, color: "#213A4A", fontSize: 16, lineHeight: 22, maxHeight: 120, borderWidth: 1, borderColor: isListening ? "#0E9488" : "#C4D8D4" }}
+                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, padding: 12, color: "#213A4A", fontSize: 16, lineHeight: 22, maxHeight: 120, borderWidth: 1, borderColor: isListening ? "#0B6F66" : "#C4D8D4" }}
                 multiline
                 textAlignVertical="top"
               />
               {speechInputNotice ? (
-                <Text style={{ color: isListening ? "#0E9488" : "#1F2937", fontSize: 12, marginTop: 6 }}>
+                <Text style={{ color: isListening ? "#0B6F66" : "#1F2937", fontSize: 12, marginTop: 6 }}>
                   {speechInputNotice}
                 </Text>
               ) : null}
