@@ -1687,7 +1687,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "10-hour rain-on-leaves recordings from top-voted r/ambientmusic threads.",
     use: "Sleep, deep work, anxiety reduction. Top-shared in sleep-hygiene communities.",
     safety: "Safe for extended use.",
-    accent: "#0891B2",
+    accent: "#066C84",
     mark: "NR",
     externalUrl: "https://www.youtube.com/results?search_query=rain+sounds+10+hours+deep+sleep",
     externalLabel: "Open rain mixes"
@@ -1711,7 +1711,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "25-minute focus interval + 5-minute break, with gentle bell start/stop cues.",
     use: "Structured deep work. #1 productivity method globally.",
     safety: "Safe. Take the breaks — don't skip.",
-    accent: "#059669",
+    accent: "#04714F",
     mark: "PM",
     externalUrl: "https://www.youtube.com/results?search_query=pomodoro+25+5+study+timer+ambient",
     externalLabel: "Open Pomodoro timers"
@@ -1816,7 +1816,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "Long-period waves at roughly 10–12 per minute — close to a resting breath rhythm.",
     use: "Breath pacing, grief, overwhelm, post-shift decompression.",
     safety: "Safe for extended use.",
-    accent: "#0891B2",
+    accent: "#066C84",
     mark: "OW",
     intent: "Downshift",
     brainState: "Parasympathetic",
@@ -2078,7 +2078,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "Double inhale through the nose, long slow exhale through the mouth. Fastest known voluntary way to lower arousal.",
     use: "Acute anxiety, anger spikes, panic onset.",
     safety: "Stop if you feel light-headed. Sit down first.",
-    accent: "#059669",
+    accent: "#04714F",
     mark: "PS",
     intent: "Rescue",
     brainState: "Parasympathetic",
@@ -2655,11 +2655,11 @@ const LIGHT_COLORS = {
   textOnDark: "#05070A",
   textMuted: "rgba(5,7,10,0.76)",
   textFaint: "#1F2937",
-  accentCyan: "#0891B2",
+  accentCyan: "#066C84",
   accentTeal: "#0B6F66",
   accentTealDeep: "#0E6F69",
   accentGold: "#A14A08",
-  success: "#059669",
+  success: "#04714F",
   warning: "#A14A08",
   danger: "#DC2626",
 } as const;
@@ -9667,7 +9667,7 @@ const VARA_INFO = [
   { day: 0, name: "Ravivara", en: "Sunday",    hi: "रविवार",   planet: "Surya (Sun)",    color: "#F59E0B", emoji: "☀️", mantra: "Om Suryaya Namah",      guidance: "Ideal for self-confidence, leadership, and connecting with authority figures." },
   { day: 1, name: "Somavara",  en: "Monday",   hi: "सोमवार",   planet: "Chandra (Moon)", color: "#0020B8", emoji: "🌙", mantra: "Om Chandraya Namah",     guidance: "Favourable for intuition, family, mind healing, and emotional clarity." },
   { day: 2, name: "Mangalavara",en:"Tuesday",  hi: "मंगलवार",  planet: "Mangal (Mars)",  color: "#DC2626", emoji: "🔴", mantra: "Om Mangalaya Namah",     guidance: "Day of courage and action. Good for physical work, property matters, and starting bold ventures." },
-  { day: 3, name: "Budhavara", en: "Wednesday",hi: "बुधवार",   planet: "Budha (Mercury)",color: "#059669", emoji: "💚", mantra: "Om Budhaya Namah",       guidance: "Excellent for communication, trade, learning, writing, and contracts." },
+  { day: 3, name: "Budhavara", en: "Wednesday",hi: "बुधवार",   planet: "Budha (Mercury)",color: "#04714F", emoji: "💚", mantra: "Om Budhaya Namah",       guidance: "Excellent for communication, trade, learning, writing, and contracts." },
   { day: 4, name: "Guruvara",  en: "Thursday", hi: "गुरुवार",  planet: "Guru (Jupiter)", color: "#B88400", emoji: "🌟", mantra: "Om Brihaspataye Namah",  guidance: "Auspicious for spiritual growth, teaching, higher wisdom, and legal matters." },
   { day: 5, name: "Shukravara",en: "Friday",   hi: "शुक्रवार", planet: "Shukra (Venus)", color: "#B80064", emoji: "💗", mantra: "Om Shukraya Namah",      guidance: "Day of beauty and love. Ideal for relationships, art, luxury, and celebration." },
   { day: 6, name: "Shanivara", en: "Saturday", hi: "शनिवार",   planet: "Shani (Saturn)", color: "#263244", emoji: "⬛", mantra: "Om Shanaye Namah",       guidance: "Day of discipline and karma. Good for service, hard work, and clearing debts." },
@@ -12914,7 +12914,7 @@ function buildMoonChartScoreReason(input: {
 
 function moonChartVisualColor(reading: Pick<MoonChart48Reading, "verdict" | "score">): string {
   if (reading.verdict === "Excellent") return "#00A2B8";
-  if (reading.verdict === "Supportive") return "#059669";
+  if (reading.verdict === "Supportive") return "#04714F";
   if (reading.verdict === "Mixed") return "#A14A08";
   return "#B80000";
 }
@@ -13405,7 +13405,7 @@ function ExitReportModal({
   if (!report) return null;
 
   const scoreColor = report.moodScore !== null
-    ? (report.moodScore >= 5 ? "#0891B2" : report.moodScore >= 3 ? "#B88400" : "#DC2626")
+    ? (report.moodScore >= 5 ? "#066C84" : report.moodScore >= 3 ? "#B88400" : "#DC2626")
     : "#263244";
 
   return (
@@ -17176,7 +17176,7 @@ export default function App() {
           importance: Notifications.AndroidImportance.HIGH,
           sound: "default",
           vibrationPattern: [0, 250, 250, 250],
-          lightColor: "#0891B2"
+          lightColor: "#066C84"
         }).catch(() => undefined);
       }
     }
@@ -20984,7 +20984,7 @@ function isTrustedExternalUrl(url: string) {
                 const greetEmoji = hour < 5 ? "🌌" : hour < 12 ? "☀️" : hour < 17 ? "🌤" : hour < 21 ? "🌙" : "⭐";
                 const bgGrad = hour < 12 ? "#F4F8F7" : hour < 17 ? "#EFF3EC" : "#EDEFF6";
                 const issueActive = selectedIssueGuide.id !== "general";
-                const scoreColor = clarityScore >= 75 ? "#059669" : clarityScore >= 55 ? "#A14A08" : "#DC2626";
+                const scoreColor = clarityScore >= 75 ? "#04714F" : clarityScore >= 55 ? "#A14A08" : "#DC2626";
                 const scoreLabel = clarityScore >= 75 ? "Strong" : clarityScore >= 55 ? "Growing" : "Building";
                 const motivations = [
                   "Every small step is progress.", "You are not your struggle.", "Clarity comes with consistency.",
@@ -21109,7 +21109,7 @@ function isTrustedExternalUrl(url: string) {
                             {orderSupportDimensionsByRelevance(selectedIssueGuide.id, crossSectionSignal.detectedThemes)
                               .slice(0, 3)
                               .map((guide, i) => {
-                                const chipColors = ["#059669", "#3730A3", "#A14A08"];
+                                const chipColors = ["#04714F", "#3730A3", "#A14A08"];
                                 const color = chipColors[i % chipColors.length];
                                 return (
                                   <View key={guide.id} style={{ flex: 1, backgroundColor: color + "12", borderRadius: 8, paddingVertical: 6, paddingHorizontal: 6, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: color + "30" }}>
@@ -21258,7 +21258,7 @@ function isTrustedExternalUrl(url: string) {
               <SupportDimensionLibraryPanel
                 eyebrow="🎵 Tone guide"
                 actionLabel="Try"
-                accentColor="#0891B2"
+                accentColor="#066C84"
                 moonChartInsightReadings={vedicMoonChartInsightReadings}
                 onOpenTab={handleTabPress}
                 onEmergencyCall={handleEmergencyCall}
@@ -21348,7 +21348,7 @@ function isTrustedExternalUrl(url: string) {
                   anxiety:      { emoji: "🌊", title: "Slow-wave settling", body: "Slow-wave audio + 4-7-8 breathing. Six minutes for a slower, clearer reset.", toneId: "binaural-theta-5", breath: "4-7-8", color: "#066C84" },
                   anger:        { emoji: "🌧️", title: "Rain-bed cool-down", body: "Ambient rain + box breath (4-4-4-4). Pause before speaking or sending anything.", toneId: "ambient-rain", breath: "4-4-4-4 box", color: "#0052B8" },
                   fear:         { emoji: "🛡️", title: "Ground + safety cue", body: "Grounding tone + one clear safety sentence repeated three times.", toneId: "sol-396", breath: "Slow diaphragm", color: "#A14A08" },
-                  burnout:      { emoji: "💆", title: "Quiet restoration", body: "Soft sustained tone + long exhale (4-in, 8-out). Rest is part of recovery.", toneId: "sol-432", breath: "4-in / 8-out", color: "#059669" },
+                  burnout:      { emoji: "💆", title: "Quiet restoration", body: "Soft sustained tone + long exhale (4-in, 8-out). Rest is part of recovery.", toneId: "sol-432", breath: "4-in / 8-out", color: "#04714F" },
                   loneliness:   { emoji: "🎵", title: "Bansuri calm + outreach", body: "Instrumental flute + one low-pressure message to a trusted person after.", toneId: "trend-krishna-flute", breath: "Natural", color: "#BE185D" },
                   grief:        { emoji: "🕯️", title: "Vocal resonance + release", body: "Resonant vocal sound + one gentle memory or one practical task.", toneId: "trend-om-chant", breath: "In-through-nose, out-through-mouth", color: "#5C00B8" },
                   addiction:    { emoji: "⚡", title: "Focus pulse + urge surfing", body: "Short focus cue + urge surfing: watch the wave for 10 minutes before acting.", toneId: "reset-gamma", breath: "Steady 5 sec each", color: "#A855F7" },
@@ -22073,7 +22073,7 @@ function isTrustedExternalUrl(url: string) {
               {/* ── Active issue hint chip ── */}
               {selectedIssueGuide.id !== "general" && (
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#E0F0E5", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)", flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>Tracking</Text>
+                  <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>Tracking</Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "insights")}</Text>
                 </View>
               )}
@@ -23151,7 +23151,7 @@ function JournalSection({
       <SupportDimensionLibraryPanel
         eyebrow="📝 Journal prompts"
         actionLabel="Write about"
-        accentColor="#0891B2"
+        accentColor="#066C84"
         moonChartInsightReadings={moonChartInsightReadings}
         onOpenTab={onOpenTab}
         onEmergencyCall={onEmergencyCall}
@@ -24067,7 +24067,7 @@ function getPristineToneBadges(tone: RelaxingToneMode): string[] {
 const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number; toneId: RelaxingToneMode["id"]; dim: string; dimColor: string; purpose: string; breathPattern: string }>> = {
   anxiety: [
     { name: "Panic Reset", duration: 5, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Pairs alternating sound with box breathing to ground the body before analysis.", breathPattern: "4-4-4-4 Box" },
-    { name: "Alpha Calm", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Supports calm focus while you name the next controllable step.", breathPattern: "4-7-8 Exhale" },
+    { name: "Alpha Calm", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#04714F", purpose: "Supports calm focus while you name the next controllable step.", breathPattern: "4-7-8 Exhale" },
     { name: "Root Safety", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Uses a soft nature bed to reduce stimulation and support steady breathing.", breathPattern: "Slow 5-5" }
   ],
   anger: [
@@ -24081,7 +24081,7 @@ const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number
     { name: "Reconnect", duration: 10, toneId: "ambient-softdrone", dim: "Reflective", dimColor: "#A14A08", purpose: "Helps mark remembrance, continuity, and one small act of care.", breathPattern: "Natural breath" }
   ],
   burnout: [
-    { name: "Recovery", duration: 15, toneId: "binaural-alpha-10", dim: "Practical", dimColor: "#059669", purpose: "Supports calm planning after load, sleep, and recovery are named.", breathPattern: "Slow 6-6" },
+    { name: "Recovery", duration: 15, toneId: "binaural-alpha-10", dim: "Practical", dimColor: "#04714F", purpose: "Supports calm planning after load, sleep, and recovery are named.", breathPattern: "Slow 6-6" },
     { name: "System Reset", duration: 20, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Gives the body a slower rhythm before adding any new demand.", breathPattern: "4-7-8 Exhale" },
     { name: "Deep Rest", duration: 10, toneId: "reset-quiet", dim: "Reflective", dimColor: "#A14A08", purpose: "Closes open loops and protects rest as a legitimate next step.", breathPattern: "Natural breath" }
   ],
@@ -24101,7 +24101,7 @@ const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number
     { name: "Repair Tone", duration: 15, toneId: "ambient-softdrone", dim: "Reflective", dimColor: "#A14A08", purpose: "Supports a slower tone for repair, apology, or careful listening.", breathPattern: "Natural breath" }
   ],
   financial: [
-    { name: "Focus Block", duration: 15, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#059669", purpose: "Supports structured review of numbers, deadlines, and options.", breathPattern: "Slow 5-5" },
+    { name: "Focus Block", duration: 15, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#04714F", purpose: "Supports structured review of numbers, deadlines, and options.", breathPattern: "Slow 5-5" },
     { name: "Stress Drop", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Reduces stimulation before making calls, lists, or payment decisions.", breathPattern: "4-7-8 Exhale" },
     { name: "Clarity", duration: 10, toneId: "binaural-reset-14", dim: "Psychological", dimColor: "#3730A3", purpose: "Supports a short decision window for one financial next step.", breathPattern: "4-4-4-4 Box" }
   ],
@@ -24111,7 +24111,7 @@ const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number
     { name: "Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Cultural", dimColor: "#B85300", purpose: "Uses body rhythm to return identity questions to one practical step.", breathPattern: "4-4-4-4 Box" }
   ],
   general: [
-    { name: "Morning Set", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#059669", purpose: "Supports a clear-headed start and one chosen action.", breathPattern: "Slow 5-5" },
+    { name: "Morning Set", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#04714F", purpose: "Supports a clear-headed start and one chosen action.", breathPattern: "Slow 5-5" },
     { name: "Stress Drop", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "A general downshift for breath, posture, and review.", breathPattern: "4-7-8 Exhale" },
     { name: "Deep Rest", duration: 10, toneId: "binaural-theta-4", dim: "Reflective", dimColor: "#A14A08", purpose: "Supports quiet reflection before closing the loop.", breathPattern: "Natural breath" }
   ],
@@ -24131,7 +24131,7 @@ const TONE_CATEGORIES = [
   { id: "focus", label: "🎯 Focus", color: "#2563EB", desc: "Steady background tones for study, planning, numbers, and clear next-step work.", ids: ["binaural-alpha-12","binaural-reset-14","binaural-gamma-40","reset-gamma","trend-lofi","trend-cafe","noise-pink","iso-8"] },
   { id: "grounding", label: "🤲 Emotional grounding", color: "#B80064", desc: "Warm, regulating tracks for grief, loneliness, relationship stress, and self-respect.", ids: ["ambient-ocean","ambient-softdrone","sol-639","sol-528","binaural-alpha-8","bilateral-soft-3","trend-krishna-flute","trend-432-guitar"] },
   { id: "deep", label: "🪷 Deep calm", color: "#A14A08", desc: "Quiet reflection sessions for stillness, recovery, and slower inner pacing.", ids: ["binaural-theta-4","binaural-theta-5","aum-136","sol-432","sol-852","sol-963","trend-tibetan-bowl","trend-om-chant"] },
-  { id: "breath", label: "⏱ Breath timing", color: "#059669", desc: "Rhythmic pulses and ambient cues that make inhale/exhale patterns easier to follow.", ids: ["ambient-breath","iso-1","iso-2","iso-3","iso-4","iso-6","iso-10","sol-417","trend-schumann","trend-forest-birds"] },
+  { id: "breath", label: "⏱ Breath timing", color: "#04714F", desc: "Rhythmic pulses and ambient cues that make inhale/exhale patterns easier to follow.", ids: ["ambient-breath","iso-1","iso-2","iso-3","iso-4","iso-6","iso-10","sol-417","trend-schumann","trend-forest-birds"] },
 ]
 
 // Reported up to App() so a persistent mini-player can show/control playback
@@ -24384,7 +24384,7 @@ function ToneLibrarySection({
         <View style={{ backgroundColor: loopEnabled ? "#DCEEFB" : "#E9F3F2", paddingHorizontal: 18, paddingTop: 16, paddingBottom: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 14 }}>
             {/* Tone mark orb */}
-            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: loopEnabled ? "rgba(8,145,178,0.14)" : "rgba(15,23,42,0.05)", borderWidth: 2, borderColor: loopEnabled ? "#0891B2" : "rgba(15,23,42,0.12)", alignItems: "center", justifyContent: "center" }}>
+            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: loopEnabled ? "rgba(8,145,178,0.14)" : "rgba(15,23,42,0.05)", borderWidth: 2, borderColor: loopEnabled ? "#066C84" : "rgba(15,23,42,0.12)", alignItems: "center", justifyContent: "center" }}>
               <Text style={{ fontSize: 22 }}>{selectedTone.mark}</Text>
               {loopEnabled && !tonePaused && (
                 <View style={{ position: "absolute", bottom: -2, right: -2, width: 14, height: 14, borderRadius: 7, backgroundColor: "#0891B2", borderWidth: 2, borderColor: "#DCEEFB" }} />
@@ -24407,7 +24407,7 @@ function ToneLibrarySection({
             {/* Timer */}
             {loopEnabled && (
               <View style={{ alignItems: "center" }}>
-                <Text style={{ color: tonePaused ? "#A14A08" : "#0891B2", fontSize: 20, fontWeight: "900", fontVariant: ["tabular-nums"] }}>{sessionLabel}</Text>
+                <Text style={{ color: tonePaused ? "#A14A08" : "#066C84", fontSize: 20, fontWeight: "900", fontVariant: ["tabular-nums"] }}>{sessionLabel}</Text>
                 {presetMinutes > 0 && <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "600" }}>/ {presetMinutes}m</Text>}
               </View>
             )}
@@ -24449,7 +24449,7 @@ function ToneLibrarySection({
             <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
               {breathSteps.map((step, i) => (
                 <View key={step} style={{ flex: 1, minWidth: 60, backgroundColor: i === breathStep % breathSteps.length ? "rgba(8,145,178,0.15)" : "rgba(15,23,42,0.04)", borderRadius: 8, paddingVertical: 8, alignItems: "center", borderWidth: 1, borderColor: i === breathStep % breathSteps.length ? "rgba(8,145,178,0.4)" : "rgba(15,23,42,0.08)" }}>
-                  <Text style={{ color: i === breathStep % breathSteps.length ? "#0891B2" : "#3A577D", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{step}</Text>
+                  <Text style={{ color: i === breathStep % breathSteps.length ? "#066C84" : "#3A577D", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{step}</Text>
                 </View>
               ))}
             </View>
@@ -24472,7 +24472,7 @@ function ToneLibrarySection({
             accessibilityLabel="Play once"
             style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: pressed ? "#C4E9E5" : "#DEF2F0", alignItems: "center", justifyContent: "center" })}
           >
-            <Text style={{ color: "#059669", fontSize: 14, fontWeight: "900" }}>▶ Play once</Text>
+            <Text style={{ color: "#04714F", fontSize: 14, fontWeight: "900" }}>▶ Play once</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -24503,7 +24503,7 @@ function ToneLibrarySection({
               <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>Comfort limiter · smooth start and stop · safe listening level</Text>
             </View>
             <View style={{ backgroundColor: selectedToneHeadphones ? "rgba(251,191,36,0.13)" : "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: selectedToneHeadphones ? "rgba(251,191,36,0.4)" : "rgba(52,211,153,0.35)" }}>
-              <Text style={{ color: selectedToneHeadphones ? "#A14A08" : "#059669", fontSize: 12, fontWeight: "700" }}>
+              <Text style={{ color: selectedToneHeadphones ? "#A14A08" : "#04714F", fontSize: 12, fontWeight: "700" }}>
                 {selectedToneHeadphones ? "🎧 Headphones" : "🔊 Speaker OK"}
               </Text>
             </View>
@@ -24591,7 +24591,7 @@ function ToneLibrarySection({
         <View style={{ flexDirection: "row", gap: 6, paddingHorizontal: 14, paddingBottom: 14, alignItems: "center" }}>
           <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>Timer:</Text>
           {([0, 5, 10, 15, 20, 30] as const).map((min) => (
-            <Pressable key={min} onPress={() => { setPresetMinutes(min); setActiveProgram(null); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#F8FBFA", borderWidth: 1, borderColor: presetMinutes === min ? "#0891B2" : "rgba(15,23,42,0.12)" }}>
+            <Pressable key={min} onPress={() => { setPresetMinutes(min); setActiveProgram(null); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#F8FBFA", borderWidth: 1, borderColor: presetMinutes === min ? "#066C84" : "rgba(15,23,42,0.12)" }}>
               <Text style={{ color: presetMinutes === min ? "#FFFFFF" : "#1F2937", fontSize: 12, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
             </Pressable>
           ))}
@@ -24743,7 +24743,7 @@ function ToneLibrarySection({
                                   hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                                   style={{ backgroundColor: "#DEF2F0", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
-                                  <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700" }}>▶</Text>
+                                  <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700" }}>▶</Text>
                                 </Pressable>
                                 <Pressable
                                   onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
@@ -25027,7 +25027,7 @@ function MeditationSection({
                         lineHeight: 16,
                         marginTop: 4,
                         textAlign: "center",
-                        color: isSelected ? "#0891B2" : "#8B9BAD"
+                        color: isSelected ? "#066C84" : "#8B9BAD"
                       }
                     ]}
                     numberOfLines={1}
@@ -27084,7 +27084,7 @@ function SearchSection({
         <SupportDimensionLibraryPanel
           eyebrow="🔍 Where to look"
           actionLabel="Search for"
-          accentColor="#0891B2"
+          accentColor="#066C84"
           moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={routeToTab}
           onEmergencyCall={onEmergencyCall}
@@ -27394,7 +27394,7 @@ function PlaySection({
         <SupportDimensionLibraryPanel
           eyebrow="🎯 Practice focus"
           actionLabel="Try"
-          accentColor="#059669"
+          accentColor="#04714F"
           moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={onOpenTab}
           onEmergencyCall={onEmergencyCall}
@@ -28254,7 +28254,7 @@ const HIGH_CONTRAST_ACCENTS: Record<string, string> = {
   "#10A76B": "#047857",
   "#11A648": "#047857",
   "#0BAD45": "#047857",
-  "#0891B2": "#0E7490",
+  "#066C84": "#0E7490",
 };
 
 function highContrastAccent(color: string): string {
@@ -28285,11 +28285,11 @@ function FreeLegalAidCard({
   };
 
   const NATIONAL_HELPLINES: Array<{ label: string; number: string; url?: string; note: string; color: string }> = [
-    { label: "NALSA — Free legal aid (National)", number: "15100", url: "https://nalsa.gov.in/", note: "Statutory RIGHT. Every state has SLSA + every district has DLSA. Free lawyer, free court fees, in your language.", color: "#059669" },
+    { label: "NALSA — Free legal aid (National)", number: "15100", url: "https://nalsa.gov.in/", note: "Statutory RIGHT. Every state has SLSA + every district has DLSA. Free lawyer, free court fees, in your language.", color: "#04714F" },
     { label: "Women's Helpline (National)", number: "181", url: "https://wcd.nic.in/schemes/women-helpline-scheme", note: "One-Stop Centre (Sakhi) network. Legal aid + medical + shelter + counselling.", color: "#BE185D" },
     { label: "Women in Distress", number: "1091", url: "", note: "Police Women helpline. Immediate protection for any woman in distress.", color: "#EC4899" },
     { label: "Childline (National)", number: "1098", url: "https://www.childlineindia.org/", note: "24x7 for any child in need. Rescue, medical, counselling, legal — all free.", color: "#0052B8" },
-    { label: "Emergency (Police / Fire / Ambulance)", number: "112", url: "", note: "Nationwide unified emergency. Fastest for immediate danger.", color: "#EF4444" },
+    { label: "Emergency (Police / Fire / Ambulance)", number: "112", url: "", note: "Nationwide unified emergency. Fastest for immediate danger.", color: "#B53333" },
     { label: "Cyber Fraud Golden Hour", number: "1930", url: "https://cybercrime.gov.in/", note: "Call within 24hr of financial cyber fraud to freeze funds. Faster than filing FIR first.", color: "#3730A3" },
     { label: "NCW (National Commission for Women)", number: "7827170170", url: "https://ncw.nic.in/", note: "WhatsApp/call. Constitutional body. Direct complaints of any women's rights violation.", color: "#FB7185" },
     { label: "NCPCR (Child Rights)", number: "011-25478250", url: "https://ncpcr.gov.in/", note: "National Commission for Protection of Child Rights. Statutory. Files POCSO complaints.", color: "#007FB8" },
@@ -28392,7 +28392,7 @@ function GovtGrievanceCellsCard({
       { label: "CPGRAMS — Central Public Grievance", url: "https://pgportal.gov.in/", note: "Single window for every central ministry + state. 30-day resolution target. Auto-escalation." },
       { label: "PMO Grievance", url: "https://pmindia.gov.in/en/interact-with-honble-pm/", note: "Direct write to PM office. Routed to appropriate ministry." },
     ]},
-    { title: "Consumer + market", color: "#059669", cells: [
+    { title: "Consumer + market", color: "#04714F", cells: [
       { label: "National Consumer Helpline", number: "1915", url: "https://consumerhelpline.gov.in/", note: "Product / service complaints. INGRAM portal." },
       { label: "Consumer Commission (Jago Grahak)", url: "https://consumeraffairs.nic.in/", note: "District / state / national commissions. Free up to ₹50 lakh." },
       { label: "RBI Ombudsman (Banks / NBFCs / UPI)", number: "14448", url: "https://cms.rbi.org.in/", note: "Bank complaints unresolved in 30 days. Free, online." },
@@ -28547,7 +28547,7 @@ function RedressDirectoriesHub({
 }) {
   const [tab, setTab] = useState<"legal" | "govt" | "state" | "health">("legal");
   const tabs: Array<{ id: "legal" | "govt" | "state" | "health"; label: string; icon: string; color: string; sub: string }> = [
-    { id: "legal", label: "Legal aid + helplines", icon: "⚖️", color: "#059669", sub: "NALSA · Women · Child" },
+    { id: "legal", label: "Legal aid + helplines", icon: "⚖️", color: "#04714F", sub: "NALSA · Women · Child" },
     { id: "govt", label: "Govt grievance", icon: "🏛️", color: "#0020B8", sub: "CPGRAMS · sector-wise" },
     { id: "state", label: "State police + officers", icon: "🏢", color: "#0052B8", sub: "Portal · e-FIR · DC · cyber" },
     { id: "health", label: "Health + hospitals", icon: "🏥", color: "#10A76B", sub: "Doctors · MH · Ayushman · eSanjeevani" },
@@ -28843,7 +28843,7 @@ function StateOfficerDirectoryCard({
         <View style={{ padding: 12, gap: 8, borderTopWidth: 1, borderTopColor: "rgba(96,165,250,0.15)" }}>
           {[
             { label: "State police portal", url: selected.portal, note: "Search 'contact us' → DC / SSP / SHO of your district", color: "#0052B8" },
-            selected.efir ? { label: "e-FIR / online complaint", url: selected.efir, note: "File FIR online where the state supports it", color: "#059669" } : null,
+            selected.efir ? { label: "e-FIR / online complaint", url: selected.efir, note: "File FIR online where the state supports it", color: "#04714F" } : null,
             selected.collectors ? { label: "District Collector / DM directory", url: selected.collectors, note: "DC / DM contact for administrative escalation", color: "#BE185D" } : null,
             selected.cyber ? { label: "Cyber crime cell", url: selected.cyber, note: "State cyber cell portal + officer list", color: "#3730A3" } : null,
             selected.dgp ? { label: "DGP / senior officers", url: selected.dgp, note: "Direct escalation to senior police leadership", color: "#A14A08" } : null,
@@ -29203,7 +29203,7 @@ function RedressSection({
               accessibilityRole="button"
               accessibilityLabel="Call emergency number 112 now"
               onPress={() => void onEmergencyCall()}
-              style={({ pressed }) => [{ flexGrow: 1, flexShrink: 1, flexBasis: 180, minWidth: 0, backgroundColor: pressed ? "#D62E00" : "#EF4444", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 10, alignItems: "center" }]}
+              style={({ pressed }) => [{ flexGrow: 1, flexShrink: 1, flexBasis: 180, minWidth: 0, backgroundColor: pressed ? "#D62E00" : "#B53333", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 10, alignItems: "center" }]}
             >
               <Text style={{ color: "#fff", fontWeight: "800", fontSize: 13 }}>🚨 SOS — 112</Text>
             </Pressable>
@@ -29266,12 +29266,12 @@ function RedressSection({
         {/* ── QUICK HELP NUMBERS STRIP ── */}
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(239,68,68,0.3)", overflow: "hidden" }}>
           <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 6, flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <Text style={{ color: "#EF4444", fontSize: 12, fontWeight: "800" }}>🚨 IMPORTANT NUMBERS</Text>
+            <Text style={{ color: "#B53333", fontSize: 12, fontWeight: "800" }}>🚨 IMPORTANT NUMBERS</Text>
             <Text style={{ color: "#6B7280", fontSize: 12, flex: 1, textAlign: "right" }}>Always available</Text>
           </View>
           {[
             // ── Immediate danger ──
-            { label: "Emergency / Police", number: "112", color: "#EF4444", desc: "Any immediate danger, assault, or threat. Single number for police, fire, and ambulance." },
+            { label: "Emergency / Police", number: "112", color: "#B53333", desc: "Any immediate danger, assault, or threat. Single number for police, fire, and ambulance." },
             { label: "Ambulance / Medical", number: "108", color: "#DC2626", desc: "Medical emergency, accident, or someone unconscious" },
             { label: "Fire", number: "101", color: "#EA580C", desc: "Fire, gas leak, or rescue from a building" },
             // ── Mental health ──
@@ -29284,7 +29284,7 @@ function RedressSection({
             { label: "Elderline (senior citizens)", number: "14567", color: "#7C3AED", desc: "Elder abuse, neglect, pension and property distress" },
             // ── Fraud & consumer ──
             { label: "Cybercrime / Fraud", number: "1930", color: "#3730A3", desc: "Online fraud — call within 24 hrs to freeze funds. Do not delete messages." },
-            { label: "Consumer Helpline", number: "1915", color: "#059669", desc: "Product, service, refund, and warranty complaints" },
+            { label: "Consumer Helpline", number: "1915", color: "#04714F", desc: "Product, service, refund, and warranty complaints" },
             // ── Institutional ──
             { label: "Anti-Ragging", number: "1800-180-5522", color: "#A14A08", desc: "Ragging, hostel intimidation — UGC 24×7 line, complaint auto-registers" },
           ].map((item) => (
@@ -29503,7 +29503,7 @@ function RedressSection({
         {/* Emergency triage for crime/domestic routes */}
         {isEmergencyRoute && (
           <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FEE2E2", borderWidth: 2, borderColor: "#EF4444", padding: 14 }}>
-            <Text style={{ color: "#EF4444", fontSize: 13, fontWeight: "800", marginBottom: 6 }}>
+            <Text style={{ color: "#B53333", fontSize: 13, fontWeight: "800", marginBottom: 6 }}>
               {isCrimeRoute ? "🚨 SAFETY FIRST" : "🚨 YOUR SAFETY COMES FIRST"}
             </Text>
             <Text style={{ color: "#B80000", fontSize: 13, lineHeight: 20, marginBottom: 10 }}>
@@ -29545,7 +29545,7 @@ function RedressSection({
 
         {/* ── URGENT NOTE ── */}
         <View style={{ marginBottom: 12, backgroundColor: "#E5EFE1", borderRadius: 12, padding: 12, borderLeftWidth: 3, borderLeftColor: "#EF4444" }}>
-          <Text style={{ color: "#EF4444", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>⚡ When to escalate immediately</Text>
+          <Text style={{ color: "#B53333", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>⚡ When to escalate immediately</Text>
           <Text style={{ color: "#B80000", fontSize: 12, lineHeight: 18 }}>{selectedRedressRoute.urgentNote}</Text>
         </View>
 
@@ -29553,11 +29553,11 @@ function RedressSection({
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden" }}>
           <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Step-by-step complaint flow</Text>
-            <Text style={{ color: "#5B7A8A", fontSize: 12 }}>Do in order</Text>
+            <Text style={{ color: "#4C6674", fontSize: 12 }}>Do in order</Text>
           </View>
           {[
             { num: "1", label: "First office", text: selectedRedressRoute.firstOffice, color: "#066C84" },
-            { num: "2", label: "First action", text: selectedRedressRoute.firstAction, color: "#059669" },
+            { num: "2", label: "First action", text: selectedRedressRoute.firstAction, color: "#04714F" },
             { num: "3", label: "Escalation path", text: selectedRedressRoute.escalation, color: "#A14A08" },
             { num: "4", label: "Track & follow up", text: "Keep a copy of every acknowledgement number. Follow up every 7–15 days in writing. If stalled, use the escalation path above.", color: "#BE185D" },
           ].map((step) => (
@@ -29576,10 +29576,10 @@ function RedressSection({
         {/* ── INTERACTIVE EVIDENCE CHECKLIST ── */}
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(52,211,153,0.2)", overflow: "hidden" }}>
           <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Evidence checklist</Text>
-            <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700" }}>{checkedCount}/{evidenceItems.length} ready</Text>
+            <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Evidence checklist</Text>
+            <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700" }}>{checkedCount}/{evidenceItems.length} ready</Text>
           </View>
-          <Text style={{ color: "#6A8899", fontSize: 12, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Tap each item to mark it as collected. Do not file without these.</Text>
+          <Text style={{ color: "#506673", fontSize: 12, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>Tap each item to mark it as collected. Do not file without these.</Text>
           {evidenceItems.map((item, i) => {
             const checked = !!checkedEvidence[String(i)];
             return (
@@ -29599,18 +29599,18 @@ function RedressSection({
               >
                 <View style={{
                   width: 20, height: 20, borderRadius: 6, borderWidth: 2, flexShrink: 0,
-                  borderColor: checked ? "#059669" : "#374151", backgroundColor: checked ? "#059669" : "transparent",
+                  borderColor: checked ? "#04714F" : "#374151", backgroundColor: checked ? "#04714F" : "transparent",
                   alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1
                 }}>
                   {checked && <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>✓</Text>}
                 </View>
-                <Text style={{ color: checked ? "#059669" : "#446573", fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: checked ? "line-through" : "none" }}>{item}</Text>
+                <Text style={{ color: checked ? "#04714F" : "#446573", fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: checked ? "line-through" : "none" }}>{item}</Text>
               </Pressable>
             );
           })}
           {checkedCount === evidenceItems.length && evidenceItems.length > 0 && (
             <View style={{ margin: 14, backgroundColor: "rgba(52,211,153,0.1)", borderRadius: 10, padding: 10 }}>
-              <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700", textAlign: "center" }}>✅ All evidence collected — ready to file</Text>
+              <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700", textAlign: "center" }}>✅ All evidence collected — ready to file</Text>
             </View>
           )}
         </View>
@@ -29660,7 +29660,7 @@ function RedressSection({
             </Pressable>
             {showDraftTemplate && (
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
-                <Text style={{ color: "#6A8899", fontSize: 12, marginTop: 8, marginBottom: 6 }}>Fill in [brackets] with your real details before sending. Keep a signed copy for your records.</Text>
+                <Text style={{ color: "#506673", fontSize: 12, marginTop: 8, marginBottom: 6 }}>Fill in [brackets] with your real details before sending. Keep a signed copy for your records.</Text>
                 <View style={{ backgroundColor: "rgba(129,140,248,0.07)", borderRadius: 10, padding: 12 }}>
                   <Text style={{ color: "#0020B8", fontSize: 12, lineHeight: 19 }}>{draftTemplate}</Text>
                 </View>
@@ -29776,7 +29776,7 @@ function RedressSection({
             </>
           ) : (
             <>
-              <Text style={{ color: "#6A8899", fontSize: 12, marginTop: 4 }}>
+              <Text style={{ color: "#506673", fontSize: 12, marginTop: 4 }}>
                 {activeCase.routeLabel}
                 {activeCase.filedDateIso ? ` · started ${new Date(activeCase.filedDateIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })}` : ""}
               </Text>
@@ -29833,7 +29833,7 @@ function RedressSection({
                       <Text style={{ color: "#0B6E67", fontSize: 13, fontWeight: "800" }}>+7d</Text>
                     </Pressable>
                   </View>
-                  <Text style={{ color: "#6A8899", fontSize: 12, lineHeight: 16, marginTop: 6 }}>
+                  <Text style={{ color: "#506673", fontSize: 12, lineHeight: 16, marginTop: 6 }}>
                     Open this tab near the follow-up date and you'll see how many days are left. The escalation flag above tells you when to push harder.
                   </Text>
                 </>
@@ -30418,7 +30418,7 @@ function InsightsSection({
           const gradeLabel =
             grade === "A" ? "Excellent" : grade === "B" ? "Good progress" : grade === "C" ? "Building steadily" : grade === "D" ? "Developing" : "Starting out";
           const gradeColor =
-            grade === "A" ? "#059669" : grade === "B" ? "#0052B8" : grade === "C" ? "#A14A08" : grade === "D" ? "#B85300" : "#DC2626";
+            grade === "A" ? "#04714F" : grade === "B" ? "#0052B8" : grade === "C" ? "#A14A08" : grade === "D" ? "#B85300" : "#DC2626";
           const activityScore = Math.min(100, Math.round((weekEntries.length / 7) * 100));
           const consistencyScore = Math.min(100, Math.round(checkInStreak * 14));
           const progressScore = Math.min(100, Math.round(((weeklyAverage + monthlyAverage) / 2)));
@@ -30446,7 +30446,7 @@ function InsightsSection({
               {/* Score bars */}
               <View style={{ padding: 14, gap: 10 }}>
                 {[
-                  { label: "Weekly clarity", score: activityScore, color: "#059669" },
+                  { label: "Weekly clarity", score: activityScore, color: "#04714F" },
                   { label: "Consistency streak", score: consistencyScore, color: "#0052B8" },
                   { label: "Score average", score: progressScore, color: "#A14A08" },
                   { label: "Reports filed", score: reportsScore, color: "#B80064" },
@@ -30493,7 +30493,7 @@ function InsightsSection({
                   style={({ pressed }) => ({ backgroundColor: pressed ? "#C5E7D9" : "#DFF2EA", borderRadius: 10, paddingVertical: 11, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 })}
                 >
                   <Text style={{ fontSize: 16 }}>📤</Text>
-                  <Text style={{ color: "#059669", fontSize: 13, fontWeight: "800" }}>Export full progress report</Text>
+                  <Text style={{ color: "#04714F", fontSize: 13, fontWeight: "800" }}>Export full progress report</Text>
                 </Pressable>
               </View>
             </View>
@@ -30774,7 +30774,7 @@ function SettingsSection({
       }}>
         <Text style={{ fontSize: 28, marginRight: 14 }}>🎁</Text>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: "#059669", fontSize: 13, fontWeight: "800", marginBottom: 3 }}>Aethon Beacon is free — no strings attached</Text>
+          <Text style={{ color: "#04714F", fontSize: 13, fontWeight: "800", marginBottom: 3 }}>Aethon Beacon is free — no strings attached</Text>
           <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 17 }}>
             Every feature is fully unlocked for at least one year. No trial, no paywall, no hidden limits. Just use it.
           </Text>
@@ -32362,7 +32362,7 @@ function BirthChartSection({
             Active chart question · {issueContext.issueLabel}
           </Text>
           <Text style={{ color: "#325C86", fontSize: 13, lineHeight: 19 }} numberOfLines={3}>{issueContext.issueText}</Text>
-          <Text style={{ color: hasExactBirthDetails ? "#059669" : "#263244", fontSize: 12, fontWeight: "700" }}>
+          <Text style={{ color: hasExactBirthDetails ? "#04714F" : "#263244", fontSize: 12, fontWeight: "700" }}>
             {hasExactBirthDetails
               ? issueContext.autoAskedAtIso ? "Calculated response is ready below." : "Calculating from your saved birth details."
               : "Saved safely. Add exact birth details to calculate the response."}
@@ -32403,7 +32403,7 @@ function BirthChartSection({
                 onSubmitEditing={() => refDobMM.current?.focus()}
                 style={{
                   backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: dobDD.length === 2 ? "#0891B2" : "#B9CDD2",
+                  borderColor: dobDD.length === 2 ? "#066C84" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -32428,7 +32428,7 @@ function BirthChartSection({
                 onSubmitEditing={() => refDobYYYY.current?.focus()}
                 style={{
                   backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: dobMM.length === 2 ? "#0891B2" : "#B9CDD2",
+                  borderColor: dobMM.length === 2 ? "#066C84" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -32453,7 +32453,7 @@ function BirthChartSection({
                 onSubmitEditing={() => refTimeMM.current?.focus()}
                 style={{
                   backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: dobYYYY.length === 4 ? "#0891B2" : "#B9CDD2",
+                  borderColor: dobYYYY.length === 4 ? "#066C84" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -32489,7 +32489,7 @@ function BirthChartSection({
                 onSubmitEditing={() => refTimeMM.current?.focus()}
                 style={{
                   backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: timeHH.length === 2 ? "#0891B2" : "#B9CDD2",
+                  borderColor: timeHH.length === 2 ? "#066C84" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -32513,7 +32513,7 @@ function BirthChartSection({
                 onSubmitEditing={() => refPlace.current?.focus()}
                 style={{
                   backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
-                  borderColor: timeMM.length === 2 ? "#0891B2" : "#B9CDD2",
+                  borderColor: timeMM.length === 2 ? "#066C84" : "#B9CDD2",
                   color: "#0D1F22", fontSize: 22, padding: 12, width: "100%", textAlign: "center", fontWeight: "800"
                 }}
               />
@@ -32543,7 +32543,7 @@ function BirthChartSection({
             onSubmitEditing={handleSave}
             style={{
               backgroundColor: "#F8FAFC", borderRadius: 10, borderWidth: 1.5,
-              borderColor: isValidPlace ? "#0891B2" : "#B9CDD2",
+              borderColor: isValidPlace ? "#066C84" : "#B9CDD2",
               color: "#0D1F22", fontSize: 15, padding: 13
             }}
           />
@@ -32986,7 +32986,7 @@ function BirthChartSection({
             if (!q) return null;
             return (
               <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)" }}>
-                {renderVedicPanelHeader("nakshatra", `✨ ${janmaNakshatra.name} — Nakshatra Characteristics`, "#059669")}
+                {renderVedicPanelHeader("nakshatra", `✨ ${janmaNakshatra.name} — Nakshatra Characteristics`, "#04714F")}
                 {vedicPanelOpen("nakshatra") && (<>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
                   {[
@@ -36430,7 +36430,7 @@ function orderSupportDimensionsByRelevance(
 function SupportDimensionLibraryPanel({
   eyebrow,
   actionLabel,
-  accentColor = "#0891B2",
+  accentColor = "#066C84",
   moonChartInsightReadings,
   onOpenTab,
   onEmergencyCall,
@@ -36479,9 +36479,9 @@ function SupportDimensionLibraryPanel({
         <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
           {eyebrow} · multidimensional support
         </Text>
-        <Text style={{ color: "#5B7A8A", fontSize: 12 }}>{issueGuide.label}</Text>
+        <Text style={{ color: "#4C6674", fontSize: 12 }}>{issueGuide.label}</Text>
       </View>
-      <Text style={{ color: "#6A8899", fontSize: 12, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4, lineHeight: 16 }}>
+      <Text style={{ color: "#506673", fontSize: 12, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4, lineHeight: 16 }}>
         {relevantCount > 0
           ? `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first. Tap any perspective for its full escalation guidance and route.`
           : "The complete multidimensional support library used by the counselling engine. Tap any perspective for its full escalation guidance and route."}
@@ -36504,7 +36504,7 @@ function SupportDimensionLibraryPanel({
             >
               <View style={{ width: 3, borderRadius: 2, alignSelf: "stretch", marginRight: 10, marginTop: 1, backgroundColor: relevant ? accentColor : "rgba(100,116,139,0.25)" }} />
               <View style={{ flex: 1 }}>
-                <Text style={{ color: relevant ? accentColor : "#5B7A8A", fontSize: 12, fontWeight: "800", textTransform: "capitalize", marginBottom: 2 }}>
+                <Text style={{ color: relevant ? accentColor : "#4C6674", fontSize: 12, fontWeight: "800", textTransform: "capitalize", marginBottom: 2 }}>
                   {guide.label}
                 </Text>
                 <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }}>{actionLabel}: {guide.firstAction}</Text>

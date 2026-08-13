@@ -345,7 +345,7 @@ for (const [bad, good] of [
 // colours survived a literal sweep that way and kept failing on the rendered
 // page. These may still appear as backgroundColor/borderColor/shadowColor,
 // where the requirement is different.
-for (const bad of ["#B45309", "#0E9488"]) {
+for (const bad of ["#B45309", "#0E9488", "#0891B2", "#5B7A8A", "#6A8899", "#EF4444", "#059669"]) {
   const nonSurface = [...source.matchAll(new RegExp(`"${bad}"`, "g"))].filter(m => {
     const pre = source.slice(Math.max(0, m.index - 40), m.index);
     return !/(backgroundColor|borderColor|shadowColor|borderLeftColor|borderTopColor)\s*[:=]\s*$/.test(pre);
