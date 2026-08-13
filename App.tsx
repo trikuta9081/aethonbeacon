@@ -327,6 +327,11 @@ type PersistedAppState = {
   voiceAssistEnabled: boolean;
   voiceGender: "female" | "male";
   voiceRate: number;
+  referralCode: string;
+  referredByCode: string;
+  referralShareCount: number;
+  referralJoinedAt: string | null;
+  calmSessions: CalmSessionLog[];
   userReviews: UserReview[];
   appLaunchCount: number;
   appFirstOpenedAt: string | null;
@@ -5463,6 +5468,133 @@ function translateNavLabel(languageId: LanguageId, label: string): string {
 
 // User-adjustable base speech rate for the voice assistant readout. Kept in a
 // modest band so the audio stays intelligible at either extreme.
+// ── Friend referral ──────────────────────────────────────────────────────────
+// Codes are generated on-device and are deliberately *not* a security
+// boundary: they identify who invited whom for a thank-you, nothing more.
+// Nothing here grants premium — entitlements stay server-authoritative
+// (see entitlements.ts: the client is read-only on purpose).
+const REFERRAL_CODE_LENGTH = 8;
+// Ambiguous glyphs (I/O/0/1) are excluded so a code read aloud or copied off a
+// screenshot cannot be mistyped into a different valid-looking code.
+const REFERRAL_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const REFERRAL_INSTALL_URL = "https://play.google.com/store/apps/details?id=com.aethonbeacon.app";
+
+function makeReferralCode(): string {
+  let out = "";
+  for (let i = 0; i < REFERRAL_CODE_LENGTH; i += 1) {
+    out += REFERRAL_CODE_ALPHABET.charAt(Math.floor(Math.random() * REFERRAL_CODE_ALPHABET.length));
+  }
+  return out;
+}
+
+// Accepts what people actually paste: lowercase, spaced, hyphenated, or with
+// the "AB-" prefix the share message uses.
+function normalizeReferralCode(raw: string): string {
+  return String(raw ?? "")
+    .toUpperCase()
+    .replace(/^AB[-\s]*/, "")
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, REFERRAL_CODE_LENGTH);
+}
+
+function isValidReferralCode(raw: string): boolean {
+  const code = normalizeReferralCode(raw);
+  if (code.length !== REFERRAL_CODE_LENGTH) return false;
+  for (const ch of code) {
+    if (!REFERRAL_CODE_ALPHABET.includes(ch)) return false;
+  }
+  return true;
+}
+
+function formatReferralCode(code: string): string {
+  return code.length === REFERRAL_CODE_LENGTH ? `AB-${code}` : code;
+}
+
+function buildReferralShareMessage(code: string, displayName: string): string {
+  const who = displayName.trim().length > 0 ? displayName.trim() : "A friend";
+  return [
+    `${who} thinks Aethon Beacon might help you.`,
+    "",
+    "It is a private, offline-first wellbeing app — daily check-ins, calm tones,",
+    "guided counselling, and real Indian helpline routes when they are needed.",
+    "",
+    `Use invite code ${formatReferralCode(code)} in Settings after you install, so they know you came from them.`,
+    "",
+    REFERRAL_INSTALL_URL
+  ].join("\n");
+}
+
+// ── Calm session log ─────────────────────────────────────────────────────────
+// One row per finished tone session. This is what lets the calm side of the
+// app show up everywhere else (streaks, the progress report) instead of being
+// a screen you visit and leave no trace on.
+type CalmSessionLog = {
+  id: string;
+  completedAt: string;
+  toneId: string;
+  toneLabel: string;
+  minutes: number;
+  programName: string | null;
+  completed: boolean;
+};
+
+function normalizeCalmSessions(value: unknown): CalmSessionLog[] {
+  if (!Array.isArray(value)) return [];
+  const out: CalmSessionLog[] = [];
+  for (const raw of value) {
+    if (typeof raw !== "object" || raw === null) continue;
+    const row = raw as Partial<CalmSessionLog>;
+    if (typeof row.completedAt !== "string" || Number.isNaN(Date.parse(row.completedAt))) continue;
+    const minutes = typeof row.minutes === "number" && Number.isFinite(row.minutes) ? row.minutes : 0;
+    if (minutes <= 0) continue;
+    out.push({
+      id: typeof row.id === "string" && row.id.length > 0 ? row.id : `calm-${row.completedAt}`,
+      completedAt: row.completedAt,
+      toneId: typeof row.toneId === "string" ? row.toneId : "",
+      toneLabel: typeof row.toneLabel === "string" ? row.toneLabel : "Tone session",
+      minutes: Math.max(1, Math.round(minutes)),
+      programName: typeof row.programName === "string" ? row.programName : null,
+      completed: row.completed === true
+    });
+  }
+  return out;
+}
+
+function calmDayKey(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+// Consecutive days ending today (or yesterday, so a streak is not lost before
+// the day is over) on which at least one calm session was finished.
+function computeCalmStreak(sessions: CalmSessionLog[], now: Date = new Date()): number {
+  if (sessions.length === 0) return 0;
+  const days = new Set(sessions.map((session) => calmDayKey(session.completedAt)));
+  const cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayKey = `${cursor.getFullYear()}-${cursor.getMonth() + 1}-${cursor.getDate()}`;
+  if (!days.has(todayKey)) {
+    cursor.setDate(cursor.getDate() - 1);
+    const yesterdayKey = `${cursor.getFullYear()}-${cursor.getMonth() + 1}-${cursor.getDate()}`;
+    if (!days.has(yesterdayKey)) return 0;
+  }
+  let streak = 0;
+  for (;;) {
+    const key = `${cursor.getFullYear()}-${cursor.getMonth() + 1}-${cursor.getDate()}`;
+    if (!days.has(key)) break;
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
+function calmMinutesOnDay(sessions: CalmSessionLog[], now: Date = new Date()): number {
+  const key = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+  return sessions.reduce(
+    (total, session) => (calmDayKey(session.completedAt) === key ? total + session.minutes : total),
+    0
+  );
+}
+
 function clampVoiceRate(value: number): number {
   if (!Number.isFinite(value)) return 1.0;
   return Math.min(1.35, Math.max(0.75, value));
@@ -13290,6 +13422,16 @@ export default function App() {
   const [voiceAssistEnabled, setVoiceAssistEnabled] = useState(false);
   const [voiceGender, setVoiceGender] = useState<"female" | "male">("female");
   const [voiceRate, setVoiceRate] = useState(1.0);
+  // Friend referral. referralCode is this device's own code (generated once,
+  // after load, so it survives restarts); referredByCode is the code this
+  // person entered from whoever invited them.
+  const [referralCode, setReferralCode] = useState("");
+  const [referredByCode, setReferredByCode] = useState("");
+  const [referralShareCount, setReferralShareCount] = useState(0);
+  const [referralJoinedAt, setReferralJoinedAt] = useState<string | null>(null);
+  // Finished calm/tone sessions -- the bridge between the Tones tab and the
+  // rest of the app (streak, progress report).
+  const [calmSessions, setCalmSessions] = useState<CalmSessionLog[]>([]);
   const [voiceAssistStatus, setVoiceAssistStatus] = useState("Ready");
   const [userReviews, setUserReviews] = useState<UserReview[]>([]);
   const [appLaunchCount, setAppLaunchCount] = useState(0);
@@ -15378,6 +15520,7 @@ export default function App() {
       "📊  STREAK & CONSISTENCY",
       separator,
       `🔥  Current streak: ${checkInStreak} day${checkInStreak === 1 ? "" : "s"}  ${streakStatus}`,
+      `🧘  Calm streak: ${calmStreakDays} day${calmStreakDays === 1 ? "" : "s"}  ·  ${calmMinutesToday} min today  ·  ${calmMinutesTotal} min total`,
       `📝  Total journal entries: ${totalEntries}`,
       `📅  Entries today: ${todayEntries}`,
       `⭐  Weekly avg score: ${weeklyAverage} / 100`,
@@ -16030,6 +16173,21 @@ export default function App() {
       if (Array.isArray(parsed.userReviews)) {
         setUserReviews(normalizeUserReviews(parsed.userReviews).slice(0, 20));
       }
+      if (typeof parsed.referralCode === "string" && isValidReferralCode(parsed.referralCode)) {
+        setReferralCode(normalizeReferralCode(parsed.referralCode));
+      }
+      if (typeof parsed.referredByCode === "string" && isValidReferralCode(parsed.referredByCode)) {
+        setReferredByCode(normalizeReferralCode(parsed.referredByCode));
+      }
+      if (typeof parsed.referralShareCount === "number" && Number.isFinite(parsed.referralShareCount)) {
+        setReferralShareCount(Math.max(0, Math.floor(parsed.referralShareCount)));
+      }
+      if (typeof parsed.referralJoinedAt === "string" || parsed.referralJoinedAt === null) {
+        setReferralJoinedAt(parsed.referralJoinedAt ?? null);
+      }
+      if (Array.isArray(parsed.calmSessions)) {
+        setCalmSessions(normalizeCalmSessions(parsed.calmSessions).slice(0, 120));
+      }
       if (typeof parsed.appLaunchCount === "number" && Number.isFinite(parsed.appLaunchCount)) {
         setAppLaunchCount(Math.max(0, Math.floor(parsed.appLaunchCount)));
       }
@@ -16377,6 +16535,11 @@ export default function App() {
       voiceAssistEnabled,
       voiceGender,
       voiceRate,
+      referralCode,
+      referredByCode,
+      referralShareCount,
+      referralJoinedAt,
+      calmSessions: calmSessions.slice(0, 120),
       userReviews: userReviews.slice(0, 20),
       appLaunchCount,
       appFirstOpenedAt,
@@ -16464,6 +16627,11 @@ export default function App() {
     voiceAssistEnabled,
     voiceGender,
     voiceRate,
+    referralCode,
+    referredByCode,
+    referralShareCount,
+    referralJoinedAt,
+    calmSessions,
     userReviews,
     appLaunchCount,
     appFirstOpenedAt,
@@ -17261,6 +17429,82 @@ export default function App() {
     if (accessRole === "verified") {
       setAccessRole("member");
     }
+  }
+
+  // Mint this device's own referral code exactly once, after the stored
+  // profile has loaded -- doing it before load would generate a throwaway code
+  // and then immediately overwrite it with the saved one (or, worse, persist
+  // the throwaway if nothing was saved yet).
+  useEffect(() => {
+    if (!hasLoaded) return;
+    if (referralCode.length > 0) return;
+    setReferralCode(makeReferralCode());
+  }, [hasLoaded, referralCode]);
+
+  const calmMinutesToday = useMemo(() => calmMinutesOnDay(calmSessions), [calmSessions]);
+  const calmStreakDays = useMemo(() => computeCalmStreak(calmSessions), [calmSessions]);
+  const calmMinutesTotal = useMemo(
+    () => calmSessions.reduce((total, session) => total + session.minutes, 0),
+    [calmSessions]
+  );
+
+  // Called by the Tones section when a session ends. Sessions shorter than a
+  // minute are ignored: tapping play and immediately stopping is not a
+  // practice, and letting it count would make the calm streak meaningless.
+  const recordCalmSession = useCallback(
+    (session: { toneId: string; toneLabel: string; seconds: number; programName: string | null; completed: boolean }) => {
+      const minutes = Math.round(session.seconds / 60);
+      if (minutes < 1) return;
+      const completedAt = new Date().toISOString();
+      setCalmSessions((current) =>
+        [
+          {
+            id: `calm-${Date.now()}-${Math.round(Math.random() * 1e6)}`,
+            completedAt,
+            toneId: session.toneId,
+            toneLabel: session.toneLabel,
+            minutes,
+            programName: session.programName,
+            completed: session.completed
+          },
+          ...current
+        ].slice(0, 120)
+      );
+    },
+    []
+  );
+
+  async function handleShareReferral() {
+    if (referralCode.length === 0) return;
+    try {
+      await Share.share({
+        title: "Invite a friend to Aethon Beacon",
+        message: buildReferralShareMessage(referralCode, profileDisplayName)
+      });
+      setReferralShareCount((count) => count + 1);
+    } catch {
+      // Share sheet dismissed or unavailable -- nothing to report.
+    }
+  }
+
+  function handleRedeemReferralCode(raw: string): boolean {
+    const code = normalizeReferralCode(raw);
+    if (referredByCode.length > 0) {
+      Alert.alert("Invite code", `You have already recorded ${formatReferralCode(referredByCode)}. An invite can only be used once.`);
+      return false;
+    }
+    if (!isValidReferralCode(code)) {
+      Alert.alert("Invite code", "That code does not look right. Codes are 8 characters, like AB-4KQ7MPX2.");
+      return false;
+    }
+    if (code === referralCode) {
+      Alert.alert("Invite code", "That is your own code. Share it with a friend instead.");
+      return false;
+    }
+    setReferredByCode(code);
+    setReferralJoinedAt(new Date().toISOString());
+    Alert.alert("Invite code accepted", `Thanks — ${formatReferralCode(code)} is recorded as the friend who brought you here.`);
+    return true;
   }
 
   async function requestVerificationCode(channel: "phone" | "email") {
@@ -18780,7 +19024,26 @@ async function fetchGuidanceHelp(
     if (Platform.OS === "web" && speechApi.speechSynthesis && speechApi.SpeechSynthesisUtterance) {
       speechApi.speechSynthesis.cancel();
       const utterance = new speechApi.SpeechSynthesisUtterance(cleanText);
-      const webVoices = speechApi.speechSynthesis.getVoices?.() ?? [];
+      // Chrome (and Safari on a cold start) populates the voice list
+      // asynchronously: the first getVoices() after page load returns []. Left
+      // as-is, the very first readout falls back to the browser default voice
+      // -- which is exactly the flat, non-Indian voice this picker exists to
+      // avoid. Wait one "voiceschanged" tick before giving up on the list.
+      let webVoices = speechApi.speechSynthesis.getVoices?.() ?? [];
+      if (webVoices.length === 0) {
+        webVoices = await new Promise<SpeechSynthesisVoice[]>((resolve) => {
+          let settled = false;
+          const finish = () => {
+            if (settled) return;
+            settled = true;
+            speechApi.speechSynthesis?.removeEventListener?.("voiceschanged", finish);
+            resolve(speechApi.speechSynthesis?.getVoices?.() ?? []);
+          };
+          speechApi.speechSynthesis?.addEventListener?.("voiceschanged", finish);
+          // Never block speech on a browser that fires nothing.
+          setTimeout(finish, 400);
+        });
+      }
       const preferredWebVoice = pickBestWebVoice(webVoices, selectedLanguage.speechLang, voiceGender);
       if (preferredWebVoice) {
         utterance.voice = preferredWebVoice;
@@ -20487,6 +20750,9 @@ function isTrustedExternalUrl(url: string) {
               isWide={isWide}
               onNowPlayingChange={setToneNowPlaying}
               onControlsReady={(controls) => { toneControlsRef.current = controls; }}
+              onSessionComplete={recordCalmSession}
+              calmMinutesToday={calmMinutesToday}
+              calmStreakDays={calmStreakDays}
             />
           </View>
 
@@ -21566,6 +21832,11 @@ function isTrustedExternalUrl(url: string) {
                 }}
                 localProductMetrics={localProductMetrics}
                 onClearProductMetrics={() => setLocalProductMetrics([])}
+                referralCode={referralCode}
+                referredByCode={referredByCode}
+                referralShareCount={referralShareCount}
+                onShareReferral={() => { void handleShareReferral(); }}
+                onRedeemReferralCode={handleRedeemReferralCode}
               />
             </View>
           )}
@@ -23365,7 +23636,10 @@ function ToneLibrarySection({
   moonChartInsightReadings,
   isWide,
   onNowPlayingChange,
-  onControlsReady
+  onControlsReady,
+  onSessionComplete,
+  calmMinutesToday = 0,
+  calmStreakDays = 0
 }: {
   selectedIssueGuide: IssueGuide;
   selectedIdentityLabel: string;
@@ -23381,6 +23655,17 @@ function ToneLibrarySection({
   // omitted (e.g. in tests or if ever reused standalone).
   onNowPlayingChange?: (state: ToneNowPlaying) => void;
   onControlsReady?: (controls: ToneLibraryControls) => void;
+  // Reports a finished session up to App() so calm practice shows up in the
+  // streak and the progress report instead of vanishing when the tab unmounts.
+  onSessionComplete?: (session: {
+    toneId: string;
+    toneLabel: string;
+    seconds: number;
+    programName: string | null;
+    completed: boolean;
+  }) => void;
+  calmMinutesToday?: number;
+  calmStreakDays?: number;
 }) {
   const compact = !isWide;
   const recommendedTone = useMemo(
@@ -23486,15 +23771,50 @@ function ToneLibrarySection({
     };
   }, [loopEnabled, selectedTone.id, tonePaused, toneVolume, presetMinutes, selectedSessionPreset.id]);
 
+  // Session accounting. These refs let the "session ended" effect below read
+  // the values the session actually ran with, without re-subscribing every
+  // time one of them changes mid-session.
+  const sessionSecondsRef = useRef(sessionSeconds);
+  useEffect(() => { sessionSecondsRef.current = sessionSeconds; }, [sessionSeconds]);
+  const sessionToneRef = useRef({ id: selectedTone.id, label: selectedTone.label });
+  useEffect(() => { sessionToneRef.current = { id: selectedTone.id, label: selectedTone.label }; }, [selectedTone.id, selectedTone.label]);
+  const sessionProgramRef = useRef<string | null>(activeProgram?.name ?? null);
+  useEffect(() => { sessionProgramRef.current = activeProgram?.name ?? null; }, [activeProgram]);
+  const sessionCompletedNaturallyRef = useRef(false);
+  const onSessionCompleteRef = useRef(onSessionComplete);
+  useEffect(() => { onSessionCompleteRef.current = onSessionComplete; }, [onSessionComplete]);
+
   // Auto-stop when preset duration is reached
   useEffect(() => {
     if (!loopEnabled || presetMinutes === 0) return;
     if (sessionSeconds >= presetMinutes * 60) {
+      sessionCompletedNaturallyRef.current = true;
       setLoopEnabled(false);
       setTonePaused(false);
       setActiveProgram(null);
     }
   }, [sessionSeconds, presetMinutes, loopEnabled]);
+
+  // Log the session once, on the transition from playing to stopped -- whether
+  // it ran to the end of the preset or the person stopped it early. Pausing is
+  // deliberately not a stop: loopEnabled stays true while paused.
+  const wasLoopEnabledRef = useRef(loopEnabled);
+  useEffect(() => {
+    const wasPlaying = wasLoopEnabledRef.current;
+    wasLoopEnabledRef.current = loopEnabled;
+    if (!wasPlaying || loopEnabled) return;
+    const seconds = sessionSecondsRef.current;
+    const completed = sessionCompletedNaturallyRef.current;
+    sessionCompletedNaturallyRef.current = false;
+    if (seconds < 60) return;
+    onSessionCompleteRef.current?.({
+      toneId: sessionToneRef.current.id,
+      toneLabel: sessionToneRef.current.label,
+      seconds,
+      programName: sessionProgramRef.current,
+      completed
+    });
+  }, [loopEnabled]);
 
   // Breathing guide step rotation
   useEffect(() => {
@@ -23581,6 +23901,27 @@ function ToneLibrarySection({
           )}
         </View>
         {/* Breathing guide — shows during active program */}
+        {/* Calm continuity — the same practice record the streak and the
+            progress report read from, shown where the practice happens so the
+            two halves of the app agree with each other. */}
+        {(calmStreakDays > 0 || calmMinutesToday > 0) && (
+          <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", paddingHorizontal: 18, paddingVertical: 10, backgroundColor: "#E7EFF6", borderTopWidth: 1, borderTopColor: "rgba(15,23,42,0.06)" }}>
+            {calmStreakDays > 0 && (
+              <View style={{ backgroundColor: "rgba(8,145,178,0.12)", borderWidth: 1, borderColor: "rgba(8,145,178,0.35)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
+                <Text style={{ color: "#0E5C6B", fontSize: 12, fontWeight: "900" }}>
+                  🔥 {calmStreakDays}-day calm streak
+                </Text>
+              </View>
+            )}
+            {calmMinutesToday > 0 && (
+              <View style={{ backgroundColor: "rgba(15,23,42,0.05)", borderWidth: 1, borderColor: "rgba(15,23,42,0.12)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
+                <Text style={{ color: "#263244", fontSize: 12, fontWeight: "800" }}>
+                  🧘 {calmMinutesToday} min today
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
         {loopEnabled && activeProgram && breathSteps.length > 0 && (
           <View style={{ backgroundColor: "#DEE7F2", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(8,145,178,0.15)" }}>
             <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
@@ -28694,9 +29035,12 @@ function RedressSection({
             </Pressable>
             {showScript && (
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
-                <Text style={{ color: "#6A8899", fontSize: 12, marginTop: 8, marginBottom: 6 }}>Use this as a starting script. Replace [brackets] with your real details.</Text>
-                <View style={{ backgroundColor: "rgba(251,191,36,0.07)", borderRadius: 10, padding: 12 }}>
-                  <Text style={{ color: "#A37E15", fontSize: 12, lineHeight: 20, fontStyle: "italic" }}>{firstScript}</Text>
+                <Text style={{ color: "#374151", fontSize: 12, marginTop: 8, marginBottom: 6 }}>Use this as a starting script. Replace [brackets] with your real details.</Text>
+                {/* The script is the thing people actually read off their phone
+                    at a counter, so it gets real ink: near-black on a defined
+                    card rather than pale amber on a pale panel. */}
+                <View style={{ backgroundColor: "#FFF8E6", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(180,83,9,0.28)" }}>
+                  <Text style={{ color: "#3F2D07", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>{firstScript}</Text>
                 </View>
                 <Pressable
                   accessibilityRole="button"
@@ -29769,6 +30113,11 @@ function SettingsSection({
   setProductAnalyticsEnabled,
   localProductMetrics,
   onClearProductMetrics,
+  referralCode,
+  referredByCode,
+  referralShareCount,
+  onShareReferral,
+  onRedeemReferralCode,
   themePreference,
   setThemePreference,
   theme
@@ -29849,7 +30198,13 @@ function SettingsSection({
   setProductAnalyticsEnabled: (value: boolean) => void;
   localProductMetrics: LocalProductMetric[];
   onClearProductMetrics: () => void;
+  referralCode: string;
+  referredByCode: string;
+  referralShareCount: number;
+  onShareReferral: () => void;
+  onRedeemReferralCode: (code: string) => boolean;
 }) {
+  const [referralCodeDraft, setReferralCodeDraft] = useState("");
   const reminderChoice = reminderOptions.find((option) => option.id === reminderMode) ?? reminderOptions[0];
   const followUpChoice = followUpOptions.find((option) => option.id === followUpMode) ?? followUpOptions[0];
   const profileDisplayName = getRespectfulAddressLabel(
@@ -30170,6 +30525,86 @@ function SettingsSection({
             );
           })}
         </View>
+      </View>
+      {/* ── Invite a friend ── */}
+      <View style={styles.settingsBlock}>
+        <Text style={styles.settingsTitle}>Invite a friend</Text>
+        <Text style={styles.promptText}>
+          Share your code with someone who could use a quieter place to think. Codes are generated on this
+          device and only record who invited whom — they are not an account, and they do not change anyone&apos;s
+          subscription or unlock paid features.
+        </Text>
+        <View
+          style={{
+            marginTop: 12,
+            backgroundColor: "#E1EEEC",
+            borderWidth: 1.5,
+            borderColor: "#0891B2",
+            borderRadius: 12,
+            paddingVertical: 14,
+            paddingHorizontal: 16,
+            alignItems: "center"
+          }}
+        >
+          <Text style={{ color: "#374151", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
+            Your invite code
+          </Text>
+          <Text selectable style={{ color: "#0E5C6B", fontSize: 24, fontWeight: "900", letterSpacing: 3, marginTop: 6 }}>
+            {referralCode.length > 0 ? formatReferralCode(referralCode) : "…"}
+          </Text>
+          {referralShareCount > 0 && (
+            <Text style={{ color: "#374151", fontSize: 12, marginTop: 6 }}>
+              Shared {referralShareCount} time{referralShareCount === 1 ? "" : "s"}
+            </Text>
+          )}
+        </View>
+        <View style={styles.backupActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Share your invite code"
+            disabled={referralCode.length === 0}
+            onPress={onShareReferral}
+            style={[styles.dangerButton, referralCode.length === 0 ? { opacity: 0.5 } : null]}
+          >
+            <Text style={styles.dangerButtonLabel}>Share invite</Text>
+          </Pressable>
+        </View>
+        {referredByCode.length > 0 ? (
+          <Text style={[styles.promptText, { marginTop: 12, color: "#0E5C6B", fontWeight: "700" }]}>
+            ✓ Invited by {formatReferralCode(referredByCode)} — thank them for you.
+          </Text>
+        ) : (
+          <View style={{ marginTop: 12 }}>
+            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700", marginBottom: 6 }}>
+              Were you invited? Enter their code
+            </Text>
+            <TextInput
+              value={referralCodeDraft}
+              onChangeText={setReferralCodeDraft}
+              placeholder="AB-XXXXXXXX"
+              placeholderTextColor="#6B7280"
+              autoCapitalize="characters"
+              autoCorrect={false}
+              maxLength={12}
+              accessibilityLabel="Friend's invite code"
+              style={styles.settingsInput}
+            />
+            <View style={styles.backupActions}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Apply invite code"
+                onPress={() => {
+                  if (onRedeemReferralCode(referralCodeDraft)) {
+                    setReferralCodeDraft("");
+                  }
+                }}
+                style={styles.secondaryDangerButton}
+              >
+                <Text style={styles.secondaryDangerButtonLabel}>Apply code</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
       </View>
       {/* ── Voice gender + humanized speech settings ── */}
       <View style={styles.settingsBlock}>
