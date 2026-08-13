@@ -58,8 +58,11 @@ function mustNotMatch(pattern, message) {
   // new, correctly-paired colors instead of the old dark-card ones.
   'color: "#0D1F22", fontSize: 14, fontWeight: "900" }}>{prog.name}',
   'color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "600" }}>{prog.purpose}',
-  'homeToneChipLabel: {\n    color: "#0D1F22"',
-  'homeToneFeaturedUse: {\n    color: "#111827"',
+  // homeToneChipLabel and homeToneFeaturedUse were asserted here by the Tones
+  // visibility pass. Both styles were unused -- nothing in the app referenced
+  // them -- so these two lines were guarding the contrast of text that never
+  // rendered. Removed with the styles themselves; the live Tones surfaces are
+  // covered by the two prog.name / prog.purpose markers above.
   `onboardingSheet: {
     width: "94%",
     maxWidth: 680,`,
@@ -77,13 +80,7 @@ function mustNotMatch(pattern, message) {
   `topTabLabel: {
     minWidth: 0,
     flexShrink: 1,`,
-  `homeToneQuickStrip: {
-    flexDirection: "row",
-    flexWrap: "wrap",`,
-  `tonePresetRow: {
-    flexDirection: "row",
-    gap: 4,
-    flexWrap: "wrap"`,
+  
   `bottomNavItem: {
     flex: 1,
     minWidth: 0,`
@@ -98,6 +95,10 @@ function mustNotMatch(pattern, message) {
     minWidth: 0,
     maxWidth: "100%",`,
   'flexDirection: "row", flexWrap: "wrap", alignItems: "flex-start", paddingHorizontal: 14'
+  // homeToneQuickStrip and tonePresetRow were asserted here too. Both styles
+  // were unused, so these guards were protecting the wrap behaviour of rows
+  // that never rendered. Removed with the styles; the live Tones rows are
+  // still covered by the toneChipRow / issueChipGrid markers above.
 ].forEach((marker) => mustInclude(marker, `Expected mobile overflow guard missing: ${marker}`));
 
 mustNotInclude(

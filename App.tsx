@@ -40071,38 +40071,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     gap: 14
   },
-  hero: {
-    position: "relative",
-    overflow: "hidden",
-    borderRadius: 18,
-    borderCurve: "continuous",
-    backgroundColor: "#E1EEEC",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8
-  },
-  heroWide: {
-    flexDirection: "row",
-    minHeight: 500
-  },
-  heroCopy: {
-    padding: 24,
-    gap: 16
-  },
-  heroCopyWide: {
-    width: "43%",
-    justifyContent: "center",
-    padding: 42
-  },
-  heroHeaderRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    gap: 10
-  },
+
+
+
+
+
   brandBadge: {
     flexGrow: 1,
     flexShrink: 1,
@@ -40178,23 +40151,8 @@ const styles = StyleSheet.create({
   brandTagCompact: {
     fontSize: 12
   },
-  heroTopActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    alignItems: "center",
-    justifyContent: "flex-end",
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 210,
-    minWidth: 0
-  },
-  heroTopActionsCompact: {
-    flexDirection: "column",
-    alignItems: "stretch",
-    flexBasis: "100%",
-    gap: 10
-  },
+
+
   topBeaconHeader: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -40204,29 +40162,10 @@ const styles = StyleSheet.create({
   topBeaconHeaderCompact: {
     gap: 8
   },
-  topBeaconUtilityStack: {
-    flexShrink: 0,
-    alignItems: "flex-end",
-    justifyContent: "flex-start",
-    gap: 6
-  },
-  topBeaconUtilityStackCompact: {
-    gap: 4
-  },
-  topBeaconLogoPhrase: {
-    maxWidth: 126,
-    textAlign: "right",
-    color: "rgba(246, 212, 107, 0.96)",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "800",
-    letterSpacing: 0
-  },
-  topBeaconLogoPhraseCompact: {
-    maxWidth: 104,
-    fontSize: 12,
-    lineHeight: 16
-  },
+
+
+
+
   topBeaconSecondaryRow: {
     flexDirection: "row",
     alignItems: "stretch",
@@ -40302,9 +40241,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: "900"
   },
-  topTabTextActive: {
-    color: COLORS.accentGold
-  },
+
   topStatusChip: {
     flexGrow: 0,
     flexShrink: 1,
@@ -40359,48 +40296,11 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: "700"
   },
-  heroMainAction: {
-    width: "100%",
-    minHeight: 58,
-    borderRadius: 14,
-    borderCurve: "continuous",
-    borderWidth: 0,
-    backgroundColor: "#B45309",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-    shadowColor: "#B8960A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4
-  },
-  heroMainActionCompact: {
-    minHeight: 34,
-    paddingHorizontal: 11,
-    paddingVertical: 5
-  },
-  heroMainActionCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2
-  },
-  heroMainActionLabel: {
-    color: "#0D1F22",
-    fontSize: 14,
-    lineHeight: 18,
-    fontWeight: "900",
-    textTransform: "uppercase"
-  },
-  heroMainActionMeta: {
-    color: "#274341",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
+
+
+
+
+
   topPageModeBanner: {
     borderRadius: 10,
     borderWidth: 1,
@@ -40606,172 +40506,29 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17
   },
-  homeReportBand: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
-    backgroundColor: "#E7EFED",
-    padding: 8,
-    gap: 6,
-    marginTop: 8
-  },
-  homeReportBandCompact: {
-    padding: 5,
-    gap: 3,
-    marginTop: 5
-  },
-  visitReportGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6
-  },
-  visitReportGridCompact: {
-    gap: 4
-  },
-  visitReportCard: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 170,
-    minWidth: 0,
-    minHeight: 84,
-    borderRadius: 14,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.18)",
-    backgroundColor: "#F4F8F7",
-    padding: 8,
-    gap: 3,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 2
-  },
-  visitReportCardCompact: {
-    flexBasis: 150,
-    minHeight: 68,
-    padding: 6,
-    gap: 2
-  },
-  visitReportLabel: {
-    color: "#0891B2",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    textTransform: "uppercase"
-  },
-  visitReportText: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "800"
-  },
-  visitReportMeta: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
-  homeOverviewGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginTop: 12
-  },
-  homeOverviewGridCompact: {
-    gap: 7,
-    marginTop: 10
-  },
-  homeOverviewCard: {
-    flexGrow: 1,
-    flexBasis: 180,
-    minWidth: 0,
-    borderRadius: 18,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.2)",
-    backgroundColor: "#F4F8F7",
-    padding: 10,
-    gap: 6,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.09,
-    shadowRadius: 14,
-    elevation: 3
-  },
-  homeOverviewCardCompact: {
-    padding: 8,
-    gap: 4
-  },
-  homeOverviewCardCommunity: {
-    backgroundColor: "#E1EEEC",
-    borderColor: "rgba(30,80,200,0.3)"
-  },
-  homeCommunityFeatureGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  homeCommunityFeatureCard: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 150,
-    minWidth: 0,
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(30,80,200,0.18)",
-    backgroundColor: "#F5F7FF",
-    padding: 10,
-    gap: 4,
-    shadowColor: "#1E50C8",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 2
-  },
-  homeCommunityFeatureTitle: {
-    color: "#24306F",
-    fontSize: 13,
-    lineHeight: 17,
-    fontWeight: "900"
-  },
-  homeCommunityFeatureText: {
-    color: "#3D4B86",
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: "800"
-  },
-  homeOverviewCardVoice: {
-    backgroundColor: "#E1EEEC",
-    borderColor: "rgba(14,111,105,0.35)"
-  },
-  homeOverviewEyebrow: {
-    color: "#0891B2",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  homeOverviewTitle: {
-    color: "#0D1F22",
-    fontSize: 14,
-    lineHeight: 18,
-    fontWeight: "900"
-  },
-  homeOverviewText: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: "700"
-  },
-  homeOverviewMeta: {
-    color: "#6F7785",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "800"
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   homeOverviewActions: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -40824,491 +40581,80 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0
   },
-  homeToneBand: {
-    maxWidth: "100%",
-    overflow: "hidden",
-    marginTop: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.32)",
-    backgroundColor: "#E1EEEC",
-    padding: 8,
-    gap: 8
-  },
-  homeToneBandHeader: {
-    flexDirection: "column",
-    alignItems: "stretch",
-    gap: 4
-  },
-  homeToneBandHeaderCopy: {
-    gap: 1
-  },
-  homeToneBandCompact: {
-    marginTop: 4,
-    padding: 5,
-    gap: 4
-  },
-  homeToneBandButton: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 112,
-    minWidth: 0,
-    maxWidth: "100%",
-    minHeight: 32,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#0E6F69",
-    backgroundColor: "#F4F8F7",
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  homeToneBandButtonLabel: {
-    color: "#075985",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  homeToneHeaderActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 4,
-    alignItems: "center",
-    justifyContent: "flex-start"
-  },
-  homeToneBandButtonSecondary: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 112,
-    minWidth: 0,
-    maxWidth: "100%",
-    minHeight: 32,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#A57B12",
-    backgroundColor: "#E1EEEC",
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  homeToneBandButtonSecondaryActive: {
-    backgroundColor: "#DFF1EF",
-    borderColor: "#1C5D58"
-  },
-  homeToneBandButtonSecondaryLabel: {
-    color: "#9A3412",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  homeToneBandButtonSecondaryLabelActive: {
-    color: "#B88600"
-  },
-  homeToneLoopStatus: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "800",
-    marginTop: 4
-  },
-  homeToneLoopStatusCompact: {
-    fontSize: 12,
-    lineHeight: 16,
-    marginTop: 2
-  },
-  homeToneBandIntro: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
-  homeToneBandIntroCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  homeToneLibraryPreviewGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  homeToneLibraryPreviewCard: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 164,
-    minWidth: 0,
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1.5,
-    backgroundColor: "#F8FAFC",
-    padding: 10,
-    gap: 4,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 2
-  },
-  homeToneLibraryPreviewTitle: {
-    fontSize: 13,
-    lineHeight: 17,
-    fontWeight: "900"
-  },
-  homeToneLibraryPreviewMeta: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: "800"
-  },
-  homeToneLibraryPreviewExamples: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: "900"
-  },
-  homeToneQuickStrip: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "flex-start",
-    gap: 6,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
-    backgroundColor: "#DFEFF1",
-    paddingHorizontal: 6,
-    paddingVertical: 4
-  },
-  homeToneQuickCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 1
-  },
-  homeToneQuickTitle: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900"
-  },
-  homeToneQuickMeta: {
-    color: "rgba(14,180,160,0.9)",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
-  homeToneQuickNote: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 150,
-    minWidth: 0,
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700",
-    textAlign: "left"
-  },
-  homeToneFeaturedCard: {
-    borderRadius: 18,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.25)",
-    backgroundColor: "#E1EEEC",
-    padding: 12,
-    gap: 6,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 14,
-    elevation: 3
-  },
-  homeToneFeaturedCardCompact: {
-    padding: 5,
-    gap: 3
-  },
-  homeToneFeaturedTop: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 6
-  },
-  homeToneFeaturedMark: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    borderCurve: "continuous",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#0E6F69"
-  },
-  homeToneFeaturedMarkCompact: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderCurve: "continuous",
-  },
-  homeToneFeaturedMarkText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  homeToneFeaturedCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2
-  },
-  homeToneFeaturedTitle: {
-    color: "#0D1F22",
-    fontSize: 14,
-    lineHeight: 18,
-    fontWeight: "900",
-    flexShrink: 1,
-    minWidth: 0
-  },
-  homeToneFeaturedTitleCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  homeToneFeaturedMeta: {
-    color: "rgba(14,180,160,0.9)",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
-  homeToneFeaturedMetaCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  homeToneFeaturedUse: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 17,
-    fontWeight: "800"
-  },
-  homeToneFeaturedUseCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  homeToneFeaturedSafety: {
-    color: "#8A5A00",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
-  homeToneFeaturedSafetyCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  homeToneChipRow: {
-    gap: 6,
-    paddingBottom: 2
-  },
-  homeToneChip: {
-    width: 146,
-    minHeight: 112,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.35)",
-    backgroundColor: "#E1EEEC",
-    padding: 9,
-    gap: 4,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 3
-  },
-  homeToneChipCompact: {
-    width: 104,
-    minHeight: 82,
-    padding: 6,
-    gap: 2
-  },
-  homeToneChipActive: {
-    borderColor: "#C4A35A",
-    backgroundColor: "#FEF3E0",
-    shadowColor: "#C4A35A",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.45,
-    shadowRadius: 8,
-  },
-  homeToneChipMark: {
-    alignSelf: "flex-start",
-    minWidth: 24,
-    minHeight: 24,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    backgroundColor: "#E4F4EF",
-    color: "#0A4A44",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    textAlign: "center"
-  },
-  homeToneChipMarkCompact: {
-    minWidth: 18,
-    minHeight: 18,
-    borderRadius: 9,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    fontSize: 12,
-    lineHeight: 16
-  },
-  homeToneChipMarkActive: {
-    backgroundColor: "#0E6F69",
-    // Near-black text on this dark teal was 2.8:1 -- flipped to white (7:1+).
-    color: "#FFFFFF"
-  },
-  homeToneChipLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900"
-  },
-  homeToneChipLabelCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  homeToneChipLabelActive: {
-    color: "#B68502"
-  },
-  homeToneChipMeta: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
-  homeToneChipMetaCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  homeToneChipMetaActive: {
-    color: "#0D1F22"
-  },
-  toneLibraryGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginTop: 10
-  },
-  toneLibraryCard: {
-    flexGrow: 1,
-    flexBasis: "48%",
-    minWidth: 0,
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.22)",
-    backgroundColor: "#E1EEEC",
-    padding: 10,
-    gap: 6,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 3
-  },
-  toneLibraryCardCompact: {
-    flexBasis: "100%"
-  },
-  toneLibraryCardActive: {
-    borderColor: "#C4A35A",
-    backgroundColor: "#FEF3E0",
-    shadowColor: "#C4A35A",
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-  },
-  toneLibraryMark: {
-    backgroundColor: "#0E6F69"
-  },
-  toneLoopButtonActive: {
-    backgroundColor: "#DFF1EF",
-    borderColor: "#1C5D58"
-  },
-  toneLoopButtonActiveLabel: {
-    color: "#B88600"
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // ── Tone session timer ───────────────────────────────────────────────────
-  toneTimerBadge: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    gap: 4,
-    backgroundColor: "rgba(14,111,105,0.22)",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.5)"
-  },
-  toneTimerBadgeTime: {
-    fontSize: 18,
-    fontWeight: "900",
-    color: "#00B8A4",
-    fontVariant: ["tabular-nums"]
-  },
-  toneTimerBadgeLabel: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#111827"
-  },
-  toneSessionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 0
-  },
-  toneSessionClock: {
-    fontSize: 20,
-    fontWeight: "900",
-    color: "#00B8A4",
-    fontVariant: ["tabular-nums"],
-    letterSpacing: 0.6
-  },
-  toneProgressTrack: {
-    flex: 1,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "rgba(14,111,105,0.2)",
-    overflow: "hidden"
-  },
-  toneProgressFill: {
-    height: "100%",
-    borderRadius: 2,
-    backgroundColor: "#0E6F69"
-  },
+
+
+
+
+
+
+
   // ── Tone preset chips ────────────────────────────────────────────────────
-  tonePresetRow: {
-    flexDirection: "row",
-    gap: 4,
-    flexWrap: "wrap"
-  },
-  tonePresetChip: {
-    borderRadius: 16,
-    borderCurve: "continuous",
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    backgroundColor: "rgba(14,111,105,0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)"
-  },
-  tonePresetChipActive: {
-    backgroundColor: "rgba(14,111,105,0.3)",
-    borderColor: "#0E6F69"
-  },
-  tonePresetChipLabel: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#111827"
-  },
-  tonePresetChipLabelActive: {
-    color: "#00B8A4"
-  },
+
+
+
+
+
   homeSafetyStrip: {
     maxWidth: "100%",
     overflow: "hidden",
@@ -41329,510 +40675,89 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 8
   },
-  heroMainActionMark: {
-    color: "#0D1F22",
-    fontSize: 16,
-    fontWeight: "900"
-  },
-  heroTopButton: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 128,
-    maxWidth: 180,
-    minHeight: 44,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.24)",
-    backgroundColor: "rgba(255,252,247,0.10)",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8
-  },
-  heroTopButtonCompact: {
-    flexBasis: "100%",
-    maxWidth: "100%"
-  },
-  heroTopButtonMark: {
-    color: "#B45309",
-    fontSize: 12,
-    fontWeight: "900"
-  },
-  heroTopButtonCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 1
-  },
-  heroTopButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  heroTopButtonMeta: {
-    color: "#486F5A",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700",
-    letterSpacing: 0
-  },
-  heroTitle: {
-    color: "#0D1F22",
-    fontSize: 40,
-    lineHeight: 46,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  heroTitleCompact: {
-    fontSize: 32,
-    lineHeight: 38
-  },
-  heroText: {
-    color: "#457359",
-    fontSize: 17,
-    lineHeight: 27
-  },
-  heroTextCompact: {
-    fontSize: 14,
-    lineHeight: 20
-  },
-  heroActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    alignItems: "center"
-  },
-  heroModeChip: {
-    minHeight: 40,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(246, 212, 107, 0.48)",
-    backgroundColor: "rgba(255, 252, 247, 0.10)",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8
-  },
-  heroModeChipCompact: {
-    flexBasis: "100%",
-    maxWidth: "100%",
-    justifyContent: "flex-start"
-  },
-  heroModeChipCalm: {
-    borderColor: "#B45309",
-    backgroundColor: "rgba(246, 212, 107, 0.16)"
-  },
-  heroModeChipMessaging: {
-    borderColor: "#0069B8",
-    backgroundColor: "rgba(124, 199, 255, 0.14)"
-  },
-  heroModeChipMark: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    backgroundColor: "#B45309",
-    // Near-black text on this dark amber was 3:1, below AA even for this
-    // bold single-character mark -- flipped to white (5:1).
-    color: "#FFFFFF",
-    fontSize: 12,
-    lineHeight: 24,
-    textAlign: "center",
-    fontWeight: "900"
-  },
-  heroModeChipCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 1
-  },
-  heroModeChipLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  heroModeChipMeta: {
-    color: "#486F5A",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700",
-    letterSpacing: 0
-  },
-  emergencyStrip: {
-    width: "100%",
-    maxWidth: 330,
-    borderRadius: 8,
-    backgroundColor: "#FDE9E5",
-    borderWidth: 1,
-    borderColor: "#AA240D",
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-    ...shadow
-  },
-  emergencyCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2
-  },
-  emergencyEyebrow: {
-    color: "#9D3224",
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase"
-  },
-  emergencyTitle: {
-    color: "#6B1E17",
-    fontSize: 15,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  emergencyText: {
-    color: "#7E342B",
-    fontSize: 12,
-    lineHeight: 16
-  },
-  emergencyButton: {
-    flexShrink: 0,
-    minWidth: 72,
-    minHeight: 40,
-    borderRadius: 8,
-    backgroundColor: "#C73F33",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 1
-  },
-  emergencyButtonMark: {
-    color: "#0D1F22",
-    fontSize: 15,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  emergencyButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0
-  },
-  communityHeroStrip: {
-    width: "100%",
-    maxWidth: 330,
-    borderRadius: 8,
-    backgroundColor: "#F5F7FF",
-    borderWidth: 1,
-    borderColor: "#0018B8",
-    padding: 10,
-    gap: 10
-  },
-  communityHeroStripCompact: {
-    maxWidth: "100%"
-  },
-  communityHeroStripExpanded: {
-    maxWidth: 390
-  },
-  communityHeroHeaderRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    gap: 8
-  },
-  communityHeroHeaderRowCompact: {
-    flexDirection: "column",
-    alignItems: "stretch"
-  },
-  communityHeroCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2
-  },
-  communityHeroEyebrow: {
-    color: "#4D5BD1",
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase"
-  },
-  communityHeroTitle: {
-    color: "#24306F",
-    fontSize: 15,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  communityHeroText: {
-    color: "#53609E",
-    fontSize: 12,
-    lineHeight: 16
-  },
-  communityHeroButtons: {
-    gap: 6,
-    alignItems: "flex-end"
-  },
-  communityHeroButtonsCompact: {
-    width: "100%",
-    alignItems: "stretch"
-  },
-  communityHeroButton: {
-    minWidth: 88,
-    minHeight: 40,
-    borderRadius: 8,
-    backgroundColor: "#4D5BD1",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  communityHeroButtonCompact: {
-    width: "100%"
-  },
-  communityHeroButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0
-  },
-  communityHeroButtonSecondary: {
-    minWidth: 88,
-    minHeight: 40,
-    borderRadius: 8,
-    backgroundColor: "#EEF0FF",
-    borderWidth: 1,
-    borderColor: "#0016B8",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  communityHeroButtonSecondaryCompact: {
-    width: "100%"
-  },
-  communityHeroButtonSecondaryLabel: {
-    color: "#32409C",
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0
-  },
-  communityHeroExpandedBody: {
-    borderTopWidth: 1,
-    borderTopColor: "#0018B8",
-    paddingTop: 8,
-    gap: 8
-  },
-  communityHeroSmallMeta: {
-    color: "#6670AA",
-    fontSize: 12,
-    fontWeight: "700"
-  },
-  communityHeroPreviewList: {
-    gap: 6
-  },
-  communityHeroPreviewMessage: {
-    borderRadius: 8,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#0012B8",
-    padding: 8,
-    gap: 3
-  },
-  communityHeroPreviewAuthor: {
-    color: "#24306F",
-    fontSize: 12,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  communityHeroPreviewText: {
-    color: "#4F5A8A",
-    fontSize: 12,
-    lineHeight: 16
-  },
-  supportBand: {
-    borderRadius: 8,
-    backgroundColor: "#E7EFED",
-    borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.28)",
-    padding: 18,
-    gap: 14
-  },
-  supportList: {
-    gap: 12
-  },
-  supportRow: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.24)",
-    backgroundColor: "#F4F8F7",
-    padding: 12,
-    gap: 12
-  },
-  supportCopy: {
-    gap: 4
-  },
-  supportName: {
-    color: "#0D1F22",
-    fontSize: 16,
-    fontWeight: "900"
-  },
-  supportMeta: {
-    color: "rgba(13,31,34,0.74)",
-    fontSize: 13,
-    lineHeight: 19
-  },
-  supportActions: {
-    flexDirection: "row",
-    gap: 8,
-    flexWrap: "wrap"
-  },
-  supportButton: {
-    minHeight: 38,
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#E1EEEC"
-  },
-  supportButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900"
-  },
-  supportButtonSecondary: {
-    minHeight: 38,
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#E1EEEC",
-    backgroundColor: "#F4F8F7"
-  },
-  supportButtonSecondaryLabel: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900"
-  },
-  helpBand: {
-    borderRadius: 8,
-    backgroundColor: "#E7EFED",
-    borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.28)",
-    padding: 10,
-    gap: 8
-  },
-  professionalBand: {
-    borderRadius: 8,
-    backgroundColor: "#E7EFED",
-    borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.28)",
-    padding: 10,
-    gap: 8
-  },
-  footerHelpStack: {
-    gap: 10,
-    marginTop: 8,
-    marginBottom: 12
-  },
-  footerHelpStackCompact: {
-    gap: 8,
-    marginTop: 6,
-    marginBottom: 10
-  },
-  footerCompactPanel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.28)",
-    backgroundColor: "#E7EFED",
-    padding: 10,
-    gap: 10
-  },
-  footerCompactPanelCompact: {
-    padding: 8,
-    gap: 8
-  },
-  footerCompactTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 10
-  },
-  footerCompactTopCompact: {
-    flexDirection: "column",
-    alignItems: "stretch",
-    justifyContent: "flex-start"
-  },
-  footerBrandLine: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8
-  },
-  footerBrandLineCompact: {
-    width: "100%",
-    minWidth: 0
-  },
-  footerLogo: {
-    width: 34,
-    height: 34,
-    borderRadius: 8
-  },
-  footerBrandCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2
-  },
-  footerBrandTitle: {
-    color: "#0D1F22",
-    fontSize: 14,
-    lineHeight: 18,
-    fontWeight: "900"
-  },
-  footerBrandTitleCompact: {
-    fontSize: 13,
-    lineHeight: 16
-  },
-  footerBrandMeta: {
-    color: "#6F7785",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
-  footerBrandMetaCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  footerExpandButton: {
-    minHeight: 32,
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  footerExpandButtonCompact: {
-    alignSelf: "flex-end"
-  },
-  footerExpandButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  footerQuickRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  footerQuickRowCompact: {
-    gap: 6
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   footerQuickAction: {
     flexGrow: 1,
     flexShrink: 1,
@@ -41848,12 +40773,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 2
   },
-  footerQuickActionCompact: {
-    flexBasis: 84,
-    minHeight: 36,
-    paddingHorizontal: 7,
-    paddingVertical: 5
-  },
+
   footerQuickActionUrgent: {
     borderColor: "#C73F33",
     backgroundColor: "#FFE2DD"
@@ -41862,10 +40782,7 @@ const styles = StyleSheet.create({
     borderColor: "#8B2F2A",
     backgroundColor: "#EEE2E4"
   },
-  footerQuickActionSecondary: {
-    borderColor: "#5C2A2E",
-    backgroundColor: "#EDE3E5"
-  },
+
   footerQuickActionLabel: {
     color: "#0D1F22",
     fontSize: 13,
@@ -41874,179 +40791,42 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0
   },
-  footerQuickActionLabelCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
+
   footerQuickActionMeta: {
     color: "#111827",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
   },
-  footerQuickActionMetaCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  footerExpandedArea: {
-    borderTopWidth: 1,
-    borderTopColor: "#244F94",
-    paddingTop: 10,
-    gap: 10
-  },
-  footerExpandedAreaCompact: {
-    paddingTop: 8,
-    gap: 8
-  },
-  footerMiniSection: {
-    gap: 8
-  },
-  footerMiniTitle: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  footerMiniTitleCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  footerMiniList: {
-    gap: 8
-  },
-  footerMiniRow: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
-    backgroundColor: "#F4F8F7",
-    padding: 9,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8
-  },
-  footerMiniRowCompact: {
-    padding: 8,
-    gap: 6
-  },
-  footerMiniCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2
-  },
-  footerMiniLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900"
-  },
-  footerMiniLabelCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  footerMiniMeta: {
-    color: "#6F7785",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "700"
-  },
-  footerMiniMetaCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  footerMiniActions: {
-    flexDirection: "row",
-    gap: 6
-  },
-  footerMiniButton: {
-    minHeight: 30,
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
-    paddingHorizontal: 9,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  footerMiniButtonCompact: {
-    minHeight: 28,
-    paddingHorizontal: 8
-  },
-  footerMiniButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900"
-  },
-  footerMiniButtonLabelCompact: {
-    fontSize: 12
-  },
-  footerMiniButtonSecondary: {
-    minHeight: 30,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#1F4799",
-    backgroundColor: "#F9FBFF",
-    paddingHorizontal: 9,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  footerMiniButtonSecondaryCompact: {
-    minHeight: 28,
-    paddingHorizontal: 8
-  },
-  footerMiniButtonSecondaryLabel: {
-    color: "#1E2F4D",
-    fontSize: 12,
-    fontWeight: "900"
-  },
-  footerMiniButtonSecondaryLabelCompact: {
-    fontSize: 12
-  },
-  legalFooterBand: {
-    borderRadius: 8,
-    backgroundColor: "#FFF8E4",
-    borderWidth: 1,
-    borderColor: "#A78711",
-    padding: 10,
-    gap: 8
-  },
-  legalFooterNote: {
-    color: "#5C4B16",
-    fontSize: 12,
-    lineHeight: 17,
-    fontWeight: "700"
-  },
-  legalFooterActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  legalFooterButton: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 150,
-    minWidth: 0,
-    minHeight: 48,
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
-    borderWidth: 1,
-    borderColor: "#A18216",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    justifyContent: "center",
-    gap: 2
-  },
-  legalFooterButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  legalFooterButtonMeta: {
-    color: "#786325",
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   issuePlanShell: {
     paddingHorizontal: 16,
     paddingBottom: 24,
@@ -42470,14 +41250,7 @@ const styles = StyleSheet.create({
   issueDetailStack: {
     gap: 12
   },
-  issueCompassBand: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
-    backgroundColor: "#F4F8F7",
-    padding: 12,
-    gap: 10
-  },
+
   issueChipGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -42699,12 +41472,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19
   },
-  issueActionBand: {
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
-    padding: 14,
-    gap: 6
-  },
+
   issueActionTitle: {
     color: "#B45309",
     fontSize: 14,
@@ -43097,9 +41865,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     fontWeight: "700"
   },
-  communityActionsCompact: {
-    flexDirection: "column"
-  },
+
   communityChatList: {
     gap: 10,
     maxHeight: 320
@@ -43546,28 +42312,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19
   },
-  recommendBand: {
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
-    borderWidth: 1,
-    borderColor: "#3E7962",
-    padding: 10,
-    gap: 8
-  },
+
   recommendList: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
   },
-  recommendSectionTitle: {
-    color: "#0D1F22",
-    fontSize: 16,
-    lineHeight: 20,
-    fontWeight: "900",
-    letterSpacing: 0,
-    flexShrink: 1,
-    maxWidth: 250
-  },
+
   recommendCard: {
     flexGrow: 1,
     flexBasis: 160,
@@ -43596,87 +42347,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16
   },
-  helpGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6
-  },
-  nearbyChipRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  nearbyChip: {
-    flexGrow: 1,
-    flexBasis: 150,
-    minHeight: 54,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#3E7963",
-    backgroundColor: "#F4F8F7",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    justifyContent: "center",
-    gap: 2
-  },
-  nearbyChipLabel: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900"
-  },
-  nearbyChipMeta: {
-    color: "#111827",
-    fontSize: 12,
-    fontWeight: "700"
-  },
-  helpCard: {
-    flexGrow: 1,
-    flexBasis: 144,
-    borderRadius: 14,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "#2E4E8A",
-    backgroundColor: "#F4F8F7",
-    padding: 8,
-    gap: 4,
-    shadowColor: "#2E4E8A",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 2
-  },
-  helpCategory: {
-    color: "#2E5C8A",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase"
-  },
-  helpTitle: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900"
-  },
-  helpAudience: {
-    color: "#111827",
-    fontSize: 12,
-    fontWeight: "700"
-  },
-  helpNumber: {
-    color: "#0891B2",
-    fontSize: 13,
-    fontWeight: "900"
-  },
-  helpDescription: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16
-  },
-  helpActions: {
-    flexDirection: "row",
-    gap: 5,
-    flexWrap: "wrap",
-    paddingTop: 2
-  },
+
+
+
+
+
+
+
+
+
+
+
+
   helpButton: {
     minHeight: 44,
     borderRadius: 10,
@@ -43742,285 +42424,51 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17
   },
-  heroArtifact: {
-    width: "92%",
-    alignSelf: "center",
-    borderRadius: 12,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(246,212,107,0.28)",
-    backgroundColor: "#F4F8F7",
-    padding: 12,
-    gap: 10,
-    ...shadow
-  },
-  heroArtifactWide: {
-    width: "46%",
-    alignSelf: "stretch",
-    justifyContent: "space-between"
-  },
-  heroArtifactCompact: {
-    width: "100%",
-    alignSelf: "stretch",
-    minHeight: 300
-  },
-  heroStoryArtifact: {
-    padding: 0,
-    gap: 0,
-    overflow: "hidden",
-    borderRadius: 8,
-    borderColor: "rgba(246, 212, 107, 0.42)",
-    backgroundColor: "#DEE7F2",
-    minHeight: 390
-  },
-  frontFeatureBand: {
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 12,
-    ...shadow
-  },
-  frontFeatureGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  frontFeatureGridCompact: {
-    gap: 6
-  },
-  frontFeatureCard: {
-    flexGrow: 1,
-    flexBasis: 150,
-    minHeight: 70,
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.2)",
-    backgroundColor: "#E7EFED",
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 2
-  },
-  frontFeatureCardCompact: {
-    flexBasis: "100%"
-  },
-  frontFeatureMark: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderCurve: "continuous",
-    backgroundColor: "#E1EEEC",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  frontFeatureMarkText: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900"
-  },
-  frontFeatureCopy: {
-    flex: 1,
-    gap: 2
-  },
-  frontFeatureLabel: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900"
-  },
-  frontFeatureMeta: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16
-  },
-  storyPreviewImage: {
-    width: "100%",
-    minHeight: 390
-  },
-  storyPreviewImageCompact: {
-    minHeight: 300
-  },
-  storyPreviewImageRadius: {
-    borderRadius: 8
-  },
-  storyPreviewScrimCompact: {
-    minHeight: 300,
-    padding: 12
-  },
-  storyPreviewScrim: {
-    minHeight: 390,
-    padding: 14,
-    justifyContent: "space-between",
-    backgroundColor: "rgba(5, 13, 21, 0.44)"
-  },
-  storyPreviewTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10
-  },
-  storyPreviewLogo: {
-    width: 52,
-    height: 52,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(246, 212, 107, 0.72)"
-  },
-  storyPreviewCopy: {
-    flex: 1,
-    gap: 2
-  },
-  storyPreviewEyebrow: {
-    color: "#B45309",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  storyPreviewTitle: {
-    color: "#FFFFFF",
-    fontSize: 17,
-    lineHeight: 22,
-    fontWeight: "900"
-  },
-  storyPreviewBottom: {
-    gap: 10
-  },
-  storyPreviewMessage: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: "900",
-    maxWidth: 320
-  },
-  storyPreviewChips: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 7
-  },
-  storyPreviewChip: {
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.32)",
-    backgroundColor: "rgba(7,17,29,0.68)",
-    paddingHorizontal: 10,
-    paddingVertical: 6
-  },
-  storyPreviewChipText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase"
-  },
-  heroArtifactHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8
-  },
-  heroArtifactMark: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  heroArtifactMarkText: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  heroArtifactCopy: {
-    flex: 1,
-    gap: 2
-  },
-  heroArtifactEyebrow: {
-    color: "#111827",
-    fontSize: 12,
-    fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  heroArtifactTitle: {
-    color: "#0D1F22",
-    fontSize: 16,
-    lineHeight: 20,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  heroArtifactMeta: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16
-  },
-  heroArtifactTiles: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  heroArtifactTile: {
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
-    paddingHorizontal: 9,
-    paddingVertical: 7,
-    gap: 2,
-    flexBasis: "48%",
-    flexGrow: 1,
-    minHeight: 48
-  },
-  heroArtifactTileHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7
-  },
-  heroArtifactTileMark: {
-    width: 17,
-    height: 17,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  heroArtifactTileMarkText: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
-  heroArtifactTileLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  heroArtifactTileText: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16
-  },
-  heroArtifactFooter: {
-    borderTopWidth: 1,
-    borderTopColor: "#7A643E",
-    paddingTop: 6
-  },
-  heroArtifactFooterText: {
-    color: "#111827",
-    fontSize: 12,
-    fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   metricsBand: {
     borderRadius: 8,
     backgroundColor: "#F4F8F7",
@@ -44031,38 +42479,10 @@ const styles = StyleSheet.create({
     padding: 4,
     ...shadow
   },
-  visionBand: {
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
-    borderWidth: 1,
-    borderColor: "rgba(246,212,107,0.22)",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 10
-  },
-  visionBandCompact: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    gap: 8
-  },
-  beaconXBand: {
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
-    borderWidth: 1,
-    borderColor: "rgba(126,111,214,0.28)",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 12
-  },
-  guidanceBand: {
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
-    borderWidth: 1,
-    borderColor: "rgba(46,125,154,0.28)",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 12
-  },
+
+
+
+
   topBeaconStrip: {
     borderRadius: 8,
     backgroundColor: "#E1EEEC",
@@ -44078,39 +42498,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     gap: 6
   },
-  topBeaconLogoBadge: {
-    width: 70,
-    height: 70,
-    borderRadius: 18,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(246, 212, 107, 0.34)",
-    backgroundColor: "rgba(255,252,247,0.08)",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden"
-  },
-  topBeaconLogoBadgeNoPointer: {
-    pointerEvents: "none"
-  },
-  topBeaconLogoBadgeCompact: {
-    width: 54,
-    height: 54,
-    borderRadius: 14,
-    borderCurve: "continuous",
-  },
-  topBeaconLogoImage: {
-    width: 62,
-    height: 62,
-    borderRadius: 14,
-    borderCurve: "continuous",
-  },
-  topBeaconLogoImageCompact: {
-    width: 46,
-    height: 46,
-    borderRadius: 12,
-    borderCurve: "continuous",
-  },
+
+
+
+
+
   topLanguageChip: {
     maxWidth: 160,
     minHeight: 34,
@@ -44158,66 +42550,16 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "flex-start"
   },
-  topBeaconActions: {
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  topBeaconActionsCompact: {
-    flexDirection: "column",
-    alignItems: "stretch"
-  },
-  guidedStepRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  guidedStepRowCompact: {
-    flexDirection: "column"
-  },
-  guidedStepPill: {
-    flexGrow: 1,
-    flexBasis: 130,
-    minHeight: 48,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
-    backgroundColor: "#F4F8F7",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8
-  },
-  guidedStepPillCompact: {
-    flexBasis: "100%"
-  },
-  guidedStepMark: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    overflow: "hidden",
-    backgroundColor: "#E1EEEC",
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900",
-    textAlign: "center",
-    lineHeight: 24
-  },
-  guidedStepCopy: {
-    flex: 1,
-    gap: 1
-  },
-  guidedStepLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900"
-  },
-  guidedStepMeta: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16
-  },
+
+
+
+
+
+
+
+
+
+
   communityPreviewBand: {
     borderRadius: 8,
     backgroundColor: "#F4F8F7",
@@ -44226,15 +42568,8 @@ const styles = StyleSheet.create({
     padding: 18,
     gap: 14
   },
-  visionText: {
-    color: "#111827",
-    fontSize: 13,
-    lineHeight: 19
-  },
-  visionTextCompact: {
-    fontSize: 12,
-    lineHeight: 17
-  },
+
+
   visionGuidanceBox: {
     borderRadius: 12,
     borderCurve: "continuous",
@@ -44245,11 +42580,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     gap: 6
   },
-  visionGuidanceBoxCompact: {
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    gap: 5
-  },
+
   visionGuidanceTitle: {
     color: "#C4A35A",
     fontSize: 12,
@@ -44257,35 +42588,15 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0
   },
-  visionGuidanceTitleCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
+
   visionGuidanceText: {
     color: "#111827",
     fontSize: 12,
     lineHeight: 17
   },
-  visionGuidanceTextCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  visionGuidanceButton: {
-    alignSelf: "flex-start",
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    minHeight: 34,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  visionGuidanceButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900",
-    letterSpacing: 0
-  },
+
+
+
   aiQuickPanel: {
     borderRadius: 8,
     backgroundColor: "#F4F8F7",
@@ -44489,32 +42800,12 @@ const styles = StyleSheet.create({
     borderLeftColor: "#0E9488",
     paddingLeft: 10
   },
-  aiHelpHeaderCompact: {
-    gap: 6
-  },
-  aiHelpEyebrowCompact: {
-    fontSize: 12
-  },
-  aiHelpTitleCompact: {
-    fontSize: 16,
-    lineHeight: 20
-  },
-  aiHelpMetaCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  aiHelpOutcomeBand: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(46,125,154,0.28)",
-    backgroundColor: "#F4F8F7",
-    padding: 10,
-    gap: 6
-  },
-  aiHelpOutcomeBandCompact: {
-    padding: 8,
-    gap: 5
-  },
+
+
+
+
+
+
   aiHelpSummaryBand: {
     borderRadius: 8,
     borderWidth: 1,
@@ -44547,102 +42838,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16
   },
-  aiHelpOutcomeTitle: {
-    color: "#B45309",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  aiHelpOutcomeText: {
-    color: "#27406A",
-    fontSize: 12,
-    lineHeight: 17,
-    fontWeight: "700"
-  },
-  aiHelpOutcomeButton: {
-    alignSelf: "flex-start",
-    minHeight: 34
-  },
-  aiHelpPromptCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
+
+
+
+
   aiHelpActionRow: {
     gap: 5
   },
-  aiQuickReply: {
-    color: "#1E2F4D",
-    fontSize: 13,
-    lineHeight: 19
-  },
-  voiceAssistInline: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    gap: 7
-  },
-  voiceAssistInlineCompact: {
-    gap: 8
-  },
-  voiceAssistButton: {
-    minHeight: 32,
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  voiceAssistButtonLabel: {
-    color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  voiceAssistButtonSecondary: {
-    minHeight: 32,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#1F4799",
-    backgroundColor: "#F9FBFF",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  voiceAssistButtonSecondaryLabel: {
-    color: "#1E2F4D",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0
-  },
-  voiceAssistStatus: {
-    flexShrink: 1,
-    color: "#6F7785",
-    fontSize: 12,
-    lineHeight: 16
-  },
-  aiQuickComposer: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center"
-  },
-  aiQuickInput: {
-    flex: 1,
-    minHeight: 42,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(14,199,189,0.35)",
-    backgroundColor: "#E1EEEC",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    color: "#0D1F22",
-    fontSize: 13,
-    lineHeight: 18
-  },
+
+
+
+
+
+
+
+
+
+
   aiHelpInputCompact: {
     minHeight: 64,
     paddingHorizontal: 9,
@@ -44674,9 +42886,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingVertical: 5
   },
-  aiStarterChipDisabled: {
-    opacity: 0.48
-  },
+
   aiStarterChipText: {
     color: "#0D1F22",
     fontSize: 12,
@@ -44687,9 +42897,7 @@ const styles = StyleSheet.create({
   aiStarterChipTextCompact: {
     fontSize: 12
   },
-  aiStarterChipTextDisabled: {
-    color: "#7B8796"
-  },
+
   aiHelpChatList: {
     gap: 6,
     maxHeight: 180
@@ -44698,74 +42906,17 @@ const styles = StyleSheet.create({
     padding: 9,
     gap: 4
   },
-  aiHelpChatAuthorCompact: {
-    fontSize: 12
-  },
-  aiHelpChatTextCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  aiHelpChatMetaCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  aiHelpFooterNoteCompact: {
-    fontSize: 12,
-    lineHeight: 16
-  },
-  careLensGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  beaconXPillarGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  beaconXPillarCard: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 150,
-    minWidth: 0,
-    minHeight: 62,
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(167,139,250,0.24)",
-    backgroundColor: "#F4F8F7",
-    paddingHorizontal: 10,
-    paddingVertical: 9,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-    shadowColor: "#7C3AED",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 2
-  },
-  beaconXPillarMark: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginTop: 3
-  },
-  beaconXPillarCopy: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2
-  },
-  beaconXPillarLabel: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900"
-  },
-  beaconXPillarMeta: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 16
-  },
+
+
+
+
+
+
+
+
+
+
+
   beaconXWisdomPanel: {
     borderRadius: 8,
     borderWidth: 1,
@@ -44928,22 +43079,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textTransform: "uppercase"
   },
-  careLensChip: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 150,
-    minWidth: 0,
-    minHeight: 52,
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
-    borderWidth: 1,
-    borderColor: "#89602F",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8
-  },
+
   onboardingBackdrop: {
     position: "absolute",
     left: 0,
@@ -45043,12 +43179,7 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingRight: 38
   },
-  profileSheetCloseButtonFloating: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    zIndex: 2
-  },
+
   profileSheetExitButton: {
     flex: 1,
     minHeight: 34,
@@ -45137,10 +43268,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textAlign: "center"
   },
-  sheetCloseIconButtonLabelCompact: {
-    fontSize: 16,
-    lineHeight: 18
-  },
+
   onboardingCloseButton: {
     minWidth: 64,
     minHeight: 34,
@@ -45372,20 +43500,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18
   },
-  tabBar: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
-    backgroundColor: "#F4F8F7",
-    padding: 4,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 4,
-    ...shadow
-  },
-  tabBarCompact: {
-    gap: 5
-  },
+
+
   flowRail: {
     marginTop: 8,
     flexDirection: "row",
@@ -45493,22 +43609,8 @@ const styles = StyleSheet.create({
   flowRailButtonLabelCompact: {
     fontSize: 12
   },
-  sectionSwitcherPanel: {
-    marginTop: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#3F785D",
-    backgroundColor: "#F4F8F7",
-    padding: 12,
-    gap: 10,
-    ...shadow
-  },
-  sectionSwitcherPanelHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8
-  },
+
+
   sectionSwitcherPanelTitle: {
     color: "#0D1F22",
     fontSize: 14,
@@ -45600,15 +43702,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#E1EEEC",
     borderColor: "#0E6F69"
   },
-  tabMark: {
-    fontSize: 18,
-    lineHeight: 22,
-    flexShrink: 0
-  },
-  tabMarkCompact: {
-    fontSize: 16,
-    lineHeight: 20
-  },
+
+
   tabLabel: {
     color: "#111827",
     fontSize: 12,
@@ -45621,9 +43716,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16
   },
-  tabTextActive: {
-    color: "#0D1F22"
-  },
+
   grid: {
     width: "100%",
     maxWidth: "100%",
@@ -45657,30 +43750,9 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 3
   },
-  accessSummaryRow: {
-    minHeight: 48,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
-    backgroundColor: "#F4F8F7",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 10
-  },
-  accessSummaryLabel: {
-    color: "#111827",
-    fontSize: 12,
-    fontWeight: "800",
-    textTransform: "uppercase"
-  },
-  accessSummaryValue: {
-    color: "#0D1F22",
-    fontSize: 13,
-    fontWeight: "900"
-  },
+
+
+
   // ── Admin Auth UI ─────────────────────────────────────────────────────────
   adminAuthCard: {
     borderRadius: 20,
@@ -46057,10 +44129,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0
   },
-  sectionTitleCompact: {
-    fontSize: 20,
-    lineHeight: 26
-  },
+
   sectionTitleSmall: {
     color: "#0D1F22",
     fontSize: 18,
@@ -46083,47 +44152,11 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: "900"
   },
-  toneRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  toneButton: {
-    flexGrow: 1,
-    minWidth: 84,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    borderWidth: 1.5,
-    borderColor: "rgba(14,199,189,0.45)",
-    backgroundColor: "#E1EEEC",
-    padding: 12,
-    alignItems: "center",
-    gap: 6,
-    shadowColor: "#00B8A4",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 6,
-    elevation: 3
-  },
-  toneMark: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    borderCurve: "continuous",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  toneMarkText: {
-    color: "#0D1F22",
-    fontSize: 16,
-    fontWeight: "900"
-  },
-  toneLabel: {
-    color: "rgba(13,31,34,0.82)",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "800"
-  },
+
+
+
+
+
   progressTrack: {
     height: 12,
     borderRadius: 8,
@@ -46245,18 +44278,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     fontWeight: "400"
   },
-  journalInput: {
-    minHeight: 168,
-    borderRadius: 14,
-    borderCurve: "continuous",
-    borderWidth: 1.5,
-    borderColor: "rgba(14,199,189,0.35)",
-    backgroundColor: "#E1EEEC",
-    padding: 16,
-    color: "#0D1F22",
-    fontSize: 16,
-    lineHeight: 24
-  },
+
   journalInsightBand: {
     borderRadius: 12,
     borderCurve: "continuous",
@@ -46365,89 +44387,19 @@ const styles = StyleSheet.create({
     color: "#B88900",
     fontWeight: "800"
   },
-  dailyRoutineBand: {
-    borderRadius: 12,
-    borderCurve: "continuous",
-    borderWidth: 1.5,
-    borderColor: "rgba(14,199,189,0.25)",
-    backgroundColor: "#E1EEEC",
-    padding: 14,
-    gap: 10
-  },
-  dailyRoutineActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  dailyRoutineActionCard: {
-    flexGrow: 1,
-    flexBasis: 240,
-    minHeight: 82,
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(14,199,189,0.2)",
-    backgroundColor: "#DFEEF1",
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 2
-  },
-  dailyRoutineActionCardPrimary: {
-    borderColor: "#E1EEEC",
-    backgroundColor: "#E1EEEC"
-  },
-  dailyRoutineActionRail: {
-    width: 5,
-    alignSelf: "stretch",
-    borderRadius: 8,
-    backgroundColor: "#72B7A8"
-  },
-  dailyRoutineActionRailPrimary: {
-    backgroundColor: "#B45309"
-  },
-  dailyRoutineActionCopy: {
-    flex: 1,
-    gap: 3,
-    minWidth: 0
-  },
-  dailyRoutineActionLabel: {
-    color: "#0D1F22",
-    fontSize: 13,
-    lineHeight: 16,
-    fontWeight: "900",
-    flexShrink: 1,
-    minWidth: 0
-  },
-  dailyRoutineActionLabelPrimary: {
-    color: "#0D1F22"
-  },
-  dailyRoutineActionDetail: {
-    color: "#111827",
-    fontSize: 12,
-    lineHeight: 17,
-    fontWeight: "700",
-    flexShrink: 1,
-    minWidth: 0
-  },
-  dailyRoutineActionDetailPrimary: {
-    color: "#4E6952"
-  },
-  dailyRoutineActionButton: {
-    color: "#0891B2",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "900",
-    textTransform: "uppercase"
-  },
-  dailyRoutineActionButtonPrimary: {
-    color: "#B45309"
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
   routineList: {
     gap: 10
   },
@@ -47647,11 +45599,7 @@ const styles = StyleSheet.create({
     minHeight: 96,
     alignItems: "flex-start"
   },
-  identityGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6
-  },
+
   identityStack: {
     gap: 8
   },
@@ -47750,11 +45698,7 @@ const styles = StyleSheet.create({
   identityMetaActive: {
     color: "#111827"
   },
-  verificationStatusRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
+
   verificationStatusChip: {
     borderRadius: 999,
     borderWidth: 1,
@@ -48096,24 +46040,8 @@ const styles = StyleSheet.create({
 
   // ── Smart Daily Brief Card ─────────────────────────────────────────────────
   // ── Hero Route Card (Codex-style "What's happening?" ── */
-  heroRouteCard: {
-    borderRadius: 22,
-    borderCurve: "continuous",
-    backgroundColor: "#DEECF2",
-    padding: 22,
-    gap: 14,
-    marginBottom: 10,
-    shadowColor: "#0891B2",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.14,
-    shadowRadius: 24,
-    elevation: 10,
-    borderWidth: 1.5,
-    borderColor: "rgba(34,211,238,0.22)"
-  },
-  heroRouteHeader: {
-    gap: 4,
-  },
+
+
   heroRouteHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -48162,18 +46090,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(13,31,34,0.18)",
   },
-  heroRouteButton: {
-    backgroundColor: "#C4A35A",
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  heroRouteButtonLabel: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#0D2B2E",
-    letterSpacing: 0.2,
-  },
+
+
   heroRoutePreview: {
     backgroundColor: "rgba(13,31,34,0.05)",
     borderRadius: 8,
@@ -48294,63 +46212,15 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   // ── First-run welcome card ──
-  welcomeExplainerCard: {
-    backgroundColor: "#F4F8F7",
-    borderRadius: 18,
-    borderCurve: "continuous",
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.2)",
-    shadowColor: "#0E6F69",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.07,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  welcomeExplainerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  welcomeExplainerTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#0D1F22",
-  },
-  welcomeExplainerClose: {
-    padding: 4,
-  },
-  welcomeExplainerCloseText: {
-    fontSize: 16,
-    color: "#111827",
-  },
-  welcomeExplainerBody: {
-    fontSize: 13,
-    color: "#111827",
-    lineHeight: 19,
-    marginBottom: 12,
-  },
-  welcomeExplainerPills: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-  },
-  welcomeExplainerPill: {
-    backgroundColor: "rgba(46,125,154,0.18)",
-    borderRadius: 12,
-    borderCurve: "continuous",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: "rgba(46,125,154,0.28)",
-  },
-  welcomeExplainerPillText: {
-    fontSize: 12,
-    color: "#0073B8",
-    fontWeight: "500",
-  },
+
+
+
+
+
+
+
+
+
   // ── Tab banner cards (Journal / Wellness / Wisdom / Community) ───────────
   // Shared header banner used at the top of every single tab (Journal,
   // Meditation, Beacon Guide, Practice, Search, Community, Patterns, Settings,
@@ -48456,49 +46326,11 @@ const styles = StyleSheet.create({
     color: "#92400E",
     lineHeight: 18,
   },
-  smartBriefCard: {
-    borderRadius: 20,
-    borderCurve: "continuous",
-    backgroundColor: "#DEF2EC",
-    borderWidth: 1,
-    borderColor: "rgba(16,185,129,0.24)",
-    borderLeftWidth: 4,
-    borderLeftColor: "#10B981",
-    padding: 18,
-    gap: 10,
-    marginBottom: 6,
-    shadowColor: "#10B981",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 20,
-    elevation: 6
-  },
-  smartBriefGreeting: {
-    fontSize: 14,
-    fontWeight: "900",
-    color: "#B88900",
-    letterSpacing: 0.5
-  },
-  smartBriefNudge: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "rgba(13,31,34,0.88)",
-    lineHeight: 22
-  },
-  smartBriefAction: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: 22,
-    borderCurve: "continuous",
-    marginTop: 4
-  },
-  smartBriefActionLabel: {
-    fontSize: 12,
-    fontWeight: "900",
-    color: "#FFFFFF",
-    letterSpacing: 0.3
-  },
+
+
+
+
+
 
   // ── Streak Card ────────────────────────────────────────────────────────────
   // ── Profile Features Grid ──
@@ -48719,80 +46551,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4
   },
-  vedicLuckyToggle: {
-    borderRadius: 10,
-    backgroundColor: "rgba(139,92,246,0.12)",
-    borderWidth: 1,
-    borderColor: "rgba(139,92,246,0.3)",
-    paddingVertical: 10,
-    alignItems: "center"
-  },
-  vedicLuckyToggleLabel: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#5B21B6"
-  },
-  vedicLuckyGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  vedicLuckyItem: {
-    width: "48%",
-    backgroundColor: "rgba(139,92,246,0.08)",
-    borderRadius: 10,
-    padding: 10,
-    alignItems: "center",
-    gap: 3,
-    borderWidth: 1,
-    borderColor: "rgba(139,92,246,0.2)"
-  },
-  vedicLuckyIcon: {
-    fontSize: 20,
-    lineHeight: 24
-  },
-  vedicLuckyValue: {
-    fontSize: 14,
-    fontWeight: "800",
-    color: "#4B2593"
-  },
-  vedicLuckyLabel: {
-    fontSize: 12,
-    // Same leftover light-lavender-on-light-card issue as the other Vedic
-    // purple text fixed above.
-    color: "#4C1D95",
-    fontWeight: "600"
-  },
-  vedicMantraBox: {
-    width: "100%",
-    backgroundColor: "rgba(139,92,246,0.12)",
-    borderRadius: 12,
-    borderCurve: "continuous",
-    padding: 12,
-    alignItems: "center",
-    gap: 4,
-    borderWidth: 1,
-    borderColor: "rgba(139,92,246,0.3)"
-  },
-  vedicMantraLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#5B21B6",
-    textTransform: "uppercase",
-    letterSpacing: 1
-  },
-  vedicMantraText: {
-    fontSize: 16,
-    fontWeight: "900",
-    color: "#2600B8",
-    textAlign: "center",
-    letterSpacing: 0.5
-  },
-  vedicMantraHint: {
-    fontSize: 12,
-    color: "#4C1D95",
-    textAlign: "center"
-  },
+
+
+
+
+
+
+
+
+
+
+
   vedicDisclaimer: {
     fontSize: 12,
     color: "#111827",
@@ -48838,211 +46607,41 @@ const styles = StyleSheet.create({
     color: "#5B21B6",
     fontWeight: "700"
   },
-  birthChartPromptCard: {
-    marginTop: 6,
-    marginBottom: 6,
-    gap: 6,
-    backgroundColor: "#E1E4EF",
-    borderColor: "rgba(168,85,247,0.32)"
-  },
-  birthChartPromptCardCompact: {
-    paddingHorizontal: 8,
-    paddingVertical: 7
-  },
-  birthChartPromptHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 10
-  },
-  birthChartPromptBadge: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#5700B8",
-    backgroundColor: "rgba(168,85,247,0.18)",
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    overflow: "hidden"
-  },
-  birthChartPromptActions: {
-    gap: 8
-  },
-  birthChartPromptHint: {
-    fontSize: 12,
-    lineHeight: 16,
-    color: "#111827",
-    fontWeight: "600"
-  },
-  birthChartPromptButtons: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6
-  },
-  birthChartPromptButton: {
-    backgroundColor: "#5B21B6",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 7
-  },
-  birthChartPromptButtonLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#0A0D1A"
-  },
-  birthChartPromptButtonSecondary: {
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)"
-  },
-  birthChartPromptButtonSecondaryLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#4B2593"
-  },
+
+
+
+
+
+
+
+
+
+
+
   birthChartPage: {
     gap: 10
   },
-  birthChartIntroCard: {
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(139,92,246,0.25)",
-    backgroundColor: "#E1E3EF",
-    padding: 14,
-    gap: 10
-  },
-  birthChartIntroTitle: {
-    fontSize: 14,
-    fontWeight: "800",
-    color: "#5700B8"
-  },
-  birthChartIntroText: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: "rgba(13,31,34,0.72)"
-  },
-  birthChartIntroMetaRow: {
-    flexDirection: "row",
-    alignItems: "center"
-  },
-  birthChartIntroMetaChip: {
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)"
-  },
-  birthChartIntroMetaChipActive: {
-    backgroundColor: "rgba(16,185,129,0.16)",
-    borderColor: "rgba(16,185,129,0.42)"
-  },
-  birthChartIntroMetaChipLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#3A577D"
-  },
-  birthChartIntroMetaChipLabelActive: {
-    color: "#07B057"
-  },
-  birthChartIntroActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  birthChartIntroButton: {
-    backgroundColor: "#5B21B6",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8
-  },
-  birthChartIntroButtonLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#0A0D1A"
-  },
-  birthChartIntroButtonSecondary: {
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)"
-  },
-  birthChartIntroButtonSecondaryLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#4B2593"
-  },
-  birthChartExactCard: {
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
-    backgroundColor: "#E1EEEC",
-    padding: 12,
-    gap: 10
-  },
-  birthChartExactHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 10
-  },
-  birthChartExactTitle: {
-    fontSize: 13,
-    fontWeight: "900",
-    color: "#0D1F22"
-  },
-  birthChartExactBadge: {
-    fontSize: 12,
-    fontWeight: "900",
-    // #0891B2 reads fine on a solid light card, but this badge's own tinted
-    // pill background (16% teal over the card) darkens the effective
-    // backdrop enough to drop it to ~2.5:1. A darker teal keeps the "exact"
-    // badge legible (5:1+) without changing the pill's color scheme.
-    color: "#0A5C58",
-    backgroundColor: "rgba(14,111,105,0.16)",
-    borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.25)",
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    overflow: "hidden"
-  },
-  birthChartExactGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
-  },
-  birthChartExactChip: {
-    flexGrow: 1,
-    flexBasis: 140,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(15,23,42,0.08)",
-    backgroundColor: "#E7EFED",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    gap: 2
-  },
-  birthChartExactChipLabel: {
-    color: "#00B8A4",
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0.8
-  },
-  birthChartExactChipValue: {
-    color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: "800"
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   birthChartGuidanceCard: {
     borderRadius: 16,
     borderCurve: "continuous",
@@ -49121,107 +46720,19 @@ const styles = StyleSheet.create({
     fontWeight: "800"
   },
 
-  streakProtectionBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    borderRadius: 14,
-    borderCurve: "continuous",
-    backgroundColor: "#F2E6DE",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,160,50,0.65)",
-    padding: 12,
-    marginBottom: 8,
-    shadowColor: "#B86500",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 5
-  },
-  streakProtectionEmoji: {
-    fontSize: 22,
-    lineHeight: 26
-  },
-  streakProtectionText: {
-    flex: 1,
-    gap: 2
-  },
-  streakProtectionTitle: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#B86700",
-    lineHeight: 17
-  },
-  streakProtectionSub: {
-    fontSize: 12,
-    color: "rgba(255,173,68,0.75)",
-    lineHeight: 16
-  },
-  streakProtectionCTA: {
-    backgroundColor: "#C47A1A",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 7
-  },
-  streakProtectionCTALabel: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#FFFFFF"
-  },
-  streakCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    borderRadius: 20,
-    borderCurve: "continuous",
-    backgroundColor: "#F2EBDE",
-    borderWidth: 1.5,
-    borderColor: "rgba(251,191,36,0.55)",
-    padding: 18,
-    marginBottom: 8,
-    shadowColor: "#B88400",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
-    shadowRadius: 20,
-    elevation: 10
-  },
-  streakLeft: {
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 58,
-    gap: 1
-  },
-  streakCount: {
-    fontSize: 40,
-    fontWeight: "900",
-    color: "#B45309",
-    lineHeight: 42
-  },
-  streakUnit: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#8A5A00",
-    textTransform: "uppercase",
-    letterSpacing: 1.2
-  },
-  streakRight: {
-    flex: 1,
-    gap: 4
-  },
-  streakTitle: {
-    fontSize: 14,
-    fontWeight: "900",
-    color: "#7C2D12",
-    letterSpacing: 0.2
-  },
-  streakMilestone: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#F59E0B"
-  },
-  streakHint: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#8A5A00"
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 });
