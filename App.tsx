@@ -9498,6 +9498,82 @@ function detectQuestionTone(text: string): AstroQuestionTone {
   return "open";
 }
 
+// "What to do now" used to be one of nine fixed sentences keyed off the
+// question's category, so every career question — "will I get this job",
+// "should I quit", "is my boss blocking me" — closed on the identical line.
+// That single canned step is what made an otherwise calculated reply read as
+// prewritten. This builds the step from the live reading instead: the score
+// band decides how much to commit, the weakest relevant dimension decides
+// what to shore up first, the question's own tone decides what shape the
+// instruction takes, and the Antardasha decides the window. Two different
+// questions in the same category now close differently because their
+// underlying dimensions differ. The category sentence is kept as a tail, so
+// nothing that was useful about it is lost — it is just no longer the whole
+// answer.
+function buildAstroChatAction(params: {
+  lang: "en" | "hi";
+  tone: ReturnType<typeof detectQuestionTone>;
+  categoryAction: string;
+  verdict: { average: number; anchor: MoonChart48Reading; careful: MoonChart48Reading } | null;
+  currentAntardasha: string | null;
+  currentAntardashaYearsLeft: number | null;
+}): string {
+  const { lang, tone, categoryAction, verdict } = params;
+  const hi = lang === "hi";
+  if (!verdict) return categoryAction;
+
+  const band: "supported" | "workable" | "strained" =
+    verdict.average >= 70 ? "supported" : verdict.average >= 55 ? "workable" : "strained";
+  const weak = verdict.careful.label;
+  const strong = verdict.anchor.label;
+  const window =
+    params.currentAntardasha && params.currentAntardashaYearsLeft !== null
+      ? (hi
+        ? `${params.currentAntardasha} अंतर्दशा में लगभग ${formatPhaseSpan(params.currentAntardashaYearsLeft, lang)} शेष हैं`
+        : `the ${params.currentAntardasha} Antardasha has about ${formatPhaseSpan(params.currentAntardashaYearsLeft, lang)} left`)
+      : null;
+
+  // How much to commit, given the calculated band.
+  const commitment = hi
+    ? band === "supported"
+      ? `यह प्रश्न ${verdict.average}/100 पर सहारा पा रहा है — इसे टालने की ज़रूरत नहीं। "${strong}" आपकी सबसे मज़बूत पकड़ है; इसी पर पूरा कदम रखें।`
+      : band === "workable"
+        ? `${verdict.average}/100 का अर्थ है: चलेगा, पर एक ही बार में सब कुछ दाँव पर न लगाएं। एक ऐसा कदम चुनें जिसे ज़रूरत पड़ने पर वापस लिया जा सके।`
+        : `${verdict.average}/100 पर यह दौर दबाव में है। अभी कोई अपरिवर्तनीय निर्णय न लें — पहले नींव सँभालें।`
+    : band === "supported"
+      ? `This question is reading ${verdict.average}/100 — it does not need to wait. "${strong}" is your firmest ground; commit through that rather than hedging.`
+      : band === "workable"
+        ? `At ${verdict.average}/100 this will move, but do not stake everything on one attempt. Choose a step you could reverse if it does not land.`
+        : `At ${verdict.average}/100 the phase is under strain. Avoid anything irreversible right now and steady the base first.`;
+
+  // What specifically to shore up — named from the actual weakest dimension.
+  const repair =
+    verdict.careful.id !== verdict.anchor.id && verdict.careful.score < 60
+      ? (hi
+        ? ` सबसे पहले "${weak}" (${verdict.careful.score}/100) को सँभालें — यही वह जगह है जहाँ यह प्रयास टूटता है।`
+        : ` Shore up "${weak}" (${verdict.careful.score}/100) first — that is where this effort actually breaks.`)
+      : "";
+
+  // The instruction's shape follows what was asked.
+  const shaped = hi
+    ? tone === "yesno"
+      ? ` निर्णय इस तरह लें: ${band === "strained" ? "अभी \"नहीं\" नहीं — \"अभी नहीं\"" : "हाँ, पर एक शर्त के साथ"} — तय करें कि किस एक संकेत पर आप आगे बढ़ेंगे, और वह संकेत आज लिख लें।`
+      : tone === "when"
+        ? ` समय: ${window ?? "अगली अंतर्दशा-संधि"} — उससे पहले तैयारी पूरी रखें ताकि अवसर आने पर देर न हो।`
+        : tone === "why"
+          ? ` कारण को व्यवहार में बदलें: जो ऊपर पढ़ा गया, उसमें से एक वाक्य चुनें और इस सप्ताह उसी एक बात को बदलें।`
+          : ` जो भी करें, उसे किसी एक दिन और समय से बाँध दें — बिना तारीख़ के इरादा इस दौर में टिकता नहीं।`
+    : tone === "yesno"
+      ? ` Decide it this way: ${band === "strained" ? 'not "no" — "not yet"' : "yes, but with one condition"}. Name the single signal you will act on, and write that signal down today.`
+      : tone === "when"
+        ? ` Timing: ${window ?? "the next Antardasha change"} — have everything ready before it, so the window is not spent preparing.`
+        : tone === "why"
+          ? ` Turn the reason into behaviour: pick one sentence from the reading above and change that one thing this week.`
+          : ` Whatever you choose, tie it to a specific day and time — an intention without a date does not survive this phase.`;
+
+  return `${commitment}${repair}${shaped} ${categoryAction}`;
+}
+
 function nextAstroChatReply(question: string, ctx: {
   moonRashiId: number | null;
   moonRashiName: string;
@@ -9691,7 +9767,15 @@ function nextAstroChatReply(question: string, ctx: {
   }
 
   // 6. Practical action lens
-  lines.push(hi ? `अब क्या करें: ${categoryActions[cat]}` : `What to do now: ${categoryActions[cat]}.`);
+  const practicalAction = buildAstroChatAction({
+    lang,
+    tone,
+    categoryAction: categoryActions[cat],
+    verdict: moon48Verdict,
+    currentAntardasha: ctx.currentAntardasha,
+    currentAntardashaYearsLeft: ctx.currentAntardashaYearsLeft
+  });
+  lines.push(hi ? `अब क्या करें: ${practicalAction}` : `What to do now: ${practicalAction}`);
 
   // 7. Today's Panchang lens
   lines.push(hi
@@ -31664,6 +31748,48 @@ function BirthChartSection({
   // stay visible for context, matching the collapse pattern used by the
   // multi-dimensional trace and the Detailed calculation panel (one consistent gesture).
   const [plainHousesOpen, setPlainHousesOpen] = React.useState(false);
+  // Uniform disclosure for the remaining chart panels. Before this, three
+  // panels collapsed and five did not, so the same tap did different things
+  // depending on where you were in the tab. Every panel now carries the same
+  // pressable header + chevron; only the DEFAULT differs, and on one rule:
+  // panels answering "what is happening to me now" open by default, the
+  // longer background/reference panels start closed.
+  const VEDIC_PANELS_OPEN_BY_DEFAULT = ["mahadasha", "gochar"];
+  const [openVedicPanels, setOpenVedicPanels] = React.useState<Set<string>>(
+    () => new Set(VEDIC_PANELS_OPEN_BY_DEFAULT)
+  );
+  const vedicPanelOpen = React.useCallback(
+    (id: string) => openVedicPanels.has(id),
+    [openVedicPanels]
+  );
+  const toggleVedicPanel = React.useCallback((id: string) => {
+    setOpenVedicPanels((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+  const renderVedicPanelHeader = (id: string, title: string, color: string, trailing?: React.ReactNode) => {
+    const open = openVedicPanels.has(id);
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 6 }}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: open }}
+          accessibilityLabel={`${title}. ${open ? "Tap to collapse" : "Tap to expand"}`}
+          onPress={() => { void Haptics.selectionAsync(); toggleVedicPanel(id); }}
+          hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+          style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0, opacity: pressed ? 0.7 : 1 }]}
+        >
+          <Text style={{ color, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flexShrink: 1, minWidth: 0 }}>
+            {title}
+          </Text>
+          <Text style={{ color, fontSize: 12, fontWeight: "900" }}>{open ? "▾" : "▸"}</Text>
+        </Pressable>
+        {trailing}
+      </View>
+    );
+  };
   // Gochar (current transits) read from the natal Moon — the "now" foresight
   // layer. Memoized per day so it is not recomputed on unrelated renders.
   const gocharDayKey = new Date().toISOString().slice(0, 10);
@@ -32215,9 +32341,8 @@ function BirthChartSection({
           {/* Samvatsara (60-year Jupiter cycle) panel */}
           {samvatsaraInfo && (
             <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(251,191,36,0.25)" }}>
-              <Text style={{ color: "#B88400", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
-                🪐 Samvatsara — Your Birth Year Cycle
-              </Text>
+              {renderVedicPanelHeader("samvatsara", "🪐 Samvatsara — Your Birth Year Cycle", "#B88400")}
+              {vedicPanelOpen("samvatsara") && (<>
               <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "900", marginBottom: 4 }}>
                 {samvatsaraInfo.name} <Text style={{ fontSize: 12, fontWeight: "600", color: "#B88400" }}>(Cycle #{samvatsaraInfo.index + 1} of 60)</Text>
               </Text>
@@ -32228,6 +32353,7 @@ function BirthChartSection({
               <Text style={{ color: "#2F4358", fontSize: 12, marginTop: 6, fontStyle: "italic" }}>
                 This Samvatsara shapes your core life-script and soul-purpose tendencies as recorded in Jyotish.
               </Text>
+              </>)}
             </View>
           )}
           {/* Mahadasha (Vimshottari Dasha) panel */}
@@ -32237,9 +32363,8 @@ function BirthChartSection({
             const dashaColor = "#5C00B8";
             return (
               <View style={{ backgroundColor: "#E3DFF1", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(192,132,252,0.3)" }}>
-                <Text style={{ color: dashaColor, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
-                  🌀 Vimshottari Mahadasha — Current Planetary Period
-                </Text>
+                {renderVedicPanelHeader("mahadasha", "🌀 Vimshottari Mahadasha — Current Planetary Period", dashaColor)}
+                {vedicPanelOpen("mahadasha") && (<>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 }}>
                   <View style={{ backgroundColor: "rgba(192,132,252,0.15)", borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: "rgba(192,132,252,0.4)" }}>
                     <Text style={{ color: dashaColor, fontSize: 20, fontWeight: "900" }}>{dasha.currentMahadasha}</Text>
@@ -32277,6 +32402,7 @@ function BirthChartSection({
                 <Text style={{ color: "#263244", fontSize: 12, fontStyle: "italic" }}>
                   Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods, exact birth time, and true Antardasha timing.
                 </Text>
+                </>)}
               </View>
             );
           })()}
@@ -32306,9 +32432,19 @@ function BirthChartSection({
             return (
               <View style={{ backgroundColor: "#E3DFF1", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(192,132,252,0.3)", gap: 10 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
-                  <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                    {isHi ? "🔮 अगले 15 वर्ष — दशा पूर्वानुमान" : "🔮 Next 15 Years — Dasha Forecast"}
-                  </Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: vedicPanelOpen("forecast15") }}
+                    accessibilityLabel={`${isHi ? "अगले 15 वर्ष — दशा पूर्वानुमान" : "Next 15 Years — Dasha Forecast"}. ${vedicPanelOpen("forecast15") ? "Tap to collapse" : "Tap to expand"}`}
+                    onPress={() => { void Haptics.selectionAsync(); toggleVedicPanel("forecast15"); }}
+                    hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                    style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0, opacity: pressed ? 0.7 : 1 }]}
+                  >
+                    <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flexShrink: 1, minWidth: 0 }}>
+                      {isHi ? "🔮 अगले 15 वर्ष — दशा पूर्वानुमान" : "🔮 Next 15 Years — Dasha Forecast"}
+                    </Text>
+                    <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "900" }}>{vedicPanelOpen("forecast15") ? "▾" : "▸"}</Text>
+                  </Pressable>
                   <View style={{ flexDirection: "row", backgroundColor: "rgba(192,132,252,0.12)", borderRadius: 999, padding: 2 }}>
                     <Pressable
                       accessibilityRole="button"
@@ -32330,6 +32466,7 @@ function BirthChartSection({
                     </Pressable>
                   </View>
                 </View>
+                {vedicPanelOpen("forecast15") && (<>
                 <Text style={{ color: "#263244", fontSize: 12.5, lineHeight: 18 }}>
                   {isHi
                     ? "यह समयरेखा आपकी विंशोत्तरी दशा के अगले महादशा/अंतर्दशा चरणों को दिखाती है, ताकि आप समझ सकें कि किस समय क्या हो रहा है और क्यों — साथ ही कठिन दौर के लिए व्यावहारिक उपाय भी।"
@@ -32447,6 +32584,7 @@ function BirthChartSection({
                     ? "अनुमानित — जन्म नक्षत्र स्वामी पर आधारित। सटीक उप-अवधि और वास्तविक अंतर्दशा समय के लिए ज्योतिषी से सलाह लें।"
                     : "Approximate — based on Janma Nakshatra lord. Consult a Jyotishi for precise sub-periods and true Antardasha timing."}
                 </Text>
+                </>)}
               </View>
             );
           })()}
@@ -32456,9 +32594,8 @@ function BirthChartSection({
             if (!q) return null;
             return (
               <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)" }}>
-                <Text style={{ color: "#059669", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 8 }}>
-                  ✨ {janmaNakshatra.name} — Nakshatra Characteristics
-                </Text>
+                {renderVedicPanelHeader("nakshatra", `✨ ${janmaNakshatra.name} — Nakshatra Characteristics`, "#059669")}
+                {vedicPanelOpen("nakshatra") && (<>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
                   {[
                     { label: "Deity", value: q.deity },
@@ -32474,6 +32611,7 @@ function BirthChartSection({
                   ))}
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 20 }}>{q.quality}</Text>
+                </>)}
               </View>
             );
           })()}
@@ -32525,15 +32663,16 @@ function BirthChartSection({
           {/* ── Gochar (current transits) — the "now" foresight layer ── */}
           {gocharChart && gocharGuidance && (
           <View style={{ marginTop: 4, borderRadius: 18, backgroundColor: "#EAF3F0", borderWidth: 1, borderColor: gocharChart.sadeSatiPhase ? "rgba(180,120,30,0.5)" : "rgba(14,148,136,0.3)", padding: 14, gap: 8 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
-              <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flexShrink: 1, minWidth: 0 }}>
-                🪐 Current transits (Gochar) · from your Moon
-              </Text>
+            {renderVedicPanelHeader(
+              "gochar",
+              "🪐 Current transits (Gochar) · from your Moon",
+              "#0A5C58",
               <Text style={{ color: "#5B6B7A", fontSize: 12, fontWeight: "700" }}>
                 as of {gocharChart.asOf.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
               </Text>
-            </View>
+            )}
             <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "900" }}>{gocharGuidance.headline}</Text>
+            {vedicPanelOpen("gochar") && (<>
             {gocharGuidance.notes.map((note, i) => (
               <Text key={i} style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>• {note}</Text>
             ))}
@@ -32552,6 +32691,7 @@ function BirthChartSection({
             <Text style={{ color: "#5B6B7A", fontSize: 12, lineHeight: 16, fontStyle: "italic" }}>
               Transits use the same real sidereal (Lahiri) positions as the rest of the chart. Reflective guidance for timing awareness — not a prediction or guarantee.
             </Text>
+            </>)}
           </View>
           )}
 
