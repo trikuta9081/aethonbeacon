@@ -245,12 +245,19 @@ assert(guidanceFetches.length >= 3, `expected to find the connected guidance end
 
 let notesCarrying = 0;
 for (const { endpoint, at } of guidanceFetches) {
-  const window = codeOnly.slice(Math.max(0, at - 2200), at + 1400);
-  if (!/\bnote\b|recentNotes|lastNote/.test(window)) continue;
+  // Scope to the enclosing handler rather than a fixed character window. A
+  // symmetric +/-2200 window will happily accept a localOnly guard that
+  // belongs to a completely different function further up the file, which
+  // would let a new leaking endpoint pass by sitting near an old safe one.
+  // Walk back to the nearest scope opener instead.
+  const openers = [...codeOnly.slice(0, at).matchAll(/\basync function |\bfunction |useEffect\(|onFetch=\{|onPress=\{/g)];
+  const scopeStart = openers.length ? openers[openers.length - 1].index : 0;
+  const scope = codeOnly.slice(scopeStart, at + 1400);
+  if (!/\bnote\b|recentNotes|lastNote/.test(scope)) continue;
   notesCarrying += 1;
   assert(
-    /if \(localOnly\)|!localOnly &&/.test(window),
-    `${endpoint} sends journal text with no localOnly guard in code -- Settings promises "Data stays on this device"`
+    /if \(localOnly\)|!localOnly &&/.test(scope),
+    `${endpoint} sends journal text with no localOnly guard in its own handler -- Settings promises "Data stays on this device"`
   );
 }
 assert(notesCarrying >= 1, `expected at least one journal-carrying guidance endpoint to be checked, saw ${notesCarrying}`);
