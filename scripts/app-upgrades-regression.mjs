@@ -289,4 +289,18 @@ assert(source.includes("const ChatComposer = React.memo("), "ChatComposer must s
 assert(/const ChatComposer = React\.memo\(function ChatComposer\([\s\S]{0,1400}?const \[draft, setDraft\] = useState\(""\)/.test(source), "ChatComposer must hold its own draft state rather than receiving it from App()");
 assert(!source.includes("const [astroChatDraft"), "the Ask-the-chart draft must not move back into App() state");
 
+// ── Route previews must not run on every keystroke ───────────────────────────
+// buildRoutePreview() reaches 38 pattern tests across five functions, and it
+// feeds three live previews: the Home issue box, the journal, and the
+// counselling composer. Keyed on raw draft text, a 170-character journal entry
+// ran roughly 6,500 pattern evaluations while it was being typed, to produce a
+// hint that only has to be right once the person stops to read it.
+assert(source.includes("function useDebouncedValue"), "a useDebouncedValue hook must exist so live previews settle instead of tracking every keystroke");
+for (const [live, settled] of [["homeIssueDraft", "settledHomeIssueDraft"], ["journal", "settledJournal"], ["aiHelpPreviewSource", "settledAiHelpPreviewSource"]]) {
+  assert(source.includes(`const ${settled} = useDebouncedValue(${live})`), `${live} must be debounced before it feeds a route preview`);
+}
+assert(!/buildRoutePreview\(journal,/.test(source), "the journal route preview must read the settled value, not raw keystrokes");
+assert(!/buildRoutePreview\(homeIssueDraft,/.test(source), "the Home route preview must read the settled value, not raw keystrokes");
+assert(!/buildRoutePreview\(aiHelpPreviewSource,/.test(source), "the counselling route preview must read the settled value, not raw keystrokes");
+
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');

@@ -100,6 +100,27 @@ const APP_TEXT_WRAP_GUARD = {
 // looping pulses (loading shimmers, the typing-dots beat, CTA breathing) can
 // hold still instead of animating. Defaults to false, so if detection is
 // unavailable the app behaves exactly as before -- purely additive.
+// Settles a fast-changing value -- draft text, in practice -- so work keyed
+// off it runs when the person pauses rather than on every character.
+//
+// buildRoutePreview() runs roughly 32 regular expressions across the whole
+// text (route detection, issue detection, redress-route detection). It feeds
+// three live previews: the Home issue box, the journal, and the counselling
+// composer. All three were recomputing that on every keystroke, so writing a
+// paragraph-long journal entry ran the full battery hundreds of times to
+// produce a hint that only needs to be right when someone stops to read it.
+//
+// 220ms is under the ~250ms that reads as "instant" after a pause, so the
+// preview still feels immediate -- it just no longer competes with typing.
+function useDebouncedValue<T>(value: T, delayMs = 220): T {
+  const [settled, setSettled] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setSettled(value), delayMs);
+    return () => clearTimeout(timer);
+  }, [value, delayMs]);
+  return settled;
+}
+
 function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -15578,27 +15599,33 @@ export default function App() {
       badge: "Path ready"
     };
   }, [needsPresentMoodCheck, onboardingCompleted]);
+  // All three previews read settled text rather than live keystrokes -- see
+  // useDebouncedValue. The empty-state check stays on the live value so the
+  // "Route waiting" placeholder still disappears the moment typing starts.
+  const settledHomeIssueDraft = useDebouncedValue(homeIssueDraft);
   const homeRoutePreview = useMemo(
     () =>
-      homeIssueDraft.trim().length === 0
+      settledHomeIssueDraft.trim().length === 0
         ? {
             title: "Route waiting",
             detail: "Type one line and the app will choose the next page automatically."
           }
-        : buildRoutePreview(homeIssueDraft, selectedIssueGuide, selectedIdentity.label),
-    [homeIssueDraft, selectedIdentity.label, selectedIssueGuide]
+        : buildRoutePreview(settledHomeIssueDraft, selectedIssueGuide, selectedIdentity.label),
+    [settledHomeIssueDraft, selectedIdentity.label, selectedIssueGuide]
   );
+  const settledJournal = useDebouncedValue(journal);
   const journalRoutePreview = useMemo(
-    () => buildRoutePreview(journal, selectedIssueGuide, selectedIdentity.label),
-    [journal, selectedIdentity.label, selectedIssueGuide]
+    () => buildRoutePreview(settledJournal, selectedIssueGuide, selectedIdentity.label),
+    [settledJournal, selectedIdentity.label, selectedIssueGuide]
   );
   const aiHelpPreviewSource =
     aiHelpDraft.trim().length > 0
       ? aiHelpDraft
       : aiHelpMessages.find((message) => message.role === "user")?.text ?? "";
+  const settledAiHelpPreviewSource = useDebouncedValue(aiHelpPreviewSource);
   const aiHelpRoutePreview = useMemo(
-    () => buildRoutePreview(aiHelpPreviewSource, selectedIssueGuide, selectedIdentity.label),
-    [aiHelpPreviewSource, selectedIdentity.label, selectedIssueGuide]
+    () => buildRoutePreview(settledAiHelpPreviewSource, selectedIssueGuide, selectedIdentity.label),
+    [settledAiHelpPreviewSource, selectedIdentity.label, selectedIssueGuide]
   );
   const hasVerifiedSensitiveAccess = profilePhoneVerified || profileEmailVerified || accessRole === "admin";
   const privateIntakeRouteTab = pendingPrivateIntakeRoute?.routeTab ?? "guide";
