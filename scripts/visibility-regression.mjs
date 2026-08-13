@@ -237,4 +237,29 @@ assert(
   );
 }
 
+// ── Weight discipline on small labels ────────────────────────────────────────
+// Measured on the deployed build: 57% of every visible text node rendered at
+// weight 900, and 38% was heavy-and-small (>=800 at <=13px) -- navigation
+// labels, chip labels, button labels. When the heaviest weight is the default
+// there is no emphasis left to spend on the things that need it. Small labels
+// now sit at 700, which is still unambiguously bold, and the weight above it
+// is reserved for titles and values at 14px and up.
+{
+  const stylesBlock = source.slice(
+    source.indexOf("const styles = StyleSheet.create({"),
+    source.lastIndexOf("});")
+  );
+  const shouting = [];
+  for (const m of stylesBlock.matchAll(/^  ([a-zA-Z][A-Za-z0-9_]*): \{([^}]*)\}/gms)) {
+    const [, name, block] = m;
+    const fs = block.match(/fontSize: (\d+)/);
+    const fw = block.match(/fontWeight: "(\d+)"/);
+    if (fs && fw && Number(fs[1]) <= 13 && Number(fw[1]) >= 900) shouting.push(`${name} (${fs[1]}px/${fw[1]})`);
+  }
+  assert(
+    shouting.length === 0,
+    `small labels must not use weight 900 -- 700 is bold enough at 13px and under, and reserving the heaviest weight for titles is what gives a screen hierarchy: ${shouting.join(", ")}`
+  );
+}
+
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');

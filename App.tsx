@@ -40177,7 +40177,7 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     fontSize: 13,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   topTabLabel: {
     minWidth: 0,
@@ -40185,7 +40185,7 @@ const styles = StyleSheet.create({
     color: "rgba(13,31,34,0.72)",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
 
   topStatusChip: {
@@ -40223,7 +40223,7 @@ const styles = StyleSheet.create({
     color: "#0891B2",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   topStatusChipLabelCompact: {
@@ -40265,7 +40265,7 @@ const styles = StyleSheet.create({
     color: "#B45309",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   topPageModeLabelCompact: {
@@ -40300,7 +40300,7 @@ const styles = StyleSheet.create({
     color: "#0891B2",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   routeNoticeTitleCompact: {
@@ -40348,7 +40348,7 @@ const styles = StyleSheet.create({
     color: "#0A5C58",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 1.1,
     textTransform: "uppercase"
   },
@@ -40376,7 +40376,7 @@ const styles = StyleSheet.create({
     color: "#0A5C58",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     paddingHorizontal: 9,
     paddingVertical: 5,
     textTransform: "uppercase"
@@ -40435,7 +40435,7 @@ const styles = StyleSheet.create({
     color: "#00B8A4",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   routePreviewTitleCompact: {
@@ -40499,7 +40499,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0
   },
@@ -40523,7 +40523,7 @@ const styles = StyleSheet.create({
     color: "#00B8A3",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0
   },
@@ -40733,7 +40733,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 13,
     lineHeight: 17,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0
   },
@@ -40859,7 +40859,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 0.8,
     textTransform: "uppercase"
   },
@@ -40916,7 +40916,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69",
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   },
   issuePrimaryInlineButton: {
@@ -40937,7 +40937,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   },
   issuePlanSection: {
@@ -40987,12 +40987,12 @@ const styles = StyleSheet.create({
   issuePlanNumberText: {
     color: "#FFFFFF",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   issuePlanCardEyebrow: {
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 0.8,
     textTransform: "uppercase"
   },
@@ -41023,7 +41023,7 @@ const styles = StyleSheet.create({
   issuePlanCardButtonLabel: {
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "900",
+    fontWeight: "700",
     textAlign: "center"
   },
   issuePracticeBand: {
@@ -41039,7 +41039,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 0.8,
     textTransform: "uppercase"
   },
@@ -41112,7 +41112,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69",
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "900",
+    fontWeight: "700",
     marginTop: 3
   },
   issueSafetyBar: {
@@ -41166,7 +41166,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   issueSafetySecondaryButton: {
     minHeight: 44,
@@ -41184,7 +41184,7 @@ const styles = StyleSheet.create({
     color: "#9F1239",
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   issueDetailToggleRow: {
     flexDirection: "row",
@@ -41264,7 +41264,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 1
   },
@@ -41287,7 +41287,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   institutionDetailBody: {
     color: "#111827",
@@ -41317,7 +41317,7 @@ const styles = StyleSheet.create({
     color: "#0891B2",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.7
   },
@@ -41366,7 +41366,7 @@ const styles = StyleSheet.create({
     color: "#075985",
     fontSize: 13,
     lineHeight: 17,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   institutionPortalUse: {
     color: "#31546A",
@@ -41410,7 +41410,7 @@ const styles = StyleSheet.create({
   issueLensLabel: {
     color: "#0891B2",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   issueLensText: {
@@ -41476,7 +41476,7 @@ const styles = StyleSheet.create({
   issueStepCheckText: {
     color: "#111827",
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   issueStepCheckTextActive: {
     color: "#FFFFFF"
@@ -41714,7 +41714,7 @@ const styles = StyleSheet.create({
   playStepCheckText: {
     color: "#111827",
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   playStepCheckTextActive: {
     color: "#FFFFFF"
@@ -41846,7 +41846,7 @@ const styles = StyleSheet.create({
   },
   communityChatAuthor: {
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   communityChatAuthorVerified: {
     color: "#0E6F69"
@@ -41948,7 +41948,7 @@ const styles = StyleSheet.create({
   },
   communityBadgeText: {
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   communityBadgeTextVerified: {
@@ -41984,7 +41984,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   communityFeatureMeta: {
     color: "#6F7785",
@@ -42121,7 +42121,7 @@ const styles = StyleSheet.create({
   },
   privateRoomMessageAuthor: {
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   privateRoomMessageAuthorYou: {
     color: "#2E5C8A"
@@ -42195,7 +42195,7 @@ const styles = StyleSheet.create({
   searchCardBadgeText: {
     color: "#0D1F22",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   searchCardActions: {
@@ -42363,7 +42363,7 @@ const styles = StyleSheet.create({
   alertBannerTitle: {
     color: "#9D3D2B",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   alertBannerText: {
     color: "#7C4A41",
@@ -42484,7 +42484,7 @@ const styles = StyleSheet.create({
     color: "#B45309",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   topLanguageChipLabelCompact: {
@@ -42539,7 +42539,7 @@ const styles = StyleSheet.create({
   visionGuidanceTitle: {
     color: "#C4A35A",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0
   },
@@ -42596,7 +42596,7 @@ const styles = StyleSheet.create({
     color: "#0E6F69",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 1.1,
     textTransform: "uppercase"
   },
@@ -42654,7 +42654,7 @@ const styles = StyleSheet.create({
   aiHelpEntryTrustDot: {
     color: "#0E9488",
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   aiHelpStarterBlock: {
     gap: 8
@@ -42663,7 +42663,7 @@ const styles = StyleSheet.create({
     color: "#243940",
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   aiHelpOptionalContext: {
     flexDirection: "row",
@@ -42696,7 +42696,7 @@ const styles = StyleSheet.create({
   aiHelpOptionalCheckLabel: {
     color: "#FFFFFF",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   aiHelpOptionalTitle: {
     color: "#0D1F22",
@@ -42742,7 +42742,7 @@ const styles = StyleSheet.create({
   aiHelpSafetyButtonLabel: {
     color: "#FFFFFF",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   aiHelpPreviousBlock: {
     gap: 10
@@ -42779,7 +42779,7 @@ const styles = StyleSheet.create({
   aiHelpSummaryLabel: {
     color: "#B45309",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0
   },
@@ -42845,7 +42845,7 @@ const styles = StyleSheet.create({
   aiStarterChipText: {
     color: "#0D1F22",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0
   },
@@ -42922,7 +42922,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 13,
     lineHeight: 17,
-    fontWeight: "900",
+    fontWeight: "700",
     flexShrink: 1,
     minWidth: 0
   },
@@ -43031,7 +43031,7 @@ const styles = StyleSheet.create({
     color: "#00B8A3",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
 
@@ -43151,7 +43151,7 @@ const styles = StyleSheet.create({
     color: "#A93E2F",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   profileSheetJumpButton: {
@@ -43170,7 +43170,7 @@ const styles = StyleSheet.create({
     color: "#0A5C58",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   onboardingHeader: {
@@ -43246,7 +43246,7 @@ const styles = StyleSheet.create({
     color: "#0891B2",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   onboardingCloseButtonLabelCompact: {
@@ -43274,7 +43274,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   onboardingScrollHintCopy: {
     flex: 1,
@@ -43284,7 +43284,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   onboardingScrollHintMeta: {
     color: "#111827",
@@ -43295,7 +43295,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 13,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 0
   },
   onboardingTitleCompact: {
@@ -43378,7 +43378,7 @@ const styles = StyleSheet.create({
   onboardingButtonSecondaryLabel: {
     color: "#0891B2",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   launchNeedGrid: {
     flexDirection: "row",
@@ -43410,7 +43410,7 @@ const styles = StyleSheet.create({
   launchNeedLabel: {
     color: "#0D1F22",
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   launchNeedLabelActive: {
     color: "#0E6F69"
@@ -43440,7 +43440,7 @@ const styles = StyleSheet.create({
   metricLabel: {
     color: "#111827",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 0,
     textTransform: "uppercase"
   },
@@ -43544,7 +43544,7 @@ const styles = StyleSheet.create({
     color: "#0A5C58",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   flowRailButtonLabelBack: {
     fontSize: 12,
@@ -43586,7 +43586,7 @@ const styles = StyleSheet.create({
     color: "#111827",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   sectionSwitcherPanelMeta: {
     color: "#111827",
@@ -43925,7 +43925,7 @@ const styles = StyleSheet.create({
   adminStatusPillText: {
     color: "#7C4A41",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   adminStatusPillTextActive: {
@@ -43971,7 +43971,7 @@ const styles = StyleSheet.create({
   launchChecklistMarkText: {
     color: "#111827",
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   launchChecklistMarkTextDone: {
     color: "#FFFFFF"
@@ -43993,7 +43993,7 @@ const styles = StyleSheet.create({
   launchChecklistStatus: {
     color: "#9A6E57",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   launchChecklistStatusDone: {
@@ -44263,7 +44263,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 13,
     lineHeight: 17,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 0.2
   },
   journalInsightText: {
@@ -44396,7 +44396,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   calmWisdomIntro: {
@@ -44474,13 +44474,13 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   calmSituationCardAction: {
     color: "#0891B2",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   calmSituationCardDetail: {
@@ -44657,7 +44657,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   calmLensChipLabelActive: {
     color: "#0891B2"
@@ -44732,7 +44732,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     fontSize: 12,
     lineHeight: 22,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   calmPracticeIndexDone: {
     backgroundColor: "#0E6F69",
@@ -44882,7 +44882,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   focusStepIndexActive: {
     backgroundColor: "#B45309",
@@ -45041,7 +45041,7 @@ const styles = StyleSheet.create({
   trendLabel: {
     color: "#111827",
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   signalRow: {
     minHeight: 70,
@@ -45053,7 +45053,7 @@ const styles = StyleSheet.create({
   signalLabel: {
     color: "#111827",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   signalValue: {
@@ -45115,7 +45115,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     overflow: "hidden"
   },
@@ -45230,7 +45230,7 @@ const styles = StyleSheet.create({
   profileSummaryLabel: {
     color: "#0E6F69",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 1.2
   },
@@ -45272,7 +45272,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 13,
     lineHeight: 17,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   accessFlowBandTitleCompact: {
     fontSize: 12,
@@ -45281,7 +45281,7 @@ const styles = StyleSheet.create({
   accessFlowBandMeta: {
     color: "#0891B2",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   accessFlowBandText: {
@@ -45330,7 +45330,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   privateIntakeFlowIndexCompact: {
     width: 22,
@@ -45347,7 +45347,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   privateIntakeFlowTitleCompact: {
     fontSize: 12,
@@ -45399,7 +45399,7 @@ const styles = StyleSheet.create({
     color: "#0D1F22",
     fontSize: 12,
     lineHeight: 16,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   accessFlowPillLabelDone: {
     color: "#0A5C58"
@@ -45431,7 +45431,7 @@ const styles = StyleSheet.create({
   govHelpCategory: {
     color: "#2E5C8A",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     textTransform: "uppercase"
   },
   govHelpTitle: {
@@ -45509,7 +45509,7 @@ const styles = StyleSheet.create({
   contactButtonLabel: {
     color: "#FFFFFF",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   contactButtonSecondary: {
     minHeight: 44,
@@ -45524,7 +45524,7 @@ const styles = StyleSheet.create({
   contactButtonSecondaryLabel: {
     color: "#0891B2",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   ratingChip: {
     minWidth: 42,
@@ -45545,7 +45545,7 @@ const styles = StyleSheet.create({
   ratingChipText: {
     color: "#1E2F4D",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   ratingChipTextActive: {
     color: "#0D1F22"
@@ -45625,7 +45625,7 @@ const styles = StyleSheet.create({
   identityMarkText: {
     color: "#0A3A35",
     fontSize: 12,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   identityMarkTextActive: {
     color: "#0D1F22"
@@ -45633,7 +45633,7 @@ const styles = StyleSheet.create({
   identityLabel: {
     color: "#0D1F22",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   identityLabelCompact: {
     fontSize: 12
@@ -46016,7 +46016,7 @@ const styles = StyleSheet.create({
   },
   heroRouteAppName: {
     fontSize: 13,
-    fontWeight: "900",
+    fontWeight: "700",
     color: "#007FB8",
     letterSpacing: 2.8,
   },
@@ -46363,7 +46363,7 @@ const styles = StyleSheet.create({
   },
   vedicCardEyebrow: {
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     color: "#2600B8",
     letterSpacing: 1.8,
     textTransform: "uppercase"
@@ -46614,12 +46614,12 @@ const styles = StyleSheet.create({
   },
   birthChartGuidanceTitle: {
     fontSize: 13,
-    fontWeight: "900",
+    fontWeight: "700",
     color: "#B45309"
   },
   birthChartGuidanceBadge: {
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     color: "#B45309",
     backgroundColor: "rgba(246,212,107,0.12)",
     borderWidth: 1,
