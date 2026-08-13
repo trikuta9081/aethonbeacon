@@ -13797,10 +13797,6 @@ export default function App() {
   const [privateSpaceSelectedThreadId, setPrivateSpaceSelectedThreadId] = useState<string | null>(
     privateSpaceSeedThreads[0]?.id ?? null
   );
-  const [privateSpaceKindDraft, setPrivateSpaceKindDraft] = useState<PrivateSpaceKind>("group");
-  const [privateSpaceTitleDraft, setPrivateSpaceTitleDraft] = useState("");
-  const [privateSpaceMembersDraft, setPrivateSpaceMembersDraft] = useState("");
-  const [privateSpaceDraft, setPrivateSpaceDraft] = useState("");
   const [homeIssueDraft, setHomeIssueDraft] = useState("");
   const [showCounselingChat, setShowCounselingChat] = useState(false);
   const [crisisSupportVisible, setCrisisSupportVisible] = useState(false);
@@ -19105,36 +19101,44 @@ async function fetchGuidanceHelp(
     return true;
   }
 
-  function createPrivateSpaceRoom() {
+  // Takes the composed room rather than reading four pieces of App() state.
+  // Returns true only when the room was actually created, so the form keeps
+  // what the person typed if creation is refused.
+  function createPrivateSpaceRoom(input: {
+    kind: PrivateSpaceKind;
+    title: string;
+    members: string;
+    firstMessage: string;
+  }): boolean {
     if (!communityVerifiedAccess) {
       Alert.alert(
         "Chat Rooms",
         "Verify your phone or email first to create a private room."
       );
-      return;
+      return false;
     }
     if (communityPostingLocked) {
       Alert.alert(
         "Chat Rooms",
         communitySafetyLockReason ?? "Room creation is currently paused for safety review."
       );
-      return;
+      return false;
     }
 
-    const title = privateSpaceTitleDraft.trim();
+    const title = input.title.trim();
     if (!title) {
       Alert.alert("Chat Rooms", "Give your room a name.");
-      return;
+      return false;
     }
 
-    const members = privateSpaceMembersDraft
+    const members = input.members
       .split(",")
       .map((member) => member.trim())
       .filter((member) => member.length > 0)
       .map((member) => member.slice(0, 40))
       .slice(0, 8);
 
-    const safetyViolation = [title, members.join(" "), privateSpaceDraft.trim()]
+    const safetyViolation = [title, members.join(" "), input.firstMessage.trim()]
       .filter((value) => value.length > 0)
       .map((value) => inspectCommunitySafety(value))
       .find((violation): violation is { reason: CommunityReportReason; message: string } => Boolean(violation));
@@ -19142,16 +19146,16 @@ async function fetchGuidanceHelp(
     if (safetyViolation) {
       logBlockedCommunityContent("chat", safetyViolation.reason, title);
       safetyAlertMessage(safetyViolation.message);
-      return;
+      return false;
     }
 
-    const initialMessageText = privateSpaceDraft.trim();
+    const initialMessageText = input.firstMessage.trim();
     const createdAt = new Date().toISOString();
     const newRoom: PrivateSpaceThread = {
       id: `private-room-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
       createdAt,
       updatedAt: createdAt,
-      kind: privateSpaceKindDraft,
+      kind: input.kind,
       title,
       members,
       messages: initialMessageText.length > 0
@@ -19169,41 +19173,39 @@ async function fetchGuidanceHelp(
 
     setPrivateSpaceThreads((current) => [newRoom, ...current.filter((room) => room.id !== newRoom.id)].slice(0, 20));
     setPrivateSpaceSelectedThreadId(newRoom.id);
-    setPrivateSpaceTitleDraft("");
-    setPrivateSpaceMembersDraft("");
-    setPrivateSpaceDraft("");
-    setPrivateSpaceKindDraft("group");
+    return true;
   }
 
-  function sendPrivateSpaceMessage() {
-    const text = privateSpaceDraft.trim();
+  // Same contract as the other composers: text in, sent-or-not out.
+  function sendPrivateSpaceMessage(rawText: string): boolean {
+    const text = rawText.trim();
     if (!text) {
       Alert.alert("Chat Rooms", "Write a message first.");
-      return;
+      return false;
     }
     if (!communityVerifiedAccess) {
       Alert.alert(
         "Chat Rooms",
         "Verify your phone or email first to use private rooms."
       );
-      return;
+      return false;
     }
     if (communityPostingLocked) {
       Alert.alert(
         "Chat Rooms",
         communitySafetyLockReason ?? "Private rooms are currently paused for safety review."
       );
-      return;
+      return false;
     }
     const safetyViolation = inspectCommunitySafety(text);
     if (safetyViolation) {
       logBlockedCommunityContent("chat", safetyViolation.reason, text);
       safetyAlertMessage(safetyViolation.message);
-      return;
+      return false;
     }
     if (!selectedPrivateSpaceThread) {
       Alert.alert("Chat Rooms", "Create or choose a room first.");
-      return;
+      return false;
     }
 
     const message: PrivateSpaceMessage = {
@@ -19226,7 +19228,7 @@ async function fetchGuidanceHelp(
           : thread
       )
     );
-    setPrivateSpaceDraft("");
+    return true;
   }
 
   function clearPrivateSpaceRoom(roomId: string) {
@@ -21867,14 +21869,6 @@ function isTrustedExternalUrl(url: string) {
                 privateSpaceThreads={privateSpaceThreads}
                 privateSpaceSelectedThreadId={privateSpaceSelectedThreadId}
                 setPrivateSpaceSelectedThreadId={setPrivateSpaceSelectedThreadId}
-                privateSpaceKindDraft={privateSpaceKindDraft}
-                setPrivateSpaceKindDraft={setPrivateSpaceKindDraft}
-                privateSpaceTitleDraft={privateSpaceTitleDraft}
-                setPrivateSpaceTitleDraft={setPrivateSpaceTitleDraft}
-                privateSpaceMembersDraft={privateSpaceMembersDraft}
-                setPrivateSpaceMembersDraft={setPrivateSpaceMembersDraft}
-                privateSpaceDraft={privateSpaceDraft}
-                setPrivateSpaceDraft={setPrivateSpaceDraft}
                 onCreatePrivateSpaceRoom={createPrivateSpaceRoom}
                 onSendPrivateSpaceMessage={sendPrivateSpaceMessage}
                 onClearPrivateSpaceRoom={clearPrivateSpaceRoom}
@@ -25585,14 +25579,6 @@ function CommunitySection({
   privateSpaceThreads,
   privateSpaceSelectedThreadId,
   setPrivateSpaceSelectedThreadId,
-  privateSpaceKindDraft,
-  setPrivateSpaceKindDraft,
-  privateSpaceTitleDraft,
-  setPrivateSpaceTitleDraft,
-  privateSpaceMembersDraft,
-  setPrivateSpaceMembersDraft,
-  privateSpaceDraft,
-  setPrivateSpaceDraft,
   onCreatePrivateSpaceRoom,
   onSendPrivateSpaceMessage,
   onClearPrivateSpaceRoom,
@@ -25651,16 +25637,8 @@ function CommunitySection({
   privateSpaceThreads: PrivateSpaceThread[];
   privateSpaceSelectedThreadId: string | null;
   setPrivateSpaceSelectedThreadId: (value: string | null) => void;
-  privateSpaceKindDraft: PrivateSpaceKind;
-  setPrivateSpaceKindDraft: (value: PrivateSpaceKind) => void;
-  privateSpaceTitleDraft: string;
-  setPrivateSpaceTitleDraft: (value: string) => void;
-  privateSpaceMembersDraft: string;
-  setPrivateSpaceMembersDraft: (value: string) => void;
-  privateSpaceDraft: string;
-  setPrivateSpaceDraft: (value: string) => void;
-  onCreatePrivateSpaceRoom: () => void;
-  onSendPrivateSpaceMessage: () => void;
+  onCreatePrivateSpaceRoom: (input: { kind: PrivateSpaceKind; title: string; members: string; firstMessage: string }) => boolean;
+  onSendPrivateSpaceMessage: (text: string) => boolean;
   onClearPrivateSpaceRoom: (roomId: string) => void;
   aiHelpMessages: GuidedSupportMessage[];
   aiHelpDraft: string;
@@ -25709,6 +25687,13 @@ function CommunitySection({
   const [communityChatSending, setCommunityChatSending] = useState(false);
   const [communityDraft, setCommunityDraft] = useState("");
   const [communityPosting, setCommunityPosting] = useState(false);
+  // Private-room form. Four more pieces of state that were sitting in App();
+  // three of them are text inputs, so typing a room name used to re-render
+  // the entire tab.
+  const [privateSpaceKindDraft, setPrivateSpaceKindDraft] = useState<PrivateSpaceKind>("group");
+  const [privateSpaceTitleDraft, setPrivateSpaceTitleDraft] = useState("");
+  const [privateSpaceMembersDraft, setPrivateSpaceMembersDraft] = useState("");
+  const [privateSpaceDraft, setPrivateSpaceDraft] = useState("");
 
   useEffect(() => {
     setShowFullCommunity(false);
@@ -26371,7 +26356,21 @@ function CommunitySection({
               accessibilityLabel={postingLocked ? "Posting paused" : interactionLocked ? "Room creation locked while intake is open" : "Create private room"}
               accessibilityHint="Creates a new private room with the title and members you entered"
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
-              onPress={onCreatePrivateSpaceRoom}
+              onPress={() => {
+                const created = onCreatePrivateSpaceRoom({
+                  kind: privateSpaceKindDraft,
+                  title: privateSpaceTitleDraft,
+                  members: privateSpaceMembersDraft,
+                  firstMessage: privateSpaceDraft
+                });
+                // Cleared only on success -- a refusal (unverified, locked,
+                // safety violation, missing name) leaves the form intact.
+                if (!created) return;
+                setPrivateSpaceTitleDraft("");
+                setPrivateSpaceMembersDraft("");
+                setPrivateSpaceDraft("");
+                setPrivateSpaceKindDraft("group");
+              }}
               disabled={postingLocked || interactionLocked}
               style={({ pressed }) => [
                 styles.helpButton,
@@ -26388,7 +26387,9 @@ function CommunitySection({
               accessibilityLabel="Send message to selected private room"
               accessibilityHint="Sends your draft message to the currently selected room"
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
-              onPress={onSendPrivateSpaceMessage}
+              onPress={() => {
+                if (onSendPrivateSpaceMessage(privateSpaceDraft)) setPrivateSpaceDraft("");
+              }}
               disabled={postingLocked || interactionLocked}
               style={({ pressed }) => [
                 styles.helpButtonSecondary,

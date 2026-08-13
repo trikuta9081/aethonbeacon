@@ -312,13 +312,21 @@ const appBody = source.slice(
   source.indexOf("export default function App("),
   source.indexOf("\nfunction ", source.indexOf("export default function App("))
 );
-for (const draft of ["communityDraft", "communityChatDraft", "astroChatDraft"]) {
+for (const draft of ["communityDraft", "communityChatDraft", "astroChatDraft", "privateSpaceKindDraft", "privateSpaceTitleDraft", "privateSpaceMembersDraft", "privateSpaceDraft"]) {
   assert(
     !appBody.includes(`const [${draft},`),
     `${draft} must live in the component that owns its TextInput, not in App() -- holding it here re-renders the whole tab on every keystroke`
   );
 }
 // The send handlers report success so a refused message is not silently lost.
+assert(
+  /function createPrivateSpaceRoom\(input: \{/.test(source),
+  "createPrivateSpaceRoom must take the composed room as an argument rather than reading four pieces of App() state"
+);
+assert(
+  /function sendPrivateSpaceMessage\(rawText: string\): boolean/.test(source),
+  "sendPrivateSpaceMessage must take the text and report whether it sent"
+);
 for (const fn of ["postCommunityMessage", "postCommunityChatMessage"]) {
   assert(
     new RegExp(`async function ${fn}\\(rawText: string\\): Promise<boolean>`).test(source),
