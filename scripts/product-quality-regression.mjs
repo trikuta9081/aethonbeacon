@@ -204,4 +204,31 @@ assert(!source.includes(hiddenNumberPhrase), 'Public internal numeric capability
 const hiddenProviderPattern = new RegExp(`\\b(?:${['A', 'I'].join('')}|${['Gemi', 'ni'].join('')})\\b`, 'i');
 assert(!hiddenProviderPattern.test(source), 'Public provider/model terminology must stay hidden.');
 
+// ── The local-only promise must actually hold ────────────────────────────────
+// Settings offers a "Local-only journal" switch whose meta reads "Data stays
+// on this device". The connected daily-brief fetch ignored it and POSTed the
+// first 150 characters of the most recent journal entry on every launch and
+// after every check-in -- and then discarded the reply, so that data left the
+// device in exchange for nothing.
+const briefEffect = source.slice(
+  source.indexOf("Connected Daily Brief"),
+  source.indexOf("Connected Daily Brief") + 2600
+);
+assert(
+  /if \(localOnly\) \{/.test(briefEffect),
+  "the connected daily-brief fetch must return early in local-only mode -- Settings promises the journal stays on the device"
+);
+assert(
+  !/lastNote/.test(briefEffect),
+  "the daily-brief payload must not carry raw journal text; the brief is built from aggregates (streak, focus, scores, Rashi)"
+);
+assert(
+  source.includes("guidanceDailyBrief ?? motivations["),
+  "the connected brief must actually be rendered -- data should never leave the device for a result nothing reads"
+);
+assert(
+  !source.includes("const smartBrief = useMemo"),
+  "the dead smartBrief memo must not come back: it computed a greeting card that was never mounted, on every render"
+);
+
 console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");

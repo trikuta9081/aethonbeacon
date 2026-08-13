@@ -14482,71 +14482,34 @@ export default function App() {
 
   const insightsTabHasBadge = useMemo(() => entries.length >= 5, [entries]);
 
-  // ── Smart daily brief ────────────────────────────────────────────────────────
-  const smartBrief = useMemo(() => {
-    const hour = new Date().getHours();
-    const recent = [...entries]
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 7);
-    const avgScore =
-      recent.length > 0
-        ? recent.reduce((s, e) => s + e.score, 0) / recent.length
-        : null;
-    const lastScore = recent[0]?.score ?? null;
-    const timeGreeting =
-      hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-    const name = accessName?.trim() || "there";
+  // The "smart daily brief" memo that used to sit here was dead: it sorted and
+  // averaged the last seven entries on every render to build a greeting card
+  // that was never mounted. The landing header below supersedes it -- it
+  // already greets by time of day and already carries a line -- so mounting
+  // the old card would have duplicated the greeting rather than added
+  // anything. Its styles (smartBrief*) are left in place for now, unused.
 
-    if (recent.length === 0) {
-      return {
-        greeting: `${timeGreeting}, ${name}`,
-        nudge: "Log how you're feeling right now — takes 30 seconds. Your mood picture builds over time.",
-        suggestTab: "journal" as TabId,
-        suggestLabel: "Log first mood",
-        accent: "#0E6F69"
-      };
-    }
-    if (lastScore !== null && lastScore <= 2) {
-      return {
-        greeting: `${timeGreeting}, ${name}`,
-        nudge: "You've been running low lately. A few minutes of calm can reset the baseline.",
-        suggestTab: "focus" as TabId,
-        suggestLabel: "Open Calm",
-        accent: "#7E6FD6"
-      };
-    }
-    if (avgScore !== null && avgScore >= 4) {
-      return {
-        greeting: `${timeGreeting}, ${name}`,
-        nudge: "Your recent sessions are strong. A good time to work through a next step.",
-        suggestTab: "guide" as TabId,
-        suggestLabel: "Open Path",
-        accent: "#0E6F69"
-      };
-    }
-    if (hour < 10) {
-      return {
-        greeting: `${timeGreeting}, ${name}`,
-        nudge: "Start the day with a quick check-in so the app can route you accurately.",
-        suggestTab: "today" as TabId,
-        suggestLabel: "Check in now",
-        accent: "#AD850B"
-      };
-    }
-    return {
-      greeting: `${timeGreeting}, ${name}`,
-      nudge: "Explore your mood patterns, guided practices, and today's cosmic reading.",
-      suggestTab: "insights" as TabId,
-      suggestLabel: "View Patterns",
-      accent: "#0E6F69"
-    };
-  }, [entries, accessName]);
   const isPrivateIntakeOpen = showPrivateIntakePanel;
   const isDevBuild = typeof __DEV__ !== "undefined" && __DEV__;
 
   // ── Connected Daily Brief — refresh when entries change or on first load ──────
+  // Two things were wrong here. First, this ran regardless of the "Local-only
+  // journal / Data stays on this device" switch in Settings, and its payload
+  // included the first 150 characters of the most recent journal entry -- so
+  // the app made a promise on one screen and broke it on every launch and
+  // after every check-in. Second, nothing ever read the result, so that data
+  // left the device in exchange for nothing.
+  //
+  // Now: local-only mode skips the call entirely, the raw note is never sent
+  // (the brief is written from the same aggregates the Home card already
+  // shows -- streak, focus, scores, Rashi), and the reply is actually used,
+  // below, as the Home greeting's line.
   useEffect(() => {
     if (!hasLoaded) return;
+    if (localOnly) {
+      setGuidanceDailyBrief(null);
+      return;
+    }
     let cancelled = false;
     async function fetchBrief() {
       const apiBase = (() => {
@@ -14568,7 +14531,6 @@ export default function App() {
             streakDays: checkInStreak,
             avgScore,
             lastScore: recent[0]?.score ?? null,
-            lastNote: recent[0]?.note?.slice(0, 150) ?? "",
             rashiName: vedicRashiInfo?.rashi?.name ?? ""
           })
         });
@@ -14586,7 +14548,7 @@ export default function App() {
     return () => { cancelled = true; };
   // Re-fetch when entries length changes (new check-in) or on first load
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasLoaded, entries.length, checkInStreak]);
+  }, [hasLoaded, entries.length, checkInStreak, localOnly]);
 
   const verificationApiBaseUrl = (() => {
     const value = typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_VERIFICATION_API_BASE_URL : "";
@@ -20879,7 +20841,12 @@ function isTrustedExternalUrl(url: string) {
                   "Today is another chance to move forward.", "Healing happens in layers.", "You showed up — that matters.",
                   "Your journey is uniquely yours.", "Courage is choosing to continue.", "Progress over perfection.",
                 ];
-                const motivation = motivations[new Date().getDate() % motivations.length];
+                // Prefer the connected brief -- it is written from this
+                // person's own streak, focus and scores -- and fall back to
+                // the rotating line whenever it was skipped (local-only
+                // mode), failed, or has not landed yet. Home never waits on
+                // the network to say something.
+                const motivation = guidanceDailyBrief ?? motivations[new Date().getDate() % motivations.length];
                 // Responds to a real short-term pattern (majority of the last
                 // 2-3 mood-tagged Journal check-ins) instead of only ever
                 // showing a rotating generic line regardless of how the
