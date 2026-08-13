@@ -334,4 +334,21 @@ for (const fn of ["postCommunityMessage", "postCommunityChatMessage"]) {
   );
 }
 
+// ── The Home route preview must track something the user can actually type ──
+// It renders directly beneath the journal input on Today. It used to read
+// homeRoutePreview, which is derived from homeIssueDraft -- a value only ever
+// set with text inside DynamicHeroCard, a component that is never mounted. So
+// the card permanently read "Route waiting -- type one line and the app will
+// choose the next page automatically", under an input that was not the one it
+// meant, while the same empty placeholder was also being written into every
+// step visit report.
+assert(
+  source.includes("routePreview={journalRoutePreview}"),
+  "TodaySection's route preview must read journalRoutePreview -- it sits under the journal input, and homeRoutePreview is derived from a draft nothing can set"
+);
+assert(
+  !/buildStepVisitReport\([\s\S]{0,220}homeRoutePreview/.test(source),
+  "visit reports must not embed homeRoutePreview -- it is permanently the empty placeholder"
+);
+
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');

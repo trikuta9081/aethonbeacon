@@ -10360,20 +10360,6 @@ function parseVedicBirthMoment(dob: string, birthTime?: string | null): Date | n
   return isNaN(trueUtc.getTime()) ? null : trueUtc;
 }
 
-function parseVedicDateAtNoonUtc(value: string): Date | null {
-  if (!value || value.length < 10) return null;
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
-  if (match) {
-    const year = Number(match[1]);
-    const month = Number(match[2]);
-    const day = Number(match[3]);
-    if (!year || !isValidCalendarDate(year, month, day)) return null;
-    const parsed = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
-    return isNaN(parsed.getTime()) ? null : parsed;
-  }
-  const parsed = new Date(value);
-  return isNaN(parsed.getTime()) ? null : parsed;
-}
 
 function julianDay(date: Date): number {
   return date.getTime() / MS_PER_DAY + 2440587.5;
@@ -11809,16 +11795,6 @@ function getVimshottariDashaState(dob: string, nakshatraLord: string, birthTime?
   return null;
 }
 
-function getMahadasha(dob: string, nakshatraLord: string, birthTime?: string | null): { current: string; yearsLeft: number; endYear: number; next: string } | null {
-  const state = getVimshottariDashaState(dob, nakshatraLord, birthTime);
-  if (!state) return null;
-  return {
-    current: state.currentMahadasha,
-    yearsLeft: Math.round(state.mahadashaYearsLeft * 10) / 10,
-    endYear: state.mahadashaEndYear,
-    next: state.nextMahadasha
-  };
-}
 
 type PhaseDomain = "health" | "wealth" | "peace" | "tension" | "relationships" | "job" | "home";
 
@@ -15632,7 +15608,7 @@ export default function App() {
             latestCheckInEntry,
             profileDisplayName,
             selectedIssueGuide,
-            homeRoutePreview,
+            journalRoutePreview,
             weeklyAverage,
             {
               languageLabel: selectedLanguage.label,
@@ -15644,7 +15620,7 @@ export default function App() {
         : null,
     [
       hasVerifiedSensitiveAccess,
-      homeRoutePreview,
+      journalRoutePreview,
       latestCheckInEntry,
       privateIntakeReport.coverage,
       privateIntakeReport.modeLabel,
@@ -15661,7 +15637,7 @@ export default function App() {
         privateIntakeReport,
         profileDisplayName,
         selectedIssueGuide,
-        homeRoutePreview,
+        journalRoutePreview,
         dailyRoutinePlan,
         weeklyAverage,
         monthlyAverage,
@@ -15675,7 +15651,7 @@ export default function App() {
     [
       hasVerifiedSensitiveAccess,
       dailyRoutinePlan,
-      homeRoutePreview,
+      journalRoutePreview,
       monthlyAverage,
       privateIntakeReport.coverage,
       privateIntakeReport.modeLabel,
@@ -17571,7 +17547,7 @@ export default function App() {
       entry,
       profileDisplayName,
       selectedIssueGuide,
-      homeRoutePreview,
+      journalRoutePreview,
       weeklyAverage,
       {
         languageLabel: selectedLanguage.label,
@@ -17585,7 +17561,7 @@ export default function App() {
       intakeReport,
       profileDisplayName,
       selectedIssueGuide,
-      homeRoutePreview,
+      journalRoutePreview,
       dailyRoutinePlan,
       weeklyAverage,
       monthlyAverage,
@@ -21082,15 +21058,12 @@ function isTrustedExternalUrl(url: string) {
                 saveCheckIn={saveCheckIn}
                 selectedIssueGuide={selectedIssueGuide}
                 selectedIdentityLabel={profileDisplayName}
-                homeIssueDraft={homeIssueDraft}
-                setHomeIssueDraft={setHomeIssueDraft}
-                onRouteHomeIssue={routeHomeIssue}
                 onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
                 onOpenTab={handleTabPress}
                 onFocusPresentMoodLayout={captureFocusLayout}
                 needsPresentMoodCheck={needsPresentMoodCheck}
                 isWide={isWide}
-                routePreview={homeRoutePreview}
+                routePreview={journalRoutePreview}
                 dailyRoutinePlan={dailyRoutinePlan}
                 onRunDailyRoutineAction={runDailyRoutineAction}
                 stepVisitReport={stepVisitReport}
@@ -22584,9 +22557,6 @@ function TodaySection({
   saveCheckIn,
   selectedIssueGuide,
   selectedIdentityLabel,
-  homeIssueDraft,
-  setHomeIssueDraft,
-  onRouteHomeIssue,
   onOpenCalm,
   onOpenTab,
   onFocusPresentMoodLayout,
@@ -22622,9 +22592,6 @@ function TodaySection({
   saveCheckIn: () => void;
   selectedIssueGuide: IssueGuide;
   selectedIdentityLabel: string;
-  homeIssueDraft: string;
-  setHomeIssueDraft: (value: string) => void;
-  onRouteHomeIssue: () => void;
   onOpenCalm: () => void;
   onOpenTab: (tab: TabId) => void;
   onFocusPresentMoodLayout?: (key: string) => (event: { nativeEvent: { layout: { y: number } } }) => void;
@@ -30192,82 +30159,6 @@ function RouteDecisionOverlay({
   );
 }
 
-function RouteFollowUpCheckpoint({
-  followUp,
-  onResolved,
-  onMoreGuidance,
-  onReminder,
-  onDismiss
-}: {
-  followUp: ActiveRouteFollowUp;
-  onResolved: () => void;
-  onMoreGuidance: () => void;
-  onReminder: () => void;
-  onDismiss: () => void;
-}) {
-  const statusText =
-    followUp.status === "resolved"
-      ? "Resolved for now"
-      : followUp.status === "more-guidance"
-        ? "Guide reopened"
-        : followUp.status === "reminder-set"
-          ? "Reminder requested"
-          : "Waiting for outcome";
-  return (
-    <View style={styles.routeFollowUpCard}>
-      <View style={styles.routeFollowUpHeader}>
-        <View style={styles.routeFollowUpCopy}>
-          <Text style={styles.routeFollowUpEyebrow}>Follow-up checkpoint</Text>
-          <Text style={styles.routeFollowUpTitle} numberOfLines={1}>
-            {followUp.choiceLabel} / {followUp.issueLabel}
-          </Text>
-          <Text style={styles.routeFollowUpText} numberOfLines={2}>
-            Did this route work, or should the app keep guiding the next step?
-          </Text>
-        </View>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onDismiss}
-          style={({ pressed }) => [styles.routeFollowUpDismiss, pressed && styles.pressed]}
-        >
-          <Text style={styles.routeFollowUpDismissText}>×</Text>
-        </Pressable>
-      </View>
-      <Text style={styles.routeFollowUpStatus}>{statusText}</Text>
-      <View style={styles.routeFollowUpActions}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onResolved}
-          style={({ pressed }) => [styles.helpButton, styles.routeFollowUpAction, pressed && styles.pressed]}
-        >
-          <Text style={styles.helpButtonLabel}>Resolved</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onMoreGuidance}
-          style={({ pressed }) => [
-            styles.helpButtonSecondary,
-            styles.routeFollowUpAction,
-            pressed && styles.pressed
-          ]}
-        >
-          <Text style={styles.helpButtonSecondaryLabel}>More guidance</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onReminder}
-          style={({ pressed }) => [
-            styles.helpButtonSecondary,
-            styles.routeFollowUpAction,
-            pressed && styles.pressed
-          ]}
-        >
-          <Text style={styles.helpButtonSecondaryLabel}>Remind me</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-}
 
 function InsightsSection({
   trend,
@@ -38857,13 +38748,6 @@ function Metric({
   );
 }
 
-function ProgressBar({ value, accent }: { value: number; accent: string }) {
-  return (
-    <View style={styles.progressTrack}>
-      <View style={[styles.progressFill, { width: `${value}%`, backgroundColor: accent }]} />
-    </View>
-  );
-}
 
 function TrendBars({ trend }: { trend: Array<{ label: string; value: number; key?: string }> }) {
   return (
