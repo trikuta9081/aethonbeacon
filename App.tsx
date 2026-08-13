@@ -13170,7 +13170,7 @@ class AppErrorBoundary extends React.Component<
       return (
         <View style={{ flex: 1, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", padding: 32 }}>
           <Text style={{ fontSize: 40, marginBottom: 16 }}>⚠️</Text>
-          <Text style={{ color: "#0E9488", fontSize: 18, fontWeight: "700", marginBottom: 8, textAlign: "center" }}>
+          <Text style={{ color: "#0B766D", fontSize: 18, fontWeight: "700", marginBottom: 8, textAlign: "center" }}>
             Something went wrong
           </Text>
           <Text style={{ color: "#263244", fontSize: 14, textAlign: "center", marginBottom: 24, lineHeight: 20 }}>
@@ -13206,7 +13206,7 @@ class TabErrorBoundary extends React.Component<
       return (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 32, backgroundColor: "#FFFFFF" }}>
           <Text style={{ fontSize: 32, marginBottom: 12 }}>⚠️</Text>
-          <Text style={{ color: "#0E9488", fontSize: 16, fontWeight: "700", marginBottom: 8, textAlign: "center" }}>
+          <Text style={{ color: "#0B766D", fontSize: 16, fontWeight: "700", marginBottom: 8, textAlign: "center" }}>
             This section had an issue
           </Text>
           <Text style={{ color: "#263244", fontSize: 13, textAlign: "center", lineHeight: 20 }}>
@@ -13217,7 +13217,7 @@ class TabErrorBoundary extends React.Component<
             style={{ marginTop: 20, backgroundColor: "#DEEAF2", borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 }}
             accessibilityRole="button"
           >
-            <Text style={{ color: "#0E9488", fontSize: 13, fontWeight: "700" }}>Try again</Text>
+            <Text style={{ color: "#0B766D", fontSize: 13, fontWeight: "700" }}>Try again</Text>
           </Pressable>
         </View>
       );
@@ -13428,7 +13428,7 @@ function ExitReportModal({
           justifyContent: "space-between",
         }}>
           <View>
-            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 2, textTransform: "uppercase" }}>
+            <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 2, textTransform: "uppercase" }}>
               Today's Visit Report
             </Text>
             <Text style={{ color: "#0D1F22", fontSize: 18, fontWeight: "900", marginTop: 2 }}>
@@ -13462,7 +13462,7 @@ function ExitReportModal({
             borderColor: "rgba(34,211,238,0.25)",
             marginBottom: 16,
           }}>
-            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.5, marginBottom: 8, textTransform: "uppercase" }}>
+            <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.5, marginBottom: 8, textTransform: "uppercase" }}>
               📋 Session Summary
             </Text>
             <Text style={{ color: "#25364D", fontSize: 14, lineHeight: 22 }}>{report.overallSummary}</Text>
@@ -13504,12 +13504,12 @@ function ExitReportModal({
           {/* Guidance Received */}
           {report.guidanceTopics.length > 0 && (
             <View style={{ backgroundColor: "#E1EEEC", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", marginBottom: 14 }}>
-              <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+              <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
                 🧭 Guidance Provided
               </Text>
               {report.guidanceTopics.map((topic, i) => (
                 <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 6 }}>
-                  <Text style={{ color: "#0891B2", fontSize: 12, marginRight: 8, marginTop: 2 }}>▸</Text>
+                  <Text style={{ color: "#06748E", fontSize: 12, marginRight: 8, marginTop: 2 }}>▸</Text>
                   <Text style={{ color: "#25364D", fontSize: 14, flex: 1, lineHeight: 20 }}>{topic}</Text>
                 </View>
               ))}
@@ -13558,7 +13558,7 @@ function ExitReportModal({
                     borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5,
                     borderWidth: 1, borderColor: "rgba(34,211,238,0.2)",
                   }}>
-                    <Text style={{ color: "#0891B2", fontSize: 12 }}>{tab}</Text>
+                    <Text style={{ color: "#06748E", fontSize: 12 }}>{tab}</Text>
                   </View>
                 ))}
               </View>
@@ -21066,7 +21066,7 @@ function isTrustedExternalUrl(url: string) {
                         {issueActive ? (
                           <View style={{ backgroundColor: "rgba(99,222,208,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(99,222,208,0.3)", flexDirection: "row", alignItems: "center", gap: 5 }}>
                             <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#0E9488" }} />
-                            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{selectedIssueGuide.label}</Text>
+                            <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "700" }}>{selectedIssueGuide.label}</Text>
                           </View>
                         ) : (
                           <View style={{ backgroundColor: "rgba(71,85,105,0.2)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(71,85,105,0.3)" }}>
@@ -21095,7 +21095,7 @@ function isTrustedExternalUrl(url: string) {
                       {issueActive && (
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
+                            <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
                               Multi-dimensional redressal
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
@@ -21345,7 +21345,7 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (() => {
                 type Rec = { emoji: string; title: string; body: string; toneId: string; breath: string; color: string };
                 const REC: Partial<Record<IssueId, Rec>> = {
-                  anxiety:      { emoji: "🌊", title: "Slow-wave settling", body: "Slow-wave audio + 4-7-8 breathing. Six minutes for a slower, clearer reset.", toneId: "binaural-theta-5", breath: "4-7-8", color: "#0891B2" },
+                  anxiety:      { emoji: "🌊", title: "Slow-wave settling", body: "Slow-wave audio + 4-7-8 breathing. Six minutes for a slower, clearer reset.", toneId: "binaural-theta-5", breath: "4-7-8", color: "#06748E" },
                   anger:        { emoji: "🌧️", title: "Rain-bed cool-down", body: "Ambient rain + box breath (4-4-4-4). Pause before speaking or sending anything.", toneId: "ambient-rain", breath: "4-4-4-4 box", color: "#0052B8" },
                   fear:         { emoji: "🛡️", title: "Ground + safety cue", body: "Grounding tone + one clear safety sentence repeated three times.", toneId: "sol-396", breath: "Slow diaphragm", color: "#B45309" },
                   burnout:      { emoji: "💆", title: "Quiet restoration", body: "Soft sustained tone + long exhale (4-in, 8-out). Rest is part of recovery.", toneId: "sol-432", breath: "4-in / 8-out", color: "#059669" },
@@ -21966,7 +21966,7 @@ function isTrustedExternalUrl(url: string) {
               )}
               {crossSectionSignal.recentMoodTrend === "declining" && (
                 <View style={styles.activeFocusStrip}>
-                  <Text style={{ color: "#0E9488", fontSize: 12 }}>📉</Text>
+                  <Text style={{ color: "#0B766D", fontSize: 12 }}>📉</Text>
                   <Text style={{ color: "#263244", fontSize: 12, fontWeight: "600", flex: 1 }}>Your recent check-ins have trended heavier — consider starting with a grounding step before working through the path below.</Text>
                 </View>
               )}
@@ -22407,7 +22407,7 @@ function isTrustedExternalUrl(url: string) {
         >
           <Text style={{ fontSize: 20 }}>{toneNowPlaying.mark}</Text>
           <View style={{ flex: 1, minWidth: 0 }}>
-            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 0.6 }} numberOfLines={1}>
+            <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 0.6 }} numberOfLines={1}>
               {toneNowPlaying.paused ? "Paused" : "Now playing"} · {toneNowPlaying.label}
             </Text>
             <Text style={{ color: "#3A577D", fontSize: 12, marginTop: 1 }}>
@@ -22425,7 +22425,7 @@ function isTrustedExternalUrl(url: string) {
             accessibilityLabel={toneNowPlaying.paused ? "Resume tone" : "Pause tone"}
             style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(8,145,178,0.3)" }}
           >
-            <Text style={{ color: "#0891B2", fontSize: 15 }}>{toneNowPlaying.paused ? "▶" : "⏸"}</Text>
+            <Text style={{ color: "#06748E", fontSize: 15 }}>{toneNowPlaying.paused ? "▶" : "⏸"}</Text>
           </Pressable>
           <Pressable
             onPress={(e) => {
@@ -22529,12 +22529,12 @@ function isTrustedExternalUrl(url: string) {
             <SafeAreaView style={{ flex: 1 }}>
               <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "#E1EEEC" }}>
                 <Pressable onPress={() => setShowPrivacyPolicyPanel(false)} style={{ marginRight: 12, padding: 4 }} accessibilityRole="button" accessibilityLabel="Close">
-                  <Text style={{ color: "#0E9488", fontSize: 16 }}>✕</Text>
+                  <Text style={{ color: "#0B766D", fontSize: 16 }}>✕</Text>
                 </Pressable>
                 <Text style={{ color: "#3A577D", fontSize: 17, fontWeight: "700", flex: 1 }}>Privacy Policy</Text>
               </View>
               <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
-                <Text style={{ color: "#0E9488", fontSize: 12, letterSpacing: 1.2, fontWeight: "700", marginBottom: 4 }}>AETHON BEACON — PRIVACY POLICY</Text>
+                <Text style={{ color: "#0B766D", fontSize: 12, letterSpacing: 1.2, fontWeight: "700", marginBottom: 4 }}>AETHON BEACON — PRIVACY POLICY</Text>
                 <Text style={{ color: "#1F2937", fontSize: 12, marginBottom: 20 }}>Last updated: June 2026</Text>
 
                 {[
@@ -22807,7 +22807,7 @@ function TodaySection({
         >
           <View style={[styles.sectionHeader, { marginBottom: 12 }]}>
             <View style={{ flex: 1, minWidth: 0 }}>
-              <Text style={[styles.eyebrow, { color: "#0E9488" }]}>Start here</Text>
+              <Text style={[styles.eyebrow, { color: "#0B766D" }]}>Start here</Text>
               <Text style={[styles.sectionTitleSmall, { color: "#0D1F22" }]}>Choose the right support in one tap.</Text>
             </View>
             <Text style={styles.smallMeta}>Premium flow</Text>
@@ -22949,7 +22949,7 @@ function TodaySection({
         >
           <Text
             style={{
-              color: "#B87D00",
+              color: "#906100",
               fontSize: 12,
               fontWeight: "700",
               letterSpacing: 1.1,
@@ -23020,7 +23020,7 @@ function TodaySection({
         <Image source={require("./assets/aethon-beacon-icon-vibrant.png")} style={{ width: 36, height: 36, borderRadius: 10 }} accessibilityLabel="Aethon Beacon" />
         <Text style={{ color: "#0E7C74", fontSize: 14, fontWeight: "800", letterSpacing: 0.2 }}>Aethon Beacon</Text>
         <Text style={{ color: "#6B7B88", fontSize: 12, textAlign: "center" }}>You don't have to carry it alone.</Text>
-        <Text style={{ color: "#9AA7B2", fontSize: 12, marginTop: 4 }}>Made with care · v1.0.4</Text>
+        <Text style={{ color: "#636B72", fontSize: 12, marginTop: 4 }}>Made with care · v1.0.4</Text>
       </View>
     </View>
   );
@@ -24127,7 +24127,7 @@ const BREATH_GUIDE: Record<string, string[]> = {
 // Tone category groupings
 const TONE_CATEGORIES = [
   { id: "sleep", label: "🌙 Sleep", color: "#4C1D95", desc: "Low-intensity sound beds for night rest, decompression, and closing mental loops.", ids: ["reset-quiet","ambient-rain","ambient-ocean","ambient-softdrone","binaural-delta-1","binaural-delta-2","trend-deep-sleep","noise-brown"] },
-  { id: "anxiety", label: "🫁 Anxiety reset", color: "#0E9488", desc: "Grounding cues with slow breath pacing for overwhelm, panic, and urgent tension.", ids: ["bilateral-soft-1","bilateral-soft-2","ambient-breath","ambient-rain","sol-396","binaural-alpha-7","iso-4"] },
+  { id: "anxiety", label: "🫁 Anxiety reset", color: "#0B766D", desc: "Grounding cues with slow breath pacing for overwhelm, panic, and urgent tension.", ids: ["bilateral-soft-1","bilateral-soft-2","ambient-breath","ambient-rain","sol-396","binaural-alpha-7","iso-4"] },
   { id: "focus", label: "🎯 Focus", color: "#2563EB", desc: "Steady background tones for study, planning, numbers, and clear next-step work.", ids: ["binaural-alpha-12","binaural-reset-14","binaural-gamma-40","reset-gamma","trend-lofi","trend-cafe","noise-pink","iso-8"] },
   { id: "grounding", label: "🤲 Emotional grounding", color: "#B80064", desc: "Warm, regulating tracks for grief, loneliness, relationship stress, and self-respect.", ids: ["ambient-ocean","ambient-softdrone","sol-639","sol-528","binaural-alpha-8","bilateral-soft-3","trend-krishna-flute","trend-432-guitar"] },
   { id: "deep", label: "🪷 Deep calm", color: "#B45309", desc: "Quiet reflection sessions for stillness, recovery, and slower inner pacing.", ids: ["binaural-theta-4","binaural-theta-5","aum-136","sol-432","sol-852","sol-963","trend-tibetan-bowl","trend-om-chant"] },
@@ -24392,7 +24392,7 @@ function ToneLibrarySection({
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
+                <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
                   {loopEnabled ? (tonePaused ? "⏸ PAUSED" : "▶ PLAYING") : "SELECTED"}
                 </Text>
                 {activeProgram && (
@@ -24521,7 +24521,7 @@ function ToneLibrarySection({
             Safety: {selectedToneContraindication}
           </Text>
 
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+          <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
             Session preset
           </Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
@@ -24600,7 +24600,7 @@ function ToneLibrarySection({
 
       {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
       <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
-        <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
+        <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
           Recommended for you today — {selectedIssueGuide.label}
         </Text>
         <View style={{ gap: 8 }}>
@@ -24661,7 +24661,7 @@ function ToneLibrarySection({
 
       {/* ── TONE LIBRARY — by category ── */}
       <View style={{ marginHorizontal: 16 }}>
-        <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
+        <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
           Curated tone library
         </Text>
         <View style={{ gap: 6 }}>
@@ -24779,7 +24779,7 @@ function ToneLibrarySection({
             style={({ pressed }) => ({ flex: 1, backgroundColor: pressed ? "#C4D1E8" : "#DEE5F2", borderRadius: 12, paddingVertical: 12, alignItems: "center", gap: 4, borderWidth: 1, borderColor: "rgba(99,222,208,0.16)", shadowColor: "#0F3B45", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6, elevation: 1 })}
           >
             <Text style={{ fontSize: 16 }}>{item.mark}</Text>
-            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{item.label}</Text>
+            <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "700" }}>{item.label}</Text>
           </Pressable>
         ))}
       </View>
@@ -25953,7 +25953,7 @@ function CommunitySection({
         </View>
         {/* ── How to use this section ── */}
         <View style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
-          <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, marginBottom: 6 }}>HOW TO USE COMMUNITY</Text>
+          <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, marginBottom: 6 }}>HOW TO USE COMMUNITY</Text>
           <Text style={{ color: "#263244", fontSize: 13, lineHeight: 20, marginBottom: 4 }}>
             {"1. Read the feed — see what others in similar situations are sharing. Tap a post to save or report it."}
           </Text>
@@ -28425,7 +28425,7 @@ function GovtGrievanceCellsCard({
       { label: "GST Grievance", url: "https://selfservice.gstsystem.in/", note: "GST portal issues, ITC blockage, refund delays." },
       { label: "CBIC Customs / Excise", url: "https://cbec-easiest.gov.in/", note: "Customs, excise, service-tax legacy." },
     ]},
-    { title: "Travel + transport", color: "#0891B2", cells: [
+    { title: "Travel + transport", color: "#06748E", cells: [
       { label: "Rail Madad (IR)", number: "139", url: "https://railmadad.indianrailways.gov.in/", note: "Any Indian Railways complaint. Ticket, staff, cleanliness, security." },
       { label: "AirSewa (Aviation)", number: "155433", url: "https://airsewa.gov.in/", note: "Flight delays, baggage, refunds, airport service." },
       { label: "Passport Seva", number: "1800-258-1800", url: "https://portal2.passportindia.gov.in/", note: "Passport application, delays, corrections." },
@@ -29365,7 +29365,7 @@ function RedressSection({
                 {selectedRedressRoute.label}
               </Text>
             </View>
-            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "800" }}>Change ▾</Text>
+            <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "800" }}>Change ▾</Text>
           </Pressable>
         )}
         <View style={{ marginBottom: 8, display: showRouteChooser ? "flex" : "none" }}>
@@ -29552,11 +29552,11 @@ function RedressSection({
         {/* ── 4-STEP COMPLAINT FLOW ── */}
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(34,211,238,0.2)", overflow: "hidden" }}>
           <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Step-by-step complaint flow</Text>
+            <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Step-by-step complaint flow</Text>
             <Text style={{ color: "#5B7A8A", fontSize: 12 }}>Do in order</Text>
           </View>
           {[
-            { num: "1", label: "First office", text: selectedRedressRoute.firstOffice, color: "#0891B2" },
+            { num: "1", label: "First office", text: selectedRedressRoute.firstOffice, color: "#06748E" },
             { num: "2", label: "First action", text: selectedRedressRoute.firstAction, color: "#059669" },
             { num: "3", label: "Escalation path", text: selectedRedressRoute.escalation, color: "#B45309" },
             { num: "4", label: "Track & follow up", text: "Keep a copy of every acknowledgement number. Follow up every 7–15 days in writing. If stalled, use the escalation path above.", color: "#BE185D" },
@@ -30325,7 +30325,7 @@ function InsightsSection({
                 borderRadius: 12,
               })}
             >
-              <Text style={{ color: "#0E9488", fontSize: 15, fontWeight: "700" }}>
+              <Text style={{ color: "#0B766D", fontSize: 15, fontWeight: "700" }}>
                 Go to Journal →
               </Text>
             </Pressable>
@@ -30432,7 +30432,7 @@ function InsightsSection({
                   <Text style={{ color: gradeColor, fontSize: 28, fontWeight: "900" }}>{grade}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>Progress Report Card</Text>
+                  <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>Progress Report Card</Text>
                   <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800", marginTop: 2 }}>{gradeLabel}</Text>
                   <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>
                     {selectedIssueGuide.label} · {checkInStreak} day streak · {weekEntries.length}/7 this week
@@ -30481,7 +30481,7 @@ function InsightsSection({
                         </Text>
                         <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700", marginTop: 3 }}>{report.title}</Text>
                         <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginTop: 3 }}>{report.summary}</Text>
-                        <Text style={{ color: "#0E9488", fontSize: 12, marginTop: 4 }}>→ {report.nextStep}</Text>
+                        <Text style={{ color: "#0B766D", fontSize: 12, marginTop: 4 }}>→ {report.nextStep}</Text>
                       </View>
                     ))}
                   </View>
@@ -31536,7 +31536,7 @@ function SettingsSection({
           You can skip optional profile details, export your notes, or delete local data whenever you choose.
         </Text>
         <Pressable accessibilityRole="button" onPress={onShowPrivacyPolicy} style={[styles.dangerButton, { backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "#334155" }]}>
-          <Text style={[styles.dangerButtonLabel, { color: "#0E9488" }]}>📄 Read privacy policy</Text>
+          <Text style={[styles.dangerButtonLabel, { color: "#0B766D" }]}>📄 Read privacy policy</Text>
         </Pressable>
       </View>
       <View style={styles.settingsBlock}>
@@ -32381,7 +32381,7 @@ function BirthChartSection({
 
         {/* Date of birth — segmented DD / MM / YYYY */}
         <View style={{ gap: 8 }}>
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             Date of birth
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
@@ -32460,7 +32460,7 @@ function BirthChartSection({
             </View>
           </View>
           {isValidDOB && (
-            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", textAlign: "center" }}>
+            <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", textAlign: "center" }}>
               ✓ {new Date(dobDraft).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
             </Text>
           )}
@@ -32468,7 +32468,7 @@ function BirthChartSection({
 
         {/* Birth time — segmented HH : MM */}
         <View style={{ gap: 8 }}>
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             Birth time (24-hour)
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -32520,7 +32520,7 @@ function BirthChartSection({
             </View>
           </View>
           {isValidTime && (
-            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", textAlign: "center" }}>
+            <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", textAlign: "center" }}>
               ✓ {(() => { const h = parseInt(timeHH, 10); const m = timeMM.padStart(2,"0"); const suffix = h >= 12 ? "PM" : "AM"; const h12 = h % 12 || 12; return `${timeHH}:${m} (${h12}:${m} ${suffix})`; })()}
             </Text>
           )}
@@ -32528,7 +32528,7 @@ function BirthChartSection({
 
         {/* Birth place */}
         <View style={{ gap: 6 }}>
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             Place of birth
           </Text>
           <TextInput
@@ -32681,7 +32681,7 @@ function BirthChartSection({
       {/* Analysis summary (shows after save) */}
       {hasExactBirthDetails && (
         <View style={{ backgroundColor: "#E1EEEC", borderRadius: 14, padding: 16, gap: 12, borderWidth: 1, borderColor: "rgba(99,222,208,0.25)" }}>
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>Your Vedic Birth Profile</Text>
+          <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>Your Vedic Birth Profile</Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             {[
               { label: "Date of Birth", value: profileDOB },
@@ -32701,11 +32701,11 @@ function BirthChartSection({
           </View>
           {lagnaInfo && (
             <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(99,222,208,0.2)" }}>
-              <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
+              <Text style={{ color: "#06748E", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
                 Lagna Analysis — {lagnaInfo.lagna.name} ({lagnaInfo.lagna.en})
               </Text>
               <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 20 }}>
-                Your Lagna (Rising Sign) is <Text style={{ fontWeight: "900", color: "#0E9488" }}>{lagnaInfo.lagna.name}</Text>, ruled by <Text style={{ fontWeight: "800" }}>{lagnaInfo.lagna.lord}</Text>.
+                Your Lagna (Rising Sign) is <Text style={{ fontWeight: "900", color: "#0B766D" }}>{lagnaInfo.lagna.name}</Text>, ruled by <Text style={{ fontWeight: "800" }}>{lagnaInfo.lagna.lord}</Text>.
                 The Lagna shows how you project yourself to the world and how you approach life's challenges.
                 Element: {lagnaInfo.lagna.element}. Nature: {lagnaInfo.lagna.nature}.
               </Text>
@@ -32740,7 +32740,7 @@ function BirthChartSection({
               </Text>
               <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 20 }}>
                 The Samvatsara is the Vedic 60-year Jupiter cycle — each year has a unique cosmic name and life-theme inscribed at birth.{"\n"}
-                <Text style={{ fontWeight: "900", color: "#0E9488" }}>Your birth-year theme: </Text>{samvatsaraInfo.theme}.
+                <Text style={{ fontWeight: "900", color: "#0B766D" }}>Your birth-year theme: </Text>{samvatsaraInfo.theme}.
               </Text>
               <Text style={{ color: "#2F4358", fontSize: 12, marginTop: 6, fontStyle: "italic" }}>
                 This Samvatsara shapes your core life-script and soul-purpose tendencies as recorded in Jyotish.
@@ -32946,7 +32946,7 @@ function BirthChartSection({
                           {period.startYear === period.endYear ? `${period.startYear}` : `${period.startYear}–${period.endYear}`}
                           <Text style={{ color: "#5C00B8" }}>  {mahaLabel} / {antarLabel}</Text>
                           {period.isCurrent && (
-                            <Text style={{ color: "#0E9488" }}>  · {isHi ? "अभी" : "now"}</Text>
+                            <Text style={{ color: "#0B766D" }}>  · {isHi ? "अभी" : "now"}</Text>
                           )}
                         </Text>
                         <View style={{ backgroundColor: verdictBg(period.verdict), borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}>
@@ -33033,7 +33033,7 @@ function BirthChartSection({
           <View pointerEvents="none" style={{ position: "absolute", right: -55, top: 80, width: 175, height: 175, borderRadius: 88, backgroundColor: "rgba(34,211,238,0.12)" }} />
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
+              <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
                 🌙 Multi-dimensional Vedic Insight
               </Text>
               <Text style={{ color: "#325C86", fontSize: 20, fontWeight: "900", marginTop: 3 }}>
@@ -33047,7 +33047,7 @@ function BirthChartSection({
               </Text>
             </View>
             <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: "rgba(99,222,208,0.12)", borderWidth: 1, borderColor: "rgba(99,222,208,0.5)", alignItems: "center", justifyContent: "center", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 14, transform: [{ perspective: 900 }, { rotateZ: "-4deg" }] }}>
-              <Text style={{ color: "#0E9488", fontSize: 24, fontWeight: "900" }}>MD</Text>
+              <Text style={{ color: "#0B766D", fontSize: 24, fontWeight: "900" }}>MD</Text>
               <Text style={{ color: "#00A8B8", fontSize: 12, fontWeight: "700", letterSpacing: 1 }}>INSIGHT</Text>
             </View>
           </View>
@@ -33163,7 +33163,7 @@ function BirthChartSection({
 
           <View style={{ gap: 8 }}>
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-              <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", flexShrink: 1 }}>{chartBriefLang === "hi" ? "पूर्ण बहुआयामी गणना-विवरण" : "Complete multidimensional calculated trace"}</Text>
+              <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", flexShrink: 1 }}>{chartBriefLang === "hi" ? "पूर्ण बहुआयामी गणना-विवरण" : "Complete multidimensional calculated trace"}</Text>
               {/* Expand-all / collapse-all so a reader can open everything at
                   once or clear it back to the scannable list in one tap. */}
               <Pressable
@@ -38011,7 +38011,7 @@ function CounselingChatModal({
         {/* Header */}
         <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Platform.OS === "ios" ? 10 : Math.max(insets.top, 12) + 12, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#DCE9E6", backgroundColor: "#FFFFFF" }}>
           <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
-            <Text style={{ color: "#0E9488", fontSize: 22 }}>←</Text>
+            <Text style={{ color: "#0B766D", fontSize: 22 }}>←</Text>
           </Pressable>
           <View style={{ flex: 1, marginLeft: 12 }}>
             {/* Consistent branding -- the enrichment card below and the
@@ -38069,7 +38069,7 @@ function CounselingChatModal({
         {/* Chat messages */}
         <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
           <View style={{ backgroundColor: "#FFFFFF", borderRadius: 18, borderCurve: "continuous", padding: 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
-            <Text style={{ color: "#0E9488", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Guided support room</Text>
+            <Text style={{ color: "#0B766D", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Guided support room</Text>
             <Text style={{ color: "#0D1F22", fontSize: 20, lineHeight: 25, fontWeight: "900", marginTop: 4 }}>What brings you here?</Text>
             <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginTop: 6 }}>
               Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies.
@@ -38197,7 +38197,7 @@ function CounselingChatModal({
                   </Text>
                 )}
               </View>
-              <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Your recommended journey</Text>
+              <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Your recommended journey</Text>
               {journeySteps.map((step, i) => (
                 <View key={step.tabId} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "#E0EBE8", borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
                   <Text style={{ fontSize: 22 }}>{step.emoji}</Text>
@@ -38215,7 +38215,7 @@ function CounselingChatModal({
                   accessibilityLabel="Replay guide summary aloud"
                 >
                   <Text style={{ fontSize: 18 }}>🔊</Text>
-                  <Text style={{ color: "#0E9488", fontSize: 13, fontWeight: "700" }}>Replay guide summary aloud</Text>
+                  <Text style={{ color: "#0B766D", fontSize: 13, fontWeight: "700" }}>Replay guide summary aloud</Text>
                 </Pressable>
               )}
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -38363,7 +38363,7 @@ function GuidedJourneyBar({
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
         <Text style={{ fontSize: 22 }}>{current.emoji}</Text>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
+          <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
             Step {currentStepIndex + 1} of {steps.length}
           </Text>
           <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 1 }}>{current.label}</Text>
@@ -38571,7 +38571,7 @@ function DynamicHeroCard({
         })}
       >
         <Text style={{ fontSize: 18 }}>🎙️</Text>
-        <Text style={{ color: "#0E9488", fontSize: 14, fontWeight: "700" }}>Talk it through with your guide</Text>
+        <Text style={{ color: "#0B766D", fontSize: 14, fontWeight: "700" }}>Talk it through with your guide</Text>
       </Pressable>
       <Text style={{ color: "#1F2937", fontSize: 12, textAlign: "center", marginTop: 6 }}>
         Supports a 30-message counselling arc and offers an optional next-step checkpoint every 6 replies.
@@ -39449,7 +39449,7 @@ function GuidanceInsightsCard({
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
         <Text style={{ fontSize: 18, marginRight: 10 }}>✦</Text>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#0B766D", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             Personal Pattern Analysis
           </Text>
           <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 1 }}>
@@ -39495,7 +39495,7 @@ function GuidanceInsightsCard({
                 borderColor: "#1A6080"
               })}
             >
-              <Text style={{ color: "#0E9488", fontSize: 13, fontWeight: "700" }}>Generate my pattern reading →</Text>
+              <Text style={{ color: "#0B766D", fontSize: 13, fontWeight: "700" }}>Generate my pattern reading →</Text>
             </Pressable>
           )}
         </View>
@@ -40097,7 +40097,7 @@ const styles = StyleSheet.create({
     gap: 3
   },
   brand: {
-    color: "#B88600",
+    color: "#886300",
     fontSize: 16,
     lineHeight: 20,
     fontWeight: "900",
@@ -40241,7 +40241,7 @@ const styles = StyleSheet.create({
     gap: 1
   },
   topStatusChipLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -40318,7 +40318,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8
   },
   routeNoticeTitle: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -41335,7 +41335,7 @@ const styles = StyleSheet.create({
     gap: 5
   },
   institutionMiniTitle: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -41429,7 +41429,7 @@ const styles = StyleSheet.create({
     gap: 4
   },
   issueLensLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     fontWeight: "700",
     textTransform: "uppercase"
@@ -41689,7 +41689,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   playCardSubtitle: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 13,
     fontWeight: "800"
   },
@@ -41802,7 +41802,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   searchSuggestionLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     fontWeight: "800",
     textTransform: "uppercase"
@@ -42358,7 +42358,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F4F8F7"
   },
   helpButtonSecondaryLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 14,
     fontWeight: "800"
   },
@@ -42673,7 +42673,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   aiHelpEntryTrustDot: {
-    color: "#0E9488",
+    color: "#0B766D",
     fontSize: 12,
     fontWeight: "700"
   },
@@ -43238,7 +43238,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   sheetCloseIconButtonLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 18,
     lineHeight: 20,
     fontWeight: "900",
@@ -43264,7 +43264,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5
   },
   onboardingCloseButtonLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -43397,7 +43397,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   onboardingButtonSecondaryLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 13,
     fontWeight: "700"
   },
@@ -44087,7 +44087,7 @@ const styles = StyleSheet.create({
   // and gentle tracking (SF "footnote/caption" feel) rather than an ultra-black
   // 900 with heavy 2.0 tracking, which read as shouty on a premium screen.
   eyebrow: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     lineHeight: 16,
     textTransform: "uppercase",
@@ -44180,7 +44180,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   communityTypingHint: {
-    color: "#0E9488",
+    color: "#0B766D",
     fontSize: 12,
     fontWeight: "700",
     fontStyle: "italic",
@@ -44498,7 +44498,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   calmSituationCardAction: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -44549,7 +44549,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   calmVoiceMeta: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "800"
@@ -44681,7 +44681,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   calmLensChipLabelActive: {
-    color: "#0891B2"
+    color: "#06748E"
   },
   calmLensChipMeta: {
     color: "#111827",
@@ -44843,7 +44843,7 @@ const styles = StyleSheet.create({
     fontWeight: "600"
   },
   routineArrow: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 20,
     fontWeight: "900"
   },
@@ -45011,7 +45011,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   textButtonLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontWeight: "900"
   },
   deleteButton: {
@@ -45184,7 +45184,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#E1EEEC"
   },
   profileBannerMarkText: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 17,
     fontWeight: "900"
   },
@@ -45300,7 +45300,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   accessFlowBandMeta: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 12,
     fontWeight: "700",
     textTransform: "uppercase"
@@ -45466,7 +45466,7 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   govHelpNumber: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 15,
     fontWeight: "900"
   },
@@ -45543,7 +45543,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F4F8F7"
   },
   contactButtonSecondaryLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontSize: 13,
     fontWeight: "700"
   },
@@ -45905,7 +45905,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14
   },
   secondaryDangerButtonLabel: {
-    color: "#0891B2",
+    color: "#06748E",
     fontWeight: "900"
   },
   commandButton: {
@@ -46009,7 +46009,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3
   },
   bottomNavLabelActive: {
-    color: "#0891B2",
+    color: "#06748E",
     fontWeight: "900",
     letterSpacing: 0.4
   },
@@ -46279,7 +46279,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   activeFocusLabel: {
-    color: "#0E9488",
+    color: "#0B766D",
     fontSize: 12,
     fontWeight: "700",
     flex: 1,

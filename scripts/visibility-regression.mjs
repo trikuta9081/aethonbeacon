@@ -305,4 +305,29 @@ assert(
   assert(scale <= 2.0, `MAX_FONT_SCALE is ${scale}; 3x was measured to clip a badge and push "Pending verification" outside its container`);
 }
 
+// ── Accent text colours that failed WCAG AA ──────────────────────────────────
+// Computed real contrast ratios from the deployed build -- rendered colour
+// against the actual composited background -- rather than checking a list of
+// known-bad hexes. 22 text nodes on the Home screen alone failed AA:
+//
+//   #9AA7B2  2.06:1   "Made with care - v1.0.4"
+//   #B88600  2.74:1   the "Aethon Beacon" brand line
+//   #B87D00  2.95:1   the tester call to action
+//   #0891B2  3.09:1   "Send OTP", "Profile", "Pending verification"
+//   #0E9488  3.14:1   "Start counselling", "Primary support"
+//
+// AA needs 4.5:1 for normal text. 3.44:1 is also why the OTP buttons read as
+// disabled -- I noticed that by eye earlier and had no number for it.
+//
+// Each was darkened to clear 4.5:1 against the lightest surface it sits on.
+// Only text colours changed; the same hues remain as backgrounds and borders,
+// where the requirement is different, so the brand is unchanged.
+for (const [bad, good] of [["#0891B2","#06748E"],["#0E9488","#0B766D"],["#B88600","#886300"],["#B87D00","#906100"],["#9AA7B2","#636B72"]]) {
+  const stillText = source.match(new RegExp(`(?<![A-Za-z])color: "${bad}"`, "g")) ?? [];
+  assert(
+    stillText.length === 0,
+    `${bad} fails WCAG AA as text (measured on the running build); use ${good} for text -- it stays available as a background and border colour`
+  );
+}
+
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');
