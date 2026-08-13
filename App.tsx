@@ -13601,7 +13601,7 @@ function CrisisSupportModal({ visible, onClose }: { visible: boolean; onClose: (
             gap: 14
           }}
         >
-          <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "900", letterSpacing: 1.4, textTransform: "uppercase" }}>
+          <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "700", letterSpacing: 1.4, textTransform: "uppercase" }}>
             You are not alone
           </Text>
           <Text style={{ color: "#0D1F22", fontSize: 22, fontWeight: "900", lineHeight: 29 }}>
@@ -21002,7 +21002,7 @@ function isTrustedExternalUrl(url: string) {
                       {/* Row 1: greeting label */}
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
                         <Text style={{ fontSize: 13 }}>{greetEmoji}</Text>
-                        <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "900", letterSpacing: 1.4, textTransform: "uppercase" }}>{greeting}</Text>
+                        <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", letterSpacing: 1.4, textTransform: "uppercase" }}>{greeting}</Text>
                         <View style={{ flex: 1 }} />
                         <Text style={{ color: "#1E3A5A", fontSize: 12, fontWeight: "700" }}>
                           {new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
@@ -21035,9 +21035,9 @@ function isTrustedExternalUrl(url: string) {
                             shadowColor: scoreColor, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.28, shadowRadius: 10, elevation: 6
                           }}>
                             <Text style={{ color: scoreColor, fontSize: 20, fontWeight: "900", lineHeight: 23 }}>{clarityScore}</Text>
-                            <Text style={{ color: scoreColor, fontSize: 12, fontWeight: "900", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
+                            <Text style={{ color: scoreColor, fontSize: 12, fontWeight: "700", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
                           </View>
-                          <Text style={{ color: scoreColor, fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{scoreLabel}</Text>
+                          <Text style={{ color: scoreColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{scoreLabel}</Text>
                         </View>
                       </View>
                       {/* Row 3: active issue + streak badges */}
@@ -21045,7 +21045,7 @@ function isTrustedExternalUrl(url: string) {
                         {issueActive ? (
                           <View style={{ backgroundColor: "rgba(99,222,208,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(99,222,208,0.3)", flexDirection: "row", alignItems: "center", gap: 5 }}>
                             <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#0E9488" }} />
-                            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900" }}>{selectedIssueGuide.label}</Text>
+                            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700" }}>{selectedIssueGuide.label}</Text>
                           </View>
                         ) : (
                           <View style={{ backgroundColor: "rgba(71,85,105,0.2)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(71,85,105,0.3)" }}>
@@ -21055,7 +21055,7 @@ function isTrustedExternalUrl(url: string) {
                         {checkInStreak > 0 && (
                           <Animated.View style={{ backgroundColor: "rgba(251,191,36,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(251,191,36,0.25)", flexDirection: "row", alignItems: "center", gap: 4, transform: [{ scale: streakPopAnim }] }}>
                             <Text style={{ fontSize: 12 }}>🔥</Text>
-                            <Text style={{ color: "#B88400", fontSize: 12, fontWeight: "900" }}>{checkInStreak} day streak</Text>
+                            <Text style={{ color: "#B88400", fontSize: 12, fontWeight: "700" }}>{checkInStreak} day streak</Text>
                           </Animated.View>
                         )}
                         {visitReports.length > 0 && (
@@ -21074,7 +21074,7 @@ function isTrustedExternalUrl(url: string) {
                       {issueActive && (
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
+                            <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
                               Multi-dimensional redressal
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
@@ -21352,7 +21352,7 @@ function isTrustedExternalUrl(url: string) {
                     <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
                       <Text style={{ fontSize: 28 }}>{rec.emoji}</Text>
                       <View style={{ flex: 1 }}>
-                        <Text style={{ color: rec.color, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                        <Text style={{ color: rec.color, fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
                           Practice for {selectedIssueGuide.label}
                         </Text>
                         <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>{rec.title}</Text>
@@ -21374,7 +21374,7 @@ function isTrustedExternalUrl(url: string) {
                             borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8,
                             borderWidth: 1, borderColor: rec.color + "60"
                           })}>
-                          <Text style={{ color: rec.color, fontSize: 12, fontWeight: "900" }}>Start this practice →</Text>
+                          <Text style={{ color: rec.color, fontSize: 12, fontWeight: "700" }}>Start this practice →</Text>
                         </Pressable>
                       </View>
                     </View>
@@ -21562,7 +21562,7 @@ function isTrustedExternalUrl(url: string) {
                     backgroundColor: "#F3E8FF", borderRadius: 12, padding: 12,
                     borderWidth: 1, borderColor: "rgba(252,211,77,0.25)"
                   }}>
-                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
+                    <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
                       {chartBriefLang === "hi" ? "आपका चार्ट पढ़ा जा रहा है…" : "Reading your chart…"}
                     </Text>
                     <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 19 }}>
@@ -21616,7 +21616,7 @@ function isTrustedExternalUrl(url: string) {
                         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                           <Text style={{
                             color: m.role === "user" ? "#007FB8" : "#B45309",
-                            fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", flexShrink: 1
+                            fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", flexShrink: 1
                           }}>
                             {m.role === "user"
                               ? (chartBriefLang === "hi" ? "आपने पूछा" : "You asked")
@@ -21637,7 +21637,7 @@ function isTrustedExternalUrl(url: string) {
                           <View style={{
                             marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(180,83,9,0.2)"
                           }}>
-                            <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
+                            <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
                               {chartBriefLang === "hi" ? "वैदिक + लाल किताब उपाय" : "Vedic + Lal Kitab remedies"}
                             </Text>
                             <Text style={{ color: "rgba(13,31,34,0.78)", fontSize: 12, lineHeight: 17, whiteSpace: "pre-wrap" } as any}>
@@ -21842,7 +21842,7 @@ function isTrustedExternalUrl(url: string) {
               }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ fontSize: 18 }}>🌱</Text>
-                  <Text style={{ color: "#047857", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
+                  <Text style={{ color: "#047857", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
                     Safe-space rules
                   </Text>
                 </View>
@@ -22052,7 +22052,7 @@ function isTrustedExternalUrl(url: string) {
               {/* ── Active issue hint chip ── */}
               {selectedIssueGuide.id !== "general" && (
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#E0F0E5", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)", flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#059669", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>Tracking</Text>
+                  <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>Tracking</Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "insights")}</Text>
                 </View>
               )}
@@ -22062,14 +22062,14 @@ function isTrustedExternalUrl(url: string) {
                   monthEntries already computed for the trend bands below. ── */}
               {weekEntries.length < 7 ? (
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#EFEAF7", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(109,40,217,0.2)", flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>Building</Text>
+                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>Building</Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>
                     {7 - weekEntries.length} more check-in{7 - weekEntries.length === 1 ? "" : "s"} this week and your weekly pattern read gets a lot sharper.
                   </Text>
                 </View>
               ) : monthEntries.length < 30 ? (
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#EFEAF7", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(109,40,217,0.2)", flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>Deepening</Text>
+                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>Deepening</Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>
                     {30 - monthEntries.length} more check-ins toward a full month — that's where the monthly rhythm becomes reliable.
                   </Text>
@@ -22386,7 +22386,7 @@ function isTrustedExternalUrl(url: string) {
         >
           <Text style={{ fontSize: 20 }}>{toneNowPlaying.mark}</Text>
           <View style={{ flex: 1, minWidth: 0 }}>
-            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 0.6 }} numberOfLines={1}>
+            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 0.6 }} numberOfLines={1}>
               {toneNowPlaying.paused ? "Paused" : "Now playing"} · {toneNowPlaying.label}
             </Text>
             <Text style={{ color: "#3A577D", fontSize: 12, marginTop: 1 }}>
@@ -22866,14 +22866,14 @@ function TodaySection({
                     <Text style={{ color: "#0D1F22", fontSize: item.id === "ask" ? 18 : 16, lineHeight: item.id === "ask" ? 23 : 20, fontWeight: "900" }} numberOfLines={1}>
                       {item.title}
                     </Text>
-                    <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900", marginTop: 2 }}>{item.cta}</Text>
+                    <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "700", marginTop: 2 }}>{item.cta}</Text>
                   </View>
                 </View>
                 <Text style={{ color: "#334155", fontSize: item.id === "ask" ? 14 : 13, lineHeight: item.id === "ask" ? 21 : 19, fontWeight: "700" }} numberOfLines={item.id === "ask" ? 3 : 2}>
                   {item.body}
                 </Text>
                 <View style={{ marginTop: 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: 11, paddingVertical: 7 }}>
-                  <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "900" }}>
+                  <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "700" }}>
                     {item.id === "ask" ? "Start counselling" : "Continue"}
                   </Text>
                 </View>
@@ -22930,7 +22930,7 @@ function TodaySection({
             style={{
               color: "#B87D00",
               fontSize: 12,
-              fontWeight: "900",
+              fontWeight: "700",
               letterSpacing: 1.1,
               textTransform: "uppercase",
               marginBottom: 6
@@ -24336,7 +24336,7 @@ function ToneLibrarySection({
   return (
     <View style={{ paddingBottom: 20 }}>
       <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 20, borderWidth: 1, borderColor: "rgba(14,148,136,0.24)", backgroundColor: "#F4FAF8", padding: 16, gap: 6 }}>
-        <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
+        <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>
           Calm for {selectedIssueGuide.label}
         </Text>
         <Text style={{ color: "#0D1F22", fontSize: 20, lineHeight: 24, fontWeight: "900" }}>
@@ -24371,12 +24371,12 @@ function ToneLibrarySection({
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1 }}>
+                <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
                   {loopEnabled ? (tonePaused ? "⏸ PAUSED" : "▶ PLAYING") : "SELECTED"}
                 </Text>
                 {activeProgram && (
                   <View style={{ backgroundColor: activeProgram.dimColor + "25", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: activeProgram.dimColor + "50" }}>
-                    <Text style={{ color: activeProgram.dimColor, fontSize: 12, fontWeight: "900" }}>{activeProgram.dim}</Text>
+                    <Text style={{ color: activeProgram.dimColor, fontSize: 12, fontWeight: "700" }}>{activeProgram.dim}</Text>
                   </View>
                 )}
               </View>
@@ -24406,7 +24406,7 @@ function ToneLibrarySection({
           <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", paddingHorizontal: 18, paddingVertical: 10, backgroundColor: "#E7EFF6", borderTopWidth: 1, borderTopColor: "rgba(15,23,42,0.06)" }}>
             {calmStreakDays > 0 && (
               <View style={{ backgroundColor: "rgba(8,145,178,0.12)", borderWidth: 1, borderColor: "rgba(8,145,178,0.35)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
-                <Text style={{ color: "#0E5C6B", fontSize: 12, fontWeight: "900" }}>
+                <Text style={{ color: "#0E5C6B", fontSize: 12, fontWeight: "700" }}>
                   🔥 {calmStreakDays}-day calm streak
                 </Text>
               </View>
@@ -24422,7 +24422,7 @@ function ToneLibrarySection({
         )}
         {loopEnabled && activeProgram && breathSteps.length > 0 && (
           <View style={{ backgroundColor: "#DEE7F2", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(8,145,178,0.15)" }}>
-            <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
+            <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
               🫁 Breathing guide — {activeProgram.breathPattern}
             </Text>
             <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
@@ -24476,13 +24476,13 @@ function ToneLibrarySection({
         <View style={{ marginHorizontal: 14, marginBottom: 12, borderRadius: 16, backgroundColor: "#DEE9F2", borderWidth: 1, borderColor: "rgba(34,211,238,0.18)", padding: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
+              <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
                 Playback quality &amp; safety
               </Text>
               <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>Comfort limiter · smooth start and stop · safe listening level</Text>
             </View>
             <View style={{ backgroundColor: selectedToneHeadphones ? "rgba(251,191,36,0.13)" : "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: selectedToneHeadphones ? "rgba(251,191,36,0.4)" : "rgba(52,211,153,0.35)" }}>
-              <Text style={{ color: selectedToneHeadphones ? "#B45309" : "#059669", fontSize: 12, fontWeight: "900" }}>
+              <Text style={{ color: selectedToneHeadphones ? "#B45309" : "#059669", fontSize: 12, fontWeight: "700" }}>
                 {selectedToneHeadphones ? "🎧 Headphones" : "🔊 Speaker OK"}
               </Text>
             </View>
@@ -24500,7 +24500,7 @@ function ToneLibrarySection({
             Safety: {selectedToneContraindication}
           </Text>
 
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
             Session preset
           </Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
@@ -24527,7 +24527,7 @@ function ToneLibrarySection({
                     borderColor: selected ? "rgba(34,211,238,0.46)" : "rgba(255,255,255,0.07)"
                   })}
                 >
-                  <Text style={{ color: selected ? "#00A2B8" : "#3A577D", fontSize: 12, fontWeight: "900" }}>{preset.label}</Text>
+                  <Text style={{ color: selected ? "#00A2B8" : "#3A577D", fontSize: 12, fontWeight: "700" }}>{preset.label}</Text>
                   <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, marginTop: 3 }}>{preset.intent}</Text>
                 </Pressable>
               );
@@ -24562,7 +24562,7 @@ function ToneLibrarySection({
             >
               <Text style={{ color: "#25364D", fontSize: 16, fontWeight: "900" }}>+</Text>
             </Pressable>
-            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "900", width: 36, textAlign: "right" }}>{toneVolumePercent}%</Text>
+            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700", width: 36, textAlign: "right" }}>{toneVolumePercent}%</Text>
           </View>
         </View>
 
@@ -24579,7 +24579,7 @@ function ToneLibrarySection({
 
       {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
       <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
-        <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
+        <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
           Recommended for you today — {selectedIssueGuide.label}
         </Text>
         <View style={{ gap: 8 }}>
@@ -24616,7 +24616,7 @@ function ToneLibrarySection({
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
                       <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "900" }}>{prog.name}</Text>
                       <View style={{ backgroundColor: prog.dimColor + "20", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}>
-                        <Text style={{ color: prog.dimColor, fontSize: 12, fontWeight: "900" }}>{prog.dim}</Text>
+                        <Text style={{ color: prog.dimColor, fontSize: 12, fontWeight: "700" }}>{prog.dim}</Text>
                       </View>
                       <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "800" }}>{prog.duration}m</Text>
                     </View>
@@ -24640,7 +24640,7 @@ function ToneLibrarySection({
 
       {/* ── TONE LIBRARY — by category ── */}
       <View style={{ marginHorizontal: 16 }}>
-        <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
+        <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
           Curated tone library
         </Text>
         <View style={{ gap: 6 }}>
@@ -24659,12 +24659,12 @@ function ToneLibrarySection({
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: hasActive ? cat.color + "12" : pressed ? "#E4EEEC" : "#EFF6F5", paddingHorizontal: 14, paddingVertical: 12 })}
                 >
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: cat.color, fontSize: 13, fontWeight: "900" }}>{cat.label}</Text>
+                    <Text style={{ color: cat.color, fontSize: 13, fontWeight: "700" }}>{cat.label}</Text>
                     <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 16, marginTop: 2, fontWeight: "700" }}>{cat.desc}</Text>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     {hasActive && <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#0891B2" }} />}
-                    <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "900" }}>{isOpen ? "▾" : "▸"}</Text>
+                    <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "700" }}>{isOpen ? "▾" : "▸"}</Text>
                   </View>
                 </Pressable>
                 {isOpen && (
@@ -24711,7 +24711,7 @@ function ToneLibrarySection({
                                 hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                                 style={{ backgroundColor: "#E6DEF2", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                               >
-                                <Text style={{ color: "#2600B8", fontSize: 12, fontWeight: "900" }}>↗</Text>
+                                <Text style={{ color: "#2600B8", fontSize: 12, fontWeight: "700" }}>↗</Text>
                               </Pressable>
                             ) : (
                               <>
@@ -24722,7 +24722,7 @@ function ToneLibrarySection({
                                   hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                                   style={{ backgroundColor: "#DEF2F0", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
-                                  <Text style={{ color: "#059669", fontSize: 12, fontWeight: "900" }}>▶</Text>
+                                  <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700" }}>▶</Text>
                                 </Pressable>
                                 <Pressable
                                   onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setSelectedToneId(toneMode.id); setActiveProgram(null); setTonePaused(false); setLoopEnabled(true); }}
@@ -24731,7 +24731,7 @@ function ToneLibrarySection({
                                   hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                                   style={{ backgroundColor: "#DEE7F2", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                                 >
-                                  <Text style={{ color: "#0052B8", fontSize: 12, fontWeight: "900" }}>🔁</Text>
+                                  <Text style={{ color: "#0052B8", fontSize: 12, fontWeight: "700" }}>🔁</Text>
                                 </Pressable>
                               </>
                             )}
@@ -28291,7 +28291,7 @@ function FreeLegalAidCard({
         style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.85 : 1 }]}
       >
         <View style={{ flex: 1 }}>
-          <Text style={{ color: "#047857", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#047857", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             ⚖️ Free legal aid · Women · Child · Nationwide helplines
           </Text>
           <Text style={{ color: "#263244", fontSize: 12, marginTop: 2, lineHeight: 16 }}>
@@ -28314,7 +28314,7 @@ function FreeLegalAidCard({
             }}>
               <View style={{ width: 4, backgroundColor: accent, alignSelf: "stretch", borderRadius: 2 }} />
               <View style={{ flex: 1 }}>
-                <Text style={{ color: accent, fontSize: 13, fontWeight: "900", lineHeight: 17 }}>{h.label}</Text>
+                <Text style={{ color: accent, fontSize: 13, fontWeight: "700", lineHeight: 17 }}>{h.label}</Text>
                 <Text style={{ color: "#111827", fontSize: 12, lineHeight: 17, marginTop: 3, fontWeight: "600" }}>{h.note}</Text>
               </View>
               <View style={{ flexDirection: "column", gap: 6, minWidth: 112 }}>
@@ -28324,7 +28324,7 @@ function FreeLegalAidCard({
                   onPress={() => callNumber(h.number, h.label)}
                   style={{ backgroundColor: accent, borderRadius: 9, paddingHorizontal: 10, paddingVertical: 7, minWidth: 104, alignItems: "center" }}
                 >
-                  <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "900" }}>📞 {h.number}</Text>
+                  <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "700" }}>📞 {h.number}</Text>
                 </Pressable>
                 {h.url ? (
                   <Pressable
@@ -28332,14 +28332,14 @@ function FreeLegalAidCard({
                     onPress={() => void openWebsite(h.url!, h.label)}
                     style={{ backgroundColor: "#FFFFFF", borderRadius: 9, paddingHorizontal: 10, paddingVertical: 6, minWidth: 104, alignItems: "center", borderWidth: 1.5, borderColor: accent }}
                   >
-                    <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>Portal ↗</Text>
+                    <Text style={{ color: accent, fontSize: 12, fontWeight: "700" }}>Portal ↗</Text>
                   </Pressable>
                 ) : null}
               </View>
             </View>
           )})}
           <View style={{ backgroundColor: "#E7F6EF", borderRadius: 12, padding: 12, borderLeftWidth: 4, borderLeftColor: "#047857", marginTop: 4, borderWidth: 1, borderColor: "rgba(4,120,87,0.25)" }}>
-            <Text style={{ color: "#047857", fontSize: 12, fontWeight: "900", letterSpacing: 1 }}>💡 KNOW YOUR RIGHT</Text>
+            <Text style={{ color: "#047857", fontSize: 12, fontWeight: "700", letterSpacing: 1 }}>💡 KNOW YOUR RIGHT</Text>
             <Text style={{ color: "#1F3F35", fontSize: 12, lineHeight: 18, marginTop: 5, fontWeight: "600" }}>
               Under the Legal Services Authorities Act 1987, free legal aid is a fundamental right (Article 39A) for: women, children, SC/ST, disabled, victims of trafficking / mass disaster / industrial disaster, persons in custody, and anyone with income below the state threshold. Walk into any DLSA (District Legal Services Authority — every district court complex has one). No fees. Your own lawyer. Court fees waived.
             </Text>
@@ -28438,7 +28438,7 @@ function GovtGrievanceCellsCard({
       backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(129,140,248,0.35)", overflow: "hidden"
     }}>
       <View style={{ paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "rgba(129,140,248,0.15)" }}>
-        <Text style={{ color: "#0020B8", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+        <Text style={{ color: "#0020B8", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
           🏛️ All-India govt helplines + grievance cells
         </Text>
         <Text style={{ color: "#263244", fontSize: 12, marginTop: 2, lineHeight: 16 }}>
@@ -28462,12 +28462,12 @@ function GovtGrievanceCellsCard({
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
                 <View style={{ width: 4, height: 20, backgroundColor: accent, borderRadius: 2 }} />
-                <Text style={{ color: accent, fontSize: 13, fontWeight: "900", lineHeight: 17 }}>{section.title}</Text>
+                <Text style={{ color: accent, fontSize: 13, fontWeight: "700", lineHeight: 17 }}>{section.title}</Text>
                 <View style={{ backgroundColor: accent + "18", borderRadius: 999, paddingHorizontal: 7, paddingVertical: 2, borderWidth: 1, borderColor: accent + "35" }}>
-                  <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{section.cells.length}</Text>
+                  <Text style={{ color: accent, fontSize: 12, fontWeight: "700" }}>{section.cells.length}</Text>
                 </View>
               </View>
-              <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{isOpen ? "▾" : "▸"}</Text>
+              <Text style={{ color: accent, fontSize: 12, fontWeight: "700" }}>{isOpen ? "▾" : "▸"}</Text>
             </Pressable>
             {isOpen && (
               <View style={{ backgroundColor: "#E1EEEC", padding: 10, gap: 8 }}>
@@ -28478,7 +28478,7 @@ function GovtGrievanceCellsCard({
                     borderWidth: 1.5, borderColor: accent + "40"
                   }}>
                     <View style={{ flex: 1 }}>
-                      <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "900" }}>{cell.label}</Text>
+                      <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "700" }}>{cell.label}</Text>
                       <Text style={{ color: "#111827", fontSize: 12, lineHeight: 17, marginTop: 3, fontWeight: "600" }}>{cell.note}</Text>
                     </View>
                     <View style={{ flexDirection: "column", gap: 6, minWidth: 104 }}>
@@ -28489,7 +28489,7 @@ function GovtGrievanceCellsCard({
                           onPress={() => callNumber(cell.number!, cell.label)}
                           style={{ backgroundColor: accent, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 7, minWidth: 104, alignItems: "center" }}
                         >
-                          <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "900" }}>📞 {cell.number}</Text>
+                          <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "700" }}>📞 {cell.number}</Text>
                         </Pressable>
                       ) : null}
                       {cell.url ? (
@@ -28498,7 +28498,7 @@ function GovtGrievanceCellsCard({
                           onPress={() => void openWebsite(cell.url!, cell.label)}
                           style={{ backgroundColor: "#FFFFFF", borderRadius: 9, paddingHorizontal: 9, paddingVertical: 6, minWidth: 104, alignItems: "center", borderWidth: 1.5, borderColor: accent }}
                         >
-                          <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>Portal ↗</Text>
+                          <Text style={{ color: accent, fontSize: 12, fontWeight: "700" }}>Portal ↗</Text>
                         </Pressable>
                       ) : null}
                     </View>
@@ -28554,7 +28554,7 @@ function RedressDirectoriesHub({
               })}
             >
               <Text style={{ fontSize: 14 }}>{t.icon}</Text>
-              <Text style={{ color: isActive ? t.color : "#263244", fontSize: 12, fontWeight: "900", marginTop: 2, textAlign: "center" }} numberOfLines={1}>
+              <Text style={{ color: isActive ? t.color : "#263244", fontSize: 12, fontWeight: "700", marginTop: 2, textAlign: "center" }} numberOfLines={1}>
                 {t.label}
               </Text>
               <Text style={{ color: isActive ? t.color : "#1F2937", fontSize: 12, marginTop: 1, opacity: 0.75, textAlign: "center" }} numberOfLines={1}>
@@ -28651,7 +28651,7 @@ function HealthDirectoryCard({
       backgroundColor: "#E1E9EF", borderWidth: 1, borderColor: "rgba(34,197,94,0.35)", overflow: "hidden"
     }}>
       <View style={{ paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "rgba(34,197,94,0.15)" }}>
-        <Text style={{ color: "#047857", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+        <Text style={{ color: "#047857", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
           🏥 National health directory · Doctors · Psychologists · Hospitals
         </Text>
         <Text style={{ color: "#263244", fontSize: 12, marginTop: 2, lineHeight: 16 }}>
@@ -28675,12 +28675,12 @@ function HealthDirectoryCard({
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
                 <View style={{ width: 4, height: 20, backgroundColor: accent, borderRadius: 2 }} />
-                <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "900", flexShrink: 1 }}>{section.title}</Text>
+                <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "700", flexShrink: 1 }}>{section.title}</Text>
                 <View style={{ backgroundColor: accent + "18", borderRadius: 999, paddingHorizontal: 7, paddingVertical: 2, borderWidth: 1, borderColor: accent + "35" }}>
-                  <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{section.rows.length}</Text>
+                  <Text style={{ color: accent, fontSize: 12, fontWeight: "700" }}>{section.rows.length}</Text>
                 </View>
               </View>
-              <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{isOpen ? "▾" : "▸"}</Text>
+              <Text style={{ color: accent, fontSize: 12, fontWeight: "700" }}>{isOpen ? "▾" : "▸"}</Text>
             </Pressable>
             {isOpen && (
               <View style={{ backgroundColor: "#E1EEEC", padding: 10, gap: 8 }}>
@@ -28691,7 +28691,7 @@ function HealthDirectoryCard({
                     borderWidth: 1.5, borderColor: accent + "40"
                   }}>
                     <View style={{ flex: 1 }}>
-                      <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "900" }}>{row.label}</Text>
+                      <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "700" }}>{row.label}</Text>
                       <Text style={{ color: "#111827", fontSize: 12, lineHeight: 17, marginTop: 3, fontWeight: "600" }}>{row.note}</Text>
                     </View>
                     <View style={{ flexDirection: "column", gap: 6, minWidth: 112 }}>
@@ -28702,7 +28702,7 @@ function HealthDirectoryCard({
                           onPress={() => callNumber(row.number!, row.label)}
                           style={{ backgroundColor: accent, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 7, minWidth: 112, alignItems: "center" }}
                         >
-                          <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "900" }}>📞 {row.number}</Text>
+                          <Text style={{ color: pillTextColor, fontSize: 12, fontWeight: "700" }}>📞 {row.number}</Text>
                         </Pressable>
                       ) : null}
                       {row.url ? (
@@ -28711,7 +28711,7 @@ function HealthDirectoryCard({
                           onPress={() => void openWebsite(row.url!, row.label)}
                           style={{ backgroundColor: "#FFFFFF", borderRadius: 9, paddingHorizontal: 9, paddingVertical: 6, minWidth: 112, alignItems: "center", borderWidth: 1.5, borderColor: accent }}
                         >
-                          <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>Portal ↗</Text>
+                          <Text style={{ color: accent, fontSize: 12, fontWeight: "700" }}>Portal ↗</Text>
                         </Pressable>
                       ) : null}
                     </View>
@@ -28781,14 +28781,14 @@ function StateOfficerDirectoryCard({
         style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.85 : 1 }]}
       >
         <View style={{ flex: 1 }}>
-          <Text style={{ color: "#1E40AF", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#1E40AF", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             🏛️ Officer directory · {selected ? selected.name : "pick your state"}
           </Text>
           <Text style={{ color: "#263244", fontSize: 12, marginTop: 2, lineHeight: 16 }}>
             Direct links to your state's OFFICIAL police portal, e-FIR, DC directory & cyber cell — kept live by each state (officer names rotate).
           </Text>
         </View>
-        <Text style={{ color: "#1E40AF", fontSize: 12, fontWeight: "900", marginLeft: 8 }}>{showPicker ? "▲ Hide" : "▼ Pick state"}</Text>
+        <Text style={{ color: "#1E40AF", fontSize: 12, fontWeight: "700", marginLeft: 8 }}>{showPicker ? "▲ Hide" : "▼ Pick state"}</Text>
       </Pressable>
 
       {showPicker && (
@@ -28841,7 +28841,7 @@ function StateOfficerDirectoryCard({
                 }]}
               >
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: accent, fontSize: 13, fontWeight: "900", lineHeight: 17 }}>{r.label}</Text>
+                  <Text style={{ color: accent, fontSize: 13, fontWeight: "700", lineHeight: 17 }}>{r.label}</Text>
                   <Text style={{ color: "#111827", fontSize: 12, lineHeight: 17, marginTop: 3, fontWeight: "600" }}>{r.note}</Text>
                 </View>
                 <Text style={{ color: accent, fontSize: 16, fontWeight: "900" }}>↗</Text>
@@ -28856,7 +28856,7 @@ function StateOfficerDirectoryCard({
               accessibilityRole="button"
               accessibilityLabel={`Call emergency number ${selected.emergency}`}
             >
-              <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "900" }}>🚨 Emergency {selected.emergency}</Text>
+              <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "700" }}>🚨 Emergency {selected.emergency}</Text>
             </Pressable>
             {selected.women && (
               <Pressable
@@ -28865,7 +28865,7 @@ function StateOfficerDirectoryCard({
                 accessibilityRole="button"
                 accessibilityLabel={`Call women's helpline ${selected.women}`}
               >
-                <Text style={{ color: "#B50268", fontSize: 12, fontWeight: "900" }}>👩 Women {selected.women}</Text>
+                <Text style={{ color: "#B50268", fontSize: 12, fontWeight: "700" }}>👩 Women {selected.women}</Text>
               </Pressable>
             )}
           </View>
@@ -29155,7 +29155,7 @@ function RedressSection({
           Your situation sets the route. Everything below — first office, recommended initial action, and formal escalation path — changes to match it, and only that route is shown. Tap “Change” on the situation card to pick a different one.
         </Text>
         <View style={{ marginBottom: 14, borderRadius: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
-          <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>
+          <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "700" }}>
             Verified guidance standard · {REDRESS_CONTENT_STANDARD.jurisdiction}
           </Text>
           <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
@@ -29228,7 +29228,7 @@ function RedressSection({
           })}
         >
           <View style={{ flex: 1, minWidth: 0 }}>
-            <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 18, fontWeight: "900" }}>
+            <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 18, fontWeight: "700" }}>
               More emergency contacts and official directories
             </Text>
             <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, marginTop: 2 }}>
@@ -29289,11 +29289,11 @@ function RedressSection({
                 >
                   <View style={{ width: 4, borderRadius: 2, backgroundColor: accent, alignSelf: "stretch", marginRight: 10 }} />
                   <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 150, minWidth: 0 }}>
-                    <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "900" }}>{item.label}</Text>
+                    <Text style={{ color: accent, fontSize: 13, lineHeight: 17, fontWeight: "700" }}>{item.label}</Text>
                     <Text style={{ color: "#111827", fontSize: 12, lineHeight: 17, fontWeight: "600" }}>{item.desc}</Text>
                   </View>
                   <View style={{ flexShrink: 1, backgroundColor: accent, borderRadius: 9, paddingHorizontal: 10, paddingVertical: 6, minWidth: 94, maxWidth: "100%", alignItems: "center" }}>
-                    <Text style={{ color: pillTextColor, fontSize: 13, fontWeight: "900" }}>{item.number}</Text>
+                    <Text style={{ color: pillTextColor, fontSize: 13, fontWeight: "700" }}>{item.number}</Text>
                   </View>
                 </Pressable>
               );
@@ -29581,7 +29581,7 @@ function RedressSection({
                   borderColor: checked ? "#059669" : "#374151", backgroundColor: checked ? "#059669" : "transparent",
                   alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1
                 }}>
-                  {checked && <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "900" }}>✓</Text>}
+                  {checked && <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>✓</Text>}
                 </View>
                 <Text style={{ color: checked ? "#059669" : "#446573", fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: checked ? "line-through" : "none" }}>{item}</Text>
               </Pressable>
@@ -29732,7 +29732,7 @@ function RedressSection({
         {/* ── MY CASE TRACKER (persistent, local-only) ── */}
         <View style={{ marginBottom: 14, borderRadius: 14, borderCurve: "continuous", backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#D9E5E2", padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>🗂 My case</Text>
+            <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>🗂 My case</Text>
             {activeCase && followUp && (
               <View style={{ backgroundColor: followUp.tone === "due" ? "rgba(239,68,68,0.12)" : followUp.tone === "soon" ? "rgba(251,191,36,0.18)" : "rgba(5,150,105,0.12)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
                 <Text style={{ color: followUp.tone === "due" ? "#B42318" : followUp.tone === "soon" ? "#8A5A00" : "#0D6B36", fontSize: 12, fontWeight: "800" }}>{followUp.label}</Text>
@@ -30158,7 +30158,7 @@ function RouteDecisionOverlay({
         }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#006B64", fontSize: 12, fontWeight: "900", letterSpacing: 1.6, textTransform: "uppercase" }}>
+              <Text style={{ color: "#006B64", fontSize: 12, fontWeight: "700", letterSpacing: 1.6, textTransform: "uppercase" }}>
                 Choose next step
               </Text>
               <Text style={{ color: "#123A63", fontSize: 20, fontWeight: "900", marginTop: 4 }}>
@@ -30182,7 +30182,7 @@ function RouteDecisionOverlay({
             borderColor: "rgba(15,23,42,0.08)"
           }}>
             {/* #298F7F was 3.3:1 on this card's background -- darkened. */}
-            <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+            <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
               Analysis
             </Text>
             <Text style={{ color: "#3A577D", fontSize: 14, lineHeight: 20 }}>
@@ -30411,7 +30411,7 @@ function InsightsSection({
                   <Text style={{ color: gradeColor, fontSize: 28, fontWeight: "900" }}>{grade}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Progress Report Card</Text>
+                  <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>Progress Report Card</Text>
                   <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800", marginTop: 2 }}>{gradeLabel}</Text>
                   <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>
                     {selectedIssueGuide.label} · {checkInStreak} day streak · {weekEntries.length}/7 this week
@@ -30435,7 +30435,7 @@ function InsightsSection({
                   <View key={item.label}>
                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
                       <Text style={{ color: "#111827", fontSize: 12, fontWeight: "800" }}>{item.label}</Text>
-                      <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{item.score}%</Text>
+                      <Text style={{ color: accent, fontSize: 12, fontWeight: "700" }}>{item.score}%</Text>
                     </View>
                     <View style={{ height: 7, backgroundColor: "rgba(36,56,74,0.12)", borderRadius: 4, overflow: "hidden" }}>
                       <View style={{ height: 7, width: `${item.score}%` as unknown as number, backgroundColor: accent, borderRadius: 4 }} />
@@ -30446,13 +30446,13 @@ function InsightsSection({
               {/* Insight + action */}
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, gap: 10 }}>
                 <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12 }}>
-                  <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>Report insight</Text>
+                  <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>Report insight</Text>
                   <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{patternCritique.summary}</Text>
                   <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, marginTop: 6 }}>Next focus: {patternCritique.next}</Text>
                 </View>
                 {visitReports.length > 0 && (
                   <View style={{ gap: 6 }}>
-                    <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8 }}>Latest session reports</Text>
+                    <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8 }}>Latest session reports</Text>
                     {visitReports.slice(0, 2).map((report) => (
                       <View key={report.id} style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12, borderLeftWidth: 3, borderLeftColor: gradeColor }}>
                         <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800" }}>
@@ -31140,7 +31140,7 @@ function SettingsSection({
         <View style={{ marginTop: 14 }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
             <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>Speaking speed</Text>
-            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "900" }}>
+            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700" }}>
               {Math.round(clampVoiceRate(voiceRate) * 100)}%
             </Text>
           </View>
@@ -31833,7 +31833,7 @@ function VedicDailyCard({
         <View pointerEvents="none" style={{ position: "absolute", right: -34, bottom: -48, width: 150, height: 150, borderRadius: 75, backgroundColor: "rgba(34,211,238,0.15)" }} />
         <View style={{ flexDirection: compact ? "column" : "row", gap: 14, alignItems: "stretch" }}>
           <View style={{ flex: 1, minHeight: 230, borderRadius: 20, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: "rgba(148,163,184,0.28)", padding: 12, transform: [{ perspective: 900 }, { rotateX: "2deg" }] }}>
-            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "900", letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 10 }}>
+            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700", letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 10 }}>
               Pristine 2D/3D lunar chart map
             </Text>
             <View style={{ alignSelf: "center", width: 190, height: 190, borderRadius: 95, borderWidth: 1, borderColor: "rgba(103,232,249,0.45)", backgroundColor: "#EAF6FA", alignItems: "center", justifyContent: "center", shadowColor: "#00A2B8", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 20 }}>
@@ -31841,15 +31841,15 @@ function VedicDailyCard({
               <View style={{ position: "absolute", width: 104, height: 104, borderRadius: 52, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)" }} />
               <Text style={{ fontSize: 34, lineHeight: 40 }}>{rashi.symbol}</Text>
               <Text style={{ color: "#325C86", fontSize: 16, fontWeight: "900", marginTop: 2 }}>{moonChart48Summary.average}/100</Text>
-              <Text style={{ color: "#263244", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Moon score</Text>
+              <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Moon score</Text>
             </View>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
               {lunarHousePreview.map((house) => {
                 const color = house.anchor ? moonChartVisualColor(house.anchor) : "#1F2937";
                 return (
                   <View key={`daily-house-${house.house}`} style={{ width: "23%" as unknown as number, minWidth: 42, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 5, backgroundColor: `${color}18`, borderWidth: 1, borderColor: `${color}55`, alignItems: "center" }}>
-                    <Text style={{ color, fontSize: 12, fontWeight: "900" }}>H{house.house}</Text>
-                    <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "900" }}>{house.avg || "—"}</Text>
+                    <Text style={{ color, fontSize: 12, fontWeight: "700" }}>H{house.house}</Text>
+                    <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "700" }}>{house.avg || "—"}</Text>
                   </View>
                 );
               })}
@@ -31857,12 +31857,12 @@ function VedicDailyCard({
           </View>
 
           <View style={{ flex: 1, gap: 8 }}>
-            <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Top lunar supports</Text>
+            <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Top lunar supports</Text>
             {moonChart48Summary.top.slice(0, 3).map((item, index) => (
               <View key={`daily-3d-${item.id}`} style={{ borderRadius: 16, padding: 12, backgroundColor: index === 0 ? "rgba(103,232,249,0.14)" : "rgba(255,255,255,0.045)", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}66`, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 6 + index * 2 }, shadowOpacity: 0.22, shadowRadius: 14, elevation: 8, transform: [{ perspective: 800 }, { rotateY: compact ? "0deg" : "-2deg" }] }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                  <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
-                  <Text style={{ color: moonChartVisualColor(item), fontSize: 13, fontWeight: "900" }}>{item.score}</Text>
+                  <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "700", flex: 1 }}>{item.label}</Text>
+                  <Text style={{ color: moonChartVisualColor(item), fontSize: 13, fontWeight: "700" }}>{item.score}</Text>
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 16, marginTop: 5 }}>{item.interpretation}</Text>
               </View>
@@ -31938,8 +31938,8 @@ function VedicDailyCard({
           <View key={item.id} style={{ borderRadius: 14, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}44`, padding: 11, gap: 6 }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <Text style={{ fontSize: 17 }}>{item.score >= 82 ? "🌟" : "🌙"}</Text>
-              <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
-              <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdict} · {item.score}</Text>
+              <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "700", flex: 1 }}>{item.label}</Text>
+              <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "700" }}>{item.verdict} · {item.score}</Text>
             </View>
             <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>Key insight: </Text>{item.interpretation}</Text>
             <Text style={{ color: "#0057B8", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>Reason: </Text>{item.scoreReason}</Text>
@@ -32152,10 +32152,10 @@ function BirthChartSection({
           hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
           style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0, opacity: pressed ? 0.7 : 1 }]}
         >
-          <Text style={{ color, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flexShrink: 1, minWidth: 0 }}>
+          <Text style={{ color, fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", flexShrink: 1, minWidth: 0 }}>
             {title}
           </Text>
-          <Text style={{ color, fontSize: 12, fontWeight: "900" }}>{open ? "▾" : "▸"}</Text>
+          <Text style={{ color, fontSize: 12, fontWeight: "700" }}>{open ? "▾" : "▸"}</Text>
         </Pressable>
         {trailing}
       </View>
@@ -32290,9 +32290,9 @@ function BirthChartSection({
                   }}
                 >
                   <Text style={{ fontSize: 12 }}>{sign.symbol}</Text>
-                  <Text style={{ color: "#111827", fontSize: 12, fontWeight: "900" }} numberOfLines={1}>{sign.en}</Text>
+                  <Text style={{ color: "#111827", fontSize: 12, fontWeight: "700" }} numberOfLines={1}>{sign.en}</Text>
                   {inhabitants.length > 0 && (
-                    <Text style={{ color: accent, fontSize: 12, fontWeight: "900", textAlign: "center", marginTop: 1 }} numberOfLines={2}>
+                    <Text style={{ color: accent, fontSize: 12, fontWeight: "700", textAlign: "center", marginTop: 1 }} numberOfLines={2}>
                       {visibleOccupants.join(" ")}{hiddenCount > 0 ? ` +${hiddenCount}` : ""}
                     </Text>
                   )}
@@ -32302,7 +32302,7 @@ function BirthChartSection({
           </View>
         ))}
         <View pointerEvents="none" style={{ position: "absolute", top: "25%", left: "25%", width: "50%", height: "50%", alignItems: "center", justifyContent: "center" }}>
-          <Text style={{ color: accent, fontSize: 12, fontWeight: "900", textAlign: "center" }}>{centerLabel}</Text>
+          <Text style={{ color: accent, fontSize: 12, fontWeight: "700", textAlign: "center" }}>{centerLabel}</Text>
         </View>
       </View>
     );
@@ -32337,7 +32337,7 @@ function BirthChartSection({
 
       {issueContext && (
         <View style={{ backgroundColor: "#E6E0F0", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)", gap: 5 }}>
-          <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
+          <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>
             Active chart question · {issueContext.issueLabel}
           </Text>
           <Text style={{ color: "#325C86", fontSize: 13, lineHeight: 19 }} numberOfLines={3}>{issueContext.issueText}</Text>
@@ -32360,7 +32360,7 @@ function BirthChartSection({
 
         {/* Date of birth — segmented DD / MM / YYYY */}
         <View style={{ gap: 8 }}>
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             Date of birth
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
@@ -32447,7 +32447,7 @@ function BirthChartSection({
 
         {/* Birth time — segmented HH : MM */}
         <View style={{ gap: 8 }}>
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             Birth time (24-hour)
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -32507,7 +32507,7 @@ function BirthChartSection({
 
         {/* Birth place */}
         <View style={{ gap: 6 }}>
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
             Place of birth
           </Text>
           <TextInput
@@ -32607,7 +32607,7 @@ function BirthChartSection({
             <>
               {rashiInfo && (
                 <View style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "rgba(154,52,18,0.15)" }}>
-                  <Text style={{ color: "#9A3412", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
+                  <Text style={{ color: "#9A3412", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
                     {chartBriefLang === "hi" ? "आपकी कुंडली की नींव" : "The foundation of your chart"}
                   </Text>
                   <Text style={{ color: "#3A2A1A", fontSize: 13, lineHeight: 20 }}>
@@ -32633,7 +32633,7 @@ function BirthChartSection({
                       ? (chartBriefLang === "hi" ? "भाव-वार पठन छुपाएँ" : "Hide house-by-house reading")
                       : (chartBriefLang === "hi" ? `भाव-वार पठन देखें (${housePlacementResult.houses.length} भाव)` : `Show house-by-house reading (${housePlacementResult.houses.length} houses)`)}
                   </Text>
-                  <Text style={{ color: "#9A3412", fontSize: 13, fontWeight: "900", width: 14, textAlign: "center" }}>{plainHousesOpen ? "▾" : "▸"}</Text>
+                  <Text style={{ color: "#9A3412", fontSize: 13, fontWeight: "700", width: 14, textAlign: "center" }}>{plainHousesOpen ? "▾" : "▸"}</Text>
                 </Pressable>
               )}
               {plainHousesOpen && housePlacementResult.houses.map((entry) => (
@@ -32660,7 +32660,7 @@ function BirthChartSection({
       {/* Analysis summary (shows after save) */}
       {hasExactBirthDetails && (
         <View style={{ backgroundColor: "#E1EEEC", borderRadius: 14, padding: 16, gap: 12, borderWidth: 1, borderColor: "rgba(99,222,208,0.25)" }}>
-          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>Your Vedic Birth Profile</Text>
+          <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>Your Vedic Birth Profile</Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             {[
               { label: "Date of Birth", value: profileDOB },
@@ -32680,7 +32680,7 @@ function BirthChartSection({
           </View>
           {lagnaInfo && (
             <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(99,222,208,0.2)" }}>
-              <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
+              <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
                 Lagna Analysis — {lagnaInfo.lagna.name} ({lagnaInfo.lagna.en})
               </Text>
               <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 20 }}>
@@ -32757,7 +32757,7 @@ function BirthChartSection({
                   </View>
                 </View>
                 <View style={{ backgroundColor: "rgba(192,132,252,0.08)", borderRadius: 10, padding: 10, borderWidth: 1, borderColor: "rgba(192,132,252,0.18)", marginBottom: 8 }}>
-                  <Text style={{ color: "#5700B8", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
+                  <Text style={{ color: "#5700B8", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
                     Current Antardasha
                   </Text>
                   <Text style={{ color: "#325C86", fontSize: 16, fontWeight: "900" }}>
@@ -32811,10 +32811,10 @@ function BirthChartSection({
                     hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                     style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0, opacity: pressed ? 0.7 : 1 }]}
                   >
-                    <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flexShrink: 1, minWidth: 0 }}>
+                    <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", flexShrink: 1, minWidth: 0 }}>
                       {isHi ? "🔮 अगले 15 वर्ष — दशा पूर्वानुमान" : "🔮 Next 15 Years — Dasha Forecast"}
                     </Text>
-                    <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "900" }}>{vedicPanelOpen("forecast15") ? "▾" : "▸"}</Text>
+                    <Text style={{ color: forecastColor, fontSize: 12, fontWeight: "700" }}>{vedicPanelOpen("forecast15") ? "▾" : "▸"}</Text>
                   </Pressable>
                   <View style={{ flexDirection: "row", backgroundColor: "rgba(192,132,252,0.12)", borderRadius: 999, padding: 2 }}>
                     <Pressable
@@ -32882,11 +32882,11 @@ function BirthChartSection({
                   return (
                     <View style={{ backgroundColor: "rgba(14,148,136,0.10)", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(14,148,136,0.35)" }}>
                       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6, marginBottom: 3 }}>
-                        <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>
+                        <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
                           {isHi ? "अभी आप यहाँ हैं" : "Where you are right now"}
                         </Text>
                         <View style={{ backgroundColor: verdictBg(cur.verdict), borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}>
-                          <Text style={{ color: verdictColor(cur.verdict), fontSize: 12, fontWeight: "900" }}>
+                          <Text style={{ color: verdictColor(cur.verdict), fontSize: 12, fontWeight: "700" }}>
                             {isHi ? verdictLabelHi(cur.verdict) : cur.verdict}
                           </Text>
                         </View>
@@ -32929,7 +32929,7 @@ function BirthChartSection({
                           )}
                         </Text>
                         <View style={{ backgroundColor: verdictBg(period.verdict), borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}>
-                          <Text style={{ color: verdictColor(period.verdict), fontSize: 12, fontWeight: "900" }}>
+                          <Text style={{ color: verdictColor(period.verdict), fontSize: 12, fontWeight: "700" }}>
                             {isHi ? verdictLabelHi(period.verdict) : period.verdict}
                           </Text>
                         </View>
@@ -32976,7 +32976,7 @@ function BirthChartSection({
                     { label: "Lord", value: janmaNakshatra.lord },
                   ].map((item) => (
                     <View key={item.label} style={{ backgroundColor: "#E1EEEC", borderRadius: 8, padding: 8, minWidth: 80 }}>
-                      <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "900", textTransform: "uppercase" }}>{item.label}</Text>
+                      <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase" }}>{item.label}</Text>
                       <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "800", marginTop: 2 }}>{item.value}</Text>
                     </View>
                   ))}
@@ -32989,7 +32989,7 @@ function BirthChartSection({
           {/* Cosmic Issue Guidance — connects current issue to Vedic reading */}
           {cosmicIssueGuidance && (
             <View style={{ backgroundColor: "#E6DEF2", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(126,111,214,0.3)" }}>
-              <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
+              <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
                 🪐 Cosmic guidance for {selectedIssueGuide.label}
               </Text>
               <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 20 }}>{cosmicIssueGuidance}</Text>
@@ -33012,7 +33012,7 @@ function BirthChartSection({
           <View pointerEvents="none" style={{ position: "absolute", right: -55, top: 80, width: 175, height: 175, borderRadius: 88, backgroundColor: "rgba(34,211,238,0.12)" }} />
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+              <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
                 🌙 Multi-dimensional Vedic Insight
               </Text>
               <Text style={{ color: "#325C86", fontSize: 20, fontWeight: "900", marginTop: 3 }}>
@@ -33027,7 +33027,7 @@ function BirthChartSection({
             </View>
             <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: "rgba(99,222,208,0.12)", borderWidth: 1, borderColor: "rgba(99,222,208,0.5)", alignItems: "center", justifyContent: "center", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 14, transform: [{ perspective: 900 }, { rotateZ: "-4deg" }] }}>
               <Text style={{ color: "#0E9488", fontSize: 24, fontWeight: "900" }}>MD</Text>
-              <Text style={{ color: "#00A8B8", fontSize: 12, fontWeight: "900", letterSpacing: 1 }}>INSIGHT</Text>
+              <Text style={{ color: "#00A8B8", fontSize: 12, fontWeight: "700", letterSpacing: 1 }}>INSIGHT</Text>
             </View>
           </View>
 
@@ -33068,13 +33068,13 @@ function BirthChartSection({
 
           <View style={{ flexDirection: isWide ? "row" : "column", gap: 12 }}>
             <View style={{ flex: 1.05, borderRadius: 20, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: "rgba(103,232,249,0.4)", padding: 12, transform: [{ perspective: 900 }, { rotateX: isWide ? "3deg" : "0deg" }] }}>
-              <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>2D/3D Moon-house visual map</Text>
+              <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>2D/3D Moon-house visual map</Text>
               <View style={{ alignSelf: "center", width: isWide ? 250 : 220, height: isWide ? 250 : 220, borderRadius: isWide ? 125 : 110, borderWidth: 1, borderColor: "rgba(103,232,249,0.5)", backgroundColor: "#EAF6FA", alignItems: "center", justifyContent: "center", shadowColor: "#00A2B8", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.3, shadowRadius: 24 }}>
                 <View style={{ position: "absolute", width: isWide ? 202 : 178, height: isWide ? 202 : 178, borderRadius: isWide ? 101 : 89, borderWidth: 1, borderColor: "rgba(196,181,253,0.28)" }} />
                 <View style={{ position: "absolute", width: isWide ? 152 : 132, height: isWide ? 152 : 132, borderRadius: isWide ? 76 : 66, borderWidth: 1, borderColor: "rgba(252,211,77,0.24)" }} />
                 <View style={{ position: "absolute", width: isWide ? 84 : 74, height: isWide ? 84 : 74, borderRadius: isWide ? 42 : 37, backgroundColor: "rgba(99,222,208,0.1)", borderWidth: 1, borderColor: "rgba(99,222,208,0.42)", alignItems: "center", justifyContent: "center" }}>
                   <Text style={{ fontSize: 28 }}>{rashiInfo.rashi.symbol}</Text>
-                  <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "900" }}>{rashiInfo.rashi.name}</Text>
+                  <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "700" }}>{rashiInfo.rashi.name}</Text>
                 </View>
                 {moonChartHouseSummary.map((house) => {
                   const color = house.anchor ? moonChartVisualColor(house.anchor) : "#1F2937";
@@ -33084,9 +33084,9 @@ function BirthChartSection({
                   const y = Math.sin(angle) * radius;
                   return (
                     <View key={`moon-house-orbit-${house.house}`} style={{ position: "absolute", left: "50%", top: "50%", width: 44, minHeight: 44, marginLeft: x - 22, marginTop: y - 22, borderRadius: 14, backgroundColor: `${color}1F`, borderWidth: 1, borderColor: `${color}66`, alignItems: "center", justifyContent: "center", shadowColor: color, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.28, shadowRadius: 8, transform: [{ perspective: 700 }, { rotateZ: `${house.house % 2 === 0 ? 3 : -3}deg` }] }}>
-                      <Text style={{ color, fontSize: 12, fontWeight: "900" }}>H{house.house}</Text>
-                      <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "900" }}>{house.average || "—"}</Text>
-                      {house.carefulCount > 0 && <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "900" }}>care</Text>}
+                      <Text style={{ color, fontSize: 12, fontWeight: "700" }}>H{house.house}</Text>
+                      <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "700" }}>{house.average || "—"}</Text>
+                      {house.carefulCount > 0 && <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "700" }}>care</Text>}
                     </View>
                   );
                 })}
@@ -33094,15 +33094,15 @@ function BirthChartSection({
             </View>
 
             <View style={{ flex: 0.95, gap: 8 }}>
-              <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Category strength board</Text>
+              <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Category strength board</Text>
               {moonChartCategorySummary.map((item) => {
                 const color = moonChartVisualColor(item.anchor);
                 return (
                   <View key={`category-${item.category}`} style={{ borderRadius: 14, padding: 10, backgroundColor: `${color}12`, borderWidth: 1, borderColor: `${color}44`, transform: [{ perspective: 800 }, { rotateY: isWide ? "-2deg" : "0deg" }] }}>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                      <Text style={{ color, fontSize: 12, fontWeight: "900", width: 34 }}>{item.average}</Text>
+                      <Text style={{ color, fontSize: 12, fontWeight: "700", width: 34 }}>{item.average}</Text>
                       <View style={{ flex: 1 }}>
-                        <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "900" }}>{moonChartCategoryLabel(item.category, chartBriefLang)}</Text>
+                        <Text style={{ color: "#325C86", fontSize: 12, fontWeight: "700" }}>{moonChartCategoryLabel(item.category, chartBriefLang)}</Text>
                         <Text style={{ color: "#263244", fontSize: 12, lineHeight: 16 }}>{item.anchor.label} · {item.anchor.verdictLabel}</Text>
                       </View>
                     </View>
@@ -33113,12 +33113,12 @@ function BirthChartSection({
           </View>
 
           <View style={{ backgroundColor: "#F1EFDF", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,211,77,0.35)" }}>
-            <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>{chartBriefLang === "hi" ? "सबसे प्रबल चंद्र-सहयोग · व्याख्या सहित" : "Strongest lunar supports · with explanation"}</Text>
+            <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>{chartBriefLang === "hi" ? "सबसे प्रबल चंद्र-सहयोग · व्याख्या सहित" : "Strongest lunar supports · with explanation"}</Text>
             {moonChart48Summary.top.map((item) => (
               <View key={`top-${item.id}`} style={{ borderRadius: 13, backgroundColor: "#FBFAF2", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}55`, padding: 10, gap: 5 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                  <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
-                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdictLabel} · {item.score}/100</Text>
+                  <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "700", flex: 1 }}>{item.label}</Text>
+                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "700" }}>{item.verdictLabel} · {item.score}/100</Text>
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{item.interpretation}</Text>
                 <Text style={{ color: "#0057B8", fontSize: 12, lineHeight: 16 }}>{chartBriefLang === "hi" ? "क्यों: " : "Why: "}{item.scoreReason}</Text>
@@ -33127,12 +33127,12 @@ function BirthChartSection({
           </View>
 
           <View style={{ backgroundColor: "#FEECEC", borderRadius: 16, padding: 12, gap: 10, borderWidth: 1, borderColor: "rgba(252,165,165,0.4)" }}>
-            <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>{chartBriefLang === "hi" ? "सावधानी बिंदु · व्यावहारिक उपाय" : "Care points · remedies made practical"}</Text>
+            <Text style={{ color: "#B80000", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>{chartBriefLang === "hi" ? "सावधानी बिंदु · व्यावहारिक उपाय" : "Care points · remedies made practical"}</Text>
             {moonChart48Summary.careful.map((item) => (
               <View key={`care-${item.id}`} style={{ gap: 6, borderRadius: 13, padding: 10, backgroundColor: "rgba(127,29,29,0.12)", borderWidth: 1, borderColor: "rgba(252,165,165,0.22)" }}>
-                <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "900" }}>{item.label} · {item.verdictLabel} · {item.score}/100</Text>
+                <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "700" }}>{item.label} · {item.verdictLabel} · {item.score}/100</Text>
                 <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{item.interpretation}</Text>
-                <Text style={{ color: "#0CAC62", fontSize: 12, fontWeight: "900" }}>{item.remedyTitle}</Text>
+                <Text style={{ color: "#0CAC62", fontSize: 12, fontWeight: "700" }}>{item.remedyTitle}</Text>
                 {item.remedySteps.map((step, stepIndex) => (
                   <Text key={`${item.id}-step-${stepIndex}`} style={{ color: "#07B15A", fontSize: 12, lineHeight: 17 }}>✓ {step}</Text>
                 ))}
@@ -33142,7 +33142,7 @@ function BirthChartSection({
 
           <View style={{ gap: 8 }}>
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-              <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", flexShrink: 1 }}>{chartBriefLang === "hi" ? "पूर्ण बहुआयामी गणना-विवरण" : "Complete multidimensional calculated trace"}</Text>
+              <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", flexShrink: 1 }}>{chartBriefLang === "hi" ? "पूर्ण बहुआयामी गणना-विवरण" : "Complete multidimensional calculated trace"}</Text>
               {/* Expand-all / collapse-all so a reader can open everything at
                   once or clear it back to the scannable list in one tap. */}
               <Pressable
@@ -33173,9 +33173,9 @@ function BirthChartSection({
                   onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); toggleMoonDim(item.id); }}
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, padding: 11, backgroundColor: pressed ? "#EAF1EF" : "transparent" })}
                 >
-                  <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
-                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "900" }}>{item.verdictLabel} · {item.score}</Text>
-                  <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "900", width: 14, textAlign: "center" }}>{expanded ? "▾" : "▸"}</Text>
+                  <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "700", flex: 1 }}>{item.label}</Text>
+                  <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "700" }}>{item.verdictLabel} · {item.score}</Text>
+                  <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "700", width: 14, textAlign: "center" }}>{expanded ? "▾" : "▸"}</Text>
                 </Pressable>
                 {expanded && (
                   <View style={{ paddingHorizontal: 11, paddingBottom: 11, gap: 5, borderTopWidth: 1, borderTopColor: `${moonChartVisualColor(item)}22`, paddingTop: 9 }}>
@@ -33202,10 +33202,10 @@ function BirthChartSection({
             onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setAdvancedVedicOpen((v) => !v); }}
           >
             <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
-              <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
+              <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
                 🕉️ Detailed Calculation Panel — D9 Navamsa · Yogas · Ashtakavarga · Shadbala
               </Text>
-              <Text style={{ color: "#5B21B6", fontSize: 13, fontWeight: "900", width: 16, textAlign: "center" }}>{advancedVedicOpen ? "▾" : "▸"}</Text>
+              <Text style={{ color: "#5B21B6", fontSize: 13, fontWeight: "700", width: 16, textAlign: "center" }}>{advancedVedicOpen ? "▾" : "▸"}</Text>
             </View>
             <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
               Built from a real navagraha ephemeris (all nine grahas, not just Sun and Moon) and{" "}
@@ -33220,7 +33220,7 @@ function BirthChartSection({
           {/* D1 Rashi chart wheel -- Lagna-anchored birth chart, distinct from
               the Moon-anchored radial map in the multidimensional engine above. */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 10 }}>
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>D1 Rashi Chart — Lagna and all 9 grahas</Text>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>D1 Rashi Chart — Lagna and all 9 grahas</Text>
             {renderVedicChartWheel(rashiWheelOccupants, "#6D28D9", "RASHI")}
             <Text style={{ color: "#1F2937", fontSize: 12, fontStyle: "italic", textAlign: "center" }}>
               South Indian style: signs are fixed to position (Aries, Taurus, Mithuna across the top, then clockwise). The shaded sign is your Lagna (Ascendant).
@@ -33229,9 +33229,9 @@ function BirthChartSection({
 
           {/* D9 Navamsa */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>D9 Navamsa Chart</Text>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>D9 Navamsa Chart</Text>
             {renderVedicChartWheel(navamsaWheelOccupants, "#B45309", "NAVAMSA")}
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>Rashi → Navamsa detail</Text>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>Rashi → Navamsa detail</Text>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
               {navamsaEntries.map((entry) => (
                 <View
@@ -33242,11 +33242,11 @@ function BirthChartSection({
                     borderWidth: 1, borderColor: entry.vargottama ? "rgba(217,119,6,0.4)" : "rgba(124,58,237,0.15)",
                   }}
                 >
-                  <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>{entry.label}</Text>
+                  <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "700" }}>{entry.label}</Text>
                   <Text style={{ color: "#25364D", fontSize: 12, marginTop: 2 }}>
                     {VEDIC_RASHIS[entry.rashiIndex].name} → {VEDIC_RASHIS[entry.navamsaIndex].name}
                   </Text>
-                  {entry.vargottama && <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "900", marginTop: 2 }}>★ Vargottama</Text>}
+                  {entry.vargottama && <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700", marginTop: 2 }}>★ Vargottama</Text>}
                 </View>
               ))}
             </View>
@@ -33256,13 +33256,13 @@ function BirthChartSection({
               nameHi/meaningHi fields detectClassicalYogas now attaches to
               every entry (see DetectedYoga type). */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
               {chartBriefLang === "hi" ? "पहचाने गए शास्त्रीय योग" : "Classical Yogas detected"}
             </Text>
             {detectedYogas.length > 0 ? (
               detectedYogas.map((yoga) => (
                 <View key={yoga.id} style={{ backgroundColor: "#FBFAF2", borderRadius: 10, padding: 10, borderWidth: 1, borderColor: "rgba(124,58,237,0.15)", gap: 3 }}>
-                  <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900" }}>{chartBriefLang === "hi" ? yoga.nameHi : yoga.name}</Text>
+                  <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "700" }}>{chartBriefLang === "hi" ? yoga.nameHi : yoga.name}</Text>
                   <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>{chartBriefLang === "hi" ? yoga.meaningHi : yoga.meaning}</Text>
                 </View>
               ))
@@ -33286,7 +33286,7 @@ function BirthChartSection({
               form used app-wide, not English, so they're left as-is in both
               languages -- only the surrounding explanatory prose switches. */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
               {chartBriefLang === "hi" ? "सर्वाष्टकवर्ग — प्रत्येक राशि में कुल बिंदु" : "Sarvashtakavarga — total bindus per sign"}
             </Text>
             {ashtakavargaResult ? (
@@ -33333,7 +33333,7 @@ function BirthChartSection({
               what "recalculating" them into real understanding looks like
               without inventing anything not already computed. */}
           <View style={{ backgroundColor: "#F3F1FA", borderRadius: 14, padding: 12, borderWidth: 1, borderColor: "rgba(124,58,237,0.2)", gap: 8 }}>
-            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "900", letterSpacing: 1, textTransform: "uppercase" }}>
+            <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
               {chartBriefLang === "hi" ? "षड्बल — ग्रह शक्ति (रूप)" : "Shadbala — planetary strength (Rupas)"}
             </Text>
             {shadbalaResult ? (
@@ -33360,7 +33360,7 @@ function BirthChartSection({
                           borderWidth: 1, borderColor: tierBorder,
                         }}
                       >
-                        <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>
+                        <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "700" }}>
                           {chartBriefLang === "hi" ? SHADBALA_PLANET_LABEL_HI[planet] : planet.charAt(0).toUpperCase() + planet.slice(1)}
                         </Text>
                         <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "900" }}>{s.totalRupas.toFixed(2)}</Text>
@@ -34816,7 +34816,7 @@ function OnboardingOverlay({
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
               <Text style={{ fontSize: 24 }}>👋</Text>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
                   Set up your profile
                 </Text>
                 <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800", marginTop: 2 }}>
@@ -34834,7 +34834,7 @@ function OnboardingOverlay({
                 { n: "3", label: "Birth details (optional)" },
               ].map((s) => (
                 <View key={s.n} style={{ flex: 1, backgroundColor: "rgba(56,189,248,0.1)", borderRadius: 10, padding: 8, borderWidth: 1, borderColor: "rgba(56,189,248,0.25)" }}>
-                  <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "900" }}>STEP {s.n}</Text>
+                  <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "700" }}>STEP {s.n}</Text>
                   <Text style={{ color: "#25364D", fontSize: 12, fontWeight: "700", marginTop: 2 }}>{s.label}</Text>
                 </View>
               ))}
@@ -36455,7 +36455,7 @@ function SupportDimensionLibraryPanel({
   return (
     <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#E1EEEC", borderRadius: 16, borderWidth: 1, borderColor: accentColor + "33", overflow: "hidden" }}>
       <View style={{ backgroundColor: accentColor + "14", paddingHorizontal: 14, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 1.2 }}>
+        <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
           {eyebrow} · multidimensional support
         </Text>
         <Text style={{ color: "#5B7A8A", fontSize: 12 }}>{issueGuide.label}</Text>
@@ -36488,7 +36488,7 @@ function SupportDimensionLibraryPanel({
                 </Text>
                 <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }}>{actionLabel}: {guide.firstAction}</Text>
               </View>
-              <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900", marginLeft: 6 }}>{isOpen ? "▾" : "▸"}</Text>
+              <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", marginLeft: 6 }}>{isOpen ? "▾" : "▸"}</Text>
             </Pressable>
             {isOpen ? (
               <View style={{ paddingHorizontal: 14, paddingBottom: 12, paddingTop: 2, backgroundColor: accentColor + "08" }}>
@@ -36496,12 +36496,12 @@ function SupportDimensionLibraryPanel({
                   <Text style={{ color: accentColor, fontSize: 12, fontWeight: "800" }}>{routeLabel(guide.route)}</Text>
                 </View>
                 <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 8 }}>{guide.context}</Text>
-                <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 4 }}>
+                <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 4 }}>
                   Path to resolution
                 </Text>
                 {guide.resolutionSteps.map((step, stepIndex) => (
                   <View key={`${guide.id}-step-${stepIndex}`} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 4, gap: 6 }}>
-                    <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900" }}>{stepIndex + 1}.</Text>
+                    <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700" }}>{stepIndex + 1}.</Text>
                     <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, flex: 1 }}>{step}</Text>
                   </View>
                 ))}
@@ -38035,7 +38035,7 @@ function CounselingChatModal({
           style={{ marginHorizontal: 20, marginTop: 12, borderRadius: 12, padding: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
         >
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>Scope and safety</Text>
+            <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "700" }}>Scope and safety</Text>
             <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "700" }}>{safetyNoticeExpanded ? "Hide ▲" : "Show ▼"}</Text>
           </View>
           {safetyNoticeExpanded && (
@@ -38048,7 +38048,7 @@ function CounselingChatModal({
         {/* Chat messages */}
         <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
           <View style={{ backgroundColor: "#FFFFFF", borderRadius: 18, borderCurve: "continuous", padding: 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
-            <Text style={{ color: "#0E9488", fontSize: 12, lineHeight: 16, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>Guided support room</Text>
+            <Text style={{ color: "#0E9488", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Guided support room</Text>
             <Text style={{ color: "#0D1F22", fontSize: 20, lineHeight: 25, fontWeight: "900", marginTop: 4 }}>What brings you here?</Text>
             <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginTop: 6 }}>
               Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies.
@@ -38131,7 +38131,7 @@ function CounselingChatModal({
                   alignItems: "center"
                 })}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "900" }}>Prepare next step now</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "700" }}>Prepare next step now</Text>
               </Pressable>
             </View>
           )}
@@ -38204,7 +38204,7 @@ function CounselingChatModal({
                   accessibilityLabel="Save counselling summary"
                   style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, borderWidth: 1, borderColor: "#0E9488", backgroundColor: pressed ? "#E1F3F0" : "#FFFFFF", paddingVertical: 12, paddingHorizontal: 12, alignItems: "center" })}
                 >
-                  <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Save summary</Text>
+                  <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>Save summary</Text>
                 </Pressable>
                 <Pressable
                   onPress={continueCounsellingLater}
@@ -38212,7 +38212,7 @@ function CounselingChatModal({
                   accessibilityLabel="Continue counselling later"
                   style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, backgroundColor: pressed ? "#DDEAE7" : "#EEF6F4", paddingVertical: 12, paddingHorizontal: 12, alignItems: "center" })}
                 >
-                  <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 17, fontWeight: "900" }}>Continue later</Text>
+                  <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>Continue later</Text>
                 </Pressable>
               </View>
               <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 12, marginBottom: 2 }}>

@@ -45,7 +45,11 @@ function mustNotMatch(pattern, message) {
   'color: "#111827", fontSize: 12',
   'color: "#1F3F35", fontSize: 12',
   'borderWidth: 1.5, borderColor: accent',
-  'fontSize: 13, fontWeight: "900"',
+  // Was fontWeight "900". The guarantee this marker exists for is that action
+  // labels are at least 13px and unambiguously bold on an accent background;
+  // 700 still satisfies both. The weight policy changed (small labels no
+  // longer use the heaviest weight), the legibility requirement did not.
+  'fontSize: 13, fontWeight: "700"',
   'minWidth: 104',
   'minWidth: 112',
   'backgroundColor: "#FFFFFF", borderRadius: 9',
@@ -256,6 +260,18 @@ assert(
     const fw = block.match(/fontWeight: "(\d+)"/);
     if (fs && fw && Number(fs[1]) <= 13 && Number(fw[1]) >= 900) shouting.push(`${name} (${fs[1]}px/${fw[1]})`);
   }
+  // Inline JSX styles are held to the same rule as the stylesheet -- 149 of
+  // them were setting 12-13px labels in the heaviest weight, which is where
+  // the remaining "Start counselling" / "Open calm" / "Continue" buttons were
+  // still shouting after the shared styles were fixed.
+  const inlineShouting = source
+    .slice(0, source.indexOf("const styles = StyleSheet.create({"))
+    .match(/fontSize: 1[23],[^{}]*?fontWeight: "900"/g) ?? [];
+  assert(
+    inlineShouting.length === 0,
+    `${inlineShouting.length} inline styles still set a 12-13px label at weight 900; small labels use 700`
+  );
+
   assert(
     shouting.length === 0,
     `small labels must not use weight 900 -- 700 is bold enough at 13px and under, and reserving the heaviest weight for titles is what gives a screen hierarchy: ${shouting.join(", ")}`
