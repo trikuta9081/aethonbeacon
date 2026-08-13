@@ -13842,8 +13842,6 @@ export default function App() {
   const [aiHelpProvider, setGuideReplyProvider] = useState<GuideReplyProvider>("local");
   // ── Personal guidance state ────────────────────────────────────────────────
   const [guidanceDailyBrief, setGuidanceDailyBrief] = useState<string | null>(null);
-  const [guidanceDailyBriefLoading, setGuidanceDailyBriefLoading] = useState(false);
-  const [guidanceJournalInsight, setGuidanceJournalInsight] = useState<string | null>(null);
   const [guidanceInsightText, setGuidanceInsightText] = useState<string | null>(null);
   const [guidanceInsightLoading, setGuidanceInsightLoading] = useState(false);
   const [guidanceBirthChartHoroscope, setGuidanceBirthChartHoroscope] = useState<string | null>(null);
@@ -13972,7 +13970,6 @@ export default function App() {
   // Session-only (not persisted) -- unlike featureNudgeDismissed above,
   // dismissing "you haven't opened X in a while" shouldn't silence it
   // forever, since which tab is stalest genuinely changes over time.
-  const [neglectedTabNudgeDismissed, setNeglectedTabNudgeDismissed] = useState(false);
   const [postCheckInSuggest, setPostCheckInSuggest] = useState<{
     icon: string; text: string; cta: string; tab: TabId;
   } | null>(null);
@@ -14607,7 +14604,6 @@ export default function App() {
         return typeof v === "string" ? v.trim().replace(/\/$/, "") : "";
       })();
       if (apiBase.length === 0) return;
-      setGuidanceDailyBriefLoading(true);
       try {
         const recent = [...entries].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 7);
         const avgScore = recent.length > 0 ? Math.round(recent.reduce((s, e) => s + e.score, 0) / recent.length) : null;
@@ -14630,8 +14626,6 @@ export default function App() {
         if (text.length > 0 && !cancelled) setGuidanceDailyBrief(text);
       } catch {
         // silently fall back to rule-based
-      } finally {
-        if (!cancelled) setGuidanceDailyBriefLoading(false);
       }
     }
     void fetchBrief();
@@ -17640,30 +17634,13 @@ export default function App() {
     // Auto-dismiss after 12 seconds
     setTimeout(() => setPostCheckInSuggest(null), 12000);
 
-    // ── Connected journal insight (async, non-blocking) ───────────────────────
-    // Gated on localOnly. This fires automatically whenever someone saves a
-    // note of 30+ characters -- no button, no prompt -- and it sent the entry
-    // in full. Someone who turned on "Local-only journal" had their whole
-    // diary leaving the device on every single check-in.
-    if (!localOnly && note.length >= 30 && verificationApiBaseUrl.length > 0) {
-      setGuidanceJournalInsight(null);
-      fetch(`${verificationApiBaseUrl}/guidance/journal`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: profileDisplayName || accessName || "there",
-          note,
-          issueLabel: selectedIssueGuide.label,
-          score: clarityScore
-        })
-      })
-        .then((r) => r.json().catch(() => null))
-        .then((payload) => {
-          const text = typeof payload?.text === "string" ? payload.text.trim() : "";
-          if (text.length > 0) setGuidanceJournalInsight(text);
-        })
-        .catch(() => undefined);
-    }
+    // The connected journal-insight round trip used to sit here. It POSTed the
+    // entry in full on every check-in of 30+ characters and stored the reply
+    // in guidanceJournalInsight -- which nothing ever read. Gating it on
+    // localOnly stopped the leak for people who had asked for privacy, but it
+    // left everyone else sending their whole journal entry in exchange for a
+    // value the app discarded. Removed rather than gated further: if a
+    // per-entry insight is wanted, it needs somewhere to appear first.
 
     if (route === "redress" || route === "urgent") {
       const redressRoute = findGuidedSupportRedressRoute(routeText);

@@ -253,7 +253,19 @@ for (const { endpoint, at } of guidanceFetches) {
     `${endpoint} sends journal text with no localOnly guard in code -- Settings promises "Data stays on this device"`
   );
 }
-assert(notesCarrying >= 2, `expected at least two journal-carrying guidance endpoints to be checked, saw ${notesCarrying}`);
+assert(notesCarrying >= 1, `expected at least one journal-carrying guidance endpoint to be checked, saw ${notesCarrying}`);
+
+// /guidance/journal is gone, not merely gated. It POSTed the whole entry on
+// every check-in and stored the reply somewhere nothing read. If it comes
+// back it needs a UI and a fresh decision about sending journal text at all.
+assert(
+  !codeOnly.includes("/guidance/journal"),
+  "the /guidance/journal round trip was removed because it sent the full entry and discarded the reply -- reinstating it needs somewhere for the insight to appear"
+);
+assert(
+  !codeOnly.includes("guidanceJournalInsight"),
+  "guidanceJournalInsight held the discarded reply; it should not return without a render site"
+);
 
 // The user should learn the trade-off before tapping, not after.
 assert(
