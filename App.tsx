@@ -16767,12 +16767,23 @@ export default function App() {
 
     hasOpenedStartupAccessPromptRef.current = true;
     setStartupAccessPromptAutoOpen(true);
-    setStartupAccessPromptDismissEnabled(false);
+    // Dismissible from the first frame. This panel used to hold the person
+    // for ten seconds -- dismissal was disabled on open and re-enabled by a
+    // timer, with the close button counting down "Exit 10s" and the header
+    // reading "Startup prompt - 10s left".
+    //
+    // It is the first thing a new user sees, and it physically would not let
+    // them leave. Apple's HIG is explicit that a modal must always offer a
+    // way out; no first-party app on any of the platforms this is measured
+    // against traps someone on launch. Ten seconds of a disabled close button
+    // is also a very efficient way to earn an immediate uninstall from
+    // somebody who opened a mental-health app while in distress.
+    //
+    // The prompt still opens, and still explains why verification matters --
+    // it just asks rather than detains.
+    setStartupAccessPromptDismissEnabled(true);
     setShowAccessVerificationSection(true);
     setShowAccessPanel(true);
-    startupAccessPromptUnlockTimerRef.current = setTimeout(() => {
-      setStartupAccessPromptDismissEnabled(true);
-    }, 10000);
   }, [
     hasLoaded,
     onboardingCompleted,
@@ -42438,16 +42449,25 @@ const styles = StyleSheet.create({
 
 
 
+  // Sits directly beside topStatusChip as a matched pair -- both are
+  // flexBasis: 0 siblings in topBeaconSecondaryRow, so they always render
+  // side by side at equal width. Every dimension below was different from its
+  // twin: 34pt tall against 48, a 9pt radius against 14, tighter padding, a
+  // 12pt value against 14, and content pinned flex-end so one chip read
+  // left-aligned and the other right-aligned. Two adjacent controls that are
+  // obviously a set, disagreeing on every property, is the clearest possible
+  // tell that a screen was assembled rather than designed. Matched to
+  // topStatusChip; only the accent colours differ, and those carry meaning.
   topLanguageChip: {
-    maxWidth: 160,
-    minHeight: 34,
-    borderRadius: 9,
+    maxWidth: 220,
+    minHeight: 48,
+    borderRadius: 14,
+    borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(246, 212, 107, 0.30)",
-    backgroundColor: "rgba(255, 252, 247, 0.10)",
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    alignItems: "flex-end",
+    backgroundColor: "#FFFCF7",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     justifyContent: "center",
     gap: 1
   },
@@ -42473,8 +42493,8 @@ const styles = StyleSheet.create({
   },
   topLanguageChipValue: {
     color: "#0D1F22",
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 14,
+    lineHeight: 18,
     fontWeight: "900"
   },
   topLanguageChipValueCompact: {

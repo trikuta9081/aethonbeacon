@@ -273,4 +273,24 @@ assert(
   "the pattern-reading card must explain up front why it is unavailable in local-only mode, rather than failing silently on tap"
 );
 
+// ── The startup prompt must never trap anyone ────────────────────────────────
+// It auto-opens on launch whenever the profile is incomplete, and it used to
+// disable its own close button for ten seconds -- counting down "Exit 10s"
+// while the header read "Startup prompt - 10s left". A modal with no way out
+// is an Apple HIG violation outright, and this is a mental-health app: the
+// first screen a distressed person meets must not hold them.
+{
+  const codeOnly = source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^[ \t]*\/\/.*$/gm, "");
+  assert(
+    !/setStartupAccessPromptDismissEnabled\(false\)/.test(codeOnly),
+    "the startup access prompt must never disable its own dismissal -- a launch modal has to be closable from the first frame"
+  );
+  assert(
+    !/setStartupAccessPromptDismissEnabled\(true\)[\s\S]{0,80}\}, \d+\)/.test(codeOnly),
+    "dismissal of the startup prompt must not be gated behind a timer"
+  );
+}
+
 console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");
