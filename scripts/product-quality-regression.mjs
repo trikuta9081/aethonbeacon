@@ -231,4 +231,34 @@ assert(
   "the dead smartBrief memo must not come back: it computed a greeting card that was never mounted, on every render"
 );
 
+// Every path that ships journal text off the device must sit behind the same
+// switch. Scanned with comments stripped, so a comment merely *mentioning*
+// localOnly cannot satisfy the check -- only real guard code can. Structural
+// rather than a fixed list, so an endpoint added later is caught too.
+const codeOnly = source
+  .replace(/\/\*[\s\S]*?\*\//g, "")
+  .replace(/^[ \t]*\/\/.*$/gm, "");
+
+const guidanceFetches = [...codeOnly.matchAll(/fetch\(`\$\{[A-Za-z]+\}(\/guidance\/[a-z-]+)`/g)]
+  .map((m) => ({ endpoint: m[1], at: m.index ?? 0 }));
+assert(guidanceFetches.length >= 3, `expected to find the connected guidance endpoints, found ${guidanceFetches.length}`);
+
+let notesCarrying = 0;
+for (const { endpoint, at } of guidanceFetches) {
+  const window = codeOnly.slice(Math.max(0, at - 2200), at + 1400);
+  if (!/\bnote\b|recentNotes|lastNote/.test(window)) continue;
+  notesCarrying += 1;
+  assert(
+    /if \(localOnly\)|!localOnly &&/.test(window),
+    `${endpoint} sends journal text with no localOnly guard in code -- Settings promises "Data stays on this device"`
+  );
+}
+assert(notesCarrying >= 2, `expected at least two journal-carrying guidance endpoints to be checked, saw ${notesCarrying}`);
+
+// The user should learn the trade-off before tapping, not after.
+assert(
+  source.includes("Local-only journal is on, so this reading is unavailable"),
+  "the pattern-reading card must explain up front why it is unavailable in local-only mode, rather than failing silently on tap"
+);
+
 console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");

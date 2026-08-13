@@ -17545,7 +17545,11 @@ export default function App() {
     setTimeout(() => setPostCheckInSuggest(null), 12000);
 
     // ── Connected journal insight (async, non-blocking) ───────────────────────
-    if (note.length >= 30 && verificationApiBaseUrl.length > 0) {
+    // Gated on localOnly. This fires automatically whenever someone saves a
+    // note of 30+ characters -- no button, no prompt -- and it sent the entry
+    // in full. Someone who turned on "Local-only journal" had their whole
+    // diary leaving the device on every single check-in.
+    if (!localOnly && note.length >= 30 && verificationApiBaseUrl.length > 0) {
       setGuidanceJournalInsight(null);
       fetch(`${verificationApiBaseUrl}/guidance/journal`, {
         method: "POST",
@@ -21997,8 +22001,18 @@ function isTrustedExternalUrl(url: string) {
                 recentNotes={entries.slice(0, 5).map((e) => e.note.slice(0, 80))}
                 insightText={guidanceInsightText}
                 loading={guidanceInsightLoading}
+                localOnly={localOnly}
                 onFetch={() => {
                   if (verificationApiBaseUrl.length === 0 || guidanceInsightLoading) return;
+                  // This one is a deliberate button press, but it still ships
+                  // the last five journal notes. Say so plainly rather than
+                  // either sending them anyway or failing silently.
+                  if (localOnly) {
+                    setGuidanceInsightText(
+                      "Local-only journal is on, so your notes stay on this device and are not sent for a written insight. Turn it off in Settings if you would like one."
+                    );
+                    return;
+                  }
                   setGuidanceInsightLoading(true);
                   const topToneLabel = entries.length > 0 ? entries[0].toneLabel : "";
                   fetch(`${verificationApiBaseUrl}/guidance/insights`, {
@@ -39356,6 +39370,7 @@ function GuidanceInsightsCard({
   recentNotes,
   insightText,
   loading,
+  localOnly,
   onFetch,
 }: {
   apiBase: string;
@@ -39369,6 +39384,7 @@ function GuidanceInsightsCard({
   recentNotes: string[];
   insightText: string | null;
   loading: boolean;
+  localOnly: boolean;
   onFetch: () => void;
 }) {
   if (apiBase.length === 0) return null;
@@ -39404,11 +39420,19 @@ function GuidanceInsightsCard({
         <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 21 }}>{insightText}</Text>
       ) : (
         <View>
-          <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 19, marginBottom: 14 }}>
+          <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 19, marginBottom: localOnly ? 8 : 14 }}>
             {entryCount >= 3
               ? `You have ${entryCount} check-ins to analyse. Get a personalised reading of your emotional patterns.`
               : `Add a few more check-ins and come back for your pattern reading.`}
           </Text>
+          {/* Said before the tap, not after it. A written reading needs the
+              notes to leave the device, which is exactly what the person
+              switched off -- so the trade-off belongs next to the button. */}
+          {localOnly && entryCount >= 3 && (
+            <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 18, marginBottom: 14 }}>
+              🔒 Local-only journal is on, so this reading is unavailable — it needs your recent notes to leave the device. You can turn it off in Settings.
+            </Text>
+          )}
           {entryCount >= 3 && (
             <Pressable
               onPress={onFetch}
