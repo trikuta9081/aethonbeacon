@@ -80,7 +80,7 @@ function mustNotMatch(pattern, message) {
   'const APP_TEXT_WRAP_GUARD = {',
   'function Text({ style, ...props }: TextProps)',
   'allowFontScaling: true',
-  'maxFontSizeMultiplier: 1.35',
+  'maxFontSizeMultiplier: MAX_FONT_SCALE',
   `topTabLabel: {
     minWidth: 0,
     flexShrink: 1,`,
@@ -288,6 +288,21 @@ assert(
     shouting.length === 0,
     `small labels must not use weight 900 -- 700 is bold enough at 13px and under, and reserving the heaviest weight for titles is what gives a screen hierarchy: ${shouting.join(", ")}`
   );
+}
+
+// ── Dynamic Type ceiling stays inside the measured range ─────────────────────
+// The cap was 1.35 and pinned here as a literal. Measuring the deployed build
+// at 1.35x / 2x / 3x showed nothing hard-clipped or escaping its parent until
+// 3x, so 1.35 was denying people text the layout handles fine -- someone who
+// enables Larger Accessibility Sizes because they need it was getting a third
+// of it. A literal is the wrong thing to guard anyway: what matters is that a
+// cap exists and sits inside the range the evidence supports.
+{
+  const m = source.match(/const MAX_FONT_SCALE = ([0-9.]+);/);
+  assert(m, "a MAX_FONT_SCALE constant must exist -- uncapped Dynamic Type will break the layout at accessibility sizes");
+  const scale = Number(m[1]);
+  assert(scale >= 1.5, `MAX_FONT_SCALE is ${scale}; below 1.5 needlessly denies accessibility text the layout can take (measured clean to 2x)`);
+  assert(scale <= 2.0, `MAX_FONT_SCALE is ${scale}; 3x was measured to clip a badge and push "Pending verification" outside its container`);
 }
 
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');

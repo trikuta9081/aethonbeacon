@@ -249,16 +249,37 @@ function Text({ style, ...props }: TextProps) {
 const TextWithDefaults = RNText as unknown as { defaultProps?: Record<string, unknown> };
 const TextInputWithDefaults = TextInput as unknown as { defaultProps?: Record<string, unknown> };
 
+// Dynamic Type ceiling. This was 1.35, which is well under what the layout
+// can actually take. Measured on the deployed build by scaling every rendered
+// text node and looking for real failures rather than assuming:
+//
+//   1.35x   nothing clipped, nothing escaped its parent
+//   2.0x    nothing clipped, nothing escaped -- 8 nav labels ellipsised,
+//           which is numberOfLines={1} degrading correctly, not breaking
+//   3.0x    first real damage: a badge letter cut off, "Pending verification"
+//           escaping its container
+//
+// So the cap was denying people text the layout would have handled fine.
+// Someone who turns on Larger Accessibility Sizes because they need it was
+// getting a third of what they asked for, for no structural reason.
+//
+// Raised to 1.8 rather than the 2.0 the evidence supports: those numbers come
+// from a 792px-wide render, and the phone layout has far less horizontal room,
+// so labels will ellipsise earlier there. 1.8 takes most of the available
+// headroom while leaving margin for the narrower case I could not measure.
+// If the phone build holds at 1.8, this can go to 2.0.
+const MAX_FONT_SCALE = 1.8;
+
 TextWithDefaults.defaultProps = {
   ...(TextWithDefaults.defaultProps ?? {}),
   allowFontScaling: true,
-  maxFontSizeMultiplier: 1.35
+  maxFontSizeMultiplier: MAX_FONT_SCALE
 };
 
 TextInputWithDefaults.defaultProps = {
   ...(TextInputWithDefaults.defaultProps ?? {}),
   allowFontScaling: true,
-  maxFontSizeMultiplier: 1.35
+  maxFontSizeMultiplier: MAX_FONT_SCALE
 };
 
 type Tone = {
