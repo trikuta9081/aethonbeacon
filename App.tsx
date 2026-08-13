@@ -12,6 +12,7 @@ import {
   Image,
   ImageBackground,
   KeyboardAvoidingView,
+  LayoutAnimation,
   Linking,
   Keyboard,
   Platform,
@@ -24,6 +25,7 @@ import {
   Switch,
   Text as RNText,
   type TextProps,
+  UIManager,
   TextInput,
   Share,
   useColorScheme,
@@ -107,6 +109,43 @@ function useReducedMotion(): boolean {
     return () => { mounted = false; sub?.remove?.(); };
   }, []);
   return reduced;
+}
+
+// ── Disclosure motion ───────────────────────────────────────────────────────
+// Every expand/collapse in the app snapped instantly: panels appeared and
+// vanished between frames, which is the single clearest tell between this and
+// a first-party Apple or Samsung app, where disclosure is always a movement
+// you can follow. LayoutAnimation gives that for free on the next layout pass,
+// but on Android's old architecture it has to be switched on explicitly.
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+// Read once per call rather than through the useReducedMotion hook, because
+// this is invoked from plain event handlers, not from render. Cached because
+// the OS setting changes rarely and an await here would land the animation a
+// frame late -- after the state update it is supposed to describe.
+let _aethonReduceMotion = false;
+AccessibilityInfo.isReduceMotionEnabled?.()
+  .then((v) => { _aethonReduceMotion = !!v; })
+  .catch(() => {});
+AccessibilityInfo.addEventListener?.("reduceMotionChanged", (v: boolean) => {
+  _aethonReduceMotion = !!v;
+});
+
+// Call immediately BEFORE the setState that changes layout.
+// 220ms on an ease-out curve: long enough to read as movement, short enough
+// that a person opening four panels in a row never waits on it. Opacity is
+// animated on entry/exit so content fades in rather than popping, while
+// height/position eases -- the same shape as a UIKit disclosure.
+function animateDisclosure(): void {
+  if (_aethonReduceMotion) return;
+  LayoutAnimation.configureNext({
+    duration: 220,
+    create: { type: LayoutAnimation.Types.easeOut, property: LayoutAnimation.Properties.opacity },
+    update: { type: LayoutAnimation.Types.easeInEaseOut },
+    delete: { type: LayoutAnimation.Types.easeIn, property: LayoutAnimation.Properties.opacity }
+  });
 }
 
 function Text({ style, ...props }: TextProps) {
@@ -20879,7 +20918,7 @@ function isTrustedExternalUrl(url: string) {
                           <Text
                             style={{
                               color: COLORS.textOnDark,
-                              fontSize: 27,
+                              fontSize: 28,
                               fontWeight: fontsLoaded ? "400" : "900",
                               fontFamily: fontsLoaded ? "PlayfairDisplay_700Bold" : undefined,
                               letterSpacing: -0.5
@@ -20899,7 +20938,7 @@ function isTrustedExternalUrl(url: string) {
                             alignItems: "center", justifyContent: "center",
                             shadowColor: scoreColor, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.28, shadowRadius: 10, elevation: 6
                           }}>
-                            <Text style={{ color: scoreColor, fontSize: 19, fontWeight: "900", lineHeight: 23 }}>{clarityScore}</Text>
+                            <Text style={{ color: scoreColor, fontSize: 20, fontWeight: "900", lineHeight: 23 }}>{clarityScore}</Text>
                             <Text style={{ color: scoreColor, fontSize: 12, fontWeight: "900", letterSpacing: 0.5, opacity: 0.8 }}>/ 100</Text>
                           </View>
                           <Text style={{ color: scoreColor, fontSize: 12, fontWeight: "900", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 3 }}>{scoreLabel}</Text>
@@ -21218,7 +21257,7 @@ function isTrustedExternalUrl(url: string) {
                     borderWidth: 1, borderColor: rec.color + "45", padding: 14
                   }}>
                     <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
-                      <Text style={{ fontSize: 30 }}>{rec.emoji}</Text>
+                      <Text style={{ fontSize: 28 }}>{rec.emoji}</Text>
                       <View style={{ flex: 1 }}>
                         <Text style={{ color: rec.color, fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
                           Practice for {selectedIssueGuide.label}
@@ -24239,7 +24278,7 @@ function ToneLibrarySection({
         <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "900", letterSpacing: 1.1, textTransform: "uppercase" }}>
           Calm for {selectedIssueGuide.label}
         </Text>
-        <Text style={{ color: "#0D1F22", fontSize: 19, lineHeight: 24, fontWeight: "900" }}>
+        <Text style={{ color: "#0D1F22", fontSize: 20, lineHeight: 24, fontWeight: "900" }}>
           Begin with one recommended session.
         </Text>
         <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700" }}>
@@ -24555,7 +24594,7 @@ function ToneLibrarySection({
                   accessibilityRole="button"
                   accessibilityLabel={`${cat.label} category`}
                   accessibilityState={{ expanded: isOpen }}
-                  onPress={() => { void Haptics.selectionAsync(); setExpandedCategory(isOpen ? null : cat.id); }}
+                  onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setExpandedCategory(isOpen ? null : cat.id); }}
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: hasActive ? cat.color + "12" : pressed ? "#E4EEEC" : "#EFF6F5", paddingHorizontal: 14, paddingVertical: 12 })}
                 >
                   <View style={{ flex: 1 }}>
@@ -25320,7 +25359,7 @@ function GuidedSupportSection({
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: showHistory }}
-            onPress={() => setShowHistory((value) => !value)}
+            onPress={() => { animateDisclosure(); setShowHistory((value) => !value); }}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
             <Text style={styles.helpButtonSecondaryLabel}>
@@ -27797,7 +27836,7 @@ function IssueGuideSection({
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: showAllIssues }}
-            onPress={() => setShowAllIssues((value) => !value)}
+            onPress={() => { animateDisclosure(); setShowAllIssues((value) => !value); }}
             style={({ pressed }) => [styles.issueSubtleButton, pressed && styles.pressed]}
           >
             <Text style={styles.issueSubtleButtonLabel}>
@@ -27953,7 +27992,7 @@ function IssueGuideSection({
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: showFullPathDetails }}
-            onPress={() => setShowFullPathDetails((value) => !value)}
+            onPress={() => { animateDisclosure(); setShowFullPathDetails((value) => !value); }}
             style={({ pressed }) => [styles.issueSubtleButton, pressed && styles.pressed]}
           >
             <Text style={styles.issueSubtleButtonLabel}>{showFullPathDetails ? "Hide details" : "View full reasoning"}</Text>
@@ -28158,7 +28197,7 @@ function FreeLegalAidCard({
     }}>
       <Pressable
         accessibilityRole="button"
-        onPress={() => setExpanded((v) => !v)}
+        onPress={() => { animateDisclosure(); setExpanded((v) => !v); }}
         style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.85 : 1 }]}
       >
         <View style={{ flex: 1 }}>
@@ -29080,6 +29119,7 @@ function RedressSection({
           accessibilityLabel={`${showEmergencyDirectory ? "Hide" : "Show"} additional emergency contacts and official directories`}
           onPress={() => {
             void Haptics.selectionAsync();
+            animateDisclosure();
             setShowEmergencyDirectory((value) => !value);
           }}
           style={({ pressed }) => ({
@@ -29188,6 +29228,7 @@ function RedressSection({
             accessibilityLabel={`Your situation: ${selectedRedressRoute.label}. Tap to choose a different situation.`}
             onPress={() => {
               void Haptics.selectionAsync();
+              animateDisclosure();
               setShowRouteChooser(true);
             }}
             style={({ pressed }) => [{
@@ -29230,6 +29271,7 @@ function RedressSection({
                 accessibilityState={{ selected: isSelected }}
                 onPress={() => {
                   void Haptics.selectionAsync();
+                  animateDisclosure();
                   setRedressRouteId(route.id);
                   // Collapse straight to this route's guidance instead of
                   // leaving the person at the top of the list they just used.
@@ -29467,7 +29509,7 @@ function RedressSection({
           <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(251,191,36,0.2)", overflow: "hidden" }}>
             <Pressable
               accessibilityRole="button"
-              onPress={() => setShowScript((v) => !v)}
+              onPress={() => { animateDisclosure(); setShowScript((v) => !v); }}
               style={({ pressed }) => [{ paddingHorizontal: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between", opacity: pressed ? 0.8 : 1 }]}
             >
               <Text style={{ color: "#B45309", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>💬 What to say at the first office</Text>
@@ -29609,7 +29651,7 @@ function RedressSection({
           </View>
           {!activeCase ? (
             <>
-              <Text style={{ color: "#446573", fontSize: 12.5, lineHeight: 18, marginTop: 6, marginBottom: 10 }}>
+              <Text style={{ color: "#446573", fontSize: 13, lineHeight: 18, marginTop: 6, marginBottom: 10 }}>
                 Track this complaint in one place — your reference number, who you filed it with, and when to follow up. Saved on this device only.
               </Text>
               <Pressable
@@ -31617,7 +31659,7 @@ function LanguageSection({
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ selected: showFullLanguages }}
-            onPress={() => setShowFullLanguages((value) => !value)}
+            onPress={() => { animateDisclosure(); setShowFullLanguages((value) => !value); }}
             style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
           >
             <Text style={styles.homeOverviewButtonLabel}>
@@ -32091,7 +32133,7 @@ function BirthChartSection({
           accessibilityRole="button"
           accessibilityState={{ expanded: open }}
           accessibilityLabel={`${title}. ${open ? "Tap to collapse" : "Tap to expand"}`}
-          onPress={() => { void Haptics.selectionAsync(); toggleVedicPanel(id); }}
+          onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); toggleVedicPanel(id); }}
           hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
           style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0, opacity: pressed ? 0.7 : 1 }]}
         >
@@ -32568,7 +32610,7 @@ function BirthChartSection({
                   accessibilityRole="button"
                   accessibilityState={{ expanded: plainHousesOpen }}
                   accessibilityLabel={`House-by-house reading, ${housePlacementResult.houses.length} houses. ${plainHousesOpen ? "Tap to collapse" : "Tap to expand"}`}
-                  onPress={() => { void Haptics.selectionAsync(); setPlainHousesOpen((v) => !v); }}
+                  onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setPlainHousesOpen((v) => !v); }}
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, paddingHorizontal: 12, paddingVertical: 9, borderRadius: 10, backgroundColor: pressed ? "#F3E4D8" : "#FBEFE3", borderWidth: 1, borderColor: "rgba(154,52,18,0.2)" })}
                 >
                   <Text style={{ color: "#9A3412", fontSize: 12, fontWeight: "800", flex: 1 }}>
@@ -32750,7 +32792,7 @@ function BirthChartSection({
                     accessibilityRole="button"
                     accessibilityState={{ expanded: vedicPanelOpen("forecast15") }}
                     accessibilityLabel={`${isHi ? "अगले 15 वर्ष — दशा पूर्वानुमान" : "Next 15 Years — Dasha Forecast"}. ${vedicPanelOpen("forecast15") ? "Tap to collapse" : "Tap to expand"}`}
-                    onPress={() => { void Haptics.selectionAsync(); toggleVedicPanel("forecast15"); }}
+                    onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); toggleVedicPanel("forecast15"); }}
                     hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                     style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0, opacity: pressed ? 0.7 : 1 }]}
                   >
@@ -32781,7 +32823,7 @@ function BirthChartSection({
                   </View>
                 </View>
                 {vedicPanelOpen("forecast15") && (<>
-                <Text style={{ color: "#263244", fontSize: 12.5, lineHeight: 18 }}>
+                <Text style={{ color: "#263244", fontSize: 13, lineHeight: 18 }}>
                   {isHi
                     ? "यह समयरेखा आपकी विंशोत्तरी दशा के अगले महादशा/अंतर्दशा चरणों को दिखाती है, ताकि आप समझ सकें कि किस समय क्या हो रहा है और क्यों — साथ ही कठिन दौर के लिए व्यावहारिक उपाय भी।"
                     : "This timeline walks your Vimshottari Mahadasha/Antardasha forward, period by period, so you can see what's shaping each stretch of time and why — with a practical remedy for the tougher stretches."}
@@ -32834,7 +32876,7 @@ function BirthChartSection({
                           </Text>
                         </View>
                       </View>
-                      <Text style={{ color: "#0D1F22", fontSize: 13.5, fontWeight: "800" }}>
+                      <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>
                         {yearSpan(cur)} · {isHi ? (DASHA_PLANET_HI[cur.mahadasha] ?? cur.mahadasha) : cur.mahadasha} / {isHi ? (DASHA_PLANET_HI[cur.antardasha] ?? cur.antardasha) : cur.antardasha}
                       </Text>
                       <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 3 }}>
@@ -32864,7 +32906,7 @@ function BirthChartSection({
                       }}
                     >
                       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
-                        <Text style={{ color: "#325C86", fontSize: 13.5, fontWeight: "900" }}>
+                        <Text style={{ color: "#325C86", fontSize: 14, fontWeight: "900" }}>
                           {period.startYear === period.endYear ? `${period.startYear}` : `${period.startYear}–${period.endYear}`}
                           <Text style={{ color: "#5C00B8" }}>  {mahaLabel} / {antarLabel}</Text>
                           {period.isCurrent && (
@@ -32958,7 +33000,7 @@ function BirthChartSection({
               <Text style={{ color: "#0E9488", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
                 🌙 Multi-dimensional Vedic Insight
               </Text>
-              <Text style={{ color: "#325C86", fontSize: 19, fontWeight: "900", marginTop: 3 }}>
+              <Text style={{ color: "#325C86", fontSize: 20, fontWeight: "900", marginTop: 3 }}>
                 Explainable lunar score {moonChart48Summary.average}/100
               </Text>
               <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
@@ -33094,6 +33136,7 @@ function BirthChartSection({
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 onPress={() => {
                   void Haptics.selectionAsync();
+                  animateDisclosure();
                   setExpandedMoonDims(allMoonDimsExpanded ? new Set() : new Set(moonChartInsightReadings.map((r) => r.id)));
                 }}
                 style={({ pressed }) => ({ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: pressed ? "#D4E7E4" : "#E4EFEC", borderWidth: 1, borderColor: "rgba(14,148,136,0.25)" })}
@@ -33112,7 +33155,7 @@ function BirthChartSection({
                   accessibilityRole="button"
                   accessibilityState={{ expanded }}
                   accessibilityLabel={`${item.label}, ${item.verdictLabel}, ${item.score} out of 100. ${expanded ? "Tap to collapse" : "Tap to expand"}`}
-                  onPress={() => { void Haptics.selectionAsync(); toggleMoonDim(item.id); }}
+                  onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); toggleMoonDim(item.id); }}
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, padding: 11, backgroundColor: pressed ? "#EAF1EF" : "transparent" })}
                 >
                   <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "900", flex: 1 }}>{item.label}</Text>
@@ -33141,7 +33184,7 @@ function BirthChartSection({
             accessibilityRole="button"
             accessibilityState={{ expanded: advancedVedicOpen }}
             accessibilityLabel={`Detailed calculation panel. ${advancedVedicOpen ? "Tap to collapse" : "Tap to expand"}`}
-            onPress={() => { void Haptics.selectionAsync(); setAdvancedVedicOpen((v) => !v); }}
+            onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setAdvancedVedicOpen((v) => !v); }}
           >
             <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
               <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
@@ -33254,7 +33297,7 @@ function BirthChartSection({
                     ? `सभी 12 राशियों में कुल ${ashtakavargaResult.sarvaTotal} बिंदु (शास्त्रीय नियम: सदैव 337)। 30+ बिंदु = उस राशि से गोचर के लिए बहुत मजबूत; 25 से कम = कमजोर।`
                     : `Total ${ashtakavargaResult.sarvaTotal} bindus across all 12 signs (classical invariant: always 337). 30+ bindus = very strong for transits through that sign; below 25 = weaker.`}
                 </Text>
-                <Text style={{ color: "#1F2937", fontSize: 12.5, lineHeight: 18, fontWeight: "600" }}>
+                <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 18, fontWeight: "600" }}>
                   {buildSarvashtakavargaNarrative(ashtakavargaResult.sarva, chartBriefLang)}
                 </Text>
               </>
@@ -33280,7 +33323,7 @@ function BirthChartSection({
             </Text>
             {shadbalaResult ? (
               <>
-                <Text style={{ color: "#1F2937", fontSize: 12.5, lineHeight: 18, fontWeight: "600" }}>
+                <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 18, fontWeight: "600" }}>
                   {buildShadbalaOverallSummary(shadbalaResult.planets, chartBriefLang)}
                 </Text>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
@@ -34756,7 +34799,7 @@ function OnboardingOverlay({
             borderWidth: 1, borderColor: "rgba(56,189,248,0.35)", padding: 16, gap: 10
           }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-              <Text style={{ fontSize: 26 }}>👋</Text>
+              <Text style={{ fontSize: 24 }}>👋</Text>
               <View style={{ flex: 1 }}>
                 <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "900", letterSpacing: 1.2, textTransform: "uppercase" }}>
                   Set up your profile
@@ -36494,7 +36537,7 @@ function SupportDimensionLibraryPanel({
         );
       })}
       <Pressable
-        onPress={() => setExpanded((value) => !value)}
+        onPress={() => { animateDisclosure(); setExpanded((value) => !value); }}
         accessibilityRole="button"
         accessibilityLabel={expanded ? "Show fewer perspectives" : "Show all support perspectives"}
         style={{ paddingVertical: 10, alignItems: "center", borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.06)" }}
@@ -37957,7 +38000,7 @@ function CounselingChatModal({
             accessibilityState={{ selected: !voiceAssistEnabled }}
             style={{ marginRight: 14, flexDirection: "row", alignItems: "center", gap: 4 }}
           >
-            <Text style={{ fontSize: 19 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
+            <Text style={{ fontSize: 20 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
             {/* Icon-only was ambiguous (mute vs. unmute isn't obvious from the
                 glyph alone) -- a short label next to it makes the tap target
                 self-explanatory without the person needing to guess. */}
@@ -37973,7 +38016,7 @@ function CounselingChatModal({
         <Pressable
           accessibilityRole="summary"
           accessibilityLabel={safetyNoticeExpanded ? "Scope and safety notice, expanded. Tap to collapse." : "Scope and safety notice, collapsed. Tap to expand."}
-          onPress={() => { void Haptics.selectionAsync(); setSafetyNoticeExpanded((v) => !v); }}
+          onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setSafetyNoticeExpanded((v) => !v); }}
           style={{ marginHorizontal: 20, marginTop: 12, borderRadius: 12, padding: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
         >
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
@@ -41970,7 +42013,7 @@ const styles = StyleSheet.create({
   },
   issuePlanHeroTitle: {
     color: "#0D1F22",
-    fontSize: 27,
+    fontSize: 28,
     lineHeight: 33,
     fontWeight: "900",
     letterSpacing: -0.5
@@ -44221,12 +44264,12 @@ const styles = StyleSheet.create({
   },
   aiHelpEntryTitle: {
     color: "#0D1F22",
-    fontSize: 26,
+    fontSize: 24,
     lineHeight: 32,
     fontWeight: "900"
   },
   aiHelpEntryTitleCompact: {
-    fontSize: 23,
+    fontSize: 22,
     lineHeight: 29
   },
   aiHelpEntryLead: {
@@ -45248,7 +45291,7 @@ const styles = StyleSheet.create({
   },
   metricValue: {
     color: "#0D1F22",
-    fontSize: 31,
+    fontSize: 32,
     lineHeight: 36,
     fontWeight: "900"
   },
@@ -45599,7 +45642,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   adminAuthShieldIcon: {
-    fontSize: 26,
+    fontSize: 24,
     lineHeight: 30
   },
   adminAuthShieldText: {
@@ -49077,7 +49120,7 @@ const styles = StyleSheet.create({
     gap: 1
   },
   streakCount: {
-    fontSize: 38,
+    fontSize: 40,
     fontWeight: "900",
     color: "#B45309",
     lineHeight: 42

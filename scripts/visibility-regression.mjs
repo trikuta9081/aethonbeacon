@@ -163,4 +163,28 @@ assert(
 );
 mustInclude('presentationStyle="pageSheet"', 'Counselling chat must present as a native iOS page sheet');
 
+// ── Type ramp: no ad-hoc font sizes ─────────────────────────────────────────
+// Sizes had drifted to 12.5, 13.5, 19, 23, 26, 27, 30, 31 and 38 alongside the
+// ramp the shared styles already use. Half-pixel and one-off sizes are exactly
+// what makes a screen read as assembled rather than designed, and they defeat
+// vertical rhythm at every system text-size setting.
+const TYPE_RAMP = [12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 28, 32, 34, 40, 48];
+const usedSizes = [...new Set(
+  [...source.matchAll(/fontSize: ([0-9]+(?:\.[0-9]+)?)/g)].map((m) => Number(m[1]))
+)].sort((a, b) => a - b);
+const offRamp = usedSizes.filter((n) => !TYPE_RAMP.includes(n));
+assert(
+  offRamp.length === 0,
+  `font sizes must come from the type ramp (${TYPE_RAMP.join(", ")}) -- off-ramp sizes found: ${offRamp.join(", ")}`
+);
+
+// ── Disclosure motion ───────────────────────────────────────────────────────
+// Every expand/collapse used to snap between frames. It must animate, and it
+// must stop animating when the OS asks it to.
+assert(source.includes("function animateDisclosure"), "an animateDisclosure() helper must exist so expand/collapse is a movement rather than a jump");
+assert(/function animateDisclosure\(\): void \{\s*\n\s*if \(_aethonReduceMotion\) return;/.test(source), "animateDisclosure must return early when the OS Reduce Motion setting is on");
+assert(source.includes("UIManager.setLayoutAnimationEnabledExperimental(true)"), "LayoutAnimation must be enabled explicitly on Android, or disclosure motion silently does nothing there");
+const disclosureCalls = (source.match(/animateDisclosure\(\);/g) ?? []).length;
+assert(disclosureCalls >= 15, `expected the disclosure animation to be wired into the app's expand/collapse controls, found only ${disclosureCalls} call sites`);
+
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');
