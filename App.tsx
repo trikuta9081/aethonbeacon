@@ -1615,7 +1615,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "24/7 lofi hip-hop radio streams. Chillhop / Lofi Girl / ChilledCow style.",
     use: "Study, focus, coding, writing. #1 category on YouTube for background work music.",
     safety: "Safe. Use at moderate volume; may include ads on external platform.",
-    accent: "#BE185D",
+    accent: "#B61759",
     mark: "LO",
     externalUrl: "https://www.youtube.com/results?search_query=lofi+hip+hop+radio+beats+to+relax+study",
     externalLabel: "Open lo-fi live streams"
@@ -2004,7 +2004,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     pattern: "Familiar Hindi melodies slowed with added reverb and a soft lo-fi drum bed.",
     use: "Study, homesickness, low-effort comfort listening.",
     safety: "Lyric-heavy — may pull focus during deep work.",
-    accent: "#BE185D",
+    accent: "#B61759",
     mark: "BL",
     intent: "Comfort",
     brainState: "Relaxed alert",
@@ -12913,7 +12913,7 @@ function buildMoonChartScoreReason(input: {
 }
 
 function moonChartVisualColor(reading: Pick<MoonChart48Reading, "verdict" | "score">): string {
-  if (reading.verdict === "Excellent") return "#00A2B8";
+  if (reading.verdict === "Excellent") return "#006876";
   if (reading.verdict === "Supportive") return "#04714F";
   if (reading.verdict === "Mixed") return "#A14A08";
   return "#B80000";
@@ -21349,7 +21349,7 @@ function isTrustedExternalUrl(url: string) {
                   anger:        { emoji: "🌧️", title: "Rain-bed cool-down", body: "Ambient rain + box breath (4-4-4-4). Pause before speaking or sending anything.", toneId: "ambient-rain", breath: "4-4-4-4 box", color: "#0052B8" },
                   fear:         { emoji: "🛡️", title: "Ground + safety cue", body: "Grounding tone + one clear safety sentence repeated three times.", toneId: "sol-396", breath: "Slow diaphragm", color: "#A14A08" },
                   burnout:      { emoji: "💆", title: "Quiet restoration", body: "Soft sustained tone + long exhale (4-in, 8-out). Rest is part of recovery.", toneId: "sol-432", breath: "4-in / 8-out", color: "#04714F" },
-                  loneliness:   { emoji: "🎵", title: "Bansuri calm + outreach", body: "Instrumental flute + one low-pressure message to a trusted person after.", toneId: "trend-krishna-flute", breath: "Natural", color: "#BE185D" },
+                  loneliness:   { emoji: "🎵", title: "Bansuri calm + outreach", body: "Instrumental flute + one low-pressure message to a trusted person after.", toneId: "trend-krishna-flute", breath: "Natural", color: "#B61759" },
                   grief:        { emoji: "🕯️", title: "Vocal resonance + release", body: "Resonant vocal sound + one gentle memory or one practical task.", toneId: "trend-om-chant", breath: "In-through-nose, out-through-mouth", color: "#5C00B8" },
                   addiction:    { emoji: "⚡", title: "Focus pulse + urge surfing", body: "Short focus cue + urge surfing: watch the wave for 10 minutes before acting.", toneId: "reset-gamma", breath: "Steady 5 sec each", color: "#A855F7" },
                   overconfidence: { emoji: "🧭", title: "Quiet close reset", body: "Very soft close pulse + 5 slow breaths. Cool the heat before deciding.", toneId: "reset-quiet", breath: "5 slow", color: "#3730A3" },
@@ -24497,7 +24497,7 @@ function ToneLibrarySection({
         <View style={{ marginHorizontal: 14, marginBottom: 12, borderRadius: 16, backgroundColor: "#DEE9F2", borderWidth: 1, borderColor: "rgba(34,211,238,0.18)", padding: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
+              <Text style={{ color: "#006876", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
                 Playback quality &amp; safety
               </Text>
               <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>Comfort limiter · smooth start and stop · safe listening level</Text>
@@ -24548,7 +24548,7 @@ function ToneLibrarySection({
                     borderColor: selected ? "rgba(34,211,238,0.46)" : "rgba(255,255,255,0.07)"
                   })}
                 >
-                  <Text style={{ color: selected ? "#00A2B8" : "#3A577D", fontSize: 12, fontWeight: "700" }}>{preset.label}</Text>
+                  <Text style={{ color: selected ? "#006876" : "#3A577D", fontSize: 12, fontWeight: "700" }}>{preset.label}</Text>
                   <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, marginTop: 3 }}>{preset.intent}</Text>
                 </Pressable>
               );
@@ -24583,7 +24583,7 @@ function ToneLibrarySection({
             >
               <Text style={{ color: "#25364D", fontSize: 16, fontWeight: "900" }}>+</Text>
             </Pressable>
-            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700", width: 36, textAlign: "right" }}>{toneVolumePercent}%</Text>
+            <Text style={{ color: "#006876", fontSize: 12, fontWeight: "700", width: 36, textAlign: "right" }}>{toneVolumePercent}%</Text>
           </View>
         </View>
 
@@ -28245,9 +28245,9 @@ function IssueGuideSection({
 // disaster victim, industrial workman, victim of trafficking) gets FREE
 // legal representation. This card exposes it.
 const HIGH_CONTRAST_ACCENTS: Record<string, string> = {
-  "#BE185D": "#BE185D",
+  "#B61759": "#B61759",
   "#FB7185": "#BE123C",
-  "#EC4899": "#BE185D",
+  "#EC4899": "#B61759",
   "#3730A3": "#3730A3",
   "#5B21B6": "#5B21B6",
   "#14B8A6": "#0F766E",
@@ -28286,7 +28286,7 @@ function FreeLegalAidCard({
 
   const NATIONAL_HELPLINES: Array<{ label: string; number: string; url?: string; note: string; color: string }> = [
     { label: "NALSA — Free legal aid (National)", number: "15100", url: "https://nalsa.gov.in/", note: "Statutory RIGHT. Every state has SLSA + every district has DLSA. Free lawyer, free court fees, in your language.", color: "#04714F" },
-    { label: "Women's Helpline (National)", number: "181", url: "https://wcd.nic.in/schemes/women-helpline-scheme", note: "One-Stop Centre (Sakhi) network. Legal aid + medical + shelter + counselling.", color: "#BE185D" },
+    { label: "Women's Helpline (National)", number: "181", url: "https://wcd.nic.in/schemes/women-helpline-scheme", note: "One-Stop Centre (Sakhi) network. Legal aid + medical + shelter + counselling.", color: "#B61759" },
     { label: "Women in Distress", number: "1091", url: "", note: "Police Women helpline. Immediate protection for any woman in distress.", color: "#EC4899" },
     { label: "Childline (National)", number: "1098", url: "https://www.childlineindia.org/", note: "24x7 for any child in need. Rescue, medical, counselling, legal — all free.", color: "#0052B8" },
     { label: "Emergency (Police / Fire / Ambulance)", number: "112", url: "", note: "Nationwide unified emergency. Fastest for immediate danger.", color: "#B53333" },
@@ -28405,7 +28405,7 @@ function GovtGrievanceCellsCard({
       { label: "MeitY Grievance", url: "https://www.meity.gov.in/", note: "IT Ministry — issues with govt digital services (Aadhaar, DigiLocker, UPI infra)." },
       { label: "UIDAI Aadhaar", number: "1947", url: "https://uidai.gov.in/", note: "Aadhaar issues, update, correction, misuse." },
     ]},
-    { title: "Constitutional bodies", color: "#BE185D", cells: [
+    { title: "Constitutional bodies", color: "#B61759", cells: [
       { label: "NCW (Women)", number: "7827170170", url: "https://ncw.nic.in/", note: "National Commission for Women. Direct complaints." },
       { label: "NCPCR (Child rights)", number: "011-25478250", url: "https://ncpcr.gov.in/", note: "POCSO + all child rights violations." },
       { label: "NHRC (Human rights)", number: "14433", url: "https://nhrc.nic.in/", note: "Custodial abuse, encounter, torture, discrimination." },
@@ -28635,7 +28635,7 @@ function HealthDirectoryCard({
       { label: "Practo (private telemedicine platform)", url: "https://www.practo.com/", note: "Online + in-person consult. Filter by RCI/NMC verified." },
       { label: "Manas Mitra (govt digital MH)", url: "https://www.mohfw.gov.in/", note: "Mental health digital platform, MoHFW. Free digital MH counsel + resources." },
     ]},
-    { title: "Hospital empanelment + free care lookup", color: "#BE185D", rows: [
+    { title: "Hospital empanelment + free care lookup", color: "#B61759", rows: [
       { label: "Ayushman Bharat PM-JAY hospital lookup", number: "14555", url: "https://hospitals.pmjay.gov.in/", note: "Free ₹5 lakh/yr hospitalisation for eligible families. Search empanelled hospitals in your district." },
       { label: "CGHS panel hospitals (central govt employees)", url: "https://cghs.gov.in/", note: "Cashless hospitalisation for CGHS beneficiaries." },
       { label: "ESIC network hospitals + dispensaries", number: "1800-11-2526", url: "https://www.esic.gov.in/", note: "Free care for insured workers + family. All-India network." },
@@ -28844,7 +28844,7 @@ function StateOfficerDirectoryCard({
           {[
             { label: "State police portal", url: selected.portal, note: "Search 'contact us' → DC / SSP / SHO of your district", color: "#0052B8" },
             selected.efir ? { label: "e-FIR / online complaint", url: selected.efir, note: "File FIR online where the state supports it", color: "#04714F" } : null,
-            selected.collectors ? { label: "District Collector / DM directory", url: selected.collectors, note: "DC / DM contact for administrative escalation", color: "#BE185D" } : null,
+            selected.collectors ? { label: "District Collector / DM directory", url: selected.collectors, note: "DC / DM contact for administrative escalation", color: "#B61759" } : null,
             selected.cyber ? { label: "Cyber crime cell", url: selected.cyber, note: "State cyber cell portal + officer list", color: "#3730A3" } : null,
             selected.dgp ? { label: "DGP / senior officers", url: selected.dgp, note: "Direct escalation to senior police leadership", color: "#A14A08" } : null,
           ].filter(Boolean).map((row) => {
@@ -29278,7 +29278,7 @@ function RedressSection({
             { label: "Tele-MANAS (mental health)", number: "14416", color: "#0D9488", desc: "Government 24×7 mental health support in 20+ languages. Free." },
             { label: "KIRAN (mental health)", number: "1800-599-0019", color: "#14B8A6", desc: "24×7 national helpline for distress, anxiety, and suicidal thoughts. Free." },
             // ── Abuse & protection ──
-            { label: "Women's Helpline", number: "181", color: "#BE185D", desc: "Domestic violence, harassment, abuse — connects to One Stop Centre support" },
+            { label: "Women's Helpline", number: "181", color: "#B61759", desc: "Domestic violence, harassment, abuse — connects to One Stop Centre support" },
             { label: "Women in Distress (Police)", number: "1091", color: "#EC4899", desc: "Direct police response line for women facing immediate threat" },
             { label: "Child Helpline", number: "1098", color: "#0052B8", desc: "Child in danger, abuse, trafficking, or child labour" },
             { label: "Elderline (senior citizens)", number: "14567", color: "#7C3AED", desc: "Elder abuse, neglect, pension and property distress" },
@@ -29559,7 +29559,7 @@ function RedressSection({
             { num: "1", label: "First office", text: selectedRedressRoute.firstOffice, color: "#066C84" },
             { num: "2", label: "First action", text: selectedRedressRoute.firstAction, color: "#04714F" },
             { num: "3", label: "Escalation path", text: selectedRedressRoute.escalation, color: "#A14A08" },
-            { num: "4", label: "Track & follow up", text: "Keep a copy of every acknowledgement number. Follow up every 7–15 days in writing. If stalled, use the escalation path above.", color: "#BE185D" },
+            { num: "4", label: "Track & follow up", text: "Keep a copy of every acknowledgement number. Follow up every 7–15 days in writing. If stalled, use the escalation path above.", color: "#B61759" },
           ].map((step) => (
             <View key={step.num} style={{ flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
               <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: step.color, alignItems: "center", justifyContent: "center", marginRight: 10, marginTop: 1, flexShrink: 0 }}>
@@ -29733,12 +29733,12 @@ function RedressSection({
         {/* ── TIMELINE EXPECTATION ── */}
         {timeline !== undefined && (
           <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(244,114,182,0.2)", padding: 14 }}>
-            <Text style={{ color: "#BE185D", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 10 }}>⏱ What to expect — timeline</Text>
+            <Text style={{ color: "#B61759", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 10 }}>⏱ What to expect — timeline</Text>
             <View style={{ gap: 8 }}>
               {[timeline.step1, timeline.step2, timeline.step3].map((step, i) => (
                 <View key={String(i)} style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
                   <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: "rgba(244,114,182,0.2)", borderWidth: 1, borderColor: "#BE185D", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                    <Text style={{ color: "#BE185D", fontSize: 12, fontWeight: "800" }}>{i + 1}</Text>
+                    <Text style={{ color: "#B61759", fontSize: 12, fontWeight: "800" }}>{i + 1}</Text>
                   </View>
                   <Text style={{ color: "#446573", fontSize: 12, lineHeight: 18, flex: 1 }}>{step}</Text>
                 </View>
@@ -31140,9 +31140,9 @@ function SettingsSection({
                 onPress={() => setVoiceGender(g)}
                 style={({ pressed }) => ({
                   flex: 1,
-                  backgroundColor: isActive ? (g === "female" ? "#BE185D" : "#0052B8") : "#E1EEEC",
+                  backgroundColor: isActive ? (g === "female" ? "#B61759" : "#0052B8") : "#E1EEEC",
                   borderWidth: 1.5,
-                  borderColor: isActive ? (g === "female" ? "#BE185D" : "#0052B8") : "#1E3A5A",
+                  borderColor: isActive ? (g === "female" ? "#B61759" : "#0052B8") : "#1E3A5A",
                   borderRadius: 12,
                   paddingVertical: 12,
                   alignItems: "center",
@@ -31161,7 +31161,7 @@ function SettingsSection({
         <View style={{ marginTop: 14 }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
             <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>Speaking speed</Text>
-            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700" }}>
+            <Text style={{ color: "#006876", fontSize: 12, fontWeight: "700" }}>
               {Math.round(clampVoiceRate(voiceRate) * 100)}%
             </Text>
           </View>
@@ -31854,7 +31854,7 @@ function VedicDailyCard({
         <View pointerEvents="none" style={{ position: "absolute", right: -34, bottom: -48, width: 150, height: 150, borderRadius: 75, backgroundColor: "rgba(34,211,238,0.15)" }} />
         <View style={{ flexDirection: compact ? "column" : "row", gap: 14, alignItems: "stretch" }}>
           <View style={{ flex: 1, minHeight: 230, borderRadius: 20, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: "rgba(148,163,184,0.28)", padding: 12, transform: [{ perspective: 900 }, { rotateX: "2deg" }] }}>
-            <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700", letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 10 }}>
+            <Text style={{ color: "#006876", fontSize: 12, fontWeight: "700", letterSpacing: 1.3, textTransform: "uppercase", marginBottom: 10 }}>
               Pristine 2D/3D lunar chart map
             </Text>
             <View style={{ alignSelf: "center", width: 190, height: 190, borderRadius: 95, borderWidth: 1, borderColor: "rgba(103,232,249,0.45)", backgroundColor: "#EAF6FA", alignItems: "center", justifyContent: "center", shadowColor: "#00A2B8", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 20 }}>
@@ -33089,7 +33089,7 @@ function BirthChartSection({
 
           <View style={{ flexDirection: isWide ? "row" : "column", gap: 12 }}>
             <View style={{ flex: 1.05, borderRadius: 20, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: "rgba(103,232,249,0.4)", padding: 12, transform: [{ perspective: 900 }, { rotateX: isWide ? "3deg" : "0deg" }] }}>
-              <Text style={{ color: "#00A2B8", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>2D/3D Moon-house visual map</Text>
+              <Text style={{ color: "#006876", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>2D/3D Moon-house visual map</Text>
               <View style={{ alignSelf: "center", width: isWide ? 250 : 220, height: isWide ? 250 : 220, borderRadius: isWide ? 125 : 110, borderWidth: 1, borderColor: "rgba(103,232,249,0.5)", backgroundColor: "#EAF6FA", alignItems: "center", justifyContent: "center", shadowColor: "#00A2B8", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.3, shadowRadius: 24 }}>
                 <View style={{ position: "absolute", width: isWide ? 202 : 178, height: isWide ? 202 : 178, borderRadius: isWide ? 101 : 89, borderWidth: 1, borderColor: "rgba(196,181,253,0.28)" }} />
                 <View style={{ position: "absolute", width: isWide ? 152 : 132, height: isWide ? 152 : 132, borderRadius: isWide ? 76 : 66, borderWidth: 1, borderColor: "rgba(252,211,77,0.24)" }} />
