@@ -279,4 +279,14 @@ assert(source.includes('function redressFollowUpState'), 'Follow-up reminder sta
 assert(source.includes('Start tracking this complaint'), 'Redress case tracker start affordance is missing');
 assert(/Alert\.alert\(\s*"Delete this case\?"/.test(source), 'Deleting a tracked case must stay confirm-gated');
 
+// ── Chat drafts must not live in App() ───────────────────────────────────────
+// App() is a single ~6,600-line component holding ~180 pieces of state. Any
+// setState there re-renders the whole active tab -- every inline style object
+// rebuilt, every useMemo dependency array compared. A chat draft held up
+// there runs that pass on every keystroke, which is what makes typing feel
+// heavy on a mid-range device. The composer owns its own draft instead.
+assert(source.includes("const ChatComposer = React.memo("), "ChatComposer must stay memoised, or confining the per-keystroke render achieves nothing");
+assert(/const ChatComposer = React\.memo\(function ChatComposer\([\s\S]{0,1400}?const \[draft, setDraft\] = useState\(""\)/.test(source), "ChatComposer must hold its own draft state rather than receiving it from App()");
+assert(!source.includes("const [astroChatDraft"), "the Ask-the-chart draft must not move back into App() state");
+
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');

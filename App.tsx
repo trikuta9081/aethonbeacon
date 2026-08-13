@@ -148,6 +148,79 @@ function animateDisclosure(): void {
   });
 }
 
+// ── Chat composer ───────────────────────────────────────────────────────────
+// App() is a single ~6,600-line component holding 183 pieces of state. Any
+// setState in it re-renders the whole active tab: every inline style object
+// rebuilt, all 85 useMemo dependency arrays compared. When the draft text of
+// a chat box lives up there, that entire pass runs on every keystroke, which
+// is what makes typing feel heavy on a mid-range Android.
+//
+// Keeping the draft inside a memoised composer confines the per-keystroke
+// render to this component. The parent is only told when the message is
+// actually sent. onSubmit is the one prop that must stay referentially
+// stable for the memo to hold -- it is a plain function declaration in App(),
+// so it does.
+const ChatComposer = React.memo(function ChatComposer({
+  placeholder,
+  submitLabel,
+  busyLabel,
+  editable,
+  busy,
+  onSubmit,
+  accessibilityLabel
+}: {
+  placeholder: string;
+  submitLabel: string;
+  busyLabel: string;
+  editable: boolean;
+  busy: boolean;
+  onSubmit: (text: string) => void;
+  accessibilityLabel?: string;
+}) {
+  const [draft, setDraft] = useState("");
+  const canSend = editable && !busy && draft.trim().length > 0;
+  return (
+    <View style={{
+      backgroundColor: "#E1EEEC", borderRadius: 12, padding: 10, gap: 8,
+      borderWidth: 1, borderColor: "rgba(252,211,77,0.2)"
+    }}>
+      <TextInput
+        value={draft}
+        onChangeText={setDraft}
+        placeholder={placeholder}
+        placeholderTextColor="rgba(13,31,34,0.4)"
+        accessibilityLabel={accessibilityLabel}
+        multiline
+        editable={editable}
+        style={{ color: "#0D1F22", fontSize: 14, minHeight: 46, lineHeight: 20, padding: 8 }}
+      />
+      <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 8 }}>
+        <Pressable
+          onPress={() => {
+            const text = draft.trim();
+            if (text.length === 0) return;
+            // Cleared here rather than by the parent, so the box empties on
+            // the same frame as the send.
+            setDraft("");
+            onSubmit(text);
+          }}
+          disabled={!canSend}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !canSend }}
+          style={({ pressed }) => ({
+            backgroundColor: !canSend ? "#334155" : (pressed ? "#B45309" : "#D97706"),
+            borderRadius: 10, paddingHorizontal: 16, paddingVertical: 9
+          })}
+        >
+          <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>
+            {busy ? busyLabel : submitLabel}
+          </Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+});
+
 function Text({ style, ...props }: TextProps) {
   return <RNText {...props} style={[APP_TEXT_WRAP_GUARD, style]} />;
 }
@@ -13730,7 +13803,6 @@ export default function App() {
   const [chartBriefLang, setChartBriefLang] = useState<"en" | "hi">("en");
   // Astro two-way chat — user asks anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy
   const [astroChatMessages, setAstroChatMessages] = useState<Array<{ id: string; role: "user" | "astro"; text: string; remedy?: string; category?: string; ts: string }>>([]);
-  const [astroChatDraft, setAstroChatDraft] = useState("");
   // The reply itself is pure synchronous local computation (real chart data,
   // but no network call), which made every answer appear literally
   // instantly -- indistinguishable from a pre-written/cached response even
@@ -19142,7 +19214,7 @@ async function fetchGuidanceHelp(
       handleTabPress("vedic");
       return;
     }
-    const q = (rawQuestion ?? astroChatDraft).trim();
+    const q = (rawQuestion ?? "").trim();
     if (q.length === 0) return;
     if (astroChatLoading) return; // one in-flight question at a time
     const nowIso = new Date().toISOString();
@@ -19150,7 +19222,7 @@ async function fetchGuidanceHelp(
     // Post the question immediately (real chat feel), then let the reply
     // load in after a beat -- see the astroChatLoading comment above.
     setAstroChatMessages((prev) => [...prev, userMsg].slice(-40));
-    setAstroChatDraft("");
+    // The composer clears its own draft on send; App() no longer holds it.
     setAstroChatLoading(true);
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -21416,42 +21488,19 @@ function isTrustedExternalUrl(url: string) {
                   </View>
                 </View>
 
-                {/* Composer */}
-                <View style={{
-                  backgroundColor: "#E1EEEC", borderRadius: 12, padding: 10, gap: 8,
-                  borderWidth: 1, borderColor: "rgba(252,211,77,0.2)"
-                }}>
-                  <TextInput
-                    value={astroChatDraft}
-                    onChangeText={setAstroChatDraft}
-                    placeholder={hasExactBirthDetails
-                      ? (chartBriefLang === "hi" ? "जैसे: क्या मुझे यह नौकरी मिलेगी? क्या अभी शादी करूँ? मैं हमेशा थका क्यों रहता हूँ?" : "e.g. Will I get this job? Should I marry now? Why am I always tired?")
-                      : (chartBriefLang === "hi" ? "चार्ट प्रश्न खोलने के लिए ऊपर सटीक जन्म-विवरण भरें" : "Enter exact birth details above to unlock chart questions")}
-                    placeholderTextColor="rgba(13,31,34,0.4)"
-                    multiline
-                    editable={hasExactBirthDetails}
-                    style={{
-                      color: "#0D1F22", fontSize: 14, minHeight: 46, lineHeight: 20,
-                      padding: 8
-                    }}
-                  />
-                  <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 8 }}>
-                    <Pressable
-                      onPress={() => submitAstroQuestion()}
-                      disabled={!hasExactBirthDetails || astroChatDraft.trim().length === 0 || astroChatLoading}
-                      accessibilityRole="button"
-                      style={({ pressed }) => ({
-                        backgroundColor: !hasExactBirthDetails || astroChatDraft.trim().length === 0 || astroChatLoading ? "#334155" : (pressed ? "#B45309" : "#D97706"),
-                        borderRadius: 10, paddingHorizontal: 16, paddingVertical: 9
-                      })}>
-                      <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>
-                        {astroChatLoading
-                          ? (chartBriefLang === "hi" ? "चार्ट से परामर्श…" : "Consulting the chart…")
-                          : (chartBriefLang === "hi" ? "चार्ट से पूछें →" : "Ask the chart →")}
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
+                {/* Composer -- draft lives inside ChatComposer, so typing a
+                    chart question no longer re-renders all of App(). */}
+                <ChatComposer
+                  editable={hasExactBirthDetails}
+                  busy={astroChatLoading}
+                  onSubmit={submitAstroQuestion}
+                  accessibilityLabel={chartBriefLang === "hi" ? "चार्ट से प्रश्न पूछें" : "Ask your chart a question"}
+                  placeholder={hasExactBirthDetails
+                    ? (chartBriefLang === "hi" ? "जैसे: क्या मुझे यह नौकरी मिलेगी? क्या अभी शादी करूँ? मैं हमेशा थका क्यों रहता हूँ?" : "e.g. Will I get this job? Should I marry now? Why am I always tired?")
+                    : (chartBriefLang === "hi" ? "चार्ट प्रश्न खोलने के लिए ऊपर सटीक जन्म-विवरण भरें" : "Enter exact birth details above to unlock chart questions")}
+                  submitLabel={chartBriefLang === "hi" ? "चार्ट से पूछें →" : "Ask the chart →"}
+                  busyLabel={chartBriefLang === "hi" ? "चार्ट से परामर्श…" : "Consulting the chart…"}
+                />
 
                 {/* Pending reply -- real per-query load, not an instant
                     lookup (see astroChatLoading comment on submitAstroQuestion).
@@ -31980,7 +32029,8 @@ function BirthChartSection({
   issueContext: VedicEngineIssueContext | null;
   // Rendered by the caller (App()) right next to the visual chart map below
   // -- kept as a prop instead of living inside this component because its
-  // state (astroChatDraft, astroChatMessages, submitAstroQuestion) is owned
+  // state (astroChatMessages, submitAstroQuestion; the draft now lives in the
+  // memoised ChatComposer) is owned
   // by App(), not by BirthChartSection.
   askTheChartPanel?: React.ReactNode;
   // Lifted to App() so the Ask-the-chart answer insight system shares this toggle.
