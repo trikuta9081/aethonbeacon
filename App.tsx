@@ -20893,6 +20893,58 @@ function isTrustedExternalUrl(url: string) {
             <TabErrorBoundary tabName="Today">
             <View onLayout={captureSectionLayout("today")}>
 
+              {/* ── Weekly reading prompt ──────────────────────────────────
+                  This banner's trigger has existed and fired for a long time:
+                  on the first open of a new week it set showWeeklyVedicBanner
+                  AND stamped lastWeeklyVedicCheck. But nothing ever read the
+                  flag, so the banner never appeared -- while the stamp still
+                  marked the week as handled. The weekly moment was being
+                  consumed and thrown away, every week. Rendering it here is
+                  what the effect always intended. */}
+              {showWeeklyVedicBanner && (
+                <View
+                  accessibilityRole="summary"
+                  style={[styles.tabBannerCard, { backgroundColor: "#E8E4F1", alignItems: "center" }]}
+                >
+                  <Text style={styles.tabBannerEmoji}>🪐</Text>
+                  <View style={styles.tabBannerText}>
+                    <Text style={styles.tabBannerTitle}>Your week ahead is ready</Text>
+                    <Text style={styles.tabBannerSub}>
+                      A new week means a new transit picture. Takes a minute to read.
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="Open this week's reading"
+                      onPress={() => {
+                        void Haptics.selectionAsync();
+                        setShowWeeklyVedicBanner(false);
+                        handleTabPress("vedic");
+                      }}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      style={({ pressed }) => ({
+                        backgroundColor: pressed ? "#4C1D95" : "#5C00B8",
+                        borderRadius: 999,
+                        paddingHorizontal: 14,
+                        paddingVertical: 8
+                      })}
+                    >
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Read it</Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="Dismiss this week's reading prompt"
+                      onPress={() => setShowWeeklyVedicBanner(false)}
+                      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                      style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, paddingHorizontal: 4 })}
+                    >
+                      <Text style={{ color: "#3A577D", fontSize: 16, fontWeight: "800" }}>✕</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              )}
+
               {/* ── LANDING HEADER — Premium redesign ── */}
               {(() => {
                 const hour = new Date().getHours();
@@ -22618,7 +22670,6 @@ function TodaySection({
 }) {
   const uiCopy = getUiCopy(languageId);
   const compact = !isWide;
-  const [selectedRelaxingToneId, setSelectedRelaxingToneId] = useState(mindRelaxingToneModes[3].id);
   const frontToneCategorySummaries = useMemo(() =>
     TONE_CATEGORIES.map((category) => {
       const tones = mindRelaxingToneModes.filter((toneMode) => category.ids.includes(toneMode.id));
@@ -22641,8 +22692,8 @@ function TodaySection({
   // ToneLibrarySection's loop player, with zero UI ever wired to actually
   // turn it on (setMindRestLoopEnabled(true) was never called anywhere in
   // the app -- confirmed by search). Because its effect depended on
-  // selectedRelaxingToneId, every tap of the brain-reset button below (which
-  // calls setSelectedRelaxingToneId) re-ran that dead effect and, since
+  // the selected tone id, every tap of the brain-reset button below re-ran
+  // that dead effect and, since
   // mindRestLoopEnabled was always false, unconditionally called
   // stopContinuousTone() -- silently killing any tone actively looping
   // elsewhere in the app (e.g. from the Tones tab or its mini-player) just
@@ -22652,7 +22703,9 @@ function TodaySection({
   const openBrainResetTone = () => {
     const toneMode =
       mindRelaxingToneModes.find((item) => item.id === "reset-gamma") ?? mindRelaxingToneModes[0];
-    setSelectedRelaxingToneId(toneMode.id);
+    // The selected-tone id this used to set was the last survivor of the
+    // removed mind-rest loop player: written on every tap, read by nothing.
+    // The cue below is the whole feature.
     void playRelaxingToneCue(toneMode);
   };
   return (
@@ -24111,7 +24164,6 @@ function ToneLibrarySection({
   const [selectedToneId, setSelectedToneId] = useState<RelaxingToneMode["id"]>(recommendedTone.id);
   const [loopEnabled, setLoopEnabled] = useState(false);
   const [tonePaused, setTonePaused] = useState(false);
-  const [showFullLibrary, setShowFullLibrary] = useState(false);
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const [selectedSessionPresetId, setSelectedSessionPresetId] = useState<ToneSessionPreset["id"]>("moon-balance");
   const [presetMinutes, setPresetMinutes] = useState(11);
@@ -24135,7 +24187,6 @@ function ToneLibrarySection({
     setSelectedToneId(recommendedTone.id);
     setLoopEnabled(false);
     setTonePaused(false);
-    setShowFullLibrary(false);
     setSessionSeconds(0);
     setSelectedSessionPresetId("moon-balance");
     setPresetMinutes(11);

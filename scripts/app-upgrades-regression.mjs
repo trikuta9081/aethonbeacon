@@ -351,4 +351,33 @@ assert(
   "visit reports must not embed homeRoutePreview -- it is permanently the empty placeholder"
 );
 
+// ── No write-only state ──────────────────────────────────────────────────────
+// Five useState slots were being written and never read. Each one meant a
+// feature that ran and produced nothing: a loading flag with no spinner, two
+// network replies discarded on arrival, and -- worst -- a weekly banner whose
+// effect stamped the week as seen while rendering nothing, so the weekly
+// moment was consumed and thrown away every week. This catches the shape.
+{
+  const withoutComments = source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^[ \t]*\/\/.*$/gm, "");
+  const writeOnly = [];
+  for (const m of withoutComments.matchAll(/const \[([A-Za-z0-9_]+), (set[A-Za-z0-9_]+)\] = useState/g)) {
+    const value = m[1];
+    const reads = withoutComments.match(new RegExp(`\\b${value}\\b`, "g")) ?? [];
+    if (reads.length <= 1) writeOnly.push(value);
+  }
+  assert(
+    writeOnly.length === 0,
+    `state is written but never read: ${writeOnly.join(", ")} -- either render it or delete it, because a value nothing reads is a feature that silently does nothing`
+  );
+}
+
+// The weekly reading prompt must actually render. Its effect stamps
+// lastWeeklyVedicCheck, so a banner that never shows burns the week.
+assert(
+  source.includes("{showWeeklyVedicBanner && ("),
+  "the weekly reading banner must be rendered -- its effect marks the week as seen either way"
+);
+
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');
