@@ -13776,10 +13776,8 @@ export default function App() {
   const [playProgress, setPlayProgress] = useState<Partial<Record<PlayChallengeId, [boolean, boolean, boolean]>>>({});
   const [playClaimed, setPlayClaimed] = useState<Partial<Record<PlayChallengeId, boolean>>>({});
   const [communityMessages, setCommunityMessages] = useState<CommunityMessage[]>(communityMessagesSeed);
-  const [communityDraft, setCommunityDraft] = useState("");
   const [communityFilter, setCommunityFilter] = useState<CommunityFilterId>("all");
   const [communityChatMessages, setCommunityChatMessages] = useState<CommunityChatMessage[]>(communityChatSeed);
-  const [communityChatDraft, setCommunityChatDraft] = useState("");
   const [communityChatPersona, setCommunityChatPersona] = useState<CommunityChatPersonaId>("mentor");
   const [communityRealtimeStatus, setCommunityRealtimeStatus] = useState(
     communityRealtimeConfigured ? "Connecting…" : "Offline mode — posts stay on this device"
@@ -14197,9 +14195,10 @@ export default function App() {
     Math.max(0, COMMUNITY_POST_COOLDOWN_MS - (Date.now() - lastCommunityPostRef.current));
   const communityChatTypingSentAtRef = useRef(0);
 
-  const handleCommunityDraftChange = useCallback(
+  // Feed draft now lives in CommunitySection alongside its TextInput; this is
+  // only the throttled typing signal. Same move as the chat composer above.
+  const notifyCommunityFeedTyping = useCallback(
     (value: string) => {
-      setCommunityDraft(value);
       if (!communityRealtimeConfigured || !value.trim()) return;
       const now = Date.now();
       if (now - communityFeedTypingSentAtRef.current < 2500) return;
@@ -14213,9 +14212,11 @@ export default function App() {
     [presenceSessionId, selectedIdentity.label]
   );
 
-  const handleCommunityChatDraftChange = useCallback(
+  // Draft text now lives in CommunitySection, which owns the TextInput. This
+  // is only the throttled "someone is typing" signal, so a keystroke no
+  // longer re-renders all of App() just to broadcast presence.
+  const notifyCommunityChatTyping = useCallback(
     (value: string) => {
-      setCommunityChatDraft(value);
       if (!communityRealtimeConfigured || !value.trim()) return;
       const now = Date.now();
       if (now - communityChatTypingSentAtRef.current < 2500) return;
@@ -18886,11 +18887,13 @@ async function fetchGuidanceHelp(
     return "Aethon guide: thank you for sharing that. Keep the next step small, plain, and doable.";
   }
 
-  async function postCommunityMessage() {
-    const text = communityDraft.trim();
+  // Returns true only when the post actually went out; every refusal below
+  // returns false so the composer keeps the person's text.
+  async function postCommunityMessage(rawText: string): Promise<boolean> {
+    const text = rawText.trim();
     if (!text) {
       Alert.alert("Community", "Write a short message first.");
-      return;
+      return false;
     }
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!communityVerifiedAccess) {
@@ -18898,14 +18901,14 @@ async function fetchGuidanceHelp(
         "Community",
         "Chat and messaging are available after either phone or email verification."
       );
-      return;
+      return false;
     }
     if (communityPostingLocked) {
       Alert.alert(
         "Community",
         communitySafetyLockReason ?? "Posting is currently paused for safety review."
       );
-      return;
+      return false;
     }
     const safetyViolation = inspectCommunitySafety(text);
     if (safetyViolation) {
@@ -18916,13 +18919,13 @@ async function fetchGuidanceHelp(
       if (nextStrikeCount >= 3) {
         Alert.alert("Community safety", "Posting has been paused after repeated unsafe attempts.");
       }
-      return;
+      return false;
     }
 
     const cooldownLeft = communityPostCooldownRemainingMs();
     if (cooldownLeft > 0) {
       Alert.alert("Slow down", `Please wait ${Math.ceil(cooldownLeft / 1000)}s before posting again.`);
-      return;
+      return false;
     }
     lastCommunityPostRef.current = Date.now();
 
@@ -18941,7 +18944,6 @@ async function fetchGuidanceHelp(
       "Guidance"
     );
 
-    setCommunityDraft("");
     void playMessageFeedbackCue("sent");
     setCommunityMessages((current) =>
       communityRealtimeConfigured
@@ -18967,12 +18969,13 @@ async function fetchGuidanceHelp(
         );
         recordProductMetric("community_delivery_succeeded");
       }
-      return;
+      return true;
     }
 
     setTimeout(() => {
       void playMessageFeedbackCue("received");
     }, 260);
+    return true;
   }
 
   function clearCommunityMessages() {
@@ -19011,11 +19014,16 @@ async function fetchGuidanceHelp(
     return "Verified mentor: tell me the one part that matters most, and we can keep the next step plain.";
   }
 
-  async function postCommunityChatMessage() {
-    const text = communityChatDraft.trim();
+  // Returns true only when the message actually went out, so the composer
+  // knows whether to clear. Every rejection path below returns false, which
+  // preserves the previous behaviour of keeping the person's text when the
+  // send is refused -- losing a typed message on a safety block or a cooldown
+  // would be its own bug.
+  async function postCommunityChatMessage(rawText: string): Promise<boolean> {
+    const text = rawText.trim();
     if (!text) {
       Alert.alert("Community chat", "Write a short message first.");
-      return;
+      return false;
     }
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!communityVerifiedAccess) {
@@ -19023,14 +19031,14 @@ async function fetchGuidanceHelp(
         "Community chat",
         "Chat and messaging are available after either phone or email verification."
       );
-      return;
+      return false;
     }
     if (communityPostingLocked) {
       Alert.alert(
         "Community chat",
         communitySafetyLockReason ?? "Posting is currently paused for safety review."
       );
-      return;
+      return false;
     }
     const safetyViolation = inspectCommunitySafety(text);
     if (safetyViolation) {
@@ -19041,13 +19049,13 @@ async function fetchGuidanceHelp(
       if (nextStrikeCount >= 3) {
         Alert.alert("Community safety", "Posting has been paused after repeated unsafe attempts.");
       }
-      return;
+      return false;
     }
 
     const cooldownLeft = communityPostCooldownRemainingMs();
     if (cooldownLeft > 0) {
       Alert.alert("Slow down", `Please wait ${Math.ceil(cooldownLeft / 1000)}s before sending again.`);
-      return;
+      return false;
     }
     lastCommunityPostRef.current = Date.now();
 
@@ -19071,7 +19079,6 @@ async function fetchGuidanceHelp(
       persona: persona.id
     };
 
-    setCommunityChatDraft("");
     void playMessageFeedbackCue("sent");
     setCommunityChatMessages((current) =>
       communityRealtimeConfigured
@@ -19089,12 +19096,13 @@ async function fetchGuidanceHelp(
       } else {
         setCommunityRealtimeStatus("Live — connected");
       }
-      return;
+      return true;
     }
 
     setTimeout(() => {
       void playMessageFeedbackCue("received");
     }, 260);
+    return true;
   }
 
   function createPrivateSpaceRoom() {
@@ -21842,8 +21850,7 @@ function isTrustedExternalUrl(url: string) {
                 setCommunityFilter={setCommunityFilter}
                 communityTopicFilter={communityTopicFilter}
                 setCommunityTopicFilter={setCommunityTopicFilter}
-                communityDraft={communityDraft}
-                setCommunityDraft={handleCommunityDraftChange}
+                onCommunityFeedTyping={notifyCommunityFeedTyping}
                 communityTypingLabel={communityFeedTypingLabel}
                 onPostCommunityMessage={postCommunityMessage}
                 onClearCommunityMessages={clearCommunityMessages}
@@ -21851,8 +21858,7 @@ function isTrustedExternalUrl(url: string) {
                 communityChatMessages={communityChatMessages}
                 communityChatPersona={communityChatPersona}
                 setCommunityChatPersona={setCommunityChatPersona}
-                communityChatDraft={communityChatDraft}
-                setCommunityChatDraft={handleCommunityChatDraftChange}
+                onCommunityChatTyping={notifyCommunityChatTyping}
                 communityChatTypingLabel={communityChatTypingLabel}
                 communityReactionsByMessageId={communityReactionsByMessageId}
                 onToggleCommunityReaction={toggleCommunityReaction}
@@ -25562,8 +25568,7 @@ function CommunitySection({
   setCommunityFilter,
   communityTopicFilter,
   setCommunityTopicFilter,
-  communityDraft,
-  setCommunityDraft,
+  onCommunityFeedTyping,
   communityTypingLabel,
   onPostCommunityMessage,
   onClearCommunityMessages,
@@ -25571,8 +25576,7 @@ function CommunitySection({
   communityChatMessages,
   communityChatPersona,
   setCommunityChatPersona,
-  communityChatDraft,
-  setCommunityChatDraft,
+  onCommunityChatTyping,
   communityChatTypingLabel,
   communityReactionsByMessageId,
   onToggleCommunityReaction,
@@ -25627,24 +25631,22 @@ function CommunitySection({
   setCommunityFilter: (value: CommunityFilterId) => void;
   communityTopicFilter: CommunityTopicFilterId;
   setCommunityTopicFilter: (value: CommunityTopicFilterId) => void;
-  communityDraft: string;
-  setCommunityDraft: (value: string) => void;
+  onCommunityFeedTyping: (value: string) => void;
   communityTypingLabel: string | null;
-  onPostCommunityMessage: () => void;
+  onPostCommunityMessage: (text: string) => Promise<boolean>;
   onClearCommunityMessages: () => void;
   onClearCommunityFilters: () => void;
   communityChatMessages: CommunityChatMessage[];
   communityChatPersona: CommunityChatPersonaId;
   setCommunityChatPersona: (value: CommunityChatPersonaId) => void;
-  communityChatDraft: string;
-  setCommunityChatDraft: (value: string) => void;
+  onCommunityChatTyping: (value: string) => void;
   communityChatTypingLabel: string | null;
   communityReactionsByMessageId: Record<
     string,
     Partial<Record<RealtimeCommunityReactionEmoji, { count: number; reactedByMe: boolean }>>
   >;
   onToggleCommunityReaction: (messageId: string, emoji: RealtimeCommunityReactionEmoji) => void;
-  onPostCommunityChat: () => void;
+  onPostCommunityChat: (text: string) => Promise<boolean>;
   onClearCommunityChat: () => void;
   privateSpaceThreads: PrivateSpaceThread[];
   privateSpaceSelectedThreadId: string | null;
@@ -25699,6 +25701,14 @@ function CommunitySection({
     privateSpaceThreads[0] ??
     null;
   const [showFullCommunity, setShowFullCommunity] = useState(false);
+  // Chat draft moved down out of App(). App() is a ~6,600-line component with
+  // ~180 pieces of state; holding the draft there meant every keystroke in
+  // this box re-rendered the whole active tab. It only ever needed to be
+  // local to the TextInput below.
+  const [communityChatDraft, setCommunityChatDraft] = useState("");
+  const [communityChatSending, setCommunityChatSending] = useState(false);
+  const [communityDraft, setCommunityDraft] = useState("");
+  const [communityPosting, setCommunityPosting] = useState(false);
 
   useEffect(() => {
     setShowFullCommunity(false);
@@ -26224,7 +26234,10 @@ function CommunitySection({
           <TextInput
             multiline
             value={communityChatDraft}
-            onChangeText={setCommunityChatDraft}
+            onChangeText={(value) => {
+              setCommunityChatDraft(value);
+              onCommunityChatTyping(value);
+            }}
             placeholder="Type a verified chat message."
             placeholderTextColor="#9A8F82"
             editable={!postingLocked && !interactionLocked}
@@ -26244,7 +26257,17 @@ function CommunitySection({
               }
               accessibilityHint="Posts your draft message to the verified chat"
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
-              onPress={onPostCommunityChat}
+              onPress={() => {
+                if (communityChatSending) return;
+                setCommunityChatSending(true);
+                void onPostCommunityChat(communityChatDraft)
+                  .then((sent) => {
+                    // Kept on refusal (safety block, cooldown, unverified)
+                    // so nobody loses what they wrote.
+                    if (sent) setCommunityChatDraft("");
+                  })
+                  .finally(() => setCommunityChatSending(false));
+              }}
               disabled={postingLocked || interactionLocked}
               style={({ pressed }) => [
                 styles.helpButton,
@@ -26537,7 +26560,10 @@ function CommunitySection({
         <TextInput
           multiline
           value={communityDraft}
-          onChangeText={setCommunityDraft}
+          onChangeText={(value) => {
+            setCommunityDraft(value);
+            onCommunityFeedTyping(value);
+          }}
           placeholder="Write one useful question, experience, or idea."
           placeholderTextColor="#9A8F82"
           editable={!postingLocked}
@@ -26552,7 +26578,13 @@ function CommunitySection({
             accessibilityLabel={postingLocked ? "Posting paused" : "Post message to shared feed"}
             accessibilityHint="Publishes your message to the community feed"
             accessibilityState={{ disabled: postingLocked }}
-            onPress={onPostCommunityMessage}
+            onPress={() => {
+              if (communityPosting) return;
+              setCommunityPosting(true);
+              void onPostCommunityMessage(communityDraft)
+                .then((sent) => { if (sent) setCommunityDraft(""); })
+                .finally(() => setCommunityPosting(false));
+            }}
             disabled={postingLocked}
             style={({ pressed }) => [
               styles.helpButton,

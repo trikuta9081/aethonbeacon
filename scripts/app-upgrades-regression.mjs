@@ -303,4 +303,27 @@ assert(!/buildRoutePreview\(journal,/.test(source), "the journal route preview m
 assert(!/buildRoutePreview\(homeIssueDraft,/.test(source), "the Home route preview must read the settled value, not raw keystrokes");
 assert(!/buildRoutePreview\(aiHelpPreviewSource,/.test(source), "the counselling route preview must read the settled value, not raw keystrokes");
 
+// ── Draft text must not live in App() ────────────────────────────────────────
+// App() holds ~180 pieces of state across ~6,600 lines; a setState there
+// re-renders the whole active tab. Draft text belongs next to its TextInput.
+// Listed explicitly rather than by pattern, so adding a new draft to App()
+// is a deliberate decision someone has to make against this list.
+const appBody = source.slice(
+  source.indexOf("export default function App("),
+  source.indexOf("\nfunction ", source.indexOf("export default function App("))
+);
+for (const draft of ["communityDraft", "communityChatDraft", "astroChatDraft"]) {
+  assert(
+    !appBody.includes(`const [${draft},`),
+    `${draft} must live in the component that owns its TextInput, not in App() -- holding it here re-renders the whole tab on every keystroke`
+  );
+}
+// The send handlers report success so a refused message is not silently lost.
+for (const fn of ["postCommunityMessage", "postCommunityChatMessage"]) {
+  assert(
+    new RegExp(`async function ${fn}\\(rawText: string\\): Promise<boolean>`).test(source),
+    `${fn} must take the text and return whether it sent, so the composer keeps the draft when a post is refused`
+  );
+}
+
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');
