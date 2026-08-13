@@ -302,7 +302,7 @@ assert(
   assert(m, "a MAX_FONT_SCALE constant must exist -- uncapped Dynamic Type will break the layout at accessibility sizes");
   const scale = Number(m[1]);
   assert(scale >= 1.5, `MAX_FONT_SCALE is ${scale}; below 1.5 needlessly denies accessibility text the layout can take (measured clean to 2x)`);
-  assert(scale <= 2.0, `MAX_FONT_SCALE is ${scale}; 3x was measured to clip a badge and push "Pending verification" outside its container`);
+  assert(scale < 2.0, `MAX_FONT_SCALE is ${scale}; at exactly 2x the clarity-score ring overlaps ("/ 100" collides with "Growing") and five nodes escape their parent -- measured, not assumed`);
 }
 
 // ── Accent text colours that failed WCAG AA ──────────────────────────────────
@@ -322,7 +322,16 @@ assert(
 // Each was darkened to clear 4.5:1 against the lightest surface it sits on.
 // Only text colours changed; the same hues remain as backgrounds and borders,
 // where the requirement is different, so the brand is unchanged.
-for (const [bad, good] of [["#0891B2","#06748E"],["#0E9488","#0B766D"],["#B88600","#886300"],["#B87D00","#906100"],["#9AA7B2","#636B72"]]) {
+for (const [bad, good] of [
+  // originals
+  ["#0891B2","#066C84"], ["#0E9488","#0B6F66"], ["#B88600","#805D00"],
+  ["#B87D00","#865A00"], ["#9AA7B2","#5C646A"], ["#B45309","#A14A08"], ["#6B7B88","#57646F"],
+  // my own first-pass replacements: computed against three surfaces when the
+  // app has sixteen, so they cleared 4.5 on white and failed on the tinted
+  // cards. Corrected against the darkest surface in use.
+  ["#06748E","#066C84"], ["#0B766D","#0A6F66"], ["#886300","#805D00"], ["#636B72","#5C646A"],
+  ["#906100","#865A00"]
+]) {
   const stillText = source.match(new RegExp(`(?<![A-Za-z])color: "${bad}"`, "g")) ?? [];
   assert(
     stillText.length === 0,
