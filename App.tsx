@@ -28441,6 +28441,11 @@ function RedressSection({
   const [showEmergencyDirectory, setShowEmergencyDirectory] = useState(false);
   const [showDraftTemplate, setShowDraftTemplate] = useState(false);
   const [showScript, setShowScript] = useState(false);
+  // The situation picker is a grid of eleven chips. Once someone has told us
+  // which situation they are in, keeping all eleven on screen pushes the
+  // answer they came for below the fold -- so the picker folds down to a
+  // single line showing the choice, with an obvious way back.
+  const [showRouteChooser, setShowRouteChooser] = useState(false);
   const [checkedEvidence, setCheckedEvidence] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -28620,7 +28625,7 @@ function RedressSection({
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
-          Choose your situation first. The app then shows your route with the appropriate first office, recommended initial action, and formal escalation path.
+          Your situation sets the route. Everything below — first office, recommended initial action, and formal escalation path — changes to match it, and only that route is shown. Tap “Change” on the situation card to pick a different one.
         </Text>
         <View style={{ marginBottom: 14, borderRadius: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
           <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "900" }}>
@@ -28779,7 +28784,41 @@ function RedressSection({
         ) : null}
 
         {/* ── ROUTE CHIPS ── */}
-        <View style={{ marginBottom: 8 }}>
+        {!showRouteChooser && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Your situation: ${selectedRedressRoute.label}. Tap to choose a different situation.`}
+            onPress={() => {
+              void Haptics.selectionAsync();
+              setShowRouteChooser(true);
+            }}
+            style={({ pressed }) => [{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 10,
+              marginBottom: 12,
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+              borderRadius: 12,
+              backgroundColor: "#E1EEEC",
+              borderWidth: 1.5,
+              borderColor: "#0891B2",
+              opacity: pressed ? 0.85 : 1
+            }]}
+          >
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={{ color: "#374151", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
+                Your situation
+              </Text>
+              <Text style={{ color: "#0E5C6B", fontSize: 15, fontWeight: "900", marginTop: 2 }} numberOfLines={2}>
+                {selectedRedressRoute.label}
+              </Text>
+            </View>
+            <Text style={{ color: "#0891B2", fontSize: 12, fontWeight: "800" }}>Change ▾</Text>
+          </Pressable>
+        )}
+        <View style={{ marginBottom: 8, display: showRouteChooser ? "flex" : "none" }}>
           <Text style={styles.eyebrow}>Choose your situation</Text>
         </View>
         <View style={styles.issueChipGrid}>
@@ -28794,6 +28833,9 @@ function RedressSection({
                 onPress={() => {
                   void Haptics.selectionAsync();
                   setRedressRouteId(route.id);
+                  // Collapse straight to this route's guidance instead of
+                  // leaving the person at the top of the list they just used.
+                  setShowRouteChooser(false);
                 }}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
@@ -31085,6 +31127,49 @@ function LanguageSection({
     languageOptions.find((option) => option.id === languageId) ?? languageOptions[0];
   const languageCount = languageOptions.length;
   const [showFullLanguages, setShowFullLanguages] = useState(false);
+  // Several of the 22 constitutional languages have no text-to-speech voice on
+  // any shipping device (Bodo, Santali and Manipuri in particular). Claiming
+  // "voice" for them and then playing nothing is exactly the kind of quiet
+  // over-promise this picker's depth tags exist to prevent, so ask the device
+  // what it actually has and tag accordingly. Web reports its list
+  // asynchronously, hence the voiceschanged listener.
+  const [spokenLocales, setSpokenLocales] = useState<string[] | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const record = (locales: string[]) => {
+      if (!cancelled) setSpokenLocales(locales);
+    };
+
+    if (Platform.OS === "web") {
+      const synth = (globalThis as typeof globalThis & { speechSynthesis?: SpeechSynthesis }).speechSynthesis;
+      if (!synth) { record([]); return undefined; }
+      const read = () => record((synth.getVoices?.() ?? []).map((voice) => voice.lang));
+      read();
+      synth.addEventListener?.("voiceschanged", read);
+      return () => { cancelled = true; synth.removeEventListener?.("voiceschanged", read); };
+    }
+
+    Speech.getAvailableVoicesAsync()
+      .then((voices) => record(voices.map((voice) => voice.language)))
+      .catch(() => record([]));
+    return () => { cancelled = true; };
+  }, []);
+
+  // Undetermined (null) is treated as "assume voice works" so a slow or
+  // unavailable voice list never downgrades a language that is in fact fine.
+  const hasDeviceVoice = React.useCallback(
+    (speechLang: string) => {
+      if (spokenLocales === null) return true;
+      const target = speechLang.replace(/_/g, "-").toLowerCase();
+      const base = target.split("-")[0];
+      return spokenLocales.some((locale) => {
+        const normalized = locale.replace(/_/g, "-").toLowerCase();
+        return normalized === target || normalized.split("-")[0] === base;
+      });
+    },
+    [spokenLocales]
+  );
+
   const visibleLanguages = showFullLanguages ? languageOptions : languageOptions.slice(0, 4);
 
   useEffect(() => {
@@ -31164,14 +31249,17 @@ function LanguageSection({
               option.id === "english" ||
               Object.keys(localizedUiCopyByLanguage[option.id] ?? {}).length > 0;
             const hasMenus = navLabelTranslations[option.id] != null;
+            const hasVoice = option.id === "english" || hasDeviceVoice(option.speechLang);
             const supportTag =
               option.id === "english"
                 ? "Default"
                 : hasFullInterface
-                ? "Full interface"
+                ? hasVoice ? "Full interface" : "Full interface · no voice"
                 : hasMenus
-                ? "Menus + voice"
-                : "Voice + English text";
+                ? hasVoice ? "Menus + voice" : "Menus · no voice"
+                : hasVoice
+                ? "Voice + English text"
+                : "English text only";
             const supportTagColor =
               option.id === "english" || hasFullInterface
                 ? "#0E6F69"
