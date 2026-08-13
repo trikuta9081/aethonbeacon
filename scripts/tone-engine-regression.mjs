@@ -60,4 +60,37 @@ assert(app.includes("function stopRelaxingToneCue"), "a stopRelaxingToneCue() mu
 assert(/async function playRelaxingToneCue\(tone: RelaxingToneMode\) \{\s*\n\s*\/\/[\s\S]*?stopRelaxingToneCue\(\);/.test(app), "playRelaxingToneCue must stop any prior cue first so taps can't stack into a buzz");
 assert(app.includes('"⏹ Stop sound"') && app.includes('"⏹ Stop audio"'), "the meditation matching-sound / play-audio buttons must be Play/Stop toggles");
 
-console.log("Tone engine regression passed: pristine presets, safe limiter, native WAV, UI controls, reliable audio-clock-scheduled stop, and no dead cross-tab-interfering tone state verified.");
+// ── Every listed tone must actually make its own sound ───────────────────────
+// Twenty-two ids (ambient-*, asmr-*, reset-quiet, trend-*) used to fall through
+// to a single 174 Hz sine on web and a single generic file on native, so
+// choosing "Ambient rain", "Fireplace", "Forest birds" or "Tibetan bowl" all
+// produced the identical drone. Guard both halves of that fix.
+const listedAmbient = [...new Set(
+  [...app.matchAll(/id: "((?:ambient|asmr|trend)-[a-z0-9-]+|reset-quiet)"/g)].map((m) => m[1])
+)];
+assert(listedAmbient.length >= 20, `expected the ambient/ASMR/trend tone families to still be present, found ${listedAmbient.length}`);
+
+const specBlock = app.slice(app.indexOf("const TONE_TEXTURES"), app.indexOf("async function startContinuousTone"));
+const missingSynthesis = listedAmbient.filter((id) => !specBlock.includes(`"${id}"`));
+assert(
+  missingSynthesis.length === 0,
+  `every ambient/ASMR/trend tone needs its own procedural voice (TONE_TEXTURES / TONE_DRONES / TONE_EVENT_LAYERS) instead of falling through to the shared 174 Hz sine -- missing: ${missingSynthesis.join(", ")}`
+);
+
+const missingNative = listedAmbient.filter((id) => !app.includes(`"${id}": require("./assets/tones/${id}.mp3")`));
+assert(
+  missingNative.length === 0,
+  `every ambient/ASMR/trend tone needs its own bundled native asset in NATIVE_TONE_ASSETS, or Android/iOS silently serve the shared fallback file -- missing: ${missingNative.join(", ")}`
+);
+
+// The generic sine must remain reachable only as a genuine last resort.
+assert(
+  /Last-resort fallback/.test(app),
+  "the 174 Hz sine must be documented as a last-resort fallback, not the default path for whole tone families"
+);
+assert(
+  app.includes("function loop_seam") === false,
+  "loop_seam belongs in the Python asset generator, not App.tsx"
+);
+
+console.log(`Tone engine regression passed: pristine presets, safe limiter, native WAV, UI controls, reliable audio-clock-scheduled stop, no dead cross-tab-interfering tone state, and all ${listedAmbient.length} ambient/ASMR/trend tones carry their own synthesis + native asset.`);

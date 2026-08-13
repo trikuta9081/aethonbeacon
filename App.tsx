@@ -2876,6 +2876,32 @@ type AethonContinuousNodes = {
 // own "else" branch does for those categories -- that is honest parity, not
 // a gap, since web has no distinct synthesis for them either.
 const NATIVE_TONE_ASSETS: Partial<Record<string, ReturnType<typeof require>>> = {
+  // Ambient / ASMR / trend voices. These used to have no entry here, so
+  // getNativeToneAsset() handed every one of them the same generic
+  // fallback file -- which is why rain, fireplace and a Tibetan bowl were
+  // indistinguishable on Android and iOS.
+  "ambient-breath": require("./assets/tones/ambient-breath.mp3"),
+  "ambient-ocean": require("./assets/tones/ambient-ocean.mp3"),
+  "ambient-rain": require("./assets/tones/ambient-rain.mp3"),
+  "ambient-softdrone": require("./assets/tones/ambient-softdrone.mp3"),
+  "ambient-wind": require("./assets/tones/ambient-wind.mp3"),
+  "asmr-bell": require("./assets/tones/asmr-bell.mp3"),
+  "asmr-hum": require("./assets/tones/asmr-hum.mp3"),
+  "asmr-hush": require("./assets/tones/asmr-hush.mp3"),
+  "asmr-paper": require("./assets/tones/asmr-paper.mp3"),
+  "reset-quiet": require("./assets/tones/reset-quiet.mp3"),
+  "trend-432-guitar": require("./assets/tones/trend-432-guitar.mp3"),
+  "trend-528-miracle": require("./assets/tones/trend-528-miracle.mp3"),
+  "trend-cafe": require("./assets/tones/trend-cafe.mp3"),
+  "trend-deep-sleep": require("./assets/tones/trend-deep-sleep.mp3"),
+  "trend-fireplace": require("./assets/tones/trend-fireplace.mp3"),
+  "trend-forest-birds": require("./assets/tones/trend-forest-birds.mp3"),
+  "trend-krishna-flute": require("./assets/tones/trend-krishna-flute.mp3"),
+  "trend-lofi": require("./assets/tones/trend-lofi.mp3"),
+  "trend-om-chant": require("./assets/tones/trend-om-chant.mp3"),
+  "trend-rain-tent": require("./assets/tones/trend-rain-tent.mp3"),
+  "trend-schumann": require("./assets/tones/trend-schumann.mp3"),
+  "trend-tibetan-bowl": require("./assets/tones/trend-tibetan-bowl.mp3"),
   "binaural-delta-1": require("./assets/tones/binaural-delta-1.mp3"),
   "binaural-delta-2": require("./assets/tones/binaural-delta-2.mp3"),
   "binaural-theta-4": require("./assets/tones/binaural-theta-4.mp3"),
@@ -3048,6 +3074,114 @@ async function stopContinuousTone(fadeMs = 700): Promise<void> {
     try { merger?.disconnect(); } catch {}
     try { masterGain.disconnect(); } catch {}
   }, fadeMs + 80);
+}
+
+// ── Ambient / ASMR / trend voice specs ───────────────────────────────────────
+// Every id below used to fall through to one shared 174 Hz sine, so picking
+// "Ambient rain", "Fireplace", "Forest birds" or "Tibetan bowl" produced the
+// identical flat drone. These specs give each family its own procedural voice.
+// All of it is synthesised from noise and oscillators at runtime -- no sampled
+// audio, nothing downloaded, nothing lifted from anyone's recording.
+
+type ToneNoiseColor = "white" | "pink" | "brown";
+
+type ToneTextureSpec = {
+  noise: ToneNoiseColor;
+  filter: BiquadFilterType;
+  freq: number;
+  q: number;
+  gain: number;
+  // Slow amplitude swell -- what makes surf breathe and wind gust instead of
+  // sitting as a flat hiss.
+  swellHz?: number;
+  swellDepth?: number;
+  // Slow filter movement, for weather that shifts rather than loops audibly.
+  sweepHz?: number;
+  sweepDepth?: number;
+};
+
+const TONE_TEXTURES: Record<string, ToneTextureSpec> = {
+  "ambient-rain":       { noise: "white", filter: "highpass", freq: 900,  q: 0.6, gain: 0.30, sweepHz: 0.05, sweepDepth: 260, swellHz: 0.07, swellDepth: 0.16 },
+  "trend-rain-tent":    { noise: "white", filter: "lowpass",  freq: 2100, q: 0.7, gain: 0.34, sweepHz: 0.04, sweepDepth: 420, swellHz: 0.05, swellDepth: 0.20 },
+  "ambient-ocean":      { noise: "brown", filter: "lowpass",  freq: 850,  q: 0.6, gain: 0.60, swellHz: 0.08, swellDepth: 0.55, sweepHz: 0.08, sweepDepth: 260 },
+  "ambient-wind":       { noise: "pink",  filter: "bandpass", freq: 520,  q: 0.8, gain: 0.55, sweepHz: 0.045, sweepDepth: 300, swellHz: 0.06, swellDepth: 0.42 },
+  "trend-cafe":         { noise: "brown", filter: "lowpass",  freq: 700,  q: 0.5, gain: 0.50, swellHz: 0.16, swellDepth: 0.22 },
+  "asmr-hush":          { noise: "white", filter: "lowpass",  freq: 3600, q: 0.5, gain: 0.22, swellHz: 0.10, swellDepth: 0.30 },
+  "reset-quiet":        { noise: "pink",  filter: "lowpass",  freq: 1800, q: 0.5, gain: 0.16, swellHz: 0.03, swellDepth: 0.10 },
+  "trend-fireplace":    { noise: "brown", filter: "lowpass",  freq: 1100, q: 0.6, gain: 0.42, swellHz: 0.12, swellDepth: 0.18 },
+  "trend-forest-birds": { noise: "pink",  filter: "lowpass",  freq: 1500, q: 0.5, gain: 0.20, swellHz: 0.05, swellDepth: 0.14 },
+  "asmr-paper":         { noise: "white", filter: "highpass", freq: 2200, q: 0.7, gain: 0.14 },
+  "ambient-breath":     { noise: "pink",  filter: "lowpass",  freq: 1200, q: 0.6, gain: 0.40 },
+};
+
+type ToneDroneSpec = {
+  base: number;
+  // [frequency multiple of base, relative gain]. Non-integer ratios are how a
+  // struck metal bowl gets its shimmer instead of sounding like an organ.
+  partials: Array<[number, number]>;
+  type: OscillatorType;
+  lowpass?: number;
+  vibratoHz?: number;
+  vibratoCents?: number;
+  amHz?: number;
+  amDepth?: number;
+  // Optional breath/vinyl bed layered under the pitched material.
+  bed?: { noise: ToneNoiseColor; freq: number; gain: number };
+};
+
+const TONE_DRONES: Record<string, ToneDroneSpec> = {
+  "ambient-softdrone":   { base: 110,   partials: [[1, 0.42], [1.5, 0.20], [2, 0.14], [3, 0.05]], type: "sine", lowpass: 1400, amHz: 0.06, amDepth: 0.18 },
+  "trend-432-guitar":    { base: 432,   partials: [[1, 0.30], [2, 0.12], [3, 0.06], [4, 0.03]], type: "triangle", lowpass: 2600, amHz: 0.10, amDepth: 0.22 },
+  "trend-528-miracle":   { base: 528,   partials: [[1, 0.34], [2, 0.10]], type: "sine", amHz: 0.08, amDepth: 0.16 },
+  "trend-om-chant":      { base: 136.1, partials: [[1, 0.36], [2, 0.16], [3, 0.09], [4, 0.04]], type: "sine", lowpass: 1600, amHz: 0.18, amDepth: 0.34 },
+  "trend-krishna-flute": { base: 587.3, partials: [[1, 0.26], [2, 0.07], [3, 0.03]], type: "triangle", lowpass: 3200, vibratoHz: 5.2, vibratoCents: 22, amHz: 0.22, amDepth: 0.30, bed: { noise: "pink", freq: 2600, gain: 0.06 } },
+  "asmr-hum":            { base: 100,   partials: [[1, 0.40], [2, 0.12]], type: "sine", lowpass: 900, vibratoHz: 0.9, vibratoCents: 8 },
+  "trend-deep-sleep":    { base: 60,    partials: [[1, 0.46], [1.5, 0.16], [2, 0.08]], type: "sine", lowpass: 400, amHz: 0.04, amDepth: 0.12 },
+  // 7.83 Hz is below hearing, so the Schumann resonance is carried as an
+  // amplitude modulation on an audible bed rather than pretended to be a tone.
+  "trend-schumann":      { base: 98,    partials: [[1, 0.40], [2, 0.10]], type: "sine", lowpass: 700, amHz: 7.83, amDepth: 0.45 },
+  "trend-lofi":          { base: 220,   partials: [[1, 0.26], [1.5, 0.14], [2, 0.10], [2.5, 0.05]], type: "triangle", lowpass: 1250, amHz: 0.14, amDepth: 0.20, bed: { noise: "brown", freq: 5200, gain: 0.05 } },
+  "trend-tibetan-bowl":  { base: 196,   partials: [[1, 0.30], [2.74, 0.14], [5.41, 0.07], [8.9, 0.03]], type: "sine", lowpass: 4200, amHz: 0.05, amDepth: 0.20 },
+  "asmr-bell":           { base: 523.3, partials: [[1, 0.22], [2.76, 0.10], [5.4, 0.04]], type: "sine", lowpass: 5200 },
+};
+
+// Sparse, randomly-placed events layered over a bed: the crackle of a fire,
+// a bird two trees away, a page turning. Without these the beds are honest
+// but lifeless -- a fire that never pops is just brown noise.
+const TONE_EVENT_LAYERS: Record<string, { perMinute: number; freq: [number, number]; decay: number; gain: number; type: OscillatorType; noise?: boolean }> = {
+  "trend-fireplace":    { perMinute: 46, freq: [420, 1500], decay: 0.11, gain: 0.16, type: "triangle", noise: true },
+  "trend-forest-birds": { perMinute: 11, freq: [1900, 3400], decay: 0.30, gain: 0.10, type: "sine" },
+  "asmr-paper":         { perMinute: 22, freq: [1600, 3000], decay: 0.20, gain: 0.13, type: "triangle", noise: true },
+  "asmr-bell":          { perMinute: 5,  freq: [523, 523],   decay: 4.20, gain: 0.20, type: "sine" },
+  "trend-tibetan-bowl": { perMinute: 4,  freq: [196, 196],   decay: 7.00, gain: 0.22, type: "sine" },
+};
+
+// Shared noise renderer -- one definition for the noise-* tones and every
+// texture bed above, so "pink" means the same thing everywhere.
+function fillToneNoise(data: Float32Array, color: ToneNoiseColor) {
+  const n = data.length;
+  if (color === "brown") {
+    let last = 0;
+    for (let i = 0; i < n; i++) {
+      const w = Math.random() * 2 - 1;
+      last = (last + 0.02 * w) / 1.02;
+      data[i] = last * 3.5;
+    }
+    return;
+  }
+  if (color === "pink") {
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < n; i++) {
+      const w = Math.random() * 2 - 1;
+      b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+      b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+      b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+      data[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+      b6=w*0.115926;
+    }
+    return;
+  }
+  for (let i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * 0.35;
 }
 
 async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOptions = {}): Promise<void> {
@@ -3336,8 +3470,188 @@ async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOp
     nodes.oscillators.push(osc);
     nodes.gainNodes.push(g);
 
+  } else if (TONE_TEXTURES[tone.id] || TONE_DRONES[tone.id]) {
+    // ── Ambient / ASMR / trend voices ─────────────────────────────────────
+    // Previously every id in this branch shared one 174 Hz sine, so a person
+    // choosing "rain" and a person choosing "Tibetan bowl" heard the same
+    // thing. Each family now renders its own texture, pitched material, and
+    // sparse events, all synthesised here at runtime.
+    const t0 = context.currentTime;
+    const texture = TONE_TEXTURES[tone.id];
+    const drone = TONE_DRONES[tone.id];
+
+    // Slow modulators are shared by texture and drone, so a family that has
+    // both (lofi, flute) breathes as one voice rather than two.
+    const startSlowSwell = (target: AudioParam, depth: number, rateHz: number, centre: number) => {
+      const lfo = context.createOscillator();
+      const lfoGain = context.createGain();
+      lfo.type = "sine";
+      lfo.frequency.setValueAtTime(rateHz, t0);
+      lfoGain.gain.setValueAtTime(depth, t0);
+      target.setValueAtTime(centre, t0);
+      lfo.connect(lfoGain);
+      lfoGain.connect(target);
+      lfo.start();
+      nodes.oscillators.push(lfo);
+      nodes.gainNodes.push(lfoGain);
+    };
+
+    if (texture) {
+      const sr = context.sampleRate;
+      // 8 seconds rather than 4: at 4s the ear starts to hear the seam on
+      // broadband weather beds.
+      const bufLen = sr * 8;
+      const buf = context.createBuffer(2, bufLen, sr);
+      for (let ch = 0; ch < 2; ch++) fillToneNoise(buf.getChannelData(ch), texture.noise);
+
+      const src = context.createBufferSource();
+      src.buffer = buf;
+      src.loop = true;
+
+      const filter = context.createBiquadFilter();
+      filter.type = texture.filter;
+      filter.frequency.setValueAtTime(texture.freq, t0);
+      filter.Q.setValueAtTime(texture.q, t0);
+
+      const bedGain = context.createGain();
+      bedGain.gain.setValueAtTime(texture.gain, t0);
+
+      if (texture.sweepHz && texture.sweepDepth) {
+        startSlowSwell(filter.frequency, texture.sweepDepth, texture.sweepHz, texture.freq);
+      }
+      if (texture.swellHz && texture.swellDepth) {
+        startSlowSwell(bedGain.gain, texture.gain * texture.swellDepth, texture.swellHz, texture.gain);
+      }
+
+      src.connect(filter);
+      filter.connect(bedGain);
+      bedGain.connect(masterGain);
+      src.start();
+      nodes.bufferSource = src;
+      nodes.effectNodes.push(filter);
+      nodes.gainNodes.push(bedGain);
+
+      // Guided breathing bed: a 4s draw and a 6s release, which is the
+      // pattern the Calm section already coaches, rather than a flat hiss.
+      if (tone.id === "ambient-breath") {
+        const cycle = 10;
+        const cycles = Math.ceil(scheduledSeconds / cycle);
+        bedGain.gain.cancelScheduledValues(t0);
+        bedGain.gain.setValueAtTime(0.06, t0);
+        for (let i = 0; i < cycles; i++) {
+          const start = t0 + i * cycle;
+          bedGain.gain.linearRampToValueAtTime(texture.gain, start + 4);
+          bedGain.gain.linearRampToValueAtTime(0.06, start + cycle);
+        }
+      }
+    }
+
+    if (drone) {
+      const droneOut = context.createGain();
+      droneOut.gain.setValueAtTime(1, t0);
+      let sink: AudioNode = droneOut;
+      if (drone.lowpass) {
+        const lp = context.createBiquadFilter();
+        lp.type = "lowpass";
+        lp.frequency.setValueAtTime(drone.lowpass, t0);
+        lp.Q.setValueAtTime(0.6, t0);
+        droneOut.connect(lp);
+        lp.connect(masterGain);
+        nodes.effectNodes.push(lp);
+      } else {
+        droneOut.connect(masterGain);
+      }
+      nodes.gainNodes.push(droneOut);
+
+      // A struck voice (bell, bowl) is silent until the event layer strikes
+      // it, so its sustained partials start at zero.
+      const struck = TONE_EVENT_LAYERS[tone.id] !== undefined && (tone.id === "asmr-bell" || tone.id === "trend-tibetan-bowl");
+
+      for (const [ratio, gain] of drone.partials) {
+        const osc = context.createOscillator();
+        const g = context.createGain();
+        osc.type = drone.type;
+        osc.frequency.setValueAtTime(drone.base * ratio, t0);
+        g.gain.setValueAtTime(struck ? gain * 0.25 : gain, t0);
+        if (drone.vibratoHz && drone.vibratoCents) {
+          // Cents converted to Hz at this partial's own frequency, so the
+          // vibrato stays musically even across the stack.
+          const depthHz = drone.base * ratio * (Math.pow(2, drone.vibratoCents / 1200) - 1);
+          startSlowSwell(osc.frequency, depthHz, drone.vibratoHz, drone.base * ratio);
+        }
+        osc.connect(g);
+        g.connect(sink);
+        osc.start();
+        nodes.oscillators.push(osc);
+        nodes.gainNodes.push(g);
+      }
+
+      if (drone.amHz && drone.amDepth) {
+        startSlowSwell(droneOut.gain, drone.amDepth, drone.amHz, 1 - drone.amDepth * 0.5);
+      }
+
+      if (drone.bed && !texture) {
+        const sr = context.sampleRate;
+        const bedBuf = context.createBuffer(2, sr * 8, sr);
+        for (let ch = 0; ch < 2; ch++) fillToneNoise(bedBuf.getChannelData(ch), drone.bed.noise);
+        const bedSrc = context.createBufferSource();
+        bedSrc.buffer = bedBuf;
+        bedSrc.loop = true;
+        const bedFilter = context.createBiquadFilter();
+        bedFilter.type = "lowpass";
+        bedFilter.frequency.setValueAtTime(drone.bed.freq, t0);
+        const bedG = context.createGain();
+        bedG.gain.setValueAtTime(drone.bed.gain, t0);
+        bedSrc.connect(bedFilter);
+        bedFilter.connect(bedG);
+        bedG.connect(masterGain);
+        bedSrc.start();
+        nodes.bufferSource = bedSrc;
+        nodes.effectNodes.push(bedFilter);
+        nodes.gainNodes.push(bedG);
+      }
+    }
+
+    // Sparse events. Scheduled up front across the whole session horizon for
+    // the same reason the isochronic branch does it: setInterval drifts and
+    // dies when the tab is backgrounded, the audio clock does not.
+    const events = TONE_EVENT_LAYERS[tone.id];
+    if (events) {
+      const eventBus = context.createGain();
+      eventBus.gain.setValueAtTime(1, t0);
+      eventBus.connect(masterGain);
+      nodes.gainNodes.push(eventBus);
+      const total = Math.min(900, Math.ceil((scheduledSeconds / 60) * events.perMinute));
+      const meanGap = scheduledSeconds / Math.max(1, total);
+      let at = t0 + 1.5;
+      for (let i = 0; i < total; i++) {
+        // Jittered spacing -- evenly spaced crackles read as a machine.
+        at += meanGap * (0.35 + Math.random() * 1.3);
+        if (at > t0 + scheduledSeconds) break;
+        const osc = context.createOscillator();
+        const g = context.createGain();
+        osc.type = events.type;
+        const f = events.freq[0] + Math.random() * (events.freq[1] - events.freq[0]);
+        osc.frequency.setValueAtTime(f, at);
+        if (events.noise) {
+          // Crackles and paper are pitch-noisy, not tonal.
+          osc.frequency.exponentialRampToValueAtTime(Math.max(80, f * 0.45), at + events.decay);
+        }
+        g.gain.setValueAtTime(0, at);
+        g.gain.linearRampToValueAtTime(events.gain * (0.5 + Math.random() * 0.6), at + 0.006);
+        g.gain.exponentialRampToValueAtTime(0.0001, at + events.decay);
+        osc.connect(g);
+        g.connect(eventBus);
+        osc.start(at);
+        osc.stop(at + events.decay + 0.05);
+        nodes.oscillators.push(osc);
+        nodes.gainNodes.push(g);
+      }
+    }
+
   } else {
-    // ── Generic ambient / ASMR fallback (sustained low drone) ─────────────
+    // ── Last-resort fallback (sustained low drone) ────────────────────────
+    // Reached only by an id with no texture, drone or event spec above.
     const osc = context.createOscillator();
     const g = context.createGain();
     osc.type = "sine";
