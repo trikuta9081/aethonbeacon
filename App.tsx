@@ -24664,7 +24664,7 @@ function ToneLibrarySection({
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     {hasActive && <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#0891B2" }} />}
-                    <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "900" }}>{isOpen ? "▲" : "▼"}</Text>
+                    <Text style={{ color: "#3A577D", fontSize: 13, fontWeight: "900" }}>{isOpen ? "▾" : "▸"}</Text>
                   </View>
                 </Pressable>
                 {isOpen && (
@@ -28298,7 +28298,7 @@ function FreeLegalAidCard({
             NALSA free legal representation is your statutory RIGHT. Every state has SLSA + every district has DLSA. Tap-to-dial. Tap-to-open portal.
           </Text>
         </View>
-        <Text style={{ color: "#10A76B", fontSize: 12, marginLeft: 8 }}>{expanded ? "▲" : "▼"}</Text>
+        <Text style={{ color: "#10A76B", fontSize: 12, marginLeft: 8 }}>{expanded ? "▾" : "▸"}</Text>
       </Pressable>
 
       {expanded && (
@@ -28467,7 +28467,7 @@ function GovtGrievanceCellsCard({
                   <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{section.cells.length}</Text>
                 </View>
               </View>
-              <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{isOpen ? "▲" : "▼"}</Text>
+              <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{isOpen ? "▾" : "▸"}</Text>
             </Pressable>
             {isOpen && (
               <View style={{ backgroundColor: "#E1EEEC", padding: 10, gap: 8 }}>
@@ -28680,7 +28680,7 @@ function HealthDirectoryCard({
                   <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{section.rows.length}</Text>
                 </View>
               </View>
-              <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{isOpen ? "▲" : "▼"}</Text>
+              <Text style={{ color: accent, fontSize: 12, fontWeight: "900" }}>{isOpen ? "▾" : "▸"}</Text>
             </Pressable>
             {isOpen && (
               <View style={{ backgroundColor: "#E1EEEC", padding: 10, gap: 8 }}>
@@ -36488,7 +36488,7 @@ function SupportDimensionLibraryPanel({
                 </Text>
                 <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }}>{actionLabel}: {guide.firstAction}</Text>
               </View>
-              <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900", marginLeft: 6 }}>{isOpen ? "▲" : "▼"}</Text>
+              <Text style={{ color: accentColor, fontSize: 12, fontWeight: "900", marginLeft: 6 }}>{isOpen ? "▾" : "▸"}</Text>
             </Pressable>
             {isOpen ? (
               <View style={{ paddingHorizontal: 14, paddingBottom: 12, paddingTop: 2, backgroundColor: accentColor + "08" }}>

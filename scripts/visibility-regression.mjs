@@ -188,4 +188,16 @@ assert(source.includes("UIManager.setLayoutAnimationEnabledExperimental(true)"),
 const disclosureCalls = (source.match(/animateDisclosure\(\);/g) ?? []).length;
 assert(disclosureCalls >= 15, `expected the disclosure animation to be wired into the app's expand/collapse controls, found only ${disclosureCalls} call sites`);
 
+// ── One disclosure language ──────────────────────────────────────────────────
+// The app was using two conventions for the same gesture: five collapsible
+// rows drew isOpen ? "\u25B2" : "\u25BC" while six others drew the iOS
+// disclosure pair "\u25B8" collapsed / "\u25BE" expanded. Same tap, two
+// visual vocabularies, on the same screen in some cases. Unified on the
+// platform-standard pair. The "\u25B6" glyphs elsewhere are play/pause
+// transport controls, not disclosure, and are deliberately untouched.
+assert(
+  !source.includes('? "\u25B2" : "\u25BC"'),
+  'disclosure carets must use the iOS pair ("\u25B8" collapsed / "\u25BE" expanded), not up/down triangles -- two conventions for one gesture is exactly what makes a screen feel unowned'
+);
+
 console.log('Visibility regression passed: app text avoids known low-contrast colors, sub-12px copy, tiny line heights, tiny portal labels, black-on-dark action/badge text, the Tones dark-on-dark contrast bug stays fixed, all Active-focus strips share one design-system token, and full-screen headers use real safe-area insets.');
