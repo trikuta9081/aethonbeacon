@@ -32375,7 +32375,7 @@ function BirthChartSection({
                   if (digits.length === 2) refDobMM.current?.focus();
                 }}
                 placeholder="DD"
-                placeholderTextColor="#52656B"
+                placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={2}
                 returnKeyType="next"
@@ -32400,7 +32400,7 @@ function BirthChartSection({
                   if (digits.length === 2) refDobYYYY.current?.focus();
                 }}
                 placeholder="MM"
-                placeholderTextColor="#52656B"
+                placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={2}
                 returnKeyType="next"
@@ -32425,7 +32425,7 @@ function BirthChartSection({
                   if (digits.length === 4) refTimeMM.current?.focus();
                 }}
                 placeholder="YYYY"
-                placeholderTextColor="#52656B"
+                placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={4}
                 returnKeyType="next"
@@ -32461,7 +32461,7 @@ function BirthChartSection({
                   if (digits.length === 2) refTimeMM.current?.focus();
                 }}
                 placeholder="HH"
-                placeholderTextColor="#52656B"
+                placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={2}
                 returnKeyType="next"
@@ -32485,7 +32485,7 @@ function BirthChartSection({
                   if (digits.length === 2) refPlace.current?.focus();
                 }}
                 placeholder="MM"
-                placeholderTextColor="#52656B"
+                placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={2}
                 returnKeyType="next"
@@ -32515,7 +32515,7 @@ function BirthChartSection({
             value={placeDraft}
             onChangeText={setPlaceDraft}
             placeholder="City, State, Country — e.g. Mumbai, Maharashtra, India"
-            placeholderTextColor="#52656B"
+            placeholderTextColor="#8C9AA1"
             autoCorrect={false}
             autoCapitalize="words"
             returnKeyType="done"
