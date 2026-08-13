@@ -21873,8 +21873,6 @@ function isTrustedExternalUrl(url: string) {
                 onSendPrivateSpaceMessage={sendPrivateSpaceMessage}
                 onClearPrivateSpaceRoom={clearPrivateSpaceRoom}
                 aiHelpMessages={aiHelpMessages}
-                aiHelpDraft={aiHelpDraft}
-                setGuidedSupportDraft={setGuidedSupportDraft}
               aiHelpLoading={aiHelpLoading}
               aiHelpProvider={aiHelpProvider}
                 aiHelpProviderLabel={aiHelpProviderLabel}
@@ -25583,8 +25581,6 @@ function CommunitySection({
   onSendPrivateSpaceMessage,
   onClearPrivateSpaceRoom,
   aiHelpMessages,
-  aiHelpDraft,
-  setGuidedSupportDraft,
   aiHelpLoading,
   aiHelpProvider,
   aiHelpProviderLabel,
@@ -25641,8 +25637,6 @@ function CommunitySection({
   onSendPrivateSpaceMessage: (text: string) => boolean;
   onClearPrivateSpaceRoom: (roomId: string) => void;
   aiHelpMessages: GuidedSupportMessage[];
-  aiHelpDraft: string;
-  setGuidedSupportDraft: (value: string) => void;
   aiHelpLoading: boolean;
   aiHelpProvider: GuideReplyProvider;
   aiHelpProviderLabel: string;
