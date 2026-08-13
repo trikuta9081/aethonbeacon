@@ -242,12 +242,24 @@ assert(
 }
 
 // ── Weight discipline on small labels ────────────────────────────────────────
-// Measured on the deployed build: 57% of every visible text node rendered at
-// weight 900, and 38% was heavy-and-small (>=800 at <=13px) -- navigation
-// labels, chip labels, button labels. When the heaviest weight is the default
-// there is no emphasis left to spend on the things that need it. Small labels
-// now sit at 700, which is still unambiguously bold, and the weight above it
-// is reserved for titles and values at 14px and up.
+// Measured on the deployed build, before and after:
+//
+//                        before   shared styles   + inline
+//   weight 900             57%         31%          21.4%
+//   heavy-and-small      38.1%       11.9%           2.4%
+//
+// Navigation labels, chip labels and button labels were all set in the
+// heaviest weight available. When the maximum is the default there is no
+// emphasis left to spend on the things that need it; 900 now lands only on
+// titles and values ("Aethon Beacon", "Counselling", the clarity score).
+//
+// The rule enforced below is precisely: no 900 at 13px or under. It is NOT
+// "800 and 900 are reserved for 14px and up" -- an earlier commit message of
+// mine said that, and it was wrong. 97 styles still use 800 at 12-13px and
+// they are fine: 800 is legitimate emphasis on a small label, and flattening
+// every small label to one weight would remove nuance rather than add
+// hierarchy. The problem was the ceiling being the default, not the
+// existence of a step between 700 and 900.
 {
   const stylesBlock = source.slice(
     source.indexOf("const styles = StyleSheet.create({"),
