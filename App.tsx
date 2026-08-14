@@ -6252,6 +6252,22 @@ type UiCopy = {
   complaint: string;
   help: string;
   read: string;
+  openHelpAndRedress: string;
+  homeSupportTitle: string;
+  homeSupportLead: string;
+  homeSupportCounsellingTitle: string;
+  homeSupportCounsellingBody: string;
+  homeSupportCounsellingCta: string;
+  homeSupportCalmTitle: string;
+  homeSupportCalmBody: string;
+  homeSupportCalmCta: string;
+  homeSupportVedicTitle: string;
+  homeSupportVedicBody: string;
+  homeSupportVedicCta: string;
+  homeSupportCommunityTitle: string;
+  homeSupportCommunityBody: string;
+  homeSupportCommunityCta: string;
+  homePrivacyNote: string;
   journalEyebrow: string;
   journalTitle: string;
   journalLoopEyebrow: string;
@@ -6311,12 +6327,28 @@ const englishUiCopy: UiCopy = {
   seeRooms: "See rooms",
   unlockChat: "Unlock chat",
   quickExitEyebrow: "Help and Redress",
-  quickExitTitle: "Emergency and formal support",
+  quickExitTitle: "In immediate danger, call 112.",
   quickExitPrompt: "Use this section for emergency assistance, complaint routes, official escalation, or guided support.",
   sos: "SOS",
   complaint: "Complaint",
   help: "Help",
   read: "Read",
+  openHelpAndRedress: "Open Help and Redress",
+  homeSupportTitle: "Choose the right support in one tap.",
+  homeSupportLead: "Begin with private counselling, or open calm support, Vedic insight, or verified community on its own focused page.",
+  homeSupportCounsellingTitle: "Counselling",
+  homeSupportCounsellingBody: "A private guided room with a 30-message arc and optional next-step checkpoints.",
+  homeSupportCounsellingCta: "Primary support",
+  homeSupportCalmTitle: "Calm / Tones",
+  homeSupportCalmBody: "Curated sound, breath timing, meditation, and body reset.",
+  homeSupportCalmCta: "Open calm",
+  homeSupportVedicTitle: "Vedic Insight",
+  homeSupportVedicBody: "Moon-chart based guidance with practical remedies.",
+  homeSupportVedicCta: "View insight",
+  homeSupportCommunityTitle: "Community",
+  homeSupportCommunityBody: "Verified support conversations when access is confirmed.",
+  homeSupportCommunityCta: "Open messages",
+  homePrivacyNote: "Privacy first: notes stay local unless you choose verified sharing, export, or tester enrolment.",
   journalEyebrow: "Private journal",
   journalTitle: "Your private journal",
   journalLoopEyebrow: "How it works",
@@ -6379,12 +6411,28 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     seeRooms: "Rooms देखें",
     unlockChat: "Chat खोलें",
     quickExitEyebrow: "त्वरित निकास",
-    quickExitTitle: "SOS, शिकायत, या मदद",
+    quickExitTitle: "तुरंत खतरे में 112 पर कॉल करें।",
     quickExitPrompt: "इस strip का उपयोग urgent help, complaint route, या main intake से तेज़ hand-off के लिए करें।",
     sos: "SOS",
     complaint: "शिकायत",
     help: "मदद",
     read: "पढ़ें",
+    openHelpAndRedress: "मदद और शिकायत खोलें",
+    homeSupportTitle: "एक टैप में सही support चुनें।",
+    homeSupportLead: "निजी counselling से शुरू करें, या calm support, Vedic insight, और verified community को अलग focused page पर खोलें।",
+    homeSupportCounsellingTitle: "Counselling",
+    homeSupportCounsellingBody: "एक निजी guided room, 30-message arc, और optional next-step checkpoints के साथ।",
+    homeSupportCounsellingCta: "मुख्य support",
+    homeSupportCalmTitle: "Calm / Tones",
+    homeSupportCalmBody: "चुनी हुई sound, सांस की timing, meditation, और body reset।",
+    homeSupportCalmCta: "Calm खोलें",
+    homeSupportVedicTitle: "Vedic Insight",
+    homeSupportVedicBody: "Moon-chart आधारित guidance, practical remedies के साथ।",
+    homeSupportVedicCta: "Insight देखें",
+    homeSupportCommunityTitle: "Community",
+    homeSupportCommunityBody: "Verified access मिलने पर support conversations तैयार रहती हैं।",
+    homeSupportCommunityCta: "Messages खोलें",
+    homePrivacyNote: "Privacy first: notes सिर्फ़ आपके device पर रहती हैं, जब तक आप verified sharing, export, या tester enrolment न चुनें।",
     journalEyebrow: "जर्नल",
     journalTitle: "लिखें, फिर आगे बढ़ें",
     journalLoopEyebrow: "लूप",
@@ -22774,8 +22822,8 @@ function TodaySection({
         <View style={styles.homeSafetyStrip}>
           <View style={styles.sectionHeader}>
             <View style={{ flex: 1, minWidth: 0 }}>
-              <Text style={[styles.eyebrow, { color: "#B82200" }]}>Help and Redress</Text>
-              <Text style={[styles.sectionTitleSmall, { color: "#6B1E17" }]}>In immediate danger, call 112.</Text>
+              <Text style={[styles.eyebrow, { color: "#B82200" }]}>{uiCopy.quickExitEyebrow}</Text>
+              <Text style={[styles.sectionTitleSmall, { color: "#6B1E17" }]}>{uiCopy.quickExitTitle}</Text>
             </View>
             <Text style={styles.smallMeta}>Top priority</Text>
           </View>
@@ -22789,8 +22837,8 @@ function TodaySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={styles.footerQuickActionLabel}>SOS 112</Text>
-              <Text style={styles.footerQuickActionMeta}>Immediate danger</Text>
+              <Text style={styles.footerQuickActionLabel}>{uiCopy.sos} 112</Text>
+              <Text style={styles.footerQuickActionMeta}>{uiCopy.quickExitPrompt}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -22801,8 +22849,8 @@ function TodaySection({
                 pressed && styles.pressed
               ]}
             >
-                <Text style={styles.footerQuickActionLabel}>Open Help and Redress</Text>
-                <Text style={styles.footerQuickActionMeta}>Numbers, complaint routes, evidence guidance</Text>
+                <Text style={styles.footerQuickActionLabel}>{uiCopy.openHelpAndRedress}</Text>
+                <Text style={styles.footerQuickActionMeta}>{uiCopy.quickExitPrompt}</Text>
             </Pressable>
           </View>
         </View>
@@ -22827,49 +22875,49 @@ function TodaySection({
         >
           <View style={[styles.sectionHeader, { marginBottom: 12 }]}>
             <View style={{ flex: 1, minWidth: 0 }}>
-              <Text style={[styles.eyebrow, { color: "#0A6F66" }]}>Start here</Text>
-              <Text style={[styles.sectionTitleSmall, { color: "#0D1F22" }]}>Choose the right support in one tap.</Text>
+              <Text style={[styles.eyebrow, { color: "#0A6F66" }]}>{uiCopy.homeStartMeta}</Text>
+              <Text style={[styles.sectionTitleSmall, { color: "#0D1F22" }]}>{uiCopy.homeSupportTitle}</Text>
             </View>
             <Text style={styles.smallMeta}>Premium flow</Text>
           </View>
           <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginBottom: 14 }}>
-            Begin with private counselling, or open calm support, Vedic insight, or verified community on its own focused page.
+            {uiCopy.homeSupportLead}
           </Text>
           <View style={{ flexDirection: compact ? "column" : "row", flexWrap: "wrap", gap: 10 }}>
             {[
               {
                 id: "ask",
                 icon: "sparkles" as keyof typeof Ionicons.glyphMap,
-                title: "Counselling",
-                body: "A private guided room with a 30-message arc and optional next-step checkpoints.",
-                cta: "Primary support",
+                title: uiCopy.homeSupportCounsellingTitle,
+                body: uiCopy.homeSupportCounsellingBody,
+                cta: uiCopy.homeSupportCounsellingCta,
                 tab: "aihelp" as TabId,
                 accent: "#0B6F66"
               },
               {
                 id: "calm",
                 icon: "flower" as keyof typeof Ionicons.glyphMap,
-                title: "Calm / Tones",
-                body: "Curated sound, breath timing, meditation, and body reset.",
-                cta: "Open calm",
+                title: uiCopy.homeSupportCalmTitle,
+                body: uiCopy.homeSupportCalmBody,
+                cta: uiCopy.homeSupportCalmCta,
                 tab: "tones" as TabId,
                 accent: "#7C3AED"
               },
               {
                 id: "chart",
                 icon: "planet" as keyof typeof Ionicons.glyphMap,
-                title: "Vedic Insight",
-                body: "Moon-chart based guidance with practical remedies.",
-                cta: "View insight",
+                title: uiCopy.homeSupportVedicTitle,
+                body: uiCopy.homeSupportVedicBody,
+                cta: uiCopy.homeSupportVedicCta,
                 tab: "vedic" as TabId,
                 accent: "#A14A08"
               },
               {
                 id: "community",
                 icon: "chatbubbles" as keyof typeof Ionicons.glyphMap,
-                title: "Community",
-                body: "Verified support conversations when access is confirmed.",
-                cta: "Open messages",
+                title: uiCopy.homeSupportCommunityTitle,
+                body: uiCopy.homeSupportCommunityBody,
+                cta: uiCopy.homeSupportCommunityCta,
                 tab: "community" as TabId,
                 accent: "#2563EB"
               }
@@ -22935,7 +22983,7 @@ function TodaySection({
           }}>
             <Ionicons name="lock-closed" size={15} color="#0E6F69" />
             <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 17, fontWeight: "800", flex: 1 }}>
-              Privacy first: notes stay local unless you choose verified sharing, export, or tester enrolment.
+              {uiCopy.homePrivacyNote}
             </Text>
           </View>
         </View>
