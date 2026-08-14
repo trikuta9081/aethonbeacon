@@ -166,12 +166,24 @@ assert(!source.includes('title: "Help and Redress",\n                body:'), 'H
 [
   'Choose what you need today.',
   'automatic counselling engine',
-  'Help and Redress is always available',
-  'Profile details are optional. You can enter the app now and add more later.',
+  'Help and Redress remains available from every page',
+  'Profile details are optional',
   'Privacy first',
-  'Skip for now',
-  'Enter app'
+  'Explore first'
 ].forEach((marker) => assert(source.includes(marker), `Missing onboarding/privacy marker: ${marker}`));
+assert(source.includes('compactOnboarding && styles.launchNeedCardCompact'), 'Mobile onboarding choices must stack instead of clipping below the sheet.');
+assert(source.includes('need.id === "guide" && styles.launchNeedCardPrimary'), 'Counselling must remain the visually dominant onboarding route.');
+assert(!source.includes('setStartupAccessPromptAutoOpen(true)'), 'Choosing an onboarding route must not trigger a second timed profile sheet; profile setup remains optional.');
+
+// Calm and Meditation are separate focused pages. They must not render both
+// long engines at once, and their deeper libraries stay progressive.
+assert(source.includes('activeTab === "meditation" ? <MeditationSection'), 'Meditation must render only on its own focused page.');
+assert(source.includes('activeTab === "focus" ? <FocusSection'), 'Calm Reset must render only on its own focused page.');
+assert(source.includes('Recommended now · {calmProgram.name}'), 'Calm must begin with the same issue-matched programme used by Path.');
+assert(source.includes('Continue to Path'), 'Calm must provide a direct hand-off to the practical Path.');
+assert(source.includes('Voice never starts automatically.'), 'Calm must state and preserve opt-in voice behavior.');
+assert(source.includes('Explore more meditation methods'), 'Meditation must progressively disclose its longer practice library.');
+assert(source.includes('View supporting perspectives'), 'Meditation support perspectives must remain hidden until requested.');
 
 // Counselling opens on the prompt entry rather than a text-heavy summary and
 // the Action Plan keeps all supporting sections coordinated around one issue.

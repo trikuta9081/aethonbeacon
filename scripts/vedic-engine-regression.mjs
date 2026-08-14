@@ -28,6 +28,8 @@ assert(blueprintCount === 48, `Moon Chart engine must contain exactly multi-dime
 
 const userFacingSource = source.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
 assert(!/sun chart|solar chart|surya chart/i.test(userFacingSource), 'User-facing Sun/Solar/Surya chart phrase detected');
+assert(!source.includes('RASHI_DAILY_PREDICTIONS'), 'Generic rotating Rashi forecast paragraphs must not remain in the calculation engine');
+assert(source.includes('static Rashi copy is deliberately not surfaced'), 'Daily prediction must document that it is calculated from Moon-chart timing rather than static sign copy');
 
 assert(source.includes('COUNSELING_THEME_TO_MOON48_CATEGORIES'), 'Counselling theme to Moon Chart insight category mapping is missing');
 assert(source.includes('buildMoonChartCounselingOverlay'), 'Counselling synthesis Moon Chart insight overlay is missing');
@@ -173,6 +175,7 @@ assert(expectedBalance === 7.5, `Sample Chandra balance should be 7.5 years; got
 // Automatic Counselling chat overlays, mirroring COUNSELING_THEME_TO_MOON48_CATEGORIES.
 assert(source.includes('const ISSUE_TO_MOON48_CATEGORIES'), 'Issue-to-Moon-Chart category map is missing from Path');
 assert(source.includes('function buildPathMoonChartComplement'), 'Path Moon Chart complement builder is missing');
+assert(source.includes('pathCalmProgram'), 'Path must draw its stabilisation step from the active issue-specific Calm programme');
 assert(source.includes('moonChartComplement = useMemo'), 'Path does not memoize its Moon Chart complement');
 assert(source.includes('moonChartInsightReadings={vedicMoonChartInsightReadings}'), 'Path is not receiving the live Moon Chart insight readings');
 assert(source.includes('Moon Chart complement'), 'Moon Chart complement panel is not rendered on Path');
@@ -267,11 +270,13 @@ assert(source.includes('Find: {target.label}'), 'SupportDimensionLibraryPanel do
 assert(source.includes('const [chartBriefLang, setChartBriefLang] = useState<"en" | "hi">("en")'), 'chartBriefLang must be a single lifted state (in App()) shared by the chart brief and Ask-the-chart engine');
 assert(source.includes('chartBriefLang={chartBriefLang}') && source.includes('setChartBriefLang={setChartBriefLang}'), 'chartBriefLang/setChartBriefLang must be threaded into BirthChartSection as props');
 assert(source.includes('lang: chartBriefLang'), 'submitAstroQuestion must pass the shared language into nextAstroChatReply');
-assert(source.includes('RASHI_CATEGORY_LENSES_HI') && source.includes('RASHI_REMEDIES_HI') && source.includes('LAL_KITAB_REMEDY_PACK_HI'), 'Ask-the-chart Hindi string packs (rashi lenses, rashi remedies, Lal Kitab) must exist');
+assert(source.includes('RASHI_CATEGORY_LENSES_HI') && source.includes('RASHI_REMEDIES_HI'), 'Ask-the-chart Hindi string packs must exist');
 assert(source.includes('function astroCategoryLabel'), 'Ask-the-chart must localise the question-category label');
 assert(/नौकरी|करियर/.test(source) && /classifyAstroQuestion/.test(source), 'classifyAstroQuestion must match Hindi/Devanagari question keywords');
 assert(source.includes('चार्ट से पूछें'), 'Ask-the-chart UI must render the Hindi title when chartBriefLang is hi');
-assert(source.includes('वैदिक + लाल किताब उपाय'), 'Ask-the-chart remedy header must be bilingual');
+assert(source.includes('Practical support') && source.includes('व्यावहारिक सहारा'), 'Ask-the-chart practical-support header must be bilingual');
+assert(source.includes('calculationBasis: result.calculationBasis'), 'Ask-the-chart must preserve the calculated basis for optional disclosure');
+assert(source.includes('No non-lunar predictive overlay is included'), 'Ask-the-chart calculation basis must explicitly remain Moon-chart only');
 
 // ── Bilingual multi-dimensional Moon-chart calculation layer ──────────────────────
 // The shared reading engine now produces Hindi as well as English, driven by

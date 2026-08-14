@@ -127,7 +127,9 @@ android {
         release {
             if (hasReleaseKeystore) {
                 signingConfig signingConfigs.release
-            } else {
+            } else if (gradle.startParameter.taskNames.any { taskName ->
+                taskName.toLowerCase().contains("release")
+            }) {
                 throw new GradleException("Missing android/keystore.properties. Release builds must use a dedicated upload keystore.")
             }
             def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'

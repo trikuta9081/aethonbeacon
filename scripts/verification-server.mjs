@@ -52,6 +52,15 @@ const defaultGuidanceModel = `${legacyProviderPrefix}-2.5-flash`;
 const guidanceModel = (process.env.GUIDANCE_MODEL ?? process.env[legacyProviderModelName] ?? defaultGuidanceModel).trim() || defaultGuidanceModel;
 const adminLoginIdentity = (process.env.ADMIN_LOGIN_ID ?? "").trim().toLowerCase();
 const adminLoginCode = (process.env.ADMIN_LOGIN_CODE ?? "").trim();
+// Signed verification challenges remove the old single-process dependency:
+// a code requested before a Render restart (or answered by another instance)
+// can still be confirmed. ADMIN_LOGIN_CODE is a stable compatibility fallback
+// for existing deployments; VERIFICATION_SIGNING_SECRET should be configured
+// independently for production.
+const verificationSigningSecret =
+  (process.env.VERIFICATION_SIGNING_SECRET ?? "").trim() ||
+  adminLoginCode ||
+  (debugPreview ? "aethon-local-verification" : "");
 const guidanceFallbackModels = [
   `${legacyProviderPrefix}-2.5-flash`,
   `${legacyProviderPrefix}-2.5-flash-lite`,
@@ -211,6 +220,55 @@ function makeDeliveryId() {
 
 function keyFor(channel, phone, email) {
   return channel === "phone" ? `phone:${phone}` : `email:${email}`;
+}
+
+function verificationDestination(channel, phone, email) {
+  return channel === "phone" ? phone : email.trim().toLowerCase();
+}
+
+function base64UrlJson(value) {
+  return Buffer.from(JSON.stringify(value), "utf8").toString("base64url");
+}
+
+function signVerificationValue(value) {
+  if (verificationSigningSecret.length === 0) return "";
+  return createHmac("sha256", verificationSigningSecret).update(value).digest("base64url");
+}
+
+function createVerificationChallenge({ channel, destination, deliveryId, code, expiresAt }) {
+  if (verificationSigningSecret.length === 0) return "";
+  const nonce = randomUUID();
+  const proof = signVerificationValue(`${channel}|${destination}|${code}|${expiresAt}|${nonce}`);
+  const payload = base64UrlJson({ v: 1, channel, destination, deliveryId, expiresAt, nonce, proof });
+  return `${payload}.${signVerificationValue(payload)}`;
+}
+
+function readVerificationChallenge(challenge) {
+  if (verificationSigningSecret.length === 0 || typeof challenge !== "string") return null;
+  const [encoded, signature, extra] = challenge.split(".");
+  if (!encoded || !signature || extra || !timingSafeEqualStrings(signature, signVerificationValue(encoded))) return null;
+  try {
+    const parsed = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8"));
+    if (
+      parsed?.v !== 1 ||
+      !["phone", "email"].includes(parsed?.channel) ||
+      typeof parsed?.destination !== "string" ||
+      typeof parsed?.deliveryId !== "string" ||
+      typeof parsed?.expiresAt !== "number" ||
+      typeof parsed?.nonce !== "string" ||
+      typeof parsed?.proof !== "string"
+    ) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function challengeCodeMatches(challenge, code) {
+  const expected = signVerificationValue(
+    `${challenge.channel}|${challenge.destination}|${code}|${challenge.expiresAt}|${challenge.nonce}`
+  );
+  return timingSafeEqualStrings(challenge.proof, expected);
 }
 
 function withinWindow(timestamps, windowMs) {
@@ -1172,6 +1230,7 @@ async function handleRequest(req, res) {
         providerTimeoutMs,
         guidanceTimeoutMs
       },
+      verificationChallenge: verificationSigningSecret.length > 0,
       pending: pendingVerifications.size,
       debugPreview
     };
@@ -1472,9 +1531,18 @@ async function handleRequest(req, res) {
         attempts: 0
       });
 
+      const challenge = createVerificationChallenge({
+        channel,
+        destination: verificationDestination(channel, phone, email),
+        deliveryId,
+        code,
+        expiresAt
+      });
+
       json(res, 200, {
         destination,
         deliveryId,
+        ...(challenge ? { challenge } : {}),
         message: `Verification code queued for ${channel}.`,
         ...(debugPreview ? { previewCode: code } : {})
       });
@@ -1491,6 +1559,7 @@ async function handleRequest(req, res) {
       const code = typeof body?.code === "string" ? body.code.trim() : "";
       const phone = typeof body?.phone === "string" ? body.phone.trim() : "";
       const email = typeof body?.email === "string" ? body.email.trim() : "";
+      const challengeToken = typeof body?.challenge === "string" ? body.challenge.trim() : "";
 
       if (!channel) {
         json(res, 400, { verified: false, message: "channel must be phone or email." });
@@ -1498,6 +1567,40 @@ async function handleRequest(req, res) {
       }
       if (code.length === 0) {
         json(res, 400, { verified: false, message: "code is required." });
+        return;
+      }
+
+      const destination = verificationDestination(channel, phone, email);
+      const challenge = challengeToken ? readVerificationChallenge(challengeToken) : null;
+      if (challengeToken) {
+        if (!challenge || challenge.channel !== channel || challenge.destination !== destination) {
+          json(res, 401, { verified: false, message: "Verification request is invalid. Send a new code." });
+          return;
+        }
+        if (Date.now() > challenge.expiresAt) {
+          json(res, 410, { verified: false, message: "Verification code expired. Send a new code." });
+          return;
+        }
+        if (!challengeCodeMatches(challenge, code)) {
+          const pendingKey = keyFor(channel, phone, email);
+          const pending = pendingVerifications.get(pendingKey);
+          if (pending) {
+            pending.attempts += 1;
+            if (pending.attempts >= maxConfirmAttempts) {
+              pendingVerifications.delete(pendingKey);
+              json(res, 429, { verified: false, message: "Too many incorrect attempts. Send a new code." });
+              return;
+            }
+          }
+          json(res, 401, { verified: false, message: "Verification code did not match." });
+          return;
+        }
+        pendingVerifications.delete(keyFor(channel, phone, email));
+        json(res, 200, {
+          verified: true,
+          deliveryId: challenge.deliveryId,
+          message: `Verification complete for ${channel}.`
+        });
         return;
       }
 

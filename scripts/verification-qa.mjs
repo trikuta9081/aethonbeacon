@@ -52,27 +52,6 @@ async function requestAndConfirm({ baseUrl, channel, destination, code }) {
     profileGender: "prefer_not_to_say"
   };
 
-  if (code) {
-    const confirm = await postJson(`${baseUrl}/verification/confirm`, {
-      ...payload,
-      code
-    });
-
-    if (!confirm.ok || confirm.body.verified !== true) {
-      throw new Error(
-        `${channel} confirm failed with ${confirm.status}: ${confirm.body.message ?? "unknown error"}`
-      );
-    }
-
-    return {
-      channel,
-      destination: redactDestination(destination),
-      confirmStatus: confirm.status,
-      verified: true,
-      confirmedExistingCode: true
-    };
-  }
-
   const request = await postJson(`${baseUrl}/verification/request`, payload);
   if (!request.ok) {
     throw new Error(
@@ -93,7 +72,8 @@ async function requestAndConfirm({ baseUrl, channel, destination, code }) {
 
   const confirm = await postJson(`${baseUrl}/verification/confirm`, {
     ...payload,
-    code: deliveredCode
+    code: deliveredCode,
+    challenge: request.body.challenge || undefined
   });
 
   if (!confirm.ok || confirm.body.verified !== true) {
@@ -107,8 +87,9 @@ async function requestAndConfirm({ baseUrl, channel, destination, code }) {
     destination: redactDestination(destination),
     requestStatus: request.status,
     confirmStatus: confirm.status,
-    verified: true,
-    usedPreviewCode: Boolean(request.body.previewCode && !code)
+      verified: true,
+      usedPreviewCode: Boolean(request.body.previewCode && !code),
+      signedChallenge: Boolean(request.body.challenge)
   };
 }
 

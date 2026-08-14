@@ -7,11 +7,9 @@ mode (binaural beats, solfeggio/AUM sustained tones, procedural noise colors,
 bilateral pulses, isochronic pulses) so the native (Android/iOS) app can play
 the actual matching sound per tone instead of one generic ambient file.
 
-Every synthesis algorithm here is a direct port of the Web Audio implementation
-in App.tsx's startContinuousTone() -- same frequency tables, same harmonic
-gains, same noise-filter coefficients, same pulse envelopes -- so native output
-matches what the web build has always produced. This does NOT invent new
-sound design; it makes native match the existing, already-shipped web engine.
+Every synthesis algorithm here is mirrored in App.tsx's Web Audio implementation
+so native output matches web playback. The five ``studio-*`` modes are original
+AethonBeacon compositions rather than copies of third-party recordings.
 
 Categories intentionally NOT covered here (ambient-rain/ocean/wind/softdrone/
 breath, asmr-hush/paper/hum/bell, reset-quiet, trend-*) are not given unique
@@ -92,6 +90,26 @@ def gen_solfeggio(freq, duration=12.0):
     )
     stereo = np.stack([tone, tone], axis=1)
     return fade_edges(stereo, int(SR * 0.05))
+
+# ── Original studio soundscapes: slow harmonic ensembles ─────────────────
+STUDIO_PROFILES = {
+    "studio-crystal": ([294, 441, 588, 882], [0.42, 0.12, 0.055, 0.018], 0.075),
+    "studio-shimmer": ([264, 396, 528, 792], [0.40, 0.11, 0.045, 0.015], 0.055),
+    "studio-slow-pulse": ([174, 261, 348], [0.43, 0.10, 0.035], 0.10),
+    "studio-body-scan": ([110, 165, 220], [0.46, 0.12, 0.035], 0.035),
+    "studio-still-point": ([196, 294, 392], [0.38, 0.07, 0.018], 0.025),
+}
+
+def gen_studio(frequencies, gains, swell_hz, duration=16.0):
+    t = np.arange(int(SR * duration)) / SR
+    tone = np.zeros_like(t)
+    for idx, (freq, gain) in enumerate(zip(frequencies, gains)):
+        phase = idx * np.pi / 7.0
+        tone += gain * np.sin(2 * np.pi * freq * t + phase)
+    swell = 0.82 + 0.16 * np.sin(2 * np.pi * swell_hz * t - np.pi / 2)
+    tone *= swell * 0.64
+    stereo = np.stack([tone, tone], axis=1)
+    return fade_edges(stereo, int(SR * 0.35))
 
 # ── Procedural noise: same filters as the web buffer generator ─────────────
 def one_pole_lowpass(x, cutoff_hz):
@@ -427,6 +445,10 @@ for tone_id, (fL, fR) in BINAURAL_FREQ.items():
 
 for tone_id, freq in SOL_FREQ.items():
     write_wav(os.path.join(OUT_DIR, f"{tone_id}.wav"), gen_solfeggio(freq))
+    count += 1
+
+for tone_id, (frequencies, gains, swell_hz) in STUDIO_PROFILES.items():
+    write_wav(os.path.join(OUT_DIR, f"{tone_id}.wav"), gen_studio(frequencies, gains, swell_hz))
     count += 1
 
 for tone_id in ["noise-brown", "noise-pink", "noise-white"]:

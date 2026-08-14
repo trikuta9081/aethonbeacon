@@ -160,6 +160,26 @@ assert(!source.includes(hiddenNumericReading), 'Public numeric Vedic reading ter
   'toneNowPlaying',
 ].forEach((marker) => indexOf(marker));
 
+// Voice readout is explicitly opt-in and prioritises a natural Indian device
+// voice. Male/female character comes from the installed voice rather than a
+// synthetic pitch effect; pitch remains close to normal human speech.
+[
+  'const [voiceAssistEnabled, setVoiceAssistEnabled] = useState(false)',
+  'normalizedVoice.endsWith("-in")',
+  'getReadyWebVoices',
+  'const speakPitch = 1.0',
+  'Natural · Indian voice',
+  'Pitch stays close to a normal speaking voice',
+].forEach((marker) => indexOf(marker));
+assert(
+  !source.includes('voiceGender === "female" ? 1.02 : 0.98'),
+  'Male/female voice selection must use an installed device voice, not synthetic pitch-shifting'
+);
+assert(
+  !/useEffect\s*\(\s*\(\)\s*=>\s*\{[\s\S]{0,600}?speakGuidance\(/.test(source),
+  'Voice guidance must not start automatically from an effect'
+);
+
 // Lock in that ToneLibrarySection is rendered unconditionally (hidden via
 // style, not removed from the tree) -- a regression back to
 // `{activeTab === "tones" && <ToneLibrarySection` would silently reintroduce

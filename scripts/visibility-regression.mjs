@@ -70,6 +70,11 @@ function mustNotMatch(pattern, message) {
   `onboardingSheet: {
     width: "94%",
     maxWidth: 680,`,
+  `onboardingSheetCompact: {
+    width: "96%",
+    maxHeight: "92%",`,
+  `launchNeedCardCompact: {
+    flexBasis: "100%",`,
   `homeSafetyStrip: {\n    maxWidth: "100%",\n    overflow: "hidden",\n    marginTop: 0,`,
   `profileGenderGrid: {\n    flexWrap: "wrap"`,
   `profileGenderButton: {\n    flexGrow: 1,\n    flexBasis: "46%"`,

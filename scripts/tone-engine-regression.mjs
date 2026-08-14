@@ -4,6 +4,8 @@ import { readFileSync, statSync } from "node:fs";
 const app = readFileSync("App.tsx", "utf8");
 const pkg = JSON.parse(readFileSync("package.json", "utf8"));
 const asset = statSync("assets/aethon-pristine-tone.wav");
+const studioToneIds = ["studio-crystal", "studio-shimmer", "studio-slow-pulse", "studio-body-scan", "studio-still-point"];
+const supportedIssueIds = ["general", "anger", "anxiety", "fear", "overconfidence", "stigma", "burnout", "loneliness", "grief", "identity", "health", "financial", "relationship", "parenting", "trauma", "academic", "addiction"];
 
 function assert(condition, message) {
   if (!condition) {
@@ -27,6 +29,23 @@ assert(app.includes("Session preset"), "tone UI must expose session presets");
 assert(app.includes("Safe gain"), "tone UI must expose safe gain control");
 assert(app.includes("getToneContraindication"), "tone safety copy must be generated per tone family");
 assert(pkg.scripts["test:tone"] === "node scripts/tone-engine-regression.mjs", "package.json must expose test:tone");
+for (const toneId of studioToneIds) {
+  assert(app.includes(`id: "${toneId}"`), `${toneId} must be present in the curated tone library`);
+  assert(app.includes(`"${toneId}": require("./assets/tones/${toneId}.wav")`), `${toneId} must use its own bundled native asset`);
+  assert(statSync(`assets/tones/${toneId}.wav`).size > 1_000_000, `${toneId} must be a real stereo soundscape, not a placeholder`);
+}
+assert(app.includes('const isStudio = tone.id.startsWith("studio-")'), "web tone engine must synthesize the original studio soundscapes");
+assert(!app.includes("miracle tone") && !app.includes("'natural' concert pitch"), "tone copy must not make unsupported frequency claims");
+const issueProgramBlock = app.match(/const ISSUE_TONE_PROGRAMS:[\s\S]*?\n\};\n\/\/ Breathing pattern guide text/);
+assert(issueProgramBlock, "issue-specific Calm programme map must exist");
+for (const issueId of supportedIssueIds) {
+  assert(new RegExp(`^\\s*${issueId}: \\[`, "m").test(issueProgramBlock[0]), `Calm programmes must explicitly cover ${issueId} instead of silently falling back to general`);
+}
+assert(app.includes("calmMoonComplement"), "Calm must consume the same Moon-chart context used by Path and counselling");
+assert(app.includes("Continue with the practical Path →"), "Calm must provide a clear hand-off into the practical Path");
+assert(app.includes('const calmProgram = (ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS.general)[0]'), "Calm Reset and Path must resolve the same issue-specific programme");
+assert(app.includes('Recommended now · {calmProgram.name}'), "Calm Reset must surface the synchronized programme before deeper guidance");
+assert(app.includes('activeTab === "focus" ? <FocusSection'), "Calm Reset must not be buried beneath the Meditation library");
 
 // ── "Tone keeps buzzing after Stop" fix ──────────────────────────────────────
 // Root causes: (1) masterGain-only cancellation left every individually

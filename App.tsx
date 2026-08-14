@@ -1329,6 +1329,94 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     accent: "#24306F",
     mark: "30"
   },
+  // Original studio soundscapes: inspired by the broad qualities users seek
+  // in short-form calming audio (soft bells, spacious drones, slow swells),
+  // but composed and synthesised locally rather than copied from a social post.
+  {
+    id: "studio-crystal",
+    label: "Crystal horizon",
+    category: "Studio soundscape",
+    pattern: "Soft bell harmonics over a slowly breathing 294 Hz bed.",
+    use: "A spacious reset for emotional grounding and a calmer transition.",
+    safety: "Use at a comfortable low volume; stop if bright tones feel tiring.",
+    accent: "#A855F7",
+    mark: "C1",
+    intent: "Create space around a crowded thought without forcing it away.",
+    brainState: "Spacious · slow harmonic movement",
+    bestTime: "After a demanding conversation or before reflection",
+    durationMin: 12,
+    requiresHeadphones: false,
+    qualityGrade: "Pristine",
+    tags: ["emotional grounding", "spacious", "gentle bells"]
+  },
+  {
+    id: "studio-shimmer",
+    label: "Evening shimmer",
+    category: "Studio soundscape",
+    pattern: "Warm 264 Hz foundation with restrained high overtones and a slow fade.",
+    use: "A soft closing soundscape for releasing the pace of the day.",
+    safety: "Keep the shimmer quiet, especially with headphones.",
+    accent: "#7C3AED",
+    mark: "C2",
+    intent: "Support evening decompression without a sharp or repetitive pulse.",
+    brainState: "Restful · warm harmonic fade",
+    bestTime: "Evening wind-down",
+    durationMin: 15,
+    requiresHeadphones: false,
+    qualityGrade: "Pristine",
+    tags: ["sleep preparation", "evening", "warm"]
+  },
+  {
+    id: "studio-slow-pulse",
+    label: "Slow tide",
+    category: "Studio soundscape",
+    pattern: "Low 174 Hz and 261 Hz layers shaped by a ten-second volume swell.",
+    use: "Follow the gradual rise and fall when you need a steady breath pace.",
+    safety: "Do not match the sound if breath pacing feels uncomfortable; breathe naturally.",
+    accent: "#066C84",
+    mark: "C3",
+    intent: "Offer a gentle timing reference for breath and posture.",
+    brainState: "Breath-paced · ten-second swell",
+    bestTime: "During a short anxiety reset",
+    durationMin: 10,
+    requiresHeadphones: false,
+    qualityGrade: "Pristine",
+    tags: ["breath timing", "slow pulse", "anxiety reset"]
+  },
+  {
+    id: "studio-body-scan",
+    label: "Grounded body scan",
+    category: "Studio soundscape",
+    pattern: "Low 110 Hz drone with warm fifth and octave layers that move gradually.",
+    use: "A low, unobtrusive background for scanning jaw, shoulders, hands, and feet.",
+    safety: "Use quietly; pause if low frequencies feel uncomfortable.",
+    accent: "#0F766E",
+    mark: "C4",
+    intent: "Bring attention back to physical sensation and present surroundings.",
+    brainState: "Grounded · low harmonic bed",
+    bestTime: "After screen time or before sleep",
+    durationMin: 15,
+    requiresHeadphones: false,
+    qualityGrade: "Pristine",
+    tags: ["body scan", "deep calm", "grounding"]
+  },
+  {
+    id: "studio-still-point",
+    label: "Still point",
+    category: "Studio soundscape",
+    pattern: "Minimal 196 Hz tone with faint fifth and octave colour, moving almost imperceptibly.",
+    use: "A quiet background when you want less stimulation and more room to observe.",
+    safety: "Use only where it is safe to rest attention; never while driving.",
+    accent: "#475569",
+    mark: "C5",
+    intent: "Support silent observation without adding a strong rhythm.",
+    brainState: "Minimal · low-stimulation stillness",
+    bestTime: "Meditation, journaling, or a quiet close",
+    durationMin: 10,
+    requiresHeadphones: false,
+    qualityGrade: "Pristine",
+    tags: ["stillness", "meditation", "low stimulation"]
+  },
   // ── Reflective frequency tones ───────────────────────────────────────────
   {
     id: "sol-396",
@@ -1354,7 +1442,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     id: "sol-432",
     label: "432 Hz quiet tone",
     category: "Frequency tone",
-    pattern: "Sustained 432 Hz — the 'natural' concert pitch. Loops continuously.",
+    pattern: "Sustained 432 Hz sine with a subtle harmonic layer. Loops continuously.",
     use: "A smooth sustained tone for simple breathing, journaling, or background calm.",
     safety: "Keep volume moderate. Stop if sustained tone feels irritating.",
     accent: "#72B7A8",
@@ -1364,7 +1452,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     id: "sol-528",
     label: "528 Hz compassion tone",
     category: "Frequency tone",
-    pattern: "Sustained 528 Hz miracle tone + octave harmonic. Loops continuously.",
+    pattern: "Sustained 528 Hz tone with an octave harmonic. Loops continuously.",
     use: "Pair with compassion practice, repair conversations, or a softer self-dialogue.",
     safety: "Keep volume moderate. This is a calming cue, not a medical intervention.",
     accent: "#7E6FD6",
@@ -1427,7 +1515,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "Brown noise",
     category: "Noise",
     pattern: "Deep low-frequency rumble. Continuous procedural generation.",
-    use: "Focus, ADHD calm, drowning out environment. Feels like thunder or a waterfall.",
+    use: "Low-frequency sound masking for focus or reducing distracting background noise.",
     safety: "Keep volume comfortable. Not recommended for extended loud listening.",
     accent: "#8B5E3C",
     mark: "BN"
@@ -1437,7 +1525,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "Pink noise",
     category: "Noise",
     pattern: "Balanced natural noise — equal energy per octave. Continuous.",
-    use: "Sleep, memory consolidation, natural sound masking.",
+    use: "Sleep preparation and balanced background sound masking.",
     safety: "Keep volume comfortable.",
     accent: "#C47AA3",
     mark: "PN"
@@ -1447,7 +1535,7 @@ const mindRelaxingToneModes: RelaxingToneMode[] = [
     label: "White noise",
     category: "Noise",
     pattern: "Full-spectrum equal-amplitude noise. Continuous procedural.",
-    use: "Tinnitus relief, focus blocking, environment masking.",
+    use: "Full-spectrum background masking for short focus sessions.",
     safety: "Keep volume low — white noise can be harsher than pink or brown.",
     accent: "#A0B4B8",
     mark: "WN"
@@ -2690,12 +2778,8 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   // chat that reads what you type and gives you a next step.
   { id: "aihelp", label: "Ask", mark: "✨", icon: "sparkles" },
   { id: "journal", label: "Journal", mark: "📓", icon: "book" },
-  // "focus" (formerly its own "Calm" nav entry) no longer has a standalone
-  // tab body — its content now renders inside the Meditation tab (see the
-  // merged activeTab === "meditation" || activeTab === "focus" block below),
-  // so only one nav entry is needed here. The "focus" TabId itself is kept
-  // alive internally (journeys, low-mood nudges, etc. still route to it,
-  // and it still resolves to the merged Meditation screen).
+  // Calm Reset is a focused internal route; Meditation is the separate,
+  // progressively disclosed practice library reached through Pages.
   { id: "meditation", label: "Meditation", mark: "🪷", icon: "flower" },
   // ── Ordered block: chart first, then the surfaces that read from it ──
   // Birth Chart → Messages → Tones → Help and Redress. Kept adjacent so the
@@ -3091,6 +3175,11 @@ const NATIVE_TONE_ASSETS: Partial<Record<string, ReturnType<typeof require>>> = 
   "iso-8": require("./assets/tones/iso-8.mp3"),
   "iso-10": require("./assets/tones/iso-10.mp3"),
   "reset-gamma": require("./assets/tones/reset-gamma.mp3"),
+  "studio-crystal": require("./assets/tones/studio-crystal.wav"),
+  "studio-shimmer": require("./assets/tones/studio-shimmer.wav"),
+  "studio-slow-pulse": require("./assets/tones/studio-slow-pulse.wav"),
+  "studio-body-scan": require("./assets/tones/studio-body-scan.wav"),
+  "studio-still-point": require("./assets/tones/studio-still-point.wav"),
 };
 const NATIVE_TONE_FALLBACK_ASSET = require("./assets/aethon-pristine-tone.wav");
 
@@ -3413,8 +3502,51 @@ async function startContinuousTone(tone: RelaxingToneMode, options: ToneEngineOp
   const isIso = tone.id.startsWith("iso-");
   const isGroundingTone = tone.id === "aum-136";
   const isGamma = tone.id === "reset-gamma";
+  const isStudio = tone.id.startsWith("studio-");
 
-  if (isBinaural) {
+  if (isStudio) {
+    // ── Original studio soundscapes ───────────────────────────────────────
+    // A small oscillator ensemble, gently animated rather than sharply
+    // pulsed. This produces the same original compositions on web that the
+    // bundled native assets reproduce on iOS and Android.
+    const STUDIO: Record<string, { frequencies: number[]; gains: number[]; swellHz: number }> = {
+      "studio-crystal": { frequencies: [294, 441, 588, 882], gains: [0.42, 0.12, 0.055, 0.018], swellHz: 0.075 },
+      "studio-shimmer": { frequencies: [264, 396, 528, 792], gains: [0.40, 0.11, 0.045, 0.015], swellHz: 0.055 },
+      "studio-slow-pulse": { frequencies: [174, 261, 348], gains: [0.43, 0.10, 0.035], swellHz: 0.10 },
+      "studio-body-scan": { frequencies: [110, 165, 220], gains: [0.46, 0.12, 0.035], swellHz: 0.035 },
+      "studio-still-point": { frequencies: [196, 294, 392], gains: [0.38, 0.07, 0.018], swellHz: 0.025 },
+    };
+    const profile = STUDIO[tone.id] ?? STUDIO["studio-still-point"];
+    const ensembleGain = context.createGain();
+    ensembleGain.gain.setValueAtTime(0.64, context.currentTime);
+    ensembleGain.connect(masterGain);
+    nodes.gainNodes.push(ensembleGain);
+
+    for (let index = 0; index < profile.frequencies.length; index++) {
+      const oscillator = context.createOscillator();
+      const harmonicGain = context.createGain();
+      oscillator.type = index === 0 ? "sine" : "triangle";
+      oscillator.frequency.setValueAtTime(profile.frequencies[index], context.currentTime);
+      harmonicGain.gain.setValueAtTime(profile.gains[index], context.currentTime);
+      oscillator.connect(harmonicGain);
+      harmonicGain.connect(ensembleGain);
+      oscillator.start();
+      nodes.oscillators.push(oscillator);
+      nodes.gainNodes.push(harmonicGain);
+    }
+
+    const swell = context.createOscillator();
+    const swellDepth = context.createGain();
+    swell.type = "sine";
+    swell.frequency.setValueAtTime(profile.swellHz, context.currentTime);
+    swellDepth.gain.setValueAtTime(0.16, context.currentTime);
+    swell.connect(swellDepth);
+    swellDepth.connect(ensembleGain.gain);
+    swell.start();
+    nodes.oscillators.push(swell);
+    nodes.gainNodes.push(swellDepth);
+
+  } else if (isBinaural) {
     // ── True binaural: separate L / R oscillators ──────────────────────────
     const BINAURAL_FREQ: Record<string, [number, number]> = {
       "binaural-delta-1":   [100, 101],
@@ -5927,6 +6059,27 @@ const navLabelTranslations: Partial<Record<LanguageId, Record<string, string>>> 
     Meditation: "مراقبہ", Wellness: "تندرستی", "Birth Chart": "زٲچہ",
     Help: "مدد", Patterns: "نمونہ", Explore: "تلاش", Practice: "مشق",
     Language: "زبان", Control: "کنٹرول", Profile: "پروفائل", More: "زیادہ", Settings: "ترتیبات"
+  },
+  bodo: {
+    Home: "न'", Today: "दिनै", Path: "लामा", Insights: "बुजिनाय", Chat: "रायज्लायनाय",
+    Community: "समाज", Journal: "लिरसुंथाइ", Calm: "सिरि", Tones: "देंखो",
+    Meditation: "मोनथाय", Wellness: "सावस्रि", "Birth Chart": "जोनोम कुण्डली",
+    Help: "मदद", Patterns: "महोर", Explore: "नागिर", Practice: "सराव",
+    Language: "राव", Control: "खोबथा", Profile: "प्रफाइल", More: "गोबां", Settings: "सेटिं"
+  },
+  manipuri: {
+    Home: "ꯌꯨꯝ", Today: "ꯉꯁꯤ", Path: "ꯂꯝꯕꯤ", Insights: "ꯈꯪꯕ", Chat: "ꯋꯥꯔꯤ",
+    Community: "ꯃꯤꯌꯥꯝ", Journal: "ꯅꯣꯠ", Calm: "ꯇꯞꯅ", Tones: "ꯈꯣꯟꯖꯦꯜ",
+    Meditation: "ꯊꯝꯃꯣꯏ", Wellness: "ꯍꯛꯁꯦꯜ", "Birth Chart": "ꯄꯣꯛꯄ ꯀꯨꯟꯗꯂꯤ",
+    Help: "ꯃꯇꯦꯡ", Patterns: "ꯃꯑꯣꯡ", Explore: "ꯊꯤꯕ", Practice: "ꯆꯠꯅꯕ",
+    Language: "ꯂꯣꯟ", Control: "ꯌꯥꯎꯐꯝ", Profile: "ꯄ꯭ꯔꯣꯐꯥꯏꯜ", More: "ꯍꯦꯟꯅ", Settings: "ꯁꯦꯇꯤꯡ"
+  },
+  santali: {
+    Home: "ᱚᱲᱟᱜ", Today: "ᱛᱮᱦᱮᱧ", Path: "ᱦᱚᱨ", Insights: "ᱩᱫᱩᱜ", Chat: "ᱨᱚᱲ",
+    Community: "ᱥᱟᱶᱛᱟ", Journal: "ᱚᱞ", Calm: "ᱥᱩᱞᱩᱠ", Tones: "ᱥᱟᱰᱮ",
+    Meditation: "ᱫᱷᱭᱟᱱ", Wellness: "ᱵᱮᱥ", "Birth Chart": "ᱡᱟᱱᱟᱢ ᱪᱟᱨᱴ",
+    Help: "ᱜᱚᱲᱚ", Patterns: "ᱱᱟᱢᱩᱱᱟ", Explore: "ᱥᱮᱸᱫᱽᱨᱟ", Practice: "ᱚᱵᱷᱭᱟᱥ",
+    Language: "ᱯᱟᱹᱨᱥᱤ", Control: "ᱫᱚᱦᱚ", Profile: "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ", More: "ᱟᱨᱦᱚᱸ", Settings: "ᱥᱟᱡᱟᱣ"
   }
 };
 
@@ -9678,20 +9831,8 @@ const VARA_INFO = [
   { day: 6, name: "Shanivara", en: "Saturday", hi: "शनिवार",   planet: "Shani (Saturn)", color: "#263244", emoji: "⬛", mantra: "Om Shanaye Namah",       guidance: "Day of discipline and karma. Good for service, hard work, and clearing debts." },
 ];
 
-const RASHI_DAILY_PREDICTIONS: Record<number, string[][]> = {
-  0:  [["Career shines — take the lead on a project you have been holding back.","Romantic energy is high; express feelings openly.","Health: Protect the head. Avoid anger.","Spiritually: Light a ghee diya to Mangal."],["Finances improve through determined effort.","A misunderstanding with a partner may arise — communicate clearly.","Health: Stay active; cold beverages should be avoided.","Spiritually: Chant 'Om Namah Shivaya' 108 times."],["An unexpected opportunity arrives — stay alert and decisive.","Social bonds strengthen today. Reach out to an old friend.","Health: Manage stress levels. Take breaks.","Spiritually: Donate red items on Tuesday."],["Your leadership instincts are sharp — trust them.","Love deepens when you show vulnerability, not just strength.","Health: Guard against headaches. Rest well.","Spiritually: Offer red flowers to Lord Hanuman."],["Colleagues recognise your efforts. Positive attention at work.","Romantic matters need patience — avoid impulsive decisions.","Health: Moderate exercise supports vitality.","Spiritually: Recite Hanuman Chalisa for strength."],["Financial deals go in your favour today.","Family dynamics are harmonious — appreciate your home circle.","Health: Hydration is key. Drink warm water.","Spiritually: Meditate at sunrise for Surya blessings."],["Bold ideas you share today are received well.","A new relationship or friendship may blossom unexpectedly.","Health: Avoid overexertion. Sleep at a regular hour.","Spiritually: Visit a Shiva temple if possible."]],
-  1:  [["Financial gains possible through patient, steady effort.","Relationships are stable and warm. Cherish togetherness.","Health: Sore throat risk — avoid cold foods.","Spiritually: Offer white flowers to Devi Lakshmi."],["A practical plan you implement today yields long-term results.","A loved one needs your emotional support — be present.","Health: Digestion sensitive. Eat light, warm meals.","Spiritually: Chant 'Om Shri Mahalakshmyai Namah'."],["Property or material matters need careful attention today.","Romance feels pleasurable and grounded — make quality time.","Health: Neck and throat area — do gentle stretches.","Spiritually: Friday puja to Shukra brings harmony."],["Stubbornness may block a good outcome — be flexible.","Creative expression in love or art brings joy today.","Health: Overindulgence risk. Practise moderation.","Spiritually: Donate sweets to children today."],["Professional stability rewards your consistent work.","Your calm presence reassures those around you greatly.","Health: Take care of feet and lower back.","Spiritually: Light a camphor lamp at dusk."],["A luxury or comfort you desire comes closer to reality.","Spoken words of appreciation go a long way today.","Health: Sensory experiences are heightened — enjoy calmly.","Spiritually: Recite Sri Sukta for prosperity."],["Your natural patience is your greatest asset today.","Steady, gentle love nurtures a bond that matters to you.","Health: Balance rest and gentle movement.","Spiritually: Offer sugarcane or sweets to Surya."]],
-  2:  [["Quick thinking solves a problem at work brilliantly.","Mixed signals in communication — clarify before assuming.","Health: Nervous system needs rest. Limit screen time.","Spiritually: Chant Vishnu Sahasranama for clarity."],["Travel or short journeys bring unexpected positive news.","Flirtatious, light energy in relationships — enjoy the play.","Health: Respiratory system — take fresh air breaks.","Spiritually: Offer green leaves to Lord Vishnu."],["A conversation opens a new professional door.","Siblings or close friends play a supportive role today.","Health: Hand and arm tension — gentle stretches help.","Spiritually: Recite 'Om Budhaya Namah' 27 times."],["Your words carry extra persuasive power — use them well.","Social interactions are energising and fruitful.","Health: Focus on breathing exercises today.","Spiritually: Wednesday fast to Budha enhances intellect."],["A sharp insight you share is valued by superiors.","Dual nature surfaces — be consistent in your feelings.","Health: Digestive balance through mindful eating.","Spiritually: Visit Ganesha temple for wisdom blessings."],["Multiple tasks handled smoothly — your adaptability impresses.","Conversations with a partner deepen mutual understanding.","Health: Mental agility high, but do not neglect rest.","Spiritually: Chant Gayatri Mantra at dawn."],["Your versatility opens up a creative opportunity.","Light, playful interactions with loved ones refresh your mood.","Health: Light yoga or walking grounds scattered energy.","Spiritually: Donate books or educational items today."]],
-  3:  [["Nurturing instincts serve you well at work today.","Home and family matters bring deep satisfaction.","Health: Guard against stomach and digestive issues.","Spiritually: Offer milk to Shiva Linga on Monday."],["Emotional intelligence is your superpower — trust feelings.","A memory or old friendship resurfaces with warmth.","Health: Emotional eating risk — stay conscious.","Spiritually: Chant 'Om Chandraya Namah' 108 times."],["Real estate or domestic matters progress positively.","Motherly love or caring gestures strengthen bonds.","Health: Sleep quality is crucial — establish a routine.","Spiritually: Donate rice and white items on Monday."],["Intuition leads you to the right decision today.","Private time with a beloved nourishes your soul.","Health: Chest and breast area — listen to your body.","Spiritually: Offer white flowers to the Moon at night."],["Colleagues appreciate your empathy and team spirit.","Emotional security in relationships grows stronger.","Health: Water intake vital. Stay hydrated.","Spiritually: Fast on Monday and visit Shiva temple."],["Financial matters connected to family see resolution.","Your sensitive nature is your strength, not weakness.","Health: Herbal teas and warm soups support wellness.","Spiritually: Light silver or white candle in evening."],["Quiet focus and reflection yield creative insights.","A loved one shows appreciation in an unexpected way.","Health: Meditation before sleep improves rest deeply.","Spiritually: Recite Chandra Kavach for mental peace."]],
-  4:  [["Leadership and authority shine — step into the spotlight.","Romance feels grand and expressive — let your heart speak.","Health: Heart area and spine — maintain good posture.","Spiritually: Offer red lotus to Surya at sunrise."],["Creative work receives recognition and deserved praise.","A proud moment in personal life uplifts your spirits.","Health: Generous nature may overextend — conserve energy.","Spiritually: Chant 'Om Suryaya Namah' at dawn."],["Ambition drives excellent outcomes at work today.","Dramatic gestures of love are welcomed and appreciated.","Health: Vitality is high — channel it into productivity.","Spiritually: Visit a Surya temple on Sunday."],["Your presence commands respect — walk with dignity.","Children or creative projects bring immense joy today.","Health: Avoid excessive heat. Stay cool and hydrated.","Spiritually: Donate gold or yellow items to charity."],["A past project or effort finally receives due credit.","Love and affection flow naturally — enjoy the warmth.","Health: Back exercises and stretching benefit you.","Spiritually: Light a gold-coloured lamp at home."],["A decision made from the heart proves to be wise.","Social and professional reputation rises today.","Health: Generous diet — be mindful of portions.","Spiritually: Meditate on Aditya Hridayam for strength."],["Confidence is contagious today — inspire those around you.","Loyalty in love is your foundation — honour it.","Health: Moderate sun exposure is beneficial.","Spiritually: Recite Surya Ashtakam for vitality."]],
-  5:  [["Analytical skills bring a breakthrough at work today.","Practical expression of love is more effective than grand words.","Health: Digestive and intestinal area needs attention.","Spiritually: Chant Saraswati Vandana for intellect."],["A detail you noticed that others missed proves critical.","Service and care for others strengthens your relationships.","Health: Eat clean, easily digestible foods today.","Spiritually: Offer green herbs to Budha on Wednesday."],["Organisational ability earns you professional recognition.","Perfectionism can block joy — allow some imperfection.","Health: Nervous system benefits from a digital break.","Spiritually: Donate green vegetables to the needy."],["Your systematic approach resolves a complex issue elegantly.","Acts of service speak louder than words in love.","Health: Skin and abdomen — nourish from within.","Spiritually: Fast on Wednesday for Budha's grace."],["A health or wellness insight proves especially useful.","Attention to small details in a relationship matters today.","Health: Herbal remedies and natural foods are best.","Spiritually: Recite 'Om Aim Saraswatyai Namah'."],["Financial precision and budgeting save you significantly.","Grounded, honest communication strengthens a key bond.","Health: Probiotics and gut-friendly foods recommended.","Spiritually: Place green plants at home for positivity."],["Your helpfulness creates a positive ripple effect today.","A simple, sincere act of care is deeply meaningful.","Health: Rest and organisation are equally important.","Spiritually: Meditate on Devi Saraswati for wisdom."]],
-  6:  [["Diplomacy and balance create success in negotiations.","Partnership energy is harmonious — a shared goal is achievable.","Health: Kidney and lower back area — stay hydrated.","Spiritually: Offer white flowers to Shukra on Friday."],["Justice and fairness are on your side today.","A romantic evening or beautiful experience uplifts you.","Health: Sugar balance — avoid excessive sweets.","Spiritually: Chant 'Om Shukraya Namah' 108 times."],["Collaborative work yields better results than solo effort.","Aesthetic pleasures — art, music, beauty — nourish your soul.","Health: Skin care and self-care rituals benefit you.","Spiritually: Light rose or jasmine incense for Shukra."],["Mediation skills resolve a conflict gracefully.","Love is in the air — an existing bond deepens beautifully.","Health: Balance activity with rest today.","Spiritually: Visit a Devi temple and offer kumkum."],["Social grace and charm bring professional advantage.","Someone you care for shows unexpected appreciation today.","Health: Treat yourself to calming beauty rituals.","Spiritually: Recite Lalita Sahasranama for blessings."],["Financial matters improve through fair partnership.","Aesthetic expression in any form brings inner peace.","Health: Hip and kidney area — gentle yoga helps.","Spiritually: Donate white or pink items to women."],["Your balanced perspective resolves what seemed impossible.","A creative collaboration in love or work blooms today.","Health: Fresh flowers in your space lift your mood.","Spiritually: Meditate on Goddess Lakshmi at dusk."]],
-  7:  [["Intense focus and research uncovers a hidden opportunity.","Depth of feeling in love can be transformative today.","Health: Reproductive and excretory system — stay aware.","Spiritually: Offer red flowers to Lord Bhairava."],["A secret or hidden matter finally comes to light.","Emotional intensity strengthens a bond that truly matters.","Health: Detox and cleansing practices are beneficial.","Spiritually: Chant 'Om Namah Shivaya' for protection."],["Investigative skills are at their peak — dig deeper.","Loyalty and deep trust define your closest relationships.","Health: Avoid toxins — alcohol, late nights take toll.","Spiritually: Tuesday fast to Mangal builds strength."],["Power dynamics at work shift in your favour.","Transformation and letting go brings remarkable peace.","Health: Scorpio rules regeneration — honour rest.","Spiritually: Recite Maha Mrityunjaya Mantra."],["Hidden talents or resources suddenly become relevant.","Deep conversations create breakthrough understanding.","Health: Consistent sleep schedule restores vitality.","Spiritually: Visit a Kali or Durga temple today."],["Strategic thinking outmanoeuvres a challenge at work.","Trust your gut instinct in matters of the heart.","Health: Herbal detox tea supports your energy.","Spiritually: Light a mustard oil lamp to Shani."],["Your perseverance through difficulty earns major respect.","Emotional honesty dissolves a long-standing barrier.","Health: Joint and muscular tension — rest deeply.","Spiritually: Recite Durga Kavach for all-round protection."]],
-  8:  [["Philosophical insight brings professional clarity today.","Optimism and adventure make love feel exciting and fresh.","Health: Hips and thighs — stretch and move freely.","Spiritually: Offer yellow flowers to Guru on Thursday."],["A long-distance or foreign connection brings good news.","Your generosity and warmth attract positive relationships.","Health: Liver and metabolism — avoid fatty foods.","Spiritually: Chant 'Om Brihaspataye Namah' 27 times."],["Higher learning or teaching opportunity presents itself.","Philosophical alignment with a partner deepens intimacy.","Health: Overoptimism about energy — pace yourself.","Spiritually: Thursday fast to Guru brings wisdom."],["Travel or expansion of any kind is favoured today.","Freedom and space in relationships bring you closer.","Health: Open-air activity and nature deeply restore you.","Spiritually: Recite Guru Stotram for knowledge."],["An inspiring idea catches fire — develop it boldly.","A chance encounter leads to meaningful connection.","Health: Maintain discipline despite high energy.","Spiritually: Donate yellow items to a Brahmin or teacher."],["Legal or ethical matters resolved in your favour today.","A mentor or spiritual guide offers timely wisdom.","Health: Moderation with rich food and celebration.","Spiritually: Chant Vishnu Sahasranama on Thursday."],["International or cultural connections benefit your work.","Abundance consciousness opens new doors in love and life.","Health: Grounding practices balance expansive energy.","Spiritually: Visit Vishnu temple and offer tulsi leaves."]],
-  9:  [["Career ambition peaks — pursue that long-term goal.","Practical love language resonates most today.","Health: Bones, skin, and knees — protect your structure.","Spiritually: Offer sesame seeds to Shani on Saturday."],["Authority and discipline bring professional respect.","Patient, steady love builds a foundation that lasts.","Health: Calcium-rich foods and sunshine benefit you.","Spiritually: Chant 'Om Shanaye Namah' 108 times."],["A challenge faced with determination yields lasting reward.","Responsibility in love is its own form of romance.","Health: Cold weather sensitivity — dress warmly.","Spiritually: Saturday fast to Shani removes obstacles."],["Systematic effort produces measurable, solid results today.","Reliability and trustworthiness strengthen your bonds.","Health: Joints and spine benefit from structured exercise.","Spiritually: Visit Shani temple and offer oil."],["Long-standing effort is finally acknowledged and rewarded.","A quiet evening at home renews your emotional reserves.","Health: Chronic conditions — be consistent with care.","Spiritually: Donate black sesame and mustard oil today."],["Discipline and patience are your dual superpowers today.","Commitment deepens a relationship that was already solid.","Health: Massage and warm oil therapy restore vitality.","Spiritually: Recite Shani Stotram for karmic relief."],["Your resilience through hardship inspires those around you.","Simple, sincere gestures mean everything in love today.","Health: Rest and regular meal times are essential.","Spiritually: Light black sesame lamp to Lord Shani."]],
-  10: [["Unconventional thinking creates a breakthrough today.","Friendships and group connections enrich your love life.","Health: Ankles and circulation — keep moving gently.","Spiritually: Offer blue flowers to Shani on Saturday."],["Humanitarian impulses guide you to meaningful action.","An unexpected, spontaneous connection sparks something new.","Health: Nervous system — reduce stimulants.","Spiritually: Chant 'Om Shanaye Namah' for Saturn's grace."],["Technology or innovation gives you a professional edge.","Freedom and authenticity are the gifts you bring to love.","Health: Electrical or technological stress — disconnect.","Spiritually: Saturday fast purifies karmic burdens."],["A community effort you lead creates real positive impact.","Originality in expressing love is more valued than tradition.","Health: Breathing exercises calm an overstimulated mind.","Spiritually: Donate to social causes today."],["Visionary ideas attract like-minded collaborators.","A friendship blossoms into something more meaningful.","Health: Group activities and social wellness lift mood.","Spiritually: Chant the Hanuman Chalisa for protection."],["Your unique perspective earns admiration in your field.","Authenticity and honesty are deeply attractive qualities.","Health: Hydration and electrolyte balance are important.","Spiritually: Recite Shani Kavach to ease restrictions."],["An eccentric or innovative path turns out to be right.","Love grows in freedom, not in control — embrace this.","Health: Yoga and breathwork ground scattered energy.","Spiritually: Donate to education for underprivileged today."]],
-  11: [["Imagination and intuition guide you to the right path.","Romantic sensitivity creates a deeply beautiful connection.","Health: Feet and immune system — rest and warm socks.","Spiritually: Offer yellow flowers to Guru on Thursday."],["Spiritual insights translate into creative work today.","Compassion and empathy deepen your most meaningful bond.","Health: Lymphatic system — gentle movement and hydration.","Spiritually: Chant 'Om Namah Shivaya' at dawn."],["A hidden talent or gift surfaces unexpectedly today.","Dreams and intuition carry important messages — listen.","Health: Sleep quality — establish a sacred bedtime ritual.","Spiritually: Chant Vishnu Sahasranama for blessings."],["Creative or artistic work receives wonderful recognition.","Unconditional love and forgiveness heal old wounds now.","Health: Emotional sensitivity — be gentle with yourself.","Spiritually: Thursday fast to Guru brings abundance."],["A spiritual or meditative practice brings a breakthrough.","Soul-level connection with a partner is deepened today.","Health: Water element is strong — stay anchored.","Spiritually: Visit Vishnu temple and offer tulsi."],["Generosity and compassion attract abundant blessings.","A quiet, intimate moment with a loved one is precious.","Health: Avoid alcohol and escapism — face things directly.","Spiritually: Recite Om Namo Narayanaya 108 times."],["Surrender and trust in the divine unfolds something beautiful.","Love expressed through sacrifice or service is deeply real.","Health: Feet reflexology and warm water soaks heal.","Spiritually: Meditate by water bodies for clarity."]],
-};
+// Generic sign-of-the-day paragraphs were removed. Daily guidance below is
+// calculated from the user's Moon chart and current lunar timing instead.
 
 // Approximate Lagna (Ascendant) from birth time using the Moon-chart Rashi as
 // the sole chart anchor. Lagna changes every ~2 hours. This remains a simplified
@@ -9971,80 +10112,43 @@ function detectQuestionTone(text: string): AstroQuestionTone {
   return "open";
 }
 
-// "What to do now" used to be one of nine fixed sentences keyed off the
-// question's category, so every career question — "will I get this job",
-// "should I quit", "is my boss blocking me" — closed on the identical line.
-// That single canned step is what made an otherwise calculated reply read as
-// prewritten. This builds the step from the live reading instead: the score
-// band decides how much to commit, the weakest relevant dimension decides
-// what to shore up first, the question's own tone decides what shape the
-// instruction takes, and the Antardasha decides the window. Two different
-// questions in the same category now close differently because their
-// underlying dimensions differ. The category sentence is kept as a tail, so
-// nothing that was useful about it is lost — it is just no longer the whole
-// answer.
-function buildAstroChatAction(params: {
-  lang: "en" | "hi";
-  tone: ReturnType<typeof detectQuestionTone>;
-  categoryAction: string;
-  verdict: { average: number; anchor: MoonChart48Reading; careful: MoonChart48Reading } | null;
-  currentAntardasha: string | null;
-  currentAntardashaYearsLeft: number | null;
-}): string {
-  const { lang, tone, categoryAction, verdict } = params;
-  const hi = lang === "hi";
-  if (!verdict) return categoryAction;
+type AstroDecisionIntent = {
+  subjectEn: string;
+  subjectHi: string;
+  actionEn: string;
+  actionHi: string;
+  highStakes: boolean;
+};
 
-  const band: "supported" | "workable" | "strained" =
-    verdict.average >= 70 ? "supported" : verdict.average >= 55 ? "workable" : "strained";
-  const weak = verdict.careful.label;
-  const strong = verdict.anchor.label;
-  const window =
-    params.currentAntardasha && params.currentAntardashaYearsLeft !== null
-      ? (hi
-        ? `${params.currentAntardasha} अंतर्दशा में लगभग ${formatPhaseSpan(params.currentAntardashaYearsLeft, lang)} शेष हैं`
-        : `the ${params.currentAntardasha} Antardasha has about ${formatPhaseSpan(params.currentAntardashaYearsLeft, lang)} left`)
-      : null;
-
-  // How much to commit, given the calculated band.
-  const commitment = hi
-    ? band === "supported"
-      ? `यह प्रश्न ${verdict.average}/100 पर सहारा पा रहा है — इसे टालने की ज़रूरत नहीं। "${strong}" आपकी सबसे मज़बूत पकड़ है; इसी पर पूरा कदम रखें।`
-      : band === "workable"
-        ? `${verdict.average}/100 का अर्थ है: चलेगा, पर एक ही बार में सब कुछ दाँव पर न लगाएं। एक ऐसा कदम चुनें जिसे ज़रूरत पड़ने पर वापस लिया जा सके।`
-        : `${verdict.average}/100 पर यह दौर दबाव में है। अभी कोई अपरिवर्तनीय निर्णय न लें — पहले नींव सँभालें।`
-    : band === "supported"
-      ? `This question is reading ${verdict.average}/100 — it does not need to wait. "${strong}" is your firmest ground; commit through that rather than hedging.`
-      : band === "workable"
-        ? `At ${verdict.average}/100 this will move, but do not stake everything on one attempt. Choose a step you could reverse if it does not land.`
-        : `At ${verdict.average}/100 the phase is under strain. Avoid anything irreversible right now and steady the base first.`;
-
-  // What specifically to shore up — named from the actual weakest dimension.
-  const repair =
-    verdict.careful.id !== verdict.anchor.id && verdict.careful.score < 60
-      ? (hi
-        ? ` सबसे पहले "${weak}" (${verdict.careful.score}/100) को सँभालें — यही वह जगह है जहाँ यह प्रयास टूटता है।`
-        : ` Shore up "${weak}" (${verdict.careful.score}/100) first — that is where this effort actually breaks.`)
-      : "";
-
-  // The instruction's shape follows what was asked.
-  const shaped = hi
-    ? tone === "yesno"
-      ? ` निर्णय इस तरह लें: ${band === "strained" ? "अभी \"नहीं\" नहीं — \"अभी नहीं\"" : "हाँ, पर एक शर्त के साथ"} — तय करें कि किस एक संकेत पर आप आगे बढ़ेंगे, और वह संकेत आज लिख लें।`
-      : tone === "when"
-        ? ` समय: ${window ?? "अगली अंतर्दशा-संधि"} — उससे पहले तैयारी पूरी रखें ताकि अवसर आने पर देर न हो।`
-        : tone === "why"
-          ? ` कारण को व्यवहार में बदलें: जो ऊपर पढ़ा गया, उसमें से एक वाक्य चुनें और इस सप्ताह उसी एक बात को बदलें।`
-          : ` जो भी करें, उसे किसी एक दिन और समय से बाँध दें — बिना तारीख़ के इरादा इस दौर में टिकता नहीं।`
-    : tone === "yesno"
-      ? ` Decide it this way: ${band === "strained" ? 'not "no" — "not yet"' : "yes, but with one condition"}. Name the single signal you will act on, and write that signal down today.`
-      : tone === "when"
-        ? ` Timing: ${window ?? "the next Antardasha change"} — have everything ready before it, so the window is not spent preparing.`
-        : tone === "why"
-          ? ` Turn the reason into behaviour: pick one sentence from the reading above and change that one thing this week.`
-          : ` Whatever you choose, tie it to a specific day and time — an intention without a date does not survive this phase.`;
-
-  return `${commitment}${repair}${shaped} ${categoryAction}`;
+function detectAstroDecisionIntent(question: string, category: AstroChatCategory): AstroDecisionIntent {
+  const q = question.trim().toLowerCase();
+  const candidates: Array<{ pattern: RegExp; value: AstroDecisionIntent }> = [
+    { pattern: /\b(quit|resign|leave my job|job छोड़|नौकरी छोड़)/i, value: { subjectEn: "leaving your current job", subjectHi: "वर्तमान नौकरी छोड़ने", actionEn: "make an irreversible exit", actionHi: "अपरिवर्तनीय निर्णय लेने", highStakes: true } },
+    { pattern: /\b(job|career|promotion|interview|नौकरी|करियर|पदोन्नति)/i, value: { subjectEn: "your work decision", subjectHi: "आपके कार्य-संबंधी निर्णय", actionEn: "move the opportunity forward", actionHi: "अवसर को आगे बढ़ाने", highStakes: false } },
+    { pattern: /\b(marry|marriage|wedding|शादी|विवाह)/i, value: { subjectEn: "the marriage decision", subjectHi: "विवाह के निर्णय", actionEn: "make the commitment", actionHi: "प्रतिबद्धता करने", highStakes: true } },
+    { pattern: /\b(divorce|separate|break up|तलाक|अलग|रिश्ता तोड़)/i, value: { subjectEn: "ending or changing this relationship", subjectHi: "इस रिश्ते को समाप्त या बदलने", actionEn: "make a final separation decision", actionHi: "अंतिम अलगाव का निर्णय लेने", highStakes: true } },
+    { pattern: /\b(relationship|partner|love|रिश्ता|साथी|प्यार)/i, value: { subjectEn: "this relationship", subjectHi: "इस रिश्ते", actionEn: "have the necessary conversation", actionHi: "ज़रूरी बातचीत करने", highStakes: false } },
+    { pattern: /\b(invest|loan|borrow|property|buy|sell|money|पैसा|निवेश|ऋण|खरीद|बेच)/i, value: { subjectEn: "this financial decision", subjectHi: "इस वित्तीय निर्णय", actionEn: "commit money", actionHi: "धन की प्रतिबद्धता करने", highStakes: true } },
+    { pattern: /\b(court|case|legal|police|complaint|मुकदमा|कानूनी|पुलिस|शिकायत)/i, value: { subjectEn: "this legal or redress decision", subjectHi: "इस कानूनी या निवारण निर्णय", actionEn: "take formal action", actionHi: "औपचारिक कार्रवाई करने", highStakes: true } },
+    { pattern: /\b(health|ill|pain|medicine|doctor|बीमार|दर्द|दवा|डॉक्टर|स्वास्थ्य)/i, value: { subjectEn: "your health concern", subjectHi: "आपकी स्वास्थ्य चिंता", actionEn: "change treatment or delay care", actionHi: "उपचार बदलने या देखभाल टालने", highStakes: true } },
+    { pattern: /\b(exam|study|education|परीक्षा|पढ़ाई|शिक्षा)/i, value: { subjectEn: "your study or examination goal", subjectHi: "आपके अध्ययन या परीक्षा लक्ष्य", actionEn: "take the next preparation step", actionHi: "अगला तैयारी कदम लेने", highStakes: false } },
+    { pattern: /\b(travel|move|relocate|विदेश|यात्रा|स्थान बदल)/i, value: { subjectEn: "the travel or relocation plan", subjectHi: "यात्रा या स्थानांतरण योजना", actionEn: "finalise the move", actionHi: "स्थानांतरण को अंतिम रूप देने", highStakes: false } },
+  ];
+  const matched = candidates.find((item) => item.pattern.test(q));
+  if (matched) return matched.value;
+  const categorySubjects: Record<AstroChatCategory, [string, string]> = {
+    career: ["your work situation", "आपकी कार्य-स्थिति"],
+    relationship: ["this relationship", "इस रिश्ते"],
+    health: ["your wellbeing concern", "आपकी स्वास्थ्य-चिंता"],
+    money: ["this financial matter", "इस वित्तीय विषय"],
+    family: ["this family matter", "इस पारिवारिक विषय"],
+    spiritual: ["your inner direction", "आपकी आंतरिक दिशा"],
+    timing: ["the timing of this decision", "इस निर्णय के समय"],
+    identity: ["your personal direction", "आपकी व्यक्तिगत दिशा"],
+    general: ["the situation you described", "आपके बताए विषय"],
+  };
+  const [subjectEn, subjectHi] = categorySubjects[category];
+  return { subjectEn, subjectHi, actionEn: "take the next step", actionHi: "अगला कदम लेने", highStakes: category === "health" || category === "money" };
 }
 
 function nextAstroChatReply(question: string, ctx: {
@@ -10062,231 +10166,138 @@ function nextAstroChatReply(question: string, ctx: {
   todayTithi: string;
   todayVara: string;
   moonChartInsightReadings?: MoonChart48Reading[];
-  // Shares the chartBriefLang "en"|"hi" toggle lifted to App(), so a reply
-  // comes back in the same language the user set the chart brief to. Defaults
-  // to English so any legacy caller without it is unaffected.
   lang?: "en" | "hi";
-}): { category: AstroChatCategory; reply: string; remedy: string } {
-  const cat = classifyAstroQuestion(question);
-  const lang: "en" | "hi" = ctx.lang ?? "en";
+}): { category: AstroChatCategory; reply: string; remedy: string; calculationBasis: string } {
+  const category = classifyAstroQuestion(question);
+  const lang = ctx.lang ?? "en";
   const hi = lang === "hi";
-  const lines: string[] = [];
+  const intent = detectAstroDecisionIntent(question, category);
 
   if (ctx.moonRashiId === null) {
-    lines.push(hi
-      ? `प्रोफ़ाइल में अपनी जन्मतिथि जोड़ें ताकि मैं आपकी चंद्र राशि पढ़ सकूँ — तब उत्तर अधिक सटीक होगा।`
-      : `Add your date of birth in Profile so I can read your Moon Rashi — the reply will be sharper.`);
-    lines.push(hi
-      ? `${astroCategoryLabel(cat, lang)} प्रश्न के लिए सामान्य दिशा: रुकें, तय करें कि आप वास्तव में क्या चाहते हैं, फिर एक छोटा कदम उठाएं जो कोई समझदार मित्र सुझाए।`
-      : `General direction for a ${astroCategoryLabel(cat, lang)} question: pause, name what you actually want, then take one small step that a wise friend would suggest.`);
     return {
-      category: cat,
-      reply: lines.join("\n\n"),
-      remedy: hi
-        ? `संध्या को एक दीया जलाएं। "ॐ नमः शिवाय" 11 बार जपें। व्यक्तिगत उपाय के लिए अपने जन्म-विवरण जोड़ें।`
-        : `Light a diya at dusk. Chant Om Namah Shivaya 11 times. Add your birth details for a personalised remedy.`,
+      category,
+      reply: hi
+        ? "इस प्रश्न का व्यक्तिगत उत्तर देने के लिए जन्मतिथि, सही जन्म-समय और जन्म-स्थान पूरा करें। इनके बिना मैं सामान्य सलाह को गणना किया हुआ ज्योतिषीय उत्तर नहीं कहूँगा।"
+        : "Complete your birth date, exact birth time, and birth place for a personal answer. Without them, I will not present general advice as a calculated chart reading.",
+      remedy: hi ? "अभी के लिए: निर्णय को छोटा रखें, तथ्य लिखें और किसी विश्वसनीय व्यक्ति से स्थिति की जाँच कराएँ।" : "For now: keep the decision small, write down the facts, and reality-check the situation with someone you trust.",
+      calculationBasis: hi ? "गणना उपलब्ध नहीं — पूर्ण जन्म-विवरण आवश्यक हैं।" : "Calculation unavailable — complete birth details are required.",
     };
   }
 
-  const categoryActions: Record<AstroChatCategory, string> = hi ? {
-    career: "इस सप्ताह एक ठोस कदम उठाएं: एक बार आवेदन करें, पूछें, या प्रकाशित करें। यह दौर पूर्ण स्पष्टता की प्रतीक्षा से अधिक संरचना को फल देता है।",
-    relationship: "सीधे पर कोमलता से बोलें। असली ज़रूरत बताएं, एक सीमा साफ़ रखें, और इशारों पर निर्भर न रहें।",
-    health: "दिनचर्या सरल करें। नींद, पानी, भोजन और एक दैनिक सैर, अधिक सोचने से बेहतर इस दौर को स्थिर करेंगे।",
-    money: "अगले 30 दिन ध्यान से देखें, रिसाव कम करें, और एक अनुशासित बचत या चुकौती का कदम उठाएं।",
-    family: "स्वर शांत रखें, ज़रूरी बात एक बार दोहराएं, और एक ही बात को अलग शब्दों में बार-बार लड़ने का चक्र रोकें।",
-    spiritual: "प्रतिदिन एक स्थिर अभ्यास रखें। इस दौर में तीव्रता से अधिक दोहराव मायने रखता है।",
-    timing: "यदि निर्णय टल न सके तो सबसे छोटा वापस लेने योग्य कदम चुनें; अन्यथा समय को थोड़ा और पकने दें।",
-    identity: "आज एक दृश्य तरीके से उस व्यक्ति की तरह व्यवहार करें जो आप बनना चाहते हैं। छोटी निरंतरता पैटर्न बदल देती है।",
-    general: "एक स्पष्ट कदम और एक स्पष्ट सीमा से भ्रम कम करें। चार्ट को सरल और दोहराने योग्य कर्म पसंद है।",
-  } : {
-    career: "Take one concrete move this week: apply, ask, or publish once. The phase rewards structure over waiting for perfect clarity.",
-    relationship: "Speak directly but softly. Name the actual need, keep one boundary clean, and do not rely on hints.",
-    health: "Simplify the routine. Sleep, water, meals, and one daily walk will stabilize the phase better than overthinking it.",
-    money: "Track the next 30 days carefully, reduce leakage, and make one disciplined saving or repayment action.",
-    family: "Keep the tone calm, repeat the important point once, and stop the loop of arguing the same thing in different words.",
-    spiritual: "Use one steady practice every day. Repetition matters more than intensity in this phase.",
-    timing: "Choose the smallest reversible step if the decision cannot wait; otherwise let the window mature a little longer.",
-    identity: "Act like the person you are trying to become in one visible way today. Small consistency changes the pattern.",
-    general: "Reduce confusion with one clear step and one clear boundary. The chart likes action that is simple and repeatable."
-  };
-  const mixedInfluences = hi ? "मिश्रित प्रभाव" : "mixed influences";
-  const currentDashaQuality = ctx.currentDasha ? summarizePlanetQuality(ctx.currentDasha, lang) : mixedInfluences;
-  const currentAntardashaQuality = ctx.currentAntardasha ? summarizePlanetQuality(ctx.currentAntardasha, lang) : mixedInfluences;
-  const dashaTiming = hi
-    ? [
-        ctx.currentAntardashaYearsLeft !== null ? `वर्तमान अंतर्दशा में लगभग ${formatPhaseSpan(ctx.currentAntardashaYearsLeft, lang)} शेष हैं` : null,
-        ctx.currentDashaYearsLeft !== null ? `व्यापक महादशा में लगभग ${formatPhaseSpan(ctx.currentDashaYearsLeft, lang)} शेष हैं` : null
-      ].filter(Boolean).join(" और ")
-    : [
-        ctx.currentAntardashaYearsLeft !== null ? `the current Antardasha has about ${formatPhaseSpan(ctx.currentAntardashaYearsLeft, lang)} left` : null,
-        ctx.currentDashaYearsLeft !== null ? `the broader Mahadasha has about ${formatPhaseSpan(ctx.currentDashaYearsLeft, lang)} left` : null
-      ].filter(Boolean).join(" and ");
-  const phaseWindow = hi
-    ? [
-        ctx.currentDashaStartedAtIso && ctx.currentDashaEndsAtIso
-          ? `महादशा लगभग ${formatApproxDate(ctx.currentDashaStartedAtIso, lang)} को शुरू हुई और लगभग ${formatApproxDate(ctx.currentDashaEndsAtIso, lang)} को समाप्त होगी`
-          : null,
-        ctx.currentAntardashaStartedAtIso && ctx.currentAntardashaEndsAtIso
-          ? `अंतर्दशा लगभग ${formatApproxDate(ctx.currentAntardashaStartedAtIso, lang)} को शुरू हुई और लगभग ${formatApproxDate(ctx.currentAntardashaEndsAtIso, lang)} को समाप्त होगी`
-          : null,
-      ].filter(Boolean).join(" • ")
-    : [
-        ctx.currentDashaStartedAtIso && ctx.currentDashaEndsAtIso
-          ? `Mahadasha started around ${formatApproxDate(ctx.currentDashaStartedAtIso, lang)} and ends around ${formatApproxDate(ctx.currentDashaEndsAtIso, lang)}`
-          : null,
-        ctx.currentAntardashaStartedAtIso && ctx.currentAntardashaEndsAtIso
-          ? `Antardasha started around ${formatApproxDate(ctx.currentAntardashaStartedAtIso, lang)} and ends around ${formatApproxDate(ctx.currentAntardashaEndsAtIso, lang)}`
-          : null,
-      ].filter(Boolean).join(" • ");
-  const domainOutlookFull = buildPhaseDomainOutlook(
-    ctx.currentDasha && ctx.currentAntardasha
-      ? { currentMahadasha: ctx.currentDasha, currentAntardasha: ctx.currentAntardasha }
-      : null,
-    lang
-  );
-  // Only the domains that match what was actually asked, not all seven.
-  // Filter on the language-independent domainKey, not the display label.
-  const relevantDomains = ASTRO_CHAT_CATEGORY_TO_PHASE_DOMAIN[cat];
-  const domainOutlook = domainOutlookFull.filter((item) =>
-    relevantDomains.includes(item.domainKey)
-  );
-
-  // Multidimensional Moon Chart lens — same explainable-score engine used
-  // elsewhere in the Vedic tab, filtered to the dimensions relevant to this
-  // question's category. Computed FIRST so the reply can open with a real,
-  // calculated verdict for this specific question instead of a canned line.
-  const moon48 = ctx.moonChartInsightReadings ?? [];
-  const primaryMoonCategory = ASTRO_CHAT_CATEGORY_TO_MOON48[cat][0];
-  let moon48Verdict: { average: number; verdictWord: string; anchor: MoonChart48Reading; careful: MoonChart48Reading } | null = null;
-  if (moon48.length > 0) {
-    const relevantCategories = ASTRO_CHAT_CATEGORY_TO_MOON48[cat];
-    const relevant = moon48.filter((reading) => relevantCategories.includes(reading.category));
-    const pool = relevant.length > 0 ? relevant : moon48;
-    const average = Math.round(pool.reduce((sum, item) => sum + item.score, 0) / pool.length);
-    const anchor = [...pool].sort((a, b) => b.score - a.score)[0];
-    const careful = [...pool].sort((a, b) => a.score - b.score)[0];
-    moon48Verdict = { average, verdictWord: verdictPhraseFromScore(average, lang), anchor, careful };
-  }
+  const relevantCategories = ASTRO_CHAT_CATEGORY_TO_MOON48[category];
+  const allReadings = ctx.moonChartInsightReadings ?? [];
+  const relevant = allReadings.filter((reading) => relevantCategories.includes(reading.category));
+  const pool = relevant.length > 0 ? relevant : allReadings;
+  const average = pool.length > 0
+    ? Math.round(pool.reduce((sum, reading) => sum + reading.score, 0) / pool.length)
+    : 50;
+  const strongest = pool.length > 0 ? [...pool].sort((a, b) => b.score - a.score)[0] : null;
+  const careful = pool.length > 0 ? [...pool].sort((a, b) => a.score - b.score)[0] : null;
   const tone = detectQuestionTone(question);
 
-  // 1. Calculated, question-specific opener. This is what actually changes
-  // between two different questions in the same category (e.g. "will I get
-  // the job" vs "should I quit") because it is derived from the live multidimensional
-  // score for the dimensions tied to THIS question, not a fixed template.
-  // NOTE: the anchor/careful reading's own label + interpretation +
-  // scoreReason come from buildMoonChartMultidimensionalEngine, which is
-  // still English-only (it feeds the whole Vedic tab + counselling engine;
-  // translating all multi-dimensional support areas' interpretation/scoreReason/remedy text is
-  // a separate, much larger pass). So in Hindi mode these few embedded
-  // reading strings stay English while the surrounding narration is Hindi --
-  // an honest partial, not a claim of full translation.
-  if (moon48Verdict) {
-    const leadIn = hi
-      ? (tone === "yesno" ? `संक्षेप में पहले: अभी ${moon48Verdict.verdictWord}। `
-        : tone === "why" ? `चार्ट असल में जो कर रहा है वह यह है: `
-        : tone === "when" ? `विशेष रूप से समय पर: `
-        : "")
-      : (tone === "yesno" ? `Short answer first: ${moon48Verdict.verdictWord.toLowerCase()} right now. `
-        : tone === "why" ? `Here is what the chart is actually doing: `
-        : tone === "when" ? `On timing specifically: `
-        : "");
-    lines.push(hi
-      ? `${leadIn}${moonChartCategoryLabel(primaryMoonCategory, lang)} ${moon48Verdict.average}/100 (${moon48Verdict.verdictWord}) दिखा रहा है — यह ${moonChartCategoryMeaning(primaryMoonCategory, lang)} को दर्शाता है। सबसे स्पष्ट संकेत "${moon48Verdict.anchor.label}" ${moon48Verdict.anchor.score}/100 पर है: ${moon48Verdict.anchor.interpretation}`
-      : `${leadIn}${moonChartCategoryLabel(primaryMoonCategory, lang)} is reading ${moon48Verdict.average}/100 (${moon48Verdict.verdictWord}) — this tracks ${moonChartCategoryMeaning(primaryMoonCategory, lang)}. The clearest signal is "${moon48Verdict.anchor.label}" at ${moon48Verdict.anchor.score}/100: ${moon48Verdict.anchor.interpretation}`
-    );
-    if (moon48Verdict.careful.id !== moon48Verdict.anchor.id && moon48Verdict.careful.score < 55) {
-      lines.push(hi
-        ? `यहाँ धीरे चलें: "${moon48Verdict.careful.label}" ${moon48Verdict.careful.score}/100 पर है — ${moon48Verdict.careful.scoreReason}`
-        : `Go gently here: "${moon48Verdict.careful.label}" is at ${moon48Verdict.careful.score}/100 — ${moon48Verdict.careful.scoreReason}`);
-    }
-  } else {
-    lines.push(hi
-      ? `इस प्रश्न पर गणना-आधारित बहुआयामी पठन के लिए अपना सटीक जन्म-समय और स्थान जोड़ें। तब तक यह मार्गदर्शन राशि और दशा पर आधारित है।`
-      : `Add your exact birth time and place for a calculated multidimensional reading on this question. Until then, this guidance is based on Rashi and Dasha.`);
-  }
+  const decisionEn = average >= 72
+    ? `The reading supports ${intent.subjectEn}, but it favours a measured step rather than a rushed commitment.`
+    : average >= 55
+      ? `The reading is conditionally supportive for ${intent.subjectEn}. Treat it as a “proceed with checks,” not an effortless yes.`
+      : `I would not treat ${intent.subjectEn} as a clean yes yet. Stabilise the weak point first, then review the decision.`;
+  const decisionHi = average >= 72
+    ? `पठन ${intent.subjectHi} का समर्थन करता है, लेकिन जल्दबाज़ी की प्रतिबद्धता के बजाय नपा-तुला कदम बेहतर है।`
+    : average >= 55
+      ? `पठन ${intent.subjectHi} के लिए शर्तों के साथ अनुकूल है। इसे सहज “हाँ” नहीं, बल्कि “जाँच के साथ आगे बढ़ें” मानें।`
+      : `अभी ${intent.subjectHi} को स्पष्ट “हाँ” नहीं मानूँगा। पहले कमज़ोर पक्ष को स्थिर करें, फिर निर्णय की समीक्षा करें।`;
 
-  // 2. Rashi lens — supporting context now, not the headline
-  lines.push(hi
-    ? `${ctx.moonRashiName} के लिए अंतर्निहित पैटर्न: ${rashiCategoryLens(cat, ctx.moonRashiId, lang)}`
-    : `Underlying pattern for ${ctx.moonRashiName}: ${rashiCategoryLens(cat, ctx.moonRashiId, lang)}`);
+  const rashiPattern = rashiCategoryLens(category, ctx.moonRashiId, lang);
+  const mahaQuality = ctx.currentDasha ? summarizePlanetQuality(ctx.currentDasha, lang) : (hi ? "मिश्रित प्रभाव" : "mixed influences");
+  const antarQuality = ctx.currentAntardasha ? summarizePlanetQuality(ctx.currentAntardasha, lang) : (hi ? "मिश्रित प्रभाव" : "mixed influences");
+  const dashaSentence = ctx.currentDasha && ctx.currentAntardasha
+    ? (hi
+        ? `${ctx.currentDasha} महादशा व्यापक दिशा देती है; ${ctx.currentAntardasha} अंतर्दशा अभी सक्रिय स्वर है। पहला ${mahaQuality} लाता है और दूसरा ${antarQuality} जोड़ता है।`
+        : `${ctx.currentDasha} Mahadasha sets the wider direction; ${ctx.currentAntardasha} Antardasha is the active tone. The first brings ${mahaQuality.toLowerCase()} and the second adds ${antarQuality.toLowerCase()}.`)
+    : (hi
+        ? "दशा-क्रम उपलब्ध जन्म-विवरण से आंशिक है, इसलिए उत्तर को निश्चित घटना नहीं बल्कि दिशा मानें।"
+        : "The phase sequence is partial from the available birth detail, so read this as direction rather than a guaranteed event.");
 
-  // 3. Dasha lens
-  if (ctx.currentDasha && ctx.currentAntardasha) {
-    lines.push(hi
-      ? `क्यों: ${ctx.currentDasha} महादशा व्यापक जीवन-पाठ है और ${ctx.currentAntardasha} अंतर्दशा सक्रिय उप-पैटर्न है। ${ctx.currentDasha} ${currentDashaQuality} लाता है, जबकि ${ctx.currentAntardasha} ${currentAntardashaQuality} जोड़ता है; यही मिश्रण अभी चार्ट व्यक्त कर रहा है।`
-      : `Why: ${ctx.currentDasha} Mahadasha is the broad life lesson and ${ctx.currentAntardasha} Antardasha is the active sub-pattern. ${ctx.currentDasha} brings ${currentDashaQuality.toLowerCase()}, while ${ctx.currentAntardasha} adds ${currentAntardashaQuality.toLowerCase()}; that blend is what the chart is expressing right now.`);
-  } else if (ctx.currentDasha) {
-    lines.push(hi
-      ? `क्यों: आप ${ctx.currentDasha} महादशा में हैं (${currentDashaQuality})। यह बड़ी धारा को आकार दे रही है और तय कर रही है कि कौन-से प्रयास वास्तव में टिक सकते हैं।`
-      : `Why: you are in ${ctx.currentDasha} Mahadasha (${currentDashaQuality.toLowerCase()}). It is shaping the larger current and deciding which efforts can actually stick.`);
-  }
+  const timing = ctx.currentAntardashaYearsLeft !== null
+    ? (hi
+        ? `यह उप-चरण लगभग ${formatPhaseSpan(ctx.currentAntardashaYearsLeft, lang)} और सक्रिय रह सकता है${ctx.currentAntardashaEndsAtIso ? `, लगभग ${formatApproxDate(ctx.currentAntardashaEndsAtIso, lang)} तक` : ""}।`
+        : `This sub-phase may remain active for about ${formatPhaseSpan(ctx.currentAntardashaYearsLeft, lang)}${ctx.currentAntardashaEndsAtIso ? `, until around ${formatApproxDate(ctx.currentAntardashaEndsAtIso, lang)}` : ""}.`)
+    : (hi ? "समय-सीमा को निश्चित तारीख न मानें; पहले छोटे, वापस लिए जा सकने वाले कदम से जाँचें।" : "Do not treat timing as a fixed date; test it first with a small, reversible step.");
 
-  // 4. Timing lens
-  if (dashaTiming.length > 0) {
-    lines.push(hi
-      ? `यह दौर कितना चलेगा: ${dashaTiming}। ये समय अनुमानित हैं क्योंकि ये यहाँ की जन्मतिथि से निकाले गए हैं; सटीक जन्म-समय और स्थान परिणाम को और स्पष्ट करेंगे।`
-      : `How long this phase lasts: ${dashaTiming}. These timings are approximate because they are derived from the birth date here; an exact birth time and location will sharpen the result.`);
-  }
-  if (phaseWindow.length > 0) {
-    lines.push(hi ? `कब शुरू हुआ और कब समाप्त होगा: ${phaseWindow}।` : `When it started and ends: ${phaseWindow}.`);
-  }
+  const actionsEn: Record<AstroChatCategory, string> = {
+    career: "Write the exact outcome you want, complete one visible work action, and request one factual response before making a larger move.",
+    relationship: "Have one calm conversation: name the need, listen to the answer, and agree on one observable change rather than relying on promises.",
+    health: "Record symptoms and timing, keep essential routines steady, and speak with a qualified clinician rather than changing treatment from this reading.",
+    money: "Verify costs, downside, documents, and an exit option; do not commit funds that would weaken essential security.",
+    family: "Lower the emotional temperature, state the concern once, and agree on one practical responsibility with a date.",
+    spiritual: "Choose one quiet daily practice and judge it by steadiness, compassion, and clarity rather than intensity.",
+    timing: "Use the smallest reversible step now, then review what actually changes before committing further.",
+    identity: "Take one action consistent with the person you want to become, then review it without self-judgment.",
+    general: "Separate facts, assumptions, and fears on paper; act only on the clearest fact first.",
+  };
+  const actionsHi: Record<AstroChatCategory, string> = {
+    career: "अपना अपेक्षित परिणाम लिखें, एक दिखाई देने वाला कार्य पूरा करें और बड़े कदम से पहले एक तथ्यात्मक उत्तर माँगें।",
+    relationship: "एक शांत बातचीत करें: ज़रूरत बताएं, उत्तर सुनें और वादों के बजाय एक दिखाई देने वाले बदलाव पर सहमति लें।",
+    health: "लक्षण और समय लिखें, आवश्यक दिनचर्या स्थिर रखें और इस पठन के आधार पर उपचार बदलने के बजाय योग्य चिकित्सक से बात करें।",
+    money: "लागत, जोखिम, दस्तावेज़ और बाहर निकलने का विकल्प जाँचें; आवश्यक सुरक्षा को कमज़ोर करने वाला धन न लगाएँ।",
+    family: "भावनात्मक ताप कम करें, चिंता एक बार साफ़ कहें और तारीख के साथ एक व्यावहारिक जिम्मेदारी तय करें।",
+    spiritual: "एक शांत दैनिक अभ्यास चुनें और उसकी तीव्रता नहीं, स्थिरता, करुणा और स्पष्टता देखें।",
+    timing: "अभी सबसे छोटा वापस लिया जा सकने वाला कदम लें, फिर आगे बढ़ने से पहले वास्तविक बदलाव देखें।",
+    identity: "जिस व्यक्ति के रूप में बढ़ना चाहते हैं उसके अनुरूप एक कार्य करें, फिर बिना आत्म-आलोचना के समीक्षा करें।",
+    general: "तथ्य, अनुमान और डर अलग-अलग लिखें; पहले केवल सबसे स्पष्ट तथ्य पर काम करें।",
+  };
 
-  // 5. Domain outlook — only the domains tied to this question's category.
-  if (domainOutlook.length > 0) {
-    lines.push(hi ? `यह व्यवहार में कहाँ दिखता है:` : `Where this shows up practically:`);
-    domainOutlook.forEach((item) => {
-      lines.push(`${item.domain}: ${item.verdictLabel} — ${item.note}`);
-    });
-  }
+  const opener = tone === "why"
+    ? (hi ? `सीधा उत्तर: ${decisionHi} इसके पीछे का कारण चंद्र-चार्ट में दो परतों का मिश्रण है।` : `Direct answer: ${decisionEn} The reason is a blend of two Moon-chart layers.`)
+    : tone === "when"
+      ? (hi ? `समय के बारे में सीधा उत्तर: ${decisionHi}` : `Direct timing answer: ${decisionEn}`)
+      : (hi ? `सीधा उत्तर: ${decisionHi}` : `Direct answer: ${decisionEn}`);
 
-  // 6. Practical action lens
-  const practicalAction = buildAstroChatAction({
-    lang,
-    tone,
-    categoryAction: categoryActions[cat],
-    verdict: moon48Verdict,
-    currentAntardasha: ctx.currentAntardasha,
-    currentAntardashaYearsLeft: ctx.currentAntardashaYearsLeft
-  });
-  lines.push(hi ? `अब क्या करें: ${practicalAction}` : `What to do now: ${practicalAction}`);
+  const reply = hi
+    ? [
+        opener,
+        `क्या इसे आकार दे रहा है: ${ctx.moonRashiName} का मूल पैटर्न — ${rashiPattern} ${dashaSentence}`,
+        `समय: ${timing}`,
+        `अगला व्यावहारिक कदम: ${actionsHi[category]}`,
+        intent.highStakes ? "महत्वपूर्ण: स्वास्थ्य, कानूनी या बड़े वित्तीय निर्णय में इस पठन को विशेषज्ञ सलाह का स्थान न दें।" : "इसे निश्चित भविष्यवाणी नहीं, बेहतर निर्णय के लिए व्याख्यात्मक मार्गदर्शन मानें।",
+      ].join("\n\n")
+    : [
+        opener,
+        `What is shaping it: the underlying ${ctx.moonRashiName} pattern — ${rashiPattern} ${dashaSentence}`,
+        `Timing: ${timing}`,
+        `Practical next step: ${actionsEn[category]}`,
+        intent.highStakes ? "Important: do not use this reading instead of qualified medical, legal, or financial advice." : "Use this as interpretive guidance for a better decision, not as a guaranteed forecast.",
+      ].join("\n\n");
 
-  // 7. Today's Panchang lens
-  lines.push(hi
-    ? `आज का पंचांग: ${ctx.todayVara}, ${ctx.todayTithi}। यदि निर्णय टल सकता है, तो परिणाम को ज़बरदस्ती करने से पहले इस अवसर पर एक बार और अवलोकन करें।`
-    : `Today’s Panchang: ${ctx.todayVara}, ${ctx.todayTithi}. If the decision can wait, use this window to observe once more before forcing the outcome.`);
-
-  lines.push(hi
-    ? `चाहें तो यही बात और संकीर्ण रूप में पूछें और मैं उसी दौर में एक परत और गहराई तक जाऊँगा।`
-    : `If you want, ask the same thing in a narrower way and I will go one layer deeper into the same phase.`);
-
-  // Remedy from the Rashi remedy pack
-  const R = (hi ? RASHI_REMEDIES_HI : RASHI_REMEDIES)[ctx.moonRashiId] ?? (hi ? RASHI_REMEDIES_HI : RASHI_REMEDIES)[0];
-  const lalKitabRemedies = buildLalKitabRemedies(ctx.currentDasha, ctx.currentAntardasha, cat, lang);
   const remedy = hi
     ? [
-        "वैदिक उपाय",
-        `मंत्र: ${R.mantra} — 108 बार, स्नान के बाद प्रातःकाल।`,
-        `रत्न: ${R.gem} (धारण करने से पहले किसी ज्योतिषी से परामर्श करें)।`,
-        `व्रत: ${R.fast} — सूर्योदय से सूर्यास्त तक, फल से खोलें।`,
-        `देवता: ${R.deity} को फूल या दीया अर्पित करें।`,
-        `भोजन: ${R.food}।`,
-        "",
-        "लाल किताब उपाय",
-        ...lalKitabRemedies,
+        "व्यावहारिक सहारा",
+        actionsHi[category],
+        "तीन मिनट शांत बैठें, साँस छोड़ना थोड़ा लंबा रखें और निर्णय का एक वाक्य लिखें।",
+        "यदि आप चाहें तो ‘ॐ चन्द्राय नमः’ 11 बार शांत स्वर में दोहराएँ; रत्न या महँगा उपाय केवल व्यक्तिगत विशेषज्ञ समीक्षा के बाद ही चुनें।",
       ].join("\n")
     : [
-        "Vedic remedy",
-        `Mantra: ${R.mantra} — 108 times, morning after bath.`,
-        `Gemstone: ${R.gem} (consult a Jyotishi before wearing).`,
-        `Fast: ${R.fast} — sunrise to sunset, break with fruit.`,
-        `Deity: offer flowers or a diya to ${R.deity}.`,
-        `Food: ${R.food}.`,
-        "",
-        "Lal Kitab remedies",
-        ...lalKitabRemedies,
+        "Practical support",
+        actionsEn[category],
+        "Sit quietly for three minutes, lengthen the exhale, and write the decision in one sentence.",
+        "If meaningful to you, repeat ‘Om Chandraya Namah’ 11 times quietly; choose no gemstone or costly remedy without an individual expert review.",
       ].join("\n");
 
-  return { category: cat, reply: lines.join("\n\n"), remedy };
+  const phaseBasis = [ctx.currentDasha, ctx.currentAntardasha].filter(Boolean).join(" / ") || (hi ? "आंशिक" : "partial");
+  const calculationBasis = hi
+    ? [
+        "केवल चंद्र-चार्ट गणना आधार",
+        `जन्म राशि: ${ctx.moonRashiName}; नक्षत्र-स्वामी: ${ctx.nakshatraLord ?? "उपलब्ध नहीं"}; दशा/अंतर्दशा: ${phaseBasis}।`,
+        `संबंधित संकेत: ${moonChartCategoryLabel(relevantCategories[0], lang)} ${average}/100${strongest ? `; प्रमुख क्षेत्र: ${strongest.label} ${strongest.score}/100` : ""}${careful ? `; सावधानी क्षेत्र: ${careful.label} ${careful.score}/100` : ""}।`,
+        `पंचांग संदर्भ: ${ctx.todayVara}, ${ctx.todayTithi}। लग्न या सूर्य-आधारित भविष्यवाणी इस उत्तर में शामिल नहीं है।`,
+      ].join("\n")
+    : [
+        "Moon-chart-only calculation basis",
+        `Janma Rashi: ${ctx.moonRashiName}; Nakshatra lord: ${ctx.nakshatraLord ?? "unavailable"}; Dasha/Antardasha: ${phaseBasis}.`,
+        `Relevant signal: ${moonChartCategoryLabel(relevantCategories[0], lang)} ${average}/100${strongest ? `; strongest area: ${strongest.label} ${strongest.score}/100` : ""}${careful ? `; caution area: ${careful.label} ${careful.score}/100` : ""}.`,
+        `Panchang context: ${ctx.todayVara}, ${ctx.todayTithi}. No non-lunar predictive overlay is included in this answer.`,
+      ].join("\n");
+
+  return { category, reply, remedy, calculationBasis };
 }
 
 type VedicEngineSource = "home" | "counseling" | "aihelp" | "manual";
@@ -12510,32 +12521,31 @@ function getNextEkadashi(): { date: Date; paksha: "Shukla" | "Krishna"; daysAway
   return null;
 }
 
-// Generate the daily prediction text for a given rashi
+// Generate a concise daily reading from the Moon-chart engine. The former
+// static Rashi copy is deliberately not surfaced: a real reading should be
+// calculated from Janma Rashi, Nakshatra, Tithi, Vara and the live
+// Mahadasha/Antardasha rather than rotate generic sign paragraphs.
 function getVedicDailyPrediction(
   rashiId: number,
-  dashaState: VimshottariDashaState | null = null
+  dashaState: VimshottariDashaState | null = null,
+  janmaNakshatra?: ReturnType<typeof getJanmaNakshatra> | null,
+  tithi?: ReturnType<typeof getTodayTithi> | null,
+  vara?: typeof VARA_INFO[0] | null
 ): string[] {
-  const predictions = RASHI_DAILY_PREDICTIONS[rashiId];
-  const fallback = [
-    "Cosmic energies are aligning for you. Reflect, rest, and trust the divine flow.",
-    "Keep intentions pure and actions selfless.",
-    "Health: Maintain daily routine.",
-    "Spiritually: Offer gratitude to the divine."
-  ];
-  const today = new Date();
-  const dayIdx = today.getDay(); // 0-6
-  const dailyLines = predictions?.[dayIdx] ?? predictions?.[0] ?? fallback;
-
-  if (!dashaState) {
-    return dailyLines;
-  }
-
   const rashiName = VEDIC_RASHIS[rashiId]?.name ?? "your Rashi";
+  const nakshatraName = janmaNakshatra?.name ?? "your Janma Nakshatra";
+  const lunarDay = tithi ? `${tithi.name}, ${tithi.paksha}` : "today's lunar phase";
+  const weekday = vara?.en ?? "today";
+  const maha = dashaState?.currentMahadasha ?? janmaNakshatra?.lord ?? "the active Mahadasha";
+  const antar = dashaState?.currentAntardasha ?? janmaNakshatra?.lord ?? "the active Antardasha";
+  const timeLine = dashaState
+    ? `Timing: about ${formatPhaseSpan(dashaState.antardashaYearsLeft)} remain in ${antar} Antardasha, within about ${formatPhaseSpan(dashaState.mahadashaYearsLeft)} of ${maha} Mahadasha.`
+    : "Timing: add exact birth details to calculate the current Mahadasha and Antardasha dates.";
   return [
-    `What is happening: ${dashaState.currentMahadasha} Mahadasha with ${dashaState.currentAntardasha} Antardasha is active. ${summarizePlanetQuality(dashaState.currentMahadasha)} meets ${summarizePlanetQuality(dashaState.currentAntardasha)} in this phase.`,
-    `Why it is happening: the Mahadasha sets the large life theme, while the Antardasha shows the current sub-pattern. Your Moon Rashi (${rashiName}) decides where that pressure lands in daily life.`,
-    `How long it lasts: about ${formatPhaseSpan(dashaState.antardashaYearsLeft)} remain in the current Antardasha and about ${formatPhaseSpan(dashaState.mahadashaYearsLeft)} remain in the larger Mahadasha.`,
-    ...dailyLines
+    `Key insight: Moon Rashi ${rashiName} and ${nakshatraName} place today's emphasis on emotional steadiness before action.`,
+    `Calculation: ${maha} Mahadasha and ${antar} Antardasha are read through ${lunarDay} and the ${weekday} rhythm.`,
+    timeLine,
+    "Practical remedy: pause before one consequential decision, write the facts in one place, and complete one small stabilising action today."
   ];
 }
 
@@ -13008,11 +13018,10 @@ function buildMoonChartMultidimensionalEngine(input: {
   dashaState: VimshottariDashaState | null;
   tithi: ReturnType<typeof getTodayTithi>;
   vara: typeof VARA_INFO[0];
-  // Optional: real Ascendant sign (0-11, sidereal), from getLagnaFromBirthDetails.
-  // The Moon chart (Chandra Kundali) stays the primary anchor -- Vedic daily
-  // prediction has traditionally leaned on the Moon chart -- but the Lagna
-  // now adds a secondary confirming/tempering layer, since the Ascendant is
-  // classically the chart of the physical self/body/personality specifically.
+  // Accepted for backward-compatible callers and chart display only. It is
+  // intentionally excluded from prediction/remedy scoring: all guidance in
+  // this engine is calculated solely from the Moon chart, as promised in the
+  // product's methodology note.
   lagnaId?: number | null;
   // When "hi", the whole reading (blueprint label/meaning, interpretation,
   // score reason, remedy, prediction, verdict word) is produced in Hindi.
@@ -13023,8 +13032,6 @@ function buildMoonChartMultidimensionalEngine(input: {
 }): MoonChart48Reading[] {
   const lang: "en" | "hi" = input.lang ?? "en";
   const rashi = VEDIC_RASHIS[input.rashiId] ?? VEDIC_RASHIS[0];
-  const lagnaRashi = typeof input.lagnaId === "number" ? VEDIC_RASHIS[input.lagnaId] ?? null : null;
-  const lagnaLord = lagnaRashi ? lagnaRashi.lord.split(" ")[0] : null;
   const nakshatra = input.janmaNakshatra;
   const nakshatraId = nakshatra?.id ?? 0;
   const nakshatraLord = nakshatra?.lord ?? "Chandra";
@@ -13054,19 +13061,6 @@ function buildMoonChartMultidimensionalEngine(input: {
       rashi.element.includes("Prithvi") && (dimension.category === "body" || dimension.category === "money" || dimension.category === "family") ? 3 :
       rashi.element.includes("Vayu") && (dimension.category === "relationship" || dimension.category === "growth" || dimension.category === "work") ? 3 : 0;
 
-    // Lagna (Ascendant) overlay -- secondary to the Moon chart. Lagna lord's
-    // classical significations plus the Ascendant sign's element, with extra
-    // weight on "self"/"body" since Lagna specifically governs physical
-    // self, vitality, and personality in Vedic astrology.
-    const lagnaLordScore = lagnaLord ? getMoonChartPlanetCategoryScore(lagnaLord, dimension.category) : 0;
-    const lagnaElementBias = lagnaRashi
-      ? (lagnaRashi.element.includes("Jal") && (dimension.category === "mind" || dimension.category === "family" || dimension.category === "spiritual") ? 2.5 :
-         lagnaRashi.element.includes("Agni") && (dimension.category === "self" || dimension.category === "work" || dimension.category === "growth") ? 2.5 :
-         lagnaRashi.element.includes("Prithvi") && (dimension.category === "body" || dimension.category === "money" || dimension.category === "family") ? 2.5 :
-         lagnaRashi.element.includes("Vayu") && (dimension.category === "relationship" || dimension.category === "growth" || dimension.category === "work") ? 2.5 : 0)
-      : 0;
-    const lagnaSelfBodyEmphasis = lagnaRashi && (dimension.category === "self" || dimension.category === "body") ? 3 : 0;
-
     const raw = 60
       + houseScore * 1.55
       + mahaScore * 0.85
@@ -13076,9 +13070,6 @@ function buildMoonChartMultidimensionalEngine(input: {
       + moonSignElementBias
       + tithiBalance
       + lunarFinePulse * 0.35
-      + lagnaLordScore * 0.5
-      + lagnaElementBias
-      + lagnaSelfBodyEmphasis
       + ((nakshatraId + index) % 3 - 1) * dimension.weight;
 
     const score = clampMoonScore(raw);
@@ -13111,10 +13102,10 @@ function buildMoonChartMultidimensionalEngine(input: {
       antar,
       nakshatraLord,
       varaPlanet,
-      lagnaRashiName: lagnaRashi?.name ?? null,
-      lagnaLord,
-      lagnaLordScore: lagnaLordScore * 0.5,
-      lagnaElementBias: lagnaElementBias + lagnaSelfBodyEmphasis,
+      lagnaRashiName: null,
+      lagnaLord: null,
+      lagnaLordScore: 0,
+      lagnaElementBias: 0,
       lang,
     });
     // dimension.label/meaning are already Hindi in Hindi mode (see hiText
@@ -13132,16 +13123,16 @@ function buildMoonChartMultidimensionalEngine(input: {
       verdict,
       verdictLabel: moonChartVerdictLabel(verdict, lang),
       prediction: lang === "hi"
-        ? `चंद्र राशि ${rashi.name}${nakshatra ? `, ${nakshatra.name} नक्षत्र पाद ${pada}` : ""}${lagnaRashi ? `, लग्न ${lagnaRashi.name} के साथ` : ""} से, ${dimension.label} आज ${focus}। यह पठन चंद्र-भाव ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, और ${varaName}${lagnaRashi ? `, लग्न ${lagnaRashi.name} द्वारा संतुलित` : ""} के माध्यम से गणना किया गया है।`
-        : `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}${lagnaRashi ? `, with Lagna ${lagnaRashi.name}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. The reading is calculated through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}${lagnaRashi ? `, tempered by the Ascendant in ${lagnaRashi.name}` : ""}.`,
+        ? `चंद्र राशि ${rashi.name}${nakshatra ? `, ${nakshatra.name} नक्षत्र पाद ${pada}` : ""} से, ${dimension.label} आज ${focus}। यह पठन केवल चंद्र-भाव ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, और ${varaName} के माध्यम से गणना किया गया है।`
+        : `From Moon Rashi ${rashi.name}${nakshatra ? `, ${nakshatra.name} Nakshatra pada ${pada}` : ""}, ${dimension.label.toLowerCase()} shows ${focus} today. This reading is calculated solely through Moon-house ${dimension.house}, ${dashaText}, ${input.tithi.name} ${input.tithi.paksha}, and ${input.vara.en}.`,
       interpretation,
       scoreReason,
       remedy: lang === "hi" ? `चंद्र-चार्ट उपाय: ${remedyPack.steps.join(" ")}` : `Moon-chart remedy: ${remedyPack.steps.join(" ")}`,
       remedyTitle: remedyPack.title,
       remedySteps: remedyPack.steps,
       calculationBasis: lang === "hi"
-        ? `चंद्र-चार्ट आधार (प्राथमिक): सायडरियल चंद्र ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "उपलब्ध नहीं"}°; जन्म राशि ${rashi.name}; नक्षत्र ${nakshatra?.name ?? "अनुमानित"}; पाद ${pada}; चंद्र से भाव ${dimension.house}; दशा ${maha}/${antar}; तिथि ${input.tithi.number}।${lagnaRashi ? ` लग्न आवरण (द्वितीयक): लग्न ${lagnaRashi.name}, स्वामी ${lagnaLord}।` : ""}`
-        : `Moon-chart basis (primary): sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.${lagnaRashi ? ` Ascendant overlay (secondary): Lagna ${lagnaRashi.name}, lord ${lagnaLord}.` : ""}`,
+        ? `केवल चंद्र-चार्ट आधार: सायडरियल चंद्र ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "उपलब्ध नहीं"}°; जन्म राशि ${rashi.name}; नक्षत्र ${nakshatra?.name ?? "अनुमानित"}; पाद ${pada}; चंद्र से भाव ${dimension.house}; दशा ${maha}/${antar}; तिथि ${input.tithi.number}।`
+        : `Moon-chart-only basis: sidereal Moon ${nakshatra?.siderealMoonLongitude.toFixed(2) ?? "n/a"}°; Janma Rashi ${rashi.name}; Nakshatra ${nakshatra?.name ?? "approximated"}; pada ${pada}; house ${dimension.house} from Moon; dasha ${maha}/${antar}; tithi ${input.tithi.number}.`,
       visualAngle: (index % 12) * 30,
       visualDepth: Math.max(0.12, Math.min(1, score / 100)),
     };
@@ -13717,12 +13708,10 @@ export default function App() {
   // closures handed up once via onControlsReady.
   const [toneNowPlaying, setToneNowPlaying] = useState<ToneNowPlaying>(null);
   const toneControlsRef = useRef<ToneLibraryControls | null>(null);
-  // "focus" still exists as an internal TabId (journeys, low-mood nudges,
-  // and situation cards route to it directly) but its content now renders
-  // inside the merged Meditation tab and it no longer has its own nav pill.
-  // Any tab-rail/nav highlighting should treat "focus" as "meditation" so
-  // navigating there doesn't leave every pill looking unselected.
-  const navActiveTab: TabId = activeTab === "focus" ? "meditation" : activeTab;
+  // Calm Reset remains an internal focused route. The primary Calm pill opens
+  // it directly, while Meditation stays available from Pages as its own
+  // progressively-disclosed practice library.
+  const navActiveTab: TabId = activeTab;
   const [selectedTone, setSelectedTone] = useState<Tone>(tones[3]);
   const [journal, setJournal] = useState(defaultDraft);
   const [sessionActive, setSessionActive] = useState(false);
@@ -13819,7 +13808,9 @@ export default function App() {
   // still came back in English. English default, exclusive en/hi (never both).
   const [chartBriefLang, setChartBriefLang] = useState<"en" | "hi">("en");
   // Astro two-way chat — user asks anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy
-  const [astroChatMessages, setAstroChatMessages] = useState<Array<{ id: string; role: "user" | "astro"; text: string; remedy?: string; category?: string; ts: string }>>([]);
+  const [astroChatMessages, setAstroChatMessages] = useState<Array<{ id: string; role: "user" | "astro"; text: string; remedy?: string; calculationBasis?: string; category?: string; ts: string }>>([]);
+  const [astroChatDraft, setAstroChatDraft] = useState("");
+  const [expandedAstroBasisIds, setExpandedAstroBasisIds] = useState<Set<string>>(() => new Set());
   // The reply itself is pure synchronous local computation (real chart data,
   // but no network call), which made every answer appear literally
   // instantly -- indistinguishable from a pre-written/cached response even
@@ -13889,6 +13880,8 @@ export default function App() {
   const [profileEmailOtp, setProfileEmailOtp] = useState("");
   const [profilePhoneOtpInput, setProfilePhoneOtpInput] = useState("");
   const [profileEmailOtpInput, setProfileEmailOtpInput] = useState("");
+  const [profilePhoneChallenge, setProfilePhoneChallenge] = useState("");
+  const [profileEmailChallenge, setProfileEmailChallenge] = useState("");
   const [profileVerificationNotice, setProfileVerificationNotice] = useState<string | null>(null);
   const [verificationRequestBusy, setVerificationRequestBusy] = useState<"phone" | "email" | null>(null);
   // Premium entitlement (RevenueCat webhook -> aethon_entitlements -> here via
@@ -13983,7 +13976,7 @@ export default function App() {
   const [reviewContact, setReviewContact] = useState("");
   const [showAccessPanel, setShowAccessPanel] = useState(false);
   const [showAccessVerificationSection, setShowAccessVerificationSection] = useState(false);
-  const [startupAccessPromptAutoOpen, setStartupAccessPromptAutoOpen] = useState(false);
+  const [startupAccessPromptAutoOpen] = useState(false);
   const [startupAccessPromptDismissEnabled, setStartupAccessPromptDismissEnabled] = useState(false);
   const [showExitReviewPrompt, setShowExitReviewPrompt] = useState(false);
   const [hasSeenExitReviewPrompt, setHasSeenExitReviewPrompt] = useState(false);
@@ -14016,8 +14009,6 @@ export default function App() {
   const lastAppliedScrollSignatureRef = React.useRef<string | null>(null);
   const hasAutoPromptedPresentMoodRef = React.useRef(false);
   const routeNoticeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const startupAccessPromptUnlockTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasOpenedStartupAccessPromptRef = React.useRef(false);
   const [presenceSessionId] = useState(() => `presence-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
 
   const selectedRoutine = useMemo(
@@ -14043,11 +14034,10 @@ export default function App() {
     [accessRole, languageId]
   );
   const activeTabLabel = useMemo(
-    // "focus" has no entry of its own in `tabs` anymore (merged into
-    // "meditation" — see navActiveTab above), so look it up under its
-    // merged id instead of falling through to the "Home" default.
-    () => visibleTabs.find((tab) => tab.id === navActiveTab)?.label ?? "Home",
-    [navActiveTab, visibleTabs]
+    () => activeTab === "focus"
+      ? "Calm Reset"
+      : visibleTabs.find((tab) => tab.id === navActiveTab)?.label ?? "Home",
+    [activeTab, navActiveTab, visibleTabs]
   );
   const headerNavTabs = useMemo(() => {
     const orderedIds: TabId[] = [
@@ -15123,8 +15113,16 @@ export default function App() {
   const vedicTithi = useMemo(() => getTodayTithi(), []);
   const vedicVara = useMemo(() => VARA_INFO[new Date().getDay()], []);
   const vedicPredictionLines = useMemo(
-    () => vedicRashiInfo ? getVedicDailyPrediction(vedicRashiInfo.rashiId, vedicDashaState) : null,
-    [vedicRashiInfo, vedicDashaState]
+    () => vedicRashiInfo
+      ? getVedicDailyPrediction(
+          vedicRashiInfo.rashiId,
+          vedicDashaState,
+          vedicJanmaNakshatra,
+          vedicTithi,
+          vedicVara
+        )
+      : null,
+    [vedicRashiInfo, vedicDashaState, vedicJanmaNakshatra, vedicTithi, vedicVara]
   );
   const vedicMoonChartInsightReadings = useMemo(
     () => vedicRashiInfo
@@ -15922,7 +15920,9 @@ export default function App() {
     setProfilePhoneOtp("");
     setProfileEmailOtp("");
     setProfilePhoneOtpInput("");
+    setProfilePhoneChallenge("");
     setProfileEmailOtpInput("");
+    setProfileEmailChallenge("");
     setProfileVerificationNotice(null);
     setProfileGender("prefer_not_to_say");
     setProfileDOB("");
@@ -16768,72 +16768,10 @@ export default function App() {
     }
   }, [hasLoaded]);
 
-  useEffect(() => {
-    // Sequenced with the onboarding overlay above: that overlay owns the
-    // very first screen a new user sees (identity + need). This prompt must
-    // never open while onboarding is still in progress, or the user sees two
-    // full-screen prompts stacked on top of each other on first launch. Only
-    // once onboarding is complete do we check whether profile/account
-    // details or channel verification are still missing.
-    if (!hasLoaded || hasOpenedStartupAccessPromptRef.current || !onboardingCompleted) return;
-    const profileSelection = hasMeaningfulProfileSelection({
-      identityId,
-      profileRoleId,
-      profileName: accessName,
-      profilePhone,
-      profileEmail,
-      profileLocation,
-      profileGender,
-      accessRole,
-      trustedContacts
-    });
-    const hasVerifiedChannel = profilePhoneVerified || profileEmailVerified;
-    const needsStartupPrompt = !profileSelection || !hasVerifiedChannel;
-    if (!needsStartupPrompt) return;
-
-    hasOpenedStartupAccessPromptRef.current = true;
-    setStartupAccessPromptAutoOpen(true);
-    // Dismissible from the first frame. This panel used to hold the person
-    // for ten seconds -- dismissal was disabled on open and re-enabled by a
-    // timer, with the close button counting down "Exit 10s" and the header
-    // reading "Startup prompt - 10s left".
-    //
-    // It is the first thing a new user sees, and it physically would not let
-    // them leave. Apple's HIG is explicit that a modal must always offer a
-    // way out; no first-party app on any of the platforms this is measured
-    // against traps someone on launch. Ten seconds of a disabled close button
-    // is also a very efficient way to earn an immediate uninstall from
-    // somebody who opened a mental-health app while in distress.
-    //
-    // The prompt still opens, and still explains why verification matters --
-    // it just asks rather than detains.
-    setStartupAccessPromptDismissEnabled(true);
-    setShowAccessVerificationSection(true);
-    setShowAccessPanel(true);
-  }, [
-    hasLoaded,
-    onboardingCompleted,
-    identityId,
-    profileRoleId,
-    accessName,
-    profilePhone,
-    profileEmail,
-    profileLocation,
-    profileGender,
-    accessRole,
-    trustedContacts,
-    profilePhoneVerified,
-    profileEmailVerified
-  ]);
-
-  useEffect(() => {
-    return () => {
-      if (startupAccessPromptUnlockTimerRef.current) {
-        clearTimeout(startupAccessPromptUnlockTimerRef.current);
-        startupAccessPromptUnlockTimerRef.current = null;
-      }
-    };
-  }, []);
+  // Profile and contact details are optional. Do not interrupt a chosen
+  // onboarding route with a second, timed account sheet. The profile sheet
+  // opens only when the person explicitly selects Profile or enters a gated
+  // Community feature that actually needs verification.
 
   useEffect(() => {
     if (!showAccessPanel || !startupAccessPromptAutoOpen || !startupAccessPromptDismissEnabled) return;
@@ -18007,6 +17945,11 @@ export default function App() {
       Alert.alert("Email verification", "Add an email address first.");
       return false;
     }
+    if (channel === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileEmail.trim())) {
+      setProfileVerificationNotice("Enter a valid email address.");
+      Alert.alert("Email verification", "Enter a valid email address.");
+      return false;
+    }
 
     if (verificationApiBaseUrl.length > 0) {
       if (verificationRequestBusy !== null) {
@@ -18046,6 +17989,7 @@ export default function App() {
           message?: string;
           destination?: string;
           deliveryId?: string;
+          challenge?: string;
           previewCode?: string;
         };
 
@@ -18054,6 +17998,16 @@ export default function App() {
         }
 
         const target = payload.destination ?? (channel === "phone" ? "your phone" : "your email inbox");
+        if (!payload.challenge) {
+          throw new Error("The verification service did not return a secure challenge. Please try again shortly.");
+        }
+        if (channel === "phone") {
+          setProfilePhoneChallenge(payload.challenge);
+          setProfilePhoneOtpInput("");
+        } else {
+          setProfileEmailChallenge(payload.challenge);
+          setProfileEmailOtpInput("");
+        }
         const isLocalDebug = verificationApiBaseUrl.includes("127.0.0.1") || verificationApiBaseUrl.includes("localhost");
         const previewLine = payload.previewCode && isLocalDebug ? `\nPreview code: ${payload.previewCode}` : "";
         setProfileVerificationNotice(
@@ -18135,6 +18089,7 @@ export default function App() {
           body: JSON.stringify({
             channel,
             code: enteredCode,
+            challenge: channel === "phone" ? profilePhoneChallenge : profileEmailChallenge,
             phone: verificationPhone,
             email: profileEmail.trim(),
             name: accessName.trim(),
@@ -18155,9 +18110,11 @@ export default function App() {
         if (channel === "phone") {
           setProfilePhoneVerified(true);
           setProfilePhoneOtpInput("");
+          setProfilePhoneChallenge("");
         } else {
           setProfileEmailVerified(true);
           setProfileEmailOtpInput("");
+          setProfileEmailChallenge("");
         }
 
         const nextPhoneVerified = channel === "phone" ? true : profilePhoneVerified;
@@ -19282,6 +19239,7 @@ async function fetchGuidanceHelp(
         role: "astro" as const,
         text: result.reply,
         remedy: result.remedy,
+        calculationBasis: result.calculationBasis,
         category: result.category,
         ts: new Date().toISOString(),
       };
@@ -19437,12 +19395,14 @@ async function fetchGuidanceHelp(
     const normalizedVoice = normalizeSpeechLocale(voiceLocale ?? "");
     const normalizedTarget = normalizeSpeechLocale(targetLocale);
     if (!normalizedVoice || !normalizedTarget) return 0;
-    if (normalizedVoice === normalizedTarget) return 100;
+    if (normalizedVoice === normalizedTarget) return 140;
     const voiceBase = normalizedVoice.split("-")[0];
     const targetBase = normalizedTarget.split("-")[0];
     let score = 0;
     if (voiceBase === targetBase) score += 70;
-    if (normalizedVoice.endsWith("-in")) score += 35;
+    // Prefer an Indian regional voice over a same-language voice from a
+    // different region. The selected locale is always an Indian locale.
+    if (normalizedVoice.endsWith("-in")) score += 55;
     if (normalizedVoice.includes("india")) score += 10;
     return score;
   }
@@ -19483,7 +19443,8 @@ async function fetchGuidanceHelp(
     return voices.reduce<{ voice: Speech.Voice | null; score: number }>(
       (best, voice) => {
         const nameScore = scoreVoiceGender(voice.name ?? voice.identifier ?? "", gender);
-        const score = scoreSpeechVoice(voice.language, targetLocale) + nameScore;
+        const qualityScore = voice.quality === Speech.VoiceQuality.Enhanced ? 12 : 0;
+        const score = scoreSpeechVoice(voice.language, targetLocale) + nameScore + qualityScore;
         if (score > best.score) return { voice, score };
         return best;
       },
@@ -19505,18 +19466,34 @@ async function fetchGuidanceHelp(
       .slice(0, 1100);
   }
 
+  async function getReadyWebVoices(synthesis: SpeechSynthesis): Promise<SpeechSynthesisVoice[]> {
+    const immediate = synthesis.getVoices?.() ?? [];
+    if (immediate.length > 0) return immediate;
+    return new Promise((resolve) => {
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        synthesis.removeEventListener?.("voiceschanged", finish);
+        resolve(synthesis.getVoices?.() ?? []);
+      };
+      synthesis.addEventListener?.("voiceschanged", finish, { once: true });
+      setTimeout(finish, 700);
+    });
+  }
+
   async function speakGuidance(text: string) {
     const cleanText = humaniseTextForSpeech(text);
     if (!cleanText) return;
     if (!voiceAssistEnabled) return;
 
-    // Humanized params — female: warmer pitch, slightly faster; male: deeper, calm.
-    // Base rate comes from the user's speed slider (Settings > Voice character);
-    // female keeps a small relative bump on top of whatever base the user picks.
-    const isFemale  = voiceGender === "female";
+    // Keep both characters at an unprocessed, normal human pitch. Gender is
+    // selected from the installed voice itself; pitch is never used to fake a
+    // male/female voice. A slightly unhurried rate makes long guidance easier
+    // to follow without making it sound theatrical.
     const baseRate   = clampVoiceRate(voiceRate);
-    const speakRate  = isFemale ? clampVoiceRate(baseRate + 0.05) : baseRate;
-    const speakPitch = isFemale ? 1.08 : 0.88;
+    const speakRate  = clampVoiceRate(baseRate * 0.96);
+    const speakPitch = 1.0;
 
     const speechApi = (globalThis as typeof globalThis & {
       speechSynthesis?: SpeechSynthesis;
@@ -19526,26 +19503,7 @@ async function fetchGuidanceHelp(
     if (Platform.OS === "web" && speechApi.speechSynthesis && speechApi.SpeechSynthesisUtterance) {
       speechApi.speechSynthesis.cancel();
       const utterance = new speechApi.SpeechSynthesisUtterance(cleanText);
-      // Chrome (and Safari on a cold start) populates the voice list
-      // asynchronously: the first getVoices() after page load returns []. Left
-      // as-is, the very first readout falls back to the browser default voice
-      // -- which is exactly the flat, non-Indian voice this picker exists to
-      // avoid. Wait one "voiceschanged" tick before giving up on the list.
-      let webVoices = speechApi.speechSynthesis.getVoices?.() ?? [];
-      if (webVoices.length === 0) {
-        webVoices = await new Promise<SpeechSynthesisVoice[]>((resolve) => {
-          let settled = false;
-          const finish = () => {
-            if (settled) return;
-            settled = true;
-            speechApi.speechSynthesis?.removeEventListener?.("voiceschanged", finish);
-            resolve(speechApi.speechSynthesis?.getVoices?.() ?? []);
-          };
-          speechApi.speechSynthesis?.addEventListener?.("voiceschanged", finish);
-          // Never block speech on a browser that fires nothing.
-          setTimeout(finish, 400);
-        });
-      }
+      const webVoices = await getReadyWebVoices(speechApi.speechSynthesis);
       const preferredWebVoice = pickBestWebVoice(webVoices, selectedLanguage.speechLang, voiceGender);
       if (preferredWebVoice) {
         utterance.voice = preferredWebVoice;
@@ -19558,7 +19516,8 @@ async function fetchGuidanceHelp(
       utterance.volume = 1;
       utterance.onend   = () => setVoiceAssistStatus("Finished");
       utterance.onerror = () => setVoiceAssistStatus("Voice preview unavailable here");
-      setVoiceAssistStatus("Speaking now");
+      const indianVoice = preferredWebVoice?.lang?.toLowerCase().replace(/_/g, "-").endsWith("-in");
+      setVoiceAssistStatus(indianVoice ? `Speaking · Indian ${voiceGender} voice` : `Speaking · ${voiceGender} device voice`);
       speechApi.speechSynthesis.speak(utterance);
       return;
     }
@@ -19568,19 +19527,20 @@ async function fetchGuidanceHelp(
       return;
     }
 
-    let preferredNativeVoice: string | undefined;
+    let preferredNativeVoice: Speech.Voice | undefined;
     try {
       const availableVoices = await Speech.getAvailableVoicesAsync();
-      preferredNativeVoice = pickBestNativeVoice(availableVoices, selectedLanguage.speechLang, voiceGender)?.identifier;
+      preferredNativeVoice = pickBestNativeVoice(availableVoices, selectedLanguage.speechLang, voiceGender);
     } catch {
       preferredNativeVoice = undefined;
     }
 
     Speech.stop();
-    setVoiceAssistStatus("Speaking now");
+    const indianVoice = preferredNativeVoice?.language?.toLowerCase().replace(/_/g, "-").endsWith("-in");
+    setVoiceAssistStatus(indianVoice ? `Speaking · Indian ${voiceGender} voice` : `Speaking · ${voiceGender} device voice`);
     Speech.speak(cleanText, {
       language: selectedLanguage.speechLang,
-      voice:    preferredNativeVoice,
+      voice:    preferredNativeVoice?.identifier,
       rate:     speakRate,
       pitch:    speakPitch,
       volume:   1,
@@ -19725,6 +19685,12 @@ async function fetchGuidanceHelp(
     }
     if (tabId === "language") {
       setLanguagePageNonce((current) => current + 1);
+    }
+    if (tabId === "focus") {
+      setRoutineId("calm");
+      setCalmPageNonce((value) => value + 1);
+      setLaunchNeedId("calm");
+      setPendingTabFocusAnchor({ tab: "focus", key: "focus:routine:calm" });
     }
     // Track Vedic view date for daily badge reset
     if (tabId === "vedic") {
@@ -21092,7 +21058,7 @@ function isTrustedExternalUrl(url: string) {
                       </View>
                       {/* Real multidimensional redressal snapshot — compact one-line
                           strip. Signature of the app; stays on Home but
-                          tightened. Was mislabeled "48-dim" over a hardcoded
+                          tightened. Was mislabeled "multi-dimensional" over a hardcoded
                           5-field table; now shows the top 3 of the ACTUAL
                           complete supportDimensionGuides library, ranked by
                           the same crossSectionSignal (real Path-detected
@@ -21323,8 +21289,12 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#EBE4ED" }]}>
                 <Text style={styles.tabBannerEmoji}>🪷</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Meditation & Calm</Text>
-                  <Text style={styles.tabBannerSub}>Body awareness · Breath · Reset · Reflection</Text>
+                  <Text style={styles.tabBannerTitle}>{activeTab === "focus" ? "Calm Reset" : "Meditation Library"}</Text>
+                  <Text style={styles.tabBannerSub}>
+                    {activeTab === "focus"
+                      ? "One matched practice · one steady next step"
+                      : "Body awareness · Breath · Reflection · Return"}
+                  </Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -21408,7 +21378,7 @@ function isTrustedExternalUrl(url: string) {
                 );
               })()}
 
-              <MeditationSection
+              {activeTab === "meditation" ? <MeditationSection
                 selectedIssueGuide={selectedIssueGuide}
                 selectedIdentityLabel={profileDisplayName}
                 onOpenTab={handleTabPress}
@@ -21423,7 +21393,7 @@ function isTrustedExternalUrl(url: string) {
                 buildNearbySearchUrl={buildNearbySearchUrl}
                 moonChartInsightReadings={vedicMoonChartInsightReadings}
                 isWide={isWide}
-              />
+              /> : null}
 
               {/* ── Reset & Calm, imbibed here (formerly its own tab) ──
                   Meditation is now the single trigger for calm: the guided
@@ -21447,7 +21417,7 @@ function isTrustedExternalUrl(url: string) {
                 />
               )}
 
-              <FocusSection
+              {activeTab === "focus" ? <FocusSection
                 key={`focus-${selectedRoutine.id}-${calmPageNonce}`}
                 selectedRoutine={selectedRoutine}
                 routineId={routineId}
@@ -21467,7 +21437,7 @@ function isTrustedExternalUrl(url: string) {
                 onStopVoice={stopVoiceGuidance}
                 onFocusSelectedRoutineLayout={captureFocusLayout}
                 calmPageNonce={calmPageNonce}
-              />
+              /> : null}
             </View>
             </TabErrorBoundary>
           )}
@@ -21664,11 +21634,51 @@ function isTrustedExternalUrl(url: string) {
                             marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(180,83,9,0.2)"
                           }}>
                             <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
-                              {chartBriefLang === "hi" ? "वैदिक + लाल किताब उपाय" : "Vedic + Lal Kitab remedies"}
+                              {chartBriefLang === "hi" ? "व्यावहारिक सहारा" : "Practical support"}
                             </Text>
-                            <Text style={{ color: "rgba(13,31,34,0.78)", fontSize: 12, lineHeight: 17, whiteSpace: "pre-wrap" } as any}>
+                            <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 19, whiteSpace: "pre-wrap" } as any}>
                               {m.remedy}
                             </Text>
+                          </View>
+                        )}
+                        {m.role === "astro" && m.calculationBasis && (
+                          <View style={{ marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(180,83,9,0.2)" }}>
+                            <Pressable
+                              accessibilityRole="button"
+                              accessibilityState={{ expanded: expandedAstroBasisIds.has(m.id) }}
+                              onPress={() => setExpandedAstroBasisIds((current) => {
+                                const next = new Set(current);
+                                if (next.has(m.id)) next.delete(m.id); else next.add(m.id);
+                                return next;
+                              })}
+                              style={({ pressed }) => ({
+                                minHeight: 44,
+                                borderRadius: 10,
+                                borderWidth: 1,
+                                borderColor: "#B45309",
+                                backgroundColor: pressed ? "#FEF3C7" : "#FFFBEB",
+                                paddingHorizontal: 12,
+                                paddingVertical: 10,
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: 8,
+                              })}
+                            >
+                              <Text style={{ color: "#78350F", fontSize: 13, fontWeight: "800", flex: 1 }}>
+                                {chartBriefLang === "hi" ? "गणना का आधार देखें" : "View calculation basis"}
+                              </Text>
+                              <Text style={{ color: "#78350F", fontSize: 16, fontWeight: "900" }}>
+                                {expandedAstroBasisIds.has(m.id) ? "▴" : "▾"}
+                              </Text>
+                            </Pressable>
+                            {expandedAstroBasisIds.has(m.id) && (
+                              <View style={{ marginTop: 8, borderRadius: 10, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#D1D5DB", padding: 12 }}>
+                                <Text style={{ color: "#111827", fontSize: 13, lineHeight: 20, whiteSpace: "pre-wrap" } as any}>
+                                  {m.calculationBasis}
+                                </Text>
+                              </View>
+                            )}
                           </View>
                         )}
                       </View>
@@ -23401,6 +23411,7 @@ function FocusSection({
   calmPageNonce?: number;
 }) {
   const isCalmMode = selectedRoutine.id === "calm";
+  const calmProgram = (ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS.general)[0];
   const adaptiveBeaconModes = getAdaptiveBeaconXModes(selectedIssueGuide.id);
   const calmLensCards = [
     { id: "practical", label: "Practical", text: selectedIssueGuide.logicalLens, hint: "facts" },
@@ -23509,30 +23520,45 @@ function FocusSection({
       </Text>
       {isCalmMode ? (
         <View style={styles.visionGuidanceBox}>
-          <Text style={styles.visionGuidanceTitle}>Calm layer</Text>
+          <Text style={styles.visionGuidanceTitle}>Recommended now · {calmProgram.name}</Text>
           <Text style={styles.visionGuidanceText}>
-            Reset lowers the noise so the body can settle before you return to Path, Journal, or Help.
+            {calmProgram.purpose}
           </Text>
           <Text style={styles.smallMeta}>
-            One job: breathe first, choose one lens, and leave lighter.
+            {calmProgram.duration} minutes · {calmProgram.breathPattern} · then return to the practical Path.
           </Text>
+          <View style={styles.calmQuickActionRow}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => onOpenTab("tones")}
+              style={styles.calmQuickActionButton}
+            >
+              <Text style={styles.calmQuickActionLabel}>Open matched sound</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => onOpenTab("guide")}
+              style={styles.calmQuickActionButton}
+            >
+              <Text style={styles.calmQuickActionLabel}>Continue to Path</Text>
+            </Pressable>
+          </View>
         </View>
       ) : null}
       {isCalmMode ? (
         <View style={styles.calmWisdomBand}>
           <View style={styles.calmWisdomHeader}>
             <View style={styles.calmWisdomHeaderCopy}>
-              <Text style={styles.eyebrow}>Wisdom</Text>
+              <Text style={styles.eyebrow}>Optional reflection</Text>
               <Text style={styles.calmWisdomTitle} numberOfLines={2}>
-                TIMELESS WISDOM
+                SETTLE, THEN ACT
               </Text>
             </View>
             <Text style={styles.calmWisdomBadge}>Paraphrased</Text>
           </View>
           <Text style={styles.calmWisdomIntro}>
-            These are compact, paraphrased ideas drawn from many traditions and distilled into
-            plain guidance. They support breath, restraint, a witnessing mind, courage, and
-            dignity for {selectedIdentityLabel}.
+            Use one brief reflection only if it helps you become steadier. Calm is a pause before
+            the next useful action, not a substitute for counselling, official help, or care.
           </Text>
           <View style={styles.calmVoiceBand}>
             <View style={styles.calmVoiceHeader}>
@@ -23544,8 +23570,8 @@ function FocusSection({
             </View>
             <Text style={styles.smallMeta}>Speak the loop aloud</Text>
           </View>
-          <Text style={styles.calmVoiceText}>
-              Let Reset read the current lens, the three calm steps, and the clean exit route.
+            <Text style={styles.calmVoiceText}>
+              Read the current lens and three steps only when you choose. Voice never starts automatically.
             </Text>
             <View style={styles.calmQuickActionRow}>
               <Pressable
@@ -23591,7 +23617,7 @@ function FocusSection({
               onPress={() => onOpenTab("aihelp")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open Guide</Text>
+              <Text style={styles.calmQuickActionLabel}>Open Counselling</Text>
             </Pressable>
           </View>
           <Pressable
@@ -23601,7 +23627,7 @@ function FocusSection({
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
             <Text style={styles.helpButtonSecondaryLabel}>
-              {showCalmDetails ? "Hide full calm guide" : "Show full calm guide"}
+              {showCalmDetails ? "Hide deeper guidance" : "Explore deeper guidance"}
             </Text>
           </Pressable>
           {showCalmDetails ? (
@@ -23664,7 +23690,7 @@ function FocusSection({
             </>
           ) : (
             <Text style={styles.smallMeta}>
-              Full calm guidance is hidden for now. Tap show full calm guide to open the route map and teachings.
+              Deeper perspectives stay hidden until needed so this reset remains simple and focused.
             </Text>
           )}
         </View>
@@ -24011,7 +24037,8 @@ function getToneBrainState(tone: RelaxingToneMode): string {
   if (tone.id === "reset-gamma") return "Gamma · brief alert reset";
   if (tone.id.startsWith("bilateral")) return "Bilateral · left-right regulation";
   if (tone.id.startsWith("noise-") || tone.id.startsWith("ambient")) return "Ambient · settling texture";
-  if (tone.id.startsWith("sol-") || tone.id === "aum-136") return "Resonance · sacred-frequency layer";
+  if (tone.id.startsWith("studio-")) return "Studio · slow harmonic movement";
+  if (tone.id.startsWith("sol-") || tone.id === "aum-136") return "Resonance · sustained harmonic layer";
   return "Gentle reset · low-stimulation support";
 }
 
@@ -24021,6 +24048,7 @@ function getToneDeliveryProfile(tone: RelaxingToneMode): string {
   if (tone.id.startsWith("bilateral")) return "Alternating left/right pulse engine";
   if (tone.id.startsWith("iso-") || tone.id === "reset-gamma") return "Precision isochronic pulse engine";
   if (tone.id.startsWith("noise-")) return "Procedural stereo noise bed";
+  if (tone.id.startsWith("studio-")) return "Original slow-moving harmonic soundscape";
   if (tone.id.startsWith("sol-") || tone.id === "aum-136") return "Harmonic sine + warm overtone stack";
   return "Soft ambient oscillator / native WAV fallback";
 }
@@ -24115,6 +24143,41 @@ const ISSUE_TONE_PROGRAMS: Record<string, Array<{ name: string; duration: number
     { name: "Core Still", duration: 15, toneId: "reset-quiet", dim: "Reflective", dimColor: "#A14A08", purpose: "Creates a quiet window for values, roles, and purpose to separate.", breathPattern: "Natural breath" },
     { name: "Ground", duration: 10, toneId: "bilateral-soft-1", dim: "Cultural", dimColor: "#B85300", purpose: "Uses body rhythm to return identity questions to one practical step.", breathPattern: "4-4-4-4 Box" }
   ],
+  fear: [
+    { name: "Orient to Safety", duration: 5, toneId: "studio-slow-pulse", dim: "Practical", dimColor: "#04714F", purpose: "Uses an even pulse while you locate the present place, one safe person, and the next protective action.", breathPattern: "Slow 5-5" },
+    { name: "Ground the Alarm", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Reduces sensory load before you separate present evidence from a feared image.", breathPattern: "4-7-8 Exhale" },
+    { name: "Steady Decision", duration: 10, toneId: "binaural-alpha-7", dim: "Psychological", dimColor: "#3730A3", purpose: "Supports a calm review of whether the right route is safety, prevention, or continued counselling.", breathPattern: "4-4-4-4 Box" }
+  ],
+  overconfidence: [
+    { name: "Reality Check", duration: 10, toneId: "studio-still-point", dim: "Practical", dimColor: "#04714F", purpose: "Creates a short pause for evidence, consequences, and one contrary view before an irreversible move.", breathPattern: "Slow 5-5" },
+    { name: "Measured Energy", duration: 10, toneId: "binaural-alpha-10", dim: "Psychological", dimColor: "#3730A3", purpose: "Keeps alertness while slowing the pace of a high-confidence decision.", breathPattern: "Slow 6-6" },
+    { name: "Quiet Accountability", duration: 10, toneId: "reset-quiet", dim: "Reflective", dimColor: "#A14A08", purpose: "Supports a calm pre-mortem and one external check before action.", breathPattern: "Natural breath" }
+  ],
+  stigma: [
+    { name: "Dignity Reset", duration: 10, toneId: "studio-crystal", dim: "Emotional", dimColor: "#B80064", purpose: "Supports a respectful inner voice while separating the situation from your worth.", breathPattern: "Slow 5-5" },
+    { name: "Neutral Words", duration: 10, toneId: "ambient-softdrone", dim: "Psychological", dimColor: "#3730A3", purpose: "Creates space to describe what happened without self-attack or an unsafe disclosure.", breathPattern: "Slow 6-6" },
+    { name: "Safe Connection", duration: 10, toneId: "binaural-alpha-8", dim: "Cultural", dimColor: "#B85300", purpose: "Prepares one low-pressure contact with a safe person or verified community.", breathPattern: "Natural breath" }
+  ],
+  health: [
+    { name: "Body Check-In", duration: 5, toneId: "studio-body-scan", dim: "Practical", dimColor: "#04714F", purpose: "Supports a calm symptom check before recording facts or contacting a health professional.", breathPattern: "Natural breath" },
+    { name: "Health Anxiety Reset", duration: 10, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "Reduces stimulation before separating the present symptom from the feared conclusion.", breathPattern: "4-7-8 Exhale" },
+    { name: "Care Plan Focus", duration: 10, toneId: "binaural-alpha-10", dim: "Psychological", dimColor: "#3730A3", purpose: "Supports one clear care question, appointment step, or routine decision; it does not replace medical care.", breathPattern: "Slow 5-5" }
+  ],
+  parenting: [
+    { name: "Parent Pause", duration: 5, toneId: "studio-slow-pulse", dim: "Emotional", dimColor: "#B80064", purpose: "Creates a brief pause before correction so voice, limit, and choice stay steady.", breathPattern: "Slow 5-5" },
+    { name: "Repair and Listen", duration: 10, toneId: "ambient-ocean", dim: "Relational", dimColor: "#0052B8", purpose: "Supports listening, a clear boundary, and repair after a difficult family moment.", breathPattern: "Slow 6-6" },
+    { name: "Regulated Guidance", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#04714F", purpose: "Keeps the adult response calm enough to offer one acceptable next choice.", breathPattern: "4-4-4-4 Box" }
+  ],
+  academic: [
+    { name: "Study Start", duration: 10, toneId: "binaural-alpha-12", dim: "Practical", dimColor: "#04714F", purpose: "Supports one defined study block with the next examinable unit in view.", breathPattern: "Slow 5-5" },
+    { name: "Exam Pressure Reset", duration: 5, toneId: "studio-slow-pulse", dim: "Emotional", dimColor: "#B80064", purpose: "Slows the body before planning so urgency does not become avoidance.", breathPattern: "4-7-8 Exhale" },
+    { name: "Clean Focus", duration: 15, toneId: "noise-pink", dim: "Psychological", dimColor: "#3730A3", purpose: "Provides a steady low-distraction bed for a short, timed work session.", breathPattern: "Natural breath" }
+  ],
+  addiction: [
+    { name: "Urge Window", duration: 10, toneId: "studio-slow-pulse", dim: "Practical", dimColor: "#04714F", purpose: "Supports the first ten-minute delay while access is removed and a support contact is prepared.", breathPattern: "Slow 5-5" },
+    { name: "Ride the Wave", duration: 10, toneId: "bilateral-soft-1", dim: "Psychological", dimColor: "#3730A3", purpose: "Pairs alternating sound with urge observation; stop and seek support if the urge is escalating.", breathPattern: "4-4-4-4 Box" },
+    { name: "Reconnect", duration: 10, toneId: "ambient-ocean", dim: "Emotional", dimColor: "#B80064", purpose: "Creates space to contact a trusted person or professional before the high-risk window continues.", breathPattern: "Natural breath" }
+  ],
   general: [
     { name: "Morning Set", duration: 10, toneId: "binaural-alpha-7", dim: "Practical", dimColor: "#04714F", purpose: "Supports a clear-headed start and one chosen action.", breathPattern: "Slow 5-5" },
     { name: "Stress Drop", duration: 15, toneId: "ambient-rain", dim: "Emotional", dimColor: "#B80064", purpose: "A general downshift for breath, posture, and review.", breathPattern: "4-7-8 Exhale" },
@@ -24134,9 +24197,9 @@ const TONE_CATEGORIES = [
   { id: "sleep", label: "🌙 Sleep", color: "#4C1D95", desc: "Low-intensity sound beds for night rest, decompression, and closing mental loops.", ids: ["reset-quiet","ambient-rain","ambient-ocean","ambient-softdrone","binaural-delta-1","binaural-delta-2","trend-deep-sleep","noise-brown"] },
   { id: "anxiety", label: "🫁 Anxiety reset", color: "#0A6F66", desc: "Grounding cues with slow breath pacing for overwhelm, panic, and urgent tension.", ids: ["bilateral-soft-1","bilateral-soft-2","ambient-breath","ambient-rain","sol-396","binaural-alpha-7","iso-4"] },
   { id: "focus", label: "🎯 Focus", color: "#2563EB", desc: "Steady background tones for study, planning, numbers, and clear next-step work.", ids: ["binaural-alpha-12","binaural-reset-14","binaural-gamma-40","reset-gamma","trend-lofi","trend-cafe","noise-pink","iso-8"] },
-  { id: "grounding", label: "🤲 Emotional grounding", color: "#B80064", desc: "Warm, regulating tracks for grief, loneliness, relationship stress, and self-respect.", ids: ["ambient-ocean","ambient-softdrone","sol-639","sol-528","binaural-alpha-8","bilateral-soft-3","trend-krishna-flute","trend-432-guitar"] },
-  { id: "deep", label: "🪷 Deep calm", color: "#A14A08", desc: "Quiet reflection sessions for stillness, recovery, and slower inner pacing.", ids: ["binaural-theta-4","binaural-theta-5","aum-136","sol-432","sol-852","sol-963","trend-tibetan-bowl","trend-om-chant"] },
-  { id: "breath", label: "⏱ Breath timing", color: "#04714F", desc: "Rhythmic pulses and ambient cues that make inhale/exhale patterns easier to follow.", ids: ["ambient-breath","iso-1","iso-2","iso-3","iso-4","iso-6","iso-10","sol-417","trend-schumann","trend-forest-birds"] },
+  { id: "grounding", label: "🤲 Emotional grounding", color: "#B80064", desc: "Warm, regulating tracks for grief, loneliness, relationship stress, and self-respect.", ids: ["studio-crystal","ambient-ocean","ambient-softdrone","sol-639","sol-528","binaural-alpha-8","bilateral-soft-3","trend-krishna-flute","trend-432-guitar"] },
+  { id: "deep", label: "🪷 Deep calm", color: "#A14A08", desc: "Quiet reflection sessions for stillness, recovery, and slower inner pacing.", ids: ["studio-body-scan","studio-still-point","studio-shimmer","binaural-theta-4","binaural-theta-5","aum-136","sol-432","sol-852","sol-963","trend-tibetan-bowl","trend-om-chant"] },
+  { id: "breath", label: "⏱ Breath timing", color: "#04714F", desc: "Rhythmic pulses and ambient cues that make inhale/exhale patterns easier to follow.", ids: ["studio-slow-pulse","ambient-breath","iso-1","iso-2","iso-3","iso-4","iso-6","iso-10","sol-417","trend-schumann","trend-forest-birds"] },
 ]
 
 // Reported up to App() so a persistent mini-player can show/control playback
@@ -24358,6 +24421,10 @@ function ToneLibrarySection({
 
   const programs = ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS["general"];
   const breathSteps = activeProgram ? (BREATH_GUIDE[activeProgram.breathPattern] ?? ["Breathe naturally"]) : [];
+  const calmMoonComplement = useMemo(
+    () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChartInsightReadings ?? []),
+    [selectedIssueGuide.id, moonChartInsightReadings]
+  );
 
   return (
     <View style={{ paddingBottom: 20 }}>
@@ -24370,6 +24437,12 @@ function ToneLibrarySection({
         </Text>
         <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700" }}>
           Choose a guided sound or breathing rhythm for the way you feel now. Nothing starts until you press Play.
+        </Text>
+        <Text style={{ color: "#475569", fontSize: 12, lineHeight: 18, fontWeight: "700" }}>
+          Connected plan: this session keeps {selectedIssueGuide.label} active in Path, counselling, and your follow-up plan.
+          {calmMoonComplement?.careful[0]
+            ? ` Optional Moon-chart context currently marks ${calmMoonComplement.careful[0].label.toLowerCase()} as a care point.`
+            : ""}
         </Text>
       </View>
       {/* ── NOW PLAYING / IDLE PLAYER ── */}
@@ -24662,6 +24735,27 @@ function ToneLibrarySection({
             );
           })}
         </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Continue ${selectedIssueGuide.label} in Path`}
+          onPress={() => { void Haptics.selectionAsync(); onOpenTab("guide"); }}
+          style={({ pressed }) => ({
+            marginTop: 10,
+            minHeight: 44,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: "#0E6F69",
+            backgroundColor: pressed ? "#C4E9E5" : "#E7F4F2",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 14,
+            paddingVertical: 10
+          })}
+        >
+          <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 18, fontWeight: "700", textAlign: "center" }}>
+            Continue with the practical Path →
+          </Text>
+        </Pressable>
       </View>
 
       {/* ── TONE LIBRARY — by category ── */}
@@ -24840,7 +24934,9 @@ function MeditationSection({
     meditationChakraTeachings.find((chakra) => chakra.id === recommendedChakraId) ?? meditationChakraTeachings[0];
   const selectedTone = getMeditationTone(selectedChakra.id);
   const meditationMethodOptions = getMeditationMethodsForIssue(selectedIssueGuide.id);
-  const featuredMeditationMethods = meditationMethodOptions.slice(0, compact ? 3 : 4);
+  const [showMeditationLibrary, setShowMeditationLibrary] = useState(false);
+  const [showMeditationPerspectives, setShowMeditationPerspectives] = useState(false);
+  const featuredMeditationMethods = meditationMethodOptions.slice(0, showMeditationLibrary ? (compact ? 4 : 6) : 1);
   const primaryMeditationMethod = meditationMethodOptions[0] ?? meditationMethods[0];
   const routeCards = getSituationRouteCards(selectedIssueGuide, selectedIdentityLabel);
   const objectiveRouteCards = [
@@ -24859,6 +24955,11 @@ function MeditationSection({
     `After this, return to Path, Help, or Journal and take one real next step.`
   ].join(" ");
 
+  useEffect(() => {
+    setShowMeditationLibrary(false);
+    setShowMeditationPerspectives(false);
+  }, [selectedIssueGuide.id]);
+
   return (
     <View style={styles.panel}>
       <View style={styles.sectionHeader}>
@@ -24866,26 +24967,28 @@ function MeditationSection({
           <Text style={styles.eyebrow}>Meditation</Text>
           <Text style={styles.sectionTitleSmall}>Settle, decide, return</Text>
         </View>
-        <Text style={styles.smallMeta}>Issue-specific</Text>
+          <Text style={styles.smallMeta}>Recommended first</Text>
       </View>
 
       <View style={styles.visionGuidanceBox}>
         <Text style={styles.visionGuidanceTitle}>Real objective</Text>
         <Text style={styles.visionGuidanceText}>
-          This is a short regulation stop for {selectedIssueGuide.label.toLowerCase()}. Use it to settle the body, observe the mind clearly, and return to the right action channel.
+          Begin with one matched method for {selectedIssueGuide.label.toLowerCase()}. Settle the body, regain perspective, then continue to Path, counselling, or Help.
         </Text>
       </View>
 
       <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Practice library</Text>
-            <Text style={styles.sectionTitleSmall}>Choose the method that fits now</Text>
+            <Text style={styles.eyebrow}>{showMeditationLibrary ? "Practice library" : "Recommended practice"}</Text>
+            <Text style={styles.sectionTitleSmall}>{primaryMeditationMethod.label}</Text>
           </View>
           <Text style={styles.smallMeta}>Neutral guidance</Text>
         </View>
         <Text style={styles.beaconXWisdomLead}>
-          Start with the first recommended method, or choose another route if your body needs something different.
+          {showMeditationLibrary
+            ? "Choose another method only when it better matches what your body needs now."
+            : `${primaryMeditationMethod.duration} · ${primaryMeditationMethod.purpose}`}
         </Text>
         <View style={styles.calmTeachingGrid}>
           {featuredMeditationMethods.map((method) => {
@@ -24927,26 +25030,40 @@ function MeditationSection({
             );
           })}
         </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: showMeditationLibrary }}
+          onPress={() => setShowMeditationLibrary((value) => !value)}
+          style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+        >
+          <Text style={styles.helpButtonSecondaryLabel}>
+            {showMeditationLibrary ? "Show recommended practice only" : "Explore more meditation methods"}
+          </Text>
+        </Pressable>
       </View>
 
-      {/* Multi-dimensional library, not a 5-field table pretending to be complete. */}
-      <SupportDimensionLibraryPanel
-        eyebrow="Meditation guidance"
-        actionLabel="Try"
-        accentColor="#3730A3"
-        moonChartInsightReadings={moonChartInsightReadings}
-        onOpenTab={onOpenTab}
-        onEmergencyCall={onEmergencyCall}
-        openWebsite={onOpenWebsite}
-        buildNearbySearchUrl={buildNearbySearchUrl}
-      />
-
-      <Text style={styles.promptText}>
-        Recommended start: {recommendedChakra.label} for {selectedIdentityLabel} dealing with {selectedIssueGuide.label.toLowerCase()}.
-      </Text>
-      <Text style={styles.smallMeta}>
-        {selectedChakra.figure} / {selectedChakra.body}
-      </Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: showMeditationPerspectives }}
+        onPress={() => setShowMeditationPerspectives((value) => !value)}
+        style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+      >
+        <Text style={styles.helpButtonSecondaryLabel}>
+          {showMeditationPerspectives ? "Hide support perspectives" : "View supporting perspectives"}
+        </Text>
+      </Pressable>
+      {showMeditationPerspectives ? (
+        <SupportDimensionLibraryPanel
+          eyebrow="Meditation guidance"
+          actionLabel="Try"
+          accentColor="#3730A3"
+          moonChartInsightReadings={moonChartInsightReadings}
+          onOpenTab={onOpenTab}
+          onEmergencyCall={onEmergencyCall}
+          openWebsite={onOpenWebsite}
+          buildNearbySearchUrl={buildNearbySearchUrl}
+        />
+      ) : null}
 
       <View style={styles.beaconXRouteBand}>
         <View style={styles.beaconXRouteHeader}>
@@ -24979,7 +25096,7 @@ function MeditationSection({
         </View>
       </View>
 
-      <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
+      {showMeditationLibrary ? <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.eyebrow}>Meditation method</Text>
@@ -25091,9 +25208,9 @@ function MeditationSection({
             </Text>
           </View>
         </View>
-      </View>
+      </View> : null}
 
-      <View style={styles.calmTeachingGrid}>
+      {showMeditationLibrary ? <View style={styles.calmTeachingGrid}>
         {meditationChakraTeachings.map((chakra) => {
           const isSelected = chakra.id === selectedChakraId;
           const isRecommended = chakra.id === recommendedChakraId;
@@ -25122,7 +25239,7 @@ function MeditationSection({
             </Pressable>
           );
         })}
-      </View>
+      </View> : null}
 
       <View style={styles.beaconXWisdomPanel}>
         <View style={styles.sectionHeader}>
@@ -25145,7 +25262,7 @@ function MeditationSection({
             onPress={() => onOpenTab("focus")}
             style={styles.calmQuickActionButton}
           >
-            <Text style={styles.calmQuickActionLabel}>Open Calm</Text>
+            <Text style={styles.calmQuickActionLabel}>Open Calm Reset</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -27777,6 +27894,7 @@ function IssueGuideSection({
     ? "A clear starting point"
     : selectedIssueGuide.label;
   const pathDepth = getIssuePathDepth(selectedIssueGuide.id);
+  const pathCalmProgram = (ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS.general)[0];
   const moonChartComplement = useMemo(
     () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChartInsightReadings ?? []),
     [selectedIssueGuide.id, moonChartInsightReadings]
@@ -27803,8 +27921,8 @@ function IssueGuideSection({
       id: "steady",
       number: "1",
       eyebrow: "Stabilise now",
-      title: "Create enough space to think",
-      text: selectedIssueGuide.action,
+      title: `Use ${pathCalmProgram.name} for ${pathCalmProgram.duration} minutes`,
+      text: `${pathCalmProgram.purpose} Return here afterwards for the practical action.` ,
       action: "Open Calm",
       onPress: onOpenCalm,
       accent: "#0E6F69"
@@ -29000,6 +29118,10 @@ function RedressSection({
   // single line showing the choice, with an obvious way back.
   const [showRouteChooser, setShowRouteChooser] = useState(false);
   const [checkedEvidence, setCheckedEvidence] = useState<Record<string, boolean>>({});
+  // A selected route is a focused destination, not another block appended to
+  // the bottom of the chooser. This prevents the mobile experience from
+  // appearing unresponsive and removes the long, disorienting scroll jump.
+  const [focusedRouteId, setFocusedRouteId] = useState<RedressRouteId | null>(null);
 
   useEffect(() => {
     setShowFullRedress(false);
@@ -29162,6 +29284,8 @@ function RedressSection({
 
   return (
     <View style={[styles.grid, isWide && styles.gridWide]}>
+
+      {focusedRouteId === null ? (<>
 
       {/* ── PANEL 1: ROUTE SELECTOR ── */}
       {/* flex:0 in single-column mode: styles.panel's flex:1 is meant for the
@@ -29378,7 +29502,7 @@ function RedressSection({
         </View>
         <View style={styles.issueChipGrid}>
           {redressRoutes.map((route) => {
-            const isSelected = route.id === selectedRedressRoute.id;
+            const isSelected = route.id === focusedRouteId;
             const ROUTE_ICONS: Partial<Record<string, string>> = { academic: "🎓", harassment: "⚠️", ragging: "🏫", public: "🏛️", private: "🏢", crime: "🚨", financial: "💰", domestic: "🏠", workplace: "👔", cybercrime: "💻", consumer: "🛒" };
             return (
               <Pressable
@@ -29392,6 +29516,7 @@ function RedressSection({
                   // Collapse straight to this route's guidance instead of
                   // leaving the person at the top of the list they just used.
                   setShowRouteChooser(false);
+                  setFocusedRouteId(route.id);
                 }}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
@@ -29500,11 +29625,44 @@ function RedressSection({
         </View>
       </View>
 
+      </>) : null}
+
       {/* ── PANEL 3: ACTIVE ROUTE DETAIL ── */}
+      {focusedRouteId !== null ? (
       <View
         style={[styles.panel, !isWide && { flexGrow: 0, flexBasis: "auto" }]}
-        onLayout={onFocusSelectedRedressLayout ? onFocusSelectedRedressLayout(selectedRedressRoute.id) : undefined}
       >
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back to choose your situation"
+          onPress={() => {
+            void Haptics.selectionAsync();
+            setFocusedRouteId(null);
+          }}
+          style={({ pressed }) => ({
+            minHeight: 48,
+            marginBottom: 14,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: "#B9CDD2",
+            backgroundColor: pressed ? "#DCEBE9" : "#F7FAFC",
+            paddingHorizontal: 14,
+            paddingVertical: 11,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+          })}
+        >
+          <Text style={{ color: "#0E6F69", fontSize: 18, fontWeight: "900" }}>‹</Text>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={{ color: "#0D1F22", fontSize: 15, lineHeight: 20, fontWeight: "900" }}>
+              Back to situations
+            </Text>
+            <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 18, marginTop: 1 }}>
+              Change the issue or institution type without losing your saved case.
+            </Text>
+          </View>
+        </Pressable>
         {/* Emergency triage for crime/domestic routes */}
         {isEmergencyRoute && (
           <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FEE2E2", borderWidth: 2, borderColor: "#EF4444", padding: 14 }}>
@@ -29530,7 +29688,7 @@ function RedressSection({
                   accessibilityRole="button"
                   accessibilityLabel="Call women's helpline at 181"
                   onPress={() => dialEmergencyNumber("181", "Women's helpline")}
-                  style={{ flex: 1, backgroundColor: "#F2DEDE", borderRadius: 10, paddingVertical: 10, alignItems: "center" }}
+                  style={{ flex: 1, backgroundColor: "#9F1239", borderRadius: 10, paddingVertical: 10, alignItems: "center" }}
                 >
                   <Text style={{ color: "#fff", fontWeight: "800", fontSize: 14 }}>📞 181 — Women</Text>
                 </Pressable>
@@ -29633,12 +29791,9 @@ function RedressSection({
             </Pressable>
             {showScript && (
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
-                <Text style={{ color: "#374151", fontSize: 12, marginTop: 8, marginBottom: 6 }}>Use this as a starting script. Replace [brackets] with your real details.</Text>
-                {/* The script is the thing people actually read off their phone
-                    at a counter, so it gets real ink: near-black on a defined
-                    card rather than pale amber on a pale panel. */}
-                <View style={{ backgroundColor: "#FFF8E6", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(180,83,9,0.28)" }}>
-                  <Text style={{ color: "#3F2D07", fontSize: 13, lineHeight: 21, fontStyle: "italic" }}>{firstScript}</Text>
+                <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19, marginTop: 8, marginBottom: 6 }}>Use this as a starting script. Replace [brackets] with your real details.</Text>
+                <View style={{ backgroundColor: "#FFFFFF", borderRadius: 10, padding: 14, borderWidth: 1, borderColor: "#D6B86C" }}>
+                  <Text style={{ color: "#111827", fontSize: 15, lineHeight: 22 }}>{firstScript}</Text>
                 </View>
                 <Pressable
                   accessibilityRole="button"
@@ -29665,9 +29820,9 @@ function RedressSection({
             </Pressable>
             {showDraftTemplate && (
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
-                <Text style={{ color: "#506673", fontSize: 12, marginTop: 8, marginBottom: 6 }}>Fill in [brackets] with your real details before sending. Keep a signed copy for your records.</Text>
-                <View style={{ backgroundColor: "rgba(129,140,248,0.07)", borderRadius: 10, padding: 12 }}>
-                  <Text style={{ color: "#0020B8", fontSize: 12, lineHeight: 19 }}>{draftTemplate}</Text>
+                <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19, marginTop: 8, marginBottom: 6 }}>Fill in [brackets] with your real details before sending. Keep a signed copy for your records.</Text>
+                <View style={{ backgroundColor: "#FFFFFF", borderRadius: 10, padding: 14, borderWidth: 1, borderColor: "#A5B4FC" }}>
+                  <Text style={{ color: "#111827", fontSize: 15, lineHeight: 22 }}>{draftTemplate}</Text>
                 </View>
                 {/* Upgraded action row — Copy · Email · Share */}
                 <View style={{ marginTop: 10, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -30031,6 +30186,7 @@ function RedressSection({
           </>
         )}
       </View>
+      ) : null}
     </View>
   );
 }
@@ -31132,7 +31288,7 @@ function SettingsSection({
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>Voice character</Text>
         <Text style={styles.promptText}>
-          Choose a voice character for the guide readout. The app selects the best matching voice from your device and applies humanized pitch and pacing — slower, warmer, and more natural than default.
+          Choose a natural male or female readout. The app prioritises a high-quality Indian regional voice on your device, with normal human pitch and unhurried pacing.
         </Text>
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
           {(["female", "male"] as const).map((g) => {
@@ -31155,9 +31311,9 @@ function SettingsSection({
                 })}
               >
                 <Text style={{ fontSize: 22, marginBottom: 4 }}>{g === "female" ? "♀" : "♂"}</Text>
-                <Text style={{ color: isActive ? "#fff" : "#6B7280", fontSize: 13, fontWeight: "800", textTransform: "capitalize" }}>{g}</Text>
-                <Text style={{ color: isActive ? "rgba(13,31,34,0.6)" : "#374151", fontSize: 12, marginTop: 2 }}>
-                  {g === "female" ? "Warm · Higher pitch" : "Calm · Deeper tone"}
+                <Text style={{ color: isActive ? "#fff" : "#263244", fontSize: 13, fontWeight: "800", textTransform: "capitalize" }}>{g}</Text>
+                <Text style={{ color: isActive ? "rgba(255,255,255,0.88)" : "#263244", fontSize: 12, marginTop: 2 }}>
+                  Natural · Indian voice
                 </Text>
               </Pressable>
             );
@@ -31202,7 +31358,7 @@ function SettingsSection({
           </View>
         </View>
         <Text style={[styles.promptText, { marginTop: 8, color: "#374151" }]}>
-          Pitch is tuned automatically per voice character; speed is yours to set. Available voices depend on your device.
+          Pitch stays close to a normal speaking voice. You control the pace; the app uses the closest available Indian male or female device voice and falls back gracefully when that voice is not installed.
         </Text>
       </View>
       <View style={styles.settingsBlock}>
@@ -31669,7 +31825,7 @@ function LanguageSection({
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>This page only handles language and voice</Text>
         <Text style={styles.promptText}>
-          Pick the language you want the app to use for labels, guidance, and spoken support. Other settings stay on the main settings page.
+          Pick the language you want for navigation and spoken support. The support badge below states honestly whether the full written interface or menus are translated.
         </Text>
         <View style={styles.identitySummary}>
           <Text style={styles.identitySummaryTitle}>{selectedLanguage.label}</Text>
@@ -31692,8 +31848,7 @@ function LanguageSection({
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>Choose language</Text>
         <Text style={styles.promptText}>
-          The selected language updates app labels and voice support. The compact preview stays small on mobile, and
-          the full list opens only when you need it.
+          All 22 choices provide translated navigation where supported by the device voice. The compact preview stays small on mobile, and the full list opens only when needed.
         </Text>
         <View style={styles.homeOverviewActions}>
           <Pressable
@@ -31725,9 +31880,9 @@ function LanguageSection({
             // Honest, per-language localisation depth so the user can see
             // exactly what changes when they pick a language -- rather than
             // 22 identical-looking options where most silently do nothing.
-            const hasFullInterface =
-              option.id === "english" ||
-              Object.keys(localizedUiCopyByLanguage[option.id] ?? {}).length > 0;
+            const fullCopyFieldCount = Object.keys(englishUiCopy).length;
+            const localizedFieldCount = Object.keys(localizedUiCopyByLanguage[option.id] ?? {}).length;
+            const hasFullInterface = option.id === "english" || localizedFieldCount === fullCopyFieldCount;
             const hasMenus = navLabelTranslations[option.id] != null;
             const hasVoice = option.id === "english" || hasDeviceVoice(option.speechLang);
             const supportTag =
@@ -34771,25 +34926,10 @@ function OnboardingOverlay({
   onSubmitReview: () => boolean;
   onDismissExitReview: () => void;
 }) {
+  const { width: onboardingWidth } = useWindowDimensions();
+  const compactOnboarding = onboardingWidth < 620;
   const onboardingScrollRef = React.useRef<ScrollView>(null);
-  const [launchSectionY, setLaunchSectionY] = useState(0);
-  const [pendingLaunchScroll, setPendingLaunchScroll] = useState(false);
   const [exitReviewSectionY, setExitReviewSectionY] = useState(0);
-
-  function scrollToLaunchSection() {
-    setPendingLaunchScroll(true);
-    InteractionManager.runAfterInteractions(() => {
-      if (launchSectionY > 0) {
-        onboardingScrollRef.current?.scrollTo({ y: Math.max(0, launchSectionY - 12), animated: true });
-        setPendingLaunchScroll(false);
-      }
-    });
-  }
-
-  function scrollToProfileSection() {
-    setPendingLaunchScroll(false);
-    onboardingScrollRef.current?.scrollTo({ y: 0, animated: true });
-  }
 
   function scrollToExitReviewSection() {
     if (exitReviewSectionY <= 0) return;
@@ -34797,14 +34937,6 @@ function OnboardingOverlay({
       onboardingScrollRef.current?.scrollTo({ y: Math.max(0, exitReviewSectionY - 12), animated: true });
     });
   }
-
-  useEffect(() => {
-    if (!pendingLaunchScroll || launchSectionY <= 0) return;
-    InteractionManager.runAfterInteractions(() => {
-      onboardingScrollRef.current?.scrollTo({ y: Math.max(0, launchSectionY - 12), animated: true });
-      setPendingLaunchScroll(false);
-    });
-  }, [pendingLaunchScroll, launchSectionY]);
 
   useEffect(() => {
     if (!showExitReviewPrompt) return;
@@ -34815,8 +34947,8 @@ function OnboardingOverlay({
     <View style={styles.onboardingBackdrop}>
       <ScrollView
         ref={onboardingScrollRef}
-        style={styles.onboardingSheet}
-        contentContainerStyle={styles.onboardingSheetContent}
+        style={[styles.onboardingSheet, compactOnboarding && styles.onboardingSheetCompact]}
+        contentContainerStyle={[styles.onboardingSheetContent, compactOnboarding && styles.onboardingSheetContentCompact]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
@@ -34932,64 +35064,14 @@ function OnboardingOverlay({
               <Text style={styles.eyebrow}>Welcome to Aethon Beacon</Text>
               <Text style={styles.onboardingTitle}>Choose what you need today.</Text>
               <Text style={styles.onboardingText}>
-                Start with counselling, calm, Vedic insight, or community. Optional details can be skipped, and private notes stay on this device unless you choose to export or share them.
+                Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.
               </Text>
-              <View style={{ marginTop: 16, gap: 10 }}>
-                {[
-                  { icon: "🧭", text: "Guided support room with an automatic counselling engine and practical next steps." },
-                  { icon: "🌿", text: "Curated calm practices, tones, breath timing, and meditation." },
-                  { icon: "🪐", text: "Moon-chart based Vedic insight with remedies and a hidden calculation basis." },
-                  { icon: "🤝", text: "Verified community messages after contact verification." },
-                ].map((item) => (
-                  <View key={item.icon} style={{ flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#F8FBFA", borderRadius: 16, padding: 12, borderWidth: 1, borderColor: "rgba(15,61,94,0.12)" }}>
-                    <Text style={{ fontSize: 20 }}>{item.icon}</Text>
-                    <Text style={[styles.onboardingText, { marginTop: 0, flex: 1, fontSize: 14, lineHeight: 20, color: "#1F2937", fontWeight: "700" }]}>{item.text}</Text>
-                  </View>
-                ))}
-                <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#FFF3F0", borderRadius: 16, padding: 12, borderWidth: 1, borderColor: "#E45A47" }}>
-                  <Text style={{ fontSize: 20 }}>🛡️</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#8D2318", fontSize: 14, lineHeight: 19, fontWeight: "900" }}>Help and Redress is always available</Text>
-                    <Text style={{ color: "#4B1F1A", fontSize: 13, lineHeight: 19, fontWeight: "700", marginTop: 3 }}>
-                      Use the dedicated Help tab for emergency support, official routes, evidence, and templates. In immediate danger, call 112.
-                    </Text>
-                  </View>
-                </View>
-              </View>
             </View>
 
-            <View style={styles.onboardingScrollHint}>
-              <Text style={styles.onboardingScrollHintIcon}>↓</Text>
-              <View style={styles.onboardingScrollHintCopy}>
-                <Text style={styles.onboardingScrollHintText}>Set up in 30 seconds</Text>
-                <Text style={styles.onboardingScrollHintMeta}>Tap Continue, then choose where to start</Text>
-              </View>
-            </View>
-
-            <View style={styles.onboardingBlock}>
-              <Text style={styles.settingsTitle}>Ready to begin</Text>
-              <Text style={styles.promptText}>Guidance opens with a neutral, general voice for everyone -- no role or occupation questions needed.</Text>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => {
-                  onChooseIdentity("other");
-                  scrollToLaunchSection();
-                }}
-                style={[styles.identityCard, styles.identityCardActive, { alignItems: "center" }]}
-              >
-                <Text style={[styles.identityLabel, styles.identityLabelActive]}>Continue</Text>
-              </Pressable>
-            </View>
-
-            <View
-              style={styles.onboardingVision}
-              onLayout={(event) => {
-                setLaunchSectionY(event.nativeEvent.layout.y);
-              }}
-            >
+            <View style={styles.onboardingVision}>
               <Text style={styles.settingsTitle}>Where do you want to start?</Text>
               <Text style={styles.promptText}>
-                Tap one path. The app opens that page directly, and you can switch any time.
+                Privacy first. Profile details are optional. Help and Redress remains available from every page.
               </Text>
               <View style={styles.launchNeedGrid}>
                 {launchNeeds.map((need) => {
@@ -35003,7 +35085,12 @@ function OnboardingOverlay({
                         setLaunchNeedId(need.id);
                         onContinue(need.id);
                       }}
-                      style={[styles.launchNeedCard, isSelected && styles.launchNeedCardActive]}
+                      style={[
+                        styles.launchNeedCard,
+                        compactOnboarding && styles.launchNeedCardCompact,
+                        need.id === "guide" && styles.launchNeedCardPrimary,
+                        isSelected && styles.launchNeedCardActive
+                      ]}
                     >
                       <Text style={[styles.launchNeedLabel, isSelected && styles.launchNeedLabelActive]}>
                         {need.label}
@@ -35015,26 +35102,9 @@ function OnboardingOverlay({
                   );
                 })}
               </View>
-              <View style={styles.onboardingActions}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={scrollToProfileSection}
-                  style={styles.onboardingButtonSecondary}
-                >
-                  <Text style={styles.onboardingButtonSecondaryLabel}>Back</Text>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => onContinue(launchNeedId)}
-                  style={styles.onboardingButton}
-                >
-                  <Text style={styles.onboardingButtonLabel}>Enter app</Text>
-                </Pressable>
-                <Pressable accessibilityRole="button" onPress={onExit} style={styles.onboardingButtonSecondary}>
-                  <Text style={styles.onboardingButtonSecondaryLabel}>Skip for now</Text>
-                </Pressable>
-              </View>
-              <Text style={styles.smallMeta}>Profile details are optional. You can enter the app now and add more later.</Text>
+              <Pressable accessibilityRole="button" onPress={onExit} style={styles.onboardingButtonSecondary}>
+                <Text style={styles.onboardingButtonSecondaryLabel}>Explore first</Text>
+              </Pressable>
             </View>
           </>
         ) : null}
@@ -35258,18 +35328,15 @@ function PrivateIntakeOverlay({
 
 // ── Persistent Bottom Navigation Bar ──────────────────────────────────────────
 // 5 primary tabs always visible.
-// Primary nav: Today / Journal / Meditation / Help / Profile
+// Primary nav: Today / Journal / Calm Reset / Help / Profile
 // Help and Redress is intentionally surfaced here (not buried in Pages) because
 // safety, SOS, complaint route, and immediate support must be one tap away and visibly
 // above the lower-priority "other/general" surfaces. Patterns, Community,
 // Explore, Birth Chart, Practice, and Tones remain accessible via Pages.
-// "Calm" (the old standalone Reset tab) is gone from primary nav — Meditation
-// is now the single always-visible entry point for calm, and its tab body
-// includes the former Calm/Reset timer, guidance paths, and wisdom content.
 const PRIMARY_NAV_TABS: Array<{ id: TabId | "more"; label: string; icon: string }> = [
   { id: "today",      label: "Today",      icon: "🏠" },
   { id: "journal",    label: "Journal",    icon: "✍️" },
-  { id: "meditation", label: "Calm",       icon: "🪷" },
+  { id: "focus",      label: "Calm",       icon: "🪷" },
   { id: "redress",    label: "Help",       icon: "🛡️" },
   { id: "settings",   label: "Profile",    icon: "👤" },
 ];
@@ -38668,13 +38735,7 @@ function BottomNavBar({
   insightsBadge?: boolean;
   languageId?: LanguageId;
 }) {
-  // "focus" no longer has its own primary-nav pill (it renders inside the
-  // Meditation tab now), but internal code still navigates to it directly
-  // in ~20 places (journeys, low-mood nudges, situation cards). Without this
-  // normalization, landing on "focus" would fail to highlight Meditation
-  // AND incorrectly light up the Profile pill (since "focus" would no
-  // longer match any primary id, tripping the secondaryTabActive fallback).
-  const navActiveTab: TabId = activeTab === "focus" ? "meditation" : activeTab;
+  const navActiveTab: TabId = activeTab;
   return (
     <View style={[styles.bottomNav, Platform.OS === "ios" && { paddingBottom: 28 }]}>
       {PRIMARY_NAV_TABS.map((item) => {
@@ -43148,6 +43209,11 @@ const styles = StyleSheet.create({
     borderColor: "rgba(14,111,105,0.3)",
     ...shadow
   },
+  onboardingSheetCompact: {
+    width: "96%",
+    maxHeight: "92%",
+    borderRadius: 24
+  },
   privateIntakeSheet: {
     width: "100%",
     maxWidth: "100%",
@@ -43187,6 +43253,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     gap: 8
+  },
+  onboardingSheetContentCompact: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    gap: 10,
+    paddingBottom: 20
   },
   profileSheetContent: {
     paddingHorizontal: 10,
@@ -43374,9 +43446,9 @@ const styles = StyleSheet.create({
   },
   onboardingTitle: {
     color: "#0D1F22",
-    fontSize: 13,
-    lineHeight: 16,
-    fontWeight: "700",
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: "900",
     letterSpacing: 0
   },
   onboardingTitleCompact: {
@@ -43385,8 +43457,8 @@ const styles = StyleSheet.create({
   },
   onboardingText: {
     color: "#111827",
-    fontSize: 12,
-    lineHeight: 16
+    fontSize: 15,
+    lineHeight: 22
   },
   onboardingTextCompact: {
     fontSize: 12,
@@ -43403,8 +43475,8 @@ const styles = StyleSheet.create({
     paddingTop: 4
   },
   onboardingVision: {
-    gap: 8,
-    paddingTop: 6,
+    gap: 12,
+    paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: "rgba(14,111,105,0.2)"
   },
@@ -43469,14 +43541,14 @@ const styles = StyleSheet.create({
   launchNeedCard: {
     flexGrow: 1,
     flexBasis: "48%",
-    minHeight: 64,
+    minHeight: 82,
     borderRadius: 14,
     borderCurve: "continuous",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.2)",
     backgroundColor: "#F4F8F7",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     gap: 4,
     shadowColor: "#0E6F69",
     shadowOffset: { width: 0, height: 3 },
@@ -43488,21 +43560,51 @@ const styles = StyleSheet.create({
     borderColor: "#0E6F69",
     backgroundColor: "#F1FBF8"
   },
+  launchNeedCardCompact: {
+    flexBasis: "100%",
+    minHeight: 72
+  },
+  launchNeedCardPrimary: {
+    borderWidth: 2,
+    borderColor: "#0E6F69",
+    backgroundColor: "#E5F6F1"
+  },
   launchNeedLabel: {
     color: "#0D1F22",
-    fontSize: 12,
-    fontWeight: "700"
+    fontSize: 16,
+    fontWeight: "900"
   },
   launchNeedLabelActive: {
     color: "#0E6F69"
   },
   launchNeedMeta: {
     color: "#111827",
-    fontSize: 12,
-    lineHeight: 16
+    fontSize: 14,
+    lineHeight: 20
   },
   launchNeedMetaActive: {
     color: "#274341"
+  },
+  onboardingSafetyNote: {
+    backgroundColor: "#FFF3F0",
+    borderRadius: 14,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    borderColor: "#E45A47",
+    padding: 12,
+    gap: 3
+  },
+  onboardingSafetyTitle: {
+    color: "#8D2318",
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "900"
+  },
+  onboardingSafetyText: {
+    color: "#4B1F1A",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "700"
   },
   metric: {
     flexGrow: 1,

@@ -66,6 +66,10 @@ services:
         value: "900000"
       - key: VERIFICATION_MAX_CONFIRM_ATTEMPTS
         value: "5"
+      - key: VERIFICATION_SIGNING_SECRET
+        sync: false
+        # Stable HMAC secret for restart-safe, multi-instance OTP confirmation.
+        # Generate a random value; never expose it through EXPO_PUBLIC_*.
       - key: TWILIO_ACCOUNT_SID
         sync: false
       - key: TWILIO_AUTH_TOKEN
