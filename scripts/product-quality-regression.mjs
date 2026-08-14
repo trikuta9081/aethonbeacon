@@ -369,4 +369,27 @@ assert(
   );
 }
 
+// ── Counselling opening line -- warmth, not routing ──────────────────────────
+// buildGuidedSupportSeedReply() is the very first thing a person sees on the
+// counselling surface. Someone opening this at 2am has just made a small
+// brave decision; the opening line has to make typing feel safe, not read
+// like a routing spec. The prior version read: "Tell me what is on your
+// mind... and I will understand what dimension of your life it is touching,
+// then build you a clear path forward." Every phrase in that line is
+// process-language.
+{
+  const fn = source.slice(source.indexOf("function buildGuidedSupportSeedReply"), source.indexOf("function buildGuidedSupportSeedReply") + 900);
+  const body = fn.match(/return\s+"([^"]+)"/)?.[1] ?? "";
+  const forbidden = ["dimension", "path forward", "next tab", "engine", "will understand", "build you", "route you"];
+  const hits = forbidden.filter((w) => body.toLowerCase().includes(w.toLowerCase()));
+  assert(
+    hits.length === 0,
+    `counselling seed line reads as routing spec (${hits.join(", ")}) rather than something a person in distress would want to read at 2am`
+  );
+  assert(
+    /\bhere\b|\blistening\b|\btake your time\b|\bwhatever you|\bas much or as little\b/i.test(body),
+    "counselling seed line must open with presence -- something along the lines of 'I'm here', 'take your time', 'as much or as little as you want'"
+  );
+}
+
 console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");

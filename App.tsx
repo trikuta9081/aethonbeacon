@@ -9119,12 +9119,17 @@ const aiHelpSeed: GuidedSupportMessage[] = [
 ];
 
 function buildGuidedSupportSeedReply() {
-  return [
-    "What this means: Tell me what is on your mind — in one sentence or a few words — and I will understand what dimension of your life it is touching, then build you a clear path forward.",
-    "Safest next step: Go back to Home, type or speak what you are carrying, and let your guide do the rest. Everything stays private on your device.",
-    "Open tab: Home.",
-    "Escalate when: If something feels urgent or unsafe, go directly to Help or tap SOS."
-  ].join("\n");
+  // The very first thing a person sees when they open counselling. It used to
+  // read: "What this means: Tell me what is on your mind... and I will
+  // understand what dimension of your life it is touching, then build you a
+  // clear path forward." That is the voice of a routing engine, not a person.
+  // Someone opening a mental-health app at 2am has just made a small brave
+  // decision; they do not need a formatted spec, they need to feel like this
+  // is a place where being heard is possible.
+  //
+  // Kept short deliberately. The engine's own probes take over as soon as
+  // they type -- this line only has to make typing feel safe.
+  return "I'm here. Tell me what's going on — as much or as little as you want. Whatever you say stays on this device, and nothing you write here needs to be tidy or make sense first.";
 }
 
 /**
