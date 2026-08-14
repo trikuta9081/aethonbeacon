@@ -36882,6 +36882,55 @@ function buildCounselingCoreProbe(allUserText: string, turnIndex: number): strin
  * high-quality banks for every advanced dimension in SupportDimensionId.
  * Branches across themes for turns 3-5.
  */
+
+// Between-turn acknowledgment. The counselling engine used to acknowledge
+// only on turn one (see buildCounselingAcknowledgment) and then fire raw
+// questions every reply after that. A person quickly starts to feel
+// interrogated rather than heard, no matter how careful the question is.
+//
+// This is small on purpose. A real counsellor's between-turn moves are
+// almost always: "I hear you" + one specific echo. Two lines, not a
+// paragraph. Rotates between openers by turn index so the same phrase does
+// not repeat back-to-back, and mirrors one concrete detail from the most
+// recent reply when it can find one -- if not, it just holds warmth.
+function buildBetweenTurnAcknowledgment(latestUserText: string, turnIndex: number): string {
+  const openers = [
+    "Thank you for saying that.",
+    "That makes sense.",
+    "I hear you.",
+    "That is a lot to hold.",
+    "Yes -- I understand.",
+    "I am staying with you on this."
+  ];
+  const opener = openers[turnIndex % openers.length];
+
+  // A concrete echo grounds the acknowledgment in what the person actually
+  // said, so the warmth does not read as generic. We look for a short noun
+  // phrase after common emotional stems ("i feel ___", "it makes me ___",
+  // "the hardest part is ___"). If nothing lands cleanly, the opener alone
+  // is honest and enough -- fabricating an echo would be worse than none.
+  const t = latestUserText.trim();
+  const echoPatterns: Array<RegExp> = [
+    /\bi (?:feel|felt) (?:so |really |quite |very |kind of |a bit )?([a-z ,-]{3,40}?)(?:[.!?,]|$| when | because | and )/i,
+    /\b(?:it|this|that|the whole thing) (?:makes|made|leaves|left) me (?:feel )?([a-z ,-]{3,40}?)(?:[.!?,]|$| when | because | and )/i,
+    /\bthe hardest part (?:is |was )([a-z ,-]{3,60}?)(?:[.!?,]|$)/i,
+    /\bwhat i (?:really )?(?:want|need) is ([a-z ,-]{3,60}?)(?:[.!?,]|$)/i
+  ];
+  let echo: string | null = null;
+  for (const re of echoPatterns) {
+    const m = t.match(re);
+    if (m && m[1]) { echo = m[1].trim().replace(/\s+/g, " "); break; }
+  }
+
+  if (echo && echo.length >= 3 && echo.length <= 60) {
+    // Reflect it back in the second person so it lands as recognition, not
+    // parroting. "So the hardest part for you is ___." rather than "You said
+    // 'hardest part is ___'".
+    return `${opener} So what you are naming is ${echo}.`;
+  }
+  return opener;
+}
+
 function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: number, allUserText?: string): string {
   // ── Bespoke 7-question banks for the core dimensions ───────────────────────
   // Advanced dimensions use buildSupportDimensionQuestionBank so the counseling
@@ -37784,6 +37833,11 @@ function CounselingChatModal({
         newQuestionIndex,
         session.originalIssue + " " + allUserText
       );
+      // Between-turn warmth in front of every follow-up question. See
+      // buildBetweenTurnAcknowledgment -- it is deliberately short and
+      // echoes one concrete thing the person just said when it can. This
+      // is the difference between a counselling conversation and a form.
+      const ack = buildBetweenTurnAcknowledgment(text, userResponses);
       const shouldOfferCheckpoint =
         userResponses >= COUNSELING_NEXT_STEP_READY_USER_RESPONSES &&
         userResponses % COUNSELING_NEXT_STEP_READY_USER_RESPONSES === 0;
@@ -37800,12 +37854,13 @@ function CounselingChatModal({
               ? `${firstStep.emoji} ${firstStep.label} — ${firstStep.reason}`
               : "a practical next step matched to what you have shared.";
             return [
+              ack,
               `Checkpoint after ${userResponses} replies: based on the conversation so far, the most useful next step appears to be ${previewLine}`,
               "You remain in control: tap “Prepare next step now” if you want to move forward, or continue here if more needs to be understood.",
               nextQ
             ].join("\n\n");
           })()
-        : nextQ;
+        : `${ack}\n\n${nextQ}`;
       typingTimeoutRef.current = setTimeout(() => {
         typingTimeoutRef.current = null;
         setIsGuideTyping(false);

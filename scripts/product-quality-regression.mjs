@@ -392,4 +392,24 @@ assert(
   );
 }
 
+// ── Counselling: between-turn acknowledgment must actually run ───────────────
+// The original engine acknowledged only on turn one and then fired the next
+// question raw for the whole 30-reply arc. A helper now prepends a short warm
+// line -- and, when it can find one, echoes one concrete phrase from the
+// most recent reply. This check makes sure both the helper stays there AND
+// the wiring stays there: it is easy for a refactor to drop either half.
+{
+  const helper = source.slice(source.indexOf("function buildBetweenTurnAcknowledgment"), source.indexOf("function buildBetweenTurnAcknowledgment") + 2400);
+  assert(/openers = \[/.test(helper), "buildBetweenTurnAcknowledgment must rotate through opener phrases");
+  assert(/echoPatterns/.test(helper), "buildBetweenTurnAcknowledgment must attempt an echo before falling back to opener alone");
+  assert(
+    /const ack = buildBetweenTurnAcknowledgment\(text, userResponses\);/.test(source),
+    "the counselling reply flow must call buildBetweenTurnAcknowledgment for every follow-up turn"
+  );
+  assert(
+    /: `\$\{ack\}\\n\\n\$\{nextQ\}`/.test(source),
+    "the non-checkpoint branch must prepend the acknowledgment to the next question, or every reply reverts to interrogation"
+  );
+}
+
 console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");
