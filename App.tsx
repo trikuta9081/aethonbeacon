@@ -13809,7 +13809,6 @@ export default function App() {
   const [chartBriefLang, setChartBriefLang] = useState<"en" | "hi">("en");
   // Astro two-way chat — user asks anything, engine replies with Rashi + Mahadasha + Antardasha + Panchang lens + remedy
   const [astroChatMessages, setAstroChatMessages] = useState<Array<{ id: string; role: "user" | "astro"; text: string; remedy?: string; calculationBasis?: string; category?: string; ts: string }>>([]);
-  const [astroChatDraft, setAstroChatDraft] = useState("");
   const [expandedAstroBasisIds, setExpandedAstroBasisIds] = useState<Set<string>>(() => new Set());
   // The reply itself is pure synchronous local computation (real chart data,
   // but no network call), which made every answer appear literally
