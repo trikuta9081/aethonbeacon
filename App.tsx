@@ -15688,7 +15688,7 @@ export default function App() {
   );
   const compactHomeBadge = getProfileSurfaceLabel(languageId);
   const latestGuidedSupportMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
-  const aiHelpProviderLabel = aiHelpProvider === "connected" ? "guided reply" : "offline reply";
+  const aiHelpProviderLabel = aiHelpProvider === "connected" ? "connected guidance" : "local guidance";
   const voiceGuidanceText = useMemo(
     () =>
       [
@@ -20574,7 +20574,7 @@ function isTrustedExternalUrl(url: string) {
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Preferred language ${selectedLanguage.label}. Open language page.`}
+                accessibilityLabel={`Preferred language ${selectedLanguage.label}. ${selectedLanguage.meta}. Open language page.`}
                 onPress={() => {
                   handleTabPress("language");
                   scrollViewRef.current?.scrollTo({ y: 0, animated: false });
@@ -20600,6 +20600,12 @@ function isTrustedExternalUrl(url: string) {
                   numberOfLines={1}
                 >
                   {selectedLanguage.label}
+                </Text>
+                <Text
+                  style={[styles.topLanguageChipMeta, isCompact && styles.topLanguageChipMetaCompact]}
+                  numberOfLines={2}
+                >
+                  {selectedLanguage.meta}
                 </Text>
               </Pressable>
             </View>
@@ -34309,8 +34315,8 @@ function AccessOverlay({
   const [startupLockCountdown, setStartupLockCountdown] = useState(startupLockActive ? 10 : 0);
   const verificationModeNote =
     verificationDeliveryMode === "remote"
-      ? "A connected provider now sends the verification codes."
-      : "This local build generates the code inside the app for beta testing.";
+      ? "Connected provider sends the verification codes."
+      : "Local fallback generates the code inside the app for beta testing.";
   const profileDisplayName = getRespectfulAddressLabel(name, profileGender, profileRoleId, "Your profile");
   const verificationInputRef = React.useRef<TextInput>(null);
   const profileScrollRef = React.useRef<ScrollView>(null);
@@ -42639,6 +42645,16 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   topLanguageChipValueCompact: {
+    fontSize: 12,
+    lineHeight: 16
+  },
+  topLanguageChipMeta: {
+    color: "#536271",
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "700"
+  },
+  topLanguageChipMetaCompact: {
     fontSize: 12,
     lineHeight: 16
   },
