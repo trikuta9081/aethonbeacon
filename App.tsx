@@ -6268,6 +6268,11 @@ type UiCopy = {
   homeSupportCommunityBody: string;
   homeSupportCommunityCta: string;
   homePrivacyNote: string;
+  brandTagline: string;
+  homeFlowLabel: string;
+  quickExitPriority: string;
+  footerReassurance: string;
+  footerMadeWithCare: string;
   journalEyebrow: string;
   journalTitle: string;
   journalLoopEyebrow: string;
@@ -6335,20 +6340,25 @@ const englishUiCopy: UiCopy = {
   read: "Read",
   openHelpAndRedress: "Open Help and Redress",
   homeSupportTitle: "Choose the right support in one tap.",
-  homeSupportLead: "Begin with private counselling, or open calm support, Vedic insight, or verified community on its own focused page.",
+  homeSupportLead: "Begin with private counselling, then move cleanly to calm support, Vedic insight, or verified community — each page hands off to the next.",
   homeSupportCounsellingTitle: "Counselling",
-  homeSupportCounsellingBody: "A private guided room with a 30-message arc and optional next-step checkpoints.",
+  homeSupportCounsellingBody: "A private guided room with a 30-message arc, turn-by-turn acknowledgements, and a clean next-step checkpoint.",
   homeSupportCounsellingCta: "Primary support",
   homeSupportCalmTitle: "Calm / Tones",
-  homeSupportCalmBody: "Curated sound, breath timing, meditation, and body reset.",
+  homeSupportCalmBody: "Issue-matched sound, breath timing, and reset practices that hand off into Path or counselling.",
   homeSupportCalmCta: "Open calm",
   homeSupportVedicTitle: "Vedic Insight",
-  homeSupportVedicBody: "Moon-chart based guidance with practical remedies.",
+  homeSupportVedicBody: "Moon-chart calculations with practical remedies that stay aligned with the same situation.",
   homeSupportVedicCta: "View insight",
   homeSupportCommunityTitle: "Community",
-  homeSupportCommunityBody: "Verified support conversations when access is confirmed.",
+  homeSupportCommunityBody: "Verified support conversations when human input is the right next step.",
   homeSupportCommunityCta: "Open messages",
-  homePrivacyNote: "Privacy first: notes stay local unless you choose verified sharing, export, or tester enrolment.",
+  homePrivacyNote: "Privacy first: notes stay local unless you choose verified sharing or export.",
+  brandTagline: "One route, one next step",
+  homeFlowLabel: "Premium flow",
+  quickExitPriority: "Top priority",
+  footerReassurance: "You don't have to carry it alone.",
+  footerMadeWithCare: "Made with care",
   journalEyebrow: "Private journal",
   journalTitle: "Your private journal",
   journalLoopEyebrow: "How it works",
@@ -6397,42 +6407,47 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     reportEyebrow: "रिपोर्ट",
     reportTitle: "सहेजा गया कदम और दैनिक सार",
     reportPrompt: "एक सहेजा गया कदम निजी रिपोर्ट बनता है। असत्यापित रिपोर्ट सिर्फ़ इसी सत्र में रहती है।",
-    visionEyebrow: "Vision",
+    visionEyebrow: "दृष्टि",
     visionTitle: "यह किसके लिए है",
     visionCopy:
-      "छात्र, शिक्षक, माता-पिता, पेशेवर, देखभालकर्ता, और कोई भी जो tabs में भटकने के बजाय एक शांत रास्ता चाहता है।",
-    openGuide: "Guide खोलें",
-    openPath: "Path खोलें",
+      "छात्र, शिक्षक, माता-पिता, पेशेवर, देखभालकर्ता, और कोई भी जो टैबों में भटकने के बजाय एक शांत मार्ग चाहता है।",
+    openGuide: "मार्गदर्शिका खोलें",
+    openPath: "पथ खोलें",
     communityEyebrow: "समुदाय",
     communityTitle: "संदेश और निजी कमरे",
     communityCopy:
-      "समुदाय के संदेश सामने दिखते हैं, और नामित निजी कमरे verified users के लिए तैयार रहते हैं।",
-    openCommunity: "Community खोलें",
-    seeRooms: "Rooms देखें",
-    unlockChat: "Chat खोलें",
+      "समुदाय के संदेश सामने दिखते हैं, और नामित निजी कमरे सत्यापित उपयोगकर्ताओं के लिए तैयार रहते हैं।",
+    openCommunity: "समुदाय खोलें",
+    seeRooms: "कक्ष देखें",
+    unlockChat: "वार्ता खोलें",
     quickExitEyebrow: "त्वरित निकास",
     quickExitTitle: "तुरंत खतरे में 112 पर कॉल करें।",
-    quickExitPrompt: "इस strip का उपयोग urgent help, complaint route, या main intake से तेज़ hand-off के लिए करें।",
+    quickExitPrompt: "इस अनुभाग का उपयोग आपात सहायता, शिकायत मार्ग, या तेज़ हस्तांतरण के लिए करें।",
     sos: "SOS",
     complaint: "शिकायत",
     help: "मदद",
     read: "पढ़ें",
     openHelpAndRedress: "मदद और शिकायत खोलें",
-    homeSupportTitle: "एक टैप में सही support चुनें।",
-    homeSupportLead: "निजी counselling से शुरू करें, या calm support, Vedic insight, और verified community को अलग focused page पर खोलें।",
-    homeSupportCounsellingTitle: "Counselling",
-    homeSupportCounsellingBody: "एक निजी guided room, 30-message arc, और optional next-step checkpoints के साथ।",
-    homeSupportCounsellingCta: "मुख्य support",
-    homeSupportCalmTitle: "Calm / Tones",
-    homeSupportCalmBody: "चुनी हुई sound, सांस की timing, meditation, और body reset।",
-    homeSupportCalmCta: "Calm खोलें",
-    homeSupportVedicTitle: "Vedic Insight",
-    homeSupportVedicBody: "Moon-chart आधारित guidance, practical remedies के साथ।",
-    homeSupportVedicCta: "Insight देखें",
-    homeSupportCommunityTitle: "Community",
-    homeSupportCommunityBody: "Verified access मिलने पर support conversations तैयार रहती हैं।",
-    homeSupportCommunityCta: "Messages खोलें",
-    homePrivacyNote: "Privacy first: notes सिर्फ़ आपके device पर रहती हैं, जब तक आप verified sharing, export, या tester enrolment न चुनें।",
+    homeSupportTitle: "एक टैप में सही सहायता चुनें।",
+    homeSupportLead: "निजी परामर्श से शुरू करें, फिर शांत सहायता, वैदिक दृष्टि, या सत्यापित समुदाय पर सहजता से जाएँ — हर पृष्ठ अगले से जुड़ता है।",
+    homeSupportCounsellingTitle: "परामर्श",
+    homeSupportCounsellingBody: "एक निजी मार्गदर्शित कक्ष, 30 संदेशों की श्रृंखला, टर्न-बाय-टर्न पुष्टि, और एक साफ़ अगले-चरण जाँच-बिंदु के साथ।",
+    homeSupportCounsellingCta: "मुख्य सहायता",
+    homeSupportCalmTitle: "शांत / स्वर",
+    homeSupportCalmBody: "समस्या के अनुसार चुनी गई ध्वनि, श्वास-ताल, और विराम अभ्यास, जो Path या परामर्श तक सहज हाथ‑हाथ जुड़ते हैं।",
+    homeSupportCalmCta: "शांत खोलें",
+    homeSupportVedicTitle: "वैदिक दृष्टि",
+    homeSupportVedicBody: "चंद्र-चार्ट की गणना पर आधारित मार्गदर्शन, व्यावहारिक उपायों के साथ, जो उसी स्थिति से जुड़ा रहता है।",
+    homeSupportVedicCta: "दृष्टि देखें",
+    homeSupportCommunityTitle: "समुदाय",
+    homeSupportCommunityBody: "जब मानवीय सहायता सबसे सही अगला कदम हो, तब सत्यापित बातचीत तैयार रहती है।",
+    homeSupportCommunityCta: "संदेश खोलें",
+    homePrivacyNote: "गोपनीयता पहले: नोट्स केवल आपके डिवाइस पर रहती हैं, जब तक आप सत्यापित साझा करना या निर्यात न चुनें।",
+    brandTagline: "एक मार्ग, एक अगला कदम",
+    homeFlowLabel: "प्रीमियम प्रवाह",
+    quickExitPriority: "शीर्ष प्राथमिकता",
+    footerReassurance: "इसे अकेले उठाने की ज़रूरत नहीं है।",
+    footerMadeWithCare: "स्नेह के साथ",
     journalEyebrow: "जर्नल",
     journalTitle: "लिखें, फिर आगे बढ़ें",
     journalLoopEyebrow: "लूप",
@@ -15735,6 +15750,7 @@ export default function App() {
     ]
   );
   const compactHomeBadge = getProfileSurfaceLabel(languageId);
+  const homeUiCopy = getUiCopy(languageId);
   const latestGuidedSupportMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
   const aiHelpProviderLabel = aiHelpProvider === "connected" ? "connected guidance" : "local guidance";
   const voiceGuidanceText = useMemo(
@@ -20585,7 +20601,7 @@ function isTrustedExternalUrl(url: string) {
                     Aethon Beacon
                   </Text>
                   <Text style={[styles.brandTag, isCompact && styles.brandTagCompact]} numberOfLines={1}>
-                    One route, one next step
+                    {homeUiCopy.brandTagline}
                   </Text>
                 </View>
               </View>
@@ -22825,7 +22841,7 @@ function TodaySection({
               <Text style={[styles.eyebrow, { color: "#B82200" }]}>{uiCopy.quickExitEyebrow}</Text>
               <Text style={[styles.sectionTitleSmall, { color: "#6B1E17" }]}>{uiCopy.quickExitTitle}</Text>
             </View>
-            <Text style={styles.smallMeta}>Top priority</Text>
+            <Text style={styles.smallMeta}>{uiCopy.quickExitPriority}</Text>
           </View>
           <View style={styles.homeSafetyActions}>
             <Pressable
@@ -22878,7 +22894,7 @@ function TodaySection({
               <Text style={[styles.eyebrow, { color: "#0A6F66" }]}>{uiCopy.homeStartMeta}</Text>
               <Text style={[styles.sectionTitleSmall, { color: "#0D1F22" }]}>{uiCopy.homeSupportTitle}</Text>
             </View>
-            <Text style={styles.smallMeta}>Premium flow</Text>
+            <Text style={styles.smallMeta}>{uiCopy.homeFlowLabel}</Text>
           </View>
           <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginBottom: 14 }}>
             {uiCopy.homeSupportLead}
@@ -23000,83 +23016,6 @@ function TodaySection({
             where it already lived. This keeps the front page short and premium
             instead of repeating full previews of pages that are one tap away
             either way. */}
-        {Platform.OS === "web" && (
-        <View
-          style={{
-            marginBottom: 14,
-            borderRadius: 20,
-            borderWidth: 1,
-            borderColor: "rgba(250,204,107,0.45)",
-            backgroundColor: "#DEE6F2",
-            padding: compact ? 14 : 18,
-            shadowColor: "#000",
-            shadowOpacity: 0.18,
-            shadowRadius: 18,
-            shadowOffset: { width: 0, height: 10 }
-          }}
-        >
-          <Text
-            style={{
-              color: "#865A00",
-              fontSize: 12,
-              fontWeight: "700",
-              letterSpacing: 1.1,
-              textTransform: "uppercase",
-              marginBottom: 6
-            }}
-          >
-            Become an Aethon Beacon tester
-          </Text>
-          <Text style={{ color: "#0D1F22", fontSize: compact ? 19 : 23, fontWeight: "900", marginBottom: 8 }}>
-            Join Android or iPhone testing
-          </Text>
-          <Text style={{ color: "#265692", fontSize: compact ? 13 : 15, lineHeight: compact ? 19 : 22, marginBottom: 14 }}>
-            New testers can open the enrolment page for Android closed testing, iPhone TestFlight access, and feedback instructions.
-          </Text>
-          <View style={{ flexDirection: compact ? "column" : "row", gap: 10 }}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() =>
-                void Linking.openURL("https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2315")
-              }
-              style={({ pressed }) => [
-                {
-                  minHeight: 48,
-                  borderRadius: 15,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingHorizontal: 16,
-                  backgroundColor: "#4ADE80",
-                  flex: compact ? undefined : 1
-                },
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={{ color: "#062014", fontWeight: "900", fontSize: 14 }}>Open tester enrolment</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => void Linking.openURL("https://play.google.com/apps/testing/com.aethonbeacon.app")}
-              style={({ pressed }) => [
-                {
-                  minHeight: 48,
-                  borderRadius: 15,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingHorizontal: 16,
-                  backgroundColor: "rgba(13,31,34,0.06)",
-                  borderWidth: 1,
-                  borderColor: "rgba(13,31,34,0.22)",
-                  flex: compact ? undefined : 1
-                },
-                pressed && styles.pressed
-              ]}
-            >
-              <Text style={{ color: "#0D1F22", fontWeight: "900", fontSize: 14 }}>Android opt-in</Text>
-            </Pressable>
-          </View>
-        </View>
-        )}
       </View>
 
       {/* ── Premium footer — gives the front a proper, intentional ending
@@ -23087,8 +23026,8 @@ function TodaySection({
         <View style={{ width: 42, height: 3, borderRadius: 2, backgroundColor: "rgba(15,61,94,0.12)", marginBottom: 10 }} />
         <Image source={require("./assets/aethon-beacon-icon-vibrant.png")} style={{ width: 36, height: 36, borderRadius: 10 }} accessibilityLabel="Aethon Beacon" />
         <Text style={{ color: "#0E7C74", fontSize: 14, fontWeight: "800", letterSpacing: 0.2 }}>Aethon Beacon</Text>
-        <Text style={{ color: "#57646F", fontSize: 12, textAlign: "center" }}>You don't have to carry it alone.</Text>
-        <Text style={{ color: "#5C646A", fontSize: 12, marginTop: 4 }}>Made with care · v1.0.4</Text>
+        <Text style={{ color: "#57646F", fontSize: 12, textAlign: "center" }}>{uiCopy.footerReassurance}</Text>
+        <Text style={{ color: "#5C646A", fontSize: 12, marginTop: 4 }}>{uiCopy.footerMadeWithCare} · v1.0.4</Text>
       </View>
     </View>
   );
@@ -31076,7 +31015,7 @@ function SettingsSection({
           </Text>
           <Text style={styles.launchSummaryItem}>Feature freeze active: only launch blockers, evidence-backed corrections, and premium polish should change now.</Text>
           <Text style={styles.launchSummaryItem}>Community chat is verified-only and blocks adult or explicit content.</Text>
-          <Text style={styles.launchSummaryItem}>Store release readiness still depends on final listing assets, reviewer notes, and tester evidence—not on placeholder OTP copy.</Text>
+          <Text style={styles.launchSummaryItem}>Store release readiness still depends on final listing assets, reviewer notes, and release evidence—not on placeholder OTP copy.</Text>
         </View>
       </View>
       <View style={styles.settingsBlock}>

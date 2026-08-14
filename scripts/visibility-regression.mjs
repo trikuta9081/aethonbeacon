@@ -317,7 +317,7 @@ assert(
 //
 //   #9AA7B2  2.06:1   "Made with care - v1.0.4"
 //   #B88600  2.74:1   the "Aethon Beacon" brand line
-//   #B87D00  2.95:1   the tester call to action
+//   #B87D00  2.95:1   the premium support card call to action
 //   #0891B2  3.09:1   "Send OTP", "Profile", "Pending verification"
 //   #0E9488  3.14:1   "Start counselling", "Primary support"
 //

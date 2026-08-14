@@ -61,7 +61,7 @@ assert(importantNumbers < directoriesHub, 'Important numbers must appear before 
 assert(directoriesHub < routeChips, 'Directories hub must appear before route chips/general route selection');
 
 
-// Front UI order: Help and Redress above other sections, tester page at the bottom.
+// Front UI order: Help and Redress above the premium support cards.
 const todayStart = indexOf('{activeTab === "today" && (');
 const landingHeader = indexOf('{/* ── LANDING HEADER — Premium redesign ── */}');
 // The front-screen Help and Redress card was intentionally trimmed from a
@@ -79,24 +79,21 @@ const mergedHelp = indexOf('In immediate danger, call 112.');
 // of what the front-page report card used to show.
 const premiumCommandCenter = indexOf('Premium command center');
 const premiumCommandTitle = indexOf('Choose the right support in one tap.');
-const testerFront = indexOf('Become an Aethon Beacon tester');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
 assert(mergedHelp < premiumCommandCenter, 'Help and Redress must remain the first Home action surface');
-assert(premiumCommandCenter < testerFront, 'Premium command center must appear before the web-only tester page');
-assert(premiumCommandTitle < testerFront, 'Premium command copy must remain on the Home surface');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
 assert(!source.includes('Moderated community support and private conversations'), 'Community/Messages preview must not remain on the front UI');
 indexOf('Open Help and Redress');
 indexOf('Open Path');
 indexOf('Start Calm');
-indexOf('A private guided room with a 30-message arc and optional next-step checkpoints.');
-indexOf('Moon-chart based guidance with practical remedies.');
-indexOf('Verified support conversations when access is confirmed.');
-indexOf('Privacy first: notes stay local unless you choose verified sharing, export, or tester enrolment.');
+indexOf('A private guided room with a 30-message arc, turn-by-turn acknowledgements, and a clean next-step checkpoint.');
+indexOf('Issue-matched sound, breath timing, and reset practices that hand off into Path or counselling.');
+indexOf('Moon-chart calculations with practical remedies that stay aligned with the same situation.');
+indexOf('Verified support conversations when human input is the right next step.');
+indexOf('Privacy first: notes stay local unless you choose verified sharing or export.');
 // homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
 // safety strip was trimmed down to SOS + "Open Help and Redress" (the 4-number
 // grid they styled no longer exists in JSX) -- see mergedHelp marker above.
-indexOf('Platform.OS === "web" && (');
 indexOf('"tones",\n      "community",\n      "redress",\n      "insights"');
 // The richer report card that Visit Report moved into still lives on Patterns.
 indexOf('Progress Report Card');
@@ -400,4 +397,4 @@ assert(
   "the weekly reading banner must be rendered -- its effect marks the week as seen either way"
 );
 
-console.log('App upgrades regression passed: section order, consolidated Help and Redress, web-only tester recruitment, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');
+console.log('App upgrades regression passed: section order, consolidated Help and Redress, premium support cards, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');

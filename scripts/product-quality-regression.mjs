@@ -93,10 +93,10 @@ assert(source.includes('local fallback only for this build'), 'Release readiness
 [
   'Premium command center',
   'Choose the right support in one tap.',
-  'A private guided room with a 30-message arc and optional next-step checkpoints.',
-  'Curated sound, breath timing, meditation, and body reset.',
-  'Moon-chart based guidance with practical remedies.',
-  'Verified support conversations when access is confirmed.',
+  'A private guided room with a 30-message arc, turn-by-turn acknowledgements, and a clean next-step checkpoint.',
+  'Issue-matched sound, breath timing, and reset practices that hand off into Path or counselling.',
+  'Moon-chart calculations with practical remedies that stay aligned with the same situation.',
+  'Verified support conversations when human input is the right next step.',
   'Start counselling',
   'Open calm',
   'View insight',
@@ -201,15 +201,13 @@ assert(source.includes('View supporting perspectives'), 'Meditation support pers
 ].forEach((marker) => assert(source.includes(marker), `Missing coordinated counselling/action-plan marker: ${marker}`));
 assert(!source.includes('id: "complaint",\n    label: "Help and Redress"'), 'Help and Redress must remain outside the onboarding choice grid.');
 
-// Store and tester polish must remain visible in the web recruitment surface
-// and launch readiness copy.
+// Store polish and launch readiness copy must remain visible in the web app.
 [
-  'Become an Aethon Beacon tester',
-  'TestFlight',
-  'Android closed testing',
   'Store release readiness',
-  'Crash/error monitoring'
-].forEach((marker) => assert(source.includes(marker), `Missing tester/store polish marker: ${marker}`));
+  'Release still needs store copy, policy text, screenshots, and package naming.',
+  'Store release readiness still depends on final listing assets, reviewer notes, and release evidence—not on placeholder OTP copy.',
+  'Crash/error monitoring and backend auth'
+].forEach((marker) => assert(source.includes(marker), `Missing store polish marker: ${marker}`));
 
 const hiddenNumberPhrase = ['48', ' dimension'].join('');
 assert(!source.includes(hiddenNumberPhrase), 'Public internal numeric capability wording must stay hidden.');
