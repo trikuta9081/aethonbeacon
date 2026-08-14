@@ -5906,7 +5906,7 @@ const languageOptions: Array<{
   speechLang: string;
 }> = [
   { id: "english", label: "English", meta: "Default guidance language", speechLang: "en-IN" },
-  { id: "hindi", label: "Hindi", meta: "हिंदी support for guidance", speechLang: "hi-IN" },
+  { id: "hindi", label: "हिन्दी", meta: "मार्गदर्शन के लिए हिंदी", speechLang: "hi-IN" },
   { id: "gujarati", label: "Gujarati", meta: "ગુજરાતી support for guidance", speechLang: "gu-IN" },
   { id: "punjabi", label: "Punjabi", meta: "ਪੰਜਾਬੀ support for guidance", speechLang: "pa-IN" },
   { id: "odia", label: "Odia", meta: "ଓଡ଼ିଆ support for guidance", speechLang: "or-IN" },
@@ -6302,6 +6302,31 @@ type UiCopy = {
   patternLoopSummary: string;
   settingsLanguageTitle: string;
   settingsLanguagePrompt: string;
+  languagePageEyebrow: string;
+  languagePageTitle: string;
+  languagePageIntro: string;
+  languagePageIdentityMeta: string;
+  languagePageSpeechLocaleLabel: string;
+  languagePageSupportedLanguagesLabel: string;
+  languagePageChoicesTitle: string;
+  languagePageChoicesIntro: string;
+  languagePageToggleCompact: string;
+  languagePageToggleExpanded: string;
+  languagePageCompactSummaryOpen: string;
+  languagePageCompactSummaryClosed: string;
+  languagePageVoiceTitle: string;
+  languagePageVoiceIntro: string;
+  languagePageVoiceAssistLabel: string;
+  languagePageVoiceRead: string;
+  languagePageVoiceStop: string;
+  voiceAssistOff: string;
+  languageSupportDefault: string;
+  languageSupportFullInterface: string;
+  languageSupportFullInterfaceNoVoice: string;
+  languageSupportMenusVoice: string;
+  languageSupportMenusNoVoice: string;
+  languageSupportVoiceEnglishText: string;
+  languageSupportEnglishTextOnly: string;
 };
 
 const englishUiCopy: UiCopy = {
@@ -6389,7 +6414,35 @@ const englishUiCopy: UiCopy = {
   patternLoopTitle: "Read the pattern, then route it",
   patternLoopSummary: "Pattern review should show what the evidence means and where to go next.",
   settingsLanguageTitle: "Language assistance",
-  settingsLanguagePrompt: "Choose the language that should guide replies and voice readout."
+  settingsLanguagePrompt: "Choose the language that should guide replies and voice readout.",
+  languagePageEyebrow: "Language",
+  languagePageTitle: "Preferred language",
+  languagePageIntro:
+    "Pick the language you want for navigation and spoken support. The support badge below states honestly whether the full written interface or menus are translated.",
+  languagePageIdentityMeta: "Spoken guidance will prefer an Indian locale voice when your device has one.",
+  languagePageSpeechLocaleLabel: "Current speech locale",
+  languagePageSupportedLanguagesLabel: "supported languages",
+  languagePageChoicesTitle: "Choose language",
+  languagePageChoicesIntro:
+    "All 22 choices provide translated navigation where supported by the device voice. The compact preview stays small on mobile, and the full list opens only when needed.",
+  languagePageToggleCompact: "Show compact",
+  languagePageToggleExpanded: "Show 22 languages",
+  languagePageCompactSummaryOpen: "Full language list open. Tap a language to switch and keep the page focused.",
+  languagePageCompactSummaryClosed: "Compact preview open. Tap to reveal the rest only when needed.",
+  languagePageVoiceTitle: "Voice preview",
+  languagePageVoiceIntro:
+    "Tap read current guidance to hear the active route in the selected language when speech support is available.",
+  languagePageVoiceAssistLabel: "Voice assistance",
+  languagePageVoiceRead: "Read current guidance",
+  languagePageVoiceStop: "Stop voice",
+  voiceAssistOff: "Voice readout is off",
+  languageSupportDefault: "Default",
+  languageSupportFullInterface: "Full interface",
+  languageSupportFullInterfaceNoVoice: "Full interface · no voice",
+  languageSupportMenusVoice: "Menus + voice",
+  languageSupportMenusNoVoice: "Menus · no voice",
+  languageSupportVoiceEnglishText: "Voice + English text",
+  languageSupportEnglishTextOnly: "English text only"
 };
 
 const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = {
@@ -6478,7 +6531,35 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     patternLoopTitle: "पैटर्न पढ़ें, फिर रास्ता चुनें",
     patternLoopSummary: "Pattern review दिखाए कि evidence का मतलब क्या है और आगे कहाँ जाना है।",
     settingsLanguageTitle: "भाषा सहायता",
-    settingsLanguagePrompt: "वह भाषा चुनें जो replies और voice readout को guide करेगी।"
+    settingsLanguagePrompt: "वह भाषा चुनें जो replies और voice readout को guide करेगी।",
+    languagePageEyebrow: "भाषा",
+    languagePageTitle: "पसंदीदा भाषा",
+    languagePageIntro:
+      "नेविगेशन और आवाज़ी सहायता के लिए अपनी भाषा चुनें। नीचे का support badge साफ़ बताता है कि पूरा लिखित interface अनुवादित है या सिर्फ़ menus।",
+    languagePageIdentityMeta: "यदि आपके डिवाइस में उपयुक्त भारतीय voice होगी, तो spoken guidance उसी को प्राथमिकता देगा।",
+    languagePageSpeechLocaleLabel: "वर्तमान speech locale",
+    languagePageSupportedLanguagesLabel: "समर्थित भाषाएँ",
+    languagePageChoicesTitle: "भाषा चुनें",
+    languagePageChoicesIntro:
+      "22 विकल्पों में वही translated navigation मिलेगा, जहाँ device voice support उपलब्ध हो। मोबाइल पर compact preview दिखता है, और पूरी सूची ज़रूरत पड़ने पर ही खुलती है।",
+    languagePageToggleCompact: "संक्षिप्त दिखाएँ",
+    languagePageToggleExpanded: "22 भाषाएँ दिखाएँ",
+    languagePageCompactSummaryOpen: "पूरी भाषा सूची खुली है। किसी भाषा पर टैप करके बदलें और पेज को focused रखें।",
+    languagePageCompactSummaryClosed: "संक्षिप्त preview खुला है। बाकी तभी दिखाएँ जब ज़रूरत हो।",
+    languagePageVoiceTitle: "आवाज़ पूर्वावलोकन",
+    languagePageVoiceIntro:
+      "उपलब्ध speech support होने पर चुनी हुई भाषा में सक्रिय मार्ग सुनने के लिए current guidance पढ़ें।",
+    languagePageVoiceAssistLabel: "आवाज़ी सहायता",
+    languagePageVoiceRead: "वर्तमान मार्ग पढ़ें",
+    languagePageVoiceStop: "आवाज़ रोकें",
+    voiceAssistOff: "आवाज़ी पढ़ना बंद है",
+    languageSupportDefault: "डिफ़ॉल्ट",
+    languageSupportFullInterface: "पूरा इंटरफ़ेस",
+    languageSupportFullInterfaceNoVoice: "पूरा इंटरफ़ेस · स्वर नहीं",
+    languageSupportMenusVoice: "मेनू + स्वर",
+    languageSupportMenusNoVoice: "मेनू · स्वर नहीं",
+    languageSupportVoiceEnglishText: "स्वर + अंग्रेज़ी पाठ",
+    languageSupportEnglishTextOnly: "सिर्फ़ अंग्रेज़ी पाठ"
   },
   punjabi: {
     homeEyebrow: "ਮੁੱਖ",
@@ -15060,8 +15141,11 @@ export default function App() {
   // Keep refs in sync for the AppState exit-report handler
   profileDisplayNameRef.current = profileDisplayName;
   issueGuideIdRef.current = issueGuideId;
-  const profileShortStatus = profilePhoneVerified || profileEmailVerified ? "Verified" : "Profile";
-  const profileButtonMeta = isCompact ? "Open" : profileShortStatus;
+  const profileShortStatus =
+    profilePhoneVerified || profileEmailVerified
+      ? (languageId === "hindi" ? "सत्यापित" : "Verified")
+      : (languageId === "hindi" ? "प्रोफ़ाइल" : "Profile");
+  const profileButtonMeta = isCompact ? (languageId === "hindi" ? "खोलें" : "Open") : profileShortStatus;
 
   const selectedIssueGuide = useMemo(
     () => issueGuides.find((guide) => guide.id === issueGuideId) ?? issueGuides[0],
@@ -15752,7 +15836,10 @@ export default function App() {
   const compactHomeBadge = getProfileSurfaceLabel(languageId);
   const homeUiCopy = getUiCopy(languageId);
   const latestGuidedSupportMessage = aiHelpMessages[0] ?? aiHelpSeed[0];
-  const aiHelpProviderLabel = aiHelpProvider === "connected" ? "connected guidance" : "local guidance";
+  const aiHelpProviderLabel =
+    aiHelpProvider === "connected"
+      ? (languageId === "hindi" ? "जुड़ा हुआ मार्गदर्शन" : "connected guidance")
+      : (languageId === "hindi" ? "स्थानीय मार्गदर्शन" : "local guidance");
   const voiceGuidanceText = useMemo(
     () =>
       [
@@ -31196,86 +31283,90 @@ function SettingsSection({
           })}
         </View>
       </View>
-      {/* ── Invite a friend ── */}
-      <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Invite a friend</Text>
-        <Text style={styles.promptText}>
-          Share your code with someone who could use a quieter place to think. Codes are generated on this
-          device and only record who invited whom — they are not an account, and they do not change anyone&apos;s
-          subscription or unlock paid features.
-        </Text>
-        <View
-          style={{
-            marginTop: 12,
-            backgroundColor: "#E1EEEC",
-            borderWidth: 1.5,
-            borderColor: "#0891B2",
-            borderRadius: 12,
-            paddingVertical: 14,
-            paddingHorizontal: 16,
-            alignItems: "center"
-          }}
-        >
-          <Text style={{ color: "#374151", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
-            Your invite code
-          </Text>
-          <Text selectable style={{ color: "#0E5C6B", fontSize: 24, fontWeight: "900", letterSpacing: 3, marginTop: 6 }}>
-            {referralCode.length > 0 ? formatReferralCode(referralCode) : "…"}
-          </Text>
-          {referralShareCount > 0 && (
-            <Text style={{ color: "#374151", fontSize: 12, marginTop: 6 }}>
-              Shared {referralShareCount} time{referralShareCount === 1 ? "" : "s"}
+      {Platform.OS !== "web" && (
+        <>
+          {/* ── Invite a friend ── */}
+          <View style={styles.settingsBlock}>
+            <Text style={styles.settingsTitle}>Invite a friend</Text>
+            <Text style={styles.promptText}>
+              Share your code with someone who could use a quieter place to think. Codes are generated on this
+              device and only record who invited whom — they are not an account, and they do not change anyone&apos;s
+              subscription or unlock paid features.
             </Text>
-          )}
-        </View>
-        <View style={styles.backupActions}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Share your invite code"
-            disabled={referralCode.length === 0}
-            onPress={onShareReferral}
-            style={[styles.dangerButton, referralCode.length === 0 ? { opacity: 0.5 } : null]}
-          >
-            <Text style={styles.dangerButtonLabel}>Share invite</Text>
-          </Pressable>
-        </View>
-        {referredByCode.length > 0 ? (
-          <Text style={[styles.promptText, { marginTop: 12, color: "#0E5C6B", fontWeight: "700" }]}>
-            ✓ Invited by {formatReferralCode(referredByCode)} — thank them for you.
-          </Text>
-        ) : (
-          <View style={{ marginTop: 12 }}>
-            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700", marginBottom: 6 }}>
-              Were you invited? Enter their code
-            </Text>
-            <TextInput
-              value={referralCodeDraft}
-              onChangeText={setReferralCodeDraft}
-              placeholder="AB-XXXXXXXX"
-              placeholderTextColor="#6B7280"
-              autoCapitalize="characters"
-              autoCorrect={false}
-              maxLength={12}
-              accessibilityLabel="Friend's invite code"
-              style={styles.settingsInput}
-            />
+            <View
+              style={{
+                marginTop: 12,
+                backgroundColor: "#E1EEEC",
+                borderWidth: 1.5,
+                borderColor: "#0891B2",
+                borderRadius: 12,
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+                alignItems: "center"
+              }}
+            >
+              <Text style={{ color: "#374151", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
+                Your invite code
+              </Text>
+              <Text selectable style={{ color: "#0E5C6B", fontSize: 24, fontWeight: "900", letterSpacing: 3, marginTop: 6 }}>
+                {referralCode.length > 0 ? formatReferralCode(referralCode) : "…"}
+              </Text>
+              {referralShareCount > 0 && (
+                <Text style={{ color: "#374151", fontSize: 12, marginTop: 6 }}>
+                  Shared {referralShareCount} time{referralShareCount === 1 ? "" : "s"}
+                </Text>
+              )}
+            </View>
             <View style={styles.backupActions}>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Apply invite code"
-                onPress={() => {
-                  if (onRedeemReferralCode(referralCodeDraft)) {
-                    setReferralCodeDraft("");
-                  }
-                }}
-                style={styles.secondaryDangerButton}
+                accessibilityLabel="Share your invite code"
+                disabled={referralCode.length === 0}
+                onPress={onShareReferral}
+                style={[styles.dangerButton, referralCode.length === 0 ? { opacity: 0.5 } : null]}
               >
-                <Text style={styles.secondaryDangerButtonLabel}>Apply code</Text>
+                <Text style={styles.dangerButtonLabel}>Share invite</Text>
               </Pressable>
             </View>
+            {referredByCode.length > 0 ? (
+              <Text style={[styles.promptText, { marginTop: 12, color: "#0E5C6B", fontWeight: "700" }]}>
+                ✓ Invited by {formatReferralCode(referredByCode)} — thank them for you.
+              </Text>
+            ) : (
+              <View style={{ marginTop: 12 }}>
+                <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700", marginBottom: 6 }}>
+                  Were you invited? Enter their code
+                </Text>
+                <TextInput
+                  value={referralCodeDraft}
+                  onChangeText={setReferralCodeDraft}
+                  placeholder="AB-XXXXXXXX"
+                  placeholderTextColor="#6B7280"
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  maxLength={12}
+                  accessibilityLabel="Friend's invite code"
+                  style={styles.settingsInput}
+                />
+                <View style={styles.backupActions}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Apply invite code"
+                    onPress={() => {
+                      if (onRedeemReferralCode(referralCodeDraft)) {
+                        setReferralCodeDraft("");
+                      }
+                    }}
+                    style={styles.secondaryDangerButton}
+                  >
+                    <Text style={styles.secondaryDangerButtonLabel}>Apply code</Text>
+                  </Pressable>
+                </View>
+              </View>
+            )}
           </View>
-        )}
-      </View>
+        </>
+      )}
       {/* ── Voice gender + humanized speech settings ── */}
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>Voice character</Text>
@@ -31751,6 +31842,7 @@ function LanguageSection({
   onReadGuidance: () => void;
   onStopVoice: () => void;
 }) {
+  const uiCopy = getUiCopy(languageId);
   const selectedLanguage =
     languageOptions.find((option) => option.id === languageId) ?? languageOptions[0];
   const languageCount = languageOptions.length;
@@ -31808,40 +31900,34 @@ function LanguageSection({
     <View style={styles.panel}>
       <View style={styles.sectionHeader}>
         <View>
-          <Text style={styles.eyebrow}>Language</Text>
-          <Text style={styles.sectionTitle}>Preferred language page</Text>
+          <Text style={styles.eyebrow}>{uiCopy.languagePageEyebrow}</Text>
+          <Text style={styles.sectionTitle}>{uiCopy.languagePageTitle}</Text>
         </View>
         <Text style={styles.smallMeta}>{selectedLanguage.label}</Text>
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>This page only handles language and voice</Text>
-        <Text style={styles.promptText}>
-          Pick the language you want for navigation and spoken support. The support badge below states honestly whether the full written interface or menus are translated.
-        </Text>
+        <Text style={styles.settingsTitle}>{uiCopy.settingsLanguageTitle}</Text>
+        <Text style={styles.promptText}>{uiCopy.languagePageIntro}</Text>
         <View style={styles.identitySummary}>
           <Text style={styles.identitySummaryTitle}>{selectedLanguage.label}</Text>
-          <Text style={styles.identitySummaryText}>
-            Spoken guidance will prefer an Indian locale voice when your device has one.
-          </Text>
+          <Text style={styles.identitySummaryText}>{uiCopy.languagePageIdentityMeta}</Text>
           <Text style={styles.smallMeta}>
-            Current speech locale: {selectedLanguage.speechLang} • {languageCount} supported languages
+            {uiCopy.languagePageSpeechLocaleLabel}: {selectedLanguage.speechLang} • {languageCount} {uiCopy.languagePageSupportedLanguagesLabel}
           </Text>
         </View>
       </View>
 
       <PreferenceRow
-        label="Voice assistance"
-        meta={voiceAssistEnabled ? voiceAssistStatus : "Voice readout is off"}
+        label={uiCopy.languagePageVoiceAssistLabel}
+        meta={voiceAssistEnabled ? voiceAssistStatus : uiCopy.voiceAssistOff}
         value={voiceAssistEnabled}
         onValueChange={setVoiceAssistEnabled}
       />
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Choose language</Text>
-        <Text style={styles.promptText}>
-          All 22 choices provide translated navigation where supported by the device voice. The compact preview stays small on mobile, and the full list opens only when needed.
-        </Text>
+        <Text style={styles.settingsTitle}>{uiCopy.languagePageChoicesTitle}</Text>
+        <Text style={styles.promptText}>{uiCopy.languagePageChoicesIntro}</Text>
         <View style={styles.homeOverviewActions}>
           <Pressable
             accessibilityRole="button"
@@ -31850,7 +31936,7 @@ function LanguageSection({
             style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
           >
             <Text style={styles.homeOverviewButtonLabel}>
-              {showFullLanguages ? "Show compact" : "Show 22 languages"}
+              {showFullLanguages ? uiCopy.languagePageToggleCompact : uiCopy.languagePageToggleExpanded}
             </Text>
           </Pressable>
           <Pressable
@@ -31858,13 +31944,13 @@ function LanguageSection({
             onPress={onStopVoice}
             style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
           >
-            <Text style={styles.homeOverviewButtonSecondaryLabel}>Stop voice</Text>
+            <Text style={styles.homeOverviewButtonSecondaryLabel}>{uiCopy.languagePageVoiceStop}</Text>
           </Pressable>
         </View>
         <Text style={styles.smallMeta}>
           {showFullLanguages
-            ? "Full language list open. Tap a language to switch and keep the page focused."
-            : "Compact preview open. Tap to reveal the rest only when needed."}
+            ? uiCopy.languagePageCompactSummaryOpen
+            : uiCopy.languagePageCompactSummaryClosed}
         </Text>
         <View style={styles.languageGrid}>
           {visibleLanguages.map((option) => {
@@ -31879,14 +31965,14 @@ function LanguageSection({
             const hasVoice = option.id === "english" || hasDeviceVoice(option.speechLang);
             const supportTag =
               option.id === "english"
-                ? "Default"
+                ? uiCopy.languageSupportDefault
                 : hasFullInterface
-                ? hasVoice ? "Full interface" : "Full interface · no voice"
+                ? hasVoice ? uiCopy.languageSupportFullInterface : uiCopy.languageSupportFullInterfaceNoVoice
                 : hasMenus
-                ? hasVoice ? "Menus + voice" : "Menus · no voice"
+                ? hasVoice ? uiCopy.languageSupportMenusVoice : uiCopy.languageSupportMenusNoVoice
                 : hasVoice
-                ? "Voice + English text"
-                : "English text only";
+                ? uiCopy.languageSupportVoiceEnglishText
+                : uiCopy.languageSupportEnglishTextOnly;
             const supportTagColor =
               option.id === "english" || hasFullInterface
                 ? "#0E6F69"
@@ -31920,16 +32006,14 @@ function LanguageSection({
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Voice preview</Text>
-        <Text style={styles.promptText}>
-          Tap read current guidance to hear the active route in the selected language when speech support is available.
-        </Text>
+        <Text style={styles.settingsTitle}>{uiCopy.languagePageVoiceTitle}</Text>
+        <Text style={styles.promptText}>{uiCopy.languagePageVoiceIntro}</Text>
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onReadGuidance} style={styles.dangerButton}>
-            <Text style={styles.dangerButtonLabel}>Read current guidance</Text>
+            <Text style={styles.dangerButtonLabel}>{uiCopy.languagePageVoiceRead}</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={onStopVoice} style={styles.secondaryDangerButton}>
-            <Text style={styles.secondaryDangerButtonLabel}>Stop voice</Text>
+            <Text style={styles.secondaryDangerButtonLabel}>{uiCopy.languagePageVoiceStop}</Text>
           </Pressable>
         </View>
       </View>
