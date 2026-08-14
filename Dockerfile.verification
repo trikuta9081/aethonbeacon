@@ -6,6 +6,9 @@ ENV NODE_ENV=production
 ENV VERIFICATION_HOST=0.0.0.0
 ENV LOCAL_VERIFICATION_DEBUG=0
 
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && pnpm install --frozen-lockfile --prod
+
 COPY scripts/verification-server.mjs ./scripts/verification-server.mjs
 
 EXPOSE 8787
