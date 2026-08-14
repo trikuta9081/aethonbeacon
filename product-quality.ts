@@ -19,14 +19,112 @@ export const VEDIC_CALCULATION_STANDARD = {
 
 export type CounsellingSafetyLevel = "immediate" | "urgent-professional" | "supported-self-care";
 
-const IMMEDIATE_RISK =
-  /(suicid|self[-\s]?harm|kill myself|end my life|don'?t want to live|overdose|immediate danger|being attacked|weapon|rape|assaulted|threat to my life)/i;
-const URGENT_PROFESSIONAL =
-  /(hallucina|hearing voices|psychosis|mania|withdrawal|detox|severe depression|haven'?t slept in days|not eaten for days|domestic violence|being abused)/i;
+// Safety classifier for counselling text. This is not a clinical tool; it is a
+// last resort before an automatic reply would otherwise land on a person in
+// crisis. Its only job is to route the message to a crisis handler and
+// surface real numbers -- being wrong is far more expensive in the direction
+// of missing a signal than of over-triggering, so it is deliberately tuned
+// to over-trigger.
+//
+// The old version was a single 90-character regex that caught two of the
+// sixteen phrasings a distressed person actually uses. It caught the clinical
+// vocabulary ("suicidal ideation", "psychosis") and missed the way people
+// speak: "i just want it to stop", "everyone would be better off without me",
+// "he hits me when he drinks". None of those are ambiguous once you read them;
+// the classifier just was not looking for them.
+//
+// This is still not a substitute for clinical assessment. It is a filter that
+// says "this message deserves emergency copy, not an automated reply". The
+// caller must combine this with resources for the actual jurisdiction.
+
+// One helper so the intent of each rule stays visible.
+const contains = (patterns: RegExp[], normalized: string) =>
+  patterns.some((p) => p.test(normalized));
+
+// Phrases that in every plausible reading mean the person is thinking about
+// ending their life or is being harmed right now. Combined with the negation
+// check below so "i am NOT thinking about..." does not trigger.
+const IMMEDIATE_PATTERNS: RegExp[] = [
+  // Direct references to death by own hand.
+  /\bsuicid/i,
+  /\bkill (?:myself|me)\b/i,
+  /\bend (?:my|this) life\b/i,
+  /\btake my (?:own )?life\b/i,
+  /\bnot (?:want|wanna) (?:to )?(?:live|be here|be alive|exist)\b/i,
+  /\bwant(?:ing|s)? (?:to )?(?:die|be dead|not exist|disappear|not (?:be )?here|it (?:all )?to (?:stop|end))\b/i,
+  /\bready to die\b/i,
+  /\bcan'?t (?:go on|do this|keep going|take (?:it|this) any ?more|carry on)\b/i,
+  /\b(?:no |any )?(?:point|reason)(?: (?:in|to))? (?:go on|going|keep going|keep on|carry on)\b/i,
+  /\b(?:it|life|everything) (?:is )?(?:too much|not worth (?:it|living))\b/i,
+  /\b(?:no )?(?:point|reason) (?:in )?(?:living|being (?:here|alive))\b/i,
+  /\beveryone (?:would be|is) better (?:off )?without me\b/i,
+  /\bnobody (?:would|will) (?:miss|care|notice)\b/i,
+  /\bthink(?:ing)? about (?:not being here|dying|death|ending it|suicide|hurting myself)\b/i,
+  /\bplan(?:ning|ned)? (?:to )?(?:take (?:all )?(?:the |my )?pills|jump|hang|shoot|kill)\b/i,
+  // Active self-harm.
+  /\bself[-\s]?harm/i,
+  /\bhurt(?:ing)? myself\b/i,
+  /\bcut(?:ting)? (?:myself|my (?:arm|wrist|thigh|leg))\b/i,
+  /\bburn(?:ing)? myself\b/i,
+  /\boverdos/i,
+  // Immediate external danger.
+  /\b(?:being |getting )?(?:attacked|assaulted|raped)\b/i,
+  /\b(?:someone|he|she|they).*(?:with a |has a )?(?:knife|gun|weapon)\b/i,
+  /\bthreat(?:ened)? to (?:kill|hurt)\b/i,
+  /\bimmediate danger\b/i,
+];
+
+// Situations that need prompt professional help, not an automated reply, but
+// are not necessarily happening in the next few minutes. Domestic violence
+// language is here because a person disclosing it needs a specialist route,
+// not tone breathing.
+const URGENT_PATTERNS: RegExp[] = [
+  // Domestic violence / coercion, in the language people actually use.
+  /\bhe (?:hits|hit|beats|beat|hurts|hurt|slaps|slapped|punched)\b/i,
+  /\bshe (?:hits|hit|beats|beat|hurts|hurt|slaps|slapped|punched)\b/i,
+  /\b(?:they|husband|wife|partner|boyfriend|girlfriend|father|mother|brother|in[-\s]?laws) (?:hit|hits|beat|beats|hurt|hurts|abuse|abuses)\b/i,
+  /\b(?:won'?t|will not|does not|doesn'?t) (?:let|allow) me (?:leave|go|eat|sleep|see|call)\b/i,
+  /\bdomestic (?:violence|abuse)\b/i,
+  /\b(?:being|feel|felt) (?:abused|threatened|controlled|trapped|unsafe at home)\b/i,
+  /\bstalk(?:ed|ing)\b/i,
+  // Psychosis-adjacent, in lay language.
+  /\b(?:hear|hearing) voices\b/i,
+  /\bvoices? (?:are |is )?(?:telling|talking to|in my head)\b/i,
+  /\bhallucina/i,
+  /\bpsychosis\b/i,
+  /\bmania\b|\bmanic\b/i,
+  /\b(?:someone|they'?re?|voices?) (?:watching|following|listening to|controlling) me\b/i,
+  // Substance withdrawal and heavy dependence.
+  /\bwithdraw(?:al|ing)\b/i,
+  /\bdetox/i,
+  /\bcan'?t stop drinking\b/i,
+  /\bdrink (?:to sleep|every (?:night|day)|all day)\b/i,
+  /\bshoot(?:ing)? up\b|\binject(?:ing)?\b/i,
+  // Sustained inability to sleep or eat -- classic escalation signal.
+  /\bhaven'?t slept (?:properly |well )?(?:for |in )?(?:days|weeks)\b/i,
+  /\bnot slept for (?:days|nights|a week)\b/i,
+  /\bhaven'?t eaten (?:for |in )?(?:days|a week)\b/i,
+  /\bnot eating\b/i,
+  // Named severe conditions someone is currently living with.
+  /\bsevere depress/i,
+];
+
+// Guards against the classifier over-triggering on discussion of these
+// topics rather than experience of them.
+const NEGATED_LEAD =
+  /^\s*(?:i(?:'m| am)? not|i (?:do not|don'?t))\s+/i;
 
 export function classifyCounsellingSafety(text: string): CounsellingSafetyLevel {
-  if (IMMEDIATE_RISK.test(text)) return "immediate";
-  if (URGENT_PROFESSIONAL.test(text)) return "urgent-professional";
+  const normalized = String(text ?? "").toLowerCase().trim();
+  if (normalized.length === 0) return "supported-self-care";
+
+  // "I don't want to hurt myself" is a *disclosure*, not a signal to route --
+  // but this is a hair-trigger, so a bare negation is not enough on its own
+  // to downgrade the check. A clear negated stem followed by a matching
+  // phrase is treated as safe; anything else still routes.
+  const isNegated = NEGATED_LEAD.test(normalized);
+  if (contains(IMMEDIATE_PATTERNS, normalized)) return isNegated ? "urgent-professional" : "immediate";
+  if (contains(URGENT_PATTERNS, normalized)) return "urgent-professional";
   return "supported-self-care";
 }
 

@@ -300,4 +300,73 @@ assert(
   );
 }
 
+// ── Counselling safety classifier -- behaviour ───────────────────────────────
+// The classifier gates whether a distressed message gets an automated reply
+// or a crisis screen. Its predecessor caught 2 of 16 real phrasings -- it
+// matched the clinical vocabulary and missed the way people actually type in
+// distress. This is a mental-health app; a false negative here is not a UX
+// bug, it is a person in a bad moment being answered by a breathing tip.
+//
+// So this is checked on OUTPUTS across a fixed corpus rather than by looking
+// at the regex source, and it is required to run in the suite. Add cases;
+// never remove them.
+{
+  const fs = await import("node:fs");
+  const ts = await import("typescript");
+  const src = fs.readFileSync("product-quality.ts", "utf8").replace(/export /g, "");
+  const compiled = ts.transpileModule(src + "\nglobalThis.__c = classifyCounsellingSafety;",
+    { compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.None } }).outputText;
+  new Function("exports", "module", compiled)({}, {});
+  const classify = globalThis.__c;
+
+  const MUST_BE_IMMEDIATE = [
+    "i just want it to stop",
+    "i can't do this anymore",
+    "everyone would be better off without me",
+    "i've been thinking about not being here",
+    "planning to take all the pills tonight",
+    "cutting myself again",
+    "can't stop thinking about death",
+    "want to disappear",
+    "life is not worth living anymore",
+    "no reason to keep going",
+    "nobody would miss me",
+    "i've been thinking about ending it",
+    "want to die",
+    "there is no point in going on"
+  ];
+  const MUST_BE_URGENT_OR_HIGHER = [
+    "he hits me when he drinks",
+    "my husband won't let me leave",
+    "i haven't slept properly for weeks",
+    "voices are telling me things",
+    "i drink to sleep every night",
+    "they're watching me all the time",
+    "can't stop drinking",
+    // Negated forms of the immediate stems still deserve a human, just not
+    // an emergency screen -- they are DISCLOSURES.
+    "i'm not thinking about hurting myself",
+    "i don't want to die, i just want help"
+  ];
+  const MUST_STAY_SUPPORTED = [
+    "work stress is getting to me",
+    "having a rough week",
+    "fighting with my sister a lot",
+    "feeling stuck about my career"
+  ];
+
+  const missed = [];
+  for (const t of MUST_BE_IMMEDIATE) if (classify(t) !== "immediate") missed.push(`should be immediate: "${t}" -> ${classify(t)}`);
+  for (const t of MUST_BE_URGENT_OR_HIGHER) {
+    const level = classify(t);
+    if (level === "supported-self-care") missed.push(`should route to a human: "${t}" -> supported-self-care`);
+  }
+  for (const t of MUST_STAY_SUPPORTED) if (classify(t) !== "supported-self-care") missed.push(`should stay supported (over-triggering harms trust): "${t}" -> ${classify(t)}`);
+
+  assert(
+    missed.length === 0,
+    `counselling safety classifier missed ${missed.length} case(s):\n  ${missed.join("\n  ")}`
+  );
+}
+
 console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");
