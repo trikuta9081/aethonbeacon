@@ -129,3 +129,31 @@ jobs:
 
           git remote add render-mirror "https://x-access-token:${CLEAN_TOKEN}@github.com/trikuta9081/AETHON-beacon-.git"
           git push render-mirror render-deploy:main --force
+
+      - name: Smoke check live Render deploy
+        run: |
+          set -euo pipefail
+
+          short_sha="$(git rev-parse --short HEAD)"
+          live_url="https://aethon-beacon-web.onrender.com"
+
+          echo "Waiting for live Render bundle to include commit ${short_sha}"
+          for attempt in $(seq 1 18); do
+            html="$(curl -fsSL "${live_url}" || true)"
+            bundle_path="$(printf '%s' "${html}" | sed -n 's/.*src="\([^"]*AppEntry-[^"]*\.js\)".*/\1/p' | head -n 1)"
+
+            if [ -n "${bundle_path}" ]; then
+              bundle_url="${live_url}${bundle_path}"
+              if curl -fsSL "${bundle_url}" | grep -Fq "${short_sha}"; then
+                if printf '%s' "${html}" | grep -Fq '<title>Aethon Beacon</title>'; then
+                  echo "Live Render smoke check passed for ${short_sha}"
+                  exit 0
+                fi
+              fi
+            fi
+
+            sleep 10
+          done
+
+          echo "::error::Live Render smoke check failed for ${short_sha}"
+          exit 1
