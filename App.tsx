@@ -15244,7 +15244,8 @@ export default function App() {
     accessName,
     profileGender,
     profileRoleId,
-    selectedIdentity.label
+    languageId === "hindi" ? "आपकी प्रोफ़ाइल" : "Your profile",
+    languageId
   );
   // Keep refs in sync for the AppState exit-report handler
   profileDisplayNameRef.current = profileDisplayName;
@@ -22834,6 +22835,7 @@ function isTrustedExternalUrl(url: string) {
     )}
         {showAccessPanel && (
           <AccessOverlay
+            languageId={languageId}
             accessRole={accessRole}
             accessName={accessName}
             profilePhone={profilePhone}
@@ -31176,7 +31178,8 @@ function SettingsSection({
     accessName,
     profileGender,
     profileRoleId,
-    selectedIdentity.label
+    t("Your profile", "आपकी प्रोफ़ाइल"),
+    languageId
   );
   const supportCircleSummary = [
     {
@@ -31490,7 +31493,7 @@ function SettingsSection({
               {profileDisplayName.length > 0 ? profileDisplayName : t("Profile not named yet", "प्रोफ़ाइल अभी नामित नहीं है")}
             </Text>
             <Text style={styles.profileBannerMeta}>
-              {getProfileGenderLabel(profileGender)}
+              {getProfileGenderLabel(profileGender, languageId)}
             </Text>
             <View style={styles.profileStatusRow}>
               <View style={[styles.verificationStatusChip, profilePhoneVerified && styles.verificationStatusChipActive]}>
@@ -31525,7 +31528,7 @@ function SettingsSection({
           </View>
           <View style={styles.profileSummaryCard}>
             <Text style={styles.profileSummaryLabel}>{t("Gender", "लिंग")}</Text>
-            <Text style={styles.profileSummaryValue}>{getProfileGenderLabel(profileGender)}</Text>
+            <Text style={styles.profileSummaryValue}>{getProfileGenderLabel(profileGender, languageId)}</Text>
           </View>
         </View>
         <View style={styles.backupActions}>
@@ -34614,6 +34617,7 @@ function AdminSection({
 }
 
 function AccessOverlay({
+  languageId,
   accessRole,
   accessName,
   profilePhone,
@@ -34650,6 +34654,7 @@ function AccessOverlay({
   onOpenAdminCenter,
   onClose
 }: {
+  languageId: LanguageId;
   accessRole: AccessRole;
   accessName: string;
   profilePhone: string;
@@ -34686,6 +34691,7 @@ function AccessOverlay({
   onOpenAdminCenter: () => void;
   onClose: () => void;
 }) {
+  const t = (english: string, hindi: string) => pickLocalizedText(languageId, { english, hindi });
   const [role, setRole] = useState<Exclude<AccessRole, "admin">>(
     accessRole === "admin" ? "verified" : accessRole
   );
@@ -34698,9 +34704,28 @@ function AccessOverlay({
   const [startupLockCountdown, setStartupLockCountdown] = useState(startupLockActive ? 10 : 0);
   const verificationModeNote =
     verificationDeliveryMode === "remote"
-      ? "Connected provider sends the verification codes."
-      : "Local fallback generates the code inside the app for beta testing.";
-  const profileDisplayName = getRespectfulAddressLabel(name, profileGender, profileRoleId, "Your profile");
+      ? t("Connected provider sends the verification codes.", "जुड़ा हुआ provider verification codes भेजता है।")
+      : t("Local fallback generates the code inside the app for beta testing.", "स्थानीय fallback beta testing के लिए code ऐप के अंदर बनाता है।");
+  const profileDisplayName = getRespectfulAddressLabel(name, profileGender, profileRoleId, t("Your profile", "आपकी प्रोफ़ाइल"), languageId);
+  const exitButtonLabel = canDismiss
+    ? t("Exit", "बंद करें")
+    : `${t("Exit", "बंद करें")} ${startupLockCountdown > 0 ? `${startupLockCountdown}s` : t("locked", "लॉक्ड")}`;
+  const startupPromptTitle = startupLockCountdown > 0
+    ? `${t("Startup prompt", "स्टार्टअप संकेत")} · ${startupLockCountdown}s ${t("left", "शेष")}`
+    : t("Startup prompt", "स्टार्टअप संकेत");
+  const localizedGenderOptions = genderOptions.map((option) => {
+    const label =
+      option.id === "female"
+        ? t("Female", "महिला")
+        : option.id === "male"
+          ? t("Male", "पुरुष")
+          : option.id === "nonbinary"
+            ? t("Non-binary", "गैर-द्विआधारी")
+            : option.id === "prefer_not_to_say"
+              ? t("Prefer not to say", "बताना नहीं चाहेंगे")
+              : t("Other", "अन्य");
+    return { ...option, label };
+  });
   const verificationInputRef = React.useRef<TextInput>(null);
   const profileScrollRef = React.useRef<ScrollView>(null);
   const didAutoJumpToVerificationRef = React.useRef(false);
@@ -34787,7 +34812,7 @@ function AccessOverlay({
         <View style={[styles.profileSheetTopRow, styles.profileSheetTopRowNoFloat, compactStartup && styles.profileSheetTopRowCompact]}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Exit profile details"
+            accessibilityLabel={t("Exit profile details", "प्रोफ़ाइल विवरण बंद करें")}
             hitSlop={12}
             onPress={() => {
               if (!canDismiss) return;
@@ -34800,34 +34825,30 @@ function AccessOverlay({
               pressed && canDismiss && styles.pressed
             ]}
           >
-            <Text style={styles.profileSheetExitButtonLabel}>
-              {canDismiss ? "Exit" : `Exit ${startupLockCountdown > 0 ? `${startupLockCountdown}s` : "locked"}`}
-            </Text>
+            <Text style={styles.profileSheetExitButtonLabel}>{exitButtonLabel}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Jump to verification section"
+            accessibilityLabel={t("Jump to verification section", "सत्यापन अनुभाग पर जाएँ")}
             hitSlop={12}
             onPress={jumpToVerification}
             style={({ pressed }) => [styles.profileSheetJumpButton, pressed && styles.pressed]}
           >
-            <Text style={styles.profileSheetJumpButtonLabel}>Verification</Text>
+            <Text style={styles.profileSheetJumpButtonLabel}>{t("Verification", "सत्यापन")}</Text>
           </Pressable>
         </View>
         <View style={[styles.onboardingHeader, compactStartup && styles.onboardingHeaderCompact]}>
-          <Text style={styles.eyebrow}>Profile center</Text>
-          <Text style={[styles.onboardingTitle, compactStartup && styles.onboardingTitleCompact]}>Your Account</Text>
+          <Text style={styles.eyebrow}>{t("Profile center", "प्रोफ़ाइल केंद्र")}</Text>
+          <Text style={[styles.onboardingTitle, compactStartup && styles.onboardingTitleCompact]}>{t("Your Account", "आपका खाता")}</Text>
           <Text style={[styles.onboardingText, compactStartup && styles.onboardingTextCompact]}>
-            Set your name, add a contact method, and verify to unlock community features.
+            {t("Set your name, add a contact method, and verify to unlock community features.", "अपना नाम रखें, संपर्क माध्यम जोड़ें, और सत्यापन करके community सुविधाएँ खोलें।")}
           </Text>
         </View>
         {startupLockActive ? (
           <View style={[styles.alertBanner, styles.alertBannerCompact]}>
-            <Text style={styles.alertBannerTitle}>
-              {startupLockCountdown > 0 ? `Startup prompt · ${startupLockCountdown}s left` : "Startup prompt"}
-            </Text>
+            <Text style={styles.alertBannerTitle}>{startupPromptTitle}</Text>
             <Text style={styles.alertBannerText}>
-              This panel stays open for 10 seconds so you can pick a profile and verify before closing it.
+              {t("This panel stays open for 10 seconds so you can pick a profile and verify before closing it.", "यह पैनल 10 सेकंड तक खुला रहता है ताकि आप प्रोफ़ाइल चुनकर बंद करने से पहले सत्यापन कर सकें।")}
             </Text>
           </View>
         ) : null}
@@ -34835,17 +34856,23 @@ function AccessOverlay({
           <View style={styles.profileBannerCopy}>
             <Text style={[styles.profileBannerTitle, compactStartup && styles.profileBannerTitleCompact]}>{profileDisplayName}</Text>
             <Text style={[styles.profileBannerMeta, compactStartup && styles.profileBannerMetaCompact]}>
-              {accessRole === "admin" ? "Admin locked out of profile edits" : `${role.charAt(0).toUpperCase() + role.slice(1)} access`}
+              {accessRole === "admin"
+                ? t("Admin locked out of profile edits", "एडमिन को प्रोफ़ाइल संपादन से रोका गया है")
+                : role === "verified"
+                  ? t("Verified access", "सत्यापित पहुँच")
+                  : role === "member"
+                    ? t("Member access", "सदस्य पहुँच")
+                    : t("Guest access", "अतिथि पहुँच")}
             </Text>
             <View style={[styles.profileStatusRow, compactStartup && styles.profileStatusRowCompact]}>
               <View style={[styles.verificationStatusChip, profilePhoneVerified && styles.verificationStatusChipActive]}>
                 <Text style={[styles.verificationStatusChipLabel, compactStartup && styles.verificationStatusChipLabelCompact, profilePhoneVerified && styles.verificationStatusChipLabelActive]}>
-                  {profilePhoneVerified ? "Phone verified" : "Phone pending"}
+                  {profilePhoneVerified ? t("Phone verified", "फ़ोन सत्यापित") : t("Phone pending", "फ़ोन लंबित")}
                 </Text>
               </View>
               <View style={[styles.verificationStatusChip, profileEmailVerified && styles.verificationStatusChipActive]}>
                 <Text style={[styles.verificationStatusChipLabel, compactStartup && styles.verificationStatusChipLabelCompact, profileEmailVerified && styles.verificationStatusChipLabelActive]}>
-                  {profileEmailVerified ? "Email verified" : "Email pending"}
+                  {profileEmailVerified ? t("Email verified", "ईमेल सत्यापित") : t("Email pending", "ईमेल लंबित")}
                 </Text>
               </View>
             </View>
@@ -34854,24 +34881,24 @@ function AccessOverlay({
 
         <View style={[styles.accessFlowBand, compactStartup && styles.accessFlowBandCompact]}>
           <View style={styles.accessFlowBandHeader}>
-            <Text style={[styles.accessFlowBandTitle, compactStartup && styles.accessFlowBandTitleCompact]}>Account setup</Text>
+            <Text style={[styles.accessFlowBandTitle, compactStartup && styles.accessFlowBandTitleCompact]}>{t("Account setup", "खाता सेटअप")}</Text>
             <Text style={styles.accessFlowBandMeta}>
-              {verificationReady ? "Verified" : "Pending verification"}
+              {verificationReady ? t("Verified", "सत्यापित") : t("Pending verification", "सत्यापन लंबित")}
             </Text>
           </View>
           <Text style={[styles.accessFlowBandText, compactStartup && styles.accessFlowBandTextCompact]}>
-            Complete your profile, add a contact method, then verify to unlock community chat and private spaces.
+            {t("Complete your profile, add a contact method, then verify to unlock community chat and private spaces.", "अपनी प्रोफ़ाइल पूरी करें, एक संपर्क माध्यम जोड़ें, फिर सत्यापन करके community chat और private spaces खोलें।")}
           </Text>
           <View style={[styles.accessFlowPills, compactStartup && styles.accessFlowPillsCompact]}>
             {[
-              { id: "profile", label: "Profile", meta: "Name", done: name.trim().length > 0 },
+              { id: "profile", label: t("Profile", "प्रोफ़ाइल"), meta: t("Name", "नाम"), done: name.trim().length > 0 },
               {
                 id: "contact",
-                label: "Contact",
-                meta: "Phone or email",
+                label: t("Contact", "संपर्क"),
+                meta: t("Phone or email", "फ़ोन या ईमेल"),
                 done: profilePhone.trim().length > 0 || profileEmail.trim().length > 0
               },
-              { id: "chat", label: "Chat", meta: "One OTP unlocks it", done: verificationReady }
+              { id: "chat", label: t("Chat", "चैट"), meta: t("One OTP unlocks it", "एक OTP इसे खोलता है"), done: verificationReady }
             ].map((step) => (
               <View
                 key={step.id}
@@ -34891,7 +34918,7 @@ function AccessOverlay({
                   {step.done ? "✓ " : ""}{step.label}
                 </Text>
                 <Text style={[styles.accessFlowPillMeta, compactStartup && styles.accessFlowPillMetaCompact]}>
-                  {step.done ? "Done" : step.meta}
+                  {step.done ? t("Done", "पूरा") : step.meta}
                 </Text>
               </View>
             ))}
@@ -34899,18 +34926,18 @@ function AccessOverlay({
         </View>
 
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
-          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Account access level</Text>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>{t("Account access level", "खाता पहुँच स्तर")}</Text>
           <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-            This controls what you can do in the app — not who you are. Verified unlocks chat and private rooms once you confirm a phone or email.
+            {t("This controls what you can do in the app — not who you are. Verified unlocks chat and private rooms once you confirm a phone or email.", "यह तय करता है कि आप ऐप में क्या कर सकते हैं — आप कौन हैं यह नहीं। फ़ोन या ईमेल की पुष्टि के बाद Verified chat और private rooms खोल देता है।")}
           </Text>
           <View style={[styles.identityStack, compactStartup && styles.identityStackCompact]}>
             {[
-              { id: "guest", label: "Guest", meta: "Browse without saving a role", mark: "G" },
-              { id: "member", label: "Member", meta: "Standard local profile", mark: "M" },
+              { id: "guest", label: t("Guest", "अतिथि"), meta: t("Browse without saving a role", "भूमिका सहेजे बिना ब्राउज़ करें"), mark: "G" },
+              { id: "member", label: t("Member", "सदस्य"), meta: t("Standard local profile", "मानक स्थानीय प्रोफ़ाइल"), mark: "M" },
               {
                 id: "verified",
-                label: "Verified",
-                meta: verificationReady ? "Unlocked for verified chat" : "Unlocks after one OTP check",
+                label: t("Verified", "सत्यापित"),
+                meta: verificationReady ? t("Unlocked for verified chat", "सत्यापित चैट के लिए खुला") : t("Unlocks after one OTP check", "एक OTP जाँच के बाद खुलता है"),
                 mark: "V"
               }
             ].map((item) => {
@@ -34923,7 +34950,7 @@ function AccessOverlay({
                   accessibilityState={{ selected: isSelected, disabled: isLocked }}
                   onPress={() => {
                     if (isLocked) {
-                      Alert.alert("Verification needed", "Verify your phone or email first.");
+                      Alert.alert(t("Verification needed", "सत्यापन आवश्यक है"), t("Verify your phone or email first.", "पहले अपना फ़ोन या ईमेल सत्यापित करें।"));
                       return;
                     }
                     setRole(item.id as Exclude<AccessRole, "admin">);
@@ -34956,22 +34983,22 @@ function AccessOverlay({
         </View>
 
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
-          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Display name</Text>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>{t("Display name", "दिखाई देने वाला नाम")}</Text>
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="Your name or handle"
+            placeholder={t("Your name or handle", "आपका नाम या handle")}
             placeholderTextColor="#9A8F82"
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
         </View>
 
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
-          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Contact details</Text>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>{t("Contact details", "संपर्क विवरण")}</Text>
           <TextInput
             value={profilePhone}
             onChangeText={setProfilePhone}
-            placeholder="Phone number"
+            placeholder={t("Phone number", "फ़ोन नंबर")}
             placeholderTextColor="#9A8F82"
             keyboardType="phone-pad"
             autoComplete="tel"
@@ -34993,13 +35020,13 @@ function AccessOverlay({
             ]}
           >
             <Text style={styles.onboardingButtonSecondaryLabel}>
-              {verificationRequestBusy === "phone" ? "Sending phone OTP…" : "Send phone OTP"}
+              {verificationRequestBusy === "phone" ? t("Sending phone OTP…", "फ़ोन OTP भेजा जा रहा है…") : t("Send phone OTP", "फ़ोन OTP भेजें")}
             </Text>
           </Pressable>
           <TextInput
             value={profileEmail}
             onChangeText={setProfileEmail}
-            placeholder="Email address"
+            placeholder={t("Email address", "ईमेल पता")}
             placeholderTextColor="#9A8F82"
             keyboardType="email-address"
             autoComplete="email"
@@ -35021,16 +35048,16 @@ function AccessOverlay({
             ]}
           >
             <Text style={styles.onboardingButtonSecondaryLabel}>
-              {verificationRequestBusy === "email" ? "Sending email OTP…" : "Send email OTP"}
+              {verificationRequestBusy === "email" ? t("Sending email OTP…", "ईमेल OTP भेजा जा रहा है…") : t("Send email OTP", "ईमेल OTP भेजें")}
             </Text>
           </Pressable>
           <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-            Choose one contact method, send its OTP, then enter the received six-digit code in Verification below.
+            {t("Choose one contact method, send its OTP, then enter the received six-digit code in Verification below.", "एक संपर्क माध्यम चुनें, उसका OTP भेजें, फिर नीचे Verification में प्राप्त छह-अंकीय कोड डालें।")}
           </Text>
           <TextInput
             value={profileLocation}
             onChangeText={setProfileLocation}
-            placeholder="City, district, or pincode"
+            placeholder={t("City, district, or pincode", "शहर, ज़िला, या पिनकोड")}
             placeholderTextColor="#9A8F82"
             autoComplete="postal-code"
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
@@ -35038,9 +35065,9 @@ function AccessOverlay({
         </View>
 
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
-          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Birth details</Text>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>{t("Birth details", "जन्म विवरण")}</Text>
           <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-            Add exact birth date, 24-hour birth time, and full birth place. Moon-chart analysis stays locked until all three are precise.
+            {t("Add exact birth date, 24-hour birth time, and full birth place. Moon-chart analysis stays locked until all three are precise.", "सटीक जन्म तिथि, 24-घंटे का जन्म समय, और पूरा जन्म स्थान जोड़ें। Moon-chart analysis तब तक बंद रहेगा जब तक तीनों सटीक न हों।")}
           </Text>
           <TextInput
             value={profileDOB}
@@ -35049,7 +35076,7 @@ function AccessOverlay({
               const cleaned = t.replace(/[^0-9-]/g, "").slice(0, 10);
               setProfileDOB(cleaned);
             }}
-            placeholder="Birth date: YYYY-MM-DD"
+            placeholder={t("Birth date: YYYY-MM-DD", "जन्म तिथि: YYYY-MM-DD")}
             placeholderTextColor="#9A8F82"
             keyboardType="numbers-and-punctuation"
             maxLength={10}
@@ -35061,7 +35088,7 @@ function AccessOverlay({
               const cleaned = t.replace(/[^0-9:]/g, "").slice(0, 5);
               setProfileBirthTime(cleaned);
             }}
-            placeholder="Exact birth time: HH:MM, 24-hour"
+            placeholder={t("Exact birth time: HH:MM, 24-hour", "सटीक जन्म समय: HH:MM, 24-घंटे")}
             placeholderTextColor="#9A8F82"
             keyboardType="numbers-and-punctuation"
             maxLength={5}
@@ -35070,7 +35097,7 @@ function AccessOverlay({
           <TextInput
             value={profileBirthPlace}
             onChangeText={setProfileBirthPlace}
-            placeholder="Birth place: city, district, state, country"
+            placeholder={t("Birth place: city, district, state, country", "जन्म स्थान: शहर, ज़िला, राज्य, देश")}
             placeholderTextColor="#9A8F82"
             style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
           />
@@ -35098,9 +35125,9 @@ function AccessOverlay({
         </View>
 
         <View style={[styles.onboardingBlock, compactStartup && styles.onboardingBlockCompact]}>
-          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Gender</Text>
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>{t("Gender", "लिंग")}</Text>
           <View style={[styles.segmentRow, styles.profileGenderGrid]}>
-            {genderOptions.map((option) => {
+            {localizedGenderOptions.map((option) => {
               const isSelected = profileGender === option.id;
               return (
                 <Pressable
@@ -35132,9 +35159,9 @@ function AccessOverlay({
         >
           <View style={styles.sectionHeader}>
             <View style={{ flex: 1, minWidth: 0 }}>
-              <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>Verification</Text>
-              <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
-                Verification stays out of the way unless chat or private rooms need it. {verificationModeNote}
+          <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>{t("Verification", "सत्यापन")}</Text>
+          <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
+                {t("Verification stays out of the way unless chat or private rooms need it.", "सत्यापन तब तक सामने नहीं आता जब तक chat या private rooms को इसकी ज़रूरत न हो।")} {verificationModeNote}
               </Text>
             </View>
             {!verificationExpanded ? (
@@ -35143,13 +35170,13 @@ function AccessOverlay({
                 onPress={jumpToVerification}
                 style={({ pressed }) => [styles.onboardingButtonSecondary, pressed && styles.pressed]}
               >
-                <Text style={styles.onboardingButtonSecondaryLabel}>Open verification</Text>
+                <Text style={styles.onboardingButtonSecondaryLabel}>{t("Open verification", "सत्यापन खोलें")}</Text>
               </Pressable>
             ) : null}
           </View>
           {profileVerificationNotice ? (
             <View style={styles.alertBanner}>
-              <Text style={styles.alertBannerTitle}>Verification status</Text>
+              <Text style={styles.alertBannerTitle}>{t("Verification status", "सत्यापन स्थिति")}</Text>
               <Text style={styles.alertBannerText}>{profileVerificationNotice}</Text>
             </View>
           ) : null}
@@ -35157,8 +35184,8 @@ function AccessOverlay({
             <View style={[styles.verificationBlock, compactStartup && styles.verificationBlockCompact]}>
               <View style={styles.segmentRow}>
                 {[
-                  { id: "phone", label: "Phone" },
-                  { id: "email", label: "Email" }
+                  { id: "phone", label: t("Phone", "फ़ोन") },
+                  { id: "email", label: t("Email", "ईमेल") }
                 ].map((item) => {
                   const isSelected = verificationChannel === item.id;
                   return (
@@ -35177,12 +35204,12 @@ function AccessOverlay({
                 })}
               </View>
               <Text style={[styles.settingsTitle, compactStartup && styles.settingsTitleCompact]}>
-                {verificationChannel === "phone" ? "Phone OTP" : "Email OTP"}
+                {verificationChannel === "phone" ? t("Phone OTP", "फ़ोन OTP") : t("Email OTP", "ईमेल OTP")}
               </Text>
               <Text style={[styles.promptText, compactStartup && styles.promptTextCompact]}>
                 {verificationChannel === "phone"
-                  ? "Send the code to the phone number you entered, then paste it here."
-                  : "Send the code to the email address you entered, then paste it here."}
+                  ? t("Send the code to the phone number you entered, then paste it here.", "आपने जो फ़ोन नंबर डाला है उस पर कोड भेजें, फिर यहाँ पेस्ट करें।")
+                  : t("Send the code to the email address you entered, then paste it here.", "आपने जो ईमेल पता डाला है उस पर कोड भेजें, फिर यहाँ पेस्ट करें।")}
               </Text>
               <View style={styles.verificationActionsRow}>
               <Pressable
@@ -35205,7 +35232,7 @@ function AccessOverlay({
                   ]}
                 >
                   <Text style={styles.onboardingButtonSecondaryLabel}>
-                    {verificationRequestBusy === verificationChannel ? "Sending..." : "Send OTP"}
+                    {verificationRequestBusy === verificationChannel ? t("Sending...", "भेजा जा रहा है…") : t("Send OTP", "OTP भेजें")}
                   </Text>
                 </Pressable>
               <Pressable
@@ -39909,11 +39936,33 @@ function getIdentityLabel(id: IdentityId) {
   return identityProfiles.find((profile) => profile.id === id)?.label ?? "Other";
 }
 
-function getProfileGenderLabel(gender: ProfileGenderId) {
+function getProfileGenderLabel(gender: ProfileGenderId, languageId: LanguageId = "english") {
+  if (languageId === "hindi") {
+    switch (gender) {
+      case "female":
+        return "महिला";
+      case "male":
+        return "पुरुष";
+      case "nonbinary":
+        return "गैर-द्विआधारी";
+      case "other":
+        return "अन्य";
+      default:
+        return "बताने से परहेज़";
+    }
+  }
   return genderOptions.find((option) => option.id === gender)?.label ?? "Prefer not to say";
 }
 
-function getHonorificPrefix(gender: ProfileGenderId, roleId?: IdentityId) {
+function getHonorificPrefix(gender: ProfileGenderId, roleId?: IdentityId, languageId: LanguageId = "english") {
+  if (languageId === "hindi") {
+    if (gender === "male") return "श्री";
+    if (gender === "female") {
+      if (roleId === "student" || roleId === "child") return "सुश्री";
+      return "श्रीमती";
+    }
+    return "";
+  }
   if (gender === "male") return "Sir";
   if (gender === "female") {
     if (roleId === "student" || roleId === "child") return "Miss";
@@ -39926,10 +39975,11 @@ function getRespectfulAddressLabel(
   name: string,
   gender: ProfileGenderId,
   roleId: IdentityId,
-  fallback: string
+  fallback: string,
+  languageId: LanguageId = "english"
 ) {
   const cleanedName = name.trim();
-  const prefix = getHonorificPrefix(gender, roleId);
+  const prefix = getHonorificPrefix(gender, roleId, languageId);
   if (cleanedName.length === 0) return fallback;
   return prefix.length > 0 ? `${prefix} ${cleanedName}` : cleanedName;
 }
