@@ -41067,10 +41067,28 @@ function CounselingChatModal({
     onClose();
   };
   const counsellingDepthCopy = isVeryCompactPhone
-    ? `0/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step later`
+    ? pickLocalizedText(languageId, {
+        english: `${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step later`,
+        hindi: `${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} जवाब · अगला कदम बाद में`,
+        telugu: `${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} ప్రత్యుత్తరాలు · తదుపరి అడుగు తరువాత`,
+        tamil: `${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} பதில்கள் · அடுத்த படி பின்னர்`,
+        urdu: `${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} جوابات · اگلا قدم بعد میں`
+      })
     : isCompactPhone
-      ? `Replies: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · next step after context`
-      : `Counselling depth: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step available after context is ready.`;
+      ? pickLocalizedText(languageId, {
+          english: `Replies: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · next step after context`,
+          hindi: `जवाब: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · अगला कदम संदर्भ के बाद`,
+          telugu: `ప్రత్యుత్తరాలు: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · తదుపరి అడుగు context తర్వాత`,
+          tamil: `பதில்கள்: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · அடுத்த படி context-க்கு பிறகு`,
+          urdu: `جوابات: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · اگلا قدم context کے بعد`
+        })
+      : pickLocalizedText(languageId, {
+          english: `Counselling depth: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step available after context is ready.`,
+          hindi: `काउंसलिंग गहराई: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} जवाब · संदर्भ तैयार होने के बाद अगला कदम उपलब्ध है।`,
+          telugu: `కౌన్సెలింగ్ లోతు: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} ప్రత్యుత్తరాలు · context సిద్ధమైన తర్వాత తదుపరి అడుగు అందుబాటులో ఉంటుంది.`,
+          tamil: `ஆலோசனை ஆழம்: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} பதில்கள் · context தயாரான பிறகு அடுத்த படி கிடைக்கும்.`,
+          urdu: `مشاورت کی گہرائی: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} جوابات · context تیار ہونے کے بعد اگلا قدم دستیاب ہوگا۔`
+        });
 
   return (
     <Modal
