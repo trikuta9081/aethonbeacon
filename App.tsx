@@ -24455,7 +24455,7 @@ function TodaySection({
             </View>
             <Text style={styles.smallMeta}>{uiCopy.homeFlowLabel}</Text>
           </View>
-          <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginBottom: 14 }}>
+          <Text style={{ color: "#334155", fontSize: compact ? 13 : 14, lineHeight: compact ? 19 : 21, fontWeight: "700", marginBottom: compact ? 10 : 14 }}>
             {uiCopy.homeSupportLead}
           </Text>
           <View style={{ flexDirection: compact ? "column" : "row", flexWrap: "wrap", gap: 10 }}>
@@ -24506,12 +24506,12 @@ function TodaySection({
                   {
                     flexBasis: compact ? undefined : "48%",
                     flexGrow: 1,
-                    minHeight: item.id === "ask" ? 132 : 116,
+                    minHeight: item.id === "ask" ? (compact ? 124 : 132) : (compact ? 104 : 116),
                     borderRadius: 20,
                     borderWidth: item.id === "ask" ? 2 : 1,
                     borderColor: item.id === "ask" ? "#0B6F66" : "rgba(15,61,94,0.12)",
                     backgroundColor: item.id === "ask" ? "#EAF8F5" : "#FFFFFF",
-                    padding: item.id === "ask" ? 16 : 14,
+                    padding: item.id === "ask" ? (compact ? 14 : 16) : (compact ? 12 : 14),
                     overflow: "hidden",
                     shadowColor: item.id === "ask" ? "#0B6F66" : "transparent",
                     shadowOpacity: item.id === "ask" ? 0.12 : 0,
@@ -24522,7 +24522,7 @@ function TodaySection({
                   pressed && styles.pressed
                 ]}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: compact ? 8 : 10 }}>
                   <View style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: item.accent + "18", alignItems: "center", justifyContent: "center" }}>
                     <Ionicons name={item.icon} size={19} color={item.accent} />
                   </View>
@@ -24533,10 +24533,10 @@ function TodaySection({
                     <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "700", marginTop: 2 }}>{item.cta}</Text>
                   </View>
                 </View>
-                <Text style={{ color: "#334155", fontSize: item.id === "ask" ? 14 : 13, lineHeight: item.id === "ask" ? 21 : 19, fontWeight: "700" }} numberOfLines={item.id === "ask" ? 3 : 2}>
+                <Text style={{ color: "#334155", fontSize: item.id === "ask" ? 14 : 13, lineHeight: item.id === "ask" ? 21 : 19, fontWeight: "700" }} numberOfLines={compact ? (item.id === "ask" ? 2 : 1) : (item.id === "ask" ? 3 : 2)}>
                   {item.body}
                 </Text>
-                <View style={{ marginTop: 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: 11, paddingVertical: 7 }}>
+                <View style={{ marginTop: compact ? 10 : 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: 11, paddingVertical: 7 }}>
                     <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "700" }}>
                       {item.id === "ask" ? uiCopy.homeSupportCardOpenCounselling : uiCopy.homeSupportCardContinue}
                     </Text>
