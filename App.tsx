@@ -41147,10 +41147,13 @@ function buildJourneySteps(
     moodTagLeaning?: "negative" | "positive" | "mixed" | null;
     recurrenceCount?: number;
     moodTrend?: "improving" | "steady" | "declining" | null;
-  } = {}
+  } = {},
+  languageId: LanguageId = "english"
 ): JourneyStep[] {
   const steps: JourneyStep[] = [];
   const has = (t: SupportDimensionId) => themes.includes(t);
+  const jt = (english: string, hindi: string, telugu: string, tamil: string, urdu: string) =>
+    pickLocalizedText(languageId, { english, hindi, telugu, tamil, urdu });
   const { streak = 0, moodTagLeaning = null, recurrenceCount = 0, moodTrend = null } = personalization;
 
   // ── 1. Immediate calm / grounding — for any emotional distress ───────────────
@@ -41158,12 +41161,24 @@ function buildJourneySteps(
   if (needsCalm.some((theme) => has(theme))) {
     steps.push({
       tabId: "focus",
-      label: "Ground yourself first",
+      label: jt("Ground yourself first", "पहले खुद को स्थिर करें", "ముందు మీను స్థిరపరచుకోండి", "முதலில் உங்களை நிலைப்படுத்துங்கள்", "پہلے خود کو سنبھالیں"),
       emoji: "🌿",
       reason:
         moodTrend === "declining"
-          ? "Your recent check-ins have been trending heavier — settle the body before anything else, so the mind isn't making decisions from a stress state."
-          : "The body needs to settle before the mind can make good decisions. Start here.",
+          ? jt(
+              "Your recent check-ins have been trending heavier — settle the body before anything else, so the mind isn't making decisions from a stress state.",
+              "आपकी हाल की जाँचें भारी होती जा रही हैं — कुछ भी और करने से पहले शरीर को शांत करें, ताकि मन तनाव की स्थिति से निर्णय न ले.",
+              "మీ తాజా చెక్-ఇన్లు మరింత భారంగా ఉన్నాయి — మరేదైనా చేయడానికి ముందు శరీరాన్ని శాంతపరచండి, అప్పుడు మనసు ఒత్తిడి స్థితిలో నిర్ణయాలు తీసుకోదు.",
+              "உங்கள் சமீபத்திய check-inகள் மேலும் கனமாகின்றன — மற்ற எதற்கும் முன் உடலை அமைதிப்படுத்துங்கள்; அப்போது மனம் stress நிலையில் முடிவு எடுக்காது.",
+              "آپ کی حالیہ چیک اِنز زیادہ بھاری ہوتی جا رہی ہیں — کچھ اور کرنے سے پہلے جسم کو سکون دیں، تاکہ ذہن دباؤ کی حالت میں فیصلہ نہ کرے۔"
+            )
+          : jt(
+              "The body needs to settle before the mind can make good decisions. Start here.",
+              "अच्छे निर्णय लेने से पहले शरीर को शांत होना चाहिए। यहीं से शुरू करें।",
+              "మనసు మంచి నిర్ణయాలు తీసుకునే ముందు శరీరం శాంతించాలి. ఇక్కడి నుంచే మొదలుపెట్టండి.",
+              "மனம் நல்ல முடிவுகள் எடுப்பதற்கு முன் உடல் அமைதியடைய வேண்டும். இங்கிருந்து தொடங்குங்கள்.",
+              "اچھے فیصلے کرنے سے پہلے جسم کو سکون ملنا چاہیے۔ یہیں سے شروع کریں۔"
+            ),
       completed: false, skipped: false
     });
   }
@@ -41174,9 +41189,15 @@ function buildJourneySteps(
   if (issueId !== "general") {
     steps.push({
       tabId: "guide",
-      label: "Open your action plan",
+      label: jt("Open your action plan", "अपनी कार्य योजना खोलें", "మీ చర్య ప్రణాళికను తెరవండి", "உங்கள் செயல் திட்டத்தைத் திறக்கவும்", "اپنا عملی منصوبہ کھولیں"),
       emoji: "🧭",
-      reason: "Use one coordinated plan with a clear principle, three saved steps, and direct handoffs to the support that fits next.",
+      reason: jt(
+        "Use one coordinated plan with a clear principle, three saved steps, and direct handoffs to the support that fits next.",
+        "एक स्पष्ट सिद्धांत, तीन सहेजे गए कदम, और अगले उपयुक्त सहारे तक सीधे पहुँच के साथ एक ही समन्वित योजना का उपयोग करें।",
+        "ఒక స్పష్టమైన సూత్రం, మూడు సేవ్ చేసిన దశలు, మరియు తర్వాతి సరైన మద్దతుకు నేరుగా వెళ్లే హ్యాండ్ఆఫ్స్‌తో ఒకే సమన్వయిత ప్రణాళికను ఉపయోగించండి.",
+        "ஒரு தெளிவான கொள்கை, மூன்று சேமித்த படிகள், மற்றும் அடுத்த பொருத்தமான ஆதரவுக்கான நேரடி handoffகளுடன் ஒரே ஒருங்கிணைந்த திட்டத்தைப் பயன்படுத்துங்கள்.",
+        "ایک واضح اصول، تین محفوظ قدم، اور اگلی مناسب مدد تک براہِ راست handoff کے ساتھ ایک ہی مربوط منصوبہ استعمال کریں۔"
+      ),
       completed: false, skipped: false
     });
   }
@@ -41185,9 +41206,15 @@ function buildJourneySteps(
   if (has("anxiety") || has("burnout") || has("anger") || has("trauma") || has("grief") || has("fear")) {
     steps.push({
       tabId: "tones",
-      label: "Sound-guided reset",
+      label: jt("Sound-guided reset", "ध्वनि-मार्गदर्शित रीसेट", "శబ్ద-మార్గదర్శిత రీసెట్", "ஒலி-வழிநடத்தும் மீளமைப்பு", "آواز کی رہنمائی والا ری سیٹ"),
       emoji: "🎵",
-      reason: "Use a low-volume sound cue to support breathing, attention, and emotional downshift before the next decision.",
+      reason: jt(
+        "Use a low-volume sound cue to support breathing, attention, and emotional downshift before the next decision.",
+        "अगले निर्णय से पहले श्वास, ध्यान, और भावनात्मक उतार-चढ़ाव को सहारा देने के लिए कम-आवाज़ वाला ध्वनि संकेत उपयोग करें।",
+        "తదుపరి నిర్ణయానికి ముందు శ్వాస, దృష్టి, మరియు భావోద్వేగ తగ్గుదలకు తోడ్పడేందుకు తక్కువ శబ్దంతో సౌండ్ సంకేతాన్ని ఉపయోగించండి.",
+        "அடுத்த முடிவுக்கு முன் மூச்சு, கவனம், மற்றும் உணர்ச்சி தளர்வை ஆதரிக்க குறைந்த ஒலி cue-ஐப் பயன்படுத்துங்கள்.",
+        "اگلے فیصلے سے پہلے سانس، توجہ، اور جذباتی سکون کے لیے کم آواز والا ساؤنڈ cue استعمال کریں۔"
+      ),
       completed: false, skipped: false
     });
   }
@@ -41196,9 +41223,15 @@ function buildJourneySteps(
   if (has("self-image") || has("loneliness") || has("sadness") || has("grief") || has("trauma") || has("health") || has("addiction") || has("burnout")) {
     steps.push({
       tabId: "meditation",
-      label: "Meditation practice",
+      label: jt("Meditation practice", "ध्यान अभ्यास", "ధ్యాన సాధన", "தியானப் பயிற்சி", "مراقبہ مشق"),
       emoji: "🪷",
-      reason: "A breath, body-scan, witness, or values practice helps turn emotion into a clear next step.",
+      reason: jt(
+        "A breath, body-scan, witness, or values practice helps turn emotion into a clear next step.",
+        "श्वास, बॉडी-स्कैन, साक्षी-भाव, या मूल्य-आधारित अभ्यास भावना को एक स्पष्ट अगले कदम में बदलने में मदद करता है।",
+        "శ్వాస, బాడీ-స్కాన్, సాక్షి-భావం, లేదా విలువల సాధన భావాన్ని స్పష్టమైన తదుపరి దశగా మార్చడానికి సహాయపడుతుంది.",
+        "மூச்சு, உடல்-ஸ்கேன், சாட்சி-உணர்வு, அல்லது மதிப்புகள் சார்ந்த பயிற்சி உணர்வை தெளிவான அடுத்த படியாக மாற்ற உதவும்.",
+        "سانس، باڈی اسکین، گواہ بننے کی مشق، یا اقدار پر مبنی مشق جذبات کو ایک واضح اگلے قدم میں بدلنے میں مدد دیتی ہے۔"
+      ),
       completed: false, skipped: false
     });
   }
@@ -41207,9 +41240,15 @@ function buildJourneySteps(
   if (route === "professional" || has("health") || has("trauma") || has("addiction") || has("sadness")) {
     steps.push({
       tabId: "search",
-      label: "Find real support",
+      label: jt("Find real support", "वास्तविक सहायता खोजें", "నిజమైన మద్దతు పొందండి", "உண்மையான ஆதரவைத் தேடுங்கள்", "حقیقی مدد تلاش کریں"),
       emoji: "🧭",
-      reason: "Use verified professional, clinic, helpline, or locality search before the issue stays only inside the app.",
+      reason: jt(
+        "Use verified professional, clinic, helpline, or locality search before the issue stays only inside the app.",
+        "समस्या को सिर्फ़ ऐप के भीतर न रहने दें — सत्यापित पेशेवर, क्लिनिक, हेल्पलाइन, या स्थानीय खोज का उपयोग करें।",
+        "సమస్యను యాప్‌లోనే ఉండనివ్వకుండా, ధృవీకరించిన నిపుణుడు, క్లినిక్, హెల్ప్‌లైన్, లేదా స్థానిక శోధనను ఉపయోగించండి.",
+        "பிரச்சினை பயன்பாட்டுக்குள் மட்டும் முடங்குவதற்கு முன், சரிபார்க்கப்பட்ட நிபுணர், கிளினிக், helpline, அல்லது உள்ளூர்த் தேடலைப் பயன்படுத்துங்கள்.",
+        "مسئلہ صرف ایپ کے اندر نہ رہ جائے — تصدیق شدہ ماہر، کلینک، ہیلپ لائن، یا مقامی تلاش استعمال کریں۔"
+      ),
       completed: false, skipped: false
     });
   }
@@ -41218,12 +41257,25 @@ function buildJourneySteps(
   // into the same room. Journal is the next reflective handoff after action.
   steps.push({
     tabId: "journal",
-    label: "Write it out",
+    label: jt("Write it out", "लिखकर निकालें", "రాసి బయటకు తీయండి", "எழுதி வெளிப்படுத்துங்கள்", "لکھ کر باہر نکالیں"),
     emoji: "✍️",
-    reason:
+    reason: jt(
       moodTagLeaning === "negative"
         ? "The last few check-ins have leaned heavy — getting it onto paper externalises the weight instead of carrying it silently."
         : "Getting it onto paper externalises the weight, creates clarity, and shifts perspective.",
+      moodTagLeaning === "negative"
+        ? "पिछली कुछ जाँचें भारी रही हैं — उसे कागज़ पर उतारना बोझ को चुपचाप ढोने के बजाय बाहर रख देता है।"
+        : "इसे कागज़ पर उतारने से बोझ बाहर आता है, स्पष्टता बनती है, और दृष्टि बदलती है।",
+      moodTagLeaning === "negative"
+        ? "గత కొన్ని చెక్-ఇన్లు భారంగా ఉన్నాయి — దాన్ని కాగితం మీద పెట్టడం, మౌనంగా మోయడం కాకుండా బరువును బయటకు తీస్తుంది."
+        : "దాన్ని కాగితం మీద రాయడం బరువును బయటకు తీస్తుంది, స్పష్టతను ఇస్తుంది, మరియు దృష్టికోణాన్ని మార్చుతుంది.",
+      moodTagLeaning === "negative"
+        ? "கடந்த சில check-inகள் கனமாக இருந்தன — அதை காகிதத்தில் எழுதுவது, அதை மௌனமாக சுமப்பதற்குப் பதிலாக, அந்தச் சுமையை வெளிப்படுத்துகிறது."
+        : "அதை காகிதத்தில் எழுதுவது சுமையை வெளிப்படுத்தி, தெளிவை உருவாக்கி, பார்வையை மாற்றுகிறது.",
+      moodTagLeaning === "negative"
+        ? "پچھلی چند چیک اِنز بھاری رہی ہیں — اسے کاغذ پر لانا بوجھ کو خاموشی سے اٹھانے کے بجائے باہر رکھ دیتا ہے۔"
+        : "اسے کاغذ پر لانا بوجھ کو باہر نکالتا ہے، وضاحت پیدا کرتا ہے، اور زاویہ بدل دیتا ہے۔"
+    ),
     completed: false, skipped: false
   });
 
@@ -41234,11 +41286,23 @@ function buildJourneySteps(
     const careful = [...(focused.length > 0 ? focused : moonChartInsightReadings)].sort((a, b) => a.score - b.score)[0];
     steps.push({
       tabId: "vedic",
-      label: "View multi-dimensional basis",
+      label: jt("View multi-dimensional basis", "बहु-आयामी आधार देखें", "బహుళ-మానదండాల ఆధారాన్ని చూడండి", "பல பரிமாண அடிப்படையைப் பாருங்கள்", "کثیر جہتی بنیاد دیکھیں"),
       emoji: "🌙",
       reason: careful
-        ? `Use the Moon-chart layer for timing and remedies; today it flags ${careful.label.toLowerCase()} as the main care point.`
-        : "Use the Moon-chart layer for timing, remedies, and the lunar pattern behind this issue.",
+        ? jt(
+            `Use the Moon-chart layer for timing and remedies; today it flags ${careful.label.toLowerCase()} as the main care point.`,
+            `समय और उपायों के लिए Moon-chart परत का उपयोग करें; आज यह ${careful.label.toLowerCase()} को मुख्य सावधानी बिंदु के रूप में दिखाती है।`,
+            `సమయం మరియు పరిహారాల కోసం Moon-chart పొరను ఉపయోగించండి; ఇవాళ ఇది ${careful.label.toLowerCase()} ను ప్రధాన జాగ్రత్త స్థలంగా చూపిస్తోంది.`,
+            `நேரம் மற்றும் நிவாரணங்களுக்கு Moon-chart அடுக்கைப் பயன்படுத்துங்கள்; இன்று இது ${careful.label.toLowerCase()} என்பதை முக்கிய கவனப் புள்ளியாகக் காட்டுகிறது.`,
+            `وقت اور علاج کے لیے Moon-chart پرت استعمال کریں؛ آج یہ ${careful.label.toLowerCase()} کو بنیادی احتیاطی نقطہ بتا رہی ہے۔`
+          )
+        : jt(
+            "Use the Moon-chart layer for timing, remedies, and the lunar pattern behind this issue.",
+            "समय, उपायों, और इस मुद्दे के पीछे के चंद्र-पैटर्न के लिए Moon-chart परत का उपयोग करें।",
+            "సమయం, పరిహారాలు, మరియు ఈ సమస్య వెనుక ఉన్న చంద్ర నమూనా కోసం Moon-chart పొరను ఉపయోగించండి.",
+            "நேரம், நிவாரணங்கள், மற்றும் இந்த பிரச்சினையின் பின்னால் உள்ள சந்திர வடிவத்திற்காக Moon-chart அடுக்கைப் பயன்படுத்துங்கள்.",
+            "وقت، علاج، اور اس مسئلے کے پیچھے موجود قمری نمونے کے لیے Moon-chart پرت استعمال کریں۔"
+          ),
       completed: false, skipped: false
     });
   }
@@ -41247,9 +41311,15 @@ function buildJourneySteps(
   if (has("safety") || has("trauma") || route === "redress") {
     steps.push({
       tabId: "redress",
-      label: "Know your rights",
+      label: jt("Know your rights", "अपने अधिकार जानें", "మీ హక్కులు తెలుసుకోండి", "உங்கள் உரிமைகளை அறியுங்கள்", "اپنے حقوق جانیں"),
       emoji: "🛡️",
-      reason: "If something wrong has been done to you, understanding your formal options is an important step — even if you have not decided to use them yet.",
+      reason: jt(
+        "If something wrong has been done to you, understanding your formal options is an important step — even if you have not decided to use them yet.",
+        "अगर आपके साथ कुछ गलत हुआ है, तो अपने औपचारिक विकल्प समझना एक महत्वपूर्ण कदम है — भले ही आपने उन्हें अभी उपयोग करने का निश्चय न किया हो।",
+        "మీతో ఏదైనా తప్పు జరిగితే, మీ అధికారిక ఎంపికలను అర్థం చేసుకోవడం ఒక ముఖ్యమైన దశ — మీరు వాటిని ఇంకా ఉపయోగించాలని నిర్ణయించకపోయినా.",
+        "உங்களுடன் ஏதேனும் தவறு நடந்திருந்தால், உங்கள் அதிகாரப்பூர்வ விருப்பங்களைப் புரிந்துகொள்வது ஒரு முக்கியமான படி — அதை இன்னும் பயன்படுத்த முடிவு செய்யாவிட்டாலும்.",
+        "اگر آپ کے ساتھ کچھ غلط ہوا ہے تو اپنے رسمی اختیارات سمجھنا ایک اہم قدم ہے — چاہے آپ نے ابھی انہیں استعمال کرنے کا فیصلہ نہ کیا ہو۔"
+      ),
       completed: false, skipped: false
     });
   }
@@ -41261,9 +41331,15 @@ function buildJourneySteps(
   ) {
     steps.push({
       tabId: "vedic",
-      label: "Daily cosmic guidance",
+      label: jt("Daily cosmic guidance", "दैनिक ब्रह्मांडीय मार्गदर्शन", "రోజువారీ ఖగోళ మార్గదర్శనం", "தினசரி விண்மீன் வழிகாட்டல்", "روزمرہ کائناتی رہنمائی"),
       emoji: "🪐",
-      reason: "Your Vedic reading today may hold something relevant to exactly where you are.",
+      reason: jt(
+        "Your Vedic reading today may hold something relevant to exactly where you are.",
+        "आज की आपकी वैदिक रीडिंग में आपके मौजूदा स्थान से जुड़ी कोई उपयोगी बात हो सकती है।",
+        "ఈరోజు మీ వేద రీడింగ్, మీరు ప్రస్తుతం ఉన్న స్థితికి సంబంధించిన ఏదో సూచనను కలిగి ఉండవచ్చు.",
+        "இன்றைய உங்கள் வேத வாசிப்பு, நீங்கள் இப்போது இருக்கும் நிலைக்கு பொருந்தக்கூடிய ஏதோ ஒன்றை வைத்திருக்கலாம்.",
+        "آج کی آپ کی ویدک ریڈنگ میں آپ کی موجودہ حالت سے متعلق کوئی مفید بات ہو سکتی ہے۔"
+      ),
       completed: false, skipped: false
     });
   }
@@ -41272,9 +41348,15 @@ function buildJourneySteps(
   if (has("loneliness") || has("unappreciated") || has("addiction") || has("grief") || has("parenting")) {
     steps.push({
       tabId: "community",
-      label: "You are not alone",
+      label: jt("You are not alone", "आप अकेले नहीं हैं", "మీరు ఒంటరిగా లేరు", "நீங்கள் தனியாக இல்லை", "آپ اکیلے نہیں ہیں"),
       emoji: "🌐",
-      reason: "Hearing from others navigating something similar can shift isolation into solidarity — and sometimes offer insights no expert can.",
+      reason: jt(
+        "Hearing from others navigating something similar can shift isolation into solidarity — and sometimes offer insights no expert can.",
+        "ऐसी ही स्थिति से गुज़र रहे लोगों को सुनना अकेलेपन को साथ में बदल सकता है — और कभी-कभी ऐसी समझ दे सकता है जो किसी विशेषज्ञ से भी न मिले।",
+        "ఇలాంటిదే ఎదుర్కొంటున్న ఇతరులను వినడం, ఒంటరితనాన్ని సంఘీభావంగా మార్చగలదు — మరియు కొన్నిసార్లు నిపుణుడి నుండి కూడా రాని సూచనలను ఇస్తుంది.",
+        "இதே போன்ற ஒன்றைச் சந்தித்து வரும் மற்றவர்களை கேட்பது, தனிமையை ஒருமைப்பாட்டாக மாற்றலாம் — சில நேரங்களில் நிபுணராலும் தர முடியாத பார்வையைக் கொடுக்கலாம்.",
+        "ایسی ہی چیز سے گزرنے والوں کی بات سننا تنہائی کو یکجہتی میں بدل سکتا ہے — اور کبھی کبھی ایسی بصیرت دے سکتا ہے جو کسی ماہر سے بھی نہ ملے۔"
+      ),
       completed: false, skipped: false
     });
   }
@@ -41282,18 +41364,30 @@ function buildJourneySteps(
   // ── 8.5. Practice — turn insight into a concrete small action ──────────────────
   steps.push({
     tabId: "play",
-    label: "Turn it into action",
+    label: jt("Turn it into action", "इसे कार्रवाई में बदलें", "దాన్ని చర్యగా మార్చండి", "அதை செயலாக மாற்றுங்கள்", "اسے عمل میں بدلیں"),
     emoji: "🎯",
-    reason: "A small, specific challenge translates what you've named into something you actually do today.",
+    reason: jt(
+      "A small, specific challenge translates what you've named into something you actually do today.",
+      "एक छोटा, विशिष्ट अभ्यास आपके बताए हुए को आज किए जाने वाले काम में बदल देता है।",
+      "ఒక చిన్న, స్పష్టమైన సవాలు మీరు చెప్పినదాన్ని ఈరోజే చేయగల పనిగా మార్చుతుంది.",
+      "ஒரு சிறிய, குறிப்பிட்ட சவால் நீங்கள் சொன்னதை இன்று நீங்கள் செய்யக்கூடிய செயலாக மாற்றுகிறது.",
+      "ایک چھوٹا، مخصوص چیلنج آپ کی بات کو آج کے عملی کام میں بدل دیتا ہے۔"
+    ),
     completed: false, skipped: false
   });
 
   // ── 9. Insights — always last ─────────────────────────────────────────────────
   steps.push({
     tabId: "insights",
-    label: "See your patterns",
+    label: jt("See your patterns", "अपने पैटर्न देखें", "మీ నమూనాలను చూడండి", "உங்கள் patternகளைப் பாருங்கள்", "اپنے پیٹرن دیکھیں"),
     emoji: "📊",
-    reason: "Understanding the bigger picture of your emotional and wellbeing patterns gives context and direction.",
+    reason: jt(
+      "Understanding the bigger picture of your emotional and wellbeing patterns gives context and direction.",
+      "अपनी भावनात्मक और wellbeing patterns की बड़ी तस्वीर समझने से संदर्भ और दिशा मिलती है।",
+      "మీ భావోద్వేగ మరియు wellbeing నమూనాల పెద్ద చిత్రాన్ని అర్థం చేసుకోవడం సందర్భం మరియు దిశను ఇస్తుంది.",
+      "உங்கள் உணர்ச்சி மற்றும் wellbeing patterns-இன் பெரிய படத்தைப் புரிந்துகொள்வது பின்னணி மற்றும் திசையை வழங்குகிறது.",
+      "اپنے جذباتی اور wellbeing patterns کی بڑی تصویر سمجھنے سے سیاق اور سمت ملتی ہے۔"
+    ),
     completed: false, skipped: false
   });
 
@@ -41605,7 +41699,7 @@ function CounselingChatModal({
       ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
       : 0;
     const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend);
-    const steps = buildJourneySteps(themesForSynthesis, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
+    const steps = buildJourneySteps(themesForSynthesis, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend }, languageId);
 
     setSession(updatedSession);
     setIsGuideTyping(true);
@@ -41698,7 +41792,8 @@ function CounselingChatModal({
             const recurrenceCount = currentIssueLabel
               ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
               : 0;
-            const previewSteps = buildJourneySteps(mergedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
+            // buildJourneySteps(mergedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend })
+            const previewSteps = buildJourneySteps(mergedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend }, languageId);
             const firstStep = previewSteps[0];
             const previewLine = firstStep
               ? `${firstStep.emoji} ${firstStep.label} — ${firstStep.reason}`
@@ -41792,7 +41887,7 @@ function CounselingChatModal({
     const recurrenceCount = currentIssueLabel
       ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
       : 0;
-    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend });
+    const steps = buildJourneySteps(session.detectedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend }, languageId);
     const finalSession: CounselingSession = { ...session, stage: "done", journeySteps: steps };
     onJourneyReady(finalSession);
   }
@@ -42452,12 +42547,14 @@ function GuidedJourneyBar({
   onContinue,
   onSkip,
   onEndJourney,
+  languageId = "english",
 }: {
   steps: JourneyStep[];
   currentStepIndex: number;
   onContinue: () => void;
   onSkip: () => void;
   onEndJourney: () => void;
+  languageId?: LanguageId;
 }) {
   if (!steps.length) return null;
   const current = steps[currentStepIndex];
@@ -42465,6 +42562,8 @@ function GuidedJourneyBar({
   const isLast = currentStepIndex >= steps.length - 1;
   const completedCount = steps.filter(s => s.completed || s.skipped).length;
   const progress = steps.length > 0 ? completedCount / steps.length : 0;
+  const jt = (english: string, hindi: string, telugu: string, tamil: string, urdu: string) =>
+    pickLocalizedText(languageId, { english, hindi, telugu, tamil, urdu });
 
   return (
     <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#FFFFFF", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#D7E3EE", shadowColor: "#0E3040", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 }}>
@@ -42477,7 +42576,7 @@ function GuidedJourneyBar({
         <Text style={{ fontSize: 22 }}>{current.emoji}</Text>
         <View style={{ flex: 1 }}>
           <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
-            Step {currentStepIndex + 1} of {steps.length}
+            {jt("Step", "चरण", "దశ", "படி", "مرحلہ")} {currentStepIndex + 1} {jt("of", "में से", "లో", "இல்", "میں سے")} {steps.length}
           </Text>
           <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 1 }}>{current.label}</Text>
           <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 17, marginTop: 2 }} numberOfLines={2}>{current.reason}</Text>
@@ -42490,7 +42589,9 @@ function GuidedJourneyBar({
           style={({ pressed }) => ({ flex: 1, backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 10, paddingVertical: 10, alignItems: "center" })}
         >
           <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>
-            {isLast ? "Complete journey ✓" : "Continue →"}
+            {isLast
+              ? jt("Complete journey ✓", "यात्रा पूरी करें ✓", "ప్రయాణాన్ని పూర్తి చేయండి ✓", "பயணத்தை முடிக்கவும் ✓", "سفر مکمل کریں ✓")
+              : jt("Continue →", "जारी रखें →", "కొనసాగించండి →", "தொடரவும் →", "جاری رکھیں →")}
           </Text>
         </Pressable>
         {!isLast && (
@@ -42498,7 +42599,7 @@ function GuidedJourneyBar({
             onPress={onSkip}
             style={({ pressed }) => ({ paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", opacity: pressed ? 0.6 : 1 })}
           >
-            <Text style={{ color: "#1F2937", fontSize: 13 }}>Skip</Text>
+            <Text style={{ color: "#1F2937", fontSize: 13 }}>{jt("Skip", "छोड़ें", "దాటవేయి", "தவிர்", "چھوڑیں")}</Text>
           </Pressable>
         )}
       </View>
