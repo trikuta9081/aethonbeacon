@@ -4333,43 +4333,75 @@ function buildDailyRoutinePlan(
 function buildRoutePreview(
   text: string,
   selectedIssueGuide: IssueGuide,
-  selectedIdentityLabel: string
+  selectedIdentityLabel: string,
+  languageId: LanguageId = "english"
 ): RoutePreview {
-  const routeText = text.trim().length > 0 ? text : `${selectedIdentityLabel} ${selectedIssueGuide.label}`;
+  const issueLabel = localizedIssueGuideLabel(selectedIssueGuide.id, languageId);
+  const routeText = text.trim().length > 0 ? text : `${selectedIdentityLabel} ${issueLabel}`;
   const route = detectGuidedSupportRouteFromText(routeText);
   const issueId = findGuidedSupportIssueIdFromText(routeText) ?? "general";
-  const issueLabel = aiHelpIssueLabelMap[issueId] ?? selectedIssueGuide.label;
+  const routedIssueLabel = localizedIssueGuideLabel(issueId, languageId);
   if (route === "redress" || route === "urgent") {
     const routeId = findGuidedSupportRedressRouteFromText(routeText);
     const routeLabel = redressRoutes.find((item) => item.id === routeId)?.label ?? "Help";
     return {
-      title: "Help route",
-      detail: `${routeLabel}: the app will open this next.`
+      title: pickLocalizedText(languageId, { english: "Help route", hindi: "सहायता मार्ग", telugu: "సహాయం మార్గం", tamil: "உதவி பாதை", urdu: "مدد کا راستہ" }),
+      detail: pickLocalizedText(languageId, {
+        english: `${routeLabel}: the app will open this next.`,
+        hindi: `${routeLabel}: ऐप इसे अगले चरण में खोलेगा।`,
+        telugu: `${routeLabel}: యాప్ దీన్ని తదుపరి తెరుస్తుంది.`,
+        tamil: `${routeLabel}: ஆப் இதை அடுத்ததாக திறக்கும்.`,
+        urdu: `${routeLabel}: ایپ اسے اگلے مرحلے میں کھولے گی۔`
+      })
     };
   }
   if (route === "professional") {
     return {
-      title: "Guide route",
-      detail: `${issueLabel}: the app will open this next.`
+      title: pickLocalizedText(languageId, { english: "Guide route", hindi: "मार्गदर्शक मार्ग", telugu: "మార్గదర్శక మార్గం", tamil: "வழிகாட்டு பாதை", urdu: "رہنمائی کا راستہ" }),
+      detail: pickLocalizedText(languageId, {
+        english: `${routedIssueLabel}: the app will open this next.`,
+        hindi: `${routedIssueLabel}: ऐप इसे अगले चरण में खोलेगा।`,
+        telugu: `${routedIssueLabel}: యాప్ దీన్ని తదుపరి తెరుస్తుంది.`,
+        tamil: `${routedIssueLabel}: ஆப் இதை அடுத்ததாக திறக்கும்.`,
+        urdu: `${routedIssueLabel}: ایپ اسے اگلے مرحلے میں کھولے گی۔`
+      })
     };
   }
   // Emotional issues that get counseling chat first, not generic calm
   const counselingPreviewIds = new Set<IssueId>(["loneliness", "burnout", "identity", "anger", "stigma"]);
   if (counselingPreviewIds.has(issueId)) {
     return {
-      title: "Counseling chat",
-      detail: `${issueLabel}: an empathetic conversation will open first.`
+      title: pickLocalizedText(languageId, { english: "Counseling chat", hindi: "परामर्श चैट", telugu: "కౌన్సెలింగ్ చాట్", tamil: "ஆலோசனை உரையாடல்", urdu: "مشاورت چیٹ" }),
+      detail: pickLocalizedText(languageId, {
+        english: `${routedIssueLabel}: an empathetic conversation will open first.`,
+        hindi: `${routedIssueLabel}: पहले सहानुभूतिपूर्ण बातचीत खुलेगी।`,
+        telugu: `${routedIssueLabel}: ముందుగా సానుభూతితో సంభాషణ తెరుచుకుంటుంది.`,
+        tamil: `${routedIssueLabel}: முதலில் அனுதாபமான உரையாடல் திறக்கும்.`,
+        urdu: `${routedIssueLabel}: پہلے ہمدردانہ گفتگو کھلے گی۔`
+      })
     };
   }
   if (calmIssueIds.has(issueId)) {
     return {
-      title: "Calm route",
-      detail: `${issueLabel}: the app will open this next.`
+      title: pickLocalizedText(languageId, { english: "Calm route", hindi: "शांत मार्ग", telugu: "ప్రశాంత మార్గం", tamil: "அமைதி பாதை", urdu: "پرسکون راستہ" }),
+      detail: pickLocalizedText(languageId, {
+        english: `${routedIssueLabel}: the app will open this next.`,
+        hindi: `${routedIssueLabel}: ऐप इसे अगले चरण में खोलेगा।`,
+        telugu: `${routedIssueLabel}: యాప్ దీన్ని తదుపరి తెరుస్తుంది.`,
+        tamil: `${routedIssueLabel}: ஆப் இதை அடுத்ததாக திறக்கும்.`,
+        urdu: `${routedIssueLabel}: ایپ اسے اگلے مرحلے میں کھولے گی۔`
+      })
     };
   }
   return {
-    title: "Path route",
-    detail: `${issueLabel}: the app will open this next.`
+    title: pickLocalizedText(languageId, { english: "Path route", hindi: "मार्ग मार्ग", telugu: "మార్గం మార్గం", tamil: "பாதை பாதை", urdu: "راستہ راستہ" }),
+    detail: pickLocalizedText(languageId, {
+      english: `${routedIssueLabel}: the app will open this next.`,
+      hindi: `${routedIssueLabel}: ऐप इसे अगले चरण में खोलेगा।`,
+      telugu: `${routedIssueLabel}: యాప్ దీన్ని తదుపరి తెరుస్తుంది.`,
+      tamil: `${routedIssueLabel}: ஆப் இதை அடுத்ததாக திறக்கும்.`,
+      urdu: `${routedIssueLabel}: ایپ اسے اگلے مرحلے میں کھولے گی۔`
+    })
   };
 }
 
@@ -4392,6 +4424,179 @@ const aiHelpIssueLabelMap: Record<IssueId, string> = {
   academic: "Academic pressure",
   addiction: "Addiction & Habits",
 };
+
+function localizedIssueGuideLabel(issueId: string, languageId: LanguageId) {
+  switch (issueId) {
+    case "general":
+      return pickLocalizedText(languageId, {
+        english: "General guidance",
+        hindi: "सामान्य मार्गदर्शन",
+        telugu: "సామాన్య మార్గదర్శనం",
+        tamil: "பொது வழிகாட்டல்",
+        urdu: "عام رہنمائی"
+      });
+    case "anger":
+      return pickLocalizedText(languageId, {
+        english: "Anger",
+        hindi: "क्रोध",
+        telugu: "కోపం",
+        tamil: "கோபம்",
+        urdu: "غصہ"
+      });
+    case "anxiety":
+      return pickLocalizedText(languageId, {
+        english: "Anxiety",
+        hindi: "चिंता",
+        telugu: "ఆందోళన",
+        tamil: "பதட்டம்",
+        urdu: "بے چینی"
+      });
+    case "fear":
+      return pickLocalizedText(languageId, {
+        english: "Fear",
+        hindi: "डर",
+        telugu: "భయం",
+        tamil: "பயம்",
+        urdu: "خوف"
+      });
+    case "overconfidence":
+      return pickLocalizedText(languageId, {
+        english: "Overconfidence",
+        hindi: "अतिआत्मविश्वास",
+        telugu: "అతివిశ్వాసం",
+        tamil: "அதிக தன்னம்பிக்கை",
+        urdu: "حد سے زیادہ اعتماد"
+      });
+    case "stigma":
+      return pickLocalizedText(languageId, {
+        english: "Self-image",
+        hindi: "स्व-छवि",
+        telugu: "స్వ-ప్రతిఛాయ",
+        tamil: "தன்-பிம்பம்",
+        urdu: "خود شبیہ"
+      });
+    case "burnout":
+      return pickLocalizedText(languageId, {
+        english: "Burnout",
+        hindi: "थकान",
+        telugu: "బర్నౌట్",
+        tamil: "சோர்வு",
+        urdu: "جلاوٹ"
+      });
+    case "loneliness":
+      return pickLocalizedText(languageId, {
+        english: "Loneliness",
+        hindi: "अकेलापन",
+        telugu: "ఒంటరితనం",
+        tamil: "தனிமை",
+        urdu: "تنہائی"
+      });
+    case "grief":
+      return pickLocalizedText(languageId, {
+        english: "Grief & Loss",
+        hindi: "शोक और हानि",
+        telugu: "శోకం మరియు నష్టం",
+        tamil: "துயரம் மற்றும் இழப்பு",
+        urdu: "غم اور نقصان"
+      });
+    case "identity":
+      return pickLocalizedText(languageId, {
+        english: "Identity & Purpose",
+        hindi: "पहचान और उद्देश्य",
+        telugu: "గుర్తింపు మరియు ఉద్దేశ్యం",
+        tamil: "அடையாளம் மற்றும் நோக்கம்",
+        urdu: "شناخت اور مقصد"
+      });
+    case "health":
+      return pickLocalizedText(languageId, {
+        english: "Health",
+        hindi: "स्वास्थ्य",
+        telugu: "ఆరోగ్యం",
+        tamil: "ஆரோக்கியம்",
+        urdu: "صحت"
+      });
+    case "financial":
+      return pickLocalizedText(languageId, {
+        english: "Financial stress",
+        hindi: "वित्तीय तनाव",
+        telugu: "ఆర్థిక ఒత్తిడి",
+        tamil: "நிதி அழுத்தம்",
+        urdu: "مالی دباؤ"
+      });
+    case "relationship":
+      return pickLocalizedText(languageId, {
+        english: "Relationship",
+        hindi: "रिश्ता",
+        telugu: "సంబంధం",
+        tamil: "உறவு",
+        urdu: "رشتہ"
+      });
+    case "parenting":
+      return pickLocalizedText(languageId, {
+        english: "Parenting",
+        hindi: "पालन-पोषण",
+        telugu: "తల్లిదండ్రత్వం",
+        tamil: "பெற்றோர் பராமரிப்பு",
+        urdu: "والدین کی ذمہ داری"
+      });
+    case "trauma":
+      return pickLocalizedText(languageId, {
+        english: "Trauma",
+        hindi: "आघात",
+        telugu: "గాయం",
+        tamil: "அதிர்ச்சி",
+        urdu: "صدمہ"
+      });
+    case "academic":
+      return pickLocalizedText(languageId, {
+        english: "Academic pressure",
+        hindi: "शैक्षणिक दबाव",
+        telugu: "విద్యా ఒత్తిడి",
+        tamil: "கல்வி அழுத்தம்",
+        urdu: "تعلیمی دباؤ"
+      });
+    case "addiction":
+      return pickLocalizedText(languageId, {
+        english: "Addiction & Habits",
+        hindi: "लत और आदतें",
+        telugu: "ఆసక్తి మరియు అలవాట్లు",
+        tamil: "அடிமைமை மற்றும் பழக்கங்கள்",
+        urdu: "لت اور عادات"
+      });
+    case "work":
+      return pickLocalizedText(languageId, {
+        english: "Work",
+        hindi: "काम",
+        telugu: "పని",
+        tamil: "வேலை",
+        urdu: "کام"
+      });
+    case "home-family":
+      return pickLocalizedText(languageId, {
+        english: "Home & Family",
+        hindi: "घर और परिवार",
+        telugu: "ఇల్లు మరియు కుటుంబం",
+        tamil: "வீடு மற்றும் குடும்பம்",
+        urdu: "گھر اور خاندان"
+      });
+    case "unappreciated":
+      return pickLocalizedText(languageId, {
+        english: "Feeling unappreciated",
+        hindi: "अप्रशंसित महसूस करना",
+        telugu: "అనుమానించబడటం",
+        tamil: "பாராட்டப்படாமல் உணர்வு",
+        urdu: "ناقدری محسوس ہونا"
+      });
+    default:
+      return pickLocalizedText(languageId, {
+        english: aiHelpIssueLabelMap[issueId as IssueId] ?? "Selected focus",
+        hindi: "चयनित फोकस",
+        telugu: "ఎంచుకున్న దృష్టి",
+        tamil: "தேர்ந்தெடுக்கப்பட்ட கவனம்",
+        urdu: "منتخب توجہ"
+      });
+  }
+}
 
 const calmIssueIds = new Set<IssueId>([
   "general",
@@ -5091,7 +5296,7 @@ function getPrivateIntakeBlueprint(
 ): PrivateIntakeBlueprint {
   const mode = getPrivateIntakeMode(issueId, routeTab);
   const safeIdentity = selectedIdentityLabel.trim().length > 0 ? selectedIdentityLabel.trim() : "the user";
-  const issueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? "this issue";
+  const issueLabel = localizedIssueGuideLabel(issueId, languageId);
   const t = (
     english: string,
     hindi: string,
@@ -16882,7 +17087,7 @@ export default function App() {
       .map<SearchMatch>((guide) => ({
         kind: "guide",
         id: guide.id,
-        title: guide.label,
+        title: localizedIssueGuideLabel(guide.id, selectedLanguage.id),
         subtitle: guide.subtitle,
         detail: guide.summary,
         accent: "#0E6F69",
@@ -17093,12 +17298,12 @@ export default function App() {
             title: "Route waiting",
             detail: "Type one line and the app will choose the next page automatically."
           }
-        : buildRoutePreview(settledHomeIssueDraft, selectedIssueGuide, selectedIdentity.label),
+        : buildRoutePreview(settledHomeIssueDraft, selectedIssueGuide, selectedIdentity.label, selectedLanguage.id),
     [settledHomeIssueDraft, selectedIdentity.label, selectedIssueGuide]
   );
   const settledJournal = useDebouncedValue(journal);
   const journalRoutePreview = useMemo(
-    () => buildRoutePreview(settledJournal, selectedIssueGuide, selectedIdentity.label),
+    () => buildRoutePreview(settledJournal, selectedIssueGuide, selectedIdentity.label, selectedLanguage.id),
     [settledJournal, selectedIdentity.label, selectedIssueGuide]
   );
   const aiHelpPreviewSource =
@@ -17107,7 +17312,7 @@ export default function App() {
       : aiHelpMessages.find((message) => message.role === "user")?.text ?? "";
   const settledAiHelpPreviewSource = useDebouncedValue(aiHelpPreviewSource);
   const aiHelpRoutePreview = useMemo(
-    () => buildRoutePreview(settledAiHelpPreviewSource, selectedIssueGuide, selectedIdentity.label),
+    () => buildRoutePreview(settledAiHelpPreviewSource, selectedIssueGuide, selectedIdentity.label, selectedLanguage.id),
     [settledAiHelpPreviewSource, selectedIdentity.label, selectedIssueGuide]
   );
   const hasVerifiedSensitiveAccess = profilePhoneVerified || profileEmailVerified || accessRole === "admin";
@@ -17843,7 +18048,7 @@ export default function App() {
     const scheduled = await Notifications.scheduleNotificationAsync({
       content: {
         title: "Aethon Beacon emotional check-in",
-        body: getReminderBody(reminderMode, selectedIssueGuide, profileDisplayName),
+        body: getReminderBody(reminderMode, selectedIssueGuide, profileDisplayName, selectedLanguage.id),
         ...reminderNotificationContentOptions()
       },
       trigger: {
@@ -18713,7 +18918,7 @@ export default function App() {
           identifier: NOTIF_IDS.checkin,
           content: {
             title: "Aethon Beacon emotional check-in",
-            body: getReminderBody(reminderMode, selectedIssueGuide, profileDisplayName),
+            body: getReminderBody(reminderMode, selectedIssueGuide, profileDisplayName, selectedLanguage.id),
             data: { tab: "today" },
             ...reminderNotificationContentOptions()
           },
@@ -18730,8 +18935,8 @@ export default function App() {
             await Notifications.scheduleNotificationAsync({
               identifier: NOTIF_IDS.followUp(weekIndex),
               content: {
-                title: "Aethon Beacon follow-up",
-                body: getFollowUpReminderBody(weekIndex, followUpWeeks, selectedIssueGuide, profileDisplayName),
+              title: "Aethon Beacon follow-up",
+                body: getFollowUpReminderBody(weekIndex, followUpWeeks, selectedIssueGuide, profileDisplayName, selectedLanguage.id),
                 data: { tab: "today" },
                 ...reminderNotificationContentOptions()
               },
@@ -20055,7 +20260,7 @@ export default function App() {
     const issue = findGuidedSupportIssue(text);
     const dimensionPlan = getSupportDimensionPlan(text, issue.id);
     const primaryDimension = dimensionPlan[0] ?? supportDimensionGuides.direction;
-    const dimensionLabels = formatSupportDimensionLabels(dimensionPlan);
+    const dimensionLabels = formatSupportDimensionLabels(dimensionPlan, selectedLanguage.id);
     const emergencyLabel = emergencyNumber.trim().length > 0 ? emergencyNumber.trim() : "112";
     const openTabLabel = getGuidedSupportOpenTabLabel(route);
     const whatThisMeans =
@@ -20186,7 +20391,7 @@ export default function App() {
     const openTabLabel = getGuidedSupportOpenTabLabel(route);
     const dimensionPlan = getSupportDimensionPlan(text, issueGuide.id);
     const primaryDimension = dimensionPlan[0] ?? supportDimensionGuides.direction;
-    const dimensionLabels = formatSupportDimensionLabels(dimensionPlan);
+    const dimensionLabels = formatSupportDimensionLabels(dimensionPlan, selectedLanguage.id);
     return [
       "You are Beacon Guide, a calm human-style guide.",
       "Your job is operational triage: classify, route, give one concrete action, and tell the user what to do next inside the app.",
@@ -20204,7 +20409,7 @@ export default function App() {
       `User role: ${selectedIdentity.label}.`,
       `User address: ${profileDisplayName}.`,
       `Detected route: ${route}.`,
-      `Current issue guide: ${issueGuide.label}.`,
+      `Current issue guide: ${localizedIssueGuideLabel(issueGuide.id, selectedLanguage.id)}.`,
       `Detected support dimensions: ${dimensionLabels}.`,
       `Primary dimension action: ${primaryDimension.firstAction}`,
       `Primary escalation rule: ${primaryDimension.escalation}`,
@@ -20246,7 +20451,7 @@ async function fetchGuidanceHelp(
           identityLabel: selectedIdentity.label,
           profileAddressLabel,
           issueGuideId: issueGuide.id,
-          issueGuideLabel: issueGuide.label,
+          issueGuideLabel: localizedIssueGuideLabel(issueGuide.id, selectedLanguage.id),
           emergencyNumber: emergencyNumber.trim() || "112",
           prompt: buildGuidanceHelpPrompt(text, route, profileAddressLabel, issueGuide)
         })
@@ -20793,7 +20998,7 @@ async function fetchGuidanceHelp(
     const text =
       requestedText.length > 0
         ? requestedText
-        : `I am ${profileDisplayName}. Guide me through ${issueGuide.label} with practical, emotional, psychological, reflective, and cultural next steps.`;
+        : `I am ${profileDisplayName}. Guide me through ${localizedIssueGuideLabel(issueGuide.id, languageId)} with practical, emotional, psychological, reflective, and cultural next steps.`;
     const safetyViolation = inspectGuidedSupportPrompt(text);
     if (safetyViolation) {
       const nextStrikeCount = communitySafetyStrikeCount + 1;
@@ -20819,7 +21024,7 @@ async function fetchGuidanceHelp(
       // situations always take the fast, direct path — never the
       // conversational engine — so help is never delayed behind questions.
       setRedressRouteId(abuseDetection.routeId);
-      void scheduleUrgentSafetyCheckIn(issueFocus.label);
+      void scheduleUrgentSafetyCheckIn(localizedIssueGuideLabel(issueFocus.id, selectedLanguage.id));
       setGuidedSupportDraft("");
       openRedressTab(redressFocus);
       return;
@@ -20832,7 +21037,7 @@ async function fetchGuidanceHelp(
       // verified lifelines — never a conversational reply, never a complaint
       // flow, and never a delay behind intake questions. Before this branch
       // existed, such messages fell through into the counselling chat below.
-      void scheduleUrgentSafetyCheckIn(issueFocus.label);
+      void scheduleUrgentSafetyCheckIn(localizedIssueGuideLabel(issueFocus.id, selectedLanguage.id));
       setGuidedSupportDraft("");
       setCrisisSupportVisible(true);
       return;
@@ -21401,8 +21606,10 @@ async function fetchGuidanceHelp(
         ? "Help route"
         : route === "professional"
           ? "Guidance route"
-          : issue.label;
-    const issueDisplayLabel = issue.id === "anxiety" ? "Calm route" : issue.label;
+          : localizedIssueGuideLabel(issue.id, selectedLanguage.id);
+    const issueDisplayLabel = issue.id === "anxiety"
+      ? "Calm route"
+      : localizedIssueGuideLabel(issue.id, selectedLanguage.id);
     setPendingRouteDecision({
       rawText,
       issueId: issue.id,
@@ -21599,15 +21806,17 @@ async function fetchGuidanceHelp(
     if (text.length > 0) {
       queueVedicEngineIssue(routeText, issue, "home");
     }
-    const issueDisplayLabel = issue.id === "anxiety" ? "Calm route" : issue.label;
+    const issueDisplayLabel = issue.id === "anxiety"
+      ? pickLocalizedText(selectedLanguage.id, { english: "Calm route", hindi: "शांत मार्ग", telugu: "ప్రశాంత మార్గం", tamil: "அமைதி பாதை", urdu: "پرسکون راستہ" })
+      : localizedIssueGuideLabel(issue.id, selectedLanguage.id);
     const routeLabel =
       route === "redress" || route === "urgent"
-        ? "Help"
+        ? pickLocalizedText(selectedLanguage.id, { english: "Help", hindi: "सहायता", telugu: "సహాయం", tamil: "உதவி", urdu: "مدد" })
         : route === "professional"
-          ? "Guidance"
+          ? pickLocalizedText(selectedLanguage.id, { english: "Guidance", hindi: "मार्गदर्शन", telugu: "మార్గదర్శనం", tamil: "வழிகாட்டுதல்", urdu: "رہنمائی" })
           : calmIssueIds.has(issue.id)
-            ? "Reset"
-            : "Path";
+            ? pickLocalizedText(selectedLanguage.id, { english: "Reset", hindi: "रीसेट", telugu: "రీసెట్", tamil: "மீட்டமை", urdu: "ری سیٹ" })
+            : pickLocalizedText(selectedLanguage.id, { english: "Path", hindi: "मार्ग", telugu: "మార్గం", tamil: "பாதை", urdu: "راستہ" });
     const nextRedressRouteId = route === "urgent" ? "crime" : findGuidedSupportRedressRouteFromText(routeText);
 
     if (text.length > 0 && isPositiveCheckIn(routeText)) {
@@ -22647,7 +22856,7 @@ function isTrustedExternalUrl(url: string) {
                                 const color = chipColors[i % chipColors.length];
                                 return (
                                   <View key={guide.id} style={{ flex: 1, backgroundColor: color + "12", borderRadius: 8, paddingVertical: 6, paddingHorizontal: 6, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: color + "30" }}>
-                                    <Text style={{ color, fontSize: 12, lineHeight: 16, fontWeight: "800", textTransform: "capitalize", letterSpacing: 0.2, textAlign: "center" }} numberOfLines={2}>{guide.label}</Text>
+                                    <Text style={{ color, fontSize: 12, lineHeight: 16, fontWeight: "800", textTransform: "capitalize", letterSpacing: 0.2, textAlign: "center" }} numberOfLines={2}>{localizedSupportDimensionLabel(guide, selectedLanguage.id)}</Text>
                                   </View>
                                 );
                               })}
@@ -24737,9 +24946,9 @@ function JournalSection({
 }) {
   const uiCopy = getUiCopy(languageId);
   const latestEntry = entries[0];
-  const journalInsight =
-    latestEntry !== undefined
-      ? getJournalInsight(latestEntry, entries.length, weeklyAverage, selectedIssueGuide)
+    const journalInsight =
+      latestEntry !== undefined
+      ? getJournalInsight(latestEntry, entries.length, weeklyAverage, selectedIssueGuide, languageId)
       : null;
   const compact = true;
   const templateLine = `What happened:\nWhat do I need:\nNext step:`;
@@ -30560,8 +30769,8 @@ function IssueGuideSection({
   const [showFullPathDetails, setShowFullPathDetails] = useState(false);
   const [showAllIssues, setShowAllIssues] = useState(false);
   const issueDisplayLabel = selectedIssueGuide.id === "general"
-    ? "A clear starting point"
-    : selectedIssueGuide.label;
+    ? l("A clear starting point", { hindi: "एक साफ़ शुरुआत", telugu: "స్పష్టమైన ప్రారంభ స్థలం", tamil: "தெளிவான தொடக்கம்", urdu: "واضح آغاز" })
+    : localizedIssueGuideLabel(selectedIssueGuide.id, languageId);
   const pathDepth = getIssuePathDepth(selectedIssueGuide.id);
   const pathCalmProgram = (ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS.general)[0];
   const moonChartComplement = useMemo(
@@ -30789,7 +30998,7 @@ function IssueGuideSection({
                 onPress={() => setIssueGuideId(guide.id)}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
-                <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>{guide.label}</Text>
+                <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>{localizedIssueGuideLabel(guide.id, languageId)}</Text>
                 <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>{guide.subtitle}</Text>
               </Pressable>
             );
@@ -39646,6 +39855,281 @@ const supportDimensionGuides: Record<SupportDimensionId, SupportDimensionGuide> 
   }
 };
 
+const supportDimensionLabelCopy: Partial<
+  Record<SupportDimensionId, { english: string } & Partial<Record<Exclude<LanguageId, "english">, string>>>
+> = {
+  "self-image": {
+    english: "self-image and dignity",
+    hindi: "स्व-छवि और गरिमा",
+    telugu: "ఆత్మ-చిత్రం మరియు గౌరవం",
+    tamil: "சுயப்படிமம் மற்றும் கண்ணியம்",
+    urdu: "خودی تصویر اور وقار"
+  },
+  grief: {
+    english: "grief and loss",
+    hindi: "शोक और हानि",
+    telugu: "శోకం మరియు నష్టం",
+    tamil: "துயரம் மற்றும் இழப்பு",
+    urdu: "غم اور نقصان"
+  },
+  trauma: {
+    english: "trauma or abuse",
+    hindi: "आघात या दुर्व्यवहार",
+    telugu: "గాయం లేదా దుర్వినియోగం",
+    tamil: "அதிர்ச்சி அல்லது துன்புறுத்தல்",
+    urdu: "صدمہ یا بدسلوکی"
+  },
+  addiction: {
+    english: "addiction or compulsion",
+    hindi: "लत या बाध्यता",
+    telugu: "వ్యసనం లేదా బలవంతపు అలవాటు",
+    tamil: "அடிமைப்பு அல்லது கட்டாயம்",
+    urdu: "لت یا مجبوری"
+  },
+  academic: {
+    english: "academic pressure",
+    hindi: "शैक्षणिक दबाव",
+    telugu: "విద్యా ఒత్తిడి",
+    tamil: "கல்வி அழுத்தம்",
+    urdu: "تعلیمی دباؤ"
+  },
+  financial: {
+    english: "financial stress",
+    hindi: "वित्तीय दबाव",
+    telugu: "ఆర్థిక ఒత్తిడి",
+    tamil: "நிதி அழுத்தம்",
+    urdu: "مالی دباؤ"
+  },
+  health: {
+    english: "health or illness concern",
+    hindi: "स्वास्थ्य या बीमारी की चिंता",
+    telugu: "ఆరోగ్యం లేదా అనారోగ్య ఆందోళన",
+    tamil: "ஆரோக்கியம் அல்லது நோய் குறித்த கவலை",
+    urdu: "صحت یا بیماری کی تشویش"
+  },
+  parenting: {
+    english: "parenting or caregiving load",
+    hindi: "पालन-पोषण या देखभाल का बोझ",
+    telugu: "తల్లిదండ్రత్వం లేదా సంరక్షణ భారం",
+    tamil: "பெற்றோர் பராமரிப்பு அல்லது கவனிப்பு சுமை",
+    urdu: "پرورش یا نگہداشت کا بوجھ"
+  },
+  relationship: {
+    english: "relationship distress",
+    hindi: "रिश्ते का तनाव",
+    telugu: "సంబంధ ఒత్తిడి",
+    tamil: "உறவு மனஅழுத்தம்",
+    urdu: "رشتے کی کشیدگی"
+  },
+  unappreciated: {
+    english: "being unseen or unappreciated",
+    hindi: "अनदेखा या कम आंका जाना",
+    telugu: "గమనించబడకపోవడం లేదా తక్కువగా అంచనా వేయబడటం",
+    tamil: "கவனிக்கப்படாமை அல்லது மதிப்பளிக்கப்படாமை",
+    urdu: "نظرانداز یا کم قدر کیا جانا"
+  },
+  work: {
+    english: "workplace pressure",
+    hindi: "कार्यस्थल का दबाव",
+    telugu: "పనిస్థల ఒత్తిడి",
+    tamil: "வேலைத்தள அழுத்தம்",
+    urdu: "کام کی جگہ کا دباؤ"
+  },
+  "home-family": {
+    english: "home and family pressure",
+    hindi: "घर और परिवार का दबाव",
+    telugu: "ఇల్లు మరియు కుటుంబ ఒత్తిడి",
+    tamil: "வீடு மற்றும் குடும்ப அழுத்தம்",
+    urdu: "گھر اور خاندان کا دباؤ"
+  },
+  anger: {
+    english: "anger and heat",
+    hindi: "क्रोध और उबाल",
+    telugu: "కోపం మరియు వేడి",
+    tamil: "கோபம் மற்றும் கொதிப்பு",
+    urdu: "غصہ اور تپش"
+  },
+  anxiety: {
+    english: "anxiety and overthinking",
+    hindi: "चिंता और जरूरत से ज्यादा सोच",
+    telugu: "ఆందోళన మరియు అతిగా ఆలోచించడం",
+    tamil: "பதட்டம் மற்றும் அளவுக்கு மேல் சிந்தித்தல்",
+    urdu: "اضطراب اور حد سے زیادہ سوچ"
+  },
+  sadness: {
+    english: "sadness or low mood",
+    hindi: "उदासी या कम मूड",
+    telugu: "విషాదం లేదా తక్కువ మూడ్",
+    tamil: "சோகம் அல்லது குறைந்த மனநிலை",
+    urdu: "اداسی یا کم مزاجی"
+  },
+  burnout: {
+    english: "burnout and exhaustion",
+    hindi: "बर्नआउट और थकावट",
+    telugu: "బర్నౌట్ మరియు అలసట",
+    tamil: "பர்ன்அவுட் மற்றும் சோர்வு",
+    urdu: "برن آؤٹ اور تھکن"
+  },
+  loneliness: {
+    english: "loneliness and isolation",
+    hindi: "अकेलापन और अलगाव",
+    telugu: "ఒంటరితనం మరియు వేరుపాటు",
+    tamil: "தனிமை மற்றும் தனித்து விடப்படுதல்",
+    urdu: "تنہائی اور علیحدگی"
+  },
+  safety: {
+    english: "safety or intimidation",
+    hindi: "सुरक्षा या धमकी",
+    telugu: "భద్రత లేదా బెదిరింపు",
+    tamil: "பாதுகாப்பு அல்லது மிரட்டல்",
+    urdu: "حفاظت یا دھمکی"
+  },
+  fear: {
+    english: "fear and self-doubt",
+    hindi: "डर और आत्म-संदेह",
+    telugu: "భయం మరియు ఆత్మసందేహం",
+    tamil: "பயம் மற்றும் தன்னம்பிக்கை இல்லாமை",
+    urdu: "خوف اور خود شک"
+  },
+  sleep: {
+    english: "sleep and rest",
+    hindi: "नींद और आराम",
+    telugu: "నిద్ర మరియు విశ్రాంతి",
+    tamil: "தூக்கம் மற்றும் ஓய்வு",
+    urdu: "نیند اور آرام"
+  },
+  appetite: {
+    english: "appetite and eating",
+    hindi: "भूख और खाना",
+    telugu: "ఆకలి మరియు ఆహారం",
+    tamil: "பசி மற்றும் உணவு",
+    urdu: "بھوک اور کھانا"
+  },
+  "body-symptoms": {
+    english: "body symptoms",
+    hindi: "शरीर के लक्षण",
+    telugu: "శరీర లక్షణాలు",
+    tamil: "உடல் அறிகுறிகள்",
+    urdu: "جسمانی علامات"
+  },
+  "legal-rights": {
+    english: "legal rights",
+    hindi: "कानूनी अधिकार",
+    telugu: "చట్టపరమైన హక్కులు",
+    tamil: "சட்ட உரிமைகள்",
+    urdu: "قانونی حقوق"
+  },
+  "digital-safety": {
+    english: "digital safety",
+    hindi: "डिजिटल सुरक्षा",
+    telugu: "డిజిటల్ భద్రత",
+    tamil: "டிஜிட்டல் பாதுகாப்பு",
+    urdu: "ڈیجیٹل حفاظت"
+  },
+  "social-reputation": {
+    english: "social reputation",
+    hindi: "सामाजिक प्रतिष्ठा",
+    telugu: "సామాజిక ప్రతిష్ట",
+    tamil: "சமூக மதிப்பு",
+    urdu: "سماجی ساکھ"
+  },
+  "career-growth": {
+    english: "career growth",
+    hindi: "कैरियर विकास",
+    telugu: "కెరీర్ వృద్ధి",
+    tamil: "தொழில் வளர்ச்சி",
+    urdu: "پیشہ ورانہ ترقی"
+  },
+  "workplace-conflict": {
+    english: "workplace conflict",
+    hindi: "कार्यस्थल संघर्ष",
+    telugu: "పనిస్థల సంఘర్షణ",
+    tamil: "வேலைத்தள மோதல்",
+    urdu: "کام کی جگہ کا تنازع"
+  },
+  "education-admin": {
+    english: "education admin",
+    hindi: "शिक्षा प्रशासन",
+    telugu: "విద్యా పరిపాలన",
+    tamil: "கல்வி நிர்வாகம்",
+    urdu: "تعلیمی انتظام"
+  },
+  "exam-performance": {
+    english: "exam performance",
+    hindi: "परीक्षा प्रदर्शन",
+    telugu: "పరీక్ష ప్రదర్శన",
+    tamil: "தேர்வு செயல்திறன்",
+    urdu: "امتحانی کارکردگی"
+  },
+  "time-management": {
+    english: "time management",
+    hindi: "समय प्रबंधन",
+    telugu: "సమయ నిర్వహణ",
+    tamil: "நேர மேலாண்மை",
+    urdu: "وقت کا انتظام"
+  },
+  procrastination: {
+    english: "procrastination",
+    hindi: "टालमटोल",
+    telugu: "వాయిదా వేయడం",
+    tamil: "தள்ளிப்போடுதல்",
+    urdu: "ٹال مٹول"
+  },
+  motivation: {
+    english: "motivation",
+    hindi: "प्रेरणा",
+    telugu: "ప్రేరణ",
+    tamil: "உந்துதல்",
+    urdu: "حوصلہ"
+  },
+  confidence: {
+    english: "confidence",
+    hindi: "आत्मविश्वास",
+    telugu: "ఆత్మవిశ్వాసం",
+    tamil: "தன்னம்பிக்கை",
+    urdu: "اعتماد"
+  },
+  boundaries: {
+    english: "boundaries",
+    hindi: "सीमाएँ",
+    telugu: "హద్దులు",
+    tamil: "எல்லைகள்",
+    urdu: "حدود"
+  },
+  communication: {
+    english: "communication",
+    hindi: "संचार",
+    telugu: "సంభాషణ",
+    tamil: "தொடர்பு",
+    urdu: "مواصلات"
+  },
+  trust: {
+    english: "trust",
+    hindi: "विश्वास",
+    telugu: "నమ్మకం",
+    tamil: "நம்பிக்கை",
+    urdu: "اعتماد"
+  },
+  intimacy: {
+    english: "intimacy",
+    hindi: "निकटता",
+    telugu: "సన్నిహితత",
+    tamil: "நெருக்கம்",
+    urdu: "قربت"
+  },
+  caregiving: {
+    english: "caregiving",
+    hindi: "देखभाल",
+    telugu: "సంరక్షణ",
+    tamil: "பராமரிப்பு",
+    urdu: "نگہداشت"
+  }
+};
+
+function localizedSupportDimensionLabel(guide: SupportDimensionGuide, languageId: LanguageId) {
+  return pickLocalizedText(languageId, supportDimensionLabelCopy[guide.id] ?? { english: guide.label });
+}
+
 function getSupportDimensionPlan(text: string, fallbackIssueId: IssueId): SupportDimensionGuide[] {
   const detected = detectThemes(text);
   const guides = detected.map((theme) => supportDimensionGuides[theme]).filter(Boolean);
@@ -39654,10 +40138,10 @@ function getSupportDimensionPlan(text: string, fallbackIssueId: IssueId): Suppor
   return [fallback ?? supportDimensionGuides.direction];
 }
 
-function formatSupportDimensionLabels(guides: SupportDimensionGuide[]) {
+function formatSupportDimensionLabels(guides: SupportDimensionGuide[], languageId: LanguageId) {
   return guides
     .slice(0, 4)
-    .map((guide) => guide.label)
+    .map((guide) => localizedSupportDimensionLabel(guide, languageId))
     .join(", ");
 }
 
@@ -39739,7 +40223,7 @@ function SupportDimensionLibraryPanel({
         <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
           {eyebrow} · {pickLocalizedText(languageId, { english: "multidimensional support", hindi: "बहु-आयामी सहायता", telugu: "బహుళ-మానదండాల మద్దతు", tamil: "பல பரிமாண ஆதரவு", urdu: "کثیر جہتی مدد" })}
         </Text>
-        <Text style={{ color: "#4C6674", fontSize: 12 }}>{issueGuide.label}</Text>
+        <Text style={{ color: "#4C6674", fontSize: 12 }}>{localizedIssueGuideLabel(issueGuide.id, languageId)}</Text>
       </View>
       <Text style={{ color: "#506673", fontSize: 12, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4, lineHeight: 16 }}>
         {relevantCount > 0
@@ -39766,7 +40250,7 @@ function SupportDimensionLibraryPanel({
             <Pressable
               accessibilityRole="button"
               accessibilityState={{ expanded: isOpen }}
-              accessibilityLabel={`${guide.label}, ${pickLocalizedText(languageId, { english: "tap for escalation guidance and route", hindi: "विस्तृत मार्गदर्शन और रास्ते के लिए टैप करें", telugu: "escalation మార్గదర్శకత మరియు route కోసం ట్యాప్ చేయండి", tamil: "escalation வழிகாட்டல் மற்றும் பாதைக்குத் தட்டவும்", urdu: "escalation رہنمائی اور راستے کے لیے ٹیپ کریں" })}`}
+              accessibilityLabel={`${localizedSupportDimensionLabel(guide, languageId)}, ${pickLocalizedText(languageId, { english: "tap for escalation guidance and route", hindi: "विस्तृत मार्गदर्शन और रास्ते के लिए टैप करें", telugu: "escalation మార్గదర్శకత మరియు route కోసం ట్యాప్ చేయండి", tamil: "escalation வழிகாட்டல் மற்றும் பாதைக்குத் தட்டவும்", urdu: "escalation رہنمائی اور راستے کے لیے ٹیپ کریں" })}`}
               onPress={() => setOpenDimensionId(isOpen ? null : guide.id)}
               style={({ pressed }) => [{
                 flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 8,
@@ -39777,7 +40261,7 @@ function SupportDimensionLibraryPanel({
               <View style={{ width: 3, borderRadius: 2, alignSelf: "stretch", marginRight: 10, marginTop: 1, backgroundColor: relevant ? accentColor : "rgba(100,116,139,0.25)" }} />
               <View style={{ flex: 1 }}>
                 <Text style={{ color: relevant ? accentColor : "#4C6674", fontSize: 12, fontWeight: "800", textTransform: "capitalize", marginBottom: 2 }}>
-                  {guide.label}
+                  {localizedSupportDimensionLabel(guide, languageId)}
                 </Text>
                 <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }}>{actionLabel}: {guide.firstAction}</Text>
               </View>
@@ -39868,9 +40352,9 @@ function SupportDimensionLibraryPanel({
   );
 }
 
-function buildSupportDimensionQuestionBank(theme: SupportDimensionId): string[] {
+function buildSupportDimensionQuestionBank(theme: SupportDimensionId, languageId: LanguageId = "english"): string[] {
   const guide = supportDimensionGuides[theme] ?? supportDimensionGuides.direction;
-  const label = guide.label;
+  const label = localizedSupportDimensionLabel(guide, languageId);
   const routeLabel =
     guide.route === "urgent" ? "urgent safety support" :
     guide.route === "professional" ? "professional support" :
@@ -40208,7 +40692,12 @@ function buildBetweenTurnAcknowledgment(latestUserText: string, turnIndex: numbe
   return opener;
 }
 
-function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: number, allUserText?: string): string {
+function buildCounselingQuestions(
+  themes: SupportDimensionId[],
+  turnIndex: number,
+  allUserText?: string,
+  languageId: LanguageId = "english"
+): string {
   // ── Bespoke 7-question banks for the core dimensions ───────────────────────
   // Advanced dimensions use buildSupportDimensionQuestionBank so the counseling
   // engine remains fully complementary with the multidimensional support engine.
@@ -40406,7 +40895,7 @@ function buildCounselingQuestions(themes: SupportDimensionId[], turnIndex: numbe
   ];
 
   const getQuestionPool = (theme: SupportDimensionId): string[] =>
-    byTheme[theme] ?? buildSupportDimensionQuestionBank(theme) ?? defaultQuestions;
+    byTheme[theme] ?? buildSupportDimensionQuestionBank(theme, languageId) ?? defaultQuestions;
 
   // For turns 0-1: always use primary theme
   // For turns 2-3: cross into secondary theme if present
@@ -40951,7 +41440,7 @@ function CounselingChatModal({
     setSafetyNoticeExpanded(true);
     if (isCompactPhone) setSafetyNoticeExpanded(false);
     const themes = detectThemes(recentJournalNotesText ? `${initialIssue} ${recentJournalNotesText}` : initialIssue);
-    const firstQuestion = buildCounselingQuestions(themes, 0, initialIssue);
+    const firstQuestion = buildCounselingQuestions(themes, 0, initialIssue, languageId);
     const opening = buildCounselingAcknowledgment(initialIssue, issueId, detectGuidedSupportRouteFromText(initialIssue));
     // Warm, personal welcome up front -- previously the chat opened straight
     // into the clinical acknowledgment with no greeting, which read as cold
@@ -41116,7 +41605,8 @@ function CounselingChatModal({
       const nextQ = buildCounselingQuestions(
         mergedThemes,
         newQuestionIndex,
-        session.originalIssue + " " + allUserText
+        session.originalIssue + " " + allUserText,
+        languageId
       );
       // Between-turn warmth in front of every follow-up question. See
       // buildBetweenTurnAcknowledgment -- it is deliberately short and
@@ -41279,7 +41769,7 @@ function CounselingChatModal({
     synthesizeAndPrepareJourney(session.turns, session.questionIndex, mergedThemes, allUserText);
   };
   const buildCounsellingSessionSummary = () => {
-    const issueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? "Selected focus";
+    const issueLabel = localizedIssueGuideLabel(issueId, languageId);
     const replyCount = session.turns.filter((turn) => turn.role === "user").length;
     const nextStepsText = journeySteps.length
       ? journeySteps.map((step, index) => `${index + 1}. ${step.label}: ${step.reason}`).join("\n")
@@ -42741,7 +43231,8 @@ function getJournalInsight(
   latestEntry: CheckInEntry,
   entryCount: number,
   weeklyAverage: number,
-  guide: IssueGuide
+  guide: IssueGuide,
+  languageId: LanguageId = "english"
 ) {
   const scoreDirection =
     latestEntry.score >= 70
@@ -42757,8 +43248,8 @@ function getJournalInsight(
       ? `${entryCount} saved / feeling ${latestEntry.mood.toLowerCase()} / weekly clarity ${weeklyAverage}`
       : `${entryCount} saved / weekly clarity ${weeklyAverage}`,
     detail: moodLine
-      ? `${moodLine} ${scoreDirection} Continue with ${guide.label}: ${guide.steps[0]}`
-      : `${scoreDirection} Continue with ${guide.label}: ${guide.steps[0]}`
+      ? `${moodLine} ${scoreDirection} Continue with ${localizedIssueGuideLabel(guide.id, languageId)}: ${guide.steps[0]}`
+      : `${scoreDirection} Continue with ${localizedIssueGuideLabel(guide.id, languageId)}: ${guide.steps[0]}`
   };
 }
 
@@ -43323,13 +43814,18 @@ function GuidanceInsightsCard({
   );
 }
 
-function getReminderBody(mode: ReminderMode, guide: IssueGuide, profileAddressLabel: string) {
+function getReminderBody(
+  mode: ReminderMode,
+  guide: IssueGuide,
+  profileAddressLabel: string,
+  languageId: LanguageId = "english"
+) {
   const timeLead =
     mode === "midday"
-      ? "Midday check-in"
+      ? pickLocalizedText(languageId, { english: "Midday check-in", hindi: "दोपहर चेक-इन", telugu: "మధ్యాహ్న చెక్-ఇన్", tamil: "நடு நாள் செக்-இன்", urdu: "دوپہر چیک اِن" })
       : mode === "evening"
-        ? "Evening check-in"
-        : "Morning check-in";
+        ? pickLocalizedText(languageId, { english: "Evening check-in", hindi: "शाम चेक-इन", telugu: "సాయంత్రం చెక్-ఇన్", tamil: "மாலை செக்-இன்", urdu: "شام چیک اِن" })
+        : pickLocalizedText(languageId, { english: "Morning check-in", hindi: "सुबह चेक-इन", telugu: "ఉదయం చెక్-ఇన్", tamil: "காலை செக்-இன்", urdu: "صبح چیک اِن" });
   const issueLeadMap: Record<IssueId, string> = {
     general: "One clear route, one concrete step, one follow-up check.",
     anger: "One boundary, one pause, one calmer reply.",
@@ -43352,17 +43848,24 @@ function getReminderBody(mode: ReminderMode, guide: IssueGuide, profileAddressLa
 
   const addressLead = profileAddressLabel.trim().length > 0 ? `${profileAddressLabel}, ` : "";
 
-  return `${addressLead}${timeLead}: ${guide.label}. ${issueLeadMap[guide.id]}`;
+  return `${addressLead}${timeLead}: ${localizedIssueGuideLabel(guide.id, languageId)}. ${issueLeadMap[guide.id]}`;
 }
 
 function getFollowUpReminderBody(
   weekNumber: number,
   totalWeeks: number,
   guide: IssueGuide,
-  profileAddressLabel: string
+  profileAddressLabel: string,
+  languageId: LanguageId = "english"
 ) {
   const addressLead = profileAddressLabel.trim().length > 0 ? `${profileAddressLabel}, ` : "";
-  return `${addressLead}Follow-up ${weekNumber}/${totalWeeks}: ${guide.label}. ${guide.followUp} Open ${guide.steps[0]}.`;
+  return `${addressLead}${pickLocalizedText(languageId, {
+    english: `Follow-up ${weekNumber}/${totalWeeks}`,
+    hindi: `फॉलो-अप ${weekNumber}/${totalWeeks}`,
+    telugu: `ఫాలో-అప్ ${weekNumber}/${totalWeeks}`,
+    tamil: `தொடர்ச்சி ${weekNumber}/${totalWeeks}`,
+    urdu: `فالو اپ ${weekNumber}/${totalWeeks}`
+  })}: ${localizedIssueGuideLabel(guide.id, languageId)}. ${guide.followUp} Open ${guide.steps[0]}.`;
 }
 
 function buildReminderDate(daysFromNow: number, hour: number, minute: number) {
