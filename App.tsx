@@ -41904,7 +41904,14 @@ function CounselingChatModal({
                 previously said the generic "Your guide", reading as two
                 different guides in the same conversation. */}
             <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 12 : isCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 18 : 20, fontWeight: "800" }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
-              {l("Beacon Guide is listening", {
+              {isVeryCompactPhone
+                ? l("Beacon Guide", {
+                    hindi: "Beacon Guide",
+                    telugu: "Beacon Guide",
+                    tamil: "Beacon Guide",
+                    urdu: "Beacon Guide"
+                  })
+                : l("Beacon Guide is listening", {
                 hindi: "Beacon Guide सुन रहा है",
                 telugu: "Beacon Guide వినుతోంది",
                 tamil: "Beacon Guide கேட்கிறது",
@@ -42023,20 +42030,27 @@ function CounselingChatModal({
                 urdu: "آپ یہاں کس لیے آئے ہیں؟"
               })}
             </Text>
-            <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 12 : 14, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 18 : 21, fontWeight: "700", marginTop: 4 }}>
-              {isCompactPhone
-                ? l("We’ll listen first, then shape the next step together.", {
-                    hindi: "पहले हम सुनेंगे, फिर अगला कदम साथ मिलकर बनाएँगे।",
-                    telugu: "ముందుగా మేము వింటాము, ఆపై తదుపరి అడుగును కలిసి రూపొందిస్తాము.",
-                    tamil: "முதலில் நாங்கள் கேட்போம், பின்னர் அடுத்த படியை ஒன்றாக வடிவமைப்போம்.",
-                    urdu: "پہلے ہم سنیں گے، پھر اگلا قدم مل کر بنائیں گے۔"
+            <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 14, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 15 : 21, fontWeight: "700", marginTop: 2 }}>
+              {isVeryCompactPhone
+                ? l("We’ll listen first, then shape one next step together.", {
+                    hindi: "पहले हम सुनेंगे, फिर एक अगला कदम साथ मिलकर बनाएँगे।",
+                    telugu: "ముందుగా మేము వింటాము, ఆపై ఒక తదుపరి అడుగును కలిసి రూపొందిస్తాము.",
+                    tamil: "முதலில் நாங்கள் கேட்போம், பின்னர் ஒரு அடுத்த படியை ஒன்றாக வடிவமைப்போம்.",
+                    urdu: "پہلے ہم سنیں گے، پھر ایک اگلا قدم مل کر بنائیں گے۔"
                   })
-                : l("Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies.", {
-                    hindi: "पहले आपकी स्थिति को धीरे से समझेंगे; हर छठे जवाब पर वैकल्पिक अगला कदम मिलता है, और पूरी बातचीत 30 जवाब तक चल सकती है।",
-                    telugu: "ముందుగా మీ పరిస్థితిని సౌమ్యంగా అర్థం చేసుకుంటాం; ప్రతి ఆరవ ప్రతిస్పందనలో ఐచ్ఛిక తదుపరి అడుగు ఉంటుంది, మరియు మొత్తం సంభాషణ 30 ప్రత్యుత్తరాల వరకు కొనసాగుతుంది.",
-                    tamil: "முதலில் உங்கள் நிலையை மெதுவாகப் புரிந்துகொள்வோம்; ஒவ்வொரு ஆறாவது பதிலும் ஒரு விருப்பமான அடுத்த படியை வழங்கும், மேலும் முழு உரையாடல் 30 பதில்கள் வரை தொடரலாம்.",
-                    urdu: "پہلے آپ کی صورتحال کو نرمی سے سمجھیں گے؛ ہر چھٹے جواب پر ایک اختیاری اگلا قدم ملتا ہے، اور پوری گفتگو 30 جوابات تک جاری رہ سکتی ہے۔"
-                  })}
+                : isCompactPhone
+                  ? l("We’ll listen first, then shape the next step together.", {
+                      hindi: "पहले हम सुनेंगे, फिर अगला कदम साथ मिलकर बनाएँगे।",
+                      telugu: "ముందుగా మేము వింటాము, ఆపై తదుపరి అడుగును కలిసి రూపొందిస్తాము.",
+                      tamil: "முதலில் நாங்கள் கேட்போம், பின்னர் அடுத்த படியை ஒன்றாக வடிவமைப்போம்.",
+                      urdu: "پہلے ہم سنیں گے، پھر اگلا قدم مل کر بنائیں گے۔"
+                    })
+                  : l("Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies.", {
+                      hindi: "पहले आपकी स्थिति को धीरे से समझेंगे; हर छठे जवाब पर वैकल्पिक अगला कदम मिलता है, और पूरी बातचीत 30 जवाब तक चल सकती है।",
+                      telugu: "ముందుగా మీ పరిస్థితిని సౌమ్యంగా అర్థం చేసుకుంటాం; ప్రతి ఆరవ ప్రతిస్పందనలో ఐచ్ఛిక తదుపరి అడుగు ఉంటుంది, మరియు మొత్తం సంభాషణ 30 ప్రత్యుత్తరాల వరకు కొనసాగుతుంది.",
+                      tamil: "முதலில் உங்கள் நிலையை மெதுவாகப் புரிந்துகொள்வோம்; ஒவ்வொரு ஆறாவது பதிலும் ஒரு விருப்பமான அடுத்த படியை வழங்கும், மேலும் முழு உரையாடல் 30 பதில்கள் வரை தொடரலாம்.",
+                      urdu: "پہلے آپ کی صورتحال کو نرمی سے سمجھیں گے؛ ہر چھٹے جواب پر ایک اختیاری اگلا قدم ملتا ہے، اور پوری گفتگو 30 جوابات تک جاری رہ سکتی ہے۔"
+                    })}
             </Text>
           </View>
           {session.turns.map((turn, i) => {
