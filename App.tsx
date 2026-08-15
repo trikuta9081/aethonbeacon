@@ -41128,9 +41128,9 @@ function CounselingChatModal({
         <View style={{
           flexDirection: "row",
           alignItems: "center",
-          paddingTop: Platform.OS === "ios" ? 10 : Math.max(insets.top, 12) + (isCompactPhone ? 8 : 12),
-          paddingBottom: isCompactPhone ? 10 : 12,
-          paddingHorizontal: isCompactPhone ? 16 : 20,
+          paddingTop: Platform.OS === "ios" ? (isVeryCompactPhone ? 8 : 10) : Math.max(insets.top, 12) + (isCompactPhone ? 8 : 12),
+          paddingBottom: isVeryCompactPhone ? 8 : isCompactPhone ? 10 : 12,
+          paddingHorizontal: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 20,
           borderBottomWidth: 1,
           borderBottomColor: "#DCE9E6",
           backgroundColor: "#FFFFFF"
@@ -41146,14 +41146,14 @@ function CounselingChatModal({
               urdu: "مشاورت بند کریں"
             })}
           >
-            <Text style={{ color: "#0A6F66", fontSize: isCompactPhone ? 20 : 22 }}>←</Text>
+            <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 18 : isCompactPhone ? 20 : 22 }}>←</Text>
           </Pressable>
-          <View style={{ flex: 1, minWidth: 0, marginLeft: isCompactPhone ? 10 : 12 }}>
+          <View style={{ flex: 1, minWidth: 0, marginLeft: isVeryCompactPhone ? 8 : isCompactPhone ? 10 : 12 }}>
             {/* Consistent branding -- the enrichment card below and the
                 system prompt both already say "Beacon Guide"; the header
                 previously said the generic "Your guide", reading as two
                 different guides in the same conversation. */}
-            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 13 : isCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 16 : isCompactPhone ? 18 : 20, fontWeight: "800" }} numberOfLines={2}>
+            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 12 : isCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 18 : 20, fontWeight: "800" }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {l("Beacon Guide is listening", {
                 hindi: "Beacon Guide सुन रहा है",
                 telugu: "Beacon Guide వినుతోంది",
@@ -41161,7 +41161,7 @@ function CounselingChatModal({
                 urdu: "Beacon Guide سن رہا ہے"
               })}
             </Text>
-            <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 15 : 16 }} numberOfLines={2}>
+            <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 15 : 16 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {voiceAssistEnabled
                 ? l("Private · Read-aloud available on request", {
                     hindi: "निजी · अनुरोध पर read-aloud उपलब्ध",
@@ -41188,9 +41188,9 @@ function CounselingChatModal({
             accessibilityRole="button"
             accessibilityLabel={voiceAssistEnabled ? l("Disable read aloud", { hindi: "read-aloud बंद करें", telugu: "చదివి వినిపింపును నిలిపివేయండి", tamil: "உரையாடல் ஒலியை அணைக்கவும்", urdu: "بلند آواز میں پڑھنا بند کریں" }) : l("Enable read aloud", { hindi: "read-aloud चालू करें", telugu: "చదివి వినిపింపును ప్రారంభించండి", tamil: "உரையாடல் ஒலியை இயக்கவும்", urdu: "بلند آواز میں پڑھنا شروع کریں" })}
             accessibilityState={{ selected: !voiceAssistEnabled }}
-            style={{ marginRight: isCompactPhone ? 8 : 14, flexDirection: "row", alignItems: "center", gap: isCompactPhone ? 0 : 4 }}
+            style={{ marginRight: isVeryCompactPhone ? 6 : isCompactPhone ? 8 : 14, flexDirection: "row", alignItems: "center", gap: isCompactPhone ? 0 : 4 }}
           >
-            <Text style={{ fontSize: isVeryCompactPhone ? 17 : isCompactPhone ? 18 : 20 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
+            <Text style={{ fontSize: isVeryCompactPhone ? 16 : isCompactPhone ? 18 : 20 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
             {/* Icon-only was ambiguous (mute vs. unmute isn't obvious from the
                 glyph alone) -- a short label next to it makes the tap target
                 self-explanatory without the person needing to guess. */}
@@ -41237,10 +41237,10 @@ function CounselingChatModal({
                 })
           }
           onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setSafetyNoticeExpanded((v) => !v); }}
-          style={{ marginHorizontal: isCompactPhone ? 16 : 20, marginTop: isCompactPhone ? 8 : 12, borderRadius: 12, padding: isVeryCompactPhone ? 9 : isCompactPhone ? 10 : 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
+          style={{ marginHorizontal: isVeryCompactPhone ? 12 : isCompactPhone ? 16 : 20, marginTop: isVeryCompactPhone ? 6 : isCompactPhone ? 8 : 12, borderRadius: 12, padding: isVeryCompactPhone ? 8 : isCompactPhone ? 10 : 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
         >
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>
+            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>
               {l("Scope and safety", {
                 hindi: "दायरा और सुरक्षा",
                 telugu: "పరిధి మరియు భద్రత",
@@ -41248,24 +41248,24 @@ function CounselingChatModal({
                 urdu: "دائرہ اور حفاظت"
               })}
             </Text>
-            <Text style={{ color: "#3A577D", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>
+            <Text style={{ color: "#3A577D", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>
               {safetyNoticeExpanded
                 ? l("Hide ▲", { hindi: "छिपाएँ ▲", telugu: "దాచండి ▲", tamil: "மறைக்கவும் ▲", urdu: "چھپائیں ▲" })
                 : l("Show ▼", { hindi: "दिखाएँ ▼", telugu: "చూపించండి ▼", tamil: "காட்டவும் ▼", urdu: "دکھائیں ▼" })}
             </Text>
           </View>
           {safetyNoticeExpanded && (
-            <Text style={{ color: "#25364D", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 18, marginTop: 3 }}>
+            <Text style={{ color: "#25364D", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 16 : 18, marginTop: 3 }}>
               {COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]}
             </Text>
           )}
         </Pressable>
 
         {/* Chat messages */}
-        <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 20, gap: isCompactPhone ? 12 : 16 }} showsVerticalScrollIndicator={false}>
-          <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
-            <Text style={{ color: "#0A6F66", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Guided support room", { hindi: "मार्गदर्शित सहायता कक्ष", telugu: "మార్గదర్శిత మద్దతు గది", tamil: "வழிகாட்டப்பட்ட ஆதரவு அறை", urdu: "رہنمائی والا مدد کمرہ" })}</Text>
-            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 16 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 20 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 4 }} numberOfLines={2}>
+        <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: isVeryCompactPhone ? 12 : isCompactPhone ? 16 : 20, gap: isVeryCompactPhone ? 10 : isCompactPhone ? 12 : 16 }} showsVerticalScrollIndicator={false}>
+          <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 10 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
+            <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Guided support room", { hindi: "मार्गदर्शित सहायता कक्ष", telugu: "మార్గదర్శిత మద్దతు గది", tamil: "வழிகாட்டப்பட்ட ஆதரவு அறை", urdu: "رہنمائی والا مدد کمرہ" })}</Text>
+            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 15 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 18 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 3 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {l("What brings you here?", {
                 hindi: "आप यहाँ किस लिए आए हैं?",
                 telugu: "మీరు ఇక్కడికి ఎందుకు వచ్చారు?",
@@ -41273,7 +41273,7 @@ function CounselingChatModal({
                 urdu: "آپ یہاں کس لیے آئے ہیں؟"
               })}
             </Text>
-            <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 14, lineHeight: isVeryCompactPhone ? 16 : isCompactPhone ? 18 : 21, fontWeight: "700", marginTop: 5 }}>
+            <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 12 : 14, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 18 : 21, fontWeight: "700", marginTop: 4 }}>
               {isCompactPhone
                 ? l("We’ll listen first, then shape the next step together.", {
                     hindi: "पहले हम सुनेंगे, फिर अगला कदम साथ मिलकर बनाएँगे।",
