@@ -28360,13 +28360,28 @@ function CommunitySection({
         {newChatCount > 0 ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`${newChatCount} new chat message${newChatCount === 1 ? "" : "s"}`}
-            accessibilityHint="Marks the new chat messages as seen"
+            accessibilityLabel={l("{count} new chat message(s)", {
+              hindi: `${newChatCount} नया चैट संदेश${newChatCount === 1 ? "" : "s"}`,
+              telugu: `${newChatCount} కొత్త చాట్ సందేశం${newChatCount === 1 ? "" : "లు"}`,
+              tamil: `${newChatCount} புதிய அரட்டை செய்தி${newChatCount === 1 ? "" : "கள்"}`,
+              urdu: `${newChatCount} نیا چیٹ پیغام${newChatCount === 1 ? "" : "ز"}`
+            }).replace("{count}", String(newChatCount))}
+            accessibilityHint={l("Marks the new chat messages as seen", {
+              hindi: "नए चैट संदेशों को देखा हुआ चिह्नित करता है",
+              telugu: "కొత్త చాట్ సందేశాలను చూశినవిగా గుర్తిస్తుంది",
+              tamil: "புதிய அரட்டை செய்திகளை பார்த்ததாக குறிக்கிறது",
+              urdu: "نئے چیٹ پیغامات کو دیکھی ہوئی نشان زد کرتا ہے"
+            })}
             onPress={markChatSeen}
             style={({ pressed }) => [styles.communityUnreadPill, pressed && styles.pressed]}
           >
             <Text style={styles.communityUnreadPillLabel}>
-              {newChatCount} new message{newChatCount === 1 ? "" : "s"}
+              {newChatCount} {l("new message(s)", {
+                hindi: `नया संदेश${newChatCount === 1 ? "" : "s"}`,
+                telugu: `కొత్త సందేశం${newChatCount === 1 ? "" : "లు"}`,
+                tamil: `புதிய செய்தி${newChatCount === 1 ? "" : "கள்"}`,
+                urdu: `نیا پیغام${newChatCount === 1 ? "" : "ز"}`
+              })}
             </Text>
           </Pressable>
         ) : null}
@@ -28411,7 +28426,7 @@ function CommunitySection({
                     ]}
                   >
                     {formatDate(message.createdAt)} /{" "}
-                    {isVerified ? "Verified" : "Member"}
+                    {isVerified ? l("Verified", { hindi: "सत्यापित", telugu: "ధృవీకరించిన", tamil: "உறுதிப்படுத்தப்பட்ட", urdu: "تصدیق شدہ" }) : l("Member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" })}
                   </Text>
                   {renderCommunityReactionRow(message.id)}
                   <View style={styles.communityChatActions}>
@@ -28419,21 +28434,48 @@ function CommunitySection({
                       accessibilityRole="button"
                       accessibilityLabel={
                         savedCommunityChat.some((item) => item.id === message.id)
-                          ? `Saved. Unsave chat message from ${message.author}`
-                          : `Save chat message from ${message.author}`
+                          ? l("Saved. Unsave chat message from {name}", {
+                              hindi: "{name} से सहेजा गया। चैट संदेश सहेजना हटाएँ",
+                              telugu: "{name} నుండి సేవ్ చేయబడింది. చాట్ సందేశ సేవ్‌ను తీసివేయండి",
+                              tamil: "{name} இலிருந்து சேமிக்கப்பட்டது. அரட்டை செய்தியின் சேமிப்பை நீக்கவும்",
+                              urdu: "{name} سے محفوظ کیا گیا۔ چیٹ پیغام کی محفوظی ہٹائیں"
+                            }).replace("{name}", message.author)
+                          : l("Save chat message from {name}", {
+                              hindi: "{name} से चैट संदेश सहेजें",
+                              telugu: "{name} నుండి చాట్ సందేశాన్ని సేవ్ చేయండి",
+                              tamil: "{name} இலிருந்து அரட்டை செய்தியை சேமிக்கவும்",
+                              urdu: "{name} سے چیٹ پیغام محفوظ کریں"
+                            }).replace("{name}", message.author)
                       }
-                      accessibilityHint="Toggles whether this chat message is kept in your saved lines"
+                      accessibilityHint={l("Toggles whether this chat message is kept in your saved lines", {
+                        hindi: "इस चैट संदेश को आपकी सहेजी गई पंक्तियों में रखता है या हटाता है",
+                        telugu: "ఈ చాట్ సందేశాన్ని మీ సేవ్ చేసిన లైన్లలో ఉంచాలా వద్దా అని మార్చుతుంది",
+                        tamil: "இந்த அரட்டை செய்தியை உங்கள் சேமித்த வரிகளில் வைத்திருக்க வேண்டுமா என்று மாற்றுகிறது",
+                        urdu: "اس چیٹ پیغام کو آپ کی محفوظ شدہ سطور میں رکھنا ہے یا نہیں، اسے بدلتا ہے"
+                      })}
                       onPress={() => onToggleSavedCommunityItem("chat", message.id)}
                       style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                     >
                       <Text style={styles.textButtonLabel}>
-                        {savedCommunityChat.some((item) => item.id === message.id) ? "Saved" : "Save"}
+                        {savedCommunityChat.some((item) => item.id === message.id)
+                          ? l("Saved", { hindi: "सहेजा गया", telugu: "సేవ్ చేయబడింది", tamil: "சேமிக்கப்பட்டது", urdu: "محفوظ کیا گیا" })
+                          : l("Save", { hindi: "सहेजें", telugu: "సేవ్ చేయండి", tamil: "சேமிக்கவும்", urdu: "محفوظ کریں" })}
                       </Text>
                     </Pressable>
                     <Pressable
                       accessibilityRole="button"
-                      accessibilityLabel={`Report chat message from ${message.author}`}
-                      accessibilityHint="Flags this message for moderator review"
+                      accessibilityLabel={l("Report chat message from {name}", {
+                        hindi: "{name} का चैट संदेश रिपोर्ट करें",
+                        telugu: "{name} యొక్క చాట్ సందేశాన్ని రిపోర్ట్ చేయండి",
+                        tamil: "{name} இன் அரட்டை செய்தியைப் புகாரளிக்கவும்",
+                        urdu: "{name} کا چیٹ پیغام رپورٹ کریں"
+                      }).replace("{name}", message.author)}
+                      accessibilityHint={l("Flags this message for moderator review", {
+                        hindi: "इस संदेश को मॉडरेटर समीक्षा के लिए चिह्नित करता है",
+                        telugu: "ఈ సందేశాన్ని మోడరేటర్ సమీక్ష కోసం గుర్తిస్తుంది",
+                        tamil: "இந்த செய்தியை moderator மதிப்பாய்விற்காக குறிக்கிறது",
+                        urdu: "اس پیغام کو منتظم جائزے کے لیے نشان زد کرتا ہے"
+                      })}
                       onPress={() =>
                         onReportCommunityItem(
                           "chat",
@@ -28444,7 +28486,12 @@ function CommunitySection({
                       }
                       style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                     >
-                      <Text style={styles.textButtonLabel}>Report</Text>
+                      <Text style={styles.textButtonLabel}>{l("Report", {
+                        hindi: "रिपोर्ट करें",
+                        telugu: "రిపోర్ట్ చేయండి",
+                        tamil: "புகாரளிக்கவும்",
+                        urdu: "رپورٹ کریں"
+                      })}</Text>
                     </Pressable>
                   </View>
                 </View>
@@ -28464,11 +28511,26 @@ function CommunitySection({
               setCommunityChatDraft(value);
               onCommunityChatTyping(value);
             }}
-            placeholder="Type a verified chat message."
+            placeholder={l("Type a verified chat message.", {
+              hindi: "सत्यापित चैट संदेश लिखें।",
+              telugu: "ధృవీకరించిన చాట్ సందేశాన్ని టైప్ చేయండి.",
+              tamil: "உறுதிப்படுத்தப்பட்ட அரட்டை செய்தியைத் தட்டச்சு செய்யவும்.",
+              urdu: "تصدیق شدہ چیٹ پیغام ٹائپ کریں۔"
+            })}
             placeholderTextColor="#9A8F82"
             editable={!postingLocked && !interactionLocked}
-            accessibilityLabel="Chat message input"
-            accessibilityHint="Type a message to send to the verified chat"
+            accessibilityLabel={l("Chat message input", {
+              hindi: "चैट संदेश इनपुट",
+              telugu: "చాట్ సందేశ ఇన్‌పుట్",
+              tamil: "அரட்டை செய்தி உள்ளீடு",
+              urdu: "چیٹ پیغام ان پٹ"
+            })}
+            accessibilityHint={l("Type a message to send to the verified chat", {
+              hindi: "सत्यापित चैट को भेजने के लिए एक संदेश लिखें",
+              telugu: "ధృవీకరించిన చాట్‌కు పంపడానికి ఒక సందేశాన్ని టైప్ చేయండి",
+              tamil: "உறுதிப்படுத்தப்பட்ட chat-க்கு அனுப்ப ஒரு செய்தியைத் தட்டச்சு செய்யவும்",
+              urdu: "تصدیق شدہ چیٹ کو بھیجنے کے لیے پیغام ٹائپ کریں"
+            })}
             style={[
               styles.communityInput,
               (postingLocked || interactionLocked) && styles.communityInputDisabled
@@ -28479,9 +28541,14 @@ function CommunitySection({
           <Pressable
               accessibilityRole="button"
               accessibilityLabel={
-                postingLocked ? "Posting paused" : interactionLocked ? "Chat locked while intake is open" : "Send chat message"
+                postingLocked ? l("Posting paused", { hindi: "पोस्टिंग रुकी हुई है", telugu: "పోస్టింగ్ నిలిపివేయబడింది", tamil: "பதிவிடுதல் இடைநிறுத்தப்பட்டது", urdu: "پوسٹنگ روک دی گئی ہے" }) : interactionLocked ? l("Chat locked while intake is open", { hindi: "इंटेक खुला होने पर चैट बंद है", telugu: "ఇన్‌టేక్ తెరిచి ఉన్నప్పుడు చాట్ లాక్ చేయబడింది", tamil: "இணைப்பு திறந்திருக்கும் போது அரட்டை பூட்டப்பட்டுள்ளது", urdu: "انٹیک کھلا ہونے پر چیٹ بند ہے" }) : l("Send chat message", { hindi: "चैट संदेश भेजें", telugu: "చాట్ సందేశం పంపండి", tamil: "அரட்டை செய்தி அனுப்பவும்", urdu: "چیٹ پیغام بھیجیں" })
               }
-              accessibilityHint="Posts your draft message to the verified chat"
+              accessibilityHint={l("Posts your draft message to the verified chat", {
+                hindi: "आपके मसौदा संदेश को सत्यापित चैट में भेजता है",
+                telugu: "మీ డ్రాఫ్ట్ సందేశాన్ని ధృవీకరించిన చాట్‌కు పంపుతుంది",
+                tamil: "உங்கள் வரைவு செய்தியை உறுதிப்படுத்தப்பட்ட chat-க்கு பதிவிடுகிறது",
+                urdu: "آپ کے مسودہ پیغام کو تصدیق شدہ چیٹ میں بھیجتا ہے"
+              })}
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={() => {
                 if (communityChatSending) return;
@@ -28502,14 +28569,28 @@ function CommunitySection({
               ]}
             >
               <Text style={[styles.helpButtonLabel, (postingLocked || interactionLocked) && styles.helpButtonLabelDisabled]}>
-              {postingLocked ? "Paused" : interactionLocked ? "Intake open" : "Send chat"}
+              {postingLocked ? l("Paused", { hindi: "रुका हुआ", telugu: "నిలిపివేయబడింది", tamil: "இடைநிறுத்தம்", urdu: "روکا ہوا" }) : interactionLocked ? l("Intake open", { hindi: "इंटेक खुला", telugu: "ఇన్‌టేక్ తెరిచి ఉంది", tamil: "இணைப்பு திறந்திருக்கும்", urdu: "انٹیک کھلا ہے" }) : l("Send chat", { hindi: "चैट भेजें", telugu: "చాట్ పంపండి", tamil: "அரட்டை அனுப்பவும்", urdu: "چیٹ بھیجیں" })}
               </Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Reset chat thread"
-              accessibilityHint="Clears your local chat conversation. This cannot be undone."
-              onPress={() => confirmDestructive("Reset chat thread?", "This clears your local chat conversation. This cannot be undone.", onClearCommunityChat)}
+              accessibilityLabel={l("Reset chat thread", {
+                hindi: "चैट थ्रेड रीसेट करें",
+                telugu: "చాట్ థ్రెడ్‌ను రీసెట్ చేయండి",
+                tamil: "அரட்டை தொடரை மீட்டமைக்கவும்",
+                urdu: "چیٹ دھاگہ ری سیٹ کریں"
+              })}
+              accessibilityHint={l("Clears your local chat conversation. This cannot be undone.", {
+                hindi: "आपकी स्थानीय चैट बातचीत साफ़ करता है। इसे वापस नहीं लाया जा सकता।",
+                telugu: "మీ స్థానిక చాట్ సంభాషణను క్లియర్ చేస్తుంది. ఇది తిరిగి మార్చలేరు.",
+                tamil: "உங்கள் உள்ளக அரட்டை உரையாடலை அழிக்கிறது. இதைத் திரும்பப் பெற முடியாது.",
+                urdu: "آپ کی مقامی چیٹ گفتگو صاف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔"
+              })}
+              onPress={() => confirmDestructive(
+                l("Reset chat thread?", { hindi: "चैट थ्रेड रीसेट करें?", telugu: "చాట్ థ్రెడ్‌ను రీసెట్ చేయాలా?", tamil: "அரட்டை தொடரை மீட்டமைக்கலாமா?", urdu: "چیٹ دھاگہ ری سیٹ کریں؟" }),
+                l("This clears your local chat conversation. This cannot be undone.", { hindi: "आपकी स्थानीय चैट बातचीत साफ़ करता है। इसे वापस नहीं लाया जा सकता।", telugu: "మీ స్థానిక చాట్ సంభాషణను క్లియర్ చేస్తుంది. ఇది తిరిగి మార్చలేరు.", tamil: "உங்கள் உள்ளக அரட்டை உரையாடலை அழிக்கிறது. இதைத் திரும்பப் பெற முடியாது.", urdu: "آپ کی مقامی چیٹ گفتگو صاف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔" }),
+                onClearCommunityChat
+              )}
               disabled={interactionLocked}
               style={({ pressed }) => [
                 styles.helpButtonSecondary,
@@ -28517,7 +28598,12 @@ function CommunitySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={styles.helpButtonSecondaryLabel}>Reset thread</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>{l("Reset thread", {
+                hindi: "थ्रेड रीसेट करें",
+                telugu: "థ్రెడ్‌ను రీసెట్ చేయండి",
+                tamil: "தொடரை மீட்டமைக்கவும்",
+                urdu: "دھاگہ ری سیٹ کریں"
+              })}</Text>
             </Pressable>
         </View>
         <Text style={styles.smallMeta}>{l("Chat is reserved for verified users and checked for safety.", {
@@ -28569,7 +28655,12 @@ function CommunitySection({
                 <Pressable
                   key={item.id}
                   accessibilityRole="button"
-                  accessibilityLabel={`Set room type to ${item.label}`}
+                  accessibilityLabel={l("Set room type to {type}", {
+                    hindi: "{type} के लिए कमरे का प्रकार सेट करें",
+                    telugu: "గది రకాన్ని {type}కి సెట్ చేయండి",
+                    tamil: "அறை வகையை {type}-க்கு அமைக்கவும்",
+                    urdu: "کمرے کی قسم {type} پر سیٹ کریں"
+                  }).replace("{type}", item.label)}
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => setPrivateSpaceKindDraft(item.id as PrivateSpaceKind)}
                   style={[styles.segmentButton, isSelected && styles.segmentButtonActive]}
@@ -28592,8 +28683,18 @@ function CommunitySection({
             })}
             placeholderTextColor="#9A8F82"
             editable={!interactionLocked}
-            accessibilityLabel="Room title"
-            accessibilityHint="Enter a name for the new private room"
+            accessibilityLabel={l("Room title", {
+              hindi: "कमरे का शीर्षक",
+              telugu: "గది శీర్షిక",
+              tamil: "அறை தலைப்பு",
+              urdu: "کمرے کا عنوان"
+            })}
+            accessibilityHint={l("Enter a name for the new private room", {
+              hindi: "नए निजी कमरे के लिए एक नाम दर्ज करें",
+              telugu: "కొత్త ప్రైవేట్ గది కోసం ఒక పేరు ఇవ్వండి",
+              tamil: "புதிய தனிப்பட்ட அறைக்கான பெயரை உள்ளிடவும்",
+              urdu: "نئے نجی کمرے کے لیے ایک نام درج کریں"
+            })}
             style={styles.settingsInput}
           />
           <TextInput
@@ -28607,8 +28708,18 @@ function CommunitySection({
             })}
             placeholderTextColor="#9A8F82"
             editable={!interactionLocked}
-            accessibilityLabel="Room members"
-            accessibilityHint="Enter member names or roles, separated by commas"
+            accessibilityLabel={l("Room members", {
+              hindi: "कमरे के सदस्य",
+              telugu: "గది సభ్యులు",
+              tamil: "அறை உறுப்பினர்கள்",
+              urdu: "کمرے کے اراکین"
+            })}
+            accessibilityHint={l("Enter member names or roles, separated by commas", {
+              hindi: "सदस्य नाम या भूमिकाएँ कॉमा से अलग करके दर्ज करें",
+              telugu: "సభ్యుల పేర్లు లేదా పాత్రలను కామాలతో వేరు చేసి నమోదు చేయండి",
+              tamil: "உறுப்பினர் பெயர்கள் அல்லது பங்குகளை கமாவால் பிரித்து உள்ளிடவும்",
+              urdu: "اراکین کے نام یا کردار کو کوما سے الگ کرکے درج کریں"
+            })}
             style={styles.settingsInput}
           />
           <TextInput
@@ -28623,8 +28734,18 @@ function CommunitySection({
             })}
             placeholderTextColor="#9A8F82"
             editable={!postingLocked && !interactionLocked}
-            accessibilityLabel="First message for new room"
-            accessibilityHint="Optional message to send as soon as the room is created"
+            accessibilityLabel={l("First message for new room", {
+              hindi: "नए कमरे के लिए पहला संदेश",
+              telugu: "కొత్త గది కోసం మొదటి సందేశం",
+              tamil: "புதிய அறைக்கான முதல் செய்தி",
+              urdu: "نئے کمرے کے لیے پہلا پیغام"
+            })}
+            accessibilityHint={l("Optional message to send as soon as the room is created", {
+              hindi: "कमरा बनते ही भेजने के लिए वैकल्पिक संदेश",
+              telugu: "గది సృష్టించిన వెంటనే పంపడానికి ఐచ్ఛిక సందేశం",
+              tamil: "அறை உருவானவுடன் அனுப்ப விருப்பமான செய்தி",
+              urdu: "کمرہ بننے کے فوراً بعد بھیجنے کے لیے اختیاری پیغام"
+            })}
             style={[
               styles.communityInput,
               (postingLocked || interactionLocked) && styles.communityInputDisabled
@@ -28671,7 +28792,12 @@ function CommunitySection({
                 tamil: "தேர்ந்தெடுத்த தனிப்பட்ட அறைக்கு செய்தி அனுப்பவும்",
                 urdu: "منتخب نجی کمرے کو پیغام بھیجیں"
               })}
-              accessibilityHint="Sends your draft message to the currently selected room"
+              accessibilityHint={l("Sends your draft message to the currently selected room", {
+                hindi: "आपके मसौदा संदेश को वर्तमान चयनित कमरे में भेजता है",
+                telugu: "మీ డ్రాఫ్ట్ సందేశాన్ని ప్రస్తుతం ఎంపిక చేసిన గదికి పంపుతుంది",
+                tamil: "உங்கள் வரைவு செய்தியை தற்போது தேர்ந்தெடுத்த அறைக்கு அனுப்புகிறது",
+                urdu: "آپ کے مسودہ پیغام کو فی الحال منتخب کمرے میں بھیجتا ہے"
+              })}
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={() => {
                 if (onSendPrivateSpaceMessage(privateSpaceDraft)) setPrivateSpaceDraft("");
@@ -28723,7 +28849,12 @@ function CommunitySection({
                 <Pressable
                   key={thread.id}
                   accessibilityRole="button"
-                  accessibilityLabel={`Open room ${thread.title}`}
+                  accessibilityLabel={`${l("Open room", {
+                    hindi: "कमरा खोलें",
+                    telugu: "గదిని తెరవండి",
+                    tamil: "அறையைத் திறக்கவும்",
+                    urdu: "کمرہ کھولیں"
+                  })} ${thread.title}`}
                   accessibilityHint={`${thread.kind === "group" ? l("Group room", { hindi: "समूह कमरा", telugu: "గ్రూప్ గది", tamil: "குழு அறை", urdu: "گروپ کمرہ" }) : l("Direct chat", { hindi: "सीधी चैट", telugu: "ప్రత్యక్ష చాట్", tamil: "நேரடி அரட்டை", urdu: "براہِ راست چیٹ" })} with ${thread.members.length} ${l("member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" })}${thread.members.length === 1 ? "" : "s"}`}
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => setPrivateSpaceSelectedThreadId(thread.id)}
@@ -28756,19 +28887,56 @@ function CommunitySection({
                   <View>
                     <Text style={styles.privateRoomThreadTitle}>{selectedPrivateRoom.title}</Text>
                     <Text style={styles.privateRoomThreadMeta}>
-                      {selectedPrivateRoom.kind === "group" ? "Named group room" : "Direct room"} /{" "}
+                      {selectedPrivateRoom.kind === "group"
+                        ? l("Group room", {
+                            hindi: "समूह कमरा",
+                            telugu: "గ్రూప్ గది",
+                            tamil: "குழு அறை",
+                            urdu: "گروپ کمرہ"
+                          })
+                        : l("Direct chat", {
+                            hindi: "सीधी चैट",
+                            telugu: "ప్రత్యక్ష చాట్",
+                            tamil: "நேரடி அரட்டை",
+                            urdu: "براہِ راست چیٹ"
+                          })} /{" "}
                       {selectedPrivateRoom.members.length > 0
                         ? selectedPrivateRoom.members.join(", ")
-                        : "No members added yet"}
+                        : l("No members added yet", {
+                            hindi: "अभी कोई सदस्य नहीं जोड़ा गया है",
+                            telugu: "ఇంకా సభ్యులు చేర్చలేదు",
+                            tamil: "இன்னும் உறுப்பினர்கள் சேர்க்கப்படவில்லை",
+                            urdu: "ابھی کوئی رکن شامل نہیں کیا گیا"
+                          })}
                     </Text>
                   </View>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel={`Clear all messages in ${selectedPrivateRoom.title}`}
-                    accessibilityHint="Deletes every message in this room from this device. This cannot be undone."
+                    accessibilityLabel={`${l("Clear all messages in", {
+                      hindi: "इस कमरे के सभी संदेश साफ़ करें",
+                      telugu: "ఈ గదిలోని అన్ని సందేశాలను క్లియర్ చేయండి",
+                      tamil: "இந்த அறையின் அனைத்து செய்திகளையும் அழிக்கவும்",
+                      urdu: "اس کمرے کے تمام پیغامات صاف کریں"
+                    })} ${selectedPrivateRoom.title}`}
+                    accessibilityHint={l("Deletes every message in this room from this device. This cannot be undone.", {
+                      hindi: "इस डिवाइस से इस कमरे का हर संदेश हटाता है। इसे वापस नहीं लाया जा सकता।",
+                      telugu: "ఈ పరికరంలో ఈ గదిలోని ప్రతి సందేశాన్ని తొలగిస్తుంది. ఇది తిరిగి రాదు.",
+                      tamil: "இந்த சாதனத்தில் இந்த அறையின் ஒவ்வொரு செய்தியையும் நீக்குகிறது. இதை மீட்டெடுக்க முடியாது.",
+                      urdu: "اس ڈیوائس سے اس کمرے کا ہر پیغام حذف کر دیتا ہے۔ اسے واپس نہیں لایا جا سکتا۔"
+                    })}
                     onPress={() => confirmDestructive(
-                      `Clear "${selectedPrivateRoom.title}"?`,
-                      "This deletes every message in this room from this device. This cannot be undone.",
+                      l("Clear this room?", {
+                        hindi: "क्या यह कमरा साफ़ करें?",
+                        telugu: "ఈ గదిని క్లియర్ చేయాలా?",
+                        tamil: "இந்த அறையை அழிக்க வேண்டுமா?",
+                        urdu: "کیا یہ کمرہ صاف کریں؟"
+                      }),
+                      l("This deletes every message in this room from this device. This cannot be undone.", {
+                        hindi: "यह इस डिवाइस से इस कमरे का हर संदेश हटाता है। इसे वापस नहीं लाया जा सकता।",
+                        telugu: "ఇది ఈ పరికరంలో ఈ గదిలోని ప్రతి సందేశాన్ని తొలగిస్తుంది. ఇది తిరిగి రాదు.",
+                        tamil: "இது இந்த சாதனத்தில் இந்த அறையின் ஒவ்வொரு செய்தியையும் நீக்குகிறது. இதை மீட்டெடுக்க முடியாது.",
+                        urdu: "یہ اس ڈیوائس سے اس کمرے کا ہر پیغام حذف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔"
+                      }),
                       () => onClearPrivateSpaceRoom(selectedPrivateRoom.id)
                     )}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
@@ -28884,11 +29052,11 @@ function CommunitySection({
             {communityTypingLabel}
           </Text>
         ) : null}
-        <TextInput
-          multiline
-          value={communityDraft}
-          onChangeText={(value) => {
-            setCommunityDraft(value);
+          <TextInput
+            multiline
+            value={communityDraft}
+            onChangeText={(value) => {
+              setCommunityDraft(value);
             onCommunityFeedTyping(value);
           }}
           placeholder={l("Write one useful question, experience, or idea.", {
@@ -28896,19 +29064,34 @@ function CommunitySection({
             telugu: "ఒక ఉపయోగకరమైన ప్రశ్న, అనుభవం, లేదా ఆలోచన రాయండి.",
             tamil: "ஒரு பயனுள்ள கேள்வி, அனுபவம், அல்லது யோசனையை எழுதுங்கள்.",
             urdu: "ایک مفید سوال، تجربہ، یا خیال لکھیں۔"
-          })}
-          placeholderTextColor="#9A8F82"
-          editable={!postingLocked}
-          accessibilityLabel="Community feed post input"
-          accessibilityHint="Write a question, experience, or idea to share with the community"
-          style={[styles.communityInput, postingLocked && styles.communityInputDisabled]}
-          textAlignVertical="top"
-        />
+            })}
+            placeholderTextColor="#9A8F82"
+            editable={!postingLocked}
+            accessibilityLabel={l("Community feed post input", {
+              hindi: "समुदाय फ़ीड पोस्ट इनपुट",
+              telugu: "కమ్యూనిటీ ఫీడ్ పోస్ట్ ఇన్‌పుట్",
+              tamil: "சமூக feed பதிவு உள்ளீடு",
+              urdu: "برادری فیڈ پوسٹ ان پٹ"
+            })}
+            accessibilityHint={l("Write a question, experience, or idea to share with the community", {
+              hindi: "समुदाय के साथ साझा करने के लिए एक प्रश्न, अनुभव, या विचार लिखें",
+              telugu: "కమ్యూనిటీతో పంచుకోవడానికి ఒక ప్రశ్న, అనుభవం, లేదా ఆలోచన రాయండి",
+              tamil: "சமூகத்துடன் பகிர ஒரு கேள்வி, அனுபவம், அல்லது யோசனையை எழுதுங்கள்",
+              urdu: "برادری کے ساتھ شیئر کرنے کے لیے ایک سوال، تجربہ، یا خیال لکھیں"
+            })}
+            style={[styles.communityInput, postingLocked && styles.communityInputDisabled]}
+            textAlignVertical="top"
+          />
         <View style={styles.communityActions}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={postingLocked ? l("Posting paused", { hindi: "पोस्टिंग रुकी हुई है", telugu: "పోస్టింగ్ నిలిపివేయబడింది", tamil: "பதிவிடுதல் இடைநிறுத்தப்பட்டது", urdu: "پوسٹنگ روک دی گئی ہے" }) : l("Post message to shared feed", { hindi: "साझा फ़ीड पर संदेश पोस्ट करें", telugu: "షేర్డ్ ఫీడ్‌లో సందేశం పోస్ట్ చేయండి", tamil: "பகிரப்பட்ட feed-இல் செய்தியைப் பதிவு செய்யவும்", urdu: "مشترکہ فیڈ پر پیغام پوسٹ کریں" })}
-            accessibilityHint="Publishes your message to the community feed"
+            accessibilityHint={l("Publishes your message to the community feed", {
+              hindi: "आपके संदेश को समुदाय फ़ीड पर प्रकाशित करता है",
+              telugu: "మీ సందేశాన్ని కమ్యూనిటీ ఫీడ్‌లో ప్రచురిస్తుంది",
+              tamil: "உங்கள் செய்தியை சமூக feed-இல் வெளியிடுகிறது",
+              urdu: "آپ کے پیغام کو برادری فیڈ پر شائع کرتا ہے"
+            })}
             accessibilityState={{ disabled: postingLocked }}
             onPress={() => {
               if (communityPosting) return;
@@ -28925,14 +29108,23 @@ function CommunitySection({
             ]}
           >
             <Text style={[styles.helpButtonLabel, postingLocked && styles.helpButtonLabelDisabled]}>
-              {postingLocked ? "Paused" : "Post message"}
+              {postingLocked ? l("Paused", { hindi: "रुका हुआ", telugu: "నిలిపివేయబడింది", tamil: "இடைநிறுத்தம்", urdu: "روکا ہوا" }) : l("Post message", {
+                hindi: "संदेश पोस्ट करें",
+                telugu: "సందేశాన్ని పోస్ట్ చేయండి",
+                tamil: "செய்தியைப் பதிவு செய்யவும்",
+                urdu: "پیغام پوسٹ کریں"
+              })}
             </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={l("Reset feed", { hindi: "फ़ीड रीसेट करें", telugu: "ఫీడ్‌ను రీసెట్ చేయండి", tamil: "feed-ஐ மீட்டமைக்கவும்", urdu: "فیڈ ری سیٹ کریں" })}
             accessibilityHint={l("Clears the community feed on this device. This cannot be undone.", { hindi: "इस डिवाइस पर समुदाय फ़ीड साफ़ करता है। इसे वापस नहीं लाया जा सकता।", telugu: "ఈ పరికరంలో కమ్యూనిటీ ఫీడ్‌ను క్లియర్ చేస్తుంది. ఇది తిరిగి మార్చలేం.", tamil: "இந்த சாதனத்தில் சமூக feed-ஐ அழிக்கிறது. இதைத் திரும்பப் பெற முடியாது.", urdu: "اس ڈیوائس پر برادری فیڈ صاف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔" })}
-            onPress={() => confirmDestructive("Reset feed?", "This clears the community feed on this device. This cannot be undone.", onClearCommunityMessages)}
+            onPress={() => confirmDestructive(
+              l("Reset feed?", { hindi: "फ़ीड रीसेट करें?", telugu: "ఫీడ్‌ను రీసెట్ చేయాలా?", tamil: "feed-ஐ மீட்டமைக்கலாமா?", urdu: "فیڈ ری سیٹ کریں؟" }),
+              l("This clears the community feed on this device. This cannot be undone.", { hindi: "इस डिवाइस पर समुदाय फ़ीड साफ़ करता है। इसे वापस नहीं लाया जा सकता।", telugu: "ఈ పరికరంలో కమ్యూనిటీ ఫీడ్‌ను క్లియర్ చేస్తుంది. ఇది తిరిగి మార్చలేరు.", tamil: "இந்த சாதனத்தில் சமூக feed-ஐ அழிக்கிறது. இதைத் திரும்பப் பெற முடியாது.", urdu: "اس ڈیوائس پر برادری فیڈ صاف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔" }),
+              onClearCommunityMessages
+            )}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
             <Text style={styles.helpButtonSecondaryLabel}>{l("Reset feed", {
@@ -28944,8 +29136,18 @@ function CommunitySection({
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Clear feed filters"
-            accessibilityHint="Resets the feed and topic filters back to All"
+            accessibilityLabel={l("Clear feed filters", {
+              hindi: "फ़ीड फ़िल्टर साफ़ करें",
+              telugu: "ఫీడ్ ఫిల్టర్లను క్లియర్ చేయండి",
+              tamil: "feed வடிப்பான்களை அழிக்கவும்",
+              urdu: "فیڈ فلٹرز صاف کریں"
+            })}
+            accessibilityHint={l("Resets the feed and topic filters back to All", {
+              hindi: "फ़ीड और विषय फ़िल्टर को फिर से सभी पर सेट करता है",
+              telugu: "ఫీడ్ మరియు టాపిక్ ఫిల్టర్లను మళ్లీ అన్నింటికి రీసెట్ చేస్తుంది",
+              tamil: "feed மற்றும் தலைப்பு வடிப்பான்களை மீண்டும் அனைத்தாக மீட்டமைக்கிறது",
+              urdu: "فیڈ اور موضوع فلٹرز کو دوبارہ سب پر سیٹ کرتا ہے"
+            })}
             onPress={onClearCommunityFilters}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
@@ -28957,33 +29159,68 @@ function CommunitySection({
             })}</Text>
           </Pressable>
         </View>
-        <Text style={styles.smallMeta}>Adult or explicit content is checked before the feed updates.</Text>
+        <Text style={styles.smallMeta}>{l("Adult or explicit content is checked before the feed updates.", {
+          hindi: "फ़ीड अपडेट होने से पहले वयस्क या स्पष्ट सामग्री की जाँच की जाती है।",
+          telugu: "ఫీడ్ నవీకరణకు ముందు వయోజన లేదా స్పష్టమైన కంటెంట్ తనిఖీ చేయబడుతుంది.",
+          tamil: "feed புதுப்பிக்கப்படும் முன் வயது வந்தோர் அல்லது வெளிப்படையான உள்ளடக்கம் சோதிக்கப்படுகிறது.",
+          urdu: "فیڈ اپ ڈیٹ ہونے سے پہلے بالغ یا صریح مواد کی جانچ کی جاتی ہے۔"
+        })}</Text>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Feed</Text>
-            <Text style={styles.sectionTitleSmall}>Curated experience</Text>
+            <Text style={styles.eyebrow}>{l("Feed", { hindi: "फ़ीड", telugu: "ఫీడ్", tamil: "feed", urdu: "فیڈ" })}</Text>
+            <Text style={styles.sectionTitleSmall}>{l("Curated experience", {
+              hindi: "संकलित अनुभव",
+              telugu: "ఎంపిక చేసిన అనుభవం",
+              tamil: "தேர்ந்தெடுக்கப்பட்ட அனுபவம்",
+              urdu: "منتخب تجربہ"
+            })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{communityMessages.length} visible</Text>
+          <Text style={styles.smallMeta}>{communityMessages.length} {l("visible", { hindi: "दिख रहे हैं", telugu: "కనిపిస్తున్నాయి", tamil: "காணப்படுகிறது", urdu: "نظر آ رہے ہیں" })}</Text>
         </View>
         {newFeedCount > 0 ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`${newFeedCount} new feed post${newFeedCount === 1 ? "" : "s"}`}
-            accessibilityHint="Marks the new feed posts as seen"
+            accessibilityLabel={l("{count} new feed post(s)", {
+              hindi: `${newFeedCount} नया फ़ीड पोस्ट${newFeedCount === 1 ? "" : "s"}`,
+              telugu: `${newFeedCount} కొత్త ఫీడ్ పోస్ట్${newFeedCount === 1 ? "" : "లు"}`,
+              tamil: `${newFeedCount} புதிய feed பதிவு${newFeedCount === 1 ? "" : "கள்"}`,
+              urdu: `${newFeedCount} نئی فیڈ پوسٹ${newFeedCount === 1 ? "" : "ز"}`
+            }).replace("{count}", String(newFeedCount))}
+            accessibilityHint={l("Marks the new feed posts as seen", {
+              hindi: "नए फ़ीड पोस्टों को देखा हुआ चिह्नित करता है",
+              telugu: "కొత్త ఫీడ్ పోస్టులను చూశినవిగా గుర్తిస్తుంది",
+              tamil: "புதிய feed பதிவுகளை பார்த்ததாக குறிக்கிறது",
+              urdu: "نئی فیڈ پوسٹس کو دیکھی ہوئی نشان زد کرتا ہے"
+            })}
             onPress={markFeedSeen}
             style={({ pressed }) => [styles.communityUnreadPill, pressed && styles.pressed]}
           >
             <Text style={styles.communityUnreadPillLabel}>
-              {newFeedCount} new post{newFeedCount === 1 ? "" : "s"}
+              {newFeedCount} {l("new post(s)", {
+                hindi: `नया पोस्ट${newFeedCount === 1 ? "" : "s"}`,
+                telugu: `కొత్త పోస్ట్${newFeedCount === 1 ? "" : "లు"}`,
+                tamil: `புதிய பதிவு${newFeedCount === 1 ? "" : "கள்"}`,
+                urdu: `نئی پوسٹ${newFeedCount === 1 ? "" : "ز"}`
+              })}
             </Text>
           </Pressable>
         ) : null}
         <View style={styles.communityList}>
           {visibleCommunityMessages.length === 0 ? (
             <View style={styles.emptyStateLarge}>
-              <Text style={styles.emptyTitle}>Nothing to show yet</Text>
+              <Text style={styles.emptyTitle}>{l("Nothing to show yet", {
+                hindi: "अभी दिखाने के लिए कुछ नहीं",
+                telugu: "ఇంకా చూపించడానికి ఏమీ లేదు",
+                tamil: "இதுவரை காட்ட எதுவும் இல்லை",
+                urdu: "ابھی دکھانے کے لیے کچھ نہیں"
+              })}</Text>
               <Text style={styles.emptyText}>
-                Post a message or switch the filter to see verified voices.
+                {l("Post a message or switch the filter to see verified voices.", {
+                  hindi: "एक संदेश पोस्ट करें या फ़िल्टर बदलें ताकि सत्यापित आवाज़ें दिखें।",
+                  telugu: "ఒక సందేశాన్ని పోస్ట్ చేయండి లేదా ధృవీకరించిన స్వరాలు చూడటానికి ఫిల్టర్ మార్చండి.",
+                  tamil: "ஒரு செய்தியைப் பதிவு செய்யவும் அல்லது வடிப்பானை மாற்றி உறுதிப்படுத்தப்பட்ட குரல்களைப் பார்க்கவும்.",
+                  urdu: "ایک پیغام پوسٹ کریں یا فلٹر بدلیں تاکہ تصدیق شدہ آوازیں نظر آئیں۔"
+                })}
               </Text>
             </View>
           ) : (
@@ -29013,8 +29250,8 @@ function CommunitySection({
                       ]}
                     >
                       {message.role === "verified" || message.role === "moderator"
-                        ? "Verified"
-                        : "Member"}
+                        ? l("Verified", { hindi: "सत्यापित", telugu: "ధృవీకరించిన", tamil: "உறுதிப்படுத்தப்பட்ட", urdu: "تصدیق شدہ" })
+                        : l("Member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" })}
                     </Text>
                   </View>
                 </View>
@@ -29025,21 +29262,48 @@ function CommunitySection({
                     accessibilityRole="button"
                     accessibilityLabel={
                       savedCommunityFeed.some((item) => item.id === message.id)
-                        ? `Saved. Unsave post from ${message.author}`
-                        : `Save post from ${message.author}`
+                        ? l("Saved. Unsave post from {name}", {
+                            hindi: "{name} से सहेजा गया। पोस्ट सहेजना हटाएँ",
+                            telugu: "{name} నుండి సేవ్ చేయబడింది. పోస్ట్ సేవ్‌ను తీసివేయండి",
+                            tamil: "{name} இலிருந்து சேமிக்கப்பட்டது. பதிவின் சேமிப்பை நீக்கவும்",
+                            urdu: "{name} سے محفوظ کیا گیا۔ پوسٹ کی محفوظی ہٹائیں"
+                          }).replace("{name}", message.author)
+                        : l("Save post from {name}", {
+                            hindi: "{name} से पोस्ट सहेजें",
+                            telugu: "{name} నుండి పోస్ట్‌ను సేవ్ చేయండి",
+                            tamil: "{name} இலிருந்து பதிவை சேமிக்கவும்",
+                            urdu: "{name} سے پوسٹ محفوظ کریں"
+                          }).replace("{name}", message.author)
                     }
-                    accessibilityHint="Toggles whether this post is kept in your saved lines"
+                    accessibilityHint={l("Toggles whether this post is kept in your saved lines", {
+                      hindi: "इस पोस्ट को आपकी सहेजी गई पंक्तियों में रखता है या हटाता है",
+                      telugu: "ఈ పోస్ట్‌ను మీ సేవ్ చేసిన లైన్లలో ఉంచాలా వద్దా అని మార్చుతుంది",
+                      tamil: "இந்த பதிவை உங்கள் சேமித்த வரிகளில் வைத்திருக்க வேண்டுமா என்று மாற்றுகிறது",
+                      urdu: "اس پوسٹ کو آپ کی محفوظ شدہ سطور میں رکھنا ہے یا نہیں، اسے بدلتا ہے"
+                    })}
                     onPress={() => onToggleSavedCommunityItem("feed", message.id)}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
                     <Text style={styles.textButtonLabel}>
-                      {savedCommunityFeed.some((item) => item.id === message.id) ? "Saved" : "Save"}
+                      {savedCommunityFeed.some((item) => item.id === message.id)
+                        ? l("Saved", { hindi: "सहेजा गया", telugu: "సేవ్ చేయబడింది", tamil: "சேமிக்கப்பட்டது", urdu: "محفوظ کیا گیا" })
+                        : l("Save", { hindi: "सहेजें", telugu: "సేవ్ చేయండి", tamil: "சேமிக்கவும்", urdu: "محفوظ کریں" })}
                     </Text>
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel={`Report post from ${message.author}`}
-                    accessibilityHint="Flags this post for moderator review"
+                    accessibilityLabel={l("Report post from {name}", {
+                      hindi: "{name} की पोस्ट रिपोर्ट करें",
+                      telugu: "{name} నుండి పోస్ట్‌ను రిపోర్ట్ చేయండి",
+                      tamil: "{name} இன் பதிவைப் புகாரளிக்கவும்",
+                      urdu: "{name} کی پوسٹ رپورٹ کریں"
+                    }).replace("{name}", message.author)}
+                    accessibilityHint={l("Flags this post for moderator review", {
+                      hindi: "इस पोस्ट को मॉडरेटर समीक्षा के लिए चिह्नित करता है",
+                      telugu: "ఈ పోస్ట్‌ను మోడరేటర్ సమీక్ష కోసం గుర్తిస్తుంది",
+                      tamil: "இந்த பதிவை moderator மதிப்பாய்விற்காக குறிக்கிறது",
+                      urdu: "اس پوسٹ کو منتظم جائزے کے لیے نشان زد کرتا ہے"
+                    })}
                     onPress={() =>
                       onReportCommunityItem(
                         "feed",
@@ -29050,7 +29314,12 @@ function CommunitySection({
                     }
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.textButtonLabel}>Report</Text>
+                    <Text style={styles.textButtonLabel}>{l("Report", {
+                      hindi: "रिपोर्ट करें",
+                      telugu: "రిపోర్ట్ చేయండి",
+                      tamil: "புகாரளிக்கவும்",
+                      urdu: "رپورٹ کریں"
+                    })}</Text>
                   </Pressable>
                 </View>
               </View>
@@ -29062,38 +29331,106 @@ function CommunitySection({
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Saved</Text>
-            <Text style={styles.sectionTitleSmall}>Saved lines</Text>
+            <Text style={styles.eyebrow}>{l("Saved", {
+              hindi: "सहेजा गया",
+              telugu: "భద్రపరచబడింది",
+              tamil: "சேமிக்கப்பட்டது",
+              urdu: "محفوظ"
+            })}</Text>
+            <Text style={styles.sectionTitleSmall}>{l("Saved lines", {
+              hindi: "सहेजी गई पंक्तियाँ",
+              telugu: "భద్రపరచిన పంక్తులు",
+              tamil: "சேமித்த வரிகள்",
+              urdu: "محفوظ شدہ سطور"
+            })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{savedCommunityCount} saved</Text>
+          <Text style={styles.smallMeta}>{savedCommunityCount} {l("saved", {
+            hindi: "सहेजा गया",
+            telugu: "భద్రపరచబడింది",
+            tamil: "சேமிக்கப்பட்டது",
+            urdu: "محفوظ"
+          })}</Text>
         </View>
         <Text style={styles.promptText}>
-          Save useful replies, complaint notes, and calm guidance so you can return to them without
-          searching again.
+          {l("Save useful replies, complaint notes, and calm guidance so you can return to them without searching again.", {
+            hindi: "काम आने वाले जवाब, शिकायत नोट, और शांत मार्गदर्शन सहेजें ताकि आप उन्हें दोबारा खोजे बिना वापस देख सकें।",
+            telugu: "ఉపయోగకరమైన ప్రతిస్పందనలు, ఫిర్యాదు గమనికలు, మరియు శాంతమైన మార్గదర్శకతను సేవ్ చేయండి, తద్వారా మళ్లీ వెతకకుండా తిరిగి చూడగలరు.",
+            tamil: "பயனுள்ள பதில்கள், புகார் குறிப்புகள், மற்றும் அமைதியான வழிகாட்டுதலைச் சேமிக்கவும்; மீண்டும் தேடாமல் அவற்றைத் திரும்பப் பார்க்கலாம்.",
+            urdu: "کارآمد جوابات، شکایت نوٹس، اور پُرسکون رہنمائی محفوظ کریں تاکہ آپ انہیں دوبارہ تلاش کیے بغیر واپس دیکھ سکیں۔"
+          })}
         </Text>
         <View style={styles.communityActions}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Clear all saved lines"
-            accessibilityHint="Removes every saved feed post and chat message. This cannot be undone."
-            onPress={() => confirmDestructive("Clear all saved lines?", "This removes every saved feed post and chat message. This cannot be undone.", onClearSavedCommunityItems)}
+            accessibilityLabel={l("Clear all saved lines", {
+              hindi: "सभी सहेजी गई पंक्तियाँ साफ़ करें",
+              telugu: "అన్ని భద్రపరచిన పంక్తులను క్లియర్ చేయండి",
+              tamil: "அனைத்து சேமித்த வரிகளை அழிக்கவும்",
+              urdu: "تمام محفوظ شدہ سطور صاف کریں"
+            })}
+            accessibilityHint={l("Removes every saved feed post and chat message. This cannot be undone.", {
+              hindi: "सहेजे गए हर फ़ीड पोस्ट और चैट संदेश को हटाता है। इसे वापस नहीं लाया जा सकता।",
+              telugu: "భద్రపరచిన ప్రతి ఫీడ్ పోస్ట్ మరియు చాట్ సందేశాన్ని తొలగిస్తుంది. ఇది తిరిగి రాదు.",
+              tamil: "சேமித்த ஒவ்வொரு feed post மற்றும் chat message-ஐயும் நீக்குகிறது. இதை மீட்டெடுக்க முடியாது.",
+              urdu: "ہر محفوظ شدہ فیڈ پوسٹ اور چیٹ پیغام کو حذف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔"
+            })}
+            onPress={() => confirmDestructive(
+              l("Clear all saved lines?", {
+                hindi: "क्या सभी सहेजी गई पंक्तियाँ साफ़ करें?",
+                telugu: "అన్ని భద్రపరచిన పంక్తులను క్లియర్ చేయాలా?",
+                tamil: "அனைத்து சேமித்த வரிகளை அழிக்க வேண்டுமா?",
+                urdu: "کیا تمام محفوظ شدہ سطور صاف کریں؟"
+              }),
+              l("This removes every saved feed post and chat message. This cannot be undone.", {
+                hindi: "यह सहेजे गए हर फ़ीड पोस्ट और चैट संदेश को हटाता है। इसे वापस नहीं लाया जा सकता।",
+                telugu: "ఇది భద్రపరచిన ప్రతి ఫీడ్ పోస్ట్ మరియు చాట్ సందేశాన్ని తొలగిస్తుంది. ఇది తిరిగి రాదు.",
+                tamil: "இது சேமித்த ஒவ்வொரு feed post மற்றும் chat message-ஐயும் நீக்குகிறது. இதை மீட்டெடுக்க முடியாது.",
+                urdu: "یہ ہر محفوظ شدہ فیڈ پوسٹ اور چیٹ پیغام کو حذف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔"
+              }),
+              onClearSavedCommunityItems
+            )}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
-            <Text style={styles.helpButtonSecondaryLabel}>Clear saved</Text>
+            <Text style={styles.helpButtonSecondaryLabel}>{l("Clear saved", {
+              hindi: "सहेजे गए साफ़ करें",
+              telugu: "భద్రపరచినవి క్లియర్ చేయండి",
+              tamil: "சேமித்தவற்றை அழிக்கவும்",
+              urdu: "محفوظ شدہ صاف کریں"
+            })}</Text>
           </Pressable>
         </View>
         {showFullCommunity ? null : (
           <View style={styles.communityPreviewBand}>
-            <Text style={styles.visionGuidanceTitle}>Saved lines hidden</Text>
+            <Text style={styles.visionGuidanceTitle}>{l("Saved lines hidden", {
+              hindi: "सहेजी गई पंक्तियाँ छिपी हुई हैं",
+              telugu: "భద్రపరచిన పంక్తులు దాచబడ్డాయి",
+              tamil: "சேமித்த வரிகள் மறைக்கப்பட்டுள்ளன",
+              urdu: "محفوظ شدہ سطور چھپی ہوئی ہیں"
+            })}</Text>
             <Text style={styles.visionGuidanceText}>
-              Tap full community to see the saved feed and saved chat lines that you can return to later.
+              {l("Tap full community to see the saved feed and saved chat lines that you can return to later.", {
+                hindi: "सहेजा गया फ़ीड और सहेजी गई चैट पंक्तियाँ देखने के लिए पूरा समुदाय खोलें, ताकि आप बाद में लौट सकें।",
+                telugu: "తరువాత తిరిగి చూడగలిగే భద్రపరచిన ఫీడ్ మరియు చాట్ పంక్తులను చూడడానికి full communityపై టాప్ చేయండి.",
+                tamil: "பின்னர் திரும்பிப் பார்க்கக்கூடிய சேமித்த feed மற்றும் chat வரிகளைப் பார்க்க முழு community-ஐத் தட்டவும்.",
+                urdu: "بعد میں واپس دیکھنے کے لیے محفوظ شدہ فیڈ اور چیٹ سطور دیکھنے کے لیے مکمل کمیونٹی پر ٹیپ کریں۔"
+              })}
             </Text>
           </View>
         )}
         {showFullCommunity && savedCommunityFeed.length === 0 && savedCommunityChat.length === 0 ? (
           <View style={styles.emptyStateLarge}>
-            <Text style={styles.emptyTitle}>Nothing saved yet</Text>
-            <Text style={styles.emptyText}>Tap Save on a feed item or chat reply to keep it here.</Text>
+            <Text style={styles.emptyTitle}>{l("Nothing saved yet", {
+              hindi: "अभी कुछ भी सहेजा नहीं गया है",
+              telugu: "ఇంకా ఏదీ భద్రపరచలేదు",
+              tamil: "இன்னும் எதுவும் சேமிக்கப்படவில்லை",
+              urdu: "ابھی کچھ بھی محفوظ نہیں کیا گیا"
+            })}</Text>
+            <Text style={styles.emptyText}>{l("Tap Save on a feed item or chat reply to keep it here.", {
+              hindi: "यहाँ रखने के लिए किसी फ़ीड आइटम या चैट जवाब पर Save टैप करें।",
+              telugu: "దాన్ని ఇక్కడ ఉంచడానికి ఫీడ్ ఐటమ్ లేదా చాట్ ప్రత్యుత్తరంపై Save నొక్కండి.",
+              tamil: "இதை இங்கே வைத்திருக்க feed item அல்லது chat reply-ல் Save-ஐத் தட்டவும்.",
+              urdu: "اسے یہاں رکھنے کے لیے کسی فیڈ آئٹم یا چیٹ جواب پر Save پر ٹیپ کریں۔"
+            })}</Text>
           </View>
         ) : (
           <View style={[styles.communitySavedList, !showFullCommunity && styles.hiddenSection]}>
@@ -29103,26 +29440,56 @@ function CommunitySection({
                   <View>
                     <Text style={styles.communityAuthor}>{message.author}</Text>
                     <Text style={styles.communityMeta}>
-                      {formatDate(message.createdAt)} / saved from feed
+                      {formatDate(message.createdAt)} / {l("saved from feed", {
+                        hindi: "फ़ीड से सहेजा गया",
+                        telugu: "ఫీడ్ నుండి భద్రపరచబడింది",
+                        tamil: "feed-இல் இருந்து சேமிக்கப்பட்டது",
+                        urdu: "فیڈ سے محفوظ کیا گیا"
+                      })}
                     </Text>
                   </View>
                   <View style={[styles.communityBadge, styles.communityBadgeVerified]}>
                     <Text style={[styles.communityBadgeText, styles.communityBadgeTextVerified]}>
-                      Saved
+                      {l("Saved", {
+                        hindi: "सहेजा गया",
+                        telugu: "భద్రపరచబడింది",
+                        tamil: "சேமிக்கப்பட்டது",
+                        urdu: "محفوظ"
+                      })}
                     </Text>
                   </View>
                 </View>
                 <Text style={styles.communityText}>{message.text}</Text>
-                <Text style={styles.communityMeta}>Topic: {message.topic}</Text>
+                <Text style={styles.communityMeta}>{l("Topic:", {
+                  hindi: "विषय:",
+                  telugu: "విషయం:",
+                  tamil: "தலைப்பு:",
+                  urdu: "موضوع:"
+                })} {message.topic}</Text>
                 <View style={styles.communityFeedActions}>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel={`Remove saved post from ${message.author}`}
-                    accessibilityHint="Removes this post from your saved lines"
+                    accessibilityLabel={`${l("Remove saved post from", {
+                      hindi: "सेव की गई पोस्ट हटाएँ",
+                      telugu: "భద్రపరచిన పోస్ట్‌ను తీసివేయండి",
+                      tamil: "சேமித்த பதிவை நீக்கவும்",
+                      urdu: "محفوظ شدہ پوسٹ ہٹائیں"
+                    })} ${message.author}`}
+                    accessibilityHint={l("Removes this post from your saved lines", {
+                      hindi: "इस पोस्ट को आपकी सहेजी गई पंक्तियों से हटाता है।",
+                      telugu: "ఈ పోస్ట్‌ను మీ భద్రపరచిన పంక్తుల నుండి తొలగిస్తుంది.",
+                      tamil: "இந்த பதிவை உங்கள் சேமித்த வரிகளில் இருந்து நீக்குகிறது.",
+                      urdu: "اس پوسٹ کو آپ کی محفوظ شدہ سطور سے ہٹاتا ہے۔"
+                    })}
                     onPress={() => onToggleSavedCommunityItem("feed", message.id)}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.textButtonLabel}>Unsave</Text>
+                    <Text style={styles.textButtonLabel}>{l("Unsave", {
+                      hindi: "असहेजें",
+                      telugu: "అన్‌సేవ్",
+                      tamil: "சேமிப்பை நீக்கு",
+                      urdu: "غیر محفوظ کریں"
+                    })}</Text>
                   </Pressable>
                 </View>
               </View>
@@ -29135,28 +29502,68 @@ function CommunitySection({
                     <View>
                       <Text style={styles.communityAuthor}>{message.author}</Text>
                       <Text style={styles.communityMeta}>
-                        {formatDate(message.createdAt)} / saved from chat
+                        {formatDate(message.createdAt)} / {l("saved from chat", {
+                          hindi: "चैट से सहेजा गया",
+                          telugu: "చాట్ నుండి భద్రపరచబడింది",
+                          tamil: "அரட்டையில் இருந்து சேமிக்கப்பட்டது",
+                          urdu: "چیٹ سے محفوظ کیا گیا"
+                        })}
                       </Text>
                     </View>
                     <View style={[styles.communityBadge, styles.communityBadgeUser]}>
                       <Text style={[styles.communityBadgeText, styles.communityBadgeTextUser]}>
-                        Saved
+                        {l("Saved", {
+                          hindi: "सहेजा गया",
+                          telugu: "భద్రపరచబడింది",
+                          tamil: "சேமிக்கப்பட்டது",
+                          urdu: "محفوظ"
+                        })}
                       </Text>
                     </View>
                   </View>
                   <Text style={styles.communityText}>{message.text}</Text>
                   <Text style={styles.communityMeta}>
-                    Persona: {message.persona} / {isUser ? "You" : "Verified"}
+                    {l("Persona:", {
+                      hindi: "व्यक्तित्व:",
+                      telugu: "వ్యక్తిత్వం:",
+                      tamil: "பாத்திரம்:",
+                      urdu: "کردار:"
+                    })} {message.persona} / {isUser ? l("You", {
+                      hindi: "आप",
+                      telugu: "మీరు",
+                      tamil: "நீங்கள்",
+                      urdu: "آپ"
+                    }) : l("Verified", {
+                      hindi: "सत्यापित",
+                      telugu: "ధృవీకరించబడింది",
+                      tamil: "சரிபார்க்கப்பட்டது",
+                      urdu: "تصدیق شدہ"
+                    })}
                   </Text>
                   <View style={styles.communityFeedActions}>
                     <Pressable
                       accessibilityRole="button"
-                      accessibilityLabel={`Remove saved chat message from ${message.author}`}
-                      accessibilityHint="Removes this chat message from your saved lines"
+                      accessibilityLabel={`${l("Remove saved chat message from", {
+                        hindi: "सहेजे गए चैट संदेश को हटाएँ",
+                        telugu: "భద్రపరచిన చాట్ సందేశాన్ని తీసివేయండి",
+                        tamil: "சேமித்த அரட்டை செய்தியை நீக்கவும்",
+                        urdu: "محفوظ شدہ چیٹ پیغام ہٹائیں"
+                      })} ${message.author}`}
+                      accessibilityHint={l("Removes this chat message from your saved lines", {
+                        hindi: "इस चैट संदेश को आपकी सहेजी गई पंक्तियों से हटाता है।",
+                        telugu: "ఈ చాట్ సందేశాన్ని మీ భద్రపరచిన పంక్తుల నుండి తొలగిస్తుంది.",
+                        tamil: "இந்த அரட்டை செய்தியை உங்கள் சேமித்த வரிகளில் இருந்து நீக்குகிறது.",
+                        urdu: "اس چیٹ پیغام کو آپ کی محفوظ شدہ سطور سے ہٹاتا ہے۔"
+                      })}
                       onPress={() => onToggleSavedCommunityItem("chat", message.id)}
                       style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                     >
-                      <Text style={styles.textButtonLabel}>Unsave</Text>
+                      <Text style={styles.textButtonLabel}>{l("Unsave", {
+                        hindi: "असहेजें",
+                        telugu: "అన్‌సేవ్",
+                        tamil: "சேமிப்பை நீக்கு",
+                        urdu: "غیر محفوظ کریں"
+                      })}</Text>
                     </Pressable>
                   </View>
                 </View>
