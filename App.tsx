@@ -8254,6 +8254,136 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     tamil: "மதிப்பீடு சேமிக்கப்பட்டது",
     urdu: "ریٹنگ محفوظ ہو گئی"
   },
+  "Send OTP": {
+    telugu: "OTP పంపండి",
+    tamil: "OTP அனுப்பவும்",
+    urdu: "OTP بھیجیں"
+  },
+  "Sending...": {
+    telugu: "పంపుతోంది…",
+    tamil: "அனுப்பப்படுகிறது…",
+    urdu: "بھیجا جا رہا ہے…"
+  },
+  "Verify code": {
+    telugu: "కోడ్ ధృవీకరించండి",
+    tamil: "குறியீட்டைச் சரிபார்க்கவும்",
+    urdu: "کوڈ کی تصدیق کریں"
+  },
+  "Enter phone code here": {
+    telugu: "ఫోన్ కోడ్‌ను ఇక్కడ నమోదు చేయండి",
+    tamil: "தொலைபேசி குறியீட்டை இங்கே உள்ளிடவும்",
+    urdu: "فون کا کوڈ یہاں درج کریں"
+  },
+  "Enter email code here": {
+    telugu: "ఇమెయిల్ కోడ్‌ను ఇక్కడ నమోదు చేయండి",
+    tamil: "மின்னஞ்சல் குறியீட்டை இங்கே உள்ளிடவும்",
+    urdu: "ای میل کا کوڈ یہاں درج کریں"
+  },
+  "Save profile": {
+    telugu: "ప్రొఫైల్ సేవ్ చేయండి",
+    tamil: "சுயவிவரத்தை சேமிக்கவும்",
+    urdu: "پروفائل محفوظ کریں"
+  },
+  "Open admin control center": {
+    telugu: "అడ్మిన్ నియంత్రణ కేంద్రాన్ని తెరవండి",
+    tamil: "நிர்வாக கட்டுப்பாட்டு மையத்தைத் திறக்கவும்",
+    urdu: "ایڈمن کنٹرول سینٹر کھولیں"
+  },
+  "Close": {
+    telugu: "మూసివేయండి",
+    tamil: "மூடவும்",
+    urdu: "بند کریں"
+  },
+  "Invite a friend": {
+    telugu: "స్నేహితుడిని ఆహ్వానించండి",
+    tamil: "நண்பரை அழைக்கவும்",
+    urdu: "دوست کو مدعو کریں"
+  },
+  "Your invite code": {
+    telugu: "మీ ఆహ్వాన కోడ్",
+    tamil: "உங்கள் அழைப்பு குறியீடு",
+    urdu: "آپ کا دعوتی کوڈ"
+  },
+  "Share invite": {
+    telugu: "ఆహ్వానం పంచుకోండి",
+    tamil: "அழைப்பை பகிரவும்",
+    urdu: "دعوت شیئر کریں"
+  },
+  "Apply code": {
+    telugu: "కోడ్ వర్తింపజేయండి",
+    tamil: "குறியீட்டை பயன்படுத்தவும்",
+    urdu: "کوڈ لاگو کریں"
+  },
+  "Voice character": {
+    telugu: "వాయిస్ స్వభావం",
+    tamil: "குரல் வகை",
+    urdu: "آواز کی قسم"
+  },
+  "Speaking speed": {
+    telugu: "మాట్లాడే వేగం",
+    tamil: "பேச்சு வேகம்",
+    urdu: "بولنے کی رفتار"
+  },
+  "Read current guidance": {
+    telugu: "ప్రస్తుత మార్గదర్శకతను చదవండి",
+    tamil: "தற்போதைய வழிகாட்டலைப் படிக்கவும்",
+    urdu: "موجودہ رہنمائی پڑھیں"
+  },
+  "Stop voice": {
+    telugu: "వాయిస్ ఆపు",
+    tamil: "குரலை நிறுத்து",
+    urdu: "آواز روکیں"
+  },
+  "Emergency number": {
+    telugu: "అత్యవసర నంబర్",
+    tamil: "அவசர எண்",
+    urdu: "ہنگامی نمبر"
+  },
+  "Nearby professional help": {
+    telugu: "సమీప వృత్తిపరమైన సహాయం",
+    tamil: "அருகிலுள்ள தொழில்முறை உதவி",
+    urdu: "قریبی پیشہ ورانہ مدد"
+  },
+  "Trusted contacts": {
+    telugu: "నమ్మకమైన సంప్రదింపులు",
+    tamil: "நம்பகமான தொடர்புகள்",
+    urdu: "قابلِ اعتماد رابطے"
+  },
+  "Government helplines": {
+    telugu: "ప్రభుత్వ హెల్ప్‌లైన్లు",
+    tamil: "அரசு உதவி எண்கள்",
+    urdu: "سرکاری ہیلپ لائنز"
+  },
+  "Daily check-in reminder": {
+    telugu: "రోజువారీ చెక్-ఇన్ గుర్తుచూపు",
+    tamil: "தினசரி check-in நினைவூட்டல்",
+    urdu: "روزانہ چیک اِن یاد دہانی"
+  },
+  "Daily emotional questionnaire": {
+    telugu: "రోజువారీ భావోద్వేగ ప్రశ్నావళి",
+    tamil: "தினசரி உணர்ச்சி கேள்வித்தாள்",
+    urdu: "روزانہ جذباتی سوالنامہ"
+  },
+  "Follow-up alerts": {
+    telugu: "ఫాలో-అప్ అలర్టులు",
+    tamil: "தொடர்ச்சி அறிவிப்புகள்",
+    urdu: "فالو اپ الرٹس"
+  },
+  "Preview daily question": {
+    telugu: "రోజువారీ ప్రశ్నను ముందుగా చూడండి",
+    tamil: "தினசரி கேள்வி முன்னோட்டம்",
+    urdu: "روزانہ سوال کا پیش نظارہ"
+  },
+  "Retention notifications": {
+    telugu: "ఉపయోగదారుని నిలుపుకునే నోటిఫికేషన్లు",
+    tamil: "பயனர் தக்கவைப்பு அறிவிப்புகள்",
+    urdu: "برقرار رکھنے والی اطلاعیں"
+  },
+  "Remembered login name or email (optional, this device only)": {
+    telugu: "గుర్తుంచుకున్న లాగిన్ పేరు లేదా ఇమెయిల్ (ఐచ్ఛికం, ఈ పరికరంలో మాత్రమే)",
+    tamil: "நினைவில் வைத்துள்ள உள்நுழைவு பெயர் அல்லது மின்னஞ்சல் (விருப்பம், இந்த சாதனத்தில் மட்டும்)",
+    urdu: "یاد رکھا ہوا لاگ اِن نام یا ای میل (اختیاری، صرف اس ڈیوائس پر)"
+  },
   "Private intake": {
     telugu: "ప్రైవేట్ intake",
     tamil: "தனிப்பட்ட intake",
@@ -38249,7 +38379,7 @@ function AccessOverlay({
                 }}
                   style={[styles.onboardingButtonSecondary, compactStartup && styles.onboardingButtonSecondaryCompact]}
                 >
-                  <Text style={styles.onboardingButtonSecondaryLabel}>Verify code</Text>
+                  <Text style={styles.onboardingButtonSecondaryLabel}>{t("Verify code", "कोड सत्यापित करें")}</Text>
                 </Pressable>
               </View>
               <TextInput
@@ -38258,7 +38388,11 @@ function AccessOverlay({
                 onChangeText={
                   verificationChannel === "phone" ? setProfilePhoneOtpInput : setProfileEmailOtpInput
                 }
-                placeholder={`Enter ${verificationChannel} code here`}
+                placeholder={
+                  verificationChannel === "phone"
+                    ? t("Enter phone code here", "फोन कोड यहाँ दर्ज करें")
+                    : t("Enter email code here", "ईमेल कोड यहाँ दर्ज करें")
+                }
                 placeholderTextColor="#9A8F82"
                 keyboardType="number-pad"
                 style={[styles.settingsInput, compactStartup && styles.settingsInputCompact]}
@@ -38284,11 +38418,11 @@ function AccessOverlay({
             }}
             style={[styles.onboardingButton, compactStartup && styles.onboardingButtonCompact]}
           >
-            <Text style={styles.onboardingButtonLabel}>Save profile</Text>
+            <Text style={styles.onboardingButtonLabel}>{t("Save profile", "प्रोफ़ाइल सहेजें")}</Text>
           </Pressable>
           {accessRole === "admin" ? (
             <Pressable accessibilityRole="button" onPress={onOpenAdminCenter} style={[styles.onboardingButtonSecondary, compactStartup && styles.onboardingButtonSecondaryCompact]}>
-              <Text style={styles.onboardingButtonSecondaryLabel}>Open admin control center</Text>
+              <Text style={styles.onboardingButtonSecondaryLabel}>{t("Open admin control center", "एडमिन नियंत्रण केंद्र खोलें")}</Text>
             </Pressable>
           ) : null}
           <Pressable
@@ -38306,7 +38440,7 @@ function AccessOverlay({
               pressed && canDismiss && styles.pressed
             ]}
           >
-            <Text style={styles.onboardingButtonSecondaryLabel}>Close</Text>
+            <Text style={styles.onboardingButtonSecondaryLabel}>{t("Close", "बंद करें")}</Text>
           </Pressable>
         </View>
       </ScrollView>
