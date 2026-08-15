@@ -24665,6 +24665,8 @@ function TodaySection({
   reportPrivacyMessage: string;
 }) {
   const uiCopy = getUiCopy(languageId);
+  const { width } = useWindowDimensions();
+  const isTinyPhone = width < 390;
   const compact = !isWide;
   const frontToneCategorySummaries = useMemo(() =>
     TONE_CATEGORIES.map((category) => {
@@ -24775,7 +24777,7 @@ function TodaySection({
             borderWidth: 1,
             borderColor: "rgba(14,148,136,0.22)",
             backgroundColor: "#F8FBFA",
-            padding: compact ? 14 : 18,
+            padding: compact ? (isTinyPhone ? 12 : 14) : 18,
             shadowColor: "#0F3D5E",
             shadowOpacity: 0.1,
             shadowRadius: 20,
@@ -24783,17 +24785,17 @@ function TodaySection({
             elevation: 6
           }}
         >
-          <View style={[styles.sectionHeader, { marginBottom: 12 }]}>
+          <View style={[styles.sectionHeader, { marginBottom: isTinyPhone ? 10 : 12 }]}>
             <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={[styles.eyebrow, { color: "#0A6F66" }]}>{uiCopy.homeStartMeta}</Text>
               <Text style={[styles.sectionTitleSmall, { color: "#0D1F22" }]}>{uiCopy.homeSupportTitle}</Text>
             </View>
             <Text style={styles.smallMeta}>{uiCopy.homeFlowLabel}</Text>
           </View>
-          <Text style={{ color: "#334155", fontSize: compact ? 13 : 14, lineHeight: compact ? 19 : 21, fontWeight: "700", marginBottom: compact ? 10 : 14 }}>
+          <Text style={{ color: "#334155", fontSize: compact ? (isTinyPhone ? 12 : 13) : 14, lineHeight: compact ? (isTinyPhone ? 17 : 19) : 21, fontWeight: "700", marginBottom: compact ? (isTinyPhone ? 8 : 10) : 14 }}>
             {uiCopy.homeSupportLead}
           </Text>
-          <View style={{ flexDirection: compact ? "column" : "row", flexWrap: "wrap", gap: 10 }}>
+          <View style={{ flexDirection: compact ? "column" : "row", flexWrap: "wrap", gap: isTinyPhone ? 8 : 10 }}>
             {[
               {
                 id: "ask",
@@ -24841,12 +24843,12 @@ function TodaySection({
                   {
                     flexBasis: compact ? undefined : "48%",
                     flexGrow: 1,
-                    minHeight: item.id === "ask" ? (compact ? 124 : 132) : (compact ? 104 : 116),
+                    minHeight: item.id === "ask" ? (compact ? (isTinyPhone ? 118 : 124) : 132) : (compact ? (isTinyPhone ? 96 : 104) : 116),
                     borderRadius: 20,
                     borderWidth: item.id === "ask" ? 2 : 1,
                     borderColor: item.id === "ask" ? "#0B6F66" : "rgba(15,61,94,0.12)",
                     backgroundColor: item.id === "ask" ? "#EAF8F5" : "#FFFFFF",
-                    padding: item.id === "ask" ? (compact ? 14 : 16) : (compact ? 12 : 14),
+                    padding: item.id === "ask" ? (compact ? (isTinyPhone ? 12 : 14) : 16) : (compact ? (isTinyPhone ? 10 : 12) : 14),
                     overflow: "hidden",
                     shadowColor: item.id === "ask" ? "#0B6F66" : "transparent",
                     shadowOpacity: item.id === "ask" ? 0.12 : 0,
@@ -24857,22 +24859,22 @@ function TodaySection({
                   pressed && styles.pressed
                 ]}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: compact ? 8 : 10 }}>
-                  <View style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: item.accent + "18", alignItems: "center", justifyContent: "center" }}>
-                    <Ionicons name={item.icon} size={19} color={item.accent} />
+                <View style={{ flexDirection: "row", alignItems: "center", gap: isTinyPhone ? 8 : 10, marginBottom: compact ? (isTinyPhone ? 6 : 8) : 10 }}>
+                  <View style={{ width: isTinyPhone ? 32 : 36, height: isTinyPhone ? 32 : 36, borderRadius: 12, backgroundColor: item.accent + "18", alignItems: "center", justifyContent: "center" }}>
+                    <Ionicons name={item.icon} size={isTinyPhone ? 18 : 19} color={item.accent} />
                   </View>
                   <View style={{ flex: 1, minWidth: 0 }}>
-                    <Text style={{ color: "#0D1F22", fontSize: item.id === "ask" ? 18 : 16, lineHeight: item.id === "ask" ? 23 : 20, fontWeight: "900" }} numberOfLines={1}>
+                    <Text style={{ color: "#0D1F22", fontSize: item.id === "ask" ? (isTinyPhone ? 17 : 18) : (isTinyPhone ? 15 : 16), lineHeight: item.id === "ask" ? (isTinyPhone ? 21 : 23) : (isTinyPhone ? 18 : 20), fontWeight: "900" }} numberOfLines={1}>
                       {item.title}
                     </Text>
-                    <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "700", marginTop: 2 }}>{item.cta}</Text>
+                    <Text style={{ color: item.accent, fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 14 : 16, fontWeight: "700", marginTop: 2 }}>{item.cta}</Text>
                   </View>
                 </View>
-                <Text style={{ color: "#334155", fontSize: item.id === "ask" ? 14 : 13, lineHeight: item.id === "ask" ? 21 : 19, fontWeight: "700" }} numberOfLines={compact ? (item.id === "ask" ? 2 : 1) : (item.id === "ask" ? 3 : 2)}>
+                <Text style={{ color: "#334155", fontSize: item.id === "ask" ? (isTinyPhone ? 13 : 14) : (isTinyPhone ? 12 : 13), lineHeight: item.id === "ask" ? (isTinyPhone ? 18 : 21) : (isTinyPhone ? 16 : 19), fontWeight: "700" }} numberOfLines={compact ? (item.id === "ask" ? (isTinyPhone ? 2 : 2) : 1) : (item.id === "ask" ? 3 : 2)}>
                   {item.body}
                 </Text>
-                <View style={{ marginTop: compact ? 10 : 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: 11, paddingVertical: 7 }}>
-                    <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "700" }}>
+                <View style={{ marginTop: compact ? (isTinyPhone ? 8 : 10) : 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: isTinyPhone ? 10 : 11, paddingVertical: isTinyPhone ? 6 : 7 }}>
+                    <Text style={{ color: item.accent, fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 14 : 16, fontWeight: "700" }}>
                       {item.id === "ask" ? uiCopy.homeSupportCardOpenCounselling : uiCopy.homeSupportCardContinue}
                     </Text>
                   </View>
@@ -24880,38 +24882,38 @@ function TodaySection({
               ))}
           </View>
           <View style={{
-            marginTop: 12,
+            marginTop: isTinyPhone ? 10 : 12,
             borderRadius: 18,
             borderWidth: 1,
             borderColor: "rgba(14,148,136,0.16)",
             backgroundColor: "#F2FBF8",
-            paddingHorizontal: 14,
-            paddingVertical: 12
+            paddingHorizontal: isTinyPhone ? 12 : 14,
+            paddingVertical: isTinyPhone ? 10 : 12
           }}>
-            <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "800", letterSpacing: 0.4, marginBottom: 4 }}>
+            <Text style={{ color: "#0E6F69", fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 14 : 16, fontWeight: "800", letterSpacing: 0.4, marginBottom: 4 }}>
               {uiCopy.homeFlowLabel}
             </Text>
-            <Text style={{ color: "#0D1F22", fontSize: compact ? 13 : 14, lineHeight: compact ? 18 : 20, fontWeight: "900" }}>
+            <Text style={{ color: "#0D1F22", fontSize: compact ? (isTinyPhone ? 12 : 13) : 14, lineHeight: compact ? (isTinyPhone ? 16 : 18) : 20, fontWeight: "900" }}>
               {homeFlowSequenceTitle}
             </Text>
-            <Text style={{ color: "#44515B", fontSize: 12, lineHeight: 17, fontWeight: "700", marginTop: 4 }}>
+            <Text style={{ color: "#44515B", fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 15 : 17, fontWeight: "700", marginTop: 4 }}>
               {homeFlowSequenceBody}
             </Text>
           </View>
           <View style={{
-            marginTop: 12,
+            marginTop: isTinyPhone ? 10 : 12,
             borderRadius: 16,
             borderWidth: 1,
             borderColor: "rgba(14,148,136,0.16)",
             backgroundColor: "#EEF8F6",
-            paddingHorizontal: 12,
-            paddingVertical: 10,
+            paddingHorizontal: isTinyPhone ? 10 : 12,
+            paddingVertical: isTinyPhone ? 8 : 10,
             flexDirection: "row",
             alignItems: "center",
-            gap: 9
+            gap: isTinyPhone ? 7 : 9
           }}>
-            <Ionicons name="lock-closed" size={15} color="#0E6F69" />
-            <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 17, fontWeight: "800", flex: 1 }}>
+            <Ionicons name="lock-closed" size={isTinyPhone ? 14 : 15} color="#0E6F69" />
+            <Text style={{ color: "#1F2937", fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 15 : 17, fontWeight: "800", flex: 1 }}>
               {uiCopy.homePrivacyNote}
             </Text>
           </View>
