@@ -42094,10 +42094,10 @@ function CounselingChatModal({
         </Pressable>
 
         {/* Chat messages */}
-        <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: isVeryCompactPhone ? 12 : isCompactPhone ? 16 : 20, gap: isVeryCompactPhone ? 10 : isCompactPhone ? 12 : 16 }} showsVerticalScrollIndicator={false}>
-          <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 10 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
-            <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Guided support room", { hindi: "मार्गदर्शित सहायता कक्ष", telugu: "మార్గదర్శిత మద్దతు గది", tamil: "வழிகாட்டப்பட்ட ஆதரவு அறை", urdu: "رہنمائی والا مدد کمرہ" })}</Text>
-            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 15 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 18 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 3 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
+        <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: isVeryCompactPhone ? 10 : isCompactPhone ? 16 : 20, gap: isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16 }} showsVerticalScrollIndicator={false}>
+          <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
+            <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 10 : 12, lineHeight: isVeryCompactPhone ? 12 : 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Guided support room", { hindi: "मार्गदर्शित सहायता कक्ष", telugu: "మార్గదర్శిత మద్దతు గది", tamil: "வழிகாட்டப்பட்ட ஆதரவு அறை", urdu: "رہنمائی والا مدد کمرہ" })}</Text>
+            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 14 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 17 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 2 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {l("What brings you here?", {
                 hindi: "आप यहाँ किस लिए आए हैं?",
                 telugu: "మీరు ఇక్కడికి ఎందుకు వచ్చారు?",
@@ -42105,7 +42105,7 @@ function CounselingChatModal({
                 urdu: "آپ یہاں کس لیے آئے ہیں؟"
               })}
             </Text>
-            <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 14, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 15 : 21, fontWeight: "700", marginTop: 2 }}>
+            <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 8.5 : isCompactPhone ? 11 : 14, lineHeight: isVeryCompactPhone ? 11 : isCompactPhone ? 15 : 21, fontWeight: "700", marginTop: 2 }}>
               {isVeryCompactPhone
                 ? l("We’ll listen first, then shape one next step together.", {
                     hindi: "पहले हम सुनेंगे, फिर एक अगला कदम साथ मिलकर बनाएँगे।",
@@ -42140,12 +42140,12 @@ function CounselingChatModal({
             <View key={i} style={{ alignItems: turn.role === "friend" ? "flex-start" : "flex-end" }}>
               {turn.role === "friend" && (
                 <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, maxWidth: "88%" }}>
-                  <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Text style={{ fontSize: 16 }}>🌟</Text>
+                  <View style={{ width: isVeryCompactPhone ? 30 : 32, height: isVeryCompactPhone ? 30 : 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Text style={{ fontSize: isVeryCompactPhone ? 15 : 16 }}>🌟</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, borderBottomLeftRadius: 4, padding: 14, borderWidth: 1, borderColor: "#E0EBE8", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 }}>
-                      <Text style={{ color: "#213A4A", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                    <View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, borderBottomLeftRadius: 4, padding: isVeryCompactPhone ? 12 : 14, borderWidth: 1, borderColor: "#E0EBE8", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 }}>
+                      <Text style={{ color: "#213A4A", fontSize: isVeryCompactPhone ? 13 : 14, lineHeight: isVeryCompactPhone ? 20 : 22 }}>{turn.message}</Text>
                     </View>
                     {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginLeft: 4 }}>{turnTime}</Text>}
                   </View>
@@ -42153,8 +42153,8 @@ function CounselingChatModal({
               )}
               {turn.role === "user" && (
                 <View style={{ maxWidth: "80%", alignItems: "flex-end" }}>
-                  <View style={{ backgroundColor: "#CDEBE5", borderRadius: 16, borderBottomRightRadius: 4, padding: 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 1 }}>
-                    <Text style={{ color: "#123A38", fontSize: 14, lineHeight: 22 }}>{turn.message}</Text>
+                  <View style={{ backgroundColor: "#CDEBE5", borderRadius: 16, borderBottomRightRadius: 4, padding: isVeryCompactPhone ? 12 : 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 1 }}>
+                    <Text style={{ color: "#123A38", fontSize: isVeryCompactPhone ? 13 : 14, lineHeight: isVeryCompactPhone ? 20 : 22 }}>{turn.message}</Text>
                   </View>
                   {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginRight: 4 }}>{turnTime}</Text>}
                 </View>
@@ -42169,11 +42169,11 @@ function CounselingChatModal({
           {isGuideTyping && (
             <View style={{ alignItems: "flex-start" }}>
               <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, maxWidth: "60%" }}>
-                <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Text style={{ fontSize: 16 }}>🌟</Text>
+                <View style={{ width: isVeryCompactPhone ? 30 : 32, height: isVeryCompactPhone ? 30 : 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Text style={{ fontSize: isVeryCompactPhone ? 15 : 16 }}>🌟</Text>
                 </View>
-                <Animated.View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, borderBottomLeftRadius: 4, paddingVertical: 14, paddingHorizontal: 16, borderWidth: 1, borderColor: "#E0EBE8", opacity: typingDotsAnim }}>
-                  <Text style={{ color: "#3A617D", fontSize: 18, fontWeight: "900", letterSpacing: 2 }}>•••</Text>
+                <Animated.View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, borderBottomLeftRadius: 4, paddingVertical: isVeryCompactPhone ? 12 : 14, paddingHorizontal: isVeryCompactPhone ? 14 : 16, borderWidth: 1, borderColor: "#E0EBE8", opacity: typingDotsAnim }}>
+                  <Text style={{ color: "#3A617D", fontSize: isVeryCompactPhone ? 16 : 18, fontWeight: "900", letterSpacing: 2 }}>•••</Text>
                 </Animated.View>
               </View>
             </View>
@@ -42184,8 +42184,8 @@ function CounselingChatModal({
               People can continue up to the full counselling depth or choose
               the next step themselves when it feels right. */}
           {canPrepareNextStepNow && (
-            <View style={{ backgroundColor: "#F6FBFA", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#B9D8D2", gap: 10 }}>
-              <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 19, fontWeight: "700" }}>
+            <View style={{ backgroundColor: "#F6FBFA", borderRadius: 14, padding: isVeryCompactPhone ? 12 : 14, borderWidth: 1, borderColor: "#B9D8D2", gap: isVeryCompactPhone ? 8 : 10 }}>
+              <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: isVeryCompactPhone ? 17 : 19, fontWeight: "700" }}>
                 {l("I have enough context to prepare a practical next step, and you can also continue the counselling conversation.", {
                   hindi: "मेरे पास एक व्यावहारिक अगला कदम तैयार करने के लिए पर्याप्त संदर्भ है, और आप काउंसलिंग बातचीत जारी भी रख सकते हैं।",
                   telugu: "ప్రాక్టికల్ తదుపరి అడుగు సిద్ధం చేయడానికి నాకు తగినంత సందర్భం ఉంది, మరియు మీరు కౌన్సెలింగ్ సంభాషణను కొనసాగించవచ్చు.",
@@ -42193,7 +42193,7 @@ function CounselingChatModal({
                   urdu: "میرے پاس ایک عملی اگلا قدم تیار کرنے کے لیے کافی سیاق موجود ہے، اور آپ مشاورت کی گفتگو جاری رکھ سکتے ہیں۔"
                 })}
               </Text>
-              <Text style={{ color: "#34515B", fontSize: 12, lineHeight: 18 }}>
+              <Text style={{ color: "#34515B", fontSize: isVeryCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 16 : 18 }}>
                 {counselingRepliesUntilAutoSummary > 0
                   ? l(`${counselingRepliesUntilAutoSummary} guided replies remain before an automatic summary.`, {
                       hindi: `स्वचालित सारांश से पहले ${counselingRepliesUntilAutoSummary} मार्गदर्शित उत्तर शेष हैं।`,
@@ -42217,15 +42217,15 @@ function CounselingChatModal({
                   tamil: "இந்த ஆலோசனை உரையாடலிலிருந்து என் அடுத்த படியைத் தயாரிக்கவும்",
                   urdu: "اس مشاورتی گفتگو سے میرا اگلا قدم تیار کریں"
                 })}
-                style={({ pressed }) => ({
-                  backgroundColor: pressed ? "#0E4A46" : "#0E6F69",
-                  borderRadius: 12,
-                  paddingVertical: 12,
-                  paddingHorizontal: 14,
-                  alignItems: "center"
-                })}
-              >
-                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "700" }}>
+                  style={({ pressed }) => ({
+                    backgroundColor: pressed ? "#0E4A46" : "#0E6F69",
+                    borderRadius: 12,
+                    paddingVertical: isVeryCompactPhone ? 10 : 12,
+                    paddingHorizontal: isVeryCompactPhone ? 12 : 14,
+                    alignItems: "center"
+                  })}
+                >
+                <Text style={{ color: "#FFFFFF", fontSize: isVeryCompactPhone ? 12 : 13, fontWeight: "700" }}>
                   {l("Prepare next step now", {
                     hindi: "अगला कदम अभी तैयार करें",
                     telugu: "తదుపరి అడుగును ఇప్పుడే సిద్ధం చేయండి",
@@ -42277,13 +42277,13 @@ function CounselingChatModal({
                   </Text>
                 )}
               </View>
-              <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>{l("Your recommended journey", { hindi: "आपकी सुझाई गई यात्रा", telugu: "మీకు సూచించిన ప్రయాణం", tamil: "உங்களுக்கான பரிந்துரைக்கப்பட்ட பயணம்", urdu: "آپ کا تجویز کردہ سفر" })}</Text>
+              <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 11 : 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>{l("Your recommended journey", { hindi: "आपकी सुझाई गई यात्रा", telugu: "మీకు సూచించిన ప్రయాణం", tamil: "உங்களுக்கான பரிந்துரைக்கப்பட்ட பயணம்", urdu: "آپ کا تجویز کردہ سفر" })}</Text>
               {journeySteps.map((step, i) => (
-                <View key={step.tabId} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "#E0EBE8", borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
-                  <Text style={{ fontSize: 22 }}>{step.emoji}</Text>
+                <View key={step.tabId} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: isVeryCompactPhone ? 12 : 14, flexDirection: "row", alignItems: "center", gap: isVeryCompactPhone ? 10 : 12, borderWidth: 1, borderColor: "#E0EBE8", borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
+                  <Text style={{ fontSize: isVeryCompactPhone ? 20 : 22 }}>{step.emoji}</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "700" }}>{i + 1}. {step.label}</Text>
-                    <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 18, marginTop: 2 }}>{step.reason}</Text>
+                    <Text style={{ color: "#3A617D", fontSize: isVeryCompactPhone ? 13 : 14, fontWeight: "700" }}>{i + 1}. {step.label}</Text>
+                    <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 16 : 18, marginTop: 2 }}>{step.reason}</Text>
                   </View>
                 </View>
               ))}
@@ -42291,11 +42291,11 @@ function CounselingChatModal({
               {synthText.trim().length > 0 && (
                 <Pressable
                   onPress={() => speakText(synthText)}
-                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 12, padding: 12, marginTop: 4, opacity: pressed ? 0.7 : 1, borderWidth: 1, borderColor: "#B7CEC9" })}
+                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 12, padding: isVeryCompactPhone ? 10 : 12, marginTop: 4, opacity: pressed ? 0.7 : 1, borderWidth: 1, borderColor: "#B7CEC9" })}
                   accessibilityLabel={l("Replay guide summary aloud", { hindi: "मार्गदर्शक सारांश ज़ोर से दोहराएँ", telugu: "మార్గదర్శక సారాంశాన్ని మళ్లీ వినిపించండి", tamil: "வழிகாட்டி சுருக்கத்தை ஒலியாக மீண்டும் இயக்கவும்", urdu: "رہنمائی کا خلاصہ بلند آواز میں دوبارہ سنائیں" })}
                 >
                   <Text style={{ fontSize: 18 }}>🔊</Text>
-                  <Text style={{ color: "#0A6F66", fontSize: 13, fontWeight: "700" }}>{l("Replay guide summary aloud", { hindi: "मार्गदर्शक सारांश ज़ोर से दोहराएँ", telugu: "మార్గదర్శక సారాంశాన్ని మళ్లీ వినిపించండి", tamil: "வழிகாட்டி சுருக்கத்தை ஒலியாக மீண்டும் இயக்கவும்", urdu: "رہنمائی کا خلاصہ بلند آواز میں دوبارہ سنائیں" })}</Text>
+                  <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 12 : 13, fontWeight: "700" }}>{l("Replay guide summary aloud", { hindi: "मार्गदर्शक सारांश ज़ोर से दोहराएँ", telugu: "మార్గదర్శక సారాంశాన్ని మళ్లీ వినిపించండి", tamil: "வழிகாட்டி சுருக்கத்தை ஒலியாக மீண்டும் இயக்கவும்", urdu: "رہنمائی کا خلاصہ بلند آواز میں دوبارہ سنائیں" })}</Text>
                 </Pressable>
               )}
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -42303,17 +42303,17 @@ function CounselingChatModal({
                   onPress={saveCounsellingSummary}
                   accessibilityRole="button"
                   accessibilityLabel={l("Save counselling summary", { hindi: "काउंसलिंग सारांश सहेजें", telugu: "కౌన్సెలింగ్ సారాంశాన్ని సేవ్ చేయండి", tamil: "ஆலோசனை சுருக்கத்தை சேமிக்கவும்", urdu: "مشاورت کا خلاصہ محفوظ کریں" })}
-                  style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, borderWidth: 1, borderColor: "#0E9488", backgroundColor: pressed ? "#E1F3F0" : "#FFFFFF", paddingVertical: 12, paddingHorizontal: 12, alignItems: "center" })}
+                  style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, borderWidth: 1, borderColor: "#0E9488", backgroundColor: pressed ? "#E1F3F0" : "#FFFFFF", paddingVertical: isVeryCompactPhone ? 10 : 12, paddingHorizontal: 12, alignItems: "center" })}
                 >
-                  <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>{l("Save summary", { hindi: "सारांश सहेजें", telugu: "సారాంశాన్ని సేవ్ చేయండి", tamil: "சுருக்கத்தை சேமிக்கவும்", urdu: "خلاصہ محفوظ کریں" })}</Text>
+                  <Text style={{ color: "#0E6F69", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 17, fontWeight: "700" }}>{l("Save summary", { hindi: "सारांश सहेजें", telugu: "సారాంశాన్ని సేవ్ చేయండి", tamil: "சுருக்கத்தை சேமிக்கவும்", urdu: "خلاصہ محفوظ کریں" })}</Text>
                 </Pressable>
                 <Pressable
                   onPress={continueCounsellingLater}
                   accessibilityRole="button"
                   accessibilityLabel={l("Continue counselling later", { hindi: "बाद में काउंसलिंग जारी रखें", telugu: "తర్వాత కౌన్సెలింగ్ కొనసాగించండి", tamil: "பின்னர் ஆலோசனையைத் தொடரவும்", urdu: "بعد میں مشاورت جاری رکھیں" })}
-                  style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, backgroundColor: pressed ? "#DDEAE7" : "#EEF6F4", paddingVertical: 12, paddingHorizontal: 12, alignItems: "center" })}
+                  style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, backgroundColor: pressed ? "#DDEAE7" : "#EEF6F4", paddingVertical: isVeryCompactPhone ? 10 : 12, paddingHorizontal: 12, alignItems: "center" })}
                 >
-                  <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>{l("Continue later", { hindi: "बाद में जारी रखें", telugu: "తర్వాత కొనసాగించండి", tamil: "பின்னர் தொடரவும்", urdu: "بعد میں جاری رکھیں" })}</Text>
+                  <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 17, fontWeight: "700" }}>{l("Continue later", { hindi: "बाद में जारी रखें", telugu: "తర్వాత కొనసాగించండి", tamil: "பின்னர் தொடரவும்", urdu: "بعد میں جاری رکھیں" })}</Text>
                 </Pressable>
               </View>
               <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 12, marginBottom: 2 }}>
@@ -42353,9 +42353,9 @@ function CounselingChatModal({
                 onPress={() => chooseJourneyNext("none")}
                 accessibilityRole="button"
                 accessibilityLabel={l("Not right now", { hindi: "अभी नहीं", telugu: "ఇప్పుడే కాదు", tamil: "இப்போது வேண்டாம்", urdu: "ابھی نہیں" })}
-                style={({ pressed }) => ({ padding: 12, alignItems: "center", opacity: pressed ? 0.6 : 1 })}
+                style={({ pressed }) => ({ padding: isVeryCompactPhone ? 10 : 12, alignItems: "center", opacity: pressed ? 0.6 : 1 })}
               >
-                <Text style={{ color: "#1F2937", fontSize: 13 }}>{l("Not right now", { hindi: "अभी नहीं", telugu: "ఇప్పుడే కాదు", tamil: "இப்போது வேண்டாம்", urdu: "ابھی نہیں" })}</Text>
+                <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 12 : 13 }}>{l("Not right now", { hindi: "अभी नहीं", telugu: "ఇప్పుడే కాదు", tamil: "இப்போது வேண்டாம்", urdu: "ابھی نہیں" })}</Text>
               </Pressable>
             </View>
           )}
@@ -42368,12 +42368,12 @@ function CounselingChatModal({
               backgroundColor: "#FFFFFF",
               borderTopWidth: 1,
               borderTopColor: "#DCE9E6",
-              paddingHorizontal: isVeryCompactPhone ? 8 : 16,
-              paddingTop: isVeryCompactPhone ? 6 : 12,
-              paddingBottom: Math.max(insets.bottom, isVeryCompactPhone ? 6 : 12),
+              paddingHorizontal: isVeryCompactPhone ? 6 : 16,
+              paddingTop: isVeryCompactPhone ? 4 : 12,
+              paddingBottom: Math.max(insets.bottom, isVeryCompactPhone ? 4 : 12),
               flexDirection: isVeryCompactPhone ? "column" : "row",
               alignItems: isVeryCompactPhone ? "stretch" : "flex-end",
-              gap: isVeryCompactPhone ? 8 : 10,
+              gap: isVeryCompactPhone ? 6 : 10,
               shadowColor: "#0E9488",
               shadowOffset: { width: 0, height: -3 },
               shadowOpacity: 0.06,
@@ -42395,12 +42395,13 @@ function CounselingChatModal({
                 style={{
                   backgroundColor: "#F1F6F5",
                   borderRadius: isVeryCompactPhone ? 11 : 12,
-                  paddingHorizontal: isVeryCompactPhone ? 8 : 12,
-                  paddingVertical: isVeryCompactPhone ? 6 : 12,
+                  paddingHorizontal: isVeryCompactPhone ? 6 : 12,
+                  paddingVertical: isVeryCompactPhone ? 4 : 12,
+                  minHeight: isVeryCompactPhone ? 40 : undefined,
                   color: "#213A4A",
-                  fontSize: isVeryCompactPhone ? 14 : 16,
-                  lineHeight: isVeryCompactPhone ? 18 : 22,
-                  maxHeight: isVeryCompactPhone ? 78 : 120,
+                  fontSize: isVeryCompactPhone ? 13 : 16,
+                  lineHeight: isVeryCompactPhone ? 17 : 22,
+                  maxHeight: isVeryCompactPhone ? 68 : 120,
                   borderWidth: 1,
                   borderColor: isListening ? "#0B6F66" : "#C4D8D4"
                 }}
@@ -42408,29 +42409,29 @@ function CounselingChatModal({
                 textAlignVertical="top"
               />
               {speechInputNotice ? (
-                <Text style={{ color: isListening ? "#0B6F66" : "#1F2937", fontSize: 12, marginTop: 5 }}>
+                <Text style={{ color: isListening ? "#0B6F66" : "#1F2937", fontSize: isVeryCompactPhone ? 11 : 12, marginTop: 4 }}>
                   {speechInputNotice}
                 </Text>
               ) : null}
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: isVeryCompactPhone ? "flex-end" : "flex-start", gap: 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: isVeryCompactPhone ? "flex-end" : "flex-start", gap: isVeryCompactPhone ? 6 : 8 }}>
               {/* Voice input button */}
               <Pressable
                 onPress={isListening ? stopVoiceInput : startVoiceInput}
-                style={{ width: isVeryCompactPhone ? 32 : 44, height: isVeryCompactPhone ? 32 : 44, borderRadius: isVeryCompactPhone ? 16 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+                style={{ width: isVeryCompactPhone ? 30 : 44, height: isVeryCompactPhone ? 30 : 44, borderRadius: isVeryCompactPhone ? 15 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
                 accessibilityRole="button"
                 accessibilityLabel={isListening ? l("Stop voice input", { hindi: "आवाज़ इनपुट रोकें", telugu: "వాయిస్ ఇన్‌పుట్ ఆపండి", tamil: "குரல் உள்ளீட்டை நிறுத்தவும்", urdu: "آواز کا ان پٹ روکیں" }) : l("Start voice input", { hindi: "आवाज़ इनपुट शुरू करें", telugu: "వాయిస్ ఇన్‌పుట్ ప్రారంభించండి", tamil: "குரல் உள்ளீட்டைத் தொடங்கவும்", urdu: "آواز کا ان پٹ شروع کریں" })}
               >
-                <Text style={{ fontSize: isVeryCompactPhone ? 17 : 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
+                <Text style={{ fontSize: isVeryCompactPhone ? 16 : 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
               </Pressable>
               <Pressable
                 onPress={handleSend}
                 disabled={isGuideTyping}
                 accessibilityRole="button"
                 accessibilityLabel={isGuideTyping ? l("Your guide is replying", { hindi: "आपका मार्गदर्शक जवाब दे रहा है", telugu: "మీ మార్గదర్శి ప్రత్యుత్తరం ఇస్తున్నారు", tamil: "உங்கள் வழிகாட்டி பதிலளிக்கிறார்", urdu: "آپ کا رہنما جواب دے رہا ہے" }) : l("Send message", { hindi: "संदेश भेजें", telugu: "సందేశం పంపండి", tamil: "செய்தியை அனுப்பவும்", urdu: "پیغام بھیجیں" })}
-                style={({ pressed }) => ({ width: isVeryCompactPhone ? 32 : 44, height: isVeryCompactPhone ? 32 : 44, borderRadius: isVeryCompactPhone ? 16 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+                style={({ pressed }) => ({ width: isVeryCompactPhone ? 30 : 44, height: isVeryCompactPhone ? 30 : 44, borderRadius: isVeryCompactPhone ? 15 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
               >
-                <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068", fontSize: isVeryCompactPhone ? 17 : 20 }}>↑</Text>
+                <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068", fontSize: isVeryCompactPhone ? 16 : 20 }}>↑</Text>
               </Pressable>
             </View>
           </View>
