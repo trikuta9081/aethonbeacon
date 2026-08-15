@@ -2809,6 +2809,24 @@ const HEADER_NAV_SHORT_LABEL: Partial<Record<TabId, string>> = {
   redress: "Help",
 };
 
+const HEADER_NAV_SHORT_LABEL_HINDI: Partial<Record<TabId, string>> = {
+  today: "होम",
+  aihelp: "पूछें",
+  vedic: "कुंडली",
+  tones: "स्वर",
+  community: "चैट",
+  redress: "मदद",
+  insights: "पैटर्न"
+};
+
+function getHeaderNavShortLabel(languageId: LanguageId, tab: { id: TabId; label: string }): string {
+  return (
+    (languageId === "hindi" ? HEADER_NAV_SHORT_LABEL_HINDI[tab.id] : undefined) ??
+    HEADER_NAV_SHORT_LABEL[tab.id] ??
+    tab.label
+  );
+}
+
 const launchNeeds: Array<{
   id: LaunchNeedId;
   label: string;
@@ -14268,9 +14286,9 @@ export default function App() {
   );
   const activeTabLabel = useMemo(
     () => activeTab === "focus"
-      ? "Calm Reset"
-      : visibleTabs.find((tab) => tab.id === navActiveTab)?.label ?? "Home",
-    [activeTab, navActiveTab, visibleTabs]
+      ? pickLocalizedText(languageId, { english: "Calm Reset", hindi: "शांत रीसेट" })
+      : visibleTabs.find((tab) => tab.id === navActiveTab)?.label ?? pickLocalizedText(languageId, { english: "Home", hindi: "होम" }),
+    [activeTab, languageId, navActiveTab, visibleTabs]
   );
   const headerNavTabs = useMemo(() => {
     const orderedIds: TabId[] = [
@@ -20886,7 +20904,7 @@ function isTrustedExternalUrl(url: string) {
                           style={[styles.topTabLabel, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
                           numberOfLines={1}
                         >
-                          {HEADER_NAV_SHORT_LABEL[tab.id] ?? tab.label}
+                          {getHeaderNavShortLabel(languageId, tab)}
                         </Text>
                       </Pressable>
                     );
@@ -20934,7 +20952,7 @@ function isTrustedExternalUrl(url: string) {
                           style={[styles.topTabLabel, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
                           numberOfLines={1}
                         >
-                          {HEADER_NAV_SHORT_LABEL[tab.id] ?? tab.label}
+                          {getHeaderNavShortLabel(languageId, tab)}
                         </Text>
                       </Pressable>
                     );
@@ -20965,9 +20983,10 @@ function isTrustedExternalUrl(url: string) {
                   style={[styles.topPageModeText, isCompact && styles.topPageModeTextCompact]}
                   numberOfLines={isCompact ? 3 : 2}
                 >
-                  {languageId === "hindi"
-                    ? "वापस जाने के बाद ← टैप करें। यह एक अलग पेज है।"
-                    : "Tap ← Back when done. This is a separate page."}
+                  {pickLocalizedText(languageId, {
+                    english: "Tap ← Back when done. This is a separate page.",
+                    hindi: "काम पूरा होने पर ← पीछे टैप करें। यह एक अलग पेज है।"
+                  })}
                 </Text>
               </View>
             ) : null}
@@ -21132,6 +21151,7 @@ function isTrustedExternalUrl(url: string) {
             {pendingRouteDecision ? (
               <RouteDecisionOverlay
                 decision={pendingRouteDecision}
+                languageId={languageId}
                 onChoose={commitRouteDecision}
                 onClose={() => {
                   setPendingRouteDecision(null);
@@ -21278,7 +21298,7 @@ function isTrustedExternalUrl(url: string) {
                             }}
                             numberOfLines={1}
                           >
-                            {profileDisplayName || "Welcome back"}
+                            {profileDisplayName || pickLocalizedText(languageId, { english: "Welcome back", hindi: "फिर से स्वागत है" })}
                           </Text>
                           <Text style={{ color: "#334155", fontSize: 12, marginTop: 3, fontStyle: "italic" }} numberOfLines={1}>
                             {moodAwareLine ?? motivation}
@@ -21306,18 +21326,30 @@ function isTrustedExternalUrl(url: string) {
                           </View>
                         ) : (
                           <View style={{ backgroundColor: "rgba(71,85,105,0.2)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(71,85,105,0.3)" }}>
-                            <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>No active focus</Text>
+                            <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
+                              {pickLocalizedText(languageId, { english: "No active focus", hindi: "कोई सक्रिय फोकस नहीं" })}
+                            </Text>
                           </View>
                         )}
                         {checkInStreak > 0 && (
                           <Animated.View style={{ backgroundColor: "rgba(251,191,36,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(251,191,36,0.25)", flexDirection: "row", alignItems: "center", gap: 4, transform: [{ scale: streakPopAnim }] }}>
                             <Text style={{ fontSize: 12 }}>🔥</Text>
-                            <Text style={{ color: "#B88400", fontSize: 12, fontWeight: "700" }}>{checkInStreak} day streak</Text>
+                            <Text style={{ color: "#B88400", fontSize: 12, fontWeight: "700" }}>
+                              {pickLocalizedText(languageId, {
+                                english: `${checkInStreak} day streak`,
+                                hindi: `${checkInStreak} दिन लगातार`
+                              })}
+                            </Text>
                           </Animated.View>
                         )}
                         {visitReports.length > 0 && (
                           <View style={{ backgroundColor: "rgba(129,140,248,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(129,140,248,0.25)" }}>
-                            <Text style={{ color: "#3730A3", fontSize: 12, fontWeight: "700" }}>{visitReports.length} session{visitReports.length !== 1 ? "s" : ""}</Text>
+                            <Text style={{ color: "#3730A3", fontSize: 12, fontWeight: "700" }}>
+                              {pickLocalizedText(languageId, {
+                                english: `${visitReports.length} session${visitReports.length !== 1 ? "s" : ""}`,
+                                hindi: `${visitReports.length} सत्र`
+                              })}
+                            </Text>
                           </View>
                         )}
                       </View>
@@ -21332,10 +21364,12 @@ function isTrustedExternalUrl(url: string) {
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                             <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
-                              Multi-dimensional redressal
+                              {pickLocalizedText(languageId, { english: "Multi-dimensional redressal", hindi: "बहु-आयामी सहायता" })}
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
-                              <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>Details →</Text>
+                              <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>
+                                {pickLocalizedText(languageId, { english: "Details →", hindi: "विवरण →" })}
+                              </Text>
                             </Pressable>
                           </View>
                           <Text style={{ color: "#263244", fontSize: 12, marginBottom: 4 }}>
@@ -21419,8 +21453,13 @@ function isTrustedExternalUrl(url: string) {
               {!dismissedHintTabs.includes("journal") && (
                 <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#E1EEEC", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center" }}>
                   <Text style={{ fontSize: 18, marginRight: 10 }}>💡</Text>
-                  <Text style={{ color: "#263244", fontSize: 12, flex: 1, lineHeight: 18 }}>Your journal entries fuel your pattern analysis. More detail = better insights.</Text>
-                  <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "journal"])} hitSlop={8} accessibilityRole="button" accessibilityLabel="Dismiss hint">
+                  <Text style={{ color: "#263244", fontSize: 12, flex: 1, lineHeight: 18 }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Your journal entries fuel your pattern analysis. More detail = better insights.",
+                      hindi: "आपकी जर्नल प्रविष्टियाँ पैटर्न विश्लेषण को बेहतर बनाती हैं। जितना स्पष्ट, उतनी बेहतर समझ।"
+                    })}
+                  </Text>
+                  <Pressable onPress={() => setDismissedHintTabs((p) => [...p, "journal"])} hitSlop={8} accessibilityRole="button" accessibilityLabel={pickLocalizedText(languageId, { english: "Dismiss hint", hindi: "सुझाव बंद करें" })}>
                     <Text style={{ color: "#1F2937", fontSize: 14, marginLeft: 8 }}>✕</Text>
                   </Pressable>
                 </View>
@@ -21429,15 +21468,22 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#E4EDE4" }]}>
                 <Text style={styles.tabBannerEmoji}>✍️</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Your Journal</Text>
-                  <Text style={styles.tabBannerSub}>Private. Honest. Yours alone.</Text>
+                  <Text style={styles.tabBannerTitle}>
+                    {pickLocalizedText(languageId, { english: "Your Journal", hindi: "आपकी जर्नल" })}
+                  </Text>
+                  <Text style={styles.tabBannerSub}>
+                    {pickLocalizedText(languageId, { english: "Private. Honest. Yours alone.", hindi: "निजी। ईमानदार। सिर्फ़ आपकी।" })}
+                  </Text>
                 </View>
                 <Text style={styles.tabBannerDate}>{getLiveDateLabel()}</Text>
               </View>
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "journal")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "journal")}</Text>
+                  </Text>
                 </View>
               )}
 
@@ -21478,22 +21524,30 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#E0EAF1" }]}>
                 <Text style={styles.tabBannerEmoji}>🎵</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Mind Rest Tones</Text>
-                  <Text style={styles.tabBannerSub}>Binaural · Frequency tones · Nature · Deep calm</Text>
+                  <Text style={styles.tabBannerTitle}>
+                    {pickLocalizedText(languageId, { english: "Mind Rest Tones", hindi: "आरामदायक ध्वनियाँ" })}
+                  </Text>
+                  <Text style={styles.tabBannerSub}>
+                    {pickLocalizedText(languageId, { english: "Binaural · Frequency tones · Nature · Deep calm", hindi: "बाइनॉरल · आवृत्ति स्वर · प्रकृति · गहरी शांति" })}
+                  </Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"tones")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"tones")}</Text>
+                  </Text>
                 </View>
               )}
 
               {/* Real multidimensional library, not a 5-field table pretending to be
                   one -- see SupportDimensionLibraryPanel. */}
               <SupportDimensionLibraryPanel
-                eyebrow="🎵 Tone guide"
-                actionLabel="Try"
+                eyebrow={pickLocalizedText(languageId, { english: "🎵 Tone guide", hindi: "🎵 ध्वनि मार्गदर्शिका" })}
+                actionLabel={pickLocalizedText(languageId, { english: "Try", hindi: "आजमाएँ" })}
+                languageId={languageId}
                 accentColor="#066C84"
                 moonChartInsightReadings={vedicMoonChartInsightReadings}
                 onOpenTab={handleTabPress}
@@ -21554,18 +21608,31 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#EBE4ED" }]}>
                 <Text style={styles.tabBannerEmoji}>🪷</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>{activeTab === "focus" ? "Calm Reset" : "Meditation Library"}</Text>
+                  <Text style={styles.tabBannerTitle}>
+                    {activeTab === "focus"
+                      ? pickLocalizedText(languageId, { english: "Calm Reset", hindi: "शांत रीसेट" })
+                      : pickLocalizedText(languageId, { english: "Meditation Library", hindi: "ध्यान पुस्तकालय" })}
+                  </Text>
                   <Text style={styles.tabBannerSub}>
                     {activeTab === "focus"
-                      ? "One matched practice · one steady next step"
-                      : "Body awareness · Breath · Reflection · Return"}
+                      ? pickLocalizedText(languageId, {
+                          english: "One matched practice · one steady next step",
+                          hindi: "एक उपयुक्त अभ्यास · एक स्थिर अगला कदम"
+                        })
+                      : pickLocalizedText(languageId, {
+                          english: "Body awareness · Breath · Reflection · Return",
+                          hindi: "शरीर की जागरूकता · श्वास · मनन · वापसी"
+                        })}
                   </Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"meditation")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"meditation")}</Text>
+                  </Text>
                 </View>
               )}
 
@@ -21646,6 +21713,7 @@ function isTrustedExternalUrl(url: string) {
               {activeTab === "meditation" ? <MeditationSection
                 selectedIssueGuide={selectedIssueGuide}
                 selectedIdentityLabel={profileDisplayName}
+                languageId={languageId}
                 onOpenTab={handleTabPress}
                 onEmergencyCall={handleEmergencyCall}
                 onOpenWebsite={openWebsite}
@@ -22048,6 +22116,7 @@ function isTrustedExternalUrl(url: string) {
                 setSearchQuery={setSearchQuery}
                 searchTotals={searchTotals}
                 searchMatches={searchMatches}
+                languageId={languageId}
                 onOpenGuide={openGuideTab}
                 onOpenRedress={openRedressTab}
                 onOpenCommunity={() => handleTabPress("community")}
@@ -22557,6 +22626,7 @@ function isTrustedExternalUrl(url: string) {
                 </View>
               </View>
               <SettingsSection
+                languageId={languageId}
                 themePreference={themePreference}
                 setThemePreference={setThemePreference}
                 theme={theme}
@@ -23354,6 +23424,7 @@ function JournalSection({
       <SupportDimensionLibraryPanel
         eyebrow="📝 Journal prompts"
         actionLabel="Write about"
+        languageId={languageId}
         accentColor="#066C84"
         moonChartInsightReadings={moonChartInsightReadings}
         onOpenTab={onOpenTab}
@@ -25077,6 +25148,7 @@ function ToneLibrarySection({
 function MeditationSection({
   selectedIssueGuide,
   selectedIdentityLabel,
+  languageId,
   onOpenTab,
   onEmergencyCall,
   onOpenWebsite,
@@ -25090,6 +25162,7 @@ function MeditationSection({
 }: {
   selectedIssueGuide: IssueGuide;
   selectedIdentityLabel: string;
+  languageId: LanguageId;
   onOpenTab: (tabId: TabId) => void;
   onEmergencyCall: () => Promise<void>;
   onOpenWebsite: (url: string, title: string) => void;
@@ -25244,6 +25317,7 @@ function MeditationSection({
         <SupportDimensionLibraryPanel
           eyebrow="Meditation guidance"
           actionLabel="Try"
+          languageId={languageId}
           accentColor="#3730A3"
           moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={onOpenTab}
@@ -27164,6 +27238,7 @@ function SearchSection({
   setSearchQuery,
   searchTotals,
   searchMatches,
+  languageId,
   onOpenGuide,
   onOpenRedress,
   onOpenCommunity,
@@ -27186,6 +27261,7 @@ function SearchSection({
     professionalResults: SearchMatch[];
     communityResults: SearchMatch[];
   };
+  languageId: LanguageId;
   onOpenGuide: (issueId: IssueId) => void;
   onOpenRedress: (routeId: RedressRouteId) => void;
   onOpenCommunity: () => void;
@@ -27198,6 +27274,7 @@ function SearchSection({
   selectedIssueGuide: IssueGuide;
   isWide: boolean;
 }) {
+  const t = (english: string, hindi: string) => pickLocalizedText(languageId, { english, hindi });
   const queryActive = searchQuery.trim().length > 0;
   const [showFullSearchResults, setShowFullSearchResults] = useState(false);
   const recommendedRedressRouteId =
@@ -27217,11 +27294,11 @@ function SearchSection({
     else onOpenGuide(selectedIssueGuide.id);
   };
   const suggestionPills = [
-    "clear next step",
-    "complaint",
-    "authority",
-    "doctor",
-    "community"
+    t("clear next step", "साफ़ अगला कदम"),
+    t("complaint", "शिकायत"),
+    t("authority", "अधिकारी"),
+    t("doctor", "डॉक्टर"),
+    t("community", "समुदाय")
   ];
   const resultLimit = showFullSearchResults ? 12 : 3;
   const visibleSearchMatches = {
@@ -27349,41 +27426,49 @@ function SearchSection({
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Explore</Text>
-            <Text style={styles.sectionTitle}>Find the right support faster</Text>
+            <Text style={styles.eyebrow}>{t("Explore", "खोजें")}</Text>
+            <Text style={styles.sectionTitle}>{t("Find the right support faster", "सही सहायता जल्दी खोजें")}</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
-          Search across guides, redress, official help, professional help, and community notes in
-          one place.
+          {t(
+            "Search across guides, redress, official help, professional help, and community notes in one place.",
+            "मार्गदर्शिकाओं, शिकायत, आधिकारिक मदद, पेशेवर मदद, और समुदाय नोट्स को एक ही जगह खोजें।"
+          )}
         </Text>
         <SectionFlowBand
-          eyebrow="Explore loop"
-          title="Sort, choose, then open"
+          eyebrow={t("Explore loop", "खोज लूप")}
+          title={t("Sort, choose, then open", "छाँटें, चुनें, फिर खोलें")}
           summary={
             queryActive
-              ? "Use the search results to pick one route, then stop wandering and open that page."
-              : "Type one real problem first, then use the results to jump into the right route."
+              ? t(
+                  "Use the search results to pick one route, then stop wandering and open that page.",
+                  "खोज परिणामों से एक रास्ता चुनें, फिर भटकना बंद करके वही पेज खोलें।"
+                )
+              : t(
+                  "Type one real problem first, then use the results to jump into the right route.",
+                  "पहले एक असली समस्या लिखें, फिर परिणामों से सही रास्ता खोलें।"
+                )
           }
           cards={[
             {
-              label: "Guides",
-              value: `${searchTotals.guides} matches`
+              label: t("Guides", "मार्गदर्शिकाएँ"),
+              value: t(`${searchTotals.guides} matches`, `${searchTotals.guides} मिलान`)
             },
             {
-              label: "Redress",
-              value: `${searchTotals.redress} matches`
+              label: t("Redress", "शिकायत"),
+              value: t(`${searchTotals.redress} matches`, `${searchTotals.redress} मिलान`)
             },
             {
-              label: "Support",
-              value: `${searchTotals.official + searchTotals.professional} matches`
+              label: t("Support", "सहायता"),
+              value: t(`${searchTotals.official + searchTotals.professional} matches`, `${searchTotals.official + searchTotals.professional} मिलान`)
             }
           ]}
           actions={[
-            { label: "Path", onPress: () => onOpenGuide(selectedIssueGuide.id) },
-            { label: "Redress", onPress: () => onOpenRedress(recommendedRedressRouteId) },
-            { label: "Community", onPress: onOpenCommunity }
+            { label: t("Path", "मार्ग"), onPress: () => onOpenGuide(selectedIssueGuide.id) },
+            { label: t("Redress", "शिकायत"), onPress: () => onOpenRedress(recommendedRedressRouteId) },
+            { label: t("Community", "समुदाय"), onPress: onOpenCommunity }
           ]}
         />
         {/* Real multidimensional library, not a 5-field table pretending to be one.
@@ -27394,6 +27479,7 @@ function SearchSection({
         <SupportDimensionLibraryPanel
           eyebrow="🔍 Where to look"
           actionLabel="Search for"
+          languageId={languageId}
           accentColor="#066C84"
           moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={routeToTab}
@@ -27404,7 +27490,10 @@ function SearchSection({
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Search guidance, complaint, doctor, support, community..."
+          placeholder={t(
+            "Search guidance, complaint, doctor, support, community...",
+            "मार्गदर्शन, शिकायत, डॉक्टर, सहायता, समुदाय खोजें..."
+          )}
           placeholderTextColor="#9A8F82"
           style={styles.searchInput}
           returnKeyType="search"
@@ -27422,51 +27511,46 @@ function SearchSection({
           ))}
         </View>
         <View style={styles.metricsBand}>
-          <Metric label="Guides" value={searchTotals.guides} caption="matches" accent="#0E6F69" />
-          <Metric label="Help" value={searchTotals.redress} caption="matches" accent="#F37B64" />
-          <Metric label="Help" value={searchTotals.official + searchTotals.professional} caption="matches" accent="#2E7D9A" />
-          <Metric label="Community" value={searchTotals.community} caption="matches" accent="#7E6FD6" />
+          <Metric label={t("Guides", "मार्गदर्शिकाएँ")} value={searchTotals.guides} caption={t("matches", "मिलान")} accent="#0E6F69" />
+          <Metric label={t("Help", "मदद")} value={searchTotals.redress} caption={t("matches", "मिलान")} accent="#F37B64" />
+          <Metric label={t("Help", "मदद")} value={searchTotals.official + searchTotals.professional} caption={t("matches", "मिलान")} accent="#2E7D9A" />
+          <Metric label={t("Community", "समुदाय")} value={searchTotals.community} caption={t("matches", "मिलान")} accent="#7E6FD6" />
         </View>
         <Text style={styles.smallMeta}>
-          Results stay grouped so you can scan, decide, and move without extra noise.
+          {t(
+            "Results stay grouped so you can scan, decide, and move without extra noise.",
+            "परिणाम समूह में रहते हैं ताकि आप बिना अतिरिक्त शोर के देख, चुन, और आगे बढ़ सकें।"
+          )}
         </Text>
       </View>
 
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>{queryActive ? "Results" : "Start here"}</Text>
-            <Text style={styles.sectionTitle}>Support routes</Text>
+            <Text style={styles.eyebrow}>{queryActive ? t("Results", "परिणाम") : t("Start here", "यहीं से शुरू करें")}</Text>
+            <Text style={styles.sectionTitle}>{t("Support routes", "सहायता मार्ग")}</Text>
           </View>
           <Text style={styles.smallMeta}>
-            {totalResultCount} items
+            {t(`${totalResultCount} items`, `${totalResultCount} आइटम`)}
           </Text>
         </View>
         {!queryActive ? (
           <View style={styles.searchStarterGrid}>
             <View style={styles.searchStarterCard}>
-              <Text style={styles.searchStarterTitle}>Clear next step</Text>
-              <Text style={styles.searchStarterText}>
-                Open Path for a clean first step, clear follow-up, and the right route.
-              </Text>
+              <Text style={styles.searchStarterTitle}>{t("Clear next step", "साफ़ अगला कदम")}</Text>
+              <Text style={styles.searchStarterText}>{t("Open Path for a clean first step, clear follow-up, and the right route.", "पहला साफ़ कदम, स्पष्ट फॉलो-अप, और सही रास्ते के लिए Path खोलें।")}</Text>
             </View>
             <View style={styles.searchStarterCard}>
-              <Text style={styles.searchStarterTitle}>Complaint or redress</Text>
-              <Text style={styles.searchStarterText}>
-                Open Help for the right office, escalation path, and complaint note.
-              </Text>
+              <Text style={styles.searchStarterTitle}>{t("Complaint or redress", "शिकायत या समाधान")}</Text>
+              <Text style={styles.searchStarterText}>{t("Open Help for the right office, escalation path, and complaint note.", "सही कार्यालय, आगे बढ़ाने का रास्ता, और शिकायत नोट के लिए Help खोलें।")}</Text>
             </View>
             <View style={styles.searchStarterCard}>
-              <Text style={styles.searchStarterTitle}>Official support</Text>
-              <Text style={styles.searchStarterText}>
-                Reach women, children, student, support, and cybercrime helplines.
-              </Text>
+              <Text style={styles.searchStarterTitle}>{t("Official support", "आधिकारिक सहायता")}</Text>
+              <Text style={styles.searchStarterText}>{t("Reach women, children, student, support, and cybercrime helplines.", "महिला, बाल, छात्र, सहायता, और साइबरक्राइम हेल्पलाइन तक पहुँचें।")}</Text>
             </View>
             <View style={styles.searchStarterCard}>
-              <Text style={styles.searchStarterTitle}>Need another route?</Text>
-              <Text style={styles.searchStarterText}>
-                Type one issue above. Search should move you to Path, Help, official support, or professional help.
-              </Text>
+              <Text style={styles.searchStarterTitle}>{t("Need another route?", "कोई और रास्ता चाहिए?")}</Text>
+              <Text style={styles.searchStarterText}>{t("Type one issue above. Search should move you to Path, Help, official support, or professional help.", "ऊपर एक समस्या लिखें। Search आपको Path, Help, आधिकारिक सहायता, या पेशेवर मदद तक ले जाएगा।")}</Text>
             </View>
           </View>
         ) : (
@@ -27479,20 +27563,20 @@ function SearchSection({
                 style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
               >
                 <Text style={styles.helpButtonSecondaryLabel}>
-                  {showFullSearchResults ? "Show focused results" : "Show more results"}
+                  {showFullSearchResults ? t("Show focused results", "सिर्फ़ चुने हुए परिणाम दिखाएँ") : t("Show more results", "और परिणाम दिखाएँ")}
                 </Text>
               </Pressable>
             </View>
             <View style={styles.searchGroupBlock}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.searchGroupLabel}>Route guides</Text>
-                  <Text style={styles.searchGroupMeta}>Practical, emotional, and reflective help</Text>
+                  <Text style={styles.searchGroupLabel}>{t("Route guides", "मार्गदर्शिका")}</Text>
+                  <Text style={styles.searchGroupMeta}>{t("Practical, emotional, and reflective help", "व्यावहारिक, भावनात्मक, और मननशील सहायता")}</Text>
                 </View>
               </View>
               <View style={styles.searchResultList}>
                 {visibleSearchMatches.guideResults.length === 0 ? (
-                  <Text style={styles.searchEmptyText}>No guide matches found.</Text>
+                  <Text style={styles.searchEmptyText}>{t("No guide matches found.", "कोई मार्गदर्शिका नहीं मिली।")}</Text>
                 ) : (
                   visibleSearchMatches.guideResults.map(renderSearchCard)
                 )}
@@ -27502,13 +27586,13 @@ function SearchSection({
             <View style={styles.searchGroupBlock}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.searchGroupLabel}>Help routes</Text>
-                  <Text style={styles.searchGroupMeta}>Complaint routes and escalation paths</Text>
+                  <Text style={styles.searchGroupLabel}>{t("Help routes", "मदद मार्ग")}</Text>
+                  <Text style={styles.searchGroupMeta}>{t("Complaint routes and escalation paths", "शिकायत और आगे बढ़ाने के रास्ते")}</Text>
                 </View>
               </View>
               <View style={styles.searchResultList}>
                 {visibleSearchMatches.redressResults.length === 0 ? (
-                  <Text style={styles.searchEmptyText}>No redress matches found.</Text>
+                  <Text style={styles.searchEmptyText}>{t("No redress matches found.", "कोई शिकायत मिलान नहीं मिला।")}</Text>
                 ) : (
                   visibleSearchMatches.redressResults.map(renderSearchCard)
                 )}
@@ -27518,13 +27602,13 @@ function SearchSection({
             <View style={styles.searchGroupBlock}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.searchGroupLabel}>Official help</Text>
-                  <Text style={styles.searchGroupMeta}>Government numbers and portals</Text>
+                  <Text style={styles.searchGroupLabel}>{t("Official help", "आधिकारिक सहायता")}</Text>
+                  <Text style={styles.searchGroupMeta}>{t("Government numbers and portals", "सरकारी नंबर और पोर्टल")}</Text>
                 </View>
               </View>
               <View style={styles.searchResultList}>
                 {visibleSearchMatches.officialResults.length === 0 ? (
-                  <Text style={styles.searchEmptyText}>No official help matches found.</Text>
+                  <Text style={styles.searchEmptyText}>{t("No official help matches found.", "कोई आधिकारिक सहायता नहीं मिली।")}</Text>
                 ) : (
                   visibleSearchMatches.officialResults.map(renderSearchCard)
                 )}
@@ -27534,13 +27618,13 @@ function SearchSection({
             <View style={styles.searchGroupBlock}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.searchGroupLabel}>Professional help</Text>
-                  <Text style={styles.searchGroupMeta}>Verified registries and locality search</Text>
+                  <Text style={styles.searchGroupLabel}>{t("Professional help", "पेशेवर सहायता")}</Text>
+                  <Text style={styles.searchGroupMeta}>{t("Verified registries and locality search", "सत्यापित रजिस्ट्रियाँ और स्थानीय खोज")}</Text>
                 </View>
               </View>
               <View style={styles.searchResultList}>
                 {visibleSearchMatches.professionalResults.length === 0 ? (
-                  <Text style={styles.searchEmptyText}>No professional help matches found.</Text>
+                  <Text style={styles.searchEmptyText}>{t("No professional help matches found.", "कोई पेशेवर सहायता नहीं मिली।")}</Text>
                 ) : (
                   visibleSearchMatches.professionalResults.map(renderSearchCard)
                 )}
@@ -27550,13 +27634,13 @@ function SearchSection({
             <View style={styles.searchGroupBlock}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.searchGroupLabel}>Messaging</Text>
-                  <Text style={styles.searchGroupMeta}>Moderated posts and verified chat</Text>
+                  <Text style={styles.searchGroupLabel}>{t("Messaging", "संदेश")}</Text>
+                  <Text style={styles.searchGroupMeta}>{t("Moderated posts and verified chat", "मॉडरेटेड पोस्ट और सत्यापित चैट")}</Text>
                 </View>
               </View>
               <View style={styles.searchResultList}>
                 {visibleSearchMatches.communityResults.length === 0 ? (
-                  <Text style={styles.searchEmptyText}>No community matches found.</Text>
+                  <Text style={styles.searchEmptyText}>{t("No community matches found.", "कोई समुदाय मिलान नहीं मिला।")}</Text>
                 ) : (
                   visibleSearchMatches.communityResults.map(renderSearchCard)
                 )}
@@ -27704,6 +27788,7 @@ function PlaySection({
         <SupportDimensionLibraryPanel
           eyebrow="🎯 Practice focus"
           actionLabel="Try"
+          languageId={languageId}
           accentColor="#04714F"
           moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={onOpenTab}
@@ -30468,10 +30553,12 @@ function SectionFlowBand({
 
 function RouteDecisionOverlay({
   decision,
+  languageId,
   onChoose,
   onClose
 }: {
   decision: PendingRouteDecision;
+  languageId: LanguageId;
   onChoose: (choice: RouteChoiceId) => void;
   onClose: () => void;
 }) {
@@ -30491,24 +30578,24 @@ function RouteDecisionOverlay({
 
   const choices: Array<{ id: RouteChoiceId; label: string; detail: string }> = isUrgent
     ? [
-        { id: "sos", label: "SOS", detail: "Call urgent help now." },
-        { id: "help", label: "Help", detail: "Open the complaint route." },
-        { id: "path", label: "Path", detail: "Get guided support first." },
-        { id: "reset", label: "Reset", detail: "Slow the body." }
+        { id: "sos", label: pickLocalizedText(languageId, { english: "SOS", hindi: "SOS" }), detail: pickLocalizedText(languageId, { english: "Call urgent help now.", hindi: "अभी तत्काल सहायता लें।" }) },
+        { id: "help", label: pickLocalizedText(languageId, { english: "Help", hindi: "मदद" }), detail: pickLocalizedText(languageId, { english: "Open the complaint route.", hindi: "शिकायत वाला रास्ता खोलें।" }) },
+        { id: "path", label: pickLocalizedText(languageId, { english: "Path", hindi: "मार्ग" }), detail: pickLocalizedText(languageId, { english: "Get guided support first.", hindi: "पहले मार्गदर्शित सहायता लें।" }) },
+        { id: "reset", label: pickLocalizedText(languageId, { english: "Reset", hindi: "रीसेट" }), detail: pickLocalizedText(languageId, { english: "Slow the body.", hindi: "शरीर की गति धीमी करें।" }) }
       ]
     : decision.route === "redress"
       ? [
-          { id: "help", label: "Help", detail: "Open the right office path." },
-          { id: "path", label: "Path", detail: "Let the guide shape the next step." },
-          { id: "search", label: "Search", detail: "Scan more support options." },
-          { id: "reset", label: "Reset", detail: "Calm down before acting." }
+          { id: "help", label: pickLocalizedText(languageId, { english: "Help", hindi: "मदद" }), detail: pickLocalizedText(languageId, { english: "Open the right office path.", hindi: "सही कार्यालय वाला रास्ता खोलें।" }) },
+          { id: "path", label: pickLocalizedText(languageId, { english: "Path", hindi: "मार्ग" }), detail: pickLocalizedText(languageId, { english: "Let the guide shape the next step.", hindi: "मार्गदर्शिका को अगला कदम तय करने दें।" }) },
+          { id: "search", label: pickLocalizedText(languageId, { english: "Search", hindi: "खोजें" }), detail: pickLocalizedText(languageId, { english: "Scan more support options.", hindi: "और सहायता विकल्प देखें।" }) },
+          { id: "reset", label: pickLocalizedText(languageId, { english: "Reset", hindi: "रीसेट" }), detail: pickLocalizedText(languageId, { english: "Calm down before acting.", hindi: "कदम उठाने से पहले शांत हों।" }) }
         ]
       : [
-          { id: "path", label: "Path", detail: "Guidance and next-step framing." },
-          { id: "help", label: "Help", detail: "Open office or complaint routes." },
-          { id: "reset", label: "Reset", detail: "Use breath and body calm." },
-          { id: "search", label: "Search", detail: "Find related support quickly." }
-        ];
+          { id: "path", label: pickLocalizedText(languageId, { english: "Path", hindi: "मार्ग" }), detail: pickLocalizedText(languageId, { english: "Guidance and next-step framing.", hindi: "मार्गदर्शन और अगले कदम की दिशा।" }) },
+          { id: "help", label: pickLocalizedText(languageId, { english: "Help", hindi: "मदद" }), detail: pickLocalizedText(languageId, { english: "Open office or complaint routes.", hindi: "कार्यालय या शिकायत वाले रास्ते खोलें।" }) },
+          { id: "reset", label: pickLocalizedText(languageId, { english: "Reset", hindi: "रीसेट" }), detail: pickLocalizedText(languageId, { english: "Use breath and body calm.", hindi: "श्वास और शरीर को शांत करें।" }) },
+          { id: "search", label: pickLocalizedText(languageId, { english: "Search", hindi: "खोजें" }), detail: pickLocalizedText(languageId, { english: "Find related support quickly.", hindi: "संबंधित सहायता तेज़ी से खोजें।" }) }
+      ];
 
   return (
     <Modal transparent animationType="fade" visible onRequestClose={onClose}>
@@ -30529,17 +30616,22 @@ function RouteDecisionOverlay({
           <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: "#006B64", fontSize: 12, fontWeight: "700", letterSpacing: 1.6, textTransform: "uppercase" }}>
-                Choose next step
+                {pickLocalizedText(languageId, { english: "Choose next step", hindi: "अगला कदम चुनें" })}
               </Text>
               <Text style={{ color: "#123A63", fontSize: 20, fontWeight: "900", marginTop: 4 }}>
                 {decision.issueLabel}
               </Text>
               <Text style={{ color: "#111827", fontSize: 13, lineHeight: 19, marginTop: 6 }}>
-                The app analysed your first line. Pick the route that fits best before it continues.
+                {pickLocalizedText(languageId, {
+                  english: "The app analysed your first line. Pick the route that fits best before it continues.",
+                  hindi: "ऐप ने आपकी पहली पंक्ति का विश्लेषण किया है। आगे बढ़ने से पहले सबसे सही रास्ता चुनें।"
+                })}
               </Text>
             </View>
             <Pressable accessibilityRole="button" onPress={onClose} style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}>
-              <Text style={styles.helpButtonSecondaryLabel}>Edit</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>
+                {pickLocalizedText(languageId, { english: "Edit", hindi: "संपादित करें" })}
+              </Text>
             </Pressable>
           </View>
 
@@ -30553,10 +30645,13 @@ function RouteDecisionOverlay({
           }}>
             {/* #298F7F was 3.3:1 on this card's background -- darkened. */}
             <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-              Analysis
+              {pickLocalizedText(languageId, { english: "Analysis", hindi: "विश्लेषण" })}
             </Text>
             <Text style={{ color: "#3A577D", fontSize: 14, lineHeight: 20 }}>
-              {decision.identityLabel} · {decision.route === "urgent" ? "Urgent" : decision.route === "redress" ? "Help" : decision.route === "professional" ? "Guidance" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "Talk" : calmIssueIds.has(decision.issueId) ? "Reset" : "Path"}
+              {decision.identityLabel} · {pickLocalizedText(languageId, {
+                english: decision.route === "urgent" ? "Urgent" : decision.route === "redress" ? "Help" : decision.route === "professional" ? "Guidance" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "Talk" : calmIssueIds.has(decision.issueId) ? "Reset" : "Path",
+                hindi: decision.route === "urgent" ? "तत्काल" : decision.route === "redress" ? "मदद" : decision.route === "professional" ? "मार्गदर्शन" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "बात करें" : calmIssueIds.has(decision.issueId) ? "रीसेट" : "मार्ग"
+              })}
             </Text>
             <Text style={{ color: "#111827", fontSize: 12, lineHeight: 18 }}>
               {decision.rawText}
@@ -30870,6 +30965,7 @@ function InsightsSection({
         <SupportDimensionLibraryPanel
           eyebrow="📊 Watch for"
           actionLabel="Signal"
+          languageId={languageId}
           accentColor="#3730A3"
           moonChartInsightReadings={moonChartInsightReadings}
           onOpenTab={onOpenTab}
@@ -30906,6 +31002,7 @@ function InsightsSection({
 }
 
 function SettingsSection({
+  languageId,
   localOnly,
   setLocalOnly,
   softPrompts,
@@ -30988,6 +31085,7 @@ function SettingsSection({
   setThemePreference,
   theme
 }: {
+  languageId: LanguageId;
   localOnly: boolean;
   setLocalOnly: (value: boolean) => void;
   themePreference: "system" | "light" | "dark";
@@ -31070,6 +31168,7 @@ function SettingsSection({
   onShareReferral: () => void;
   onRedeemReferralCode: (code: string) => boolean;
 }) {
+  const t = (english: string, hindi: string) => pickLocalizedText(languageId, { english, hindi });
   const [referralCodeDraft, setReferralCodeDraft] = useState("");
   const reminderChoice = reminderOptions.find((option) => option.id === reminderMode) ?? reminderOptions[0];
   const followUpChoice = followUpOptions.find((option) => option.id === followUpMode) ?? followUpOptions[0];
@@ -31081,40 +31180,145 @@ function SettingsSection({
   );
   const supportCircleSummary = [
     {
-      label: "Family",
-      value: privateIntakeDraft.familyContext.trim() || "Not added"
+      label: t("Family", "परिवार"),
+      value: privateIntakeDraft.familyContext.trim() || t("Not added", "नहीं जोड़ा")
     },
     {
-      label: "Relatives",
-      value: privateIntakeDraft.relativeContext.trim() || "Not added"
+      label: t("Relatives", "रिश्तेदार"),
+      value: privateIntakeDraft.relativeContext.trim() || t("Not added", "नहीं जोड़ा")
     },
     {
-      label: "Friends",
-      value: privateIntakeDraft.friendsContext.trim() || "Not added"
+      label: t("Friends", "दोस्त"),
+      value: privateIntakeDraft.friendsContext.trim() || t("Not added", "नहीं जोड़ा")
     },
     {
-      label: "Coworkers",
-      value: privateIntakeDraft.coworkerContext.trim() || "Not added"
+      label: t("Coworkers", "सहकर्मी"),
+      value: privateIntakeDraft.coworkerContext.trim() || t("Not added", "नहीं जोड़ा")
     }
   ] as const;
   const reminderMeta =
     reminderAccess === "unsupported"
-      ? "Browser reminders are not available here."
+      ? t("Browser reminders are not available here.", "ब्राउज़र reminders यहाँ उपलब्ध नहीं हैं।")
       : reminderAccess === "denied"
-        ? "Enable notifications in system settings to use reminders."
+        ? t("Enable notifications in system settings to use reminders.", "reminders के लिए सिस्टम सेटिंग्स में notifications चालू करें।")
           : reminderEnabled
-          ? `Asks one daily emotional question at ${reminderChoice.timeLabel} and keeps follow-up alerts ready.`
-          : "Turn on reminders to get a daily emotional question prompt.";
+          ? t(`Asks one daily emotional question at ${reminderChoice.timeLabel} and keeps follow-up alerts ready.`, `${reminderChoice.timeLabel} पर हर दिन एक भावनात्मक सवाल पूछता है और follow-up alerts तैयार रखता है।`)
+          : t("Turn on reminders to get a daily emotional question prompt.", "दैनिक भावनात्मक सवाल पाने के लिए reminders चालू करें।");
+  const localizedLegalTrustItems = legalTrustItems.map((item) => {
+    if (item.title === "Privacy policy") {
+      return {
+        ...item,
+        title: t("Privacy policy", "गोपनीयता नीति"),
+        status: t("Draft prepared", "ड्राफ्ट तैयार"),
+        text: t(
+          "Aethon Beacon is local-first by default. Check-ins, journal entries, profile details, SOS settings, trusted contacts, verification status, and community safety state stay on this device unless the user exports them or a future sync model is enabled.",
+          "Aethon Beacon डिफ़ॉल्ट रूप से local-first है। चेक-इन, जर्नल प्रविष्टियाँ, प्रोफ़ाइल विवरण, SOS सेटिंग्स, भरोसेमंद संपर्क, सत्यापन स्थिति, और community safety state इसी डिवाइस पर रहते हैं जब तक उपयोगकर्ता उन्हें export न करे या future sync model सक्षम न हो।"
+        )
+      };
+    }
+    if (item.title === "Terms of use") {
+      return {
+        ...item,
+        title: t("Terms of use", "उपयोग की शर्तें"),
+        status: t("Draft prepared", "ड्राफ्ट तैयार"),
+        text: t(
+          "The app is a clarity and support tool. It does not replace emergency services, licensed medical care, legal advice, or professional judgment.",
+          "यह ऐप स्पष्टता और सहायता का उपकरण है। यह emergency services, licensed medical care, legal advice, या professional judgment का स्थान नहीं लेता।"
+        )
+      };
+    }
+    if (item.title === "Safety disclaimer") {
+      return {
+        ...item,
+        title: t("Safety disclaimer", "सुरक्षा अस्वीकरण"),
+        status: t("Included", "शामिल"),
+        text: t(
+          "If there is immediate danger, use SOS, emergency services, nearby authorities, or trusted people first. Complaint and redress guidance helps with preparation and routing, but it cannot guarantee a response or outcome.",
+          "यदि तुरंत खतरा है, तो पहले SOS, emergency services, nearby authorities, या भरोसेमंद लोगों का उपयोग करें। शिकायत और redress guidance तैयारी और routing में मदद करती है, लेकिन प्रतिक्रिया या परिणाम की गारंटी नहीं दे सकती।"
+        )
+      };
+    }
+    if (item.title === "Community rules") {
+      return {
+        ...item,
+        title: t("Community rules", "समुदाय नियम"),
+        status: t("Included", "शामिल"),
+        text: t(
+          "Chat and posting require at least one verified contact method, either phone or email. Adult, explicit, abusive, harassing, threatening, spam, and unsafe content can be blocked, hidden, reported, or paused by admin controls.",
+          "चैट और पोस्ट करने के लिए कम-से-कम एक सत्यापित संपर्क माध्यम, यानी phone या email, आवश्यक है। वयस्क, स्पष्ट, अपमानजनक, उत्पीड़नकारी, धमकीपूर्ण, स्पैम, और असुरक्षित सामग्री को admin controls द्वारा block, hide, report, या pause किया जा सकता है।"
+        )
+      };
+    }
+    return {
+      ...item,
+      title: t(item.title, item.title),
+      status: t(item.status, item.status),
+      text: t(item.text, item.text)
+    };
+  });
+  const localizedCareLenses = careLenses.map((lens) => {
+    switch (lens.id) {
+      case "practical":
+        return { ...lens, label: t("Practical", "व्यावहारिक"), meta: t("Record facts, choose one next action, use SOS or redress when safety or authority is involved.", "तथ्य दर्ज करें, एक अगला कदम चुनें, और जब सुरक्षा या अधिकार जुड़ा हो तो SOS या redress उपयोग करें।") };
+      case "emotional":
+        return { ...lens, label: t("Emotional", "भावनात्मक"), meta: t("Name the feeling without shame, lower the heat, and ask what hurt or need is underneath.", "भावना को बिना शर्म के नाम दें, तनाव कम करें, और देखें नीचे कौन-सा दर्द या ज़रूरत है।") };
+      case "psychological":
+        return { ...lens, label: t("Psychological", "मनोवैज्ञानिक"), meta: t("Notice patterns, reduce threat loops, and turn pressure into one repeatable recovery step.", "पैटर्न देखें, खतरे के लूप कम करें, और दबाव को एक दोहराने योग्य recovery step में बदलें।") };
+      case "spiritual":
+        return { ...lens, label: t("Reflective", "चिंतनशील"), meta: t("Reconnect with values, silence, meaning, gratitude, and the inner discipline to pause before action.", "मूल्यों, मौन, अर्थ, कृतज्ञता, और कार्य से पहले ठहरने की आंतरिक discipline से फिर जुड़ें।") };
+      case "cultural":
+        return { ...lens, label: t("Cultural", "सांस्कृतिक"), meta: t("Respect family, community, duty, privacy, language, age, gender, and local support realities.", "परिवार, समुदाय, कर्तव्य, गोपनीयता, भाषा, आयु, लिंग, और स्थानीय सहायता की वास्तविकताओं का सम्मान करें।") };
+    }
+  });
+  const localizedReminderOptions = reminderOptions.map((option) => ({
+    ...option,
+    label:
+      option.id === "morning"
+        ? t("Morning", "सुबह")
+        : option.id === "midday"
+          ? t("Midday", "दोपहर")
+          : t("Evening", "शाम")
+  }));
+  const localizedFollowUpOptions = followUpOptions.map((option) => ({
+    ...option,
+    label:
+      option.id === "off"
+        ? t("Off", "बंद")
+        : option.id === "threeMonths"
+          ? t("3 months", "3 महीने")
+          : t("4 months", "4 महीने"),
+    meta:
+      option.id === "off"
+        ? t("No follow-up series", "कोई follow-up श्रृंखला नहीं")
+        : option.id === "threeMonths"
+          ? t("Weekly contact for 12 weeks", "12 हफ्तों तक साप्ताहिक संपर्क")
+          : t("Weekly contact for 16 weeks", "16 हफ्तों तक साप्ताहिक संपर्क")
+  }));
+  const localizedQuestionPreviews = dailyEmotionQuestionPreviews.map((item) => ({
+    ...item,
+    label:
+      item.id === "morning"
+        ? t("Morning", "सुबह")
+        : item.id === "midday"
+          ? t("Midday", "दोपहर")
+          : t("Evening", "शाम"),
+    detail:
+      item.id === "morning"
+        ? t("What are you feeling right now, and what is your body telling you?", "अभी आप क्या महसूस कर रहे हैं, और आपका शरीर क्या बता रहा है?")
+        : item.id === "midday"
+          ? t("What triggered the shift, and what support do you need before the day moves on?", "यह बदलाव किसने शुरू किया, और दिन आगे बढ़ने से पहले आपको किस सहायता की ज़रूरत है?")
+          : t("What stayed heavy today, what helped, and what should be carried into tomorrow?", "आज क्या भारी रहा, क्या मददगार रहा, और कल के लिए क्या साथ जाना चाहिए?")
+  }));
 
   return (
-    <View style={styles.panel}>
-      <View style={styles.sectionHeader}>
-        <View>
-          <Text style={styles.eyebrow}>Settings</Text>
-          <Text style={styles.sectionTitle}>Your wellness profile</Text>
+      <View style={styles.panel}>
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.eyebrow}>{t("Settings", "सेटिंग्स")}</Text>
+            <Text style={styles.sectionTitle}>{t("Your wellness profile", "आपकी कल्याण प्रोफ़ाइल")}</Text>
+          </View>
+        <Text style={styles.smallMeta}>{t(`${entries.length} entries`, `${entries.length} प्रविष्टियाँ`)}</Text>
         </View>
-        <Text style={styles.smallMeta}>{entries.length} entries</Text>
-      </View>
       {/* ─── FREE ACCESS BANNER ────────────────────────────────────── */}
       <View style={{
         marginHorizontal: 16, marginBottom: 16, borderRadius: 16,
@@ -31123,9 +31327,14 @@ function SettingsSection({
       }}>
         <Text style={{ fontSize: 28, marginRight: 14 }}>🎁</Text>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: "#04714F", fontSize: 13, fontWeight: "800", marginBottom: 3 }}>Aethon Beacon is free — no strings attached</Text>
+          <Text style={{ color: "#04714F", fontSize: 13, fontWeight: "800", marginBottom: 3 }}>
+            {t("Aethon Beacon is free — no strings attached", "Aethon Beacon मुफ़्त है — कोई शर्त नहीं")}
+          </Text>
           <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 17 }}>
-            Every feature is fully unlocked for at least one year. No trial, no paywall, no hidden limits. Just use it.
+            {t(
+              "Every feature is fully unlocked for at least one year. No trial, no paywall, no hidden limits. Just use it.",
+              "हर सुविधा कम से कम एक साल के लिए पूरी तरह खुली है। कोई ट्रायल नहीं, कोई पेवॉल नहीं, कोई छिपी सीमा नहीं। बस इस्तेमाल करें।"
+            )}
           </Text>
         </View>
       </View>
@@ -31139,88 +31348,115 @@ function SettingsSection({
           default-issue helpers elsewhere keep working with a neutral voice;
           nothing in the UI lets a user change it anymore. */}
       <View style={{ paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
-        <Text style={[styles.eyebrow, { color: "#06B6D4", fontSize: 12, letterSpacing: 1.4 }]}>👤  PROFILE</Text>
+        <Text style={[styles.eyebrow, { color: "#06B6D4", fontSize: 12, letterSpacing: 1.4 }]}>👤  {t("PROFILE", "प्रोफ़ाइल")}</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>App vision</Text>
+        <Text style={styles.settingsTitle}>{t("App vision", "ऐप का दृष्टिकोण")}</Text>
         <Text style={styles.promptText}>
-          Notice what is happening, name it without shame, choose one useful next step, and keep a direct path to support.
+          {t(
+            "Notice what is happening, name it without shame, choose one useful next step, and keep a direct path to support.",
+            "जो हो रहा है उसे देखें, बिना शर्म के नाम दें, एक उपयोगी अगला कदम चुनें, और सहायता तक सीधा रास्ता रखें।"
+          )}
         </Text>
         <Text style={styles.promptText}>
-          It works across practical, emotional, psychological, reflective, and cultural layers.
+          {t(
+            "It works across practical, emotional, psychological, reflective, and cultural layers.",
+            "यह व्यावहारिक, भावनात्मक, मनोवैज्ञानिक, चिंतनशील, और सांस्कृतिक स्तरों पर काम करता है।"
+          )}
         </Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Privacy-conscious improvement</Text>
+        <Text style={styles.settingsTitle}>{t("Privacy-conscious improvement", "गोपनीयता-सचेत सुधार")}</Text>
         <Text style={styles.promptText}>
-          Optional product measurements are stored only on this device. They record feature names and timestamps—not counselling text, messages, birth details, contact information, or astrology results.
+          {t(
+            "Optional product measurements are stored only on this device. They record feature names and timestamps—not counselling text, messages, birth details, contact information, or astrology results.",
+            "वैकल्पिक उत्पाद माप केवल इसी डिवाइस पर संग्रहीत होते हैं। ये सुविधा नाम और समय दर्ज करते हैं — न कि काउंसलिंग पाठ, संदेश, जन्म विवरण, संपर्क जानकारी, या ज्योतिष परिणाम।"
+          )}
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10 }}>
           <View style={{ flex: 1, minWidth: 0 }}>
-            <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>Allow local product measurements</Text>
+            <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>{t("Allow local product measurements", "स्थानीय उत्पाद माप चालू करें")}</Text>
             <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>
-              {productAnalyticsEnabled ? `${localProductMetrics.length} local events retained` : "Off by default"}
+              {productAnalyticsEnabled ? t(`${localProductMetrics.length} local events retained`, `${localProductMetrics.length} स्थानीय घटनाएँ रखी गईं`) : t("Off by default", "डिफ़ॉल्ट रूप से बंद")}
             </Text>
           </View>
           <Switch value={productAnalyticsEnabled} onValueChange={setProductAnalyticsEnabled} />
         </View>
         {localProductMetrics.length > 0 && (
           <Pressable style={styles.secondaryDangerButton} onPress={onClearProductMetrics}>
-            <Text style={styles.secondaryDangerButtonLabel}>Erase local measurements</Text>
+            <Text style={styles.secondaryDangerButtonLabel}>{t("Erase local measurements", "स्थानीय माप मिटाएँ")}</Text>
           </Pressable>
         )}
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Access commitment</Text>
+        <Text style={styles.settingsTitle}>{t("Access commitment", "पहुँच प्रतिबद्धता")}</Text>
         <Text style={styles.promptText}>
-          Emergency assistance, Help and Redress, core automatic counselling, basic Calm Sound, and basic Moon-chart insight remain available without a premium payment.
+          {t(
+            "Emergency assistance, Help and Redress, core automatic counselling, basic Calm Sound, and basic Moon-chart insight remain available without a premium payment.",
+            "आपात सहायता, Help और Redress, मूल स्वचालित काउंसलिंग, बुनियादी Calm Sound, और बुनियादी Moon-chart insight बिना किसी प्रीमियम भुगतान के उपलब्ध रहते हैं।"
+          )}
         </Text>
         <Text style={styles.promptText}>
-          Aethon Beacon will not sell personal wellbeing data, target advertising from emotional or astrological profiles, or place emergency help behind a paywall.
+          {t(
+            "Aethon Beacon will not sell personal wellbeing data, target advertising from emotional or astrological profiles, or place emergency help behind a paywall.",
+            "Aethon Beacon निजी कल्याण डेटा नहीं बेचेगा, भावनात्मक या ज्योतिषीय प्रोफ़ाइल पर विज्ञापन लक्षित नहीं करेगा, और आपात सहायता को पेवॉल के पीछे नहीं रखेगा।"
+          )}
         </Text>
         <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>
-          Optional future services: {ETHICAL_ACCESS_MODEL.optionalPremium.join(" · ")}
+          {t("Optional future services", "वैकल्पिक भविष्य सेवाएँ")}: {ETHICAL_ACCESS_MODEL.optionalPremium.join(" · ")}
         </Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Controlled beta standard</Text>
+        <Text style={styles.settingsTitle}>{t("Controlled beta standard", "नियंत्रित बीटा मानक")}</Text>
         <Text style={styles.promptText}>
-          Release target: {BETA_DEVICE_MATRIX.minimumActiveTesters}–{BETA_DEVICE_MATRIX.targetActiveTesters} active testers with no unresolved blocker.
+          {t(
+            "Release target",
+            "रिलीज़ लक्ष्य"
+          )}: {BETA_DEVICE_MATRIX.minimumActiveTesters}–{BETA_DEVICE_MATRIX.targetActiveTesters} active testers with no unresolved blocker.
         </Text>
         <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>{BETA_DEVICE_MATRIX.requiredCoverage.join(" · ")}</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Launch status</Text>
+        <Text style={styles.settingsTitle}>{t("Launch status", "लॉन्च स्थिति")}</Text>
         <Text style={styles.promptText}>
-          This build is ready for beta or soft launch on iOS, Android, and web. It stays local-first while release paperwork is finished.
+          {t(
+            "This build is ready for beta or soft launch on iOS, Android, and web. It stays local-first while release paperwork is finished.",
+            "यह बिल्ड iOS, Android, और web पर beta या soft launch के लिए तैयार है। रिलीज़ कागज़ी काम पूरा होने तक यह local-first रहता है।"
+          )}
         </Text>
         <View style={styles.launchSummaryList}>
-          <Text style={styles.launchSummaryItem}>Privacy-first: data stays on device unless you export it.</Text>
-          <Text style={styles.launchSummaryItem}>Built-in support: SOS, trusted contacts, official helplines, and verified help.</Text>
-          <Text style={styles.launchSummaryItem}>Release still needs store copy, policy text, screenshots, and package naming.</Text>
+          <Text style={styles.launchSummaryItem}>{t("Privacy-first: data stays on device unless you export it.", "गोपनीयता-पहले: डेटा डिवाइस पर ही रहता है जब तक आप उसे export न करें।")}</Text>
+          <Text style={styles.launchSummaryItem}>{t("Built-in support: SOS, trusted contacts, official helplines, and verified help.", "इन-बिल्ट सहायता: SOS, भरोसेमंद संपर्क, आधिकारिक हेल्पलाइन, और सत्यापित मदद।")}</Text>
+          <Text style={styles.launchSummaryItem}>{t("Release still needs store copy, policy text, screenshots, and package naming.", "रिलीज़ के लिए अभी भी store copy, policy text, screenshots, और package naming चाहिए।")}</Text>
         </View>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Release readiness</Text>
+        <Text style={styles.settingsTitle}>{t("Release readiness", "रिलीज़ तैयारी")}</Text>
         <Text style={styles.promptText}>
-          The app is in feature freeze and ready for beta or soft launch. Verification is provider-backed when the production service is connected, and local preview builds clearly mark fallback delivery.
+          {t(
+            "The app is in feature freeze and ready for beta or soft launch. Verification is provider-backed when the production service is connected, and local preview builds clearly mark fallback delivery.",
+            "ऐप feature freeze में है और beta या soft launch के लिए तैयार है। production service जुड़ी होने पर verification provider-backed होता है, और local preview builds fallback delivery को साफ़ दिखाते हैं।"
+          )}
         </Text>
         <View style={styles.launchSummaryList}>
           <Text style={styles.launchSummaryItem}>
-            Verification provider: {verificationDeliveryMode === "remote" ? "connected for SMS and email OTP" : "local fallback only for this build"}.
+            {t("Verification provider", "सत्यापन प्रदाता")}: {verificationDeliveryMode === "remote" ? t("connected for SMS and email OTP", "SMS और email OTP के लिए जुड़ा") : t("local fallback only for this build", "इस बिल्ड के लिए केवल स्थानीय fallback")}
           </Text>
-          <Text style={styles.launchSummaryItem}>Feature freeze active: only launch blockers, evidence-backed corrections, and premium polish should change now.</Text>
-          <Text style={styles.launchSummaryItem}>Community chat is verified-only and blocks adult or explicit content.</Text>
-          <Text style={styles.launchSummaryItem}>Store release readiness still depends on final listing assets, reviewer notes, and release evidence—not on placeholder OTP copy.</Text>
+          <Text style={styles.launchSummaryItem}>{t("Feature freeze active: only launch blockers, evidence-backed corrections, and premium polish should change now.", "Feature freeze सक्रिय है: अब केवल लॉन्च blockers, प्रमाण-आधारित सुधार, और premium polish ही बदलने चाहिए।")}</Text>
+          <Text style={styles.launchSummaryItem}>{t("Community chat is verified-only and blocks adult or explicit content.", "Community chat केवल सत्यापित उपयोगकर्ताओं के लिए है और adult या explicit content रोकता है।")}</Text>
+          <Text style={styles.launchSummaryItem}>{t("Store release readiness still depends on final listing assets, reviewer notes, and release evidence—not on placeholder OTP copy.", "Store release readiness अभी भी अंतिम listing assets, reviewer notes, और release evidence पर निर्भर है — placeholder OTP copy पर नहीं।")}</Text>
         </View>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Legal and privacy</Text>
+        <Text style={styles.settingsTitle}>{t("Legal and privacy", "कानूनी और गोपनीयता")}</Text>
         <Text style={styles.promptText}>
-          These launch protections are prepared in the project. The final public wording should still be reviewed by legal counsel.
+          {t(
+            "These launch protections are prepared in the project. The final public wording should still be reviewed by legal counsel.",
+            "ये लॉन्च सुरक्षा उपाय प्रोजेक्ट में तैयार हैं। अंतिम सार्वजनिक wording की फिर भी legal counsel द्वारा समीक्षा होनी चाहिए।"
+          )}
         </Text>
         <View style={styles.legalTrustList}>
-          {legalTrustItems.map((item) => (
+          {localizedLegalTrustItems.map((item) => (
             <View key={item.title} style={styles.legalTrustCard}>
               <View style={styles.legalTrustHeader}>
                 <Text style={styles.legalTrustTitle}>{item.title}</Text>
@@ -31239,9 +31475,9 @@ function SettingsSection({
         </View>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Profile</Text>
+        <Text style={styles.settingsTitle}>{t("Profile", "प्रोफ़ाइल")}</Text>
         <Text style={styles.promptText}>
-          This is the user-facing profile. It keeps the support details easy to find later.
+          {t("This is the user-facing profile. It keeps the support details easy to find later.", "यह उपयोगकर्ता-केन्द्रित प्रोफ़ाइल है। यह सहायता विवरण बाद में आसानी से खोजने देता है।")}
         </Text>
         <View style={styles.profileBanner}>
           <View style={styles.profileBannerMark}>
@@ -31251,7 +31487,7 @@ function SettingsSection({
           </View>
           <View style={styles.profileBannerCopy}>
             <Text style={styles.profileBannerTitle}>
-              {profileDisplayName.length > 0 ? profileDisplayName : "Profile not named yet"}
+              {profileDisplayName.length > 0 ? profileDisplayName : t("Profile not named yet", "प्रोफ़ाइल अभी नामित नहीं है")}
             </Text>
             <Text style={styles.profileBannerMeta}>
               {getProfileGenderLabel(profileGender)}
@@ -31259,12 +31495,12 @@ function SettingsSection({
             <View style={styles.profileStatusRow}>
               <View style={[styles.verificationStatusChip, profilePhoneVerified && styles.verificationStatusChipActive]}>
                 <Text style={[styles.verificationStatusChipLabel, profilePhoneVerified && styles.verificationStatusChipLabelActive]}>
-                  {profilePhoneVerified ? "Phone verified" : "Phone pending"}
+                  {profilePhoneVerified ? t("Phone verified", "फ़ोन सत्यापित") : t("Phone pending", "फ़ोन लंबित")}
                 </Text>
               </View>
               <View style={[styles.verificationStatusChip, profileEmailVerified && styles.verificationStatusChipActive]}>
                 <Text style={[styles.verificationStatusChipLabel, profileEmailVerified && styles.verificationStatusChipLabelActive]}>
-                  {profileEmailVerified ? "Email verified" : "Email pending"}
+                  {profileEmailVerified ? t("Email verified", "ईमेल सत्यापित") : t("Email pending", "ईमेल लंबित")}
                 </Text>
               </View>
             </View>
@@ -31272,43 +31508,43 @@ function SettingsSection({
         </View>
         <View style={styles.profileSummaryGrid}>
           <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>Name</Text>
-            <Text style={styles.profileSummaryValue}>{profileDisplayName.length > 0 ? profileDisplayName : "Not set"}</Text>
+            <Text style={styles.profileSummaryLabel}>{t("Name", "नाम")}</Text>
+            <Text style={styles.profileSummaryValue}>{profileDisplayName.length > 0 ? profileDisplayName : t("Not set", "सेट नहीं")}</Text>
           </View>
           <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>Phone</Text>
-            <Text style={styles.profileSummaryValue}>{profilePhone.trim().length > 0 ? profilePhone.trim() : "Not set"}</Text>
+            <Text style={styles.profileSummaryLabel}>{t("Phone", "फ़ोन")}</Text>
+            <Text style={styles.profileSummaryValue}>{profilePhone.trim().length > 0 ? profilePhone.trim() : t("Not set", "सेट नहीं")}</Text>
           </View>
           <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>Email</Text>
-            <Text style={styles.profileSummaryValue}>{profileEmail.trim().length > 0 ? profileEmail.trim() : "Not set"}</Text>
+            <Text style={styles.profileSummaryLabel}>{t("Email", "ईमेल")}</Text>
+            <Text style={styles.profileSummaryValue}>{profileEmail.trim().length > 0 ? profileEmail.trim() : t("Not set", "सेट नहीं")}</Text>
           </View>
           <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>Location</Text>
-            <Text style={styles.profileSummaryValue}>{profileLocation.trim().length > 0 ? profileLocation.trim() : "Not set"}</Text>
+            <Text style={styles.profileSummaryLabel}>{t("Location", "स्थान")}</Text>
+            <Text style={styles.profileSummaryValue}>{profileLocation.trim().length > 0 ? profileLocation.trim() : t("Not set", "सेट नहीं")}</Text>
           </View>
           <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>Gender</Text>
+            <Text style={styles.profileSummaryLabel}>{t("Gender", "लिंग")}</Text>
             <Text style={styles.profileSummaryValue}>{getProfileGenderLabel(profileGender)}</Text>
           </View>
         </View>
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onOpenAccessPanel} style={styles.dangerButton}>
-            <Text style={styles.dangerButtonLabel}>Edit profile</Text>
+            <Text style={styles.dangerButtonLabel}>{t("Edit profile", "प्रोफ़ाइल संपादित करें")}</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={onSignOut} style={styles.secondaryDangerButton}>
-            <Text style={styles.secondaryDangerButtonLabel}>Sign out</Text>
+            <Text style={styles.secondaryDangerButtonLabel}>{t("Sign out", "साइन आउट")}</Text>
           </Pressable>
         </View>
       </View>
       {/* ─── SECTION: Safety & Support ─────────────────────────────── */}
       <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 2 }}>
-        <Text style={[styles.eyebrow, { color: "#10B981", fontSize: 12, letterSpacing: 1.4 }]}>🛡️  SAFETY & SUPPORT</Text>
+        <Text style={[styles.eyebrow, { color: "#10B981", fontSize: 12, letterSpacing: 1.4 }]}>🛡️  {t("SAFETY & SUPPORT", "सुरक्षा और सहायता")}</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Support circle</Text>
+        <Text style={styles.settingsTitle}>{t("Support circle", "सहारा मंडल")}</Text>
         <Text style={styles.promptText}>
-          Keep the people around you here so guidance stays grounded in real life.
+          {t("Keep the people around you here so guidance stays grounded in real life.", "अपने आसपास के लोगों को यहाँ रखें ताकि मार्गदर्शन असली जीवन से जुड़ा रहे।")}
         </Text>
         <View style={styles.profileSummaryGrid}>
           {supportCircleSummary.map((item) => (
@@ -31318,14 +31554,12 @@ function SettingsSection({
             </View>
           ))}
         </View>
-        <Text style={styles.smallMeta}>
-          Family, relatives, friends, and coworkers stay local in this build unless you export them.
-        </Text>
+        <Text style={styles.smallMeta}>{t("Family, relatives, friends, and coworkers stay local in this build unless you export them.", "परिवार, रिश्तेदार, दोस्त, और सहकर्मी इस बिल्ड में स्थानीय रहते हैं जब तक आप उन्हें export न करें।")}</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Why it helps</Text>
+        <Text style={styles.settingsTitle}>{t("Why it helps", "यह क्यों मदद करता है")}</Text>
         <View style={styles.careLensList}>
-          {careLenses.map((lens) => (
+          {localizedCareLenses.map((lens) => (
             <View key={lens.id} style={styles.careLensRow}>
               <View style={[styles.careLensDot, { backgroundColor: lens.accent }]} />
               <View style={styles.careLensCopy}>
@@ -31337,20 +31571,20 @@ function SettingsSection({
         </View>
       </View>
       <PreferenceRow
-        label="Local-only journal"
-        meta={localOnly ? "Data stays on this device" : "Ready for future sync"}
+        label={t("Local-only journal", "केवल-स्थानीय जर्नल")}
+        meta={localOnly ? t("Data stays on this device", "डेटा इस डिवाइस पर रहता है") : t("Ready for future sync", "भविष्य के sync के लिए तैयार")}
         value={localOnly}
         onValueChange={setLocalOnly}
       />
       <PreferenceRow
-        label="Starter line"
-        meta={softPrompts ? "Shows one short example line" : "Keeps the page minimal"}
+        label={t("Starter line", "प्रारंभिक पंक्ति")}
+        meta={softPrompts ? t("Shows one short example line", "एक छोटी उदाहरण पंक्ति दिखाता है") : t("Keeps the page minimal", "पेज को सरल रखता है")}
         value={softPrompts}
         onValueChange={setSoftPrompts}
       />
       <PreferenceRow
-        label="Voice assistance"
-        meta={voiceAssistEnabled ? voiceAssistStatus : "Voice readout is off"}
+        label={t("Voice assistance", "आवाज़ सहायता")}
+        meta={voiceAssistEnabled ? voiceAssistStatus : t("Voice readout is off", "आवाज़ पढ़ना बंद है")}
         value={voiceAssistEnabled}
         onValueChange={setVoiceAssistEnabled}
       />
@@ -31359,18 +31593,19 @@ function SettingsSection({
           the rest of the app's colors are still fixed-dark and don't flip
           yet -- a full light-mode pass across every screen is future work. */}
       <View style={[styles.settingsBlock, { backgroundColor: theme.bgDeep, borderRadius: 12, padding: 14 }]}>
-        <Text style={[styles.settingsTitle, { color: theme.textPrimary }]}>Appearance</Text>
+        <Text style={[styles.settingsTitle, { color: theme.textPrimary }]}>{t("Appearance", "दिखावट")}</Text>
         <Text style={[styles.promptText, { color: theme.textMuted, marginBottom: 10 }]}>
-          System follows your device. Light/Dark force a theme regardless of device setting.
+          {t("System follows your device. Light/Dark force a theme regardless of device setting.", "System आपके device का अनुसरण करता है। Light/Dark device setting की परवाह किए बिना theme लागू करते हैं।")}
         </Text>
         <View style={{ flexDirection: "row", gap: 8 }}>
           {(["system", "light", "dark"] as const).map((option) => {
             const isSelected = themePreference === option;
+            const optionLabel = option === "system" ? t("System", "सिस्टम") : option === "light" ? t("Light", "रोशनी") : t("Dark", "अँधेरा");
             return (
               <Pressable
                 key={option}
                 accessibilityRole="button"
-                accessibilityLabel={`${option} theme`}
+                accessibilityLabel={`${optionLabel} theme`}
                 accessibilityState={{ selected: isSelected }}
                 onPress={() => setThemePreference(option)}
                 style={({ pressed }) => ({
@@ -31385,7 +31620,7 @@ function SettingsSection({
                 })}
               >
                 <Text style={{ color: isSelected ? theme.accentGold : theme.textMuted, fontSize: 12, fontWeight: "800", textTransform: "capitalize" }}>
-                  {option}
+                  {optionLabel}
                 </Text>
               </Pressable>
             );
@@ -31394,11 +31629,12 @@ function SettingsSection({
       </View>
       {/* ── Invite a friend ── */}
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Invite a friend</Text>
+        <Text style={styles.settingsTitle}>{t("Invite a friend", "दोस्त को आमंत्रित करें")}</Text>
         <Text style={styles.promptText}>
-          Share your code with someone who could use a quieter place to think. Codes are generated on this
-          device and only record who invited whom — they are not an account, and they do not change anyone&apos;s
-          subscription or unlock paid features.
+          {t(
+            "Share your code with someone who could use a quieter place to think. Codes are generated on this device and only record who invited whom — they are not an account, and they do not change anyone's subscription or unlock paid features.",
+            "अपना कोड ऐसे व्यक्ति के साथ साझा करें जिसे सोचने के लिए एक शांत जगह चाहिए। कोड इसी डिवाइस पर बनते हैं और केवल यह दर्ज करते हैं कि किसने किसे आमंत्रित किया — ये कोई खाता नहीं हैं, और न ही किसी की subscription बदलते हैं या paid features खोलते हैं।"
+          )}
         </Text>
         <View
           style={{
@@ -31412,38 +31648,34 @@ function SettingsSection({
             alignItems: "center"
           }}
         >
-          <Text style={{ color: "#374151", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
-            Your invite code
-          </Text>
+          <Text style={{ color: "#374151", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>{t("Your invite code", "आपका आमंत्रण कोड")}</Text>
           <Text selectable style={{ color: "#0E5C6B", fontSize: 24, fontWeight: "900", letterSpacing: 3, marginTop: 6 }}>
             {referralCode.length > 0 ? formatReferralCode(referralCode) : "…"}
           </Text>
           {referralShareCount > 0 && (
             <Text style={{ color: "#374151", fontSize: 12, marginTop: 6 }}>
-              Shared {referralShareCount} time{referralShareCount === 1 ? "" : "s"}
+              {t("Shared", "साझा किया गया")} {referralShareCount} {t("time", "बार")}{referralShareCount === 1 ? "" : "s"}
             </Text>
           )}
         </View>
         <View style={styles.backupActions}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Share your invite code"
+            accessibilityLabel={t("Share your invite code", "अपना आमंत्रण कोड साझा करें")}
             disabled={referralCode.length === 0}
             onPress={onShareReferral}
             style={[styles.dangerButton, referralCode.length === 0 ? { opacity: 0.5 } : null]}
           >
-            <Text style={styles.dangerButtonLabel}>Share invite</Text>
+            <Text style={styles.dangerButtonLabel}>{t("Share invite", "आमंत्रण साझा करें")}</Text>
           </Pressable>
         </View>
         {referredByCode.length > 0 ? (
           <Text style={[styles.promptText, { marginTop: 12, color: "#0E5C6B", fontWeight: "700" }]}>
-            ✓ Invited by {formatReferralCode(referredByCode)} — thank them for you.
+            {t("✓ Invited by", "✓ द्वारा आमंत्रित")} {formatReferralCode(referredByCode)} — {t("thank them for you.", "उनका धन्यवाद करें।")}
           </Text>
         ) : (
           <View style={{ marginTop: 12 }}>
-            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700", marginBottom: 6 }}>
-              Were you invited? Enter their code
-            </Text>
+            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700", marginBottom: 6 }}>{t("Were you invited? Enter their code", "क्या आपको आमंत्रित किया गया था? उनका कोड डालें")}</Text>
             <TextInput
               value={referralCodeDraft}
               onChangeText={setReferralCodeDraft}
@@ -31452,13 +31684,13 @@ function SettingsSection({
               autoCapitalize="characters"
               autoCorrect={false}
               maxLength={12}
-              accessibilityLabel="Friend's invite code"
+              accessibilityLabel={t("Friend's invite code", "दोस्त का आमंत्रण कोड")}
               style={styles.settingsInput}
             />
             <View style={styles.backupActions}>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Apply invite code"
+                accessibilityLabel={t("Apply invite code", "आमंत्रण कोड लागू करें")}
                 onPress={() => {
                   if (onRedeemReferralCode(referralCodeDraft)) {
                     setReferralCodeDraft("");
@@ -31466,7 +31698,7 @@ function SettingsSection({
                 }}
                 style={styles.secondaryDangerButton}
               >
-                <Text style={styles.secondaryDangerButtonLabel}>Apply code</Text>
+                <Text style={styles.secondaryDangerButtonLabel}>{t("Apply code", "कोड लागू करें")}</Text>
               </Pressable>
             </View>
           </View>
@@ -31474,9 +31706,12 @@ function SettingsSection({
       </View>
       {/* ── Voice gender + humanized speech settings ── */}
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Voice character</Text>
+        <Text style={styles.settingsTitle}>{t("Voice character", "आवाज़ का प्रकार")}</Text>
         <Text style={styles.promptText}>
-          Choose a natural male or female readout. The app prioritises a high-quality Indian regional voice on your device, with normal human pitch and unhurried pacing.
+          {t(
+            "Choose a natural male or female readout. The app prioritises a high-quality Indian regional voice on your device, with normal human pitch and unhurried pacing.",
+            "एक स्वाभाविक पुरुष या महिला आवाज़ चुनें। ऐप आपके डिवाइस पर उच्च-गुणवत्ता वाली भारतीय क्षेत्रीय आवाज़ को प्राथमिकता देता है, सामान्य मानवीय pitch और धीमी, सहज गति के साथ।"
+          )}
         </Text>
         <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
           {(["female", "male"] as const).map((g) => {
@@ -31499,9 +31734,9 @@ function SettingsSection({
                 })}
               >
                 <Text style={{ fontSize: 22, marginBottom: 4 }}>{g === "female" ? "♀" : "♂"}</Text>
-                <Text style={{ color: isActive ? "#fff" : "#263244", fontSize: 13, fontWeight: "800", textTransform: "capitalize" }}>{g}</Text>
+                <Text style={{ color: isActive ? "#fff" : "#263244", fontSize: 13, fontWeight: "800", textTransform: "capitalize" }}>{g === "female" ? t("female", "महिला") : t("male", "पुरुष")}</Text>
                 <Text style={{ color: isActive ? "rgba(255,255,255,0.88)" : "#263244", fontSize: 12, marginTop: 2 }}>
-                  Natural · Indian voice
+                  {t("Natural · Indian voice", "स्वाभाविक · भारतीय आवाज़")}
                 </Text>
               </Pressable>
             );
@@ -31509,7 +31744,7 @@ function SettingsSection({
         </View>
         <View style={{ marginTop: 14 }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>Speaking speed</Text>
+            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>{t("Speaking speed", "बोलने की गति")}</Text>
             <Text style={{ color: "#006876", fontSize: 12, fontWeight: "700" }}>
               {Math.round(clampVoiceRate(voiceRate) * 100)}%
             </Text>
@@ -31517,7 +31752,7 @@ function SettingsSection({
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Slower"
+              accessibilityLabel={t("Slower", "धीमा")}
               onPress={() => setVoiceRate((v) => clampVoiceRate(v - 0.05))}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(15,23,42,0.08)" }}
@@ -31536,7 +31771,7 @@ function SettingsSection({
             </View>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Faster"
+              accessibilityLabel={t("Faster", "तेज़")}
               onPress={() => setVoiceRate((v) => clampVoiceRate(v + 0.05))}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(15,23,42,0.08)" }}
@@ -31546,26 +31781,31 @@ function SettingsSection({
           </View>
         </View>
         <Text style={[styles.promptText, { marginTop: 8, color: "#374151" }]}>
-          Pitch stays close to a normal speaking voice. You control the pace; the app uses the closest available Indian male or female device voice and falls back gracefully when that voice is not installed.
+          {t(
+            "Pitch stays close to a normal speaking voice. You control the pace; the app uses the closest available Indian male or female device voice and falls back gracefully when that voice is not installed.",
+            "Pitch सामान्य बोलचाल की आवाज़ के क़रीब रहती है। गति आप नियंत्रित करते हैं; ऐप उपलब्ध सबसे निकट भारतीय पुरुष या महिला device voice का उपयोग करता है और voice न होने पर सहजता से fallback करता है।"
+          )}
         </Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Voice assistance</Text>
+        <Text style={styles.settingsTitle}>{t("Voice assistance", "आवाज़ सहायता")}</Text>
         <Text style={styles.promptText}>
-          Reads the current recommended path aloud. Web uses browser speech, while iOS and Android use device speech.
-          The app will try to use the closest Indian locale voice for the selected language whenever the device has one.
+          {t(
+            "Reads the current recommended path aloud. Web uses browser speech, while iOS and Android use device speech. The app will try to use the closest Indian locale voice for the selected language whenever the device has one.",
+            "वर्तमान सुझाए गए रास्ते को ज़ोर से पढ़ता है। वेब browser speech का उपयोग करता है, जबकि iOS और Android device speech का उपयोग करते हैं। चयनित भाषा के लिए ऐप उपलब्ध होने पर सबसे निकट भारतीय locale voice का उपयोग करने की कोशिश करेगा।"
+          )}
         </Text>
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onReadGuidance} style={styles.dangerButton}>
-            <Text style={styles.dangerButtonLabel}>Read current guidance</Text>
+            <Text style={styles.dangerButtonLabel}>{t("Read current guidance", "वर्तमान मार्गदर्शन पढ़ें")}</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={onStopVoice} style={styles.secondaryDangerButton}>
-            <Text style={styles.secondaryDangerButtonLabel}>Stop voice</Text>
+            <Text style={styles.secondaryDangerButtonLabel}>{t("Stop voice", "आवाज़ रोकें")}</Text>
           </Pressable>
         </View>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Emergency number</Text>
+        <Text style={styles.settingsTitle}>{t("Emergency number", "आपातकालीन नंबर")}</Text>
         <TextInput
           value={emergencyNumber}
           onChangeText={setEmergencyNumber}
@@ -31576,12 +31816,10 @@ function SettingsSection({
           textContentType="telephoneNumber"
           style={styles.settingsInput}
         />
-        <Text style={styles.promptText}>
-          Used by the SOS button. Set your local emergency number.
-        </Text>
+        <Text style={styles.promptText}>{t("Used by the SOS button. Set your local emergency number.", "SOS बटन द्वारा उपयोग किया जाता है। अपना स्थानीय आपातकालीन नंबर सेट करें।")}</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Nearby professional help</Text>
+        <Text style={styles.settingsTitle}>{t("Nearby professional help", "निकटवर्ती पेशेवर सहायता")}</Text>
         <TextInput
           value={supportLocality}
           onChangeText={setSupportLocality}
@@ -31590,42 +31828,38 @@ function SettingsSection({
           autoComplete="postal-code"
           style={styles.settingsInput}
         />
-        <Text style={styles.promptText}>
-          This helps the app tailor nearby searches for psychologists, counselors, doctors, clinics, and hospitals.
-        </Text>
+        <Text style={styles.promptText}>{t("This helps the app tailor nearby searches for psychologists, counselors, doctors, clinics, and hospitals.", "इससे ऐप मनोवैज्ञानिकों, काउंसलरों, डॉक्टरों, क्लीनिकों, और अस्पतालों की निकटवर्ती खोज को बेहतर बनाता है।")}</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Trusted contacts</Text>
-        <Text style={styles.promptText}>
-          Add people you trust so the SOS area can show quick call and text actions.
-        </Text>
+        <Text style={styles.settingsTitle}>{t("Trusted contacts", "भरोसेमंद संपर्क")}</Text>
+        <Text style={styles.promptText}>{t("Add people you trust so the SOS area can show quick call and text actions.", "ऐसे लोगों को जोड़ें जिन पर आप भरोसा करते हैं ताकि SOS क्षेत्र तेज़ कॉल और टेक्स्ट कार्रवाइयाँ दिखा सके।")}</Text>
         <View style={styles.contactStack}>
           {trustedContacts.map((contact, index) => {
             const isFilled = contact.name.trim().length > 0 || contact.phone.trim().length > 0;
             return (
               <View key={contact.id} style={styles.contactCard}>
                 <View style={styles.contactHeader}>
-                  <Text style={styles.contactTitle}>Contact {index + 1}</Text>
-                  <Text style={styles.contactMeta}>{isFilled ? "Saved" : "Optional"}</Text>
+                  <Text style={styles.contactTitle}>{t("Contact", "संपर्क")} {index + 1}</Text>
+                  <Text style={styles.contactMeta}>{isFilled ? t("Saved", "सहेजा गया") : t("Optional", "वैकल्पिक")}</Text>
                 </View>
                 <TextInput
                   value={contact.name}
                   onChangeText={(value) => updateTrustedContact(index, "name", value)}
-                  placeholder="Name"
+                  placeholder={t("Name", "नाम")}
                   placeholderTextColor="#9A8F82"
                   style={styles.settingsInput}
                 />
                 <TextInput
                   value={contact.relationship}
                   onChangeText={(value) => updateTrustedContact(index, "relationship", value)}
-                  placeholder="Relationship"
+                  placeholder={t("Relationship", "रिश्ता")}
                   placeholderTextColor="#9A8F82"
                   style={styles.settingsInput}
                 />
                 <TextInput
                   value={contact.phone}
                   onChangeText={(value) => updateTrustedContact(index, "phone", value)}
-                  placeholder="Phone number"
+                  placeholder={t("Phone number", "फ़ोन नंबर")}
                   placeholderTextColor="#9A8F82"
                   keyboardType="phone-pad"
                   autoComplete="tel"
@@ -31638,14 +31872,14 @@ function SettingsSection({
                     onPress={() => onTrustedCall(contact)}
                     style={({ pressed }) => [styles.contactButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.contactButtonLabel}>Call</Text>
+                    <Text style={styles.contactButtonLabel}>{t("Call", "कॉल")}</Text>
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => onTrustedText(contact)}
                     style={({ pressed }) => [styles.contactButtonSecondary, pressed && styles.pressed]}
                   >
-                    <Text style={styles.contactButtonSecondaryLabel}>Text</Text>
+                    <Text style={styles.contactButtonSecondaryLabel}>{t("Text", "संदेश")}</Text>
                   </Pressable>
                 </View>
               </View>
@@ -31654,10 +31888,8 @@ function SettingsSection({
         </View>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Government helplines</Text>
-        <Text style={styles.promptText}>
-          Official India resources for emergencies, women, children, students, support, and cybercrime.
-        </Text>
+        <Text style={styles.settingsTitle}>{t("Government helplines", "सरकारी हेल्पलाइन")}</Text>
+        <Text style={styles.promptText}>{t("Official India resources for emergencies, women, children, students, support, and cybercrime.", "आपात स्थिति, महिलाओं, बच्चों, छात्रों, सहायता, और साइबर अपराध के लिए आधिकारिक भारत संसाधन।")}</Text>
         <View style={styles.govHelpList}>
           {governmentHelplines.map((resource) => (
             <View key={resource.id} style={styles.govHelpRow}>
@@ -31674,14 +31906,14 @@ function SettingsSection({
                   onPress={() => onGovernmentCall(resource)}
                   style={({ pressed }) => [styles.helpButton, pressed && styles.pressed]}
                 >
-                  <Text style={styles.helpButtonLabel}>Call</Text>
+                  <Text style={styles.helpButtonLabel}>{t("Call", "कॉल")}</Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => onGovernmentOpen(resource.website, resource.title)}
                   style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
                 >
-                  <Text style={styles.helpButtonSecondaryLabel}>Site</Text>
+                  <Text style={styles.helpButtonSecondaryLabel}>{t("Site", "साइट")}</Text>
                 </Pressable>
               </View>
             </View>
@@ -31693,23 +31925,19 @@ function SettingsSection({
         <Text style={[styles.eyebrow, { color: "#06B6D4", fontSize: 12, letterSpacing: 1.4 }]}>🔔  NOTIFICATIONS</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Daily check-in reminder</Text>
-        <Text style={styles.promptText}>
-          Keep the emotional questionnaire and follow-up alerts on one page.
-        </Text>
-        <Text style={styles.smallMeta}>
-          Once enabled, the app automatically schedules the daily question and follow-up alerts.
-        </Text>
+        <Text style={styles.settingsTitle}>{t("Daily check-in reminder", "दैनिक चेक-इन reminder")}</Text>
+        <Text style={styles.promptText}>{t("Keep the emotional questionnaire and follow-up alerts on one page.", "भावनात्मक प्रश्नावली और follow-up alerts को एक ही पेज पर रखें।")}</Text>
+        <Text style={styles.smallMeta}>{t("Once enabled, the app automatically schedules the daily question and follow-up alerts.", "एक बार चालू होने पर ऐप दैनिक प्रश्न और follow-up alerts अपने-आप तय करता है।")}</Text>
         <PreferenceRow
-          label="Daily emotional questionnaire"
+          label={t("Daily emotional questionnaire", "दैनिक भावनात्मक प्रश्नावली")}
           meta={reminderMeta}
           value={reminderEnabled}
           onValueChange={setReminderEnabled}
           disabled={reminderAccess === "unsupported"}
         />
-        <Text style={styles.settingsTitle}>Daily time</Text>
+        <Text style={styles.settingsTitle}>{t("Daily time", "दैनिक समय")}</Text>
         <View style={styles.segmentRow}>
-          {reminderOptions.map((option) => {
+          {localizedReminderOptions.map((option) => {
             const isSelected = option.id === reminderMode;
             return (
               <Pressable
@@ -31729,31 +31957,25 @@ function SettingsSection({
             );
           })}
         </View>
-        <Text style={styles.promptText}>
-          Choose the window that best fits your emotional check-in rhythm. The reminder can be changed any time.
-        </Text>
-        <Text style={styles.settingsTitle}>Question preview</Text>
-        <Text style={styles.promptText}>
-          Each daily alert asks one question from this set.
-        </Text>
+        <Text style={styles.promptText}>{t("Choose the window that best fits your emotional check-in rhythm. The reminder can be changed any time.", "अपने भावनात्मक चेक-इन rhythm के लिए सबसे उपयुक्त समय चुनें। reminder कभी भी बदला जा सकता है।")}</Text>
+        <Text style={styles.settingsTitle}>{t("Question preview", "प्रश्न पूर्वावलोकन")}</Text>
+        <Text style={styles.promptText}>{t("Each daily alert asks one question from this set.", "हर दैनिक alert इस सूची से एक प्रश्न पूछता है।")}</Text>
         <View style={styles.launchSummaryList}>
-          {dailyEmotionQuestionPreviews.map((item) => (
+          {localizedQuestionPreviews.map((item) => (
             <Text key={item.id} style={styles.launchSummaryItem}>
               • {item.label}: {item.detail}
             </Text>
           ))}
         </View>
-        <Text style={styles.settingsTitle}>Follow-up alerts</Text>
+        <Text style={styles.settingsTitle}>{t("Follow-up alerts", "अनुवर्ती alerts")}</Text>
         <Text style={styles.promptText}>
           {followUpChoice.id === "off"
-            ? "No weekly follow-up series is active."
-            : `A follow-up check-in will run for ${followUpChoice.weeks} weeks after the selected issue to keep the loop alive.`}
+            ? t("No weekly follow-up series is active.", "कोई साप्ताहिक follow-up श्रृंखला सक्रिय नहीं है।")
+            : t(`A follow-up check-in will run for ${followUpChoice.weeks} weeks after the selected issue to keep the loop alive.`, `चुनी गई समस्या के बाद ${followUpChoice.weeks} हफ्तों तक follow-up check-in चलेगा ताकि लूप सक्रिय रहे।`)}
         </Text>
-        <Text style={styles.smallMeta}>
-          Follow-up alerts are scheduled automatically once this is turned on.
-        </Text>
+        <Text style={styles.smallMeta}>{t("Follow-up alerts are scheduled automatically once this is turned on.", "एक बार चालू होने पर follow-up alerts अपने-आप तय हो जाते हैं।")}</Text>
         <View style={styles.segmentRow}>
-          {followUpOptions.map((option) => {
+          {localizedFollowUpOptions.map((option) => {
             const isSelected = option.id === followUpMode;
             return (
               <Pressable
@@ -31775,47 +31997,45 @@ function SettingsSection({
         </View>
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onPreviewRetentionAlert} style={styles.dangerButton}>
-            <Text style={styles.dangerButtonLabel}>Preview daily question</Text>
+            <Text style={styles.dangerButtonLabel}>{t("Preview daily question", "दैनिक प्रश्न का पूर्वावलोकन")}</Text>
           </Pressable>
-          <Text style={styles.smallMeta}>Retention alerts keep the emotional loop warm</Text>
+          <Text style={styles.smallMeta}>{t("Retention alerts keep the emotional loop warm", "Retention alerts भावनात्मक लूप को सक्रिय रखते हैं।")}</Text>
         </View>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>🔔 Retention notifications</Text>
-        <Text style={styles.promptText}>
-          Smart nudges that bring you back at the right moment — protecting your streak, surfacing your cosmic reading, and re-engaging gently after time away.
-        </Text>
+        <Text style={styles.settingsTitle}>{t("🔔 Retention notifications", "🔔 बनाए रखने वाले notifications")}</Text>
+        <Text style={styles.promptText}>{t("Smart nudges that bring you back at the right moment — protecting your streak, surfacing your cosmic reading, and re-engaging gently after time away.", "स्मार्ट nudges जो आपको सही समय पर वापस लाते हैं — आपकी streak की रक्षा करते हैं, आपका cosmic reading दिखाते हैं, और कुछ समय दूर रहने के बाद धीरे से फिर जोड़ते हैं।")}</Text>
         <Text style={styles.smallMeta}>
           {reminderAccess === "unsupported"
-            ? "Push notifications are not available in this browser."
+            ? t("Push notifications are not available in this browser.", "इस browser में push notifications उपलब्ध नहीं हैं।")
             : reminderAccess === "denied"
-              ? "Enable notifications in system settings to activate these alerts."
-              : "Alerts are scheduled automatically when the main reminder is on."}
+              ? t("Enable notifications in system settings to activate these alerts.", "इन alerts को सक्रिय करने के लिए system settings में notifications चालू करें।")
+              : t("Alerts are scheduled automatically when the main reminder is on.", "मुख्य reminder चालू होने पर alerts अपने-आप तय हो जाते हैं।")}
         </Text>
         <PreferenceRow
-          label="Streak protection"
-          meta="Daily 8 pm alert if your streak is active and you haven't logged yet"
+          label={t("Streak protection", "streak सुरक्षा")}
+          meta={t("Daily 8 pm alert if your streak is active and you haven't logged yet", "यदि आपकी streak सक्रिय है और आपने अभी तक लॉग नहीं किया है, तो हर दिन शाम 8 बजे alert")}
           value={notifStreakEnabled}
           onValueChange={setNotifStreakEnabled}
           disabled={reminderAccess === "unsupported" || reminderAccess === "denied"}
         />
         <PreferenceRow
-          label="Vedic daily reading"
-          meta="7 am notification with your Rashi's cosmic forecast for the day"
+          label={t("Vedic daily reading", "वैदिक दैनिक पठन")}
+          meta={t("7 am notification with your Rashi's cosmic forecast for the day", "सुबह 7 बजे notification में आपके Rashi का दैनिक cosmic forecast")}
           value={notifVedicEnabled}
           onValueChange={setNotifVedicEnabled}
           disabled={reminderAccess === "unsupported" || reminderAccess === "denied"}
         />
         <PreferenceRow
-          label="Re-engagement nudge"
-          meta="One-shot reminder if you step away for 3 days"
+          label={t("Re-engagement nudge", "फिर से जोड़ने वाला nudge")}
+          meta={t("One-shot reminder if you step away for 3 days", "यदि आप 3 दिन दूर रहें, तो एक बार reminder")}
           value={notifReengageEnabled}
           onValueChange={setNotifReengageEnabled}
           disabled={reminderAccess === "unsupported" || reminderAccess === "denied"}
         />
         <PreferenceRow
-          label="Wellbeing check-ins (3× daily)"
-          meta="Morning (8 am), afternoon (1 pm) and evening (7 pm) nudges to log your state"
+          label={t("Wellbeing check-ins (3× daily)", "कल्याण चेक-इन (दिन में 3 बार)")}
+          meta={t("Morning (8 am), afternoon (1 pm) and evening (7 pm) nudges to log your state", "सुबह (8 बजे), दोपहर (1 बजे), और शाम (7 बजे) अपने हाल की प्रविष्टि करने के लिए nudges")}
           value={notifWellbeingEnabled}
           onValueChange={setNotifWellbeingEnabled}
           disabled={reminderAccess === "unsupported" || reminderAccess === "denied"}
@@ -31825,10 +32045,8 @@ function SettingsSection({
         <Text style={[styles.eyebrow, { color: "#F59E0B", fontSize: 12, letterSpacing: 1.4 }]}>⭐  FEEDBACK</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Quick review</Text>
-        <Text style={styles.promptText}>
-          Leave a rating and, if you want, a short note about what helped or where the app should guide better.
-        </Text>
+        <Text style={styles.settingsTitle}>{t("Quick review", "त्वरित समीक्षा")}</Text>
+        <Text style={styles.promptText}>{t("Leave a rating and, if you want, a short note about what helped or where the app should guide better.", "रेटिंग दें और चाहें तो छोटा नोट लिखें कि क्या मददगार रहा या ऐप कहाँ बेहतर मार्गदर्शन दे सकता है।")}</Text>
         <View style={styles.segmentRow}>
           {[1, 2, 3, 4, 5].map((rating) => {
             const isSelected = reviewRating === rating;
@@ -31851,7 +32069,7 @@ function SettingsSection({
           multiline
           value={reviewDraft}
           onChangeText={setReviewDraft}
-          placeholder="Write a short review or suggestion."
+          placeholder={t("Write a short review or suggestion.", "संक्षिप्त समीक्षा या सुझाव लिखें।")}
           placeholderTextColor="#9A8F82"
           style={[styles.settingsInput, styles.reviewInput]}
           textAlignVertical="top"
@@ -31859,71 +32077,60 @@ function SettingsSection({
         <TextInput
           value={reviewContact}
           onChangeText={setReviewContact}
-          placeholder="Optional contact handle, email, or phone"
+          placeholder={t("Optional contact handle, email, or phone", "वैकल्पिक संपर्क handle, email, या phone")}
           placeholderTextColor="#9A8F82"
           style={styles.settingsInput}
         />
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onSubmitReview} style={styles.dangerButton}>
-            <Text style={styles.dangerButtonLabel}>Submit review</Text>
+            <Text style={styles.dangerButtonLabel}>{t("Submit review", "समीक्षा भेजें")}</Text>
           </Pressable>
-          <Text style={styles.smallMeta}>{userReviews.length} reviews saved</Text>
+          <Text style={styles.smallMeta}>{t(`${userReviews.length} reviews saved`, `${userReviews.length} समीक्षाएँ सहेजी गईं`)}</Text>
         </View>
       </View>
       <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 2 }}>
         <Text style={[styles.eyebrow, { color: "#8B5CF6", fontSize: 12, letterSpacing: 1.4 }]}>💾  DATA & PRIVACY</Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Privacy</Text>
-        <Text style={styles.promptText}>
-          Aethon Beacon is local-first. Your data never leaves your device unless you choose to export it.
-        </Text>
-        <Text style={styles.promptText}>
-          Phone and email are used only for verification. Voice and microphone access are optional and only support spoken guidance or dictated input when you turn them on.
-        </Text>
-        <Text style={styles.promptText}>
-          You can skip optional profile details, export your notes, or delete local data whenever you choose.
-        </Text>
+        <Text style={styles.settingsTitle}>{t("Privacy", "गोपनीयता")}</Text>
+        <Text style={styles.promptText}>{t("Aethon Beacon is local-first. Your data never leaves your device unless you choose to export it.", "Aethon Beacon local-first है। आपका डेटा तब तक डिवाइस नहीं छोड़ता जब तक आप उसे export न करें।")}</Text>
+        <Text style={styles.promptText}>{t("Phone and email are used only for verification. Voice and microphone access are optional and only support spoken guidance or dictated input when you turn them on.", "फ़ोन और ईमेल केवल verification के लिए उपयोग होते हैं। आवाज़ और microphone access वैकल्पिक हैं और केवल spoken guidance या dictated input के लिए काम करते हैं जब आप उन्हें चालू करते हैं।")}</Text>
+        <Text style={styles.promptText}>{t("You can skip optional profile details, export your notes, or delete local data whenever you choose.", "आप चाहें तो वैकल्पिक प्रोफ़ाइल विवरण छोड़ सकते हैं, अपनी notes export कर सकते हैं, या local data हटा सकते हैं।")}</Text>
         <Pressable accessibilityRole="button" onPress={onShowPrivacyPolicy} style={[styles.dangerButton, { backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "#334155" }]}>
-          <Text style={[styles.dangerButtonLabel, { color: "#0A6F66" }]}>📄 Read privacy policy</Text>
+          <Text style={[styles.dangerButtonLabel, { color: "#0A6F66" }]}>{t("📄 Read privacy policy", "📄 गोपनीयता नीति पढ़ें")}</Text>
         </Pressable>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Storage</Text>
-        <Text style={styles.promptText}>
-          Aethon Beacon is currently local-first. Authentication, cloud sync, and encrypted backup are planned as opt-in features.
-        </Text>
+        <Text style={styles.settingsTitle}>{t("Storage", "संग्रहण")}</Text>
+        <Text style={styles.promptText}>{t("Aethon Beacon is currently local-first. Authentication, cloud sync, and encrypted backup are planned as opt-in features.", "Aethon Beacon अभी local-first है। Authentication, cloud sync, और encrypted backup opt-in features के रूप में नियोजित हैं।")}</Text>
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onExportBackup} style={styles.dangerButton}>
-            <Text style={styles.dangerButtonLabel}>Export my notes</Text>
+            <Text style={styles.dangerButtonLabel}>{t("Export my notes", "मेरी notes export करें")}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={onRestartOnboarding}
             style={styles.secondaryDangerButton}
           >
-            <Text style={styles.secondaryDangerButtonLabel}>Show onboarding again</Text>
+            <Text style={styles.secondaryDangerButtonLabel}>{t("Show onboarding again", "onboarding फिर दिखाएँ")}</Text>
           </Pressable>
         </View>
         <Pressable accessibilityRole="button" onPress={clearEntries} style={styles.dangerButton}>
-          <Text style={styles.dangerButtonLabel}>Clear local entries</Text>
+          <Text style={styles.dangerButtonLabel}>{t("Clear local entries", "स्थानीय प्रविष्टियाँ साफ़ करें")}</Text>
         </Pressable>
         <Pressable accessibilityRole="button" onPress={onDeleteLocalData} style={styles.secondaryDangerButton}>
-          <Text style={styles.secondaryDangerButtonLabel}>Delete my local data</Text>
+          <Text style={styles.secondaryDangerButtonLabel}>{t("Delete my local data", "मेरा स्थानीय डेटा हटाएँ")}</Text>
         </Pressable>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Owner access</Text>
-        <Text style={styles.promptText}>
-          Manages the app's community safety switches and usage snapshot. Requires the admin login
-          ID and code configured on the backend — everyday accounts stay unaffected.
-        </Text>
+        <Text style={styles.settingsTitle}>{t("Owner access", "मालिक पहुँच")}</Text>
+        <Text style={styles.promptText}>{t("Manages the app's community safety switches and usage snapshot. Requires the admin login ID and code configured on the backend — everyday accounts stay unaffected.", "ऐप के community safety switches और usage snapshot को प्रबंधित करता है। इसके लिए backend में configured admin login ID और code चाहिए — सामान्य accounts पर कोई असर नहीं पड़ता।")}</Text>
         <Pressable
           accessibilityRole="button"
           onPress={onOpenAdminLogin}
           style={[styles.dangerButton, { backgroundColor: "#F4F0FB", borderWidth: 1, borderColor: "#5B4B8A" }]}
         >
-          <Text style={[styles.dangerButtonLabel, { color: "#5B4B8A" }]}>🛡️ Admin sign-in</Text>
+          <Text style={[styles.dangerButtonLabel, { color: "#5B4B8A" }]}>{t("🛡️ Admin sign-in", "🛡️ एडमिन साइन-इन")}</Text>
         </Pressable>
       </View>
     </View>
@@ -36683,6 +36890,7 @@ function orderSupportDimensionsByRelevance(
 function SupportDimensionLibraryPanel({
   eyebrow,
   actionLabel,
+  languageId = "english",
   accentColor = "#066C84",
   moonChartInsightReadings,
   onOpenTab,
@@ -36692,6 +36900,7 @@ function SupportDimensionLibraryPanel({
 }: {
   eyebrow: string;
   actionLabel: string;
+  languageId?: LanguageId;
   accentColor?: string;
   // Only passed by Path today -- when present, tapping open a dimension also
   // shows its personal Moon Chart complement and a direct route button, so
@@ -36721,23 +36930,32 @@ function SupportDimensionLibraryPanel({
     [openDimensionId, moonChartInsightReadings]
   );
   const routeLabel = (route: GuidedSupportRoute) =>
-    route === "redress" ? "Formal remedy · Redress" :
-    route === "professional" ? "Professional support" :
-    route === "urgent" ? "Urgent safety support" :
-    "Guided practical action · Path";
+    route === "redress"
+      ? pickLocalizedText(languageId, { english: "Formal remedy · Redress", hindi: "औपचारिक समाधान · शिकायत" })
+      : route === "professional"
+        ? pickLocalizedText(languageId, { english: "Professional support", hindi: "पेशेवर सहायता" })
+        : route === "urgent"
+          ? pickLocalizedText(languageId, { english: "Urgent safety support", hindi: "तत्काल सुरक्षा सहायता" })
+          : pickLocalizedText(languageId, { english: "Guided practical action · Path", hindi: "मार्गदर्शित व्यावहारिक कदम · मार्ग" });
 
   return (
     <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#E1EEEC", borderRadius: 16, borderWidth: 1, borderColor: accentColor + "33", overflow: "hidden" }}>
       <View style={{ backgroundColor: accentColor + "14", paddingHorizontal: 14, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
-          {eyebrow} · multidimensional support
+          {eyebrow} · {pickLocalizedText(languageId, { english: "multidimensional support", hindi: "बहु-आयामी सहायता" })}
         </Text>
         <Text style={{ color: "#4C6674", fontSize: 12 }}>{issueGuide.label}</Text>
       </View>
       <Text style={{ color: "#506673", fontSize: 12, paddingHorizontal: 14, paddingTop: 8, paddingBottom: 4, lineHeight: 16 }}>
         {relevantCount > 0
-          ? `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first. Tap any perspective for its full escalation guidance and route.`
-          : "The complete multidimensional support library used by the counselling engine. Tap any perspective for its full escalation guidance and route."}
+          ? pickLocalizedText(languageId, {
+              english: `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first. Tap any perspective for its full escalation guidance and route.`,
+              hindi: `${relevantCount} प्रासंगिक सहायता दृष्टिकोण आपके सक्रिय फोकस${detectedThemes.length > 0 ? " और Path बातचीत" : ""} से मेल खाते हैं और पहले दिखते हैं। किसी भी दृष्टिकोण पर टैप करके उसका पूरा मार्गदर्शन और रास्ता देखें।`
+            })
+          : pickLocalizedText(languageId, {
+              english: "The complete multidimensional support library used by the counselling engine. Tap any perspective for its full escalation guidance and route.",
+              hindi: "परामर्श इंजन द्वारा इस्तेमाल की जाने वाली पूरी बहु-आयामी सहायता लाइब्रेरी। किसी भी दृष्टिकोण पर टैप करके उसका पूरा मार्गदर्शन और रास्ता देखें।"
+            })}
       </Text>
       {visible.map((guide, i) => {
         const relevant = isRelevant(guide);
@@ -36747,7 +36965,7 @@ function SupportDimensionLibraryPanel({
             <Pressable
               accessibilityRole="button"
               accessibilityState={{ expanded: isOpen }}
-              accessibilityLabel={`${guide.label}, tap for escalation guidance and route`}
+              accessibilityLabel={`${guide.label}, ${pickLocalizedText(languageId, { english: "tap for escalation guidance and route", hindi: "विस्तृत मार्गदर्शन और रास्ते के लिए टैप करें" })}`}
               onPress={() => setOpenDimensionId(isOpen ? null : guide.id)}
               style={({ pressed }) => [{
                 flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 8,
@@ -36762,8 +36980,8 @@ function SupportDimensionLibraryPanel({
                 </Text>
                 <Text style={{ color: "#446573", fontSize: 12, lineHeight: 17 }}>{actionLabel}: {guide.firstAction}</Text>
               </View>
-              <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", marginLeft: 6 }}>{isOpen ? "▾" : "▸"}</Text>
-            </Pressable>
+                <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", marginLeft: 6 }}>{isOpen ? "▾" : "▸"}</Text>
+              </Pressable>
             {isOpen ? (
               <View style={{ paddingHorizontal: 14, paddingBottom: 12, paddingTop: 2, backgroundColor: accentColor + "08" }}>
                 <View style={{ backgroundColor: accentColor + "18", alignSelf: "flex-start", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3, marginBottom: 8, borderWidth: 1, borderColor: accentColor + "40" }}>
@@ -36771,7 +36989,7 @@ function SupportDimensionLibraryPanel({
                 </View>
                 <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 8 }}>{guide.context}</Text>
                 <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 4 }}>
-                  Path to resolution
+                  {pickLocalizedText(languageId, { english: "Path to resolution", hindi: "समाधान का रास्ता" })}
                 </Text>
                 {guide.resolutionSteps.map((step, stepIndex) => (
                   <View key={`${guide.id}-step-${stepIndex}`} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 4, gap: 6 }}>
@@ -36780,26 +36998,30 @@ function SupportDimensionLibraryPanel({
                   </View>
                 ))}
                 <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginTop: 6, marginBottom: 6 }}>
-                  <Text style={{ fontWeight: "900" }}>Resolved when: </Text>{guide.conclusionMarker}
+                  <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Resolved when: ", hindi: "सुलझा माना जाए जब: " })}</Text>{guide.conclusionMarker}
                 </Text>
                 <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 6 }}>
-                  <Text style={{ fontWeight: "900" }}>Escalate when: </Text>{guide.escalation}
+                  <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Escalate when: ", hindi: "और ऊपर बढ़ाएँ जब: " })}</Text>{guide.escalation}
                 </Text>
                 {openDimensionMoonChart ? (
                   <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 8 }}>
-                    <Text style={{ fontWeight: "900" }}>Moon Chart: </Text>
+                    <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Moon Chart: ", hindi: "चंद्र-चार्ट: " })}</Text>
                     {openDimensionMoonChart.average}/100 ({openDimensionMoonChart.verdict.toLowerCase()}) · {openDimensionMoonChart.remedyTitle}: {openDimensionMoonChart.remedy}
                   </Text>
                 ) : null}
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                   {onOpenTab && guide.route === "redress" ? (
                     <Pressable accessibilityRole="button" onPress={() => onOpenTab("redress")} style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}>
-                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Open Redress</Text>
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>
+                        {pickLocalizedText(languageId, { english: "Open Redress", hindi: "शिकायत खोलें" })}
+                      </Text>
                     </Pressable>
                   ) : null}
                   {onOpenTab && guide.route === "guide" ? (
                     <Pressable accessibilityRole="button" onPress={() => onOpenTab("guide")} style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}>
-                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Open Path</Text>
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>
+                        {pickLocalizedText(languageId, { english: "Open Path", hindi: "मार्ग खोलें" })}
+                      </Text>
                     </Pressable>
                   ) : null}
                   {openWebsite && buildNearbySearchUrl
@@ -36810,7 +37032,9 @@ function SupportDimensionLibraryPanel({
                           onPress={() => void openWebsite(buildNearbySearchUrl(target.query), target.label)}
                           style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                         >
-                          <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Find: {target.label}</Text>
+                          <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>
+                            {pickLocalizedText(languageId, { english: "Find: ", hindi: "खोजें: " })}{target.label}
+                          </Text>
                         </Pressable>
                       ))
                     : null}
@@ -36828,11 +37052,15 @@ function SupportDimensionLibraryPanel({
       <Pressable
         onPress={() => { animateDisclosure(); setExpanded((value) => !value); }}
         accessibilityRole="button"
-        accessibilityLabel={expanded ? "Show fewer perspectives" : "Show all support perspectives"}
+        accessibilityLabel={expanded
+          ? pickLocalizedText(languageId, { english: "Show fewer perspectives", hindi: "कम दृष्टिकोण दिखाएँ" })
+          : pickLocalizedText(languageId, { english: "Show all support perspectives", hindi: "सभी सहायता दृष्टिकोण दिखाएँ" })}
         style={{ paddingVertical: 10, alignItems: "center", borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.06)" }}
       >
         <Text style={{ color: accentColor, fontSize: 12, fontWeight: "800" }}>
-          {expanded ? "Show fewer ↑" : `Show all perspectives ↓ (${ordered.length - visible.length} more)`}
+          {expanded
+            ? pickLocalizedText(languageId, { english: "Show fewer ↑", hindi: "कम दिखाएँ ↑" })
+            : pickLocalizedText(languageId, { english: `Show all perspectives ↓ (${ordered.length - visible.length} more)`, hindi: `सभी दृष्टिकोण दिखाएँ ↓ (${ordered.length - visible.length} और)` })}
         </Text>
       </Pressable>
     </View>
