@@ -33298,7 +33298,7 @@ function RouteDecisionOverlay({
           <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: "#006B64", fontSize: 12, fontWeight: "700", letterSpacing: 1.6, textTransform: "uppercase" }}>
-                {pickLocalizedText(languageId, { english: "Choose next step", hindi: "अगला कदम चुनें" })}
+                {pickLocalizedText(languageId, { english: "Choose next step", hindi: "अगला कदम चुनें", telugu: "తదుపరి దశ ఎంచుకోండి", tamil: "அடுத்த படியைத் தேர்ந்தெடுக்கவும்", urdu: "اگلا قدم چنیں" })}
               </Text>
               <Text style={{ color: "#123A63", fontSize: 20, fontWeight: "900", marginTop: 4 }}>
                 {decision.issueLabel}
@@ -33306,13 +33306,16 @@ function RouteDecisionOverlay({
               <Text style={{ color: "#111827", fontSize: 13, lineHeight: 19, marginTop: 6 }}>
                 {pickLocalizedText(languageId, {
                   english: "The app analysed your first line. Pick the route that fits best before it continues.",
-                  hindi: "ऐप ने आपकी पहली पंक्ति का विश्लेषण किया है। आगे बढ़ने से पहले सबसे सही रास्ता चुनें।"
+                  hindi: "ऐप ने आपकी पहली पंक्ति का विश्लेषण किया है। आगे बढ़ने से पहले सबसे सही रास्ता चुनें।",
+                  telugu: "అప్ మీ మొదటి పంక్తిని విశ్లేషించింది. కొనసాగించే ముందు సరిపోయే మార్గాన్ని ఎంచుకోండి.",
+                  tamil: "ஆப் உங்கள் முதல் வரியை பகுப்பாய்வு செய்தது. அது தொடரும் முன் பொருத்தமான பாதையைத் தேர்வுசெய்க.",
+                  urdu: "ایپ نے آپ کی پہلی لائن کا تجزیہ کیا ہے۔ آگے بڑھنے سے پہلے مناسب راستہ منتخب کریں۔"
                 })}
               </Text>
             </View>
             <Pressable accessibilityRole="button" onPress={onClose} style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}>
               <Text style={styles.helpButtonSecondaryLabel}>
-                {pickLocalizedText(languageId, { english: "Edit", hindi: "संपादित करें" })}
+                {pickLocalizedText(languageId, { english: "Edit", hindi: "संपादित करें", telugu: "సవరించు", tamil: "திருத்து", urdu: "ترمیم کریں" })}
               </Text>
             </Pressable>
           </View>
@@ -33327,12 +33330,15 @@ function RouteDecisionOverlay({
           }}>
             {/* #298F7F was 3.3:1 on this card's background -- darkened. */}
             <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-              {pickLocalizedText(languageId, { english: "Analysis", hindi: "विश्लेषण" })}
+              {pickLocalizedText(languageId, { english: "Analysis", hindi: "विश्लेषण", telugu: "విశ్లేషణ", tamil: "பகுப்பாய்வு", urdu: "تجزیہ" })}
             </Text>
             <Text style={{ color: "#3A577D", fontSize: 14, lineHeight: 20 }}>
               {decision.identityLabel} · {pickLocalizedText(languageId, {
                 english: decision.route === "urgent" ? "Urgent" : decision.route === "redress" ? "Help" : decision.route === "professional" ? "Guidance" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "Talk" : calmIssueIds.has(decision.issueId) ? "Reset" : "Path",
-                hindi: decision.route === "urgent" ? "तत्काल" : decision.route === "redress" ? "मदद" : decision.route === "professional" ? "मार्गदर्शन" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "बात करें" : calmIssueIds.has(decision.issueId) ? "रीसेट" : "मार्ग"
+                hindi: decision.route === "urgent" ? "तत्काल" : decision.route === "redress" ? "मदद" : decision.route === "professional" ? "मार्गदर्शन" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "बात करें" : calmIssueIds.has(decision.issueId) ? "रीसेट" : "मार्ग",
+                telugu: decision.route === "urgent" ? "అత్యవసరం" : decision.route === "redress" ? "సహాయం" : decision.route === "professional" ? "మార్గదర్శనం" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "మాట్లాడండి" : calmIssueIds.has(decision.issueId) ? "రీసెట్" : "మార్గం",
+                tamil: decision.route === "urgent" ? "அவசரம்" : decision.route === "redress" ? "உதவி" : decision.route === "professional" ? "வழிகாட்டல்" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "பேசுங்கள்" : calmIssueIds.has(decision.issueId) ? "மீட்டமை" : "பாதை",
+                urdu: decision.route === "urgent" ? "فوری" : decision.route === "redress" ? "مدد" : decision.route === "professional" ? "رہنمائی" : (["loneliness","burnout","identity","anger","stigma"] as string[]).includes(decision.issueId) ? "بات کریں" : calmIssueIds.has(decision.issueId) ? "ری سیٹ" : "راستہ"
               })}
             </Text>
             <Text style={{ color: "#111827", fontSize: 12, lineHeight: 18 }}>
