@@ -22954,8 +22954,8 @@ function isTrustedExternalUrl(url: string) {
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
                   <Text style={styles.activeFocusLabel}>
-                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:" })}{" "}
-                    <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "journal")}</Text>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id, "journal")}</Text>
                   </Text>
                 </View>
               )}
@@ -23103,8 +23103,8 @@ function isTrustedExternalUrl(url: string) {
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
                   <Text style={styles.activeFocusLabel}>
-                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:" })}{" "}
-                    <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"meditation")}</Text>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id,"meditation")}</Text>
                   </Text>
                 </View>
               )}
@@ -23209,7 +23209,10 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"focus")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id,"focus")}</Text>
+                  </Text>
                 </View>
               )}
 
@@ -23254,7 +23257,18 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (
                 <View style={{ marginHorizontal: 16, marginTop: 4, marginBottom: 8, backgroundColor: "#F3E8FF", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: "rgba(192,132,252,0.3)" }}>
                   <Text style={{ color: "#5C00B8", fontSize: 12 }}>🎯</Text>
-                  <Text style={{ color: "#5C00B8", fontSize: 12, fontWeight: "700", flex: 1 }}>Active focus: <Text style={{ color: "#263244", fontWeight: "400" }}>{selectedIssueGuide.label} — read the chart below through this lens.</Text></Text>
+                  <Text style={{ color: "#5C00B8", fontSize: 12, fontWeight: "700", flex: 1 }}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={{ color: "#263244", fontWeight: "400" }}>
+                      {localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {pickLocalizedText(languageId, {
+                        english: "read the chart below through this lens.",
+                        hindi: "इस दृष्टि से नीचे दिए गए चार्ट को पढ़ें।",
+                        telugu: "ఈ దృష్టితో క్రింద ఉన్న చార్ట్‌ను చదవండి.",
+                        tamil: "இந்தக் கோணத்தில் கீழே உள்ள சார்ட்டைப் படிக்கவும்.",
+                        urdu: "اس زاویے سے نیچے دیے گئے چارٹ کو پڑھیں۔"
+                      })}
+                    </Text>
+                  </Text>
                 </View>
               )}
 
@@ -23512,7 +23526,10 @@ function isTrustedExternalUrl(url: string) {
                   {selectedIssueGuide.id !== "general" && (
                     <View style={styles.activeFocusStrip}>
                       <Text style={{ fontSize: 12 }}>🎯</Text>
-                      <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id, "play")}</Text></Text>
+                      <Text style={styles.activeFocusLabel}>
+                        {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                        <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id, "play")}</Text>
+                      </Text>
                     </View>
                   )}
                   {/* Practice was the one tab excluded from the guided-journey
@@ -23571,7 +23588,10 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"wisdom")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id,"wisdom")}</Text>
+                  </Text>
                 </View>
               )}
 
@@ -23611,7 +23631,10 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (
                 <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 4, backgroundColor: "#E1EEEC", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"aihelp")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id,"aihelp")}</Text>
+                  </Text>
                 </View>
               )}
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "aihelp" && (
@@ -23849,7 +23872,10 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"guide")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id,"guide")}</Text>
+                  </Text>
                 </View>
               )}
               {selectedIssueGuide.id !== "general" && selectedIssueRecurrenceCount >= 2 && (
@@ -23923,7 +23949,10 @@ function isTrustedExternalUrl(url: string) {
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"redress")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id,"redress")}</Text>
+                  </Text>
                 </View>
               )}
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "redress" && (
@@ -23967,7 +23996,15 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={styles.tabBannerEmoji}>📊</Text>
                 <View style={styles.tabBannerText}>
                   <Text style={styles.tabBannerTitle}>Patterns</Text>
-                  <Text style={styles.tabBannerSub}>Weekly · Monthly · Signals · 5 lenses · Progress</Text>
+                  <Text style={styles.tabBannerSub}>
+                    {pickLocalizedText(languageId, {
+                      english: "Weekly · Monthly · Signals · 5 lenses · Progress",
+                      hindi: "साप्ताहिक · मासिक · संकेत · 5 दृष्टियाँ · प्रगति",
+                      telugu: "వారపు · నెలవారీ · సంకేతాలు · 5 కోణాలు · పురోగతి",
+                      tamil: "வாராந்திர · மாதாந்திர · சிக்னல்கள் · 5 கோணங்கள் · முன்னேற்றம்",
+                      urdu: "ہفتہ وار · ماہانہ · اشارے · 5 زاویے · پیش رفت"
+                    })}
+                  </Text>
                 </View>
               </View>
               {/* ── Active issue hint chip ── */}
@@ -26932,7 +26969,13 @@ function MeditationSection({
         style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
       >
         <Text style={styles.helpButtonSecondaryLabel}>
-          {showMeditationPerspectives ? "Hide support perspectives" : "View supporting perspectives"}
+          {pickLocalizedText(languageId, {
+            english: showMeditationPerspectives ? "Hide support perspectives" : "View supporting perspectives",
+            hindi: showMeditationPerspectives ? "सहायक दृष्टियाँ छिपाएँ" : "सहायक दृष्टियाँ देखें",
+            telugu: showMeditationPerspectives ? "మద్దతు దృక్కోణాలను దాచండి" : "మద్దతు దృక్కోణాలను చూడండి",
+            tamil: showMeditationPerspectives ? "ஆதரவு பார்வைகளை மறைக்கவும்" : "ஆதரவு பார்வைகளைப் பார்க்கவும்",
+            urdu: showMeditationPerspectives ? "مددگار زاویے چھپائیں" : "مددگار زاویے دیکھیں"
+          })}
         </Text>
       </Pressable>
       {showMeditationPerspectives ? (
@@ -28464,16 +28507,12 @@ function CommunitySection({
               style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
             >
               <Text style={styles.homeOverviewButtonLabel}>
-                {showFullCommunity ? l("Show compact", {
-                  hindi: "संक्षिप्त दिखाएँ",
-                  telugu: "సంక్షిప్తంగా చూపించండి",
-                  tamil: "சுருக்கமாகக் காட்டு",
-                  urdu: "مختصر دکھائیں"
-                }) : l("Show full community", {
-                  hindi: "पूरा समुदाय दिखाएँ",
-                  telugu: "పూర్తి సమాజాన్ని చూపించండి",
-                  tamil: "முழு சமூகத்தை காட்டு",
-                  urdu: "مکمل برادری دکھائیں"
+                {pickLocalizedText(languageId, {
+                  english: showFullCommunity ? "Show compact community view" : "Show full community view",
+                  hindi: showFullCommunity ? "संक्षिप्त समुदाय दृश्य दिखाएँ" : "पूरा समुदाय दृश्य दिखाएँ",
+                  telugu: showFullCommunity ? "సంక్షిప్త సమాజ వీక్షణ చూపించండి" : "పూర్తి సమాజ వీక్షణ చూపించండి",
+                  tamil: showFullCommunity ? "சுருக்கமான சமூகக் காட்சியை காட்டு" : "முழு சமூகக் காட்சியை காட்டு",
+                  urdu: showFullCommunity ? "مختصر برادری منظر دکھائیں" : "مکمل برادری منظر دکھائیں"
                 })}
               </Text>
             </Pressable>
@@ -30393,7 +30432,7 @@ function PlaySection({
           >
             <Text style={styles.homeOverviewButtonLabel}>
               {pickLocalizedText(languageId, {
-                english: showFullPractice ? "Show compact" : "Show full practice",
+                english: showFullPractice ? "Show compact practice" : "Show full practice",
                 hindi: showFullPractice ? "संक्षिप्त दिखाएँ" : "पूरा अभ्यास दिखाएँ",
                 telugu: showFullPractice ? "కాంపాక్ట్ చూపించు" : "పూర్తి ప్రాక్టీస్ చూపించు",
                 tamil: showFullPractice ? "சுருக்கமாகக் காட்டு" : "முழு பயிற்சியைக் காட்டு",
