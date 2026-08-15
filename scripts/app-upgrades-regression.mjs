@@ -78,7 +78,7 @@ const mergedHelp = indexOf('In immediate danger, call 112.');
 // The Patterns/insights tab's own "Progress Report Card" is a richer version
 // of what the front-page report card used to show.
 const premiumCommandCenter = indexOf('Premium command center');
-const premiumCommandTitle = indexOf('One calm start, four clear paths.');
+const premiumCommandTitle = indexOf('One calm start, four connected paths.');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
 assert(mergedHelp < premiumCommandCenter, 'Help and Redress must remain the first Home action surface');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
@@ -86,10 +86,10 @@ assert(!source.includes('Moderated community support and private conversations')
 indexOf('Open Help and Redress');
 indexOf('Open Path');
 indexOf('Open calm');
-indexOf('A private first step with a clear checkpoint.');
-indexOf('Sound and breath that hand off into Path.');
-indexOf('Moon-chart insight with practical remedies.');
-indexOf('Verified support when human input is the right next step.');
+indexOf('A private first step that keeps the next Path clear.');
+indexOf('Sound and breath that settle you before Path.');
+indexOf('Moon-chart insight that complements the same next step.');
+indexOf('Verified support when a human handoff is the right next step.');
 indexOf('Open messages');
 indexOf('Private by default. Notes stay local unless you share or export.');
 // homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
