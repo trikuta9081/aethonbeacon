@@ -24458,6 +24458,20 @@ function TodaySection({
     // The cue below is the whole feature.
     void playRelaxingToneCue(toneMode);
   };
+  const homeFlowSequenceTitle = pickLocalizedText(languageId, {
+    english: "Counselling → Calm → Path → Vedic",
+    hindi: "परामर्श → शांति → मार्ग → वेद",
+    telugu: "కౌన్సెలింగ్ → ప్రశాంతత → మార్గం → వేద",
+    tamil: "ஆலோசனை → அமைதி → வழி → வேதம்",
+    urdu: "مشاورت → سکون → راستہ → ویدک"
+  });
+  const homeFlowSequenceBody = pickLocalizedText(languageId, {
+    english: "Start private, settle the body, turn context into one next step, then add perspective when it helps.",
+    hindi: "निजी तौर पर शुरू करें, शरीर को शांत करें, संदर्भ को एक अगला कदम बनाएं, फिर ज़रूरत होने पर नया दृष्टिकोण जोड़ें।",
+    telugu: "ప్రైవేట్‌గా ప్రారంభించండి, శరీరాన్ని ప్రశాంతపరచండి, సందర్భాన్ని ఒక తదుపరి దశగా మార్చండి, అవసరమైనప్పుడు కొత్త దృక్కోణం జోడించండి.",
+    tamil: "தனிப்பட்ட முறையில் தொடங்கி, உடலை அமைதிப்படுத்தி, சூழலை ஒரு அடுத்த படியாக மாற்றி, தேவையானபோது பார்வையைச் சேர்க்கவும்.",
+    urdu: "نجی طور پر شروع کریں، جسم کو پرسکون کریں، سیاق کو ایک اگلا قدم بنائیں، پھر ضرورت ہو تو نیا زاویہ شامل کریں۔"
+  });
   return (
     <View style={styles.grid}>
       <View style={styles.panel}>
@@ -24618,6 +24632,25 @@ function TodaySection({
                   </View>
                 </Pressable>
               ))}
+          </View>
+          <View style={{
+            marginTop: 12,
+            borderRadius: 18,
+            borderWidth: 1,
+            borderColor: "rgba(14,148,136,0.16)",
+            backgroundColor: "#F2FBF8",
+            paddingHorizontal: 14,
+            paddingVertical: 12
+          }}>
+            <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "800", letterSpacing: 0.4, marginBottom: 4 }}>
+              {uiCopy.homeFlowLabel}
+            </Text>
+            <Text style={{ color: "#0D1F22", fontSize: compact ? 13 : 14, lineHeight: compact ? 18 : 20, fontWeight: "900" }}>
+              {homeFlowSequenceTitle}
+            </Text>
+            <Text style={{ color: "#44515B", fontSize: 12, lineHeight: 17, fontWeight: "700", marginTop: 4 }}>
+              {homeFlowSequenceBody}
+            </Text>
           </View>
           <View style={{
             marginTop: 12,
