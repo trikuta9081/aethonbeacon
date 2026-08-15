@@ -138,7 +138,7 @@ jobs:
           live_url="https://aethon-beacon-web.onrender.com"
 
           echo "Waiting for live Render bundle to include commit ${short_sha}"
-          for attempt in $(seq 1 36); do
+          for attempt in $(seq 1 60); do
             html="$(curl -fsSL "${live_url}" || true)"
             bundle_path="$(printf '%s' "${html}" | sed -n 's/.*src="\([^"]*AppEntry-[^"]*\.js\)".*/\1/p' | head -n 1)"
 
