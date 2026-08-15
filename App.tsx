@@ -7186,39 +7186,39 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     visionTitle: "ఇది ఎవరికోసం",
     visionCopy:
       "విద్యార్థులు, ఉపాధ్యాయులు, తల్లిదండ్రులు, నిపుణులు, సంరక్షకులు, మరియు tabs మధ్య తిప్పలు లేకుండా ఒక శాంతమైన మార్గం కావాలనుకునే ఎవరైనా.",
-    openGuide: "Guide తెరవండి",
-    openPath: "Path తెరవండి",
+    openGuide: "మార్గదర్శిని తెరవండి",
+    openPath: "మార్గం తెరవండి",
     communityEyebrow: "సముదాయం",
-    communityTitle: "సందేశాలు మరియు private rooms",
+    communityTitle: "సందేశాలు మరియు ప్రైవేట్ గదులు",
     communityCopy:
-      "Community messages ముందు కనిపిస్తాయి, మరియు పేరున్న private rooms verified users కోసం సిద్ధంగా ఉంటాయి.",
-    openCommunity: "Community తెరవండి",
-    seeRooms: "Rooms చూడండి",
-    unlockChat: "Chat తెరవండి",
+      "సముదాయం సందేశాలు ముందుగా కనిపిస్తాయి, మరియు పేరున్న ప్రైవేట్ గదులు ధృవీకరించిన వినియోగదారుల కోసం సిద్ధంగా ఉంటాయి.",
+    openCommunity: "సముదాయం తెరవండి",
+    seeRooms: "గదులు చూడండి",
+    unlockChat: "చాట్ తెరవండి",
     quickExitEyebrow: "త్వరిత నిష్క్రమణ",
     quickExitTitle: "SOS, ఫిర్యాదు, లేదా సహాయం",
     quickExitPrompt:
-      "ఈ strip ను urgent help, complaint route, లేదా main intake నుంచి వేగవంతమైన hand-off కోసం వాడండి.",
+      "ఈ భాగాన్ని అత్యవసర సహాయం, ఫిర్యాదు మార్గం, లేదా ప్రధాన ప్రవేశం నుంచి వేగవంతమైన బదిలీ కోసం వాడండి.",
     sos: "SOS",
     complaint: "ఫిర్యాదు",
     help: "సహాయం",
     read: "చదవండి",
-    openHelpAndRedress: "సహాయం మరియు ఫిర్యాదు తెరవండి",
+    openHelpAndRedress: "సహాయం మరియు పరిహారం తెరవండి",
     homeSupportTitle: "ఒక ప్రశాంత ఆరంభం, నాలుగు స్పష్టమైన మార్గాలు.",
-    homeSupportLead: "ముందు counselling తో ప్రారంభించి, అవసరమైనప్పుడు calm, insight, లేదా community కి వెళ్లండి.",
+    homeSupportLead: "ముందు కౌన్సెలింగ్‌తో ప్రారంభించి, అవసరమైతే ప్రశాంతత, దృష్టి, లేదా సమాజానికి వెళ్లండి.",
     homeSupportCounsellingTitle: "కౌన్సెలింగ్",
-    homeSupportCounsellingBody: "స్పష్టమైన తదుపరి దశతో ఒక private మొదటి అడుగు.",
+    homeSupportCounsellingBody: "స్పష్టమైన తదుపరి దశతో ఒక ప్రైవేట్ మొదటి అడుగు.",
     homeSupportCounsellingCta: "ప్రధాన సహాయం",
     homeSupportCalmTitle: "ప్రశాంతత / స్వరాలు",
-    homeSupportCalmBody: "ధ్వని మరియు శ్వాస, ఇవి Path కి hand off అవుతాయి.",
+    homeSupportCalmBody: "ధ్వని మరియు శ్వాస, ఇవి పథానికి సాఫీగా చేరుతాయి.",
     homeSupportCalmCta: "ప్రశాంతత తెరవండి",
     homeSupportVedicTitle: "వేద దర్శనం",
-    homeSupportVedicBody: "Moon-chart insight, practical remedies తో.",
+    homeSupportVedicBody: "చంద్ర చార్ట్ దృష్టి, ఆచరణాత్మక పరిహారాలతో.",
     homeSupportVedicCta: "దర్శనం చూడండి",
     homeSupportCommunityTitle: "సమాజం",
-    homeSupportCommunityBody: "మనిషి input సరైన తదుపరి దశ అయినప్పుడు verified support conversations.",
+    homeSupportCommunityBody: "మానవ సహాయం సరైన తదుపరి దశ అయినప్పుడు ధృవీకరించిన మద్దతు సంభాషణలు.",
     homeSupportCommunityCta: "సందేశాలు తెరవండి",
-    homePrivacyNote: "డిఫాల్ట్‌గా private. మీరు share లేదా export చేయనంత వరకు notes లోకల్‌గా ఉంటాయి.",
+    homePrivacyNote: "అప్రమేయంగా ప్రైవేట్. మీరు పంచుకోకపోతే లేదా ఎగుమతి చేయకపోతే notes పరికరంలోనే ఉంటాయి.",
     brandTagline: "ఒక మార్గం, ఒక తదుపరి అడుగు",
     homeFlowLabel: "మార్గదర్శిత ప్రవాహం",
     flowBack: "వెనుకకు",
@@ -7240,7 +7240,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     greetingAfternoon: "శుభ మద్యాహ్నం",
     greetingEvening: "శుభ సాయంత్రం",
     greetingNight: "శుభ రాత్రి",
-    homeSupportCardOpenCounselling: "Counselling ప్రారంభించండి",
+    homeSupportCardOpenCounselling: "కౌన్సెలింగ్ ప్రారంభించండి",
     homeSupportCardContinue: "కొనసాగించండి",
     quickExitPriority: "అత్యున్నత ప్రాధాన్యం",
     footerReassurance: "ఇది మీరు ఒంటరిగా మోయాల్సిన అవసరం లేదు.",
@@ -7254,7 +7254,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     oneClearLineTitle: "ఒక స్పష్టమైన లైన్",
     oneClearLineMeta: "సులభంగా ఉంచండి: ఏమైంది, ఏమి కావాలి, తరువాత ఏమి జరగాలి.",
     useStarter: "starter వాడండి",
-    openPathFromJournal: "Path తెరవండి",
+    openPathFromJournal: "మార్గం తెరవండి",
     startCalm: "శాంతంగా ప్రారంభించండి",
     clearHistory: "చరిత్రను తొలగించండి",
     saveAndOpenPath: "Save చేసి Path తెరవండి",
@@ -7320,39 +7320,39 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     visionTitle: "இது யாருக்காக",
     visionCopy:
       "மாணவர்கள், ஆசிரியர்கள், பெற்றோர், நிபுணர்கள், பராமரிப்பவர்கள், மற்றும் tabs-இல் அலைந்து திரியாமல் அமைதியான பாதை விரும்பும் யாரும்.",
-    openGuide: "Guide திறக்கவும்",
-    openPath: "Path திறக்கவும்",
+    openGuide: "வழிகாட்டியைத் திறக்கவும்",
+    openPath: "பாதையைத் திறக்கவும்",
     communityEyebrow: "சமூகம்",
-    communityTitle: "செய்திகள் மற்றும் private rooms",
+    communityTitle: "செய்திகள் மற்றும் தனிப்பட்ட அறைகள்",
     communityCopy:
-      "Community messages முன்னால் தெரியும், மற்றும் பெயரிடப்பட்ட private rooms verified users க்காக தயாராக இருக்கும்.",
-    openCommunity: "Community திறக்கவும்",
-    seeRooms: "Rooms காண்க",
-    unlockChat: "Chat திறக்கவும்",
+      "சமூகம் செய்திகள் முன்னால் தெரியும், மற்றும் பெயரிடப்பட்ட தனிப்பட்ட அறைகள் உறுதிப்படுத்தப்பட்ட பயனர்களுக்குத் தயாராக இருக்கும்.",
+    openCommunity: "சமூகத்தைத் திறக்கவும்",
+    seeRooms: "அறைகளைக் காண்க",
+    unlockChat: "அரட்டையைத் திறக்கவும்",
     quickExitEyebrow: "விரைவு வெளியேறு",
     quickExitTitle: "SOS, புகார், அல்லது உதவி",
     quickExitPrompt:
-      "இந்த strip-ஐ urgent help, complaint route, அல்லது main intake-இலிருந்து வேகமான hand-off க்குப் பயன்படுத்தவும்.",
+      "இந்த பகுதியை அவசர உதவி, புகார் பாதை, அல்லது முதன்மை உள்ளீட்டிலிருந்து விரைவான மாற்றத்திற்கு பயன்படுத்தவும்.",
     sos: "SOS",
     complaint: "புகார்",
     help: "உதவி",
     read: "படி",
-    openHelpAndRedress: "உதவி மற்றும் புகார் திறக்கவும்",
+    openHelpAndRedress: "உதவி மற்றும் நிவாரணம் திறக்கவும்",
     homeSupportTitle: "ஒரு அமைதியான தொடக்கம், நான்கு தெளிவான வழிகள்.",
-    homeSupportLead: "முதலில் counselling-இல் தொடங்கி, தேவையாயின் calm, insight, அல்லது community-க்கு நகருங்கள்.",
+    homeSupportLead: "முதலில் ஆலோசனையுடன் தொடங்கி, தேவைப்படும்போது அமைதி, பார்வை, அல்லது சமூகத்திற்குச் செல்லுங்கள்.",
     homeSupportCounsellingTitle: "ஆலோசனை",
-    homeSupportCounsellingBody: "தெளிவான அடுத்த படியுடன் ஒரு private முதல் அடி.",
+    homeSupportCounsellingBody: "தெளிவான அடுத்த படியுடன் தனிப்பட்ட முதல் அடி.",
     homeSupportCounsellingCta: "முதன்மை உதவி",
     homeSupportCalmTitle: "அமைதி / ஒலிகள்",
-    homeSupportCalmBody: "Path-க்கு hand off ஆகும் ஒலி மற்றும் மூச்சு.",
+    homeSupportCalmBody: "பாதைக்கு மென்மையாக இணையும் ஒலி மற்றும் மூச்சு.",
     homeSupportCalmCta: "அமைதியைத் திறக்கவும்",
     homeSupportVedicTitle: "வேத பார்வை",
-    homeSupportVedicBody: "Moon-chart insight, practical remedies உடன்.",
+    homeSupportVedicBody: "சந்திர அட்டவணை பார்வை, நடைமுறை நிவாரணங்களுடன்.",
     homeSupportVedicCta: "பார்வையைப் பார்க்கவும்",
     homeSupportCommunityTitle: "சமூகம்",
-    homeSupportCommunityBody: "மனித input சரியான அடுத்த படி ஆகும் போது verified support conversations.",
+    homeSupportCommunityBody: "மனித உதவி சரியான அடுத்த படி ஆகும் போது உறுதிப்படுத்தப்பட்ட ஆதரவு உரையாடல்கள்.",
     homeSupportCommunityCta: "செய்திகளைத் திறக்கவும்",
-    homePrivacyNote: "இயல்பாக private. நீங்கள் share அல்லது export செய்யும் வரை குறிப்புகள் device-இலேயே இருக்கும்.",
+    homePrivacyNote: "இயல்பாக தனிப்பட்டது. நீங்கள் பகிரவோ export செய்யவோ செய்யாத வரை குறிப்புகள் சாதனத்திலேயே இருக்கும்.",
     brandTagline: "ஒரு பாதை, ஒரு அடுத்த படி",
     homeFlowLabel: "வழிகாட்டப்பட்ட ஓட்டம்",
     flowBack: "முந்தைய",
@@ -7374,7 +7374,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     greetingAfternoon: "மதிய வணக்கம்",
     greetingEvening: "மாலை வணக்கம்",
     greetingNight: "இரவு வணக்கம்",
-    homeSupportCardOpenCounselling: "Counselling தொடங்கவும்",
+    homeSupportCardOpenCounselling: "ஆலோசனையைத் தொடங்கவும்",
     homeSupportCardContinue: "தொடரவும்",
     quickExitPriority: "மிக உயர்ந்த முன்னுரிமை",
     footerReassurance: "இதைக் கடத்த நீங்கள் தனியாக இருக்க வேண்டியதில்லை.",
@@ -7388,7 +7388,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     oneClearLineTitle: "ஒரு தெளிவான வரி",
     oneClearLineMeta: "எளிமையாக வைத்துக்கொள்ளுங்கள்: என்ன நடந்தது, என்ன வேண்டும், அடுத்து என்ன வேண்டும்.",
     useStarter: "starter பயன்படுத்தவும்",
-    openPathFromJournal: "Path திறக்கவும்",
+    openPathFromJournal: "பாதையைத் திறக்கவும்",
     startCalm: "அமைதியாக தொடங்குங்கள்",
     clearHistory: "வரலாற்றை அழிக்கவும்",
     saveAndOpenPath: "சேமித்து Path திறக்கவும்",
@@ -7454,39 +7454,39 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     visionTitle: "یہ کس کے لیے ہے",
     visionCopy:
       "طلبہ، اساتذہ، والدین، پیشہ ور، نگہبان، اور ہر وہ شخص جو tabs میں بھٹکنے کے بجائے ایک پُرسکون راستہ چاہتا ہے۔",
-    openGuide: "Guide کھولیں",
-    openPath: "Path کھولیں",
+    openGuide: "رہنما کھولیں",
+    openPath: "راستہ کھولیں",
     communityEyebrow: "کمیونٹی",
     communityTitle: "پیغامات اور نجی کمرے",
     communityCopy:
-      "کمیونٹی پیغامات سامنے رہتے ہیں، اور نامزد نجی کمرے verified users کے لیے تیار رہتے ہیں۔",
-    openCommunity: "Community کھولیں",
-    seeRooms: "Rooms دیکھیں",
-    unlockChat: "Chat کھولیں",
+      "برادری کے پیغامات سامنے رہتے ہیں، اور نامزد نجی کمرے تصدیق شدہ صارفین کے لیے تیار رہتے ہیں۔",
+    openCommunity: "برادری کھولیں",
+    seeRooms: "کمرے دیکھیں",
+    unlockChat: "چیٹ کھولیں",
     quickExitEyebrow: "فوری اخراج",
     quickExitTitle: "SOS، شکایت، یا مدد",
     quickExitPrompt:
-      "اس strip کو urgent help، complaint route، یا main intake سے تیز hand-off کے لیے استعمال کریں۔",
+      "اس حصے کو فوری مدد، شکایت کے راستے، یا مرکزی اندراج سے تیز منتقلی کے لیے استعمال کریں۔",
     sos: "SOS",
     complaint: "شکایت",
     help: "مدد",
     read: "پڑھیں",
-    openHelpAndRedress: "مدد اور شکایت کھولیں",
+    openHelpAndRedress: "مدد اور ازالہ کھولیں",
     homeSupportTitle: "ایک پُرسکون آغاز، چار واضح راستے۔",
-    homeSupportLead: "پہلے counselling سے شروع کریں، پھر ضرورت کے مطابق calm، insight، یا community کی طرف جائیں۔",
+    homeSupportLead: "پہلے مشاورت سے شروع کریں، پھر ضرورت کے مطابق سکون، بصیرت، یا برادری کی طرف جائیں۔",
     homeSupportCounsellingTitle: "مشاورت",
     homeSupportCounsellingBody: "واضح اگلے قدم کے ساتھ ایک نجی پہلا مرحلہ۔",
     homeSupportCounsellingCta: "بنیادی مدد",
     homeSupportCalmTitle: "سکون / آوازیں",
-    homeSupportCalmBody: "آواز اور سانس جو Path تک hand off ہو جائیں۔",
+    homeSupportCalmBody: "آواز اور سانس جو راستے تک نرمی سے پہنچیں۔",
     homeSupportCalmCta: "سکون کھولیں",
     homeSupportVedicTitle: "ویدک بصیرت",
-    homeSupportVedicBody: "Moon-chart insight، practical remedies کے ساتھ۔",
+    homeSupportVedicBody: "قمری چارٹ کی بصیرت، عملی تجاویز کے ساتھ۔",
     homeSupportVedicCta: "بصیرت دیکھیں",
     homeSupportCommunityTitle: "برادری",
-    homeSupportCommunityBody: "جب انسانی input صحیح اگلا قدم ہو تو verified support conversations.",
+    homeSupportCommunityBody: "جب انسانی مدد درست اگلا قدم ہو تو تصدیق شدہ معاون گفتگو۔",
     homeSupportCommunityCta: "پیغامات کھولیں",
-    homePrivacyNote: "بطورِ ڈیفالٹ نجی۔ نوٹس تب تک local رہتی ہیں جب تک آپ share یا export نہ کریں۔",
+    homePrivacyNote: "بطورِ ڈیفالٹ نجی۔ جب تک آپ شیئر یا برآمد نہ کریں، نوٹس اسی آلہ میں رہتی ہیں۔",
     brandTagline: "ایک راستہ، ایک اگلا قدم",
     homeFlowLabel: "رہنمائی والا بہاؤ",
     flowBack: "پیچھے",
@@ -7508,7 +7508,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     greetingAfternoon: "دوپہر بخیر",
     greetingEvening: "شام بخیر",
     greetingNight: "شب بخیر",
-    homeSupportCardOpenCounselling: "Counselling شروع کریں",
+    homeSupportCardOpenCounselling: "مشاورت شروع کریں",
     homeSupportCardContinue: "جاری رکھیں",
     quickExitPriority: "سب سے اہم",
     footerReassurance: "آپ کو یہ اکیلے اٹھانے کی ضرورت نہیں ہے۔",
@@ -7522,7 +7522,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     oneClearLineTitle: "ایک صاف لائن",
     oneClearLineMeta: "سادہ رکھیں: کیا ہوا، کیا چاہیے، اور آگے کیا ہونا چاہیے۔",
     useStarter: "ابتدائی لائن",
-    openPathFromJournal: "Path کھولیں",
+    openPathFromJournal: "راستہ کھولیں",
     startCalm: "پرسکون آغاز",
     clearHistory: "تاریخ صاف کریں",
     saveAndOpenPath: "محفوظ کریں اور Path کھولیں",
@@ -7975,9 +7975,9 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     urdu: "اپنا پروفائل سیٹ کریں"
   },
   "Your data stays on this device. Nothing is shared unless you explicitly share it.": {
-    telugu: "మీ డేటా ఈ పరికరంలోనే ఉంటుంది. మీరు స్పష్టంగా పంచుకున్నంత వరకు ఏదీ షేర్ కాదు.",
+    telugu: "మీ డేటా ఈ పరికరంలోనే ఉంటుంది. మీరు స్పష్టంగా పంచుకున్నంత వరకు ఏదీ భాగస్వామ్యం కాదు.",
     tamil: "உங்கள் தரவு இந்த சாதனத்திலேயே இருக்கும். நீங்கள் வெளிப்படையாகப் பகிரும் வரை எதுவும் பகிரப்படாது.",
-    urdu: "آپ کا ڈیٹا اسی device پر رہتا ہے۔ جب تک آپ خود share نہ کریں، کچھ بھی شیئر نہیں ہوتا۔"
+    urdu: "آپ کا ڈیٹا اسی آلے پر رہتا ہے۔ جب تک آپ خود شیئر نہ کریں، کچھ بھی شیئر نہیں ہوتا۔"
   },
   "Identity": {
     telugu: "గుర్తింపు",
@@ -8005,9 +8005,9 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     urdu: "آپ کہاں سے شروع کرنا چاہتے ہیں؟"
   },
   "Privacy first. Profile details are optional. Help and Redress remains available from every page.": {
-    telugu: "ముందు privacy. ప్రొఫైల్ వివరాలు ఐచ్ఛికం. Help and Redress ప్రతి పేజీ నుంచీ అందుబాటులో ఉంటుంది.",
-    tamil: "முதலில் தனியுரிமை. சுயவிவர விவரங்கள் விருப்பமானவை. Help and Redress ஒவ்வொரு பக்கத்திலிருந்தும் கிடைக்கும்.",
-    urdu: "پہلے پرائیویسی۔ پروفائل کی تفصیلات اختیاری ہیں۔ Help and Redress ہر صفحے سے دستیاب رہتا ہے۔"
+    telugu: "ముందు గోప్యత. ప్రొఫైల్ వివరాలు ఐచ్ఛికం. సహాయం మరియు న్యాయ పరిహారం ప్రతి పేజీ నుంచీ అందుబాటులో ఉంటుంది.",
+    tamil: "முதலில் தனியுரிமை. சுயவிவர விவரங்கள் விருப்பமானவை. உதவி மற்றும் நிவாரணம் ஒவ்வொரு பக்கத்திலிருந்தும் கிடைக்கும்.",
+    urdu: "پہلے رازداری۔ پروفائل کی تفصیلات اختیاری ہیں۔ مدد اور ازالہ ہر صفحے سے دستیاب رہتا ہے۔"
   },
   "Explore first": {
     telugu: "ముందు అన్వేషించండి",
@@ -8015,13 +8015,13 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     urdu: "پہلے دیکھیں"
   },
   "Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.": {
-    telugu: "స్వయంచాలక counselling engine, calm support, Vedic insight, లేదా communityతో ప్రారంభించండి. ఐచ్ఛిక వివరాలను తరువాత చేర్చొచ్చు, మరియు మీరు export లేదా share చేయనంత వరకు notes ఈ పరికరంలోనే ఉంటాయి.",
-    tamil: "தானியங்கி counselling engine, calm support, Vedic insight, அல்லது community-இல் தொடங்குங்கள். விருப்ப விவரங்களை பின்னர் சேர்க்கலாம், மேலும் நீங்கள் export அல்லது share செய்யும் வரை குறிப்புகள் இந்த சாதனத்திலேயே இருக்கும்.",
-    urdu: "خودکار counselling engine، calm support، Vedic insight، یا community سے شروع کریں۔ اختیاری تفصیلات بعد میں شامل کی جا سکتی ہیں، اور جب تک آپ export یا share نہ کریں notes اسی device پر رہتی ہیں۔"
+    telugu: "స్వయంచాలక కౌన్సెలింగ్ ఇంజిన్, ప్రశాంత సహాయం, వేద దృష్టి, లేదా సముదాయంతో ప్రారంభించండి. ఐచ్ఛిక వివరాలను తరువాత చేర్చొచ్చు, మరియు మీరు ఎగుమతి చేయకపోతే లేదా పంచుకోకపోతే notes ఈ పరికరంలోనే ఉంటాయి.",
+    tamil: "தானியங்கி ஆலோசனை இயந்திரம், அமைதியான உதவி, வேத பார்வை, அல்லது சமூகத்திலிருந்து தொடங்குங்கள். விருப்ப விவரங்களை பின்னர் சேர்க்கலாம்; நீங்கள் export செய்யவோ பகிரவோ செய்யும் வரை குறிப்புகள் இந்த சாதனத்திலேயே இருக்கும்.",
+    urdu: "خودکار مشاورت انجن، پُرسکون مدد، ویدک بصیرت، یا برادری سے شروع کریں۔ اختیاری تفصیلات بعد میں شامل کی جا سکتی ہیں، اور جب تک آپ برآمد یا شیئر نہ کریں نوٹس اسی آلے پر رہتی ہیں۔"
   },
   "Start a private guided support room.": {
-    telugu: "ఒక private మార్గదర్శిత సహాయ గదిని ప్రారంభించండి.",
-    tamil: "ஒரு private வழிகாட்டப்பட்ட ஆதரவு அறையைத் தொடங்கவும்.",
+    telugu: "ఒక ప్రైవేట్ మార్గదర్శిత సహాయ గదిని ప్రారంభించండి.",
+    tamil: "ஒரு தனிப்பட்ட வழிகாட்டப்பட்ட ஆதரவு அறையைத் தொடங்கவும்.",
     urdu: "ایک نجی رہنمائی والا مدد کمرہ شروع کریں۔"
   },
   "Settle the body with breath and sound.": {
@@ -8030,14 +8030,14 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     urdu: "سانس اور آواز سے جسم کو سکون دیں۔"
   },
   "Open moon-chart based guidance and remedies.": {
-    telugu: "చంద్ర-చార్ట్ ఆధారిత మార్గదర్శకత్వం మరియు పరిహారాలను తెరవండి.",
-    tamil: "Moon-chart அடிப்படையிலான வழிகாட்டுதல் மற்றும் நிவாரணங்களைத் திறக்கவும்.",
-    urdu: "Moon-chart پر مبنی رہنمائی اور remedies کھولیں۔"
+    telugu: "చంద్ర చార్ట్ ఆధారిత మార్గదర్శకత్వం మరియు పరిహారాలను తెరవండి.",
+    tamil: "சந்திர அட்டவணை அடிப்படையிலான வழிகாட்டுதல் மற்றும் நிவாரணங்களைத் திறக்கவும்.",
+    urdu: "قمری چارٹ پر مبنی رہنمائی اور تدابیر کھولیں۔"
   },
   "Open verified support messages when access is confirmed.": {
-    telugu: "ప్రవేశం ధృవీకరించబడినప్పుడు verified support messages తెరవండి.",
-    tamil: "அணுகல் உறுதிசெய்யப்பட்டபோது verified support messages-ஐத் திறக்கவும்.",
-    urdu: "جب access تصدیق ہو جائے تو verified support messages کھولیں۔"
+    telugu: "ప్రవేశం ధృవీకరించబడినప్పుడు ధృవీకరించిన మద్దతు సందేశాలను తెరవండి.",
+    tamil: "அணுகல் உறுதிசெய்யப்பட்டபோது உறுதிப்படுத்தப்பட்ட ஆதரவு செய்திகளைத் திறக்கவும்.",
+    urdu: "جب رسائی کی تصدیق ہو جائے تو تصدیق شدہ مدد کے پیغامات کھولیں۔"
   },
   "Save rating": {
     telugu: "రేటింగ్ సేవ్ చేయండి",
@@ -8200,14 +8200,14 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     urdu: "شہر، ضلع، یا پِن کوڈ"
   },
   "Complete your profile, add a contact method, then verify to unlock community chat and private spaces.": {
-    telugu: "మీ ప్రొఫైల్ పూర్తిచేసి, ఒక సంప్రదింపు విధానాన్ని చేర్చి, ఆపై verify చేసి community chat మరియు private spaces ను తెరవండి.",
-    tamil: "உங்கள் சுயவிவரத்தை முடித்து, ஒரு தொடர்பு முறையை சேர்த்து, பின்னர் verify செய்து community chat மற்றும் private spaces-ஐத் திறக்கவும்.",
-    urdu: "اپنا پروفائل مکمل کریں، ایک رابطہ طریقہ شامل کریں، پھر verify کر کے community chat اور private spaces کھولیں۔"
+    telugu: "మీ ప్రొఫైల్ పూర్తిచేసి, ఒక సంప్రదింపు విధానాన్ని చేర్చి, ఆపై ధృవీకరించి సముదాయం చాట్ మరియు ప్రైవేట్ స్థలాలను తెరవండి.",
+    tamil: "உங்கள் சுயவிவரத்தை முடித்து, ஒரு தொடர்பு முறையை சேர்த்து, பின்னர் உறுதிப்படுத்தி சமூகம் அரட்டை மற்றும் தனிப்பட்ட இடங்களைத் திறக்கவும்.",
+    urdu: "اپنا پروفائل مکمل کریں، ایک رابطہ طریقہ شامل کریں، پھر تصدیق کر کے برادری چیٹ اور نجی جگہیں کھولیں۔"
   },
   "Connected provider sends the verification codes.": {
-    telugu: "కనెక్ట్ చేసిన provider verification codes పంపుతుంది.",
-    tamil: "இணைக்கப்பட்ட provider verification codes அனுப்புகிறது.",
-    urdu: "جڑا ہوا provider verification codes بھیجتا ہے۔"
+    telugu: "కనెక్ట్ చేసిన సేవాదారు ధృవీకరణ కోడ్‌లను పంపుతుంది.",
+    tamil: "இணைக்கப்பட்ட சேவை வழங்குநர் உறுதிப்படுத்தும் குறியீடுகளை அனுப்புகிறார்.",
+    urdu: "جڑا ہوا فراہم کنندہ تصدیقی کوڈ بھیجتا ہے۔"
   },
   "Contact": {
     telugu: "సంప్రదింపు",
@@ -40537,8 +40537,10 @@ function CounselingChatModal({
     onClose();
   };
   const counsellingDepthCopy = isVeryCompactPhone
-    ? `Replies: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · next step once context is ready.`
-    : `Counselling depth: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step available after context is ready.`;
+    ? `0/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step later`
+    : isCompactPhone
+      ? `Replies: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · next step after context`
+      : `Counselling depth: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step available after context is ready.`;
 
   return (
     <Modal
@@ -40974,9 +40976,9 @@ function CounselingChatModal({
 
         {/* Input area */}
         {session.stage !== "synthesizing" && (
-          <View style={{ backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#DCE9E6", paddingHorizontal: isVeryCompactPhone ? 12 : 16, paddingTop: isVeryCompactPhone ? 10 : 12, paddingBottom: Math.max(insets.bottom, isVeryCompactPhone ? 10 : 12), flexDirection: "row", alignItems: "flex-end", gap: isVeryCompactPhone ? 8 : 10, shadowColor: "#0E9488", shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 }}>
+          <View style={{ backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#DCE9E6", paddingHorizontal: isVeryCompactPhone ? 10 : 16, paddingTop: isVeryCompactPhone ? 8 : 12, paddingBottom: Math.max(insets.bottom, isVeryCompactPhone ? 8 : 12), flexDirection: "row", alignItems: "flex-end", gap: isVeryCompactPhone ? 6 : 10, shadowColor: "#0E9488", shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "800", marginBottom: isVeryCompactPhone ? 4 : 6 }} numberOfLines={2}>
+              <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : 16, fontWeight: "800", marginBottom: isVeryCompactPhone ? 2 : 6 }} numberOfLines={1} ellipsizeMode="tail">
                 {counsellingDepthCopy}
               </Text>
               <TextInput
@@ -40984,7 +40986,7 @@ function CounselingChatModal({
                 onChangeText={setDraft}
                 placeholder={isListening ? l("Listening...", { hindi: "सुन रहा है…", telugu: "వింటోంది…", tamil: "கேட்கப்படுகிறது…", urdu: "سن رہا ہے…" }) : l("Reply here...", { hindi: "यहाँ जवाब लिखें…", telugu: "ఇక్కడ ప్రత్యుత్తరం ఇవ్వండి…", tamil: "இங்கே பதிலளிக்கவும்…", urdu: "یہاں جواب لکھیں…" })}
                 placeholderTextColor="#5B7480"
-                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, paddingHorizontal: isVeryCompactPhone ? 10 : 12, paddingVertical: isVeryCompactPhone ? 10 : 12, color: "#213A4A", fontSize: isVeryCompactPhone ? 15 : 16, lineHeight: isVeryCompactPhone ? 20 : 22, maxHeight: isVeryCompactPhone ? 108 : 120, borderWidth: 1, borderColor: isListening ? "#0B6F66" : "#C4D8D4" }}
+                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, paddingHorizontal: isVeryCompactPhone ? 9 : 12, paddingVertical: isVeryCompactPhone ? 8 : 12, color: "#213A4A", fontSize: isVeryCompactPhone ? 15 : 16, lineHeight: isVeryCompactPhone ? 19 : 22, maxHeight: isVeryCompactPhone ? 92 : 120, borderWidth: 1, borderColor: isListening ? "#0B6F66" : "#C4D8D4" }}
                 multiline
                 textAlignVertical="top"
               />
@@ -40997,7 +40999,7 @@ function CounselingChatModal({
             {/* Voice input button */}
             <Pressable
               onPress={isListening ? stopVoiceInput : startVoiceInput}
-              style={{ width: isVeryCompactPhone ? 40 : 44, height: isVeryCompactPhone ? 40 : 44, borderRadius: isVeryCompactPhone ? 20 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+              style={{ width: isVeryCompactPhone ? 38 : 44, height: isVeryCompactPhone ? 38 : 44, borderRadius: isVeryCompactPhone ? 19 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
               accessibilityRole="button"
               accessibilityLabel={isListening ? l("Stop voice input", { hindi: "आवाज़ इनपुट रोकें", telugu: "వాయిస్ ఇన్‌పుట్ ఆపండి", tamil: "குரல் உள்ளீட்டை நிறுத்தவும்", urdu: "آواز کا ان پٹ روکیں" }) : l("Start voice input", { hindi: "आवाज़ इनपुट शुरू करें", telugu: "వాయిస్ ఇన్‌పుట్ ప్రారంభించండి", tamil: "குரல் உள்ளீட்டைத் தொடங்கவும்", urdu: "آواز کا ان پٹ شروع کریں" })}
             >
@@ -41008,7 +41010,7 @@ function CounselingChatModal({
               disabled={isGuideTyping}
               accessibilityRole="button"
               accessibilityLabel={isGuideTyping ? l("Your guide is replying", { hindi: "आपका मार्गदर्शक जवाब दे रहा है", telugu: "మీ మార్గదర్శి ప్రత్యుత్తరం ఇస్తున్నారు", tamil: "உங்கள் வழிகாட்டி பதிலளிக்கிறார்", urdu: "آپ کا رہنما جواب دے رہا ہے" }) : l("Send message", { hindi: "संदेश भेजें", telugu: "సందేశం పంపండి", tamil: "செய்தியை அனுப்பவும்", urdu: "پیغام بھیجیں" })}
-              style={({ pressed }) => ({ width: isVeryCompactPhone ? 40 : 44, height: isVeryCompactPhone ? 40 : 44, borderRadius: isVeryCompactPhone ? 20 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+              style={({ pressed }) => ({ width: isVeryCompactPhone ? 38 : 44, height: isVeryCompactPhone ? 38 : 44, borderRadius: isVeryCompactPhone ? 19 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
             >
               <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068", fontSize: 20 }}>↑</Text>
             </Pressable>
