@@ -260,7 +260,12 @@ for (const id of allDimensionIds) {
 // The detail view must actually render this depth, not just carry it as data.
 assert(source.includes('Path to resolution'), 'SupportDimensionLibraryPanel does not render the resolution steps');
 assert(source.includes('Resolved when: '), 'SupportDimensionLibraryPanel does not render the conclusion marker');
-assert(source.includes('Find: {target.label}'), 'SupportDimensionLibraryPanel does not render per-dimension supportSearch buttons');
+assert(
+  source.includes('supportSearch.map((target) => (') &&
+  source.includes('buildNearbySearchUrl(target.query)') &&
+  source.includes('target.label'),
+  'SupportDimensionLibraryPanel does not render per-dimension supportSearch buttons'
+);
 
 // ── Bilingual "Ask the chart" ────────────────────────────────────────────────
 // The Ask-the-chart answer engine must produce Hindi as well as English, driven
