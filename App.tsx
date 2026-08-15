@@ -32036,21 +32036,61 @@ function RedressSection({
       <View style={[styles.panel, !isWide && { flexGrow: 0, flexBasis: "auto" }]}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Emergency first</Text>
-            <Text style={styles.sectionTitle}>Help and Redress</Text>
+            <Text style={styles.eyebrow}>{l("Emergency first", {
+              hindi: "पहले आपातकाल",
+              telugu: "ముందుగా అత్యవసరం",
+              tamil: "முன்னுரிமை அவசரம்",
+              urdu: "پہلے ایمرجنسی"
+            })}</Text>
+            <Text style={styles.sectionTitle}>{l("Help and Redress", {
+              hindi: "मदद और शिकायत",
+              telugu: "సహాయం మరియు పరిహారం",
+              tamil: "உதவி மற்றும் நிவாரணம்",
+              urdu: "مدد اور ازالہ"
+            })}</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
-          Your situation sets the route. Everything below — first office, recommended initial action, and formal escalation path — changes to match it, and only that route is shown. Tap “Change” on the situation card to pick a different one.
+          {l("Your situation sets the route. Everything below — first office, recommended initial action, and formal escalation path — changes to match it, and only that route is shown. Tap “Change” on the situation card to pick a different one.", {
+            hindi: "आपकी स्थिति ही मार्ग तय करती है। नीचे की हर चीज़ — पहला कार्यालय, सुझाया गया शुरुआती कदम, और औपचारिक escalation path — उसी के अनुसार बदलती है, और केवल वही route दिखता है। अलग route चुनने के लिए स्थिति कार्ड पर “Change” टैप करें।",
+            telugu: "మీ పరిస్థితి route‌ను నిర్ణయిస్తుంది. దిగువ ఉన్న ప్రతిదీ — మొదటి office, సూచించిన మొదటి చర్య, మరియు formal escalation path — దానికి అనుగుణంగా మారుతుంది, మరియు ఆ route మాత్రమే చూపబడుతుంది. వేరే route ఎంచుకోవడానికి situation card పై “Change” ను ట్యాప్ చేయండి.",
+            tamil: "உங்கள் நிலைதான் வழியை நிர்ணயிக்கிறது. கீழே உள்ள அனைத்தும் — முதல் அலுவலகம், பரிந்துரைக்கப்பட்ட முதல் செயல், மற்றும் அதிகாரப்பூர்வ escalaton path — அதற்கு ஏற்ப மாறும், மற்றும் அந்த route மட்டுமே காட்டப்படும். வேறு route-ஐ தேர்ந்தெடுக்க situation card-இல் “Change” என்பதைத் தட்டவும்.",
+            urdu: "آپ کی صورتحال ہی راستہ طے کرتی ہے۔ نیچے کی ہر چیز — پہلا دفتر، تجویز کردہ ابتدائی قدم، اور رسمی escalation path — اسی کے مطابق بدلتی ہے، اور صرف وہی راستہ دکھایا جاتا ہے۔ مختلف راستہ منتخب کرنے کے لیے صورتحال کارڈ پر “Change” ٹیپ کریں۔"
+          })}
         </Text>
         <View style={{ marginBottom: 14, borderRadius: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
           <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "700" }}>
-            Verified guidance standard · {REDRESS_CONTENT_STANDARD.jurisdiction}
+            {l("Verified guidance standard", {
+              hindi: "सत्यापित मार्गदर्शन मानक",
+              telugu: "ధృవీకరించిన మార్గదర్శక ప్రమాణం",
+              tamil: "உறுதிப்படுத்தப்பட்ட வழிகாட்டு தரநிலை",
+              urdu: "تصدیق شدہ رہنمائی معیار"
+            })} · {REDRESS_CONTENT_STANDARD.jurisdiction}
           </Text>
           <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
-            Reviewed {REDRESS_CONTENT_STANDARD.reviewedOn}; next review {redressReviewState.nextReviewOn}.{" "}
-            {redressReviewState.current ? "Directory review is current." : "Directory review is overdue—confirm every destination on its official website before relying on it."}{" "}
+            {l("Reviewed", {
+              hindi: "समीक्षित",
+              telugu: "సమీక్షించిన తేదీ",
+              tamil: "மதிப்பாய்வு",
+              urdu: "جائزہ لیا گیا"
+            })} {REDRESS_CONTENT_STANDARD.reviewedOn}; {l("next review", {
+              hindi: "अगली समीक्षा",
+              telugu: "తదుపరి సమీక్ష",
+              tamil: "அடுத்த மதிப்பாய்வு",
+              urdu: "اگلا جائزہ"
+            })} {redressReviewState.nextReviewOn}.{" "}
+            {redressReviewState.current ? l("Directory review is current.", {
+              hindi: "डायरेक्टरी समीक्षा अद्यतन है।",
+              telugu: "డైరెక్టరీ సమీక్ష ప్రస్తుతంగా ఉంది.",
+              tamil: "அடைவுக் கோப்பு மதிப்பாய்வு தற்போதைய நிலையில் உள்ளது.",
+              urdu: "ڈائریکٹری کا جائزہ تازہ ہے۔"
+            }) : l("Directory review is overdue—confirm every destination on its official website before relying on it.", {
+              hindi: "डायरेक्टरी समीक्षा देरी से है — भरोसा करने से पहले हर destination को उसकी official website पर ज़रूर जाँचें।",
+              telugu: "డైరెక్టరీ సమీక్ష ఆలస్యం అయింది — నమ్మే ముందు ప్రతి destination ను దాని official website లో ధృవీకరించండి.",
+              tamil: "அடைவுக் கோப்பு மதிப்பாய்வு தாமதமாக உள்ளது — நம்புவதற்கு முன் ஒவ்வொரு destination-ஐயும் அதன் அதிகாரப்பூர்வ வலைத்தளத்தில் உறுதிப்படுத்தவும்.",
+              urdu: "ڈائریکٹری کا جائزہ تاخیر کا شکار ہے — اعتماد کرنے سے پہلے ہر destination کو اس کی official website پر ضرور تصدیق کریں۔"
+            })}{" "}
             {REDRESS_CONTENT_STANDARD.sourceRule} {REDRESS_CONTENT_STANDARD.outcomeNotice}
           </Text>
         </View>
@@ -32064,8 +32104,18 @@ function RedressSection({
             heard rather than read under stress. */}
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FBEAE7", borderWidth: 1, borderColor: "rgba(239,68,68,0.35)", padding: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <Text style={{ color: "#B82200", fontSize: 12, fontWeight: "800" }}>{l("Immediate safety actions")}</Text>
-            <Text style={{ color: "#8A5147", fontSize: 12 }}>Priority access</Text>
+            <Text style={{ color: "#B82200", fontSize: 12, fontWeight: "800" }}>{l("Immediate safety actions", {
+              hindi: "तत्काल सुरक्षा कदम",
+              telugu: "తక్షణ భద్రతా చర్యలు",
+              tamil: "உடனடி பாதுகாப்பு நடவடிக்கைகள்",
+              urdu: "فوری حفاظتی اقدامات"
+            })}</Text>
+            <Text style={{ color: "#8A5147", fontSize: 12 }}>{l("Priority access", {
+              hindi: "प्राथमिक पहुँच",
+              telugu: "ప్రాధాన్య ప్రాప్యత",
+              tamil: "முன்னுரிமை அணுகல்",
+              urdu: "ترجیحی رسائی"
+            })}</Text>
           </View>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             <Pressable
@@ -32096,7 +32146,12 @@ function RedressSection({
         <Pressable
           accessibilityRole="button"
           accessibilityState={{ expanded: showEmergencyDirectory }}
-          accessibilityLabel={`${showEmergencyDirectory ? "Hide" : "Show"} additional emergency contacts and official directories`}
+          accessibilityLabel={`${showEmergencyDirectory ? l("Hide", { hindi: "छिपाएँ", telugu: "దాచు", tamil: "மறை", urdu: "چھپائیں" }) : l("Show", { hindi: "दिखाएँ", telugu: "చూపించు", tamil: "காட்டு", urdu: "دکھائیں" })} ${l("additional emergency contacts and official directories", {
+            hindi: "अतिरिक्त आपातकालीन संपर्क और आधिकारिक निर्देशिकाएँ",
+            telugu: "అదనపు అత్యవసర సంప్రదింపులు మరియు అధికారిక డైరెక్టరీలు",
+            tamil: "கூடுதல் அவசர தொடர்புகள் மற்றும் அதிகாரப்பூர்வ அடைவுகள்",
+            urdu: "اضافی ہنگامی رابطے اور سرکاری ڈائریکٹریاں"
+          })}`}
           onPress={() => {
             void Haptics.selectionAsync();
             animateDisclosure();
@@ -32119,10 +32174,20 @@ function RedressSection({
         >
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 18, fontWeight: "700" }}>
-              More emergency contacts and official directories
+              {l("More emergency contacts and official directories", {
+                hindi: "अधिक आपातकालीन संपर्क और आधिकारिक निर्देशिकाएँ",
+                telugu: "మరిన్ని అత్యవసర సంప్రదింపులు మరియు అధికారిక డైరెక్టరీలు",
+                tamil: "மேலும் அவசர தொடர்புகள் மற்றும் அதிகாரப்பூர்வ அடைவுகள்",
+                urdu: "مزید ہنگامی رابطے اور سرکاری ڈائریکٹریاں"
+              })}
             </Text>
             <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, marginTop: 2 }}>
-              Open verified helplines, legal aid, government grievance and police resources only when needed.
+              {l("Open verified helplines, legal aid, government grievance and police resources only when needed.", {
+                hindi: "सत्यापित हेल्पलाइन, कानूनी सहायता, सरकारी शिकायत और पुलिस संसाधन केवल ज़रूरत पड़ने पर खोलें।",
+                telugu: "ధృవీకరించిన హెల్ప్‌లైన్లు, చట్ట సహాయం, ప్రభుత్వ ఫిర్యాదు మరియు పోలీసు వనరులను అవసరమైనప్పుడు మాత్రమే తెరవండి.",
+                tamil: "உறுதிப்படுத்தப்பட்ட உதவி எண்கள், சட்ட உதவி, அரசு புகார் மற்றும் காவல் வளங்களை தேவைப்படும் போதுதான் திறக்கவும்.",
+                urdu: "تصدیق شدہ ہیلپ لائنز، قانونی مدد، سرکاری شکایت اور پولیس وسائل صرف ضرورت پڑنے پر کھولیں۔"
+              })}
             </Text>
           </View>
           <Text style={{ color: "#0E6F69", fontSize: 20, fontWeight: "900" }}>
@@ -32135,27 +32200,157 @@ function RedressSection({
         {/* ── QUICK HELP NUMBERS STRIP ── */}
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "rgba(239,68,68,0.3)", overflow: "hidden" }}>
           <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 6, flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <Text style={{ color: "#B53333", fontSize: 12, fontWeight: "800" }}>🚨 IMPORTANT NUMBERS</Text>
-            <Text style={{ color: "#6B7280", fontSize: 12, flex: 1, textAlign: "right" }}>Always available</Text>
+            <Text style={{ color: "#B53333", fontSize: 12, fontWeight: "800" }}>{l("🚨 IMPORTANT NUMBERS", {
+              hindi: "🚨 महत्वपूर्ण नंबर",
+              telugu: "🚨 ముఖ్యమైన నంబర్లు",
+              tamil: "🚨 முக்கிய எண்கள்",
+              urdu: "🚨 اہم نمبرز"
+            })}</Text>
+            <Text style={{ color: "#6B7280", fontSize: 12, flex: 1, textAlign: "right" }}>{l("Always available", {
+              hindi: "हमेशा उपलब्ध",
+              telugu: "ఎల్లప్పుడూ అందుబాటులో",
+              tamil: "எப்போதும் கிடைக்கும்",
+              urdu: "ہمیشہ دستیاب"
+            })}</Text>
           </View>
           {[
             // ── Immediate danger ──
-            { label: "Emergency / Police", number: "112", color: "#B53333", desc: "Any immediate danger, assault, or threat. Single number for police, fire, and ambulance." },
-            { label: "Ambulance / Medical", number: "108", color: "#DC2626", desc: "Medical emergency, accident, or someone unconscious" },
-            { label: "Fire", number: "101", color: "#EA580C", desc: "Fire, gas leak, or rescue from a building" },
+            { label: l("Emergency / Police", {
+              hindi: "आपातकाल / पुलिस",
+              telugu: "అత్యవసరం / పోలీస్",
+              tamil: "அவசரம் / காவல்துறை",
+              urdu: "ایمرجنسی / پولیس"
+            }), number: "112", color: "#B53333", desc: l("Any immediate danger, assault, or threat. Single number for police, fire, and ambulance.", {
+              hindi: "कोई भी तात्कालिक खतरा, हमला, या धमकी। पुलिस, आग, और एम्बुलेंस के लिए एक ही नंबर।",
+              telugu: "తక్షణ ప్రమాదం, దాడి, లేదా బెదిరింపు. పోలీసు, అగ్నిమాపక, మరియు అంబులెన్స్‌కు ఒకే నంబర్.",
+              tamil: "உடனடி ஆபத்து, தாக்குதல், அல்லது அச்சுறுத்தல். காவல்துறை, தீயணைப்பு, மற்றும் ஆம்புலன்ஸுக்கு ஒரே எண்.",
+              urdu: "کوئی فوری خطرہ، حملہ، یا دھمکی۔ پولیس، فائر، اور ایمبولینس کے لیے ایک ہی نمبر۔"
+            }) },
+            { label: l("Ambulance / Medical", {
+              hindi: "एम्बुलेंस / मेडिकल",
+              telugu: "అంబులెన్స్ / వైద్య",
+              tamil: "ஆம்புலன்ஸ் / மருத்துவம்",
+              urdu: "ایمبولینس / طبی"
+            }), number: "108", color: "#DC2626", desc: l("Medical emergency, accident, or someone unconscious", {
+              hindi: "चिकित्सीय आपातकाल, दुर्घटना, या कोई बेहोश हो।",
+              telugu: "వైద్య అత్యవసరం, ప్రమాదం, లేదా ఎవరైనా స్పృహ కోల్పోవడం.",
+              tamil: "மருத்துவ அவசரம், விபத்து, அல்லது ஒருவர் மயக்கமடைந்தால்.",
+              urdu: "طبی ایمرجنسی، حادثہ، یا کوئی بے ہوش ہو۔"
+            }) },
+            { label: l("Fire", {
+              hindi: "आग",
+              telugu: "అగ్ని",
+              tamil: "தீ",
+              urdu: "آگ"
+            }), number: "101", color: "#EA580C", desc: l("Fire, gas leak, or rescue from a building", {
+              hindi: "आग, गैस रिसाव, या इमारत से बचाव।",
+              telugu: "అగ్ని, గ్యాస్ లీక్, లేదా భవనం నుండి రక్షణ.",
+              tamil: "தீ, எரிவாயு கசிவு, அல்லது கட்டிடத்திலிருந்து மீட்பு.",
+              urdu: "آگ، گیس لیک، یا عمارت سے ریسکیو۔"
+            }) },
             // ── Mental health ──
-            { label: "Tele-MANAS (mental health)", number: "14416", color: "#0D9488", desc: "Government 24×7 mental health support in 20+ languages. Free." },
-            { label: "KIRAN (mental health)", number: "1800-599-0019", color: "#14B8A6", desc: "24×7 national helpline for distress, anxiety, and suicidal thoughts. Free." },
+            { label: l("Tele-MANAS (mental health)", {
+              hindi: "टेली-मानस (मानसिक स्वास्थ्य)",
+              telugu: "టెలీ-మానస్ (మానసిక ఆరోగ్యం)",
+              tamil: "டெலி-மனஸ் (மனநலம்)",
+              urdu: "ٹیلی-مانس (ذہنی صحت)"
+            }), number: "14416", color: "#0D9488", desc: l("Government 24×7 mental health support in 20+ languages. Free.", {
+              hindi: "सरकारी 24×7 मानसिक स्वास्थ्य सहायता 20+ भाषाओं में। निःशुल्क।",
+              telugu: "ప్రభుత్వ 24×7 మానసిక ఆరోగ్య సహాయం 20+ భాషల్లో. ఉచితం.",
+              tamil: "அரசின் 24×7 மனநல ஆதரவு 20+ மொழிகளில். இலவசம்.",
+              urdu: "حکومتی 24×7 ذہنی صحت مدد 20+ زبانوں میں۔ مفت۔"
+            }) },
+            { label: l("KIRAN (mental health)", {
+              hindi: "किरण (मानसिक स्वास्थ्य)",
+              telugu: "కిరణ్ (మానసిక ఆరోగ్యం)",
+              tamil: "கிரண் (மனநலம்)",
+              urdu: "کِران (ذہنی صحت)"
+            }), number: "1800-599-0019", color: "#14B8A6", desc: l("24×7 national helpline for distress, anxiety, and suicidal thoughts. Free.", {
+              hindi: "कष्ट, चिंता, और आत्मघाती विचारों के लिए 24×7 राष्ट्रीय हेल्पलाइन। निःशुल्क।",
+              telugu: "వేదన, ఆందోళన, మరియు ఆత్మహత్య ఆలోచనల కోసం 24×7 జాతీయ హెల్ప్‌లైన్. ఉచితం.",
+              tamil: "துன்பம், பதட்டம், மற்றும் தற்கொலை எண்ணங்களுக்கான 24×7 தேசிய உதவி எண். இலவசம்.",
+              urdu: "پریشانی، اضطراب، اور خودکشی کے خیالات کے لیے 24×7 قومی ہیلپ لائن۔ مفت۔"
+            }) },
             // ── Abuse & protection ──
-            { label: "Women's Helpline", number: "181", color: "#B61759", desc: "Domestic violence, harassment, abuse — connects to One Stop Centre support" },
-            { label: "Women in Distress (Police)", number: "1091", color: "#EC4899", desc: "Direct police response line for women facing immediate threat" },
-            { label: "Child Helpline", number: "1098", color: "#0052B8", desc: "Child in danger, abuse, trafficking, or child labour" },
-            { label: "Elderline (senior citizens)", number: "14567", color: "#7C3AED", desc: "Elder abuse, neglect, pension and property distress" },
+            { label: l("Women's Helpline", {
+              hindi: "महिला हेल्पलाइन",
+              telugu: "మహిళా హెల్ప్‌లైన్",
+              tamil: "பெண்கள் உதவி எண்",
+              urdu: "خواتین ہیلپ لائن"
+            }), number: "181", color: "#B61759", desc: l("Domestic violence, harassment, abuse — connects to One Stop Centre support", {
+              hindi: "घरेलू हिंसा, उत्पीड़न, दुर्व्यवहार — वन स्टॉप सेंटर सहायता से जोड़ता है",
+              telugu: "గృహహింస, వేధింపులు, దుర్వినియోగం — One Stop Centre సహాయానికి కలుపుతుంది",
+              tamil: "குடும்ப வன்முறை, தொல்லை, துன்புறுத்தல் — One Stop Centre ஆதரவுடன் இணைக்கிறது",
+              urdu: "گھریلو تشدد، ہراسانی، بدسلوکی — One Stop Centre مدد سے جوڑتا ہے"
+            }) },
+            { label: l("Women in Distress (Police)", {
+              hindi: "संकट में महिलाएं (पुलिस)",
+              telugu: "ఇబ్బందిలో ఉన్న మహిళలు (పోలీస్)",
+              tamil: "சிக்கலில் உள்ள பெண்கள் (காவல்துறை)",
+              urdu: "پریشانی میں خواتین (پولیس)"
+            }), number: "1091", color: "#EC4899", desc: l("Direct police response line for women facing immediate threat", {
+              hindi: "तुरंत खतरे में पड़ी महिलाओं के लिए सीधी पुलिस प्रतिक्रिया लाइन",
+              telugu: "తక్షణ ప్రమాదంలో ఉన్న మహిళల కోసం ప్రత్యక్ష పోలీసు స్పందన లైన్",
+              tamil: "உடனடி ஆபத்தில் உள்ள பெண்களுக்கு நேரடி காவல்துறை பதில் எண்",
+              urdu: "فوری خطرے میں موجود خواتین کے لیے براہِ راست پولیس لائن"
+            }) },
+            { label: l("Child Helpline", {
+              hindi: "बाल हेल्पलाइन",
+              telugu: "చైల్డ్ హెల్ప్‌లైన్",
+              tamil: "குழந்தை உதவி எண்",
+              urdu: "چائلڈ ہیلپ لائن"
+            }), number: "1098", color: "#0052B8", desc: l("Child in danger, abuse, trafficking, or child labour", {
+              hindi: "खतरे में बच्चा, दुर्व्यवहार, तस्करी, या बाल श्रम",
+              telugu: "ప్రమాదంలో ఉన్న పిల్లవాడు, దుర్వినియోగం, రవాణా, లేదా బాల కార్మికత",
+              tamil: "ஆபத்தில் உள்ள குழந்தை, துன்புறுத்தல், கடத்தல், அல்லது குழந்தை தொழிலாளர்",
+              urdu: "خطرے میں بچہ، بدسلوکی، اسمگلنگ، یا چائلڈ لیبر"
+            }) },
+            { label: l("Elderline (senior citizens)", {
+              hindi: "एल्डरलाइन (वरिष्ठ नागरिक)",
+              telugu: "ఎల్డర్‌లైన్ (వృద్ధులు)",
+              tamil: "எல்டர்லைன் (மூத்த குடிமக்கள்)",
+              urdu: "ایلڈر لائن (بزرگ شہری)"
+            }), number: "14567", color: "#7C3AED", desc: l("Elder abuse, neglect, pension and property distress", {
+              hindi: "वरिष्ठों के साथ दुर्व्यवहार, उपेक्षा, पेंशन और संपत्ति की परेशानी",
+              telugu: "వృద్ధులపై దుర్వినియోగం, నిర్లక్ష్యం, పెన్షన్ మరియు ఆస్తి సమస్యలు",
+              tamil: "மூத்தோர் துன்புறுத்தல், புறக்கணிப்பு, ஓய்வூதியம் மற்றும் சொத்து தொந்தரவு",
+              urdu: "بزرگوں سے بدسلوکی، لاپروائی، پنشن اور جائیداد کی پریشانی"
+            }) },
             // ── Fraud & consumer ──
-            { label: "Cybercrime / Fraud", number: "1930", color: "#3730A3", desc: "Online fraud — call within 24 hrs to freeze funds. Do not delete messages." },
-            { label: "Consumer Helpline", number: "1915", color: "#04714F", desc: "Product, service, refund, and warranty complaints" },
+            { label: l("Cybercrime / Fraud", {
+              hindi: "साइबर अपराध / धोखाधड़ी",
+              telugu: "సైబర్ నేరం / మోసం",
+              tamil: "சைபர் குற்றம் / மோசடி",
+              urdu: "سائبر کرائم / دھوکہ دہی"
+            }), number: "1930", color: "#3730A3", desc: l("Online fraud — call within 24 hrs to freeze funds. Do not delete messages.", {
+              hindi: "ऑनलाइन धोखाधड़ी — धन रोकने के लिए 24 घंटे के भीतर कॉल करें। संदेश न हटाएँ।",
+              telugu: "ఆన్‌లైన్ మోసం — నిధులను నిలిపివేయడానికి 24 గంటల్లో కాల్ చేయండి. సందేశాలను తొలగించవద్దు.",
+              tamil: "ஆன்லைன் மோசடி — பணத்தை முடக்க 24 மணி நேரத்திற்குள் அழைக்கவும். செய்திகள் அழிக்க வேண்டாம்.",
+              urdu: "آن لائن دھوکہ دہی — فنڈز روکنے کے لیے 24 گھنٹے میں کال کریں۔ پیغامات حذف نہ کریں۔"
+            }) },
+            { label: l("Consumer Helpline", {
+              hindi: "उपभोक्ता हेल्पलाइन",
+              telugu: "వినియోగదారుల హెల్ప్‌లైన్",
+              tamil: "நுகர்வோர் உதவி எண்",
+              urdu: "صارف ہیلپ لائن"
+            }), number: "1915", color: "#04714F", desc: l("Product, service, refund, and warranty complaints", {
+              hindi: "उत्पाद, सेवा, धनवापसी, और वारंटी शिकायतें",
+              telugu: "ఉత్పత్తి, సేవ, రీఫండ్, మరియు వారంటీ ఫిర్యాదులు",
+              tamil: "தயாரிப்பு, சேவை, பணப்பரிமாற்றம், மற்றும் உத்தரவாத புகார்கள்",
+              urdu: "پروڈکٹ، سروس، رقم واپسی، اور وارنٹی شکایات"
+            }) },
             // ── Institutional ──
-            { label: "Anti-Ragging", number: "1800-180-5522", color: "#A14A08", desc: "Ragging, hostel intimidation — UGC 24×7 line, complaint auto-registers" },
+            { label: l("Anti-Ragging", {
+              hindi: "एंटी-रैगिंग",
+              telugu: "యాంటీ-రాగింగ్",
+              tamil: "ரேக்கிங் தடுப்பு",
+              urdu: "اینٹی ریگنگ"
+            }), number: "1800-180-5522", color: "#A14A08", desc: l("Ragging, hostel intimidation — UGC 24×7 line, complaint auto-registers", {
+              hindi: "रैगिंग, हॉस्टल धमकी — UGC 24×7 लाइन, शिकायत स्वतः दर्ज होती है",
+              telugu: "రాగింగ్, హాస్టల్ బెదిరింపు — UGC 24×7 లైన్, ఫిర్యాదు స్వయంచాలకంగా నమోదు అవుతుంది",
+              tamil: "ராகிங், விடுதி மிரட்டல் — UGC 24×7 line, புகார் தானாகப் பதிவாகிறது",
+              urdu: "رینگنگ، ہاسٹل دھمکی — UGC 24×7 لائن، شکایت خودکار طور پر درج ہوتی ہے"
+            }) },
           ].map((item) => (
             (() => {
               const accent = highContrastAccent(item.color);
