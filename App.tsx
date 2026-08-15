@@ -6270,6 +6270,24 @@ type UiCopy = {
   homePrivacyNote: string;
   brandTagline: string;
   homeFlowLabel: string;
+  flowBack: string;
+  flowNext: string;
+  flowHome: string;
+  flowPages: string;
+  flowMore: string;
+  sectionSwitcherTitle: string;
+  sectionSwitcherPrompt: string;
+  sectionSwitcherClose: string;
+  weekAheadTitle: string;
+  weekAheadSub: string;
+  weekAheadRead: string;
+  greetingStillAwake: string;
+  greetingMorning: string;
+  greetingAfternoon: string;
+  greetingEvening: string;
+  greetingNight: string;
+  homeSupportCardOpenCounselling: string;
+  homeSupportCardContinue: string;
   quickExitPriority: string;
   footerReassurance: string;
   footerMadeWithCare: string;
@@ -6381,6 +6399,24 @@ const englishUiCopy: UiCopy = {
   homePrivacyNote: "Privacy first: notes stay local unless you choose verified sharing or export.",
   brandTagline: "One route, one next step",
   homeFlowLabel: "Premium flow",
+  flowBack: "Back",
+  flowNext: "Next",
+  flowHome: "Home",
+  flowPages: "Pages",
+  flowMore: "More",
+  sectionSwitcherTitle: "Open a page",
+  sectionSwitcherPrompt: "Tap a page to go there directly.",
+  sectionSwitcherClose: "Close",
+  weekAheadTitle: "Your week ahead is ready",
+  weekAheadSub: "A new week means a new transit picture. Takes a minute to read.",
+  weekAheadRead: "Read it",
+  greetingStillAwake: "Still awake?",
+  greetingMorning: "Good morning",
+  greetingAfternoon: "Good afternoon",
+  greetingEvening: "Good evening",
+  greetingNight: "Good night",
+  homeSupportCardOpenCounselling: "Start counselling",
+  homeSupportCardContinue: "Continue",
   quickExitPriority: "Top priority",
   footerReassurance: "You don't have to carry it alone.",
   footerMadeWithCare: "Made with care",
@@ -6498,6 +6534,24 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homePrivacyNote: "गोपनीयता पहले: नोट्स केवल आपके डिवाइस पर रहती हैं, जब तक आप सत्यापित साझा करना या निर्यात न चुनें।",
     brandTagline: "एक मार्ग, एक अगला कदम",
     homeFlowLabel: "प्रीमियम प्रवाह",
+    flowBack: "पिछला",
+    flowNext: "अगला",
+    flowHome: "होम",
+    flowPages: "पेज",
+    flowMore: "और",
+    sectionSwitcherTitle: "एक पेज खोलें",
+    sectionSwitcherPrompt: "सीधे जाने के लिए कोई पेज टैप करें।",
+    sectionSwitcherClose: "बंद करें",
+    weekAheadTitle: "आपका आने वाला सप्ताह तैयार है",
+    weekAheadSub: "नया सप्ताह नया गोचर चित्र लाता है। पढ़ने में एक मिनट लगता है।",
+    weekAheadRead: "पढ़ें",
+    greetingStillAwake: "जाग रहे हैं?",
+    greetingMorning: "सुप्रभात",
+    greetingAfternoon: "नमस्कार",
+    greetingEvening: "शुभ संध्या",
+    greetingNight: "शुभ रात्रि",
+    homeSupportCardOpenCounselling: "परामर्श शुरू करें",
+    homeSupportCardContinue: "जारी रखें",
     quickExitPriority: "शीर्ष प्राथमिकता",
     footerReassurance: "इसे अकेले उठाने की ज़रूरत नहीं है।",
     footerMadeWithCare: "स्नेह के साथ",
@@ -20813,7 +20867,7 @@ function isTrustedExternalUrl(url: string) {
                     ]}
                   >
                     <Text style={[styles.topTabMark, { color: theme.textMuted }]}>+</Text>
-                    <Text style={[styles.topTabLabel, { color: theme.textMuted }]} numberOfLines={1}>More</Text>
+                  <Text style={[styles.topTabLabel, { color: theme.textMuted }]} numberOfLines={1}>{homeUiCopy.flowMore}</Text>
                   </Pressable>
                 </ScrollView>
               ) : (
@@ -20861,7 +20915,7 @@ function isTrustedExternalUrl(url: string) {
                     ]}
                   >
                     <Text style={[styles.topTabMark, { color: theme.textMuted }]}>+</Text>
-                    <Text style={[styles.topTabLabel, { color: theme.textMuted }]} numberOfLines={1}>More</Text>
+                  <Text style={[styles.topTabLabel, { color: theme.textMuted }]} numberOfLines={1}>{homeUiCopy.flowMore}</Text>
                   </Pressable>
                 </View>
               )}
@@ -20875,7 +20929,9 @@ function isTrustedExternalUrl(url: string) {
                   style={[styles.topPageModeText, isCompact && styles.topPageModeTextCompact]}
                   numberOfLines={isCompact ? 3 : 2}
                 >
-                  Tap ← Back when done. This is a separate page.
+                  {languageId === "hindi"
+                    ? "वापस जाने के बाद ← टैप करें। यह एक अलग पेज है।"
+                    : "Tap ← Back when done. This is a separate page."}
                 </Text>
               </View>
             ) : null}
@@ -20900,7 +20956,7 @@ function isTrustedExternalUrl(url: string) {
                       isCompact && styles.flowRailButtonLabelCompact
                     ]}
                   >
-                    Back
+                    {homeUiCopy.flowBack}
                   </Text>
                 </Pressable>
               ) : null}
@@ -20925,7 +20981,7 @@ function isTrustedExternalUrl(url: string) {
                       isCompact && styles.flowRailButtonLabelCompact
                     ]}
                   >
-                    Next
+                    {homeUiCopy.flowNext}
                   </Text>
                 </Pressable>
               ) : null}
@@ -20951,7 +21007,7 @@ function isTrustedExternalUrl(url: string) {
                       isCompact && styles.flowRailButtonLabelCompact
                     ]}
                   >
-                    Home
+                    {homeUiCopy.flowHome}
                   </Text>
                 </Pressable>
               ) : null}
@@ -20967,7 +21023,7 @@ function isTrustedExternalUrl(url: string) {
                 ]}
               >
                 <Text style={[styles.flowRailButtonLabel, isCompact && styles.flowRailButtonLabelCompact]}>
-                  Pages
+                  {homeUiCopy.flowPages}
                 </Text>
               </Pressable>
               {!showFullHomeHero ? (
@@ -20997,9 +21053,9 @@ function isTrustedExternalUrl(url: string) {
                 <View style={[styles.sectionSwitcherModalSheet, { backgroundColor: theme.bgDarker }]}>
                   <View style={styles.sectionSwitcherModalHeader}>
                     <View style={{ flex: 1, gap: 4 }}>
-                      <Text style={[styles.sectionSwitcherPanelTitle, { color: theme.textPrimary }]}>Open a page</Text>
+                      <Text style={[styles.sectionSwitcherPanelTitle, { color: theme.textPrimary }]}>{homeUiCopy.sectionSwitcherTitle}</Text>
                       <Text style={[styles.sectionSwitcherPanelMeta, { color: theme.textMuted }]}>
-                        Tap a page to go there directly.
+                        {homeUiCopy.sectionSwitcherPrompt}
                       </Text>
                     </View>
                     <Pressable
@@ -21008,7 +21064,7 @@ function isTrustedExternalUrl(url: string) {
                       onPress={() => setShowSectionSwitcher(false)}
                       style={({ pressed }) => [styles.sectionSwitcherPanelClose, { backgroundColor: theme.bgDeep }, pressed && styles.pressed]}
                     >
-                      <Text style={[styles.sectionSwitcherPanelCloseLabel, { color: theme.textMuted }]}>Close</Text>
+                      <Text style={[styles.sectionSwitcherPanelCloseLabel, { color: theme.textMuted }]}>{homeUiCopy.sectionSwitcherClose}</Text>
                     </Pressable>
                   </View>
                   <View style={styles.sectionSwitcherGrid}>
@@ -21067,9 +21123,9 @@ function isTrustedExternalUrl(url: string) {
                 >
                   <Text style={styles.tabBannerEmoji}>🪐</Text>
                   <View style={styles.tabBannerText}>
-                    <Text style={styles.tabBannerTitle}>Your week ahead is ready</Text>
+                    <Text style={styles.tabBannerTitle}>{homeUiCopy.weekAheadTitle}</Text>
                     <Text style={styles.tabBannerSub}>
-                      A new week means a new transit picture. Takes a minute to read.
+                      {homeUiCopy.weekAheadSub}
                     </Text>
                   </View>
                   <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
@@ -21089,7 +21145,7 @@ function isTrustedExternalUrl(url: string) {
                         paddingVertical: 8
                       })}
                     >
-                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>Read it</Text>
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>{homeUiCopy.weekAheadRead}</Text>
                     </Pressable>
                     <Pressable
                       accessibilityRole="button"
@@ -21107,17 +21163,32 @@ function isTrustedExternalUrl(url: string) {
               {/* ── LANDING HEADER — Premium redesign ── */}
               {(() => {
                 const hour = new Date().getHours();
-                const greeting = hour < 5 ? "Still awake?" : hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : hour < 21 ? "Good evening" : "Good night";
+                const greeting = hour < 5 ? homeUiCopy.greetingStillAwake : hour < 12 ? homeUiCopy.greetingMorning : hour < 17 ? homeUiCopy.greetingAfternoon : hour < 21 ? homeUiCopy.greetingEvening : homeUiCopy.greetingNight;
                 const greetEmoji = hour < 5 ? "🌌" : hour < 12 ? "☀️" : hour < 17 ? "🌤" : hour < 21 ? "🌙" : "⭐";
                 const bgGrad = hour < 12 ? "#F4F8F7" : hour < 17 ? "#EFF3EC" : "#EDEFF6";
                 const issueActive = selectedIssueGuide.id !== "general";
                 const scoreColor = clarityScore >= 75 ? "#04714F" : clarityScore >= 55 ? "#A14A08" : "#DC2626";
-                const scoreLabel = clarityScore >= 75 ? "Strong" : clarityScore >= 55 ? "Growing" : "Building";
-                const motivations = [
-                  "Every small step is progress.", "You are not your struggle.", "Clarity comes with consistency.",
-                  "Today is another chance to move forward.", "Healing happens in layers.", "You showed up — that matters.",
-                  "Your journey is uniquely yours.", "Courage is choosing to continue.", "Progress over perfection.",
-                ];
+                const scoreLabel =
+                  languageId === "hindi"
+                    ? (clarityScore >= 75 ? "मज़बूत" : clarityScore >= 55 ? "बढ़ रहा" : "बन रहा")
+                    : (clarityScore >= 75 ? "Strong" : clarityScore >= 55 ? "Growing" : "Building");
+                const motivations = languageId === "hindi"
+                  ? [
+                      "हर छोटा कदम प्रगति है।",
+                      "आप अपनी मुश्किल नहीं हैं।",
+                      "स्पष्टता निरंतरता से आती है।",
+                      "आज आगे बढ़ने का एक और मौका है।",
+                      "ठीक होना परतों में होता है।",
+                      "आप यहाँ आए — यही मायने रखता है।",
+                      "आपकी यात्रा सिर्फ़ आपकी है।",
+                      "हिम्मत है जारी रखना।",
+                      "पूर्णता से बेहतर प्रगति।",
+                    ]
+                  : [
+                      "Every small step is progress.", "You are not your struggle.", "Clarity comes with consistency.",
+                      "Today is another chance to move forward.", "Healing happens in layers.", "You showed up — that matters.",
+                      "Your journey is uniquely yours.", "Courage is choosing to continue.", "Progress over perfection.",
+                    ];
                 // Prefer the connected brief -- it is written from this
                 // person's own streak, focus and scores -- and fall back to
                 // the rotating line whenever it was skipped (local-only
@@ -21132,7 +21203,9 @@ function isTrustedExternalUrl(url: string) {
                 // the same voice as the Journal mood responses.
                 const moodAwareLine =
                   crossSectionSignal.recentMoodTagLeaning === "negative"
-                    ? "The last few check-ins have leaned heavy — that's worth noticing, not pushing past."
+                  ? (languageId === "hindi"
+                      ? "पिछले कुछ चेक-इन भारी रहे हैं — इसे नोटिस करना ज़रूरी है, ज़बरदस्ती आगे बढ़ना नहीं।"
+                      : "The last few check-ins have leaned heavy — that's worth noticing, not pushing past.")
                     : null;
                 return (
                   <View style={{ marginHorizontal: 16, marginTop: 10, marginBottom: 10 }}>
@@ -23065,12 +23138,12 @@ function TodaySection({
                   {item.body}
                 </Text>
                 <View style={{ marginTop: 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: 11, paddingVertical: 7 }}>
-                  <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "700" }}>
-                    {item.id === "ask" ? "Start counselling" : "Continue"}
-                  </Text>
-                </View>
-              </Pressable>
-            ))}
+                    <Text style={{ color: item.accent, fontSize: 12, lineHeight: 16, fontWeight: "700" }}>
+                      {item.id === "ask" ? uiCopy.homeSupportCardOpenCounselling : uiCopy.homeSupportCardContinue}
+                    </Text>
+                  </View>
+                </Pressable>
+              ))}
           </View>
           <View style={{
             marginTop: 12,
