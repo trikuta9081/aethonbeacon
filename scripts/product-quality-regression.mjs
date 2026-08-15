@@ -107,11 +107,11 @@ assert(source.includes('local fallback only for this build'), 'Release readiness
 // primary card; each entry carries a short benefit and clear action.
 [
   'Premium command center',
-  'Four clear paths in one tap.',
-  'A private guided room with a clean next-step checkpoint.',
-  'Issue-matched sound and breath that hand off into Path.',
-  'Moon-chart insight with practical remedies for the same situation.',
-  'Verified support conversations when human input is the right next step.',
+  'One calm start, four clear paths.',
+  'A private first step with a clear checkpoint.',
+  'Sound and breath that hand off into Path.',
+  'Moon-chart insight with practical remedies.',
+  'Verified support when human input is the right next step.',
   'Start counselling',
   'Open calm',
   'View insight',

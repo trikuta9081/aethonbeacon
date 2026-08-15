@@ -2701,6 +2701,72 @@ function getDailyPrompt(): string {
   return DAILY_PROMPTS[dayOfYear % DAILY_PROMPTS.length];
 }
 
+const HOME_HERO_MOTIVATIONS: Array<Partial<Record<LanguageId, string>> & { english: string }> = [
+  {
+    english: "Small steps count.",
+    hindi: "छोटे कदम भी मायने रखते हैं।",
+    telugu: "చిన్న అడుగులకూ విలువ ఉంది.",
+    tamil: "சிறிய படிகளும் மதிப்புடையவை.",
+    urdu: "چھوٹے قدم بھی اہم ہیں۔"
+  },
+  {
+    english: "You are not your struggle.",
+    hindi: "आप अपनी मुश्किल नहीं हैं।",
+    telugu: "మీరు మీ కష్టం మాత్రమే కాదు.",
+    tamil: "நீங்கள் உங்கள் போராட்டம் அல்ல.",
+    urdu: "آپ اپنی مشکل نہیں ہیں۔"
+  },
+  {
+    english: "Clarity grows with rhythm.",
+    hindi: "स्पष्टता लय के साथ बढ़ती है।",
+    telugu: "లయతో స్పష్టత పెరుగుతుంది.",
+    tamil: "தெளிவு தொடர்ச்சியுடன் வளரும்.",
+    urdu: "وضاحت تال کے ساتھ بڑھتی ہے۔"
+  },
+  {
+    english: "Today is enough to begin.",
+    hindi: "शुरू करने के लिए आज काफ़ी है।",
+    telugu: "ప్రారంభించడానికి ఈ రోజు చాలుతుంది.",
+    tamil: "தொடங்க இன்றே போதும்.",
+    urdu: "شروع کرنے کے لیے آج کافی ہے۔"
+  },
+  {
+    english: "Healing happens in layers.",
+    hindi: "ठीक होना परतों में होता है।",
+    telugu: "స్వస్థత దశలవారీగా వస్తుంది.",
+    tamil: "ஆறுதல் அடுக்குகளாக நடக்கிறது.",
+    urdu: "شفا تہہ در تہہ ہوتی ہے۔"
+  },
+  {
+    english: "Showing up matters.",
+    hindi: "आना और उपस्थित रहना मायने रखता है।",
+    telugu: "హాజరుకావడం ముఖ్యం.",
+    tamil: "வருவது முக்கியம்.",
+    urdu: "حاضر ہونا اہم ہے۔"
+  },
+  {
+    english: "Your path is your own.",
+    hindi: "आपका रास्ता आपका अपना है।",
+    telugu: "మీ మార్గం మీదే.",
+    tamil: "உங்கள் பாதை உங்களதே.",
+    urdu: "آپ کا راستہ آپ کا اپنا ہے۔"
+  },
+  {
+    english: "Courage is continuing.",
+    hindi: "हिम्मत है जारी रखना।",
+    telugu: "కొనసాగడమే ధైర్యం.",
+    tamil: "தொடர்வதே துணிவு.",
+    urdu: "ہمت جاری رکھنے میں ہے۔"
+  },
+  {
+    english: "Progress beats perfection.",
+    hindi: "पूर्णता से बेहतर प्रगति।",
+    telugu: "పరిపూర్ణతకన్నా పురోగతి మంచిది.",
+    tamil: "முழுமையை விட முன்னேற்றமே சிறப்பு.",
+    urdu: "کمال سے بہتر پیش رفت ہے۔"
+  }
+];
+
 // ── Shared color tokens ──────────────────────────────────────────────────────
 // Pristine-quality pass: the app now defaults to a white-surface / dark-text
 // palette everywhere (every StyleSheet color literal that used to hardcode
@@ -4905,27 +4971,65 @@ function getPrivateIntakeMode(issueId: IssueId, routeTab: "guide" | "redress"): 
   return "general";
 }
 
-function getPrivateIntakeReferencePack(mode: PrivateIntakeMode) {
+function getPrivateIntakeReferencePack(mode: PrivateIntakeMode, languageId: LanguageId) {
+  const t = (
+    english: string,
+    hindi: string,
+    telugu?: string,
+    tamil?: string,
+    urdu?: string
+  ) =>
+    pickLocalizedText(languageId, {
+      english,
+      hindi,
+      ...(telugu ? { telugu } : {}),
+      ...(tamil ? { tamil } : {}),
+      ...(urdu ? { urdu } : {})
+    });
   if (mode === "redress") {
     return [
       {
-        title: "CPGRAMS",
-        detail: "India's public grievance platform for tracked complaint handling.",
+        title: t("CPGRAMS", "सीपीग्राम्स", "సీపీగ్రామ్స్", "سی پی گرامس", "سی پی گرامس"),
+        detail: t(
+          "India's public grievance platform for tracked complaint handling.",
+          "शिकायतों की ट्रैक की गई handling के लिए भारत का सार्वजनिक grievance platform.",
+          "ఫిర్యాదులను ట్రాక్ చేసే handling కోసం భారతదేశపు public grievance platform.",
+          "கண்காணிக்கப்படும் புகார் கையாளுதலுக்கான இந்தியாவின் பொது grievance platform.",
+          "شکایتوں کی ٹریک کی گئی handling کے لیے بھارت کا عوامی grievance platform."
+        ),
         url: "https://pgportal.gov.in/"
       },
       {
-        title: "UGC / e-Samadhan",
-        detail: "Useful for university and college grievance routing where applicable.",
+        title: t("UGC / e-Samadhan", "यूजीसी / ई-समाधान", "UGC / e-Samadhan", "UGC / e-Samadhan", "یو جی سی / ای-سمادھان"),
+        detail: t(
+          "Useful for university and college grievance routing where applicable.",
+          "जहाँ लागू हो, विश्वविद्यालय और कॉलेज grievance routing के लिए उपयोगी.",
+          "వర్తించే చోట university మరియు college grievance routing కోసం ఉపయోగకరం.",
+          "பல்கலைக்கழகம் மற்றும் கல்லூரி grievance routing-க்கு பயன்படும்.",
+          "جہاں لاگو ہو، یونیورسٹی اور کالج grievance routing کے لیے مفید."
+        ),
         url: "https://ugc.gov.in/"
       },
       {
-        title: "AICTE / institute grievance",
-        detail: "Helpful for technical institutions and affiliated complaint routes.",
+        title: t("AICTE / institute grievance", "एआईसीटीई / संस्थान शिकायत", "AICTE / institute grievance", "AICTE / institute grievance", "اے آئی سی ٹی ای / ادارہ شکایت"),
+        detail: t(
+          "Helpful for technical institutions and affiliated complaint routes.",
+          "तकनीकी संस्थानों और संबद्ध शिकायत मार्गों के लिए मददगार.",
+          "టెక్నికల్ institutions మరియు affiliated complaint routes కోసం ఉపయోగకరం.",
+          "தொழில்நுட்ப நிறுவனங்கள் மற்றும் தொடர்புடைய புகார் வழிகளுக்கு உதவும்.",
+          "تکنیکی اداروں اور وابستہ شکایت routes کے لیے مددگار."
+        ),
         url: "https://aicte-india.org/"
       },
       {
-        title: "Emergency / safety",
-        detail: "Use 112 or the nearest police station if the situation is unsafe.",
+        title: t("Emergency / safety", "आपात / सुरक्षा", "అత్యవసరం / భద్రత", "அவசரம் / பாதுகாப்பு", "ایمرجنسی / حفاظت"),
+        detail: t(
+          "Use 112 or the nearest police station if the situation is unsafe.",
+          "यदि स्थिति unsafe हो तो 112 या नज़दीकी पुलिस स्टेशन का उपयोग करें.",
+          "పరిస్థితి unsafe అయితే 112 లేదా దగ్గరలోని పోలీస్ స్టేషన్‌ను ఉపయోగించండి.",
+          "நிலைமை unsafe ஆக இருந்தால் 112 அல்லது அருகிலுள்ள காவல் நிலையத்தை பயன்படுத்தவும்.",
+          "اگر صورتحال unsafe ہو تو 112 یا قریبی پولیس اسٹیشن استعمال کریں۔"
+        ),
         url: "https://112.gov.in/"
       }
     ];
@@ -4933,23 +5037,47 @@ function getPrivateIntakeReferencePack(mode: PrivateIntakeMode) {
 
   return [
     {
-      title: "WHO mental health",
-      detail: "Global public health reference on mental health support and care.",
+      title: t("WHO mental health", "डब्ल्यूएचओ मानसिक स्वास्थ्य", "WHO మెంటల్ హెల్త్", "WHO மனநலம்", "ڈبلیو ایچ او ذہنی صحت"),
+      detail: t(
+        "Global public health reference on mental health support and care.",
+        "मानसिक स्वास्थ्य support और care पर वैश्विक public health reference.",
+        "mental health support మరియు care‌పై global public health reference.",
+        "மனநல support மற்றும் care குறித்த global public health reference.",
+        "ذہنی صحت support اور care پر عالمی public health reference."
+      ),
       url: "https://www.who.int/health-topics/mental-health"
     },
     {
-      title: "NIMH anxiety disorders",
-      detail: "Verified signs, symptoms, treatment, and help options from NIMH.",
+      title: t("NIMH anxiety disorders", "एनआईएमएच चिंता विकार", "NIMH anxiety disorders", "NIMH anxiety disorders", "NIMH اضطرابی عوارض"),
+      detail: t(
+        "Verified signs, symptoms, treatment, and help options from NIMH.",
+        "NIMH से सत्यापित संकेत, लक्षण, उपचार, और मदद विकल्प.",
+        "NIMH నుండి verified signs, symptoms, treatment, మరియు help options.",
+        "NIMH-இல் இருந்து verified signs, symptoms, treatment, மற்றும் help options.",
+        "NIMH سے verified signs، symptoms، treatment، اور help options."
+      ),
       url: "https://www.nimh.nih.gov/health/topics/anxiety-disorders"
     },
     {
-      title: "CDC coping",
-      detail: "Practical coping guidance from the U.S. Centers for Disease Control and Prevention.",
+      title: t("CDC coping", "सीडीसी coping", "CDC coping", "CDC coping", "سی ڈی سی coping"),
+      detail: t(
+        "Practical coping guidance from the U.S. Centers for Disease Control and Prevention.",
+        "U.S. Centers for Disease Control and Prevention से practical coping guidance.",
+        "U.S. Centers for Disease Control and Prevention నుండి practical coping guidance.",
+        "U.S. Centers for Disease Control and Prevention-இல் இருந்து practical coping guidance.",
+        "U.S. Centers for Disease Control and Prevention سے practical coping guidance."
+      ),
       url: "https://www.cdc.gov/mental-health/living-with/index.html"
     },
     {
-      title: "Tele-MANAS",
-      detail: "Free 24x7 counselling and referral support in India.",
+      title: t("Tele-MANAS", "टेली-मानस", "టెలీ-మానస్", "டெலி-மனஸ்", "ٹیلی-مانس"),
+      detail: t(
+        "Free 24x7 counselling and referral support in India.",
+        "भारत में मुफ़्त 24x7 counselling और referral support.",
+        "భారతదేశంలో ఉచిత 24x7 counselling మరియు referral support.",
+        "இந்தியாவில் இலவச 24x7 counselling மற்றும் referral support.",
+        "بھارت میں مفت 24x7 counselling اور referral support."
+      ),
       url: "https://dghs.mohfw.gov.in/national-mental-health-programme.php"
     }
   ];
@@ -4958,155 +5086,217 @@ function getPrivateIntakeReferencePack(mode: PrivateIntakeMode) {
 function getPrivateIntakeBlueprint(
   issueId: IssueId,
   selectedIdentityLabel: string,
-  routeTab: "guide" | "redress"
+  routeTab: "guide" | "redress",
+  languageId: LanguageId
 ): PrivateIntakeBlueprint {
   const mode = getPrivateIntakeMode(issueId, routeTab);
   const safeIdentity = selectedIdentityLabel.trim().length > 0 ? selectedIdentityLabel.trim() : "the user";
   const issueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? "this issue";
+  const t = (
+    english: string,
+    hindi: string,
+    telugu?: string,
+    tamil?: string,
+    urdu?: string
+  ) =>
+    pickLocalizedText(languageId, {
+      english,
+      hindi,
+      ...(telugu ? { telugu } : {}),
+      ...(tamil ? { tamil } : {}),
+      ...(urdu ? { urdu } : {})
+    });
   const modeLabelMap: Record<PrivateIntakeMode, string> = {
-    redress: "Complaint route",
-    distress: "Emotional route",
-    workload: "Load and recovery",
-    connection: "Connection and support",
-    conflict: "Conflict and repair",
-    selfview: "Evidence and judgment",
-    general: "General route"
+    redress: t("Complaint route", "शिकायत मार्ग", "ఫిర్యాదు మార్గం", "புகார் பாதை", "شکایت کا راستہ"),
+    distress: t("Emotional route", "भावनात्मक मार्ग", "భావోద్వేగ మార్గం", "உணர்ச்சி பாதை", "جذباتی راستہ"),
+    workload: t("Load and recovery", "भार और रिकवरी", "భారం మరియు విశ్రాంతి", "சுமை மற்றும் மீட்பு", "بوجھ اور بحالی"),
+    connection: t("Connection and support", "जुड़ाव और सहारा", "సంబంధం మరియు సహాయం", "தொடர்பு மற்றும் ஆதரவு", "رابطہ اور مدد"),
+    conflict: t("Conflict and repair", "संघर्ष और मरम्मत", "వివాదం మరియు సరిచేయడం", "மோதல் மற்றும் சரி செய்தல்", "تنازعہ اور مرمت"),
+    selfview: t("Evidence and judgment", "साक्ष्य और निर्णय", "సాక్ష్యం మరియు నిర్ణయం", "சான்று மற்றும் தீர்ப்பு", "ثبوت اور فیصلہ"),
+    general: t("General route", "सामान्य मार्ग", "సాధారణ మార్గం", "பொது பாதை", "عمومی راستہ")
   };
   const modeSummaryMap: Record<PrivateIntakeMode, string> = {
-    redress:
+    redress: t(
       "This version asks for facts, people, evidence, impact, and the result you want so the report can support a complaint or grievance route.",
-    distress:
+      "इस संस्करण में तथ्य, लोग, साक्ष्य, प्रभाव, और आपका वांछित परिणाम पूछा जाता है ताकि रिपोर्ट शिकायत या grievance मार्ग में मदद कर सके.",
+      "ఈ వెర్షన్ facts, people, evidence, impact, మరియు మీరు కోరుకున్న result ను అడుగుతుంది, తద్వారా report ఫిర్యాదు మార్గానికి సహాయపడుతుంది.",
+      "இந்த பதிப்பு facts, people, evidence, impact, மற்றும் நீங்கள் விரும்பும் result-ஐ கேட்கிறது, அதனால் report complaint வழியை ஆதரிக்க முடியும்.",
+      "یہ ورژن facts، people، evidence، impact، اور آپ کے مطلوبہ result کے بارے میں پوچھتا ہے تاکہ رپورٹ شکایت کے route میں مدد دے سکے۔"
+    ),
+    distress: t(
       "This version asks more about feelings, body signals, triggers, support, and the pressure around the issue so the report can calm the route first.",
-    workload:
+      "इस संस्करण में feelings, body signals, triggers, support, और issue के आसपास के pressure के बारे में ज़्यादा पूछा जाता है ताकि report पहले route को शांत कर सके.",
+      "ఈ వెర్షన్ feelings, body signals, triggers, support, మరియు సమస్య చుట్టూ ఉన్న pressure గురించి ఎక్కువగా అడుగుతుంది, తద్వారా report ముందుగా route‌ను శాంతపరచగలదు.",
+      "இந்த பதிப்பு feelings, body signals, triggers, support, மற்றும் issue சுற்றிய pressure பற்றி அதிகமாக கேட்கிறது; report முதலில் route-ஐ அமைதிப்படுத்த முடியும்.",
+      "یہ ورژن feelings، body signals، triggers، support، اور مسئلے کے اردگرد کے pressure کے بارے میں زیادہ پوچھتا ہے تاکہ رپورٹ پہلے route کو پرسکون کر سکے۔"
+    ),
+    workload: t(
       "This version asks more about load, recovery, sleep, energy, and routine so the report can balance practical pressure with emotional strain.",
-    connection:
+      "इस संस्करण में load, recovery, sleep, energy, और routine के बारे में ज़्यादा पूछा जाता है ताकि रिपोर्ट practical pressure और emotional strain को संतुलित कर सके.",
+      "ఈ వెర్షన్ load, recovery, sleep, energy, మరియు routine గురించి ఎక్కువగా అడుగుతుంది, తద్వారా report practical pressure ను emotional strain తో సమతుల్యం చేయగలదు.",
+      "இந்த பதிப்பு load, recovery, sleep, energy, மற்றும் routine பற்றி அதிகமாக கேட்கிறது; report practical pressure மற்றும் emotional strain-ஐ சமநிலைப்படுத்த முடியும்.",
+      "یہ ورژن load، recovery، sleep، energy، اور routine کے بارے میں زیادہ پوچھتا ہے تاکہ رپورٹ practical pressure اور emotional strain کو متوازن کر سکے۔"
+    ),
+    connection: t(
       "This version asks more about who is around, who feels missing, and what support would make the day feel less empty.",
-    conflict:
+      "इस संस्करण में पूछा जाता है कि आसपास कौन है, कौन याद आ रहा है, और कौन-सा support दिन को कम खाली महसूस कराएगा.",
+      "ఈ వెర్షన్ చుట్టూ ఎవరు ఉన్నారు, ఎవరు లేరు అనిపిస్తోంది, మరియు ఏ support day‌ను తక్కువ ఖాళీగా అనిపింపజేస్తుందో అడుగుతుంది.",
+      "இந்த பதிப்பு யார் அருகில் இருக்கிறார்கள், யார் missing போலத் தோன்றுகிறார்கள், மற்றும் எந்த support நாள் குறைவாக வெறுமையாக உணரச் செய்யும் என்பதை கேட்கிறது.",
+      "یہ ورژن پوچھتا ہے کہ کون آس پاس ہے، کون missing محسوس ہو رہا ہے، اور کون سی support دن کو کم خالی محسوس کرائے گی۔"
+    ),
+    conflict: t(
       "This version asks more about the incident, reaction, repair, and boundaries so the report can separate the moment from the person.",
-    selfview:
+      "इस संस्करण में incident, reaction, repair, और boundaries के बारे में ज़्यादा पूछा जाता है ताकि रिपोर्ट उस पल को व्यक्ति से अलग कर सके.",
+      "ఈ వెర్షన్ incident, reaction, repair, మరియు boundaries గురించి ఎక్కువగా అడుగుతుంది, తద్వారా report moment ను వ్యక్తి నుండి వేరు చేయగలదు.",
+      "இந்த பதிப்பு incident, reaction, repair, மற்றும் boundaries பற்றி அதிகமாக கேட்கிறது; report அந்த தருணத்தை நபரிலிருந்து பிரிக்க முடியும்.",
+      "یہ ورژن incident، reaction، repair، اور boundaries کے بارے میں زیادہ پوچھتا ہے تاکہ رپورٹ لمحے کو شخص سے الگ کر سکے۔"
+    ),
+    selfview: t(
       "This version asks more about evidence, feedback, certainty, and judgment so the report can slow down overreaction or overconfidence.",
-    general:
-      "This version keeps the intake broad and lets the report lean toward the strongest signals that appear in the answers."
+      "इस संस्करण में evidence, feedback, certainty, और judgment के बारे में ज़्यादा पूछा जाता है ताकि रिपोर्ट overreaction या overconfidence को धीमा कर सके.",
+      "ఈ వెర్షన్ evidence, feedback, certainty, మరియు judgment గురించి ఎక్కువగా అడుగుతుంది, తద్వారా report overreaction లేదా overconfidence ను నెమ్మదించగలదు.",
+      "இந்த பதிப்பு evidence, feedback, certainty, மற்றும் judgment பற்றி அதிகமாக கேட்கிறது; report overreaction அல்லது overconfidence-ஐ மெதுவாக்க முடியும்.",
+      "یہ ورژن evidence، feedback، certainty، اور judgment کے بارے میں زیادہ پوچھتا ہے تاکہ رپورٹ overreaction یا overconfidence کو سست کر سکے۔"
+    ),
+    general: t(
+      "This version keeps the intake broad and lets the report lean toward the strongest signals that appear in the answers.",
+      "यह संस्करण intake को व्यापक रखता है और रिपोर्ट को उत्तरों में दिखने वाले सबसे मज़बूत संकेतों की ओर झुकने देता है.",
+      "ఈ వెర్షన్ intake‌ను విస్తృతంగా ఉంచి, సమాధానాల్లో కనిపించే బలమైన సంకేతాల వైపు report‌ను మళ్లిస్తుంది.",
+      "இந்த பதிப்பு intake-ஐ பரந்ததாக வைத்து, பதில்களில் தோன்றும் வலுவான signals-ஐ report கவனிக்கச் செய்கிறது.",
+      "یہ ورژن intake کو وسیع رکھتا ہے اور رپورٹ کو جوابات میں ظاہر ہونے والے مضبوط اشاروں کی طرف جھکنے دیتا ہے۔"
+    )
   };
   const flowStepsByMode: Record<PrivateIntakeMode, Array<{ id: string; title: string; meta: string }>> = {
     redress: [
-      { id: "facts", title: "Facts", meta: "What happened, when, and where?" },
-      { id: "people", title: "People", meta: "Who was involved, affected, or witnessed it?" },
-      { id: "evidence", title: "Evidence", meta: "What records, messages, or proof are available?" },
-      { id: "impact", title: "Impact", meta: "How did it affect life, safety, or dignity?" },
-      { id: "outcome", title: "Outcome", meta: "What result and boundary do you want?" }
+      { id: "facts", title: t("Facts", "तथ्य", "వాస్తవాలు", "விவரங்கள்", "حقائق"), meta: t("What happened, when, and where?", "क्या हुआ, कब, और कहाँ?", "ఏమైంది, ఎప్పుడు, ఎక్కడ?", "என்ன நடந்தது, எப்போது, எங்கே?", "کیا ہوا، کب، اور کہاں؟") },
+      { id: "people", title: t("People", "लोग", "వ్యక్తులు", "மக்கள்", "لوگ"), meta: t("Who was involved, affected, or witnessed it?", "कौन शामिल था, किस पर असर पड़ा, या किसने देखा?", "ఎవరు భాగమయ్యారు, ప్రభావితమయ్యారు, లేదా చూశారు?", "யார் ஈடுபட்டனர், பாதிக்கப்பட்டனர், அல்லது பார்த்தனர்?", "کون شامل تھا، کس پر اثر پڑا، یا کس نے دیکھا؟") },
+      { id: "evidence", title: t("Evidence", "साक्ष्य", "సాక్ష్యం", "சான்று", "ثبوت"), meta: t("What records, messages, or proof are available?", "कौन-से रिकॉर्ड, संदेश, या प्रमाण उपलब्ध हैं?", "ఏ రికార్డులు, సందేశాలు, లేదా proof అందుబాటులో ఉన్నాయి?", "எந்த records, messages, அல்லது proof கிடைக்கிறது?", "کون سے records، messages، یا proof دستیاب ہیں؟") },
+      { id: "impact", title: t("Impact", "प्रभाव", "ప్రభావం", "பாதிப்பு", "اثر"), meta: t("How did it affect life, safety, or dignity?", "इसका जीवन, सुरक्षा, या गरिमा पर क्या असर पड़ा?", "ఇది జీవితం, భద్రత, లేదా గౌరవంపై ఎలా ప్రభావం చూపింది?", "இது வாழ்க்கை, பாதுகாப்பு, அல்லது மரியாதையை எப்படி பாதித்தது?", "اس نے زندگی، حفاظت، یا وقار کو کیسے متاثر کیا؟") },
+      { id: "outcome", title: t("Outcome", "परिणाम", "ఫలితం", "முடிவு", "نتیجہ"), meta: t("What result and boundary do you want?", "आप कौन-सा परिणाम और सीमा चाहते हैं?", "మీరు ఏ ఫలితం మరియు boundary కోరుకుంటున్నారు?", "எந்த result மற்றும் boundary வேண்டும்?", "آپ کون سا result اور boundary چاہتے ہیں؟") }
     ],
     distress: [
-      { id: "situation", title: "Situation", meta: "What changed and when?" },
-      { id: "feeling", title: "Feeling", meta: "What is the emotional and body state now?" },
-      { id: "support", title: "Support", meta: "Who is around and what helps?" },
-      { id: "pattern", title: "Pattern", meta: "What repeats and what worsens it?" },
-      { id: "next", title: "Next move", meta: "What should happen first?" }
+      { id: "situation", title: t("Situation", "स्थिति", "పరిస్థితి", "நிலைமை", "صورت حال"), meta: t("What changed and when?", "क्या बदला और कब?", "ఏమి మారింది, ఎప్పుడు?", "எது மாறியது, எப்போது?", "کیا بدلا اور کب؟") },
+      { id: "feeling", title: t("Feeling", "महसूस", "అనుభూతి", "உணர்வு", "احساس"), meta: t("What is the emotional and body state now?", "अभी भावनात्मक और शरीर की स्थिति क्या है?", "ఇప్పుడే భావోద్వేగ మరియు శరీర స్థితి ఎలా ఉంది?", "இப்போது உணர்ச்சி மற்றும் உடல் நிலை என்ன?", "اب جذباتی اور جسمانی حالت کیا ہے؟") },
+      { id: "support", title: t("Support", "सहारा", "సహాయం", "ஆதரவு", "مدد"), meta: t("Who is around and what helps?", "आसपास कौन है और क्या मदद करता है?", "చుట్టూ ఎవరు ఉన్నారు, ఏమి సహాయపడుతుంది?", "யார் அருகில் உள்ளனர், என்ன உதவுகிறது?", "کون آس پاس ہے اور کیا مدد کرتا ہے؟") },
+      { id: "pattern", title: t("Pattern", "पैटर्न", "నమూనా", "முறை", "پیٹرن"), meta: t("What repeats and what worsens it?", "क्या बार-बार होता है और क्या इसे बिगाड़ता है?", "ఏమి పునరావృతమవుతుంది, ఏమి దాన్ని మరింత చెడగొడుతుంది?", "எது மீண்டும் நடக்கிறது, எது அதை மோசமாக்குகிறது?", "کیا بار بار ہوتا ہے اور کیا اسے بگاڑتا ہے؟") },
+      { id: "next", title: t("Next move", "अगला कदम", "తదుపరి అడుగు", "அடுத்த நகர்வு", "اگلا قدم"), meta: t("What should happen first?", "सबसे पहले क्या होना चाहिए?", "ముందుగా ఏమి జరగాలి?", "முதலில் என்ன நடக்க வேண்டும்?", "سب سے پہلے کیا ہونا چاہیے؟") }
     ],
     workload: [
-      { id: "load", title: "Load", meta: "What is taking the most energy?" },
-      { id: "energy", title: "Energy", meta: "What is happening in the body and mind?" },
-      { id: "pressure", title: "Pressure", meta: "Who or what is adding pressure?" },
-      { id: "recovery", title: "Recovery", meta: "What has helped a little?" },
-      { id: "next", title: "Next move", meta: "What must be reduced or protected?" }
+      { id: "load", title: t("Load", "भार", "భారం", "சுமை", "بوجھ"), meta: t("What is taking the most energy?", "सबसे ज़्यादा ऊर्जा किसमें लग रही है?", "ఎక్కువ శక్తి తీసుకుంటున్నది ఏమిటి?", "எதில் அதிக energy செல்கிறது?", "سب سے زیادہ توانائی کس میں لگ رہی ہے؟") },
+      { id: "energy", title: t("Energy", "ऊर्जा", "శక్తి", "ஆற்றல்", "توانائی"), meta: t("What is happening in the body and mind?", "शरीर और मन में क्या हो रहा है?", "శరీరం మరియు మనసులో ఏమి జరుగుతోంది?", "உடலும் மனதும் என்ன அனுபவிக்கின்றன?", "جسم اور ذہن میں کیا ہو رہا ہے؟") },
+      { id: "pressure", title: t("Pressure", "दबाव", "ఒత్తిడి", "அழுத்தம்", "دباؤ"), meta: t("Who or what is adding pressure?", "कौन या क्या दबाव बढ़ा रहा है?", "ఎవరు లేదా ఏమి pressure పెంచుతోంది?", "யார் அல்லது எது pressure சேர்க்கிறது?", "کون یا کیا دباؤ بڑھا رہا ہے؟") },
+      { id: "recovery", title: t("Recovery", "रिकवरी", "రికవరీ", "மீட்பு", "بحالی"), meta: t("What has helped a little?", "क्या थोड़ी मदद कर पाया?", "ఏది కొంచెం సహాయపడింది?", "எது கொஞ்சம் உதவியது?", "کس چیز سے تھوڑی مدد ملی؟") },
+      { id: "next", title: t("Next move", "अगला कदम", "తదుపరి అడుగు", "அடுத்த நகர்வு", "اگلا قدم"), meta: t("What must be reduced or protected?", "क्या कम या सुरक्षित रखना है?", "ఏమి తగ్గించాలి లేదా కాపాడాలి?", "எதை குறைக்க அல்லது பாதுகாக்க வேண்டும்?", "کیا کم یا محفوظ رکھنا ہے؟") }
     ],
     connection: [
-      { id: "gap", title: "Gap", meta: "Where does the emptiness feel strongest?" },
-      { id: "people", title: "People", meta: "Who is missing or safe to reach?" },
-      { id: "rhythm", title: "Rhythm", meta: "What routine keeps the day steadier?" },
-      { id: "support", title: "Support", meta: "What kind of contact feels best?" },
-      { id: "next", title: "Next move", meta: "What connection should happen next?" }
+      { id: "gap", title: t("Gap", "खालीपन", "ఖాళీ", "வெற்றிடம்", "خلا"), meta: t("Where does the emptiness feel strongest?", "खालीपन सबसे ज़्यादा कहाँ महसूस होता है?", "ఖాళీ భావన ఎక్కువగా ఎక్కడ అనిపిస్తోంది?", "வெறுமை எங்கு மிகவும் தெளிவாக உணரப்படுகிறது?", "خلا سب سے زیادہ کہاں محسوس ہوتا ہے؟") },
+      { id: "people", title: t("People", "लोग", "వ్యక్తులు", "மக்கள்", "لوگ"), meta: t("Who is missing or safe to reach?", "कौन याद आ रहा है या किससे बात करना सुरक्षित है?", "ఎవరు లేరని అనిపిస్తోంది లేదా ఎవరు చేరుకోవడానికి సురక్షితం?", "யார் missing போல இருக்கிறார்கள் அல்லது யாரை அணுகுவது பாதுகாப்பானது?", "کون missing ہے یا کس تک پہنچنا محفوظ ہے؟") },
+      { id: "rhythm", title: t("Rhythm", "लय", "లయ", "ஓட்டம்", "ردم"), meta: t("What routine keeps the day steadier?", "कौन-सी routine दिन को स्थिर रखती है?", "ఏ routine రోజును స్థిరంగా ఉంచుతుంది?", "எந்த routine நாள் மேலும் நிலையாக இருக்க உதவுகிறது?", "کون سا routine دن کو زیادہ steady رکھتا ہے؟") },
+      { id: "support", title: t("Support", "सहारा", "సహాయం", "ஆதரவு", "مدد"), meta: t("What kind of contact feels best?", "किस तरह का संपर्क सबसे अच्छा लगता है?", "ఎలాంటి contact బాగా అనిపిస్తుంది?", "எந்த வகை தொடர்பு சிறந்ததாக உணரப்படுகிறது?", "کس طرح کا contact بہتر محسوس ہوتا ہے؟") },
+      { id: "next", title: t("Next move", "अगला कदम", "తదుపరి అడుగు", "அடுத்த நகர்வு", "اگلا قدم"), meta: t("What connection should happen next?", "अगला कौन-सा connection होना चाहिए?", "తదుపరి ఏ connection జరగాలి?", "அடுத்து எந்த connection நடக்க வேண்டும்?", "اگلا کون سا connection ہونا چاہیے؟") }
     ],
     conflict: [
-      { id: "moment", title: "Moment", meta: "What happened just before the reaction?" },
-      { id: "reaction", title: "Reaction", meta: "How did the body and mind respond?" },
-      { id: "people", title: "People", meta: "Who was involved or affected?" },
-      { id: "repair", title: "Repair", meta: "What would help make this right?" },
-      { id: "boundary", title: "Boundary", meta: "What should be handled differently next time?" }
+      { id: "moment", title: t("Moment", "क्षण", "క్షణం", "தருணம்", "لمحہ"), meta: t("What happened just before the reaction?", "प्रतिक्रिया से ठीक पहले क्या हुआ?", "ప్రతిక్రియకు కొద్దిసేపటి ముందు ఏమి జరిగింది?", "எதிர்வினைக்கு முன் என்ன நடந்தது?", "ردعمل سے کچھ پہلے کیا ہوا؟") },
+      { id: "reaction", title: t("Reaction", "प्रतिक्रिया", "ప్రతిక్రియ", "எதிர்வினை", "ردعمل"), meta: t("How did the body and mind respond?", "शरीर और मन ने कैसे प्रतिक्रिया दी?", "శరీరం మరియు మనసు ఎలా స్పందించాయి?", "உடலும் மனமும் எப்படி பதிலளித்தன?", "جسم اور ذہن نے کیسے ردعمل دیا؟") },
+      { id: "people", title: t("People", "लोग", "వ్యక్తులు", "மக்கள்", "لوگ"), meta: t("Who was involved or affected?", "कौन शामिल था या प्रभावित हुआ?", "ఎవరు భాగమయ్యారు లేదా ప్రభావితమయ్యారు?", "யார் ஈடுபட்டனர் அல்லது பாதிக்கப்பட்டனர்?", "کون شامل تھا یا متاثر ہوا؟") },
+      { id: "repair", title: t("Repair", "मरम्मत", "పరిష్కారం", "சரி செய்தல்", "مرمت"), meta: t("What would help make this right?", "इसे सही करने में क्या मदद करेगा?", "ఇది సరిచేయడానికి ఏమి సహాయపడుతుంది?", "இதைச் சரி செய்ய எது உதவும்?", "اسے درست کرنے میں کیا مدد کرے گا؟") },
+      { id: "boundary", title: t("Boundary", "सीमा", "హద్దు", "எல்லை", "حد"), meta: t("What should be handled differently next time?", "अगली बार क्या अलग तरह से संभालना चाहिए?", "తదుపరి సారి ఏమి భిన్నంగా నిర్వహించాలి?", "அடுத்த முறை எதை வேறுபடையாக கையாள வேண்டும்?", "اگلی بار کیا مختلف طریقے سے سنبھالنا چاہیے؟") }
     ],
     selfview: [
-      { id: "signal", title: "Signal", meta: "What pressure or belief is rising?" },
-      { id: "evidence", title: "Evidence", meta: "What facts or feedback matter here?" },
-      { id: "people", title: "People", meta: "Who can give a reality check?" },
-      { id: "pattern", title: "Pattern", meta: "What keeps repeating?" },
-      { id: "next", title: "Next move", meta: "What adjustment should happen now?" }
+      { id: "signal", title: t("Signal", "संकेत", "సంకేతం", "சிக்னல்", "اشارہ"), meta: t("What pressure or belief is rising?", "कौन-सा दबाव या विश्वास बढ़ रहा है?", "ఏ pressure లేదా belief పెరుగుతోంది?", "எந்த pressure அல்லது நம்பிக்கை உயர்கிறது?", "کون سا دباؤ یا belief بڑھ رہا ہے؟") },
+      { id: "evidence", title: t("Evidence", "साक्ष्य", "సాక్ష్యం", "சான்று", "ثبوت"), meta: t("What facts or feedback matter here?", "यहाँ कौन-से तथ्य या feedback मायने रखते हैं?", "ఇక్కడ ఏ facts లేదా feedback ముఖ్యం?", "இங்கே எந்த facts அல்லது feedback முக்கியம்?", "یہاں کون سے facts یا feedback اہم ہیں؟") },
+      { id: "people", title: t("People", "लोग", "వ్యక్తులు", "மக்கள்", "لوگ"), meta: t("Who can give a reality check?", "कौन reality check दे सकता है?", "ఎవరు reality check ఇవ్వగలరు?", "யார் reality check கொடுக்க முடியும்?", "کون reality check دے سکتا ہے؟") },
+      { id: "pattern", title: t("Pattern", "पैटर्न", "నమూనా", "முறை", "پیٹرن"), meta: t("What keeps repeating?", "क्या बार-बार होता रहता है?", "ఏమి తిరిగి జరుగుతోంది?", "எது மீண்டும் மீண்டும் நடக்கிறது?", "کیا بار بار ہو رہا ہے؟") },
+      { id: "next", title: t("Next move", "अगला कदम", "తదుపరి అడుగు", "அடுத்த நகர்வு", "اگلا قدم"), meta: t("What adjustment should happen now?", "अब कौन-सा adjustment होना चाहिए?", "ఇప్పుడు ఏ adjustment జరగాలి?", "இப்போது என்ன adjustment நடக்க வேண்டும்?", "اب کون سی adjustment ہونی چاہیے؟") }
     ],
     general: [
-      { id: "situation", title: "Situation", meta: "What is happening right now?" },
-      { id: "feeling", title: "Feeling", meta: "How is the body and mood?" },
-      { id: "people", title: "People", meta: "Who else matters here?" },
-      { id: "pattern", title: "Pattern", meta: "What repeats or worsens it?" },
-      { id: "next", title: "Next move", meta: "What should the app do first?" }
+      { id: "situation", title: t("Situation", "स्थिति", "పరిస్థితి", "நிலைமை", "صورت حال"), meta: t("What is happening right now?", "अभी क्या हो रहा है?", "ఇప్పుడే ఏమి జరుగుతోంది?", "இப்போது என்ன நடக்கிறது?", "ابھی کیا ہو رہا ہے؟") },
+      { id: "feeling", title: t("Feeling", "महसूस", "అనుభూతి", "உணர்வு", "احساس"), meta: t("How is the body and mood?", "शरीर और mood कैसा है?", "శరీరం మరియు mood ఎలా ఉన్నాయి?", "உடலும் mood-உம் எப்படி இருக்கின்றன?", "جسم اور mood کیسا ہے؟") },
+      { id: "people", title: t("People", "लोग", "వ్యక్తులు", "மக்கள்", "لوگ"), meta: t("Who else matters here?", "यहाँ और कौन मायने रखता है?", "ఇంకెవరు ఇక్కడ ముఖ్యులు?", "இங்கு வேறு யார் முக்கியம்?", "یہاں اور کون اہم ہے؟") },
+      { id: "pattern", title: t("Pattern", "पैटर्न", "నమూనా", "முறை", "پیٹرن"), meta: t("What repeats or worsens it?", "क्या बार-बार होता है या इसे बिगाड़ता है?", "ఏమి తిరిగి జరుగుతోంది లేదా చెడగొడుతోంది?", "எது மீண்டும் நடக்கிறது அல்லது மோசமாக்குகிறது?", "کیا بار بار ہوتا ہے یا اسے بگاڑتا ہے؟") },
+      { id: "next", title: t("Next move", "अगला कदम", "తదుపరి అడుగు", "அடுத்த நகர்வு", "اگلا قدم"), meta: t("What should the app do first?", "ऐप को पहले क्या करना चाहिए?", "యాప్ ముందుగా ఏమి చేయాలి?", "app முதலில் என்ன செய்ய வேண்டும்?", "ایپ کو پہلے کیا کرنا چاہیے؟") }
     ]
   };
   const analysisLensesByMode: Record<PrivateIntakeMode, string[]> = {
-    redress: ["Facts", "Evidence", "Impact", "Grievance route"],
-    distress: ["Emotion", "Body", "Support", "Coping"],
-    workload: ["Load", "Recovery", "Routine", "Boundaries"],
-    connection: ["Belonging", "People", "Routine", "Contact plan"],
-    conflict: ["Trigger", "Reaction", "Repair", "Boundary"],
-    selfview: ["Evidence", "Reality check", "Pattern", "Decision pace"],
-    general: ["Facts", "Feeling", "People", "Next move"]
+    redress: [t("Facts", "तथ्य", "వాస్తవాలు", "விவரங்கள்", "حقائق"), t("Evidence", "साक्ष्य", "సాక్ష్యం", "சான்று", "ثبوت"), t("Impact", "प्रभाव", "ప్రభావం", "பாதிப்பு", "اثر"), t("Grievance route", "शिकायत मार्ग", "ఫిర్యాదు మార్గం", "புகார் பாதை", "شکایت کا راستہ")],
+    distress: [t("Emotion", "भावना", "భావం", "உணர்ச்சி", "جذبات"), t("Body", "शरीर", "శరీరం", "உடல்", "جسم"), t("Support", "सहारा", "సహాయం", "ஆதரவு", "مدد"), t("Coping", "सामना", "నెగ్గడం", "சமாளித்தல்", "مقابلہ")],
+    workload: [t("Load", "भार", "భారం", "சுமை", "بوجھ"), t("Recovery", "रिकवरी", "రికవరీ", "மீட்பு", "بحالی"), t("Routine", "दिनचर्या", "అలవాటు", "தினசரி", "روٹین"), t("Boundaries", "सीमाएँ", "హద్దులు", "எல்லைகள்", "حدود")],
+    connection: [t("Belonging", "अपनापन", "అనుబంధం", "சேர்ந்த உணர்வு", "وابستگی"), t("People", "लोग", "వ్యక్తులు", "மக்கள்", "لوگ"), t("Routine", "दिनचर्या", "అలవాటు", "தினசரி", "روٹین"), t("Contact plan", "संपर्क योजना", "సంప్రదింపు ప్రణాళిక", "தொடர்பு திட்டம்", "رابطہ منصوبہ")],
+    conflict: [t("Trigger", "ट्रिगर", "ట్రిగ్గర్", "தூண்டி", "ٹرگر"), t("Reaction", "प्रतिक्रिया", "ప్రతిక్రియ", "எதிர்வினை", "ردعمل"), t("Repair", "मरम्मत", "పరిష్కారం", "சரி செய்தல்", "مرمت"), t("Boundary", "सीमा", "హద్దు", "எல்லை", "حد")],
+    selfview: [t("Evidence", "साक्ष्य", "సాక్ష్యం", "சான்று", "ثبوت"), t("Reality check", "वास्तविकता जाँच", "వాస్తవ తనిఖీ", "உண்மைச் சோதனை", "حقیقت کی جانچ"), t("Pattern", "पैटर्न", "నమూనా", "முறை", "پیٹرن"), t("Decision pace", "निर्णय की गति", "నిర్ణయ వేగం", "முடிவு வேகம்", "فیصلے کی رفتار")],
+    general: [t("Facts", "तथ्य", "వాస్తవాలు", "விவரங்கள்", "حقائق"), t("Feeling", "महसूस", "అనుభూతి", "உணர்வு", "احساس"), t("People", "लोग", "వ్యक्तులు", "மக்கள்", "لوگ"), t("Next move", "अगला कदम", "తదుపరి అడుగు", "அடுத்த நகர்வு", "اگلا قدم")]
   };
   const redressSections: PrivateIntakeSection[] = [
     {
       id: "facts",
-      title: "1. Facts and timeline",
-      meta: "Write the complaint in a plain, dated way.",
-      intro: `Focus on the event first. ${safeIdentity} can add the emotional side after the facts are clear.`,
+      title: t("1. Facts and timeline", "1. तथ्य और समयरेखा", "1. వాస్తవాలు మరియు కాలరేఖ", "1. விவரங்கள் மற்றும் காலவரிசை", "1. حقائق اور ٹائم لائن"),
+      meta: t("Write the complaint in a plain, dated way.", "शिकायत को साधी, तारीख़वार भाषा में लिखें.", "ఫిర్యాదును సాధారణ, తేదీతో కూడిన శైలిలో రాయండి.", "புகாரை எளிய, தேதியிட்ட முறையில் எழுதுங்கள்.", "شکایت کو سادہ، تاریخ وار انداز میں لکھیں۔"),
+      intro: t(
+        `Focus on the event first. ${safeIdentity} can add the emotional side after the facts are clear.`,
+        `पहले घटना पर ध्यान दें. तथ्य साफ़ होने के बाद ${safeIdentity} भावनात्मक पक्ष जोड़ सकते हैं.`,
+        `ముందుగా సంఘటనపై దృష్టి పెట్టండి. వాస్తవాలు స్పష్టమైన తర్వాత ${safeIdentity} భావోద్వేగ భాగాన్ని జోడించవచ్చు.`,
+        `முதலில் நிகழ்வை கவனிக்கவும். உண்மைகள் தெளிவான பிறகு ${safeIdentity} உணர்ச்சி பக்கத்தை சேர்க்கலாம்.`,
+        `پہلے واقعے پر توجہ دیں۔ حقائق واضح ہونے کے بعد ${safeIdentity} جذباتی پہلو شامل کر سکتے ہیں۔`
+      ),
       questions: [
-        buildPrivateIntakeQuestion("overview", "What happened?", "Describe the event in a few lines.", "Start with the clearest facts."),
-        buildPrivateIntakeQuestion("timelineContext", "When did it start?", "Give dates, periods, or the point it changed.", "Timeline helps the route move cleanly."),
-        buildPrivateIntakeQuestion("frequencyContext", "How often has it happened?", "Once, repeated, ongoing, or escalating?", "Frequency shows whether it is a one-off or a pattern."),
-        buildPrivateIntakeQuestion("triggerContext", "What happened just before or after?", "Name the action, message, office, or person involved.", "Use the trigger as a factual marker.", true)
+        buildPrivateIntakeQuestion("overview", t("What happened?", "क्या हुआ?", "ఏం జరిగింది?", "என்ன நடந்தது?", "کیا ہوا؟"), t("Describe the event in a few lines.", "घटना को कुछ पंक्तियों में बताइए.", "సంఘటనను కొన్ని పంక్తుల్లో వివరించండి.", "நிகழ்வை சில வரிகளில் விவரிக்கவும்.", "واقعے کو چند سطروں میں بیان کریں۔"), t("Start with the clearest facts.", "सबसे साफ़ तथ्यों से शुरू करें.", "అత్యంత స్పష్టమైన వాస్తవాల నుంచి ప్రారంభించండి.", "மிகவும் தெளிவான உண்மைகளிலிருந்து தொடங்குங்கள்.", "سب سے واضح حقائق سے شروع کریں۔")),
+        buildPrivateIntakeQuestion("timelineContext", t("When did it start?", "यह कब शुरू हुआ?", "ఇది ఎప్పుడు ప్రారంభమైంది?", "இது எப்போது தொடங்கியது?", "یہ کب شروع ہوا؟"), t("Give dates, periods, or the point it changed.", "तारीख़, अवधि, या बदलाव का बिंदु लिखें.", "తేదీలు, కాలాలు, లేదా మారిన క్షణాన్ని చెప్పండి.", "தேதிகள், காலப்பகுதிகள், அல்லது அது மாறிய தருணத்தை சொல்லுங்கள்.", "تاریخیں، مدتیں، یا وہ نقطہ بتائیں جہاں یہ بدلا۔"), t("Timeline helps the route move cleanly.", "समयरेखा से मार्ग साफ़ चलता है.", "కాలరేఖతో మార్గం శుభ్రంగా సాగుతుంది.", "காலவரிசை வழியை சீராக நகரச் செய்கிறது.", "ٹائم لائن سے راستہ صاف چلتا ہے۔")),
+        buildPrivateIntakeQuestion("frequencyContext", t("How often has it happened?", "यह कितनी बार हुआ है?", "ఇది ఎంతసార్లు జరిగింది?", "இது எத்தனை முறை நடந்துள்ளது?", "یہ کتنی بار ہوا ہے؟"), t("Once, repeated, ongoing, or escalating?", "एक बार, बार-बार, जारी, या बढ़ता हुआ?", "ఒక్కసారి, పునరావృతం, కొనసాగుతున్నది, లేదా పెరుగుతున్నదా?", "ஒரு முறை, மீண்டும் மீண்டும், தொடர்ந்தது, அல்லது அதிகரிக்கிறதா?", "ایک بار، بار بار، جاری، یا بڑھتا ہوا؟"), t("Frequency shows whether it is a one-off or a pattern.", "बार-बार होने से पता चलता है कि यह एकबारगी है या पैटर्न.", "పునరావృతం ఇది ఒక్కసారిది లేదా నమూనా అని చూపుతుంది.", "அதிர்வுகள் இது ஒரே முறைதானா அல்லது ஒரு pattern-ஆ என்பதை காட்டுகிறது.", "تکرار سے معلوم ہوتا ہے کہ یہ ایک بار کا معاملہ ہے یا ایک pattern ہے۔")),
+        buildPrivateIntakeQuestion("triggerContext", t("What happened just before or after?", "ठीक पहले या बाद में क्या हुआ?", "దానికి ముందు లేదా తర్వాత ఏమి జరిగింది?", "முன் அல்லது பின் என்ன நடந்தது?", "بالکل پہلے یا بعد میں کیا ہوا؟"), t("Name the action, message, office, or person involved.", "कार्रवाई, संदेश, दफ़्तर, या शामिल व्यक्ति का नाम लिखें.", "చర్య, సందేశం, కార్యాలయం, లేదా సంబంధిత వ్యక్తిని పేర్కొనండి.", "நடவடிக்கை, செய்தி, அலுவலகம், அல்லது தொடர்புடைய நபரை குறிப்பிடுங்கள்.", "کارروائی، پیغام، دفتر، یا شامل شخص کا نام دیں۔"), t("Use the trigger as a factual marker.", "ट्रिगर को तथ्यात्मक निशान की तरह लिखें.", "ట్రిగ్గర్‌ను వాస్తవ సూచికగా ఉపయోగించండి.", "தூண்டியை ஒரு factual marker ஆக பயன்படுத்துங்கள்.", "ٹرگر کو ایک factual marker کے طور پر استعمال کریں۔"), true)
       ]
     },
     {
       id: "people",
-      title: "2. People and witnesses",
-      meta: "List who was involved and who can confirm it.",
-      intro: "The complaint gets stronger when the people layer is written down clearly.",
+      title: t("2. People and witnesses", "2. लोग और गवाह", "2. వ్యక్తులు మరియు సాక్షులు", "2. மக்கள் மற்றும் சாட்சிகள்", "2. لوگ اور گواہ"),
+      meta: t("List who was involved and who can confirm it.", "लिखिए कौन शामिल था और कौन इसकी पुष्टि कर सकता है.", "ఎవరు భాగమయ్యారో మరియు ఎవరు నిర్ధారించగలరో జాబితా చేయండి.", "யார் ஈடுபட்டனர் மற்றும் யார் உறுதிப்படுத்த முடியும் என்பதைப் பட்டியலிடுங்கள்.", "لکھیں کون شامل تھا اور کون اس کی تصدیق کر سکتا ہے۔"),
+      intro: t("The complaint gets stronger when the people layer is written down clearly.", "जब लोग और उनकी भूमिका साफ़ लिखी जाती है, शिकायत और मज़बूत होती है.", "వ్యక్తుల భాగం స్పష్టంగా రాసినప్పుడు ఫిర్యాదు మరింత బలపడుతుంది.", "மக்கள் மற்றும் அவர்களின் பங்கு தெளிவாக எழுதப்பட்டால் புகார் வலுப்படும்.", "جب لوگوں کی پرت صاف لکھ دی جاتی ہے تو شکایت مضبوط ہو جاتی ہے۔"),
       questions: [
-        buildPrivateIntakeQuestion("familyContext", "Who at home or in the family knows?", "Say who should know or already knows.", "Useful for support and privacy planning.", true),
-        buildPrivateIntakeQuestion("relativeContext", "Any relatives or outside family involved?", "Note the relatives or outside family context.", "Useful if family pressure shapes the route.", true),
-        buildPrivateIntakeQuestion("friendsContext", "Any friends or classmates who know?", "Add people who saw, heard, or supported you.", "Witnesses or support people help a lot.", true),
-        buildPrivateIntakeQuestion("coworkerContext", "Any office, class, or department people involved?", "List staff, teachers, officers, or coworkers if relevant.", "Use names or roles if you know them.", true)
+        buildPrivateIntakeQuestion("familyContext", t("Who at home or in the family knows?", "घर या परिवार में कौन जानता है?", "ఇంట్లో లేదా కుటుంబంలో ఎవరికీ తెలుసు?", "வீட்டில் அல்லது குடும்பத்தில் யாருக்குத் தெரியும்?", "گھر یا خاندان میں کون جانتا ہے؟"), t("Say who should know or already knows.", "लिखिए किसे जानना चाहिए या पहले से पता है.", "ఎవరికి తెలుసుండాలో లేదా ఎవరికీ తెలుసో చెప్పండి.", "யாருக்குத் தெரிந்திருக்க வேண்டும் அல்லது ஏற்கனவே தெரிந்திருக்கிறது என்பதைச் சொல்லுங்கள்.", "بتائیں کس کو جاننا چاہیے یا پہلے سے معلوم ہے۔"), t("Useful for support and privacy planning.", "सहारा और गोपनीयता योजना के लिए उपयोगी.", "సహాయం మరియు గోప్యతా ప్రణాళికకు ఉపయోగకరం.", "ஆதரவு மற்றும் தனியுரிமை திட்டமிடலுக்கு உதவும்.", "مدد اور رازداری کی planning کے لیے مفید۔"), true),
+        buildPrivateIntakeQuestion("relativeContext", t("Any relatives or outside family involved?", "कोई रिश्तेदार या बाहर का परिवार शामिल है?", "ఏమైనా బంధువులు లేదా బయటి కుటుంబ సభ్యులు ఉన్నారా?", "எந்த உறவினர்கள் அல்லது வெளி குடும்பத்தினர் ஈடுபட்டுள்ளனரா?", "کوئی رشتہ دار یا باہر کا خاندان شامل ہے؟"), t("Note the relatives or outside family context.", "रिश्तेदारों या बाहरी परिवार का संदर्भ लिखिए.", "బంధువులు లేదా బయట కుటుంబ సందర్భాన్ని గమనించండి.", "உறவினர்கள் அல்லது வெளி குடும்ப சூழலை குறிப்பிடுங்கள்.", "رشتہ داروں یا باہر کے خاندان کا پس منظر نوٹ کریں۔"), t("Useful if family pressure shapes the route.", "यदि परिवार का दबाव रास्ता तय करता है तो यह उपयोगी है.", "కుటుంబ ఒత్తిడి మార్గాన్ని ప్రభావితం చేస్తే ఇది ఉపయోగకరం.", "குடும்ப அழுத்தம் வழியை வடிவமைத்தால் இது உதவும்.", "اگر خاندانی دباؤ راستہ بناتا ہے تو یہ مفید ہے۔"), true),
+        buildPrivateIntakeQuestion("friendsContext", t("Any friends or classmates who know?", "कोई दोस्त या सहपाठी जानते हैं?", "తెలిసిన స్నేహితులు లేదా సహపాఠులు ఉన్నారా?", "தெரிந்த நண்பர்கள் அல்லது வகுப்புத் தோழர்கள் உள்ளனரா?", "کوئی دوست یا ہم جماعت جانتے ہیں؟"), t("Add people who saw, heard, or supported you.", "वे लोग जोड़ें जिन्होंने देखा, सुना, या आपका साथ दिया.", "చూసిన, విన్న, లేదా మద్దతు ఇచ్చినవారిని జోడించండి.", "பார்த்த, கேட்ட, அல்லது ஆதரித்தவர்களைச் சேர்க்கவும்.", "ان لوگوں کو شامل کریں جنہوں نے دیکھا، سنا، یا آپ کا ساتھ دیا۔"), t("Witnesses or support people help a lot.", "गवाह या सहायक लोग बहुत मदद करते हैं.", "సాక్షులు లేదా సహాయకులు చాలా సహాయపడతారు.", "சாட்சிகள் அல்லது ஆதரவு தரும் நபர்கள் மிகவும் உதவுவர்.", "گواہ یا مددگار لوگ بہت مدد کرتے ہیں۔"), true),
+        buildPrivateIntakeQuestion("coworkerContext", t("Any office, class, or department people involved?", "कोई दफ़्तर, कक्षा, या विभाग के लोग शामिल हैं?", "ఏదైనా కార్యాలయం, తరగతి, లేదా విభాగం వ్యక్తులు ఉన్నారా?", "அலுவலகம், வகுப்பு, அல்லது துறை சார்ந்தவர்கள் ஈடுபட்டுள்ளனரா?", "کوئی دفتر، کلاس، یا شعبے کے لوگ شامل ہیں؟"), t("List staff, teachers, officers, or coworkers if relevant.", "यदि ज़रूरी हो तो स्टाफ, शिक्षक, अधिकारी, या सहकर्मी लिखिए.", "వర్తిస్తే సిబ్బంది, ఉపాధ్యాయులు, అధికారులు, లేదా సహోద్యోగులను నమోదు చేయండి.", "தேவைப்பட்டால் பணியாளர்கள், ஆசிரியர்கள், அதிகாரிகள், அல்லது சக ஊழியர்களை பட்டியலிடுங்கள்.", "اگر متعلق ہو تو عملہ، اساتذہ، افسران، یا ساتھی کارکن درج کریں۔"), t("Use names or roles if you know them.", "अगर नाम या भूमिका पता हो तो लिखिए.", "తెలిస్తే పేర్లు లేదా పాత్రలను ఉపయోగించండి.", "தெரிந்தால் பெயர்கள் அல்லது பங்குகளைப் பயன்படுத்துங்கள்.", "اگر نام یا کردار معلوم ہو تو لکھیں۔"), true)
       ]
     },
     {
       id: "evidence",
-      title: "3. Proof and impact",
-      meta: "Keep the record useful for a formal route.",
-      intro: "Put the evidence and the effect in the same place so the report stays usable later.",
+      title: t("3. Proof and impact", "3. प्रमाण और प्रभाव", "3. సాక్ష్యం మరియు ప్రభావం", "3. சான்று மற்றும் பாதிப்பு", "3. ثبوت اور اثر"),
+      meta: t("Keep the record useful for a formal route.", "रिकॉर्ड को औपचारिक मार्ग के लिए उपयोगी रखें.", "రికార్డును అధికారిక మార్గానికి ఉపయోగపడేలా ఉంచండి.", "பதிவை formal route-க்கு பயனுள்ளதாக்குங்கள்.", "ریکارڈ کو رسمی راستے کے لیے مفید رکھیں۔"),
+      intro: t("Put the evidence and the effect in the same place so the report stays usable later.", "साक्ष्य और असर को एक ही जगह लिखें ताकि रिपोर्ट बाद में भी काम की रहे.", "సాక్ష్యం మరియు ప్రభావాన్ని ఒకే చోట ఉంచండి, తద్వారా report తరువాత కూడా ఉపయోగపడుతుంది.", "சான்று மற்றும் தாக்கத்தை ஒரே இடத்தில் வையுங்கள், அதனால் report பின்னரும் பயன்படும்.", "ثبوت اور اثر کو ایک ہی جگہ رکھیں تاکہ رپورٹ بعد میں بھی کارآمد رہے۔"),
       questions: [
-        buildPrivateIntakeQuestion("behaviorPattern", "What pattern do you see?", "Repeat the pattern in simple words.", "Patterns help show this was not random.", true),
-        buildPrivateIntakeQuestion("previousAttempts", "What have you already tried?", "Mention complaints, messages, calls, or meetings.", "Prior attempts show the path already taken.", true),
-        buildPrivateIntakeQuestion("dailyImpactContext", "How has this affected work, study, home, or health?", "Describe the practical effect.", "Impact matters for the report and the next office.", true),
-        buildPrivateIntakeQuestion("strengthsContext", "What proof or support is still available?", "Messages, screenshots, witnesses, documents, or allies.", "Evidence and support can be stored in the report.", true)
+        buildPrivateIntakeQuestion("behaviorPattern", t("What pattern do you see?", "आपको कौन-सा पैटर्न दिख रहा है?", "మీకు ఏ నమూనా కనిపిస్తోంది?", "எந்த pattern தெரிகிறது?", "آپ کو کون سا pattern نظر آ رہا ہے؟"), t("Repeat the pattern in simple words.", "पैटर्न को सरल शब्दों में दोहराइए.", "నమూనాను సరళమైన మాటల్లో చెప్పండి.", "pattern-ஐ எளிய வார்த்தைகளில் மீண்டும் சொல்லுங்கள்.", "pattern کو سادہ الفاظ میں دہرائیں۔"), t("Patterns help show this was not random.", "पैटर्न दिखाता है कि यह संयोग नहीं था.", "నమూనాలు ఇది యాదృచ్ఛికం కాదని చూపుతాయి.", "Patterns இது தற்செயல் அல்ல என்பதை காட்டுகின்றன.", "patterns یہ دکھاتے ہیں کہ یہ اتفاقی نہیں تھا۔"), true),
+        buildPrivateIntakeQuestion("previousAttempts", t("What have you already tried?", "आप पहले क्या कोशिश कर चुके हैं?", "మీరు ఇప్పటికే ఏమి ప్రయత్నించారు?", "நீங்கள் ஏற்கனவே என்ன முயற்சி செய்தீர்கள்?", "آپ پہلے کیا آزما چکے ہیں؟"), t("Mention complaints, messages, calls, or meetings.", "शिकायत, संदेश, कॉल, या बैठकों का ज़िक्र करें.", "ఫిర్యాదులు, సందేశాలు, కాల్స్, లేదా సమావేశాలను పేర్కొనండి.", "புகார்கள், செய்திகள், calls, அல்லது meetings-ஐ குறிப்பிடுங்கள்.", "شکایتیں، پیغامات، کالز، یا ملاقاتوں کا ذکر کریں۔"), t("Prior attempts show the path already taken.", "पहले किए गए प्रयास रास्ता दिखाते हैं.", "మునుపటి ప్రయత్నాలు ఇప్పటికే తీసుకున్న మార్గాన్ని చూపుతాయి.", "முன்னைய முயற்சிகள் ஏற்கனவே எடுத்த பாதையை காட்டுகின்றன.", "پچھلی کوششیں پہلے سے طے شدہ راستہ دکھاتی ہیں۔"), true),
+        buildPrivateIntakeQuestion("dailyImpactContext", t("How has this affected work, study, home, or health?", "इसका काम, पढ़ाई, घर, या सेहत पर क्या असर पड़ा?", "ఇది పని, చదువు, ఇల్లు, లేదా ఆరోగ్యంపై ఎలా ప్రభావం చూపింది?", "இது வேலை, படிப்பு, வீடு, அல்லது ஆரோக்கியத்தை எப்படி பாதித்தது?", "اس نے کام، پڑھائی، گھر، یا صحت کو کیسے متاثر کیا؟"), t("Describe the practical effect.", "व्यावहारिक असर लिखिए.", "ప్రాక్టికల్ ప్రభావాన్ని వివరించండి.", "நடைமுறை தாக்கத்தை விவரிக்கவும்.", "عملی اثر بیان کریں۔"), t("Impact matters for the report and the next office.", "असर रिपोर्ट और अगले दफ़्तर के लिए मायने रखता है.", "ప్రభావం report మరియు తదుపరి కార్యాలయం కోసం ముఖ్యం.", "தாக்கம் report-க்கும் அடுத்த அலுவலகத்துக்கும் முக்கியம்.", "اثر رپورٹ اور اگلے دفتر کے لیے اہم ہے۔"), true),
+        buildPrivateIntakeQuestion("strengthsContext", t("What proof or support is still available?", "कौन-सा प्रमाण या सहारा अभी उपलब्ध है?", "ఏ సాక్ష్యం లేదా మద్దతు ఇంకా అందుబాటులో ఉంది?", "எந்தச் சான்று அல்லது ஆதரவு இன்னும் கிடைக்கிறது?", "کون سا ثبوت یا مدد ابھی دستیاب ہے؟"), t("Messages, screenshots, witnesses, documents, or allies.", "संदेश, स्क्रीनशॉट, गवाह, दस्तावेज़, या साथ देने वाले लोग.", "సందేశాలు, స్క్రీన్‌షాట్లు, సాక్షులు, పత్రాలు, లేదా మద్దతుదారులు.", "செய்திகள், screenshots, சாட்சிகள், ஆவணங்கள், அல்லது ஆதரவாளர்கள்.", "پیغامات، اسکرین شاٹس، گواہ، دستاویزات، یا اتحادی۔"), t("Evidence and support can be stored in the report.", "साक्ष्य और सहारा रिपोर्ट में सुरक्षित रखे जा सकते हैं.", "సాక్ష్యం మరియు మద్దతును report లో భద్రపరచవచ్చు.", "சான்று மற்றும் ஆதரவு report-இல் சேமிக்கப்படலாம்.", "ثبوت اور مدد رپورٹ میں محفوظ کی جا سکتی ہے۔"), true)
       ]
     },
     {
       id: "impact",
-      title: "4. Feeling and body",
-      meta: "The emotional side still matters in a complaint.",
-      intro: "A formal issue can still leave a person shaken. That reaction belongs in the report too.",
+      title: t("4. Feeling and body", "4. भावना और शरीर", "4. భావం మరియు శరీరం", "4. உணர்வு மற்றும் உடல்", "4. احساس اور جسم"),
+      meta: t("The emotional side still matters in a complaint.", "शिकायत में भावनात्मक पक्ष भी मायने रखता है.", "ఫిర్యాదులో భావోద్వేగ భాగం కూడా ముఖ్యం.", "புகாரில் உணர்ச்சி பக்கமும் முக்கியம்.", "شکایت میں جذباتی پہلو بھی اہم ہے۔"),
+      intro: t("A formal issue can still leave a person shaken. That reaction belongs in the report too.", "औपचारिक समस्या किसी को भी हिला सकती है. वह प्रतिक्रिया भी रिपोर्ट में होनी चाहिए.", "అధికారిక సమస్య కూడా ఒక వ్యక్తిని కదిలించవచ్చు. ఆ ప్రతిస్పందన కూడా report లో ఉండాలి.", "ஒரு formal issue கூட ஒருவரை கலங்கச் செய்யலாம். அந்த எதிர்வினையும் report-இல் இருக்க வேண்டும்.", "رسمی مسئلہ بھی کسی کو ہلا سکتا ہے۔ وہ ردعمل بھی رپورٹ میں ہونا چاہیے۔"),
       questions: [
-        buildPrivateIntakeQuestion("currentFeeling", "What are you feeling right now?", "Use plain words like hurt, angry, unsafe, or ashamed.", "Feelings help show the human cost.", true),
-        buildPrivateIntakeQuestion("emotionIntensity", "How intense is it?", "Low, medium, high, or overwhelming.", "Intensity helps the report decide whether calm or urgent help is needed."),
-        buildPrivateIntakeQuestion("bodySignal", "What is your body doing?", "Breath, sleep, appetite, tension, stomach, headaches, or tears.", "Body signals often show strain before words do.", true),
-        buildPrivateIntakeQuestion("supportNeed", "What support do you want first?", "Advice, documentation, official route, witness support, or safety.", "Start with the kind of help you want.")
+        buildPrivateIntakeQuestion("currentFeeling", t("What are you feeling right now?", "अभी आप क्या महसूस कर रहे हैं?", "ఇప్పుడు మీరు ఏమి అనుభవిస్తున్నారు?", "இப்போது நீங்கள் என்ன உணர்கிறீர்கள்?", "ابھی آپ کیا محسوس کر رہے ہیں؟"), t("Use plain words like hurt, angry, unsafe, or ashamed.", "दुख, ग़ुस्सा, असुरक्षा, या शर्म जैसे सीधे शब्दों का उपयोग करें.", "బాధ, కోపం, అసురక్షితం, లేదా సిగ్గు వంటి సూటి పదాలు వాడండి.", "வேதனை, கோபம், பாதுகாப்பற்றது, அல்லது அவமானம் போன்ற எளிய வார்த்தைகளைப் பயன்படுத்துங்கள்.", "دکھ، غصہ، غیر محفوظ، یا شرمندہ جیسے سادہ الفاظ استعمال کریں۔"), t("Feelings help show the human cost.", "भावनाएँ इंसानी असर दिखाती हैं.", "భావాలు మానవ ప్రభావాన్ని చూపుతాయి.", "உணர்வுகள் மனிதச் செலவை காட்டுகின்றன.", "جذبات انسانی اثر کو ظاہر کرتے ہیں۔"), true),
+        buildPrivateIntakeQuestion("emotionIntensity", t("How intense is it?", "यह कितना तीव्र है?", "ఇది ఎంత తీవ్రంగా ఉంది?", "இது எவ்வளவு தீவிரமாக உள்ளது?", "یہ کتنا شدید ہے؟"), t("Low, medium, high, or overwhelming.", "कम, मध्यम, ज़्यादा, या बहुत भारी.", "తక్కువ, మధ్యమ, అధిక, లేదా overwhelming.", "குறைவு, நடுத்தரம், அதிகம், அல்லது overwhelming.", "کم، درمیانہ، زیادہ، یا بہت شدید۔"), t("Intensity helps the report decide whether calm or urgent help is needed.", "तीव्रता से तय होता है कि शांत या तुरंत मदद चाहिए.", "తీవ్రత report కు శాంతి లేదా అత్యవసర సహాయం అవసరమా అని నిర్ణయించడంలో సహాయపడుతుంది.", "தீவிரம் report-க்கு அமைதியா அல்லது அவசர உதவியா என்பதை தீர்மானிக்க உதவும்.", "شدت سے رپورٹ کو طے کرنے میں مدد ملتی ہے کہ پرسکون مدد چاہیے یا فوری مدد۔")),
+        buildPrivateIntakeQuestion("bodySignal", t("What is your body doing?", "आपका शरीर क्या कर रहा है?", "మీ శరీరం ఏమి చేస్తోంది?", "உங்கள் உடல் என்ன செய்கிறது?", "آپ کا جسم کیا کر رہا ہے؟"), t("Breath, sleep, appetite, tension, stomach, headaches, or tears.", "साँस, नींद, भूख, तनाव, पेट, सिरदर्द, या आँसू लिखिए.", "శ్వాస, నిద్ర, ఆకలి, ఒత్తిడి, కడుపు, తలనొప్పి, లేదా కన్నీళ్లు.", "மூச்சு, தூக்கம், பசி, இறுக்கம், வயிறு, தலைவலி, அல்லது கண்ணீர்.", "سانس، نیند، بھوک، تناؤ، پیٹ، سر درد، یا آنسو۔"), t("Body signals often show strain before words do.", "शरीर के संकेत अक्सर शब्दों से पहले तनाव दिखाते हैं.", "శరీర సంకేతాలు తరచుగా మాటల కంటే ముందే ఒత్తిడిని చూపుతాయి.", "உடல் signals பெரும்பாலும் வார்த்தைகளுக்கு முன்பே strain-ஐ காட்டும்.", "جسمانی اشارے اکثر الفاظ سے پہلے تناؤ دکھاتے ہیں۔"), true),
+        buildPrivateIntakeQuestion("supportNeed", t("What support do you want first?", "आपको पहले किस तरह का सहारा चाहिए?", "ముందుగా మీకు ఎలాంటి మద్దతు కావాలి?", "முதலில் எந்த வகை ஆதரவு வேண்டும்?", "آپ کو پہلے کس طرح کی مدد چاہیے؟"), t("Advice, documentation, official route, witness support, or safety.", "सलाह, दस्तावेज़, औपचारिक मार्ग, गवाह सहायता, या सुरक्षा.", "సలహా, పత్రాలు, అధికారిక మార్గం, సాక్షి మద్దతు, లేదా భద్రత.", "ஆலோசனை, ஆவணங்கள், அதிகாரப்பூர்வ வழி, சாட்சி ஆதரவு, அல்லது பாதுகாப்பு.", "مشورہ، دستاویزات، رسمی راستہ، گواہ کی مدد، یا حفاظت۔"), t("Start with the kind of help you want.", "उसी सहायता से शुरू करें जो आप चाहते हैं.", "మీకు కావలసిన సహాయంతో ప్రారంభించండి.", "நீங்கள் விரும்பும் உதவியிலிருந்து தொடங்குங்கள்.", "اسی مدد سے شروع کریں جو آپ چاہتے ہیں۔"))
       ]
     },
     {
       id: "outcome",
-      title: "5. Outcome, safety, and privacy",
-      meta: "Say the result you want and the boundary you need.",
-      intro: `The report should know what a good result looks like for ${issueLabel.toLowerCase()}.`,
+      title: t("5. Outcome, safety, and privacy", "5. परिणाम, सुरक्षा, और गोपनीयता", "5. ఫలితం, భద్రత, మరియు గోప్యత", "5. முடிவு, பாதுகாப்பு, மற்றும் தனியுரிமை", "5. نتیجہ، حفاظت، اور رازداری"),
+      meta: t("Say the result you want and the boundary you need.", "आप जो परिणाम और सीमा चाहते हैं, उसे साफ़ लिखें.", "మీకు కావలసిన ఫలితం మరియు హద్దును చెప్పండి.", "நீங்கள் விரும்பும் முடிவையும் தேவையான எல்லையையும் சொல்லுங்கள்.", "آپ جو نتیجہ اور حد چاہتے ہیں، اسے واضح لکھیں۔"),
+      intro: t(
+        `The report should know what a good result looks like for ${issueLabel.toLowerCase()}.`,
+        `रिपोर्ट को पता होना चाहिए कि ${issueLabel.toLowerCase()} के लिए अच्छा परिणाम कैसा दिखता है.`,
+        `రిపోర్ట్‌కు ${issueLabel.toLowerCase()} కోసం మంచి ఫలితం ఎలా ఉండాలో తెలియాలి.`,
+        `report-க்கு ${issueLabel.toLowerCase()}-க்கு நல்ல முடிவு எப்படி இருக்கும் என்பது தெரிந்திருக்க வேண்டும்.`,
+        `رپورٹ کو معلوم ہونا چاہیے کہ ${issueLabel.toLowerCase()} کے لیے اچھا نتیجہ کیسا لگتا ہے۔`
+      ),
       questions: [
-        buildPrivateIntakeQuestion("supportPreferences", "What support style feels best?", "Private, direct, step-by-step, family-aware, or official.", "The app can match tone to your preference.", true),
-        buildPrivateIntakeQuestion("neededOutcome", "What result do you want?", "Apology, correction, fix, protection, refund, transfer, or other.", "The outcome drives the redress route.", true),
-        buildPrivateIntakeQuestion("safetyNote", "Any immediate safety concern?", "Tell me if anyone is unsafe or pressure is live now.", "Urgent cues always stay visible.", true),
-        buildPrivateIntakeQuestion("privacyBoundary", "Any privacy boundary to respect?", "What should stay private or not be repeated?", "Privacy boundaries shape how the report is saved.", true)
+        buildPrivateIntakeQuestion("supportPreferences", t("What support style feels best?", "किस तरह का सहारा सबसे अच्छा लगेगा?", "ఎలాంటి మద్దతు శైలి బాగా అనిపిస్తుంది?", "எந்த வகை ஆதரவு சிறந்ததாக இருக்கும்?", "کس طرح کی مدد سب سے بہتر لگتی ہے؟"), t("Private, direct, step-by-step, family-aware, or official.", "निजी, सीधे, चरण-दर-चरण, परिवार-समझने वाला, या औपचारिक.", "ప్రైవేట్, నేరుగా, దశలవారీగా, కుటుంబాన్ని పరిగణలోకి తీసుకునే, లేదా అధికారిక.", "தனிப்பட்ட, நேரடி, படிப்படியான, குடும்ப-அறிந்த, அல்லது அதிகாரப்பூர்வ.", "نجی، سیدھی، مرحلہ وار، خاندان سے واقف، یا رسمی۔"), t("The app can match tone to your preference.", "ऐप आपकी पसंद के अनुसार लहजा मिला सकता है.", "యాప్ మీ అభిరుచికి అనుగుణంగా శైలిని సరిపోల్చగలదు.", "app உங்கள் விருப்பத்திற்கு ஏற்ப tone-ஐ பொருத்த முடியும்.", "ایپ آپ کی پسند کے مطابق لہجہ ملا سکتی ہے۔"), true),
+        buildPrivateIntakeQuestion("neededOutcome", t("What result do you want?", "आप कौन-सा परिणाम चाहते हैं?", "మీరు ఏ ఫలితాన్ని కోరుకుంటున్నారు?", "எந்த முடிவை நீங்கள் விரும்புகிறீர்கள்?", "آپ کون سا نتیجہ چاہتے ہیں؟"), t("Apology, correction, fix, protection, refund, transfer, or other.", "माफ़ी, सुधार, ठीक करना, सुरक्षा, रिफंड, ट्रांसफ़र, या कुछ और.", "క్షమాపణ, సవరణ, పరిష్కారం, రక్షణ, రీఫండ్, బదిలీ, లేదా ఇతరము.", "மன்னிப்பு, திருத்தம், சரிசெய்தல், பாதுகாப்பு, பணம் திரும்ப, மாற்றம், அல்லது பிற.", "معذرت، اصلاح، درستگی، حفاظت، رقم واپسی، منتقلی، یا کچھ اور۔"), t("The outcome drives the redress route.", "परिणाम ही redress मार्ग को चलाता है.", "ఫలితం redress మార్గాన్ని నడుపుతుంది.", "முடிவே redress பாதையை இயக்குகிறது.", "نتیجہ ہی redress route کو چلاتا ہے۔"), true),
+        buildPrivateIntakeQuestion("safetyNote", t("Any immediate safety concern?", "कोई तुरंत सुरक्षा चिंता है?", "తక్షణ భద్రతా ఆందోళన ఏదైనా ఉందా?", "உடனடி பாதுகாப்பு கவலை ஏதேனும் உள்ளதா?", "کوئی فوری حفاظتی تشویش؟"), t("Tell me if anyone is unsafe or pressure is live now.", "यदि कोई असुरक्षित है या दबाव अभी सक्रिय है, तो बताइए.", "ఎవరైనా అసురక్షితంగా ఉంటే లేదా ఒత్తిడి ఇప్పుడే ఉన్నా చెప్పండి.", "யாராவது பாதுகாப்பற்றவராக இருந்தால் அல்லது அழுத்தம் இப்போது நடந்து கொண்டிருந்தால் சொல்லுங்கள்.", "اگر کوئی غیر محفوظ ہے یا دباؤ ابھی جاری ہے تو بتائیں۔"), t("Urgent cues always stay visible.", "तुरंत के संकेत हमेशा दिखते रहते हैं.", "అత్యవసర సూచనలు ఎప్పుడూ కనిపిస్తాయి.", "அவசர குறிப்புகள் எப்போதும் தெளிவாக இருக்கும்.", "فوری اشارے ہمیشہ ظاہر رہتے ہیں۔"), true),
+        buildPrivateIntakeQuestion("privacyBoundary", t("Any privacy boundary to respect?", "कोई गोपनीयता सीमा है जिसे मानना चाहिए?", "పరిగణలోకి తీసుకోవాల్సిన గోప్యతా హద్దు ఏదైనా ఉందా?", "மதிக்க வேண்டிய தனியுரிமை எல்லை ஏதேனும் உள்ளதா?", "کوئی رازداری کی حد جس کا احترام کرنا چاہیے؟"), t("What should stay private or not be repeated?", "क्या निजी रहना चाहिए या दोहराया नहीं जाना चाहिए?", "ఏది ప్రైవేట్‌గా ఉండాలి లేదా తిరిగి చెప్పకూడదు?", "எது தனிப்பட்டதாக இருக்க வேண்டும் அல்லது மீண்டும் சொல்லக் கூடாது?", "کیا نجی رہنا چاہیے یا دہرایا نہیں جانا چاہیے؟"), t("Privacy boundaries shape how the report is saved.", "गोपनीयता सीमाएँ तय करती हैं कि रिपोर्ट कैसे सुरक्षित रहेगी.", "గోప్యతా హద్దులు report ఎలా భద్రపరచబడుతుందో నిర్ణయిస్తాయి.", "தனியுரிமை எல்லைகள் report எப்படிச் சேமிக்கப்படும் என்பதை வடிவமைக்கின்றன.", "رازداری کی حدود طے کرتی ہیں کہ رپورٹ کیسے محفوظ کی جائے۔"), true)
       ]
     }
   ];
@@ -5114,370 +5304,424 @@ function getPrivateIntakeBlueprint(
     distress: [
       {
         id: "situation",
-        title: "1. Situation and trigger",
-        meta: "Write what changed and what set it off.",
-        intro: `Describe what is happening with ${issueLabel.toLowerCase()}. The clearer the picture, the better the next step will fit.`,
+        title: t("1. Situation and trigger", "1. स्थिति और ट्रिगर", "1. పరిస్థితి మరియు ట్రిగ్గర్", "1. நிலைமை மற்றும் தூண்டி", "1. صورت حال اور ٹرگر"),
+        meta: t("Write what changed and what set it off.", "क्या बदला और किसने उसे शुरू किया, यह लिखें.", "ఏం మారిందో మరియు దానిని ఏం ప్రారంభించిందో రాయండి.", "எது மாறியது, எது அதைத் தொடங்கியது என்பதை எழுதுங்கள்.", "کیا بدلا اور کس نے اسے شروع کیا، یہ لکھیں۔"),
+        intro: t(
+          `Describe what is happening with ${issueLabel.toLowerCase()}. The clearer the picture, the better the next step will fit.`,
+          `${issueLabel.toLowerCase()} के साथ क्या हो रहा है, यह बताइए. तस्वीर जितनी साफ़ होगी, अगला कदम उतना ही बेहतर बैठेगा.`,
+          `${issueLabel.toLowerCase()}తో ఏమి జరుగుతోందో వివరించండి. దృశ్యం जितना స్పష్టంగా ఉంటే, తదుపరి అడుగు అంత బాగా సరిపోతుంది.`,
+          `${issueLabel.toLowerCase()} உடன் என்ன நடக்கிறது என்பதை விவரிக்கவும். படம் எவ்வளவு தெளிவாக இருக்கிறதோ, அடுத்த படி அவ்வளவு நன்றாக பொருந்தும்.`,
+          `${issueLabel.toLowerCase()} کے ساتھ کیا ہو رہا ہے، یہ بتائیں۔ تصویر جتنی صاف ہوگی، اگلا قدم اتنا ہی بہتر فٹ ہوگا۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("overview", "What is happening?", "Describe the situation in one or two lines.", "Start with the main event."),
-          buildPrivateIntakeQuestion("timelineContext", "When did it start or change?", "Say when the feeling or issue became stronger.", "Timing helps the report judge urgency."),
-          buildPrivateIntakeQuestion("frequencyContext", "How often does it return?", "Once, repeated, daily, weekly, or on specific days?", "Frequency shows the pattern."),
-          buildPrivateIntakeQuestion("triggerContext", "What usually triggers it?", "People, places, thoughts, messages, or duties.", "Triggers help route the next step.", true)
+          buildPrivateIntakeQuestion("overview", t("What is happening?", "क्या हो रहा है?", "ఏం జరుగుతోంది?", "என்ன நடக்கிறது?", "کیا ہو رہا ہے؟"), t("Describe the situation in one or two lines.", "स्थिति को एक-दो पंक्तियों में बताइए.", "పరిస్థితిని ఒకటి లేదా రెండు పంక్తుల్లో వివరించండి.", "நிலையை ஒரு அல்லது இரண்டு வரிகளில் விவரிக்கவும்.", "صورت حال کو ایک دو سطروں میں بیان کریں۔"), t("Start with the main event.", "मुख्य घटना से शुरू करें.", "ముఖ్య సంఘటనతో ప్రారంభించండి.", "முக்கிய நிகழ்விலிருந்து தொடங்குங்கள்.", "اہم واقعے سے شروع کریں۔")),
+          buildPrivateIntakeQuestion("timelineContext", t("When did it start or change?", "यह कब शुरू या बदला?", "ఇది ఎప్పుడు ప్రారంభమైంది లేదా మారింది?", "இது எப்போது தொடங்கியது அல்லது மாறியது?", "یہ کب شروع ہوا یا بدلا؟"), t("Say when the feeling or issue became stronger.", "बताइए कि यह भावना या समस्या कब और तेज़ हुई.", "భావన లేదా సమస్య ఎప్పుడు మరింత బలపడిందో చెప్పండి.", "உணர்வு அல்லது பிரச்சினை எப்போது வலுவானது என்பதைச் சொல்லுங்கள்.", "بتائیں کہ احساس یا مسئلہ کب زیادہ شدید ہوا۔"), t("Timing helps the report judge urgency.", "समय से रिपोर्ट को तुरंतपन समझने में मदद मिलती है.", "సమయం report కు అత్యవసరతను నిర్ణయించడంలో సహాయపడుతుంది.", "நேரம் report-க்கு அவசரத்தைக் கணக்கிட உதவுகிறது.", "وقت رپورٹ کو urgency سمجھنے میں مدد دیتا ہے۔")),
+          buildPrivateIntakeQuestion("frequencyContext", t("How often does it return?", "यह कितनी बार लौटता है?", "ఇది ఎంతసార్లు తిరిగి వస్తుంది?", "இது எத்தனை முறை மீண்டும் வருகிறது?", "یہ کتنی بار واپس آتا ہے؟"), t("Once, repeated, daily, weekly, or on specific days?", "एक बार, बार-बार, रोज़, हफ़्ते में, या किसी ख़ास दिन?", "ఒక్కసారి, పునరావృతం, రోజూ, వారానికి, లేదా ప్రత్యేక దినాల్లోనా?", "ஒரு முறை, மீண்டும் மீண்டும், தினசரி, வாரம், அல்லது குறிப்பிட்ட நாட்களில்?", "ایک بار، بار بار، روزانہ، ہفتہ وار، یا مخصوص دنوں میں؟"), t("Frequency shows the pattern.", "बार-बार होने से पैटर्न दिखता है.", "పునరావృతం నమూనాను చూపుతుంది.", "அதிர்வெண் pattern-ஐ காட்டுகிறது.", "تکرار pattern دکھاتی ہے۔")),
+          buildPrivateIntakeQuestion("triggerContext", t("What usually triggers it?", "इसे आम तौर पर क्या ट्रिगर करता है?", "దీనిని సాధారణంగా ఏమి trigger చేస్తుంది?", "இதற்கு பொதுவாக எது trigger ஆகிறது?", "اسے عام طور پر کیا trigger کرتا ہے؟"), t("People, places, thoughts, messages, or duties.", "लोग, जगह, विचार, संदेश, या ज़िम्मेदारियाँ.", "వ్యక్తులు, ప్రదేశాలు, ఆలోచనలు, సందేశాలు, లేదా బాధ్యతలు.", "மக்கள், இடங்கள், எண்ணங்கள், செய்திகள், அல்லது கடமைகள்.", "لوگ، جگہیں، خیالات، پیغامات، یا ذمہ داریاں۔"), t("Triggers help route the next step.", "ट्रिगर अगले कदम को सही दिशा देता है.", "ట్రిగ్గర్లు తదుపరి అడుగును సరైన దిశలో నడిపిస్తాయి.", "தூண்டிகள் அடுத்த படியை சரியாக வழிநடத்த உதவும்.", "ٹرگر اگلے قدم کو صحیح سمت دیتے ہیں۔"), true)
         ]
       },
       {
         id: "feeling",
-        title: "2. Feeling and body",
-        meta: "Track the emotional and physical load.",
-        intro: "This is where the app learns how heavy the moment feels inside the body.",
+        title: t("2. Feeling and body", "2. भावना और शरीर", "2. భావం మరియు శరీరం", "2. உணர்வு மற்றும் உடல்", "2. احساس اور جسم"),
+        meta: t("Track the emotional and physical load.", "भावनात्मक और शारीरिक बोझ को दर्ज करें.", "భావోద్వేగ మరియు శారీరక భారాన్ని గుర్తించండి.", "உணர்ச்சி மற்றும் உடல் சுமையை பதிவு செய்யுங்கள்.", "جذباتی اور جسمانی بوجھ کو نوٹ کریں۔"),
+        intro: t("This is where the app learns how heavy the moment feels inside the body.", "यहाँ ऐप समझता है कि यह पल शरीर के भीतर कितना भारी लग रहा है.", "ఇక్కడ యాప్ క్షణం శరీరంలో ఎంత భారంగా అనిపిస్తుందో నేర్చుకుంటుంది.", "இங்கே app அந்த தருணம் உடலில் எவ்வளவு கனமாக உணரப்படுகிறது என்பதைப் புரிந்துகொள்கிறது.", "یہاں ایپ سیکھتی ہے کہ یہ لمحہ جسم کے اندر کتنا بھاری محسوس ہو رہا ہے۔"),
         questions: [
-          buildPrivateIntakeQuestion("currentFeeling", "What are you feeling right now?", "Name the feeling as plainly as you can.", "Emotion naming helps the next route."),
-          buildPrivateIntakeQuestion("emotionIntensity", "How strong is it?", "Low, medium, high, or overwhelming.", "Intensity helps decide between calm and support."),
-          buildPrivateIntakeQuestion("bodySignal", "What is your body doing?", "Breath, heartbeat, stomach, sleep, tears, shaking, fatigue.", "The body often reveals the strain first."),
-          buildPrivateIntakeQuestion("dailyImpactContext", "How is this affecting life today?", "Study, work, home, sleep, or relationships.", "Impact shows whether the pressure is spreading.")
+          buildPrivateIntakeQuestion("currentFeeling", t("What are you feeling right now?", "अभी आप क्या महसूस कर रहे हैं?", "ఇప్పుడు మీరు ఏమి అనుభవిస్తున్నారు?", "இப்போது நீங்கள் என்ன உணர்கிறீர்கள்?", "ابھی آپ کیا محسوس کر رہے ہیں؟"), t("Name the feeling as plainly as you can.", "भावना को जितना सीधे हो सके बताइए.", "భావాన్ని వీలైనంత సూటిగా చెప్పండి.", "உணர்வை முடிந்தவரை எளிமையாக சொல்லுங்கள்.", "احساس کو جتنا سادہ ہو سکے بیان کریں۔"), t("Emotion naming helps the next route.", "भावना का नाम देना अगले मार्ग में मदद करता है.", "భావాన్ని పేరుతో చెప్పడం తదుపరి మార్గానికి సహాయపడుతుంది.", "உணர்வை பெயரிடுவது அடுத்த வழியை உதவுகிறது.", "جذبات کا نام دینا اگلے راستے میں مدد کرتا ہے۔")),
+          buildPrivateIntakeQuestion("emotionIntensity", t("How strong is it?", "यह कितना प्रबल है?", "ఇది ఎంత బలంగా ఉంది?", "இது எவ்வளவு வலுவாக உள்ளது?", "یہ کتنا شدید ہے؟"), t("Low, medium, high, or overwhelming.", "कम, मध्यम, ज़्यादा, या बहुत भारी.", "తక్కువ, మధ్య, అధిక, లేదా overwhelming.", "குறைவு, நடுத்தரம், அதிகம், அல்லது overwhelming.", "کم، درمیانہ، زیادہ، یا بہت زیادہ۔"), t("Intensity helps decide between calm and support.", "तीव्रता से शांत रहने या सहारा देने का फ़ैसला होता है.", "తీవ్రత శాంతి లేదా మద్దతు మధ్య నిర్ణయించడంలో సహాయపడుతుంది.", "தீவிரம் அமைதி அல்லது ஆதரவு எது வேண்டுமென்று தீர்மானிக்க உதவும்.", "شدت پرسکون مدد اور سہارا کے درمیان فیصلہ کرنے میں مدد کرتی ہے۔")),
+          buildPrivateIntakeQuestion("bodySignal", t("What is your body doing?", "आपका शरीर क्या कर रहा है?", "మీ శరీరం ఏమి చేస్తోంది?", "உங்கள் உடல் என்ன செய்கிறது?", "آپ کا جسم کیا کر رہا ہے؟"), t("Breath, heartbeat, stomach, sleep, tears, shaking, fatigue.", "साँस, धड़कन, पेट, नींद, आँसू, काँपना, थकान.", "శ్వాస, గుండెధడ, కడుపు, నిద్ర, కన్నీళ్లు, వణుకు, అలసట.", "மூச்சு, இதயதுடிப்பு, வயிறு, தூக்கம், கண்ணீர், நடுக்கம், சோர்வு.", "سانس، دھڑکن، پیٹ، نیند، آنسو، کپکپی، تھکن۔"), t("The body often reveals the strain first.", "शरीर अक्सर तनाव को पहले दिखाता है.", "శరీరం తరచుగా ఒత్తిడిని ముందే చూపిస్తుంది.", "உடல் பெரும்பாலும் strain-ஐ முதலில் காட்டுகிறது.", "جسم اکثر دباؤ کو پہلے ظاہر کرتا ہے۔")),
+          buildPrivateIntakeQuestion("dailyImpactContext", t("How is this affecting life today?", "यह आज के जीवन को कैसे प्रभावित कर रहा है?", "ఇది నేటి జీవితాన్ని ఎలా ప్రభావితం చేస్తోంది?", "இது இன்றைய வாழ்க்கையை எப்படி பாதிக்கிறது?", "یہ آج کی زندگی کو کیسے متاثر کر رہا ہے؟"), t("Study, work, home, sleep, or relationships.", "पढ़ाई, काम, घर, नींद, या रिश्ते.", "చదువు, పని, ఇల్లు, నిద్ర, లేదా సంబంధాలు.", "படிப்பு, வேலை, வீடு, தூக்கம், அல்லது உறவுகள்.", "پڑھائی، کام، گھر، نیند، یا رشتے۔"), t("Impact shows whether the pressure is spreading.", "असर से पता चलता है कि दबाव फैल रहा है या नहीं.", "ప్రభావం ఒత్తిడి వ్యాపిస్తోంది లేదా లేదో చూపిస్తుంది.", "தாக்கம் pressure பரவுகிறதா என்பதை காட்டுகிறது.", "اثر سے معلوم ہوتا ہے کہ دباؤ پھیل رہا ہے یا نہیں۔"))
         ]
       },
       {
         id: "support",
-        title: "3. People and support",
-        meta: "Capture the human context around the issue.",
-        intro: `Support works better when the app knows who is close, who is safe, and who is adding pressure for ${safeIdentity}.`,
+        title: t("3. People and support", "3. लोग और सहारा", "3. వ్యక్తులు మరియు సహాయం", "3. மக்கள் மற்றும் ஆதரவு", "3. لوگ اور مدد"),
+        meta: t("Capture the human context around the issue.", "समस्या के आसपास का मानवीय संदर्भ दर्ज करें.", "సమస్య చుట్టూ ఉన్న మానవ సందర్భాన్ని నమోదు చేయండి.", "பிரச்சினையைச் சுற்றிய மனித சூழலைப் பதிவு செய்யுங்கள்.", "مسئلے کے اردگرد انسانی پس منظر کو درج کریں۔"),
+        intro: t(
+          `Support works better when the app knows who is close, who is safe, and who is adding pressure for ${safeIdentity}.`,
+          `जब ऐप को पता हो कि कौन पास है, कौन सुरक्षित है, और ${safeIdentity} पर कौन दबाव बढ़ा रहा है, तब सहारा बेहतर काम करता है.`,
+          `యాప్‌కు ఎవరు దగ్గరగా ఉన్నారు, ఎవరు సురక్షితులు, మరియు ${safeIdentity}పై ఎవరు ఒత్తిడి పెంచుతున్నారో తెలిసినప్పుడు మద్దతు బాగా పనిచేస్తుంది.`,
+          `${safeIdentity}-க்கு யார் அருகில் இருக்கிறார்கள், யார் பாதுகாப்பானவர்கள், யார் அழுத்தம் சேர்க்கிறார்கள் என்பதை app அறிந்தால் ஆதரவு சிறப்பாக வேலை செய்யும்.`,
+          `جب ایپ کو معلوم ہو کہ کون قریب ہے، کون محفوظ ہے، اور ${safeIdentity} پر کون دباؤ بڑھا رہا ہے، تب مدد بہتر کام کرتی ہے۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("familyContext", "What does family or home look like here?", "Add family context if it helps the route.", "Family support can change the best next step.", true),
-          buildPrivateIntakeQuestion("relativeContext", "Any relatives or extended family involved?", "Add wider family pressure or support.", "Useful when family dynamics shape the issue.", true),
-          buildPrivateIntakeQuestion("friendsContext", "Any friends or close people involved?", "Who listens, who knows, who helps?", "Safe contact can calm the next move.", true),
-          buildPrivateIntakeQuestion("coworkerContext", "Any class, office, or team context?", "Add teacher, coworker, boss, or class pressure if relevant.", "Work or study pressure often needs its own route.", true),
-          buildPrivateIntakeQuestion("supportNeed", "What support do you want now?", "Calm, advice, documentation, talk, or professional help.", "The report uses this to choose the next route.", true)
+          buildPrivateIntakeQuestion("familyContext", t("What does family or home look like here?", "यहाँ परिवार या घर का माहौल कैसा है?", "ఇక్కడ కుటుంబం లేదా ఇల్లు ఎలా ఉంది?", "இங்கே குடும்பம் அல்லது வீடு எப்படி இருக்கிறது?", "یہاں خاندان یا گھر کی صورت حال کیسی ہے؟"), t("Add family context if it helps the route.", "यदि मार्ग के लिए उपयोगी हो तो परिवार का संदर्भ जोड़ें.", "మార్గానికి ఉపయోగపడితే కుటుంబ సందర్భాన్ని జోడించండి.", "வழிக்கு உதவுமானால் குடும்ப சூழலைச் சேர்க்கவும்.", "اگر راستے کے لیے مفید ہو تو خاندانی پس منظر شامل کریں۔"), t("Family support can change the best next step.", "परिवार का सहारा अगले सबसे अच्छे कदम को बदल सकता है.", "కుటుంబ మద్దతు ఉత్తమ తదుపరి అడుగును మార్చవచ్చు.", "குடும்ப ஆதரவு அடுத்த சிறந்த படியை மாற்றலாம்.", "خاندانی مدد بہترین اگلے قدم کو بدل سکتی ہے۔"), true),
+          buildPrivateIntakeQuestion("relativeContext", t("Any relatives or extended family involved?", "कोई रिश्तेदार या बड़ा परिवार शामिल है?", "ఏమైనా బంధువులు లేదా విస్తృత కుటుంబం ఉన్నారా?", "எந்த உறவினர்கள் அல்லது விரிந்த குடும்பம் ஈடுபட்டுள்ளதா?", "کوئی رشتہ دار یا بڑا خاندان شامل ہے؟"), t("Add wider family pressure or support.", "बड़े परिवार का दबाव या सहारा जोड़ें.", "విస్తృత కుటుంబ ఒత్తిడి లేదా మద్దతును జోడించండి.", "விரிந்த குடும்பத்தின் pressure அல்லது ஆதரவை சேர்க்கவும்.", "وسیع خاندان کا دباؤ یا مدد شامل کریں۔"), t("Useful when family dynamics shape the issue.", "जब पारिवारिक गतिशीलता समस्या को आकार देती हो, तब उपयोगी.", "కుటుంబ డైనమిక్స్ సమస్యను రూపొందిస్తే ఇది ఉపయోగకరం.", "குடும்ப இயக்கங்கள் பிரச்சினையை வடிவமைக்கும்போது இது உதவும்.", "جب خاندانی dynamics مسئلے کو shape کرتی ہوں تو مفید ہے۔"), true),
+          buildPrivateIntakeQuestion("friendsContext", t("Any friends or close people involved?", "कोई दोस्त या करीबी लोग शामिल हैं?", "ఏమైనా స్నేహితులు లేదా దగ్గరి వ్యక్తులు ఉన్నారా?", "நண்பர்கள் அல்லது நெருக்கமானவர்கள் ஈடுபட்டுள்ளனரா?", "کوئی دوست یا قریبی لوگ شامل ہیں؟"), t("Who listens, who knows, who helps?", "कौन सुनता है, कौन जानता है, कौन मदद करता है?", "ఎవరు వింటారు, ఎవరికీ తెలుసు, ఎవరు సహాయపడతారు?", "யார் கேட்கிறார்கள், யாருக்குத் தெரியும், யார் உதவுகிறார்கள்?", "کون سنتا ہے، کون جانتا ہے، کون مدد کرتا ہے؟"), t("Safe contact can calm the next move.", "सुरक्षित संपर्क अगला कदम शांत कर सकता है.", "సురక్షిత సంపర్కం తదుపరి అడుగును శాంతపరచగలదు.", "பாதுகாப்பான தொடர்பு அடுத்த படியை அமைதிப்படுத்தலாம்.", "محفوظ رابطہ اگلے قدم کو پرسکون کر سکتا ہے۔"), true),
+          buildPrivateIntakeQuestion("coworkerContext", t("Any class, office, or team context?", "कोई कक्षा, दफ़्तर, या टीम का संदर्भ है?", "ఏమైనా తరగతి, కార్యాలయం, లేదా బృందం సందర్భమా?", "வகுப்பு, அலுவலகம், அல்லது குழு சூழல் உள்ளதா?", "کوئی کلاس، دفتر، یا ٹیم کا پس منظر؟"), t("Add teacher, coworker, boss, or class pressure if relevant.", "यदि लागू हो तो शिक्षक, सहकर्मी, बॉस, या कक्षा का दबाव जोड़ें.", "వర్తిస్తే ఉపాధ్యాయుడు, సహోద్యోగి, బాస్, లేదా తరగతి ఒత్తిడిని జోడించండి.", "தேவைப்பட்டால் ஆசிரியர், சக ஊழியர், மேலாளர், அல்லது வகுப்பு pressure-ஐ சேர்க்கவும்.", "اگر متعلق ہو تو استاد، ساتھی کارکن، باس، یا کلاس کا دباؤ شامل کریں۔"), t("Work or study pressure often needs its own route.", "काम या पढ़ाई का दबाव अक्सर अपने अलग रास्ते की मांग करता है.", "పని లేదా చదువు ఒత్తిడికి తరచుగా ప్రత్యేక మార్గం అవసరం.", "வேலை அல்லது படிப்பு pressure-க்கு தனி வழி தேவைப்படும்.", "کام یا پڑھائی کے دباؤ کے لیے اکثر اپنا الگ راستہ چاہیے ہوتا ہے۔"), true),
+          buildPrivateIntakeQuestion("supportNeed", t("What support do you want now?", "आपको अभी किस तरह का सहारा चाहिए?", "ఇప్పుడు మీకు ఎలాంటి మద్దతు కావాలి?", "இப்போது எந்த வகை ஆதரவு வேண்டும்?", "اب آپ کو کس طرح کی مدد چاہیے؟"), t("Calm, advice, documentation, talk, or professional help.", "शांति, सलाह, दस्तावेज़, बातचीत, या पेशेवर मदद.", "శాంతి, సలహా, పత్రాలు, మాట్లాడటం, లేదా వృత్తిపరమైన సహాయం.", "அமைதி, ஆலோசனை, ஆவணங்கள், பேசுதல், அல்லது தொழில்முறை உதவி.", "پرسکون مدد، مشورہ، دستاویزات، بات چیت، یا پیشہ ورانہ مدد۔"), t("The report uses this to choose the next route.", "रिपोर्ट इसे अगले मार्ग को चुनने के लिए उपयोग करती है.", "report దీన్ని తదుపరి మార్గాన్ని ఎంచుకోవడానికి ఉపయోగిస్తుంది.", "report இதை அடுத்த வழியைத் தேர்வுசெய்ய பயன்படுத்துகிறது.", "رپورٹ اسے اگلا راستہ چننے کے لیے استعمال کرتی ہے۔"), true)
         ]
       },
       {
         id: "pattern",
-        title: "4. Pattern and recovery",
-        meta: "See what repeats and what has helped.",
-        intro: "What is the pattern you keep noticing? Describe it plainly.",
+        title: t("4. Pattern and recovery", "4. पैटर्न और रिकवरी", "4. నమూనా మరియు రికవరీ", "4. முறை மற்றும் மீட்பு", "4. پیٹرن اور بحالی"),
+        meta: t("See what repeats and what has helped.", "देखिए क्या दोहराता है और किसने मदद की.", "ఏది పునరావృతమవుతోందో మరియు ఏది సహాయపడిందో చూడండి.", "எது மீண்டும் நடக்கிறது மற்றும் எது உதவியது என்பதைப் பாருங்கள்.", "دیکھیں کیا دہرا رہا ہے اور کس چیز نے مدد کی۔"),
+        intro: t("What is the pattern you keep noticing? Describe it plainly.", "आप बार-बार कौन-सा पैटर्न देखते हैं? इसे सीधे शब्दों में बताइए.", "మీరు గమనిస్తున్న నమూనా ఏమిటి? దానిని సూటిగా వివరించండి.", "நீங்கள் தொடர்ந்து கவனிக்கும் pattern என்ன? அதை நேராக விவரிக்கவும்.", "آپ بار بار کون سا pattern دیکھ رہے ہیں؟ اسے سیدھے الفاظ میں بیان کریں۔"),
         questions: [
-          buildPrivateIntakeQuestion("behaviorPattern", "What keeps repeating?", "Describe the loop or habit that comes back.", "Patterns are often more useful than labels.", true),
-          buildPrivateIntakeQuestion("previousAttempts", "What have you already tried?", "Small things, big things, and what did not help.", "The app should not repeat failed advice."),
-          buildPrivateIntakeQuestion("strengthsContext", "What has helped even a little?", "Breath, walk, prayer, company, work change, rest, or something else.", "Strengths help shape the next route.", true),
-          buildPrivateIntakeQuestion("supportPreferences", "What support style feels best?", "Quiet, direct, step-by-step, faith-aware, family-aware, or practical.", "Tone matters for follow-through.", true)
+          buildPrivateIntakeQuestion("behaviorPattern", t("What keeps repeating?", "क्या बार-बार हो रहा है?", "ఏది తిరిగి జరుగుతోంది?", "எது மீண்டும் மீண்டும் நடக்கிறது?", "کیا بار بار ہو رہا ہے؟"), t("Describe the loop or habit that comes back.", "जो लूप या आदत बार-बार लौटती है, उसे बताइए.", "తిరిగి వచ్చే లూప్ లేదా అలవాటును వివరించండి.", "திரும்பத் திரும்ப வரும் loop அல்லது habit-ஐ விவரிக்கவும்.", "اس loop یا عادت کو بیان کریں جو واپس آتی ہے۔"), t("Patterns are often more useful than labels.", "पैटर्न अक्सर नामों से ज़्यादा काम आते हैं.", "నమూనాలు తరచుగా పేర్లకంటే ఉపయోగకరంగా ఉంటాయి.", "Pattern-கள் பெயர்களைவிட அதிக பயனுள்ளதாக இருக்கும்.", "patterns اکثر labels سے زیادہ مفید ہوتے ہیں۔"), true),
+          buildPrivateIntakeQuestion("previousAttempts", t("What have you already tried?", "आपने पहले क्या कोशिश की है?", "మీరు ఇప్పటికే ఏమి ప్రయత్నించారు?", "நீங்கள் ஏற்கனவே என்ன முயற்சி செய்தீர்கள்?", "آپ پہلے کیا کوشش کر چکے ہیں؟"), t("Small things, big things, and what did not help.", "छोटी कोशिशें, बड़ी कोशिशें, और जो मदद नहीं कर पाईं.", "చిన్న ప్రయత్నాలు, పెద్ద ప్రయత్నాలు, మరియు సహాయపడనివి.", "சிறிய முயற்சிகள், பெரிய முயற்சிகள், மற்றும் உதவாதவை.", "چھوٹی کوششیں، بڑی کوششیں، اور جو مدد نہ کر سکیں۔"), t("The app should not repeat failed advice.", "ऐप को असफल सलाह दोहरानी नहीं चाहिए.", "యాప్ విఫలమైన సలహాను పునరావృతం చేయకూడదు.", "app தோல்வியடைந்த ஆலோசனையை மீண்டும் சொல்லக் கூடாது.", "ایپ کو ناکام مشورہ دہرانا نہیں چاہیے۔")),
+          buildPrivateIntakeQuestion("strengthsContext", t("What has helped even a little?", "थोड़ा भी क्या मदद कर पाया?", "కొంచెం అయినా ఏమి సహాయపడింది?", "சிறிதளவாவது எது உதவியது?", "تھوڑا سا بھی کیا مددگار رہا؟"), t("Breath, walk, prayer, company, work change, rest, or something else.", "साँस, टहलना, प्रार्थना, साथ, काम में बदलाव, आराम, या कुछ और.", "శ్వాస, నడక, ప్రార్థన, సహవాసం, పని మార్పు, విశ్రాంతి, లేదా ఇంకేదైనా.", "மூச்சு, நடை, பிரார்த்தனை, கூட்டம், வேலை மாற்றம், ஓய்வு, அல்லது வேறு ஏதாவது.", "سانس، چہل قدمی، دعا، ساتھ، کام میں تبدیلی، آرام، یا کچھ اور۔"), t("Strengths help shape the next route.", "मज़बूत पक्ष अगले मार्ग को आकार देते हैं.", "బలాలు తదుపరి మార్గాన్ని ఆకారమిస్తాయి.", "வலிமைகள் அடுத்த வழியை வடிவமைக்கின்றன.", "طاقتیں اگلے راستے کو shape کرتی ہیں۔"), true),
+          buildPrivateIntakeQuestion("supportPreferences", t("What support style feels best?", "किस तरह का सहारा सबसे अच्छा लगेगा?", "ఎలాంటి మద్దతు శైలి బాగా అనిపిస్తుంది?", "எந்த வகை ஆதரவு சிறந்ததாக இருக்கும்?", "کس طرح کی مدد سب سے بہتر لگتی ہے؟"), t("Quiet, direct, step-by-step, faith-aware, family-aware, or practical.", "शांत, सीधे, चरण-दर-चरण, आस्था-समझने वाला, परिवार-समझने वाला, या व्यावहारिक.", "నిశ్శబ్ద, నేరుగా, దశలవారీగా, విశ్వాసాన్ని పరిగణించే, కుటుంబాన్ని పరిగణించే, లేదా ప్రాక్టికల్.", "அமைதியான, நேரடி, படிப்படியான, நம்பிக்கை-அறிந்த, குடும்ப-அறிந்த, அல்லது நடைமுறை.", "خاموش، سیدھی، مرحلہ وار، عقیدے سے واقف، خاندانی طور پر واقف، یا عملی۔"), t("Tone matters for follow-through.", "लहजा आगे बढ़ने में मायने रखता है.", "శైలి కొనసాగింపులో ముఖ్యం.", "தோன் தொடர்ச்சிக்கு முக்கியம்.", "لہجہ follow-through کے لیے اہم ہے۔"), true)
         ]
       },
       {
         id: "next",
-        title: "5. Next move and safety",
-        meta: "Define the outcome and any urgent boundary.",
-        intro: "The last part tells the app what a good next move should look like.",
+        title: t("5. Next move and safety", "5. अगला कदम और सुरक्षा", "5. తదుపరి అడుగు మరియు భద్రత", "5. அடுத்த நகர்வு மற்றும் பாதுகாப்பு", "5. اگلا قدم اور حفاظت"),
+        meta: t("Define the outcome and any urgent boundary.", "परिणाम और कोई भी तुरंत सीमा तय करें.", "ఫలితం మరియు ఏదైనా అత్యవసర హద్దును నిర్ణయించండి.", "முடிவையும் அவசர எல்லையையும் வரையறுக்கவும்.", "نتیجہ اور کوئی فوری حد طے کریں۔"),
+        intro: t("The last part tells the app what a good next move should look like.", "आख़िरी भाग ऐप को बताता है कि अच्छा अगला कदम कैसा होना चाहिए.", "చివరి భాగం మంచి తదుపరి అడుగు ఎలా ఉండాలో యాప్‌కు చెబుతుంది.", "கடைசி பகுதி app-க்கு நல்ல அடுத்த படி எப்படி இருக்க வேண்டும் என்பதைச் சொல்கிறது.", "آخری حصہ ایپ کو بتاتا ہے کہ اچھا اگلا قدم کیسا ہونا چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("neededOutcome", "What do you need from this app?", "One calm step, a plan, a route, a reminder, or a professional lead.", "The outcome controls the final report."),
-          buildPrivateIntakeQuestion("safetyNote", "Any safety concern or urgent risk?", "Tell me if the situation is unsafe, escalating, or overwhelming.", "Safety must stay visible.", true),
-          buildPrivateIntakeQuestion("privacyBoundary", "What should stay private?", "Any detail, person, or topic that should not be repeated.", "Privacy boundaries are respected in the report.")
+          buildPrivateIntakeQuestion("neededOutcome", t("What do you need from this app?", "इस ऐप से आपको क्या चाहिए?", "ఈ యాప్ నుండి మీకు ఏమి కావాలి?", "இந்த app-இல் இருந்து உங்களுக்கு என்ன வேண்டும்?", "اس ایپ سے آپ کو کیا چاہیے؟"), t("One calm step, a plan, a route, a reminder, or a professional lead.", "एक शांत कदम, योजना, मार्ग, रिमाइंडर, या पेशेवर मदद.", "ఒక శాంతమైన అడుగు, ప్రణాళిక, మార్గం, గుర్తు, లేదా వృత్తిపరమైన సహాయం.", "ஒரு அமைதியான படி, திட்டம், வழி, நினைவூட்டு, அல்லது தொழில்முறை வழிகாட்டல்.", "ایک پرسکون قدم، منصوبہ، راستہ، یاد دہانی، یا پیشہ ورانہ رہنمائی۔"), t("The outcome controls the final report.", "परिणाम ही अंतिम रिपोर्ट को चलाता है.", "ఫలితం చివరి report‌ను నియంత్రిస్తుంది.", "முடிவே final report-ஐ நிர்வகிக்கிறது.", "نتیجہ ہی آخری رپورٹ کو چلاتا ہے۔")),
+          buildPrivateIntakeQuestion("safetyNote", t("Any safety concern or urgent risk?", "कोई सुरक्षा चिंता या तुरंत जोखिम है?", "ఏదైనా భద్రతా ఆందోళన లేదా అత్యవసర ప్రమాదం ఉందా?", "பாதுகாப்பு கவலை அல்லது அவசர ஆபத்து ஏதேனும் உள்ளதா?", "کوئی حفاظتی تشویش یا فوری خطرہ؟"), t("Tell me if the situation is unsafe, escalating, or overwhelming.", "अगर स्थिति असुरक्षित, बढ़ती हुई, या बहुत भारी है, तो बताइए.", "పరిస్థితి అసురక్షితంగా, పెరుగుతున్నదిగా, లేదా overwhelming గా ఉంటే చెప్పండి.", "நிலைமை பாதுகாப்பற்றதாக, அதிகரிப்பதாக, அல்லது overwhelming ஆக இருந்தால் சொல்லுங்கள்.", "اگر صورتحال غیر محفوظ، بڑھتی ہوئی، یا بہت زیادہ ہو رہی ہے تو بتائیں۔"), t("Safety must stay visible.", "सुरक्षा हमेशा दिखाई देनी चाहिए.", "భద్రత ఎల్లప్పుడూ కనిపించాలి.", "பாதுகாப்பு எப்போதும் தெளிவாக இருக்க வேண்டும்.", "حفاظت ہمیشہ واضح رہنی چاہیے۔"), true),
+          buildPrivateIntakeQuestion("privacyBoundary", t("What should stay private?", "क्या निजी रहना चाहिए?", "ఏది ప్రైవేట్‌గా ఉండాలి?", "எது தனிப்பட்டதாக இருக்க வேண்டும்?", "کیا نجی رہنا چاہیے؟"), t("Any detail, person, or topic that should not be repeated.", "कोई भी विवरण, व्यक्ति, या विषय जो दोहराया नहीं जाना चाहिए.", "తిరిగి చెప్పకూడని ఏ వివరము, వ్యక్తి, లేదా విషయం.", "மீண்டும் சொல்லக்கூடாத எந்த விவரம், நபர், அல்லது தலைப்பு.", "کوئی بھی تفصیل، شخص، یا موضوع جو دہرایا نہیں جانا چاہیے۔"), t("Privacy boundaries are respected in the report.", "रिपोर्ट में गोपनीयता सीमाओं का सम्मान किया जाता है.", "report లో గోప్యతా హద్దులు గౌరవించబడతాయి.", "report-இல் தனியுரிமை எல்லைகள் மதிக்கப்படுகின்றன.", "رپورٹ میں رازداری کی حدود کا احترام کیا جاتا ہے۔"))
         ]
       }
     ],
     workload: [
       {
         id: "load",
-        title: "1. Load and routine",
-        meta: "Start with what is taking the energy.",
-        intro: `You are dealing with ${issueLabel.toLowerCase()}. Focus on what is adding the most load right now and what rest you need.`,
+        title: t("1. Load and routine", "1. भार और दिनचर्या", "1. భారం మరియు అలవాటు", "1. சுமை மற்றும் தினசரி", "1. بوجھ اور روٹین"),
+        meta: t("Start with what is taking the energy.", "सबसे पहले देखें कि ऊर्जा किसमें लग रही है.", "మొదట శక్తిని ఏమి తీసుకుంటుందో చూడండి.", "முதலில் ஆற்றலை எது எடுத்துக்கொள்கிறது என்பதைப் பாருங்கள்.", "سب سے پہلے دیکھیں کہ توانائی کس میں لگ رہی ہے۔"),
+        intro: t(
+          `You are dealing with ${issueLabel.toLowerCase()}. Focus on what is adding the most load right now and what rest you need.`,
+          `आप ${issueLabel.toLowerCase()} से जूझ रहे हैं. अभी सबसे ज़्यादा बोझ क्या बढ़ा रहा है और आपको किस तरह का आराम चाहिए, उसी पर ध्यान दें.`,
+          `మీరు ${issueLabel.toLowerCase()}తో వ్యవహరిస్తున్నారు. ఇప్పుడే అత్యధిక భారం ఏమి పెంచుతోంది మరియు మీకు ఏ విశ్రాంతి అవసరమో దానిపై దృష్టి పెట్టండి.`,
+          `நீங்கள் ${issueLabel.toLowerCase()}-ஐ எதிர்கொள்கிறீர்கள். இப்போது எது அதிக சுமையை சேர்க்கிறது மற்றும் உங்களுக்கு எந்த ஓய்வு வேண்டும் என்பதில் கவனம் செலுத்துங்கள்.`,
+          `آپ ${issueLabel.toLowerCase()} سے نبردآزما ہیں۔ ابھی سب سے زیادہ بوجھ کیا بڑھا رہا ہے اور آپ کو کس طرح کے آرام کی ضرورت ہے، اسی پر توجہ دیں۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("overview", "What is taking the most energy?", "Workload, duty, deadlines, home pressure, or life load.", "Start with the heaviest part."),
-          buildPrivateIntakeQuestion("timelineContext", "When did the load start to rise?", "Explain when the pressure crossed from manageable to heavy.", "Timing helps the report see the climb."),
-          buildPrivateIntakeQuestion("dailyImpactContext", "What is this doing to your routine?", "Sleep, food, focus, study, work, or home life.", "Routine impact often shows burnout early."),
-          buildPrivateIntakeQuestion("frequencyContext", "How often do you feel this way?", "Daily, most days, at specific hours, or in bursts.", "Frequency helps track load.")
+          buildPrivateIntakeQuestion("overview", t("What is taking the most energy?", "सबसे ज़्यादा ऊर्जा किसमें लग रही है?", "ఎక్కువ శక్తి తీసుకుంటున్నది ఏమిటి?", "எதில் அதிக ஆற்றல் செல்கிறது?", "سب سے زیادہ توانائی کس میں لگ رہی ہے؟"), t("Workload, duty, deadlines, home pressure, or life load.", "काम का बोझ, ज़िम्मेदारी, डेडलाइन, घर का दबाव, या जीवन का बोझ.", "పని భారం, బాధ్యత, గడువులు, ఇంటి ఒత్తిడి, లేదా జీవన భారం.", "வேலைச்சுமை, கடமை, deadlines, வீட்டழுத்தம், அல்லது வாழ்க்கைச் சுமை.", "کام کا بوجھ، ذمہ داری، ڈیڈ لائنز، گھر کا دباؤ، یا زندگی کا بوجھ۔"), t("Start with the heaviest part.", "सबसे भारी हिस्से से शुरू करें.", "అత్యంత భారమైన భాగంతో ప్రారంభించండి.", "மிகவும் கனமான பகுதியிலிருந்து தொடங்குங்கள்.", "سب سے بھاری حصے سے شروع کریں۔")),
+          buildPrivateIntakeQuestion("timelineContext", t("When did the load start to rise?", "बोझ कब बढ़ना शुरू हुआ?", "భారం ఎప్పుడు పెరగడం ప్రారంభమైంది?", "சுமை எப்போது உயரத் தொடங்கியது?", "بوجھ کب بڑھنا شروع ہوا؟"), t("Explain when the pressure crossed from manageable to heavy.", "बताइए कब दबाव संभालने लायक से भारी हो गया.", "ఒత్తిడి ఎప్పుడు నిర్వహించదగిన స్థితి నుంచి భారంగా మారిందో వివరించండి.", "அழுத்தம் எப்போது சமாளிக்கக்கூடிய நிலையிலிருந்து கனமானதாக மாறியது என்பதைச் சொல்லுங்கள்.", "بتائیں کب دباؤ سنبھالنے کے قابل سے بھاری ہو گیا۔"), t("Timing helps the report see the climb.", "समय से रिपोर्ट को बढ़ोतरी समझने में मदद मिलती है.", "సమయం report కు పెరుగుదలని చూడడంలో సహాయపడుతుంది.", "நேரம் report-க்கு உயர்வை பார்க்க உதவுகிறது.", "وقت رپورٹ کو بڑھوتری سمجھنے میں مدد دیتا ہے۔")),
+          buildPrivateIntakeQuestion("dailyImpactContext", t("What is this doing to your routine?", "यह आपकी दिनचर्या को कैसे प्रभावित कर रहा है?", "ఇది మీ దినచర్యను ఎలా ప్రభావితం చేస్తోంది?", "இது உங்கள் தினசரியை எப்படி பாதிக்கிறது?", "یہ آپ کی روٹین کو کیسے متاثر کر رہا ہے؟"), t("Sleep, food, focus, study, work, or home life.", "नींद, खाना, ध्यान, पढ़ाई, काम, या घर का जीवन.", "నిద్ర, ఆహారం, దృష్టి, చదువు, పని, లేదా ఇంటి జీవితం.", "தூக்கம், உணவு, கவனம், படிப்பு, வேலை, அல்லது வீட்டுவாழ்க்கை.", "نیند، کھانا، توجہ، پڑھائی، کام، یا گھریلو زندگی۔"), t("Routine impact often shows burnout early.", "दिनचर्या पर असर से burnout जल्दी दिखता है.", "దినచర్యపై ప్రభావం burnout ను తొందరగా చూపుతుంది.", "தினசரி பாதிப்பு burnout-ஐ முன்பே காட்டும்.", "روٹین پر اثر burnout کو جلد ظاہر کرتا ہے۔")),
+          buildPrivateIntakeQuestion("frequencyContext", t("How often do you feel this way?", "आपको यह कितना बार महसूस होता है?", "మీకు ఇలా ఎంతసార్లు అనిపిస్తుంది?", "உங்களுக்கு இப்படி எத்தனை முறை உணரப்படுகிறது?", "آپ کو ایسا کتنی بار محسوس ہوتا ہے؟"), t("Daily, most days, at specific hours, or in bursts.", "रोज़, ज़्यादातर दिन, ख़ास घंटों में, या अचानक झटकों में.", "రోజూ, ఎక్కువ రోజులు, నిర్దిష్ట గంటల్లో, లేదా bursts లో.", "தினசரி, பெரும்பாலான நாட்கள், குறிப்பிட்ட நேரங்களில், அல்லது திடீர் அலைகளாக.", "روزانہ، زیادہ تر دن، مخصوص اوقات میں، یا وقفوں میں۔"), t("Frequency helps track load.", "बारंबारता से बोझ का हिसाब चलता है.", "తరచుదనం భారాన్ని ట్రాక్ చేయడంలో సహాయపడుతుంది.", "அதிர்வெண் சுமையை கண்காணிக்க உதவுகிறது.", "تکرار بوجھ کو track کرنے میں مدد دیتی ہے۔"))
         ]
       },
       {
         id: "energy",
-        title: "2. Energy and body",
-        meta: "Capture exhaustion before it becomes collapse.",
-        intro: "When the body is drained, the app should hear that clearly.",
+        title: t("2. Energy and body", "2. ऊर्जा और शरीर", "2. శక్తి మరియు శరీరం", "2. ஆற்றல் மற்றும் உடல்", "2. توانائی اور جسم"),
+        meta: t("Capture exhaustion before it becomes collapse.", "थकावट को टूटने से पहले दर्ज करें.", "అలసట కూలిపోయే ముందు దానిని నమోదు చేయండి.", "சோர்வு முறிவாக மாறுவதற்கு முன் பதிவு செய்யுங்கள்.", "تھکن کو collapse سے پہلے درج کریں۔"),
+        intro: t("When the body is drained, the app should hear that clearly.", "जब शरीर थक चुका हो, तो ऐप को यह साफ़-साफ़ सुनना चाहिए.", "శరీరం తరిగిపోయినప్పుడు యాప్ దానిని స్పష్టంగా వినాలి.", "உடல் சோர்ந்திருந்தால் அதை app தெளிவாகக் கேட்க வேண்டும்.", "جب جسم خالی ہو جائے تو ایپ کو یہ صاف سننا چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("currentFeeling", "What does the exhaustion feel like?", "Drained, flat, tense, restless, numb, or overwhelmed.", "Name the emotional state."),
-          buildPrivateIntakeQuestion("emotionIntensity", "How intense is the pressure?", "Low, medium, high, or overwhelming.", "Intensity helps separate strain from emergency."),
-          buildPrivateIntakeQuestion("bodySignal", "What is your body telling you?", "Sleep, appetite, breath, headaches, stomach, pain, or fatigue.", "The body signal is a major burnout clue."),
-          buildPrivateIntakeQuestion("supportNeed", "What would help first?", "Rest, fewer tasks, advice, talk, or medical check-in.", "Ask for the help that lowers the load.")
+          buildPrivateIntakeQuestion("currentFeeling", t("What does the exhaustion feel like?", "थकावट कैसी लगती है?", "అలసట ఎలా అనిపిస్తోంది?", "சோர்வு எப்படி உணரப்படுகிறது?", "تھکن کیسی محسوس ہو رہی ہے؟"), t("Drained, flat, tense, restless, numb, or overwhelmed.", "खाली, सपाट, तनावग्रस्त, बेचैन, सुन्न, या बहुत भारी.", "శక్తి తరిగిన, నిస్సార, ఒత్తిడిగా, అశాంతిగా, numbగా, లేదా overwhelmingగా.", "சோர்ந்த, வெறுமையாக, இறுக்கமாக, restless, உணர்வற்ற, அல்லது overwhelming.", "خالی، بےجان، تناؤ میں، بےچین، سن، یا بہت زیادہ۔"), t("Name the emotional state.", "भावनात्मक स्थिति को नाम दें.", "భావోద్వేగ స్థితికి పేరు చెప్పండి.", "உணர்ச்சி நிலையை பெயரிடுங்கள்.", "جذباتی حالت کا نام دیں۔")),
+          buildPrivateIntakeQuestion("emotionIntensity", t("How intense is the pressure?", "दबाव कितना तीव्र है?", "ఒత్తిడి ఎంత తీవ్రంగా ఉంది?", "அழுத்தம் எவ்வளவு தீவிரமாக உள்ளது?", "دباؤ کتنا شدید ہے؟"), t("Low, medium, high, or overwhelming.", "कम, मध्यम, ज़्यादा, या बहुत भारी.", "తక్కువ, మధ్య, అధిక, లేదా overwhelming.", "குறைவு, நடுத்தரம், அதிகம், அல்லது overwhelming.", "کم، درمیانہ، زیادہ، یا بہت زیادہ۔"), t("Intensity helps separate strain from emergency.", "तीव्रता से तनाव और आपात स्थिति अलग दिखती है.", "తీవ్రత strain‌ను emergency నుంచి వేరు చేయడంలో సహాయపడుతుంది.", "தீவிரம் strain-ஐ emergency-இலிருந்து பிரிக்க உதவுகிறது.", "شدت دباؤ کو ایمرجنسی سے الگ کرنے میں مدد دیتی ہے۔")),
+          buildPrivateIntakeQuestion("bodySignal", t("What is your body telling you?", "आपका शरीर क्या बता रहा है?", "మీ శరీరం ఏమి చెబుతోంది?", "உங்கள் உடல் என்ன சொல்கிறது?", "آپ کا جسم کیا بتا رہا ہے؟"), t("Sleep, appetite, breath, headaches, stomach, pain, or fatigue.", "नींद, भूख, साँस, सिरदर्द, पेट, दर्द, या थकान.", "నిద్ర, ఆకలి, శ్వాస, తలనొప్పులు, కడుపు, నొప్పి, లేదా అలసట.", "தூக்கம், பசி, மூச்சு, தலைவலி, வயிறு, வலி, அல்லது சோர்வு.", "نیند، بھوک، سانس، سر درد، پیٹ، درد، یا تھکن۔"), t("The body signal is a major burnout clue.", "शरीर का संकेत burnout का बड़ा सुराग है.", "శరీర సంకేతం burnout‌కు ముఖ్య సూచన.", "உடல் signal burnout-க்கு முக்கிய clue.", "جسمانی اشارہ burnout کا بڑا clue ہے۔")),
+          buildPrivateIntakeQuestion("supportNeed", t("What would help first?", "सबसे पहले क्या मदद करेगा?", "మొదట ఏమి సహాయపడుతుంది?", "முதலில் எது உதவும்?", "سب سے پہلے کیا مدد کرے گا؟"), t("Rest, fewer tasks, advice, talk, or medical check-in.", "आराम, कम काम, सलाह, बातचीत, या medical check-in.", "విశ్రాంతి, తక్కువ పనులు, సలహా, మాట్లాడటం, లేదా medical check-in.", "ஓய்வு, குறைவான tasks, ஆலோசனை, பேசுதல், அல்லது medical check-in.", "آرام، کم کام، مشورہ، بات چیت، یا medical check-in۔"), t("Ask for the help that lowers the load.", "उसी मदद को माँगें जो बोझ कम करे.", "భారం తగ్గించే సహాయాన్ని అడగండి.", "சுமையை குறைக்கும் உதவியைக் கேளுங்கள்.", "وہ مدد مانگیں جو بوجھ کم کرے۔"))
         ]
       },
       {
         id: "pressure",
-        title: "3. People and pressure",
-        meta: "Show where the pressure is coming from.",
-        intro: `This makes the report more precise for ${safeIdentity} by showing where pressure is landing.`,
+        title: t("3. People and pressure", "3. लोग और दबाव", "3. వ్యక్తులు మరియు ఒత్తిడి", "3. மக்கள் மற்றும் அழுத்தம்", "3. لوگ اور دباؤ"),
+        meta: t("Show where the pressure is coming from.", "बताइए दबाव कहाँ से आ रहा है.", "ఒత్తిడి ఎక్కడి నుంచి వస్తోందో చూపించండి.", "அழுத்தம் எங்கிருந்து வருகிறது என்பதை காட்டுங்கள்.", "بتائیں دباؤ کہاں سے آ رہا ہے۔"),
+        intro: t(
+          `This makes the report more precise for ${safeIdentity} by showing where pressure is landing.`,
+          `यह ${safeIdentity} के लिए रिपोर्ट को अधिक सटीक बनाता है, क्योंकि इसमें दिखता है कि दबाव कहाँ पड़ रहा है.`,
+          `ఇది ఒత్తిడి ఎక్కడ పడుతోందో చూపించి ${safeIdentity} కోసం report‌ను మరింత ఖచ్చితంగా చేస్తుంది.`,
+          `அழுத்தம் எங்கு விழுகிறது என்பதை காட்டி இது ${safeIdentity}-க்கு report-ஐ மேலும் துல்லியமாக்குகிறது.`,
+          `یہ ${safeIdentity} کے لیے رپورٹ کو زیادہ درست بناتا ہے کیونکہ اس میں دکھتا ہے کہ دباؤ کہاں پڑ رہا ہے۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("familyContext", "How does home or family add to this?", "Keep it short and factual.", "Home pressure can change the route.", true),
-          buildPrivateIntakeQuestion("coworkerContext", "How does work or duty add to this?", "Mention coworkers, managers, teachers, or class pressure.", "Work pressure often needs practical support.", true),
-          buildPrivateIntakeQuestion("relativeContext", "Any wider family or social pressure?", "Add relatives or social expectations if they matter.", "Extra pressure changes recovery.", true),
-          buildPrivateIntakeQuestion("friendsContext", "Any friends or peers helping or draining you?", "Who helps, who doesn't, who is available?", "Support clarity matters.")
+          buildPrivateIntakeQuestion("familyContext", t("How does home or family add to this?", "घर या परिवार इसमें कैसे जोड़ रहे हैं?", "ఇంట్లో లేదా కుటుంబంలో ఇది ఎలా పెరుగుతోంది?", "வீடு அல்லது குடும்பம் இதற்கு எப்படி சேர்க்கிறது?", "گھر یا خاندان اس میں کیسے اضافہ کر رہے ہیں؟"), t("Keep it short and factual.", "इसे छोटा और तथ्यपूर्ण रखें.", "దాన్ని చిన్నగా మరియు వాస్తవపరంగా ఉంచండి.", "இதைக் குறுகியதும் factual-ஆவும் வைத்திருக்கவும்.", "اسے مختصر اور factual رکھیں۔"), t("Home pressure can change the route.", "घर का दबाव मार्ग बदल सकता है.", "ఇంటి ఒత్తిడి మార్గాన్ని మార్చవచ్చు.", "வீட்டு pressure வழியை மாற்றலாம்.", "گھریلو دباؤ راستہ بدل سکتا ہے۔"), true),
+          buildPrivateIntakeQuestion("coworkerContext", t("How does work or duty add to this?", "काम या ज़िम्मेदारी इसमें कैसे जोड़ रही है?", "పని లేదా బాధ్యత దీనిలో ఎలా చేరిస్తోంది?", "வேலை அல்லது கடமை இதற்கு எப்படி சேர்க்கிறது?", "کام یا ذمہ داری اس میں کیسے اضافہ کر رہی ہے؟"), t("Mention coworkers, managers, teachers, or class pressure.", "सहकर्मी, प्रबंधक, शिक्षक, या कक्षा के दबाव का ज़िक्र करें.", "సహోద్యోగులు, మేనేజర్లు, ఉపాధ్యాయులు, లేదా క్లాస్ ఒత్తిడిని పేర్కొనండి.", "சக ஊழியர்கள், மேலாளர்கள், ஆசிரியர்கள், அல்லது வகுப்பு pressure-ஐ குறிப்பிடுங்கள்.", "ساتھی کارکن، مینیجرز، اساتذہ، یا کلاس کے دباؤ کا ذکر کریں۔"), t("Work pressure often needs practical support.", "काम का दबाव अक्सर व्यावहारिक सहारे की माँग करता है.", "పని ఒత్తిడికి తరచుగా ప్రాక్టికల్ మద్దతు అవసరం.", "வேலை pressure-க்கு அடிக்கடி நடைமுறை ஆதரவு தேவை.", "کام کا دباؤ اکثر عملی مدد مانگتا ہے۔"), true),
+          buildPrivateIntakeQuestion("relativeContext", t("Any wider family or social pressure?", "कोई बड़ा परिवार या सामाजिक दबाव है?", "విస్తృత కుటుంబం లేదా సామాజిక ఒత్తిడి ఏదైనా ఉందా?", "விரிந்த குடும்பம் அல்லது சமூக pressure ஏதேனும் உள்ளதா?", "کوئی وسیع خاندانی یا سماجی دباؤ؟"), t("Add relatives or social expectations if they matter.", "यदि मायने रखता हो तो रिश्तेदार या सामाजिक उम्मीदें जोड़ें.", "అవి ముఖ్యం అయితే బంధువులు లేదా సామాజిక అంచనాలను జోడించండి.", "முக்கியமானதாக இருந்தால் உறவினர்கள் அல்லது சமூக எதிர்பார்ப்புகளைச் சேர்க்கவும்.", "اگر اہم ہوں تو رشتہ داروں یا سماجی توقعات کو شامل کریں۔"), t("Extra pressure changes recovery.", "अतिरिक्त दबाव रिकवरी बदल देता है.", "అదనపు ఒత్తిడి కోలుకోవడాన్ని మార్చుతుంది.", "கூடுதல் pressure மீட்பை மாற்றுகிறது.", "اضافی دباؤ بحالی کو بدل دیتا ہے۔"), true),
+          buildPrivateIntakeQuestion("friendsContext", t("Any friends or peers helping or draining you?", "कोई दोस्त या साथी मदद कर रहे हैं या थका रहे हैं?", "ఏ స్నేహితులు లేదా సహచరులు సహాయపడుతున్నారా లేదా బలహీనపరుస్తున్నారా?", "நண்பர்கள் அல்லது சகவர்கள் உதவுகிறார்களா அல்லது சோர்வடையச் செய்கிறார்களா?", "کوئی دوست یا ساتھی مدد کر رہے ہیں یا تھکا رہے ہیں؟"), t("Who helps, who doesn't, who is available?", "कौन मदद करता है, कौन नहीं, कौन उपलब्ध है?", "ఎవరు సహాయపడుతున్నారు, ఎవరు కాదు, ఎవరు అందుబాటులో ఉన్నారు?", "யார் உதவுகிறார்கள், யார் இல்லை, யார் கிடைக்கிறார்கள்?", "کون مدد کرتا ہے، کون نہیں، کون دستیاب ہے؟"), t("Support clarity matters.", "सहारे की स्पष्टता मायने रखती है.", "మద్దతు స్పష్టత ముఖ్యం.", "ஆதரவு தெளிவு முக்கியம்.", "مدد کی وضاحت اہم ہے۔"))
         ]
       },
       {
         id: "recovery",
-        title: "4. Pattern and recovery",
-        meta: "Find what has helped and what has not.",
-        intro: "Describe how recovery is actually going — not how it should go, how it really is.",
+        title: t("4. Pattern and recovery", "4. पैटर्न और रिकवरी", "4. నమూనా మరియు రికవరీ", "4. முறை மற்றும் மீட்பு", "4. پیٹرن اور بحالی"),
+        meta: t("Find what has helped and what has not.", "देखिए क्या मदद कर रहा है और क्या नहीं.", "ఏది సహాయపడిందో మరియు ఏది సహాయపడలేదో చూడండి.", "எது உதவியது, எது உதவவில்லை என்பதைக் கண்டுபிடிக்கவும்.", "دیکھیں کیا مدد کر رہا ہے اور کیا نہیں۔"),
+        intro: t("Describe how recovery is actually going — not how it should go, how it really is.", "रिकवरी सच में कैसी चल रही है, बताइए — जैसी होनी चाहिए वैसी नहीं, जैसी वास्तव में है.", "రికవరీ నిజంగా ఎలా సాగుతోందో వివరించండి — ఎలా ఉండాలో కాదు, నిజంగా ఎలా ఉందో.", "மீட்பு உண்மையில் எப்படி நடக்கிறது என்பதை விவரிக்கவும் — எப்படி இருக்க வேண்டும் என்பதல்ல, அது உண்மையில் எப்படி இருக்கிறதோ.", "بحالی حقیقت میں کیسے چل رہی ہے، بیان کریں — جیسی ہونی چاہیے ویسی نہیں، جیسی واقعی ہے۔"),
         questions: [
-          buildPrivateIntakeQuestion("behaviorPattern", "What keeps repeating?", "Describe the cycle in one short paragraph.", "Repeating patterns often explain burnout."),
-          buildPrivateIntakeQuestion("previousAttempts", "What have you already tried?", "Rest, breaks, sleep, support, boundaries, or other steps.", "The app should build on what already worked."),
-          buildPrivateIntakeQuestion("strengthsContext", "What still helps a little?", "Even small relief counts.", "A little relief is a good clue."),
-          buildPrivateIntakeQuestion("supportPreferences", "What kind of support feels safest?", "Quiet, direct, practical, private, faith-aware, or family-aware.", "Tone matters in recovery.")
+          buildPrivateIntakeQuestion("behaviorPattern", t("What keeps repeating?", "क्या बार-बार हो रहा है?", "ఏది తిరిగి జరుగుతోంది?", "எது மீண்டும் நடக்கிறது?", "کیا بار بار ہو رہا ہے؟"), t("Describe the cycle in one short paragraph.", "चक्र को एक छोटे पैराग्राफ़ में बताइए.", "చక్రాన్ని ఒక చిన్న పేరాగ్రాఫ్‌లో వివరించండి.", "சுழற்சியை ஒரு சிறிய பத்தியில் விவரிக்கவும்.", "چکر کو ایک مختصر پیراگراف میں بیان کریں۔"), t("Repeating patterns often explain burnout.", "दोहराने वाले पैटर्न अक्सर burnout समझाते हैं.", "పునరావృత నమూనాలు తరచుగా burnoutను వివరిస్తాయి.", "மீண்டும் வரும் patterns பெரும்பாலும் burnout-ஐ விளக்குகின்றன.", "دہرائے جانے والے patterns اکثر burnout کی وضاحت کرتے ہیں۔")),
+          buildPrivateIntakeQuestion("previousAttempts", t("What have you already tried?", "आप पहले क्या आज़मा चुके हैं?", "మీరు ఇప్పటికే ఏమి ప్రయత్నించారు?", "நீங்கள் ஏற்கனவே என்ன முயற்சி செய்தீர்கள்?", "آپ پہلے کیا آزما چکے ہیں؟"), t("Rest, breaks, sleep, support, boundaries, or other steps.", "आराम, ब्रेक, नींद, सहारा, सीमाएँ, या अन्य कदम.", "విశ్రాంతి, విరామాలు, నిద్ర, మద్దతు, హద్దులు, లేదా ఇతర చర్యలు.", "ஓய்வு, இடைவெளிகள், தூக்கம், ஆதரவு, எல்லைகள், அல்லது பிற படிகள்.", "آرام، وقفے، نیند، مدد، حدود، یا دوسرے اقدامات۔"), t("The app should build on what already worked.", "ऐप को पहले से काम आई चीज़ों पर बनना चाहिए.", "యాప్ ఇప్పటికే పనిచేసినదానిపై నిర్మించాలి.", "app ஏற்கனவே வேலை செய்தவற்றின் மேல் கட்டப்பட வேண்டும்.", "ایپ کو پہلے سے کام آنے والی چیزوں پر بننا چاہیے۔")),
+          buildPrivateIntakeQuestion("strengthsContext", t("What still helps a little?", "अभी भी थोड़ा क्या मदद कर रहा है?", "ఇంకా కొంచెం ఏమి సహాయపడుతోంది?", "இன்னும் சிறிதளவு எது உதவுகிறது?", "ابھی بھی تھوڑا کیا مدد کر رہا ہے؟"), t("Even small relief counts.", "थोड़ी-सी राहत भी मायने रखती है.", "చిన్న ఉపశమనం కూడా ముఖ్యం.", "சிறிய நிவாரணமும் முக்கியம்.", "تھوڑی سی راحت بھی اہم ہے۔"), t("A little relief is a good clue.", "थोड़ी राहत एक अच्छा सुराग है.", "చిన్న ఉపశమనం మంచి సూచన.", "சிறிய நிவாரணம் ஒரு நல்ல clue.", "تھوڑی سی راحت ایک اچھا clue ہے۔")),
+          buildPrivateIntakeQuestion("supportPreferences", t("What kind of support feels safest?", "किस तरह का सहारा सबसे सुरक्षित लगता है?", "ఎలాంటి మద్దతు అత్యంత సురక్షితంగా అనిపిస్తుంది?", "எந்த வகை ஆதரவு மிகவும் பாதுகாப்பாக உணரப்படுகிறது?", "کس طرح کی مدد سب سے محفوظ لگتی ہے؟"), t("Quiet, direct, practical, private, faith-aware, or family-aware.", "शांत, सीधे, व्यावहारिक, निजी, आस्था-समझने वाला, या परिवार-समझने वाला.", "నిశ్శబ్ద, నేరుగా, ప్రాక్టికల్‌గా, ప్రైవేట్‌గా, విశ్వాసాన్ని పరిగణించే, లేదా కుటుంబాన్ని పరిగణించే.", "அமைதியான, நேரடி, நடைமுறை, தனிப்பட்ட, நம்பிக்கை-அறிந்த, அல்லது குடும்ப-அறிந்த.", "خاموش، سیدھی، عملی، نجی، عقیدے سے واقف، یا خاندانی طور پر واقف۔"), t("Tone matters in recovery.", "रिकवरी में लहजा मायने रखता है.", "రికవరీలో శైలి ముఖ్యం.", "மீட்பில் tone முக்கியம்.", "بحالی میں لہجہ اہم ہے۔"))
         ]
       },
       {
         id: "next",
-        title: "5. Next move and boundaries",
-        meta: "Decide what should change first.",
-        intro: "The report should leave with a lighter next step, not just a fuller form.",
+        title: t("5. Next move and boundaries", "5. अगला कदम और सीमाएँ", "5. తదుపరి అడుగు మరియు హద్దులు", "5. அடுத்த நகர்வு மற்றும் எல்லைகள்", "5. اگلا قدم اور حدود"),
+        meta: t("Decide what should change first.", "सबसे पहले क्या बदलना चाहिए, तय करें.", "ముందుగా ఏమి మారాలో నిర్ణయించండి.", "முதலில் என்ன மாற வேண்டும் என்பதை முடிவு செய்யுங்கள்.", "سب سے پہلے کیا بدلنا چاہیے، طے کریں۔"),
+        intro: t("The report should leave with a lighter next step, not just a fuller form.", "रिपोर्ट सिर्फ़ भरी हुई form नहीं, बल्कि हल्के अगले कदम के साथ खत्म होनी चाहिए.", "report కేవలం నిండిన form‌తో కాదు, తేలికైన తదుపరి అడుగుతో ముగియాలి.", "report வெறும் நிரம்பிய form-ஆக அல்ல, லேசான அடுத்த படியுடன் வெளியேற வேண்டும்.", "رپورٹ کو صرف بھری ہوئی form نہیں بلکہ ہلکے اگلے قدم کے ساتھ ختم ہونا چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("neededOutcome", "What do you need right now?", "Reduce load, rest, a plan, or outside help.", "The outcome should lower pressure."),
-          buildPrivateIntakeQuestion("safetyNote", "Any urgent safety concern?", "Tell me if the pressure is causing unsafe thoughts or collapse.", "Safety remains visible."),
-          buildPrivateIntakeQuestion("privacyBoundary", "Any detail to keep private?", "What should stay off the report or hidden from others?", "Boundaries are respected.")
+          buildPrivateIntakeQuestion("neededOutcome", t("What do you need right now?", "अभी आपको क्या चाहिए?", "ఇప్పుడు మీకు ఏమి అవసరం?", "இப்போது உங்களுக்கு என்ன வேண்டும்?", "اب آپ کو ابھی کیا چاہیے؟"), t("Reduce load, rest, a plan, or outside help.", "बोझ कम करना, आराम, योजना, या बाहरी मदद.", "భారం తగ్గించడం, విశ్రాంతి, ప్రణాళిక, లేదా బయటి సహాయం.", "சுமையை குறைத்தல், ஓய்வு, திட்டம், அல்லது வெளி உதவி.", "بوجھ کم کرنا، آرام، منصوبہ، یا باہر کی مدد۔"), t("The outcome should lower pressure.", "परिणाम से दबाव कम होना चाहिए.", "ఫలితం ఒత్తిడిని తగ్గించాలి.", "முடிவு pressure-ஐ குறைக்க வேண்டும்.", "نتیجہ دباؤ کم کرے۔")),
+          buildPrivateIntakeQuestion("safetyNote", t("Any urgent safety concern?", "कोई तुरंत सुरक्षा चिंता?", "ఏదైనా అత్యవసర భద్రతా ఆందోళన?", "அவசரமான பாதுகாப்பு கவலை ஏதேனும் உள்ளதா?", "کوئی فوری حفاظتی تشویش؟"), t("Tell me if the pressure is causing unsafe thoughts or collapse.", "अगर दबाव असुरक्षित विचार या टूटन ला रहा है, तो बताइए.", "ఒత్తిడి అసురక్షిత ఆలోచనలు లేదా కూలిపోవడానికి దారితీస్తే చెప్పండి.", "அழுத்தம் பாதுகாப்பற்ற எண்ணங்கள் அல்லது collapse-ஐ ஏற்படுத்தினால் சொல்லுங்கள்.", "اگر دباؤ غیر محفوظ خیالات یا collapse پیدا کر رہا ہے تو بتائیں۔"), t("Safety remains visible.", "सुरक्षा दिखाई देती रहेगी.", "భద్రత కనిపించేలా ఉంటుంది.", "பாதுகாப்பு தெளிவாக இருக்கும்.", "حفاظت واضح رہے گی۔")),
+          buildPrivateIntakeQuestion("privacyBoundary", t("Any detail to keep private?", "कोई विवरण निजी रखना है?", "ఏదైనా వివరాన్ని ప్రైవేట్‌గా ఉంచాలా?", "எந்த விவரத்தை தனிப்பட்டதாக வைத்திருக்க வேண்டும்?", "کوئی تفصیل نجی رکھنی ہے؟"), t("What should stay off the report or hidden from others?", "क्या रिपोर्ट से बाहर रहना चाहिए या दूसरों से छिपा रहना चाहिए?", "ఏది report‌లో లేకుండా ఉండాలి లేదా ఇతరుల నుండి దాచాలి?", "எது report-இல் இருந்து விலகி அல்லது மற்றவர்களிடமிருந்து மறைக்கப்பட வேண்டும்?", "کیا رپورٹ سے باہر رہنا چاہیے یا دوسروں سے چھپانا چاہیے؟"), t("Boundaries are respected.", "सीमाओं का सम्मान किया जाता है.", "హద్దులను గౌరవిస్తారు.", "எல்லைகள் மதிக்கப்படுகின்றன.", "حدود کا احترام کیا جاتا ہے۔"))
         ]
       }
     ],
     connection: [
       {
         id: "gap",
-        title: "1. The gap",
-        meta: "Start with the emptiness or distance.",
-        intro: "This version is for loneliness or social distance and tries to make the missing part easier to name.",
+        title: t("1. The gap", "1. खालीपन", "1. ఖాళీ", "1. வெற்றிடம்", "1. خلا"),
+        meta: t("Start with the emptiness or distance.", "खालीपन या दूरी से शुरू करें.", "ఖాళీ లేదా దూరంతో ప్రారంభించండి.", "வெறுமை அல்லது தூரத்திலிருந்து தொடங்குங்கள்.", "خلا یا فاصلے سے شروع کریں۔"),
+        intro: t("This version is for loneliness or social distance and tries to make the missing part easier to name.", "यह संस्करण अकेलेपन या सामाजिक दूरी के लिए है और कमी को नाम देना आसान बनाता है.", "ఈ వెర్షన్ ఒంటరితనం లేదా సామాజిక దూరం కోసం ఉంది మరియు లోటును పేరుతో చెప్పడాన్ని సులభం చేస్తుంది.", "இந்த பதிப்பு தனிமை அல்லது சமூக தூரத்திற்காக உள்ளது; குறைவான பகுதியை பெயரிட எளிதாக்குகிறது.", "یہ ورژن تنہائی یا سماجی فاصلے کے لیے ہے اور کمی کو نام دینا آسان بناتا ہے۔"),
         questions: [
-          buildPrivateIntakeQuestion("overview", "What feels missing right now?", "Company, closeness, reassurance, belonging, or routine.", "Name the gap in simple words."),
-          buildPrivateIntakeQuestion("currentFeeling", "What does the emptiness feel like?", "Sad, hollow, ignored, tense, or restless.", "Feeling naming keeps the report honest."),
-          buildPrivateIntakeQuestion("bodySignal", "What does your body do when this happens?", "Sleep, appetite, heaviness, tears, restlessness, or fatigue.", "Connection issues often show in the body."),
-          buildPrivateIntakeQuestion("frequencyContext", "How often do you feel this way?", "Daily, at night, after work, or in certain settings.", "Frequency helps the app see the pattern.")
+          buildPrivateIntakeQuestion("overview", t("What feels missing right now?", "अभी आपको क्या कमी लग रही है?", "ఇప్పుడు ఏమి లోటుగా అనిపిస్తోంది?", "இப்போது எது குறைவாக உணரப்படுகிறது?", "ابھی کیا کمی محسوس ہو رہی ہے؟"), t("Company, closeness, reassurance, belonging, or routine.", "साथ, नज़दीकी, भरोसा, अपनापन, या दिनचर्या.", "సహవాసం, సాన్నిహిత్యం, ధైర్యం, అనుబంధం, లేదా దినచర్య.", "துணை, நெருக்கம், உறுதுணை, சேர்ந்துணர்வு, அல்லது routine.", "ساتھ، قربت، تسلی، وابستگی، یا روٹین۔"), t("Name the gap in simple words.", "कमी को सरल शब्दों में लिखें.", "లోటును సరళమైన మాటల్లో చెప్పండి.", "குறைவைக் எளிய வார்த்தைகளில் பெயரிடுங்கள்.", "کمی کو سادہ الفاظ میں نام دیں۔")),
+          buildPrivateIntakeQuestion("currentFeeling", t("What does the emptiness feel like?", "खालीपन कैसा लगता है?", "ఖాళీ భావన ఎలా అనిపిస్తోంది?", "வெறுமை எப்படி உணரப்படுகிறது?", "خلا کیسا محسوس ہوتا ہے؟"), t("Sad, hollow, ignored, tense, or restless.", "उदास, ख़ाली, अनदेखा, तनावग्रस्त, या बेचैन.", "దుఃఖంగా, ఖాళీగా, పట్టించుకోనట్లు, ఒత్తిడిగా, లేదా అశాంతిగా.", "சோகமாக, வெறுமையாக, கவனிக்கப்படாதது போல, இறுக்கமாக, அல்லது restless.", "اداس، خالی، نظرانداز، تناؤ میں، یا بےچین۔"), t("Feeling naming keeps the report honest.", "भावना का नाम देने से रिपोर्ट ईमानदार रहती है.", "భావాన్ని పేరుతో చెప్పడం report‌ను నిజాయితీగా ఉంచుతుంది.", "உணர்வுக்கு பெயர் வைப்பது report-ஐ நேர்மையாக வைத்திருக்கும்.", "احساس کا نام دینا رپورٹ کو سچا رکھتا ہے۔")),
+          buildPrivateIntakeQuestion("bodySignal", t("What does your body do when this happens?", "जब ऐसा होता है तो आपका शरीर क्या करता है?", "ఇది జరిగినప్పుడు మీ శరీరం ఏమి చేస్తుంది?", "இது நடக்கும் போது உங்கள் உடல் என்ன செய்கிறது?", "جب ایسا ہوتا ہے تو آپ کا جسم کیا کرتا ہے؟"), t("Sleep, appetite, heaviness, tears, restlessness, or fatigue.", "नींद, भूख, भारीपन, आँसू, बेचैनी, या थकान.", "నిద్ర, ఆకలి, భారంగా అనిపించడం, కన్నీళ్లు, అశాంతి, లేదా అలసట.", "தூக்கம், பசி, கனத்த உணர்வு, கண்ணீர், restless, அல்லது சோர்வு.", "نیند، بھوک، بھاری پن، آنسو، بےچینی، یا تھکن۔"), t("Connection issues often show in the body.", "जुड़ाव की समस्या अक्सर शरीर में दिखती है.", "సంబంధ సమస్యలు తరచుగా శరీరంలో కనిపిస్తాయి.", "தொடர்பு பிரச்சினைகள் உடலில் அடிக்கடி தெரியும்.", "رابطے کے مسائل اکثر جسم میں ظاہر ہوتے ہیں۔")),
+          buildPrivateIntakeQuestion("frequencyContext", t("How often do you feel this way?", "आपको ऐसा कितना बार महसूस होता है?", "మీకు ఇలా ఎంతసార్లు అనిపిస్తుంది?", "உங்களுக்கு இப்படி எத்தனை முறை உணரப்படுகிறது?", "آپ کو ایسا کتنی بار محسوس ہوتا ہے؟"), t("Daily, at night, after work, or in certain settings.", "रोज़, रात में, काम के बाद, या कुछ ख़ास जगहों पर.", "రోజూ, రాత్రి, పని తర్వాత, లేదా కొన్ని సందర్భాల్లో.", "தினசரி, இரவில், வேலைக்குப் பிறகு, அல்லது சில சூழல்களில்.", "روزانہ، رات میں، کام کے بعد، یا مخصوص حالات میں۔"), t("Frequency helps the app see the pattern.", "बारंबारता से ऐप को पैटर्न दिखता है.", "తరచుదనం యాప్‌కు నమూనాను చూడటంలో సహాయపడుతుంది.", "அதிர்வெண் app-க்கு pattern-ஐ பார்க்க உதவுகிறது.", "تکرار ایپ کو pattern دیکھنے میں مدد دیتی ہے۔"))
         ]
       },
       {
         id: "people",
-        title: "2. People around you",
-        meta: "See who is close, missing, or safe to reach.",
-        intro: `The app should know which people matter most to ${safeIdentity}.`,
+        title: t("2. People around you", "2. आपके आसपास लोग", "2. మీ చుట్టూ ఉన్న వ్యక్తులు", "2. உங்களைச் சுற்றிய மக்கள்", "2. آپ کے آس پاس لوگ"),
+        meta: t("See who is close, missing, or safe to reach.", "देखिए कौन पास है, कौन दूर है, और किससे संपर्क सुरक्षित है.", "ఎవరు దగ్గరగా ఉన్నారు, ఎవరు లేరు, లేదా ఎవరిని సంప్రదించడం సురక్షితం అనేదాన్ని చూడండి.", "யார் அருகில் உள்ளனர், யார் missing, மற்றும் யாரை அணுகுவது பாதுகாப்பு என்பதைப் பாருங்கள்.", "دیکھیں کون قریب ہے، کون غائب لگ رہا ہے، اور کس تک پہنچنا محفوظ ہے۔"),
+        intro: t(
+          `The app should know which people matter most to ${safeIdentity}.`,
+          `ऐप को पता होना चाहिए कि ${safeIdentity} के लिए कौन लोग सबसे ज़्यादा मायने रखते हैं.`,
+          `యాప్‌కు ${safeIdentity}కి ఎవరు అత్యంత ముఖ్యమో తెలిసి ఉండాలి.`,
+          `app-க்கு ${safeIdentity}-க்கு யார் மிக முக்கியம் என்பதைத் தெரிந்திருக்க வேண்டும்.`,
+          `ایپ کو معلوم ہونا چاہیے کہ ${safeIdentity} کے لیے کون سے لوگ سب سے زیادہ اہم ہیں۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("familyContext", "How does family or home feel?", "Close, distant, tense, supportive, or mixed.", "Home can calm or intensify loneliness.", true),
-          buildPrivateIntakeQuestion("relativeContext", "What about relatives or extended family?", "Any contact, distance, or pressure.", "Extended family can matter too.", true),
-          buildPrivateIntakeQuestion("friendsContext", "What about friends or classmates?", "Who feels safe, who is missing, who is nearby?", "Friends often help the route open."),
-          buildPrivateIntakeQuestion("coworkerContext", "What about coworkers, peers, or community?", "Any work, class, or group context to note.", "Shared spaces can matter more than advice.", true),
-          buildPrivateIntakeQuestion("supportNeed", "Who do you want to reach first?", "One person, one group, or one safe space.", "The next contact should feel doable.")
+          buildPrivateIntakeQuestion("familyContext", t("How does family or home feel?", "परिवार या घर कैसा लग रहा है?", "కుటుంబం లేదా ఇల్లు ఎలా అనిపిస్తోంది?", "குடும்பம் அல்லது வீடு எப்படி உணரப்படுகிறது?", "خاندان یا گھر کیسا محسوس ہو رہا ہے؟"), t("Close, distant, tense, supportive, or mixed.", "पास, दूर, तनावपूर्ण, सहायक, या मिला-जुला.", "దగ్గరగా, దూరంగా, ఉద్రిక్తంగా, మద్దతుగా, లేదా మిశ్రమంగా.", "நெருக்கமாக, தொலைவில், இறுக்கமாக, ஆதரவாக, அல்லது கலவையாக.", "قریب، دور، تناؤ میں، مددگار، یا ملا جلا۔"), t("Home can calm or intensify loneliness.", "घर अकेलेपन को शांत भी कर सकता है या बढ़ा भी सकता है.", "ఇల్లు ఒంటరితనాన్ని శాంతపరచగలదు లేదా పెంచగలదు.", "வீடு தனிமையை அமைதிப்படுத்தவோ அல்லது அதிகரிக்கவோ முடியும்.", "گھر تنہائی کو پرسکون بھی کر سکتا ہے یا بڑھا بھی سکتا ہے۔"), true),
+          buildPrivateIntakeQuestion("relativeContext", t("What about relatives or extended family?", "रिश्तेदार या विस्तृत परिवार का क्या?", "బంధువులు లేదా విస్తృత కుటుంబం గురించి ఏమిటి?", "உறவினர்கள் அல்லது விரிந்த குடும்பம் பற்றி என்ன?", "رشتہ داروں یا بڑے خاندان کا کیا؟"), t("Any contact, distance, or pressure.", "कोई संपर्क, दूरी, या दबाव.", "ఏదైనా సంప్రదింపు, దూరం, లేదా ఒత్తిడి.", "எந்தத் தொடர்பு, தூரம், அல்லது pressure.", "کوئی رابطہ، فاصلہ، یا دباؤ۔"), t("Extended family can matter too.", "विस्तृत परिवार भी मायने रख सकता है.", "విస్తృత కుటుంబం కూడా ముఖ్యమవచ్చు.", "விரிந்த குடும்பமும் முக்கியமாக இருக்கலாம்.", "بڑا خاندان بھی اہم ہو سکتا ہے۔"), true),
+          buildPrivateIntakeQuestion("friendsContext", t("What about friends or classmates?", "दोस्त या सहपाठी कैसे हैं?", "స్నేహితులు లేదా సహపాఠులు ఎలా ఉన్నారు?", "நண்பர்கள் அல்லது வகுப்புத் தோழர்கள் எப்படி?", "دوست یا ہم جماعت کیسے ہیں؟"), t("Who feels safe, who is missing, who is nearby?", "कौन सुरक्षित लगता है, कौन याद आता है, कौन पास है?", "ఎవరు సురక్షితంగా అనిపిస్తున్నారు, ఎవరు లేరు, ఎవరు దగ్గరలో ఉన్నారు?", "யார் பாதுகாப்பாக உணரப்படுகிறார், யார் missing, யார் அருகில்?", "کون محفوظ لگتا ہے، کون غائب ہے، کون قریب ہے؟"), t("Friends often help the route open.", "दोस्त अक्सर रास्ता खोलने में मदद करते हैं.", "స్నేహితులు తరచుగా మార్గాన్ని తెరవడానికి సహాయపడతారు.", "நண்பர்கள் வழியைத் திறக்க உதவுவார்கள்.", "دوست اکثر راستہ کھولنے میں مدد کرتے ہیں۔")),
+          buildPrivateIntakeQuestion("coworkerContext", t("What about coworkers, peers, or community?", "सहकर्मी, साथी, या समुदाय का क्या?", "సహోద్యోగులు, సహచరులు, లేదా సమాజం గురించి ఏమిటి?", "சக ஊழியர்கள், சக நண்பர்கள், அல்லது சமூகம் பற்றி என்ன?", "ساتھی کارکن، ہم منصب، یا برادری کا کیا؟"), t("Any work, class, or group context to note.", "काम, कक्षा, या समूह का कोई संदर्भ लिखिए.", "పని, తరగతి, లేదా సమూహ సందర్భం ఏదైనా ఉంటే నమోదు చేయండి.", "வேலை, வகுப்பு, அல்லது குழு சூழலை குறிப்பிடவும்.", "کام، کلاس، یا گروپ کا کوئی پس منظر درج کریں۔"), t("Shared spaces can matter more than advice.", "साझा जगहें अक्सर सलाह से ज़्यादा मायने रखती हैं.", "పంచుకున్న ప్రదేశాలు తరచుగా సలహా కంటే ఎక్కువ ముఖ్యం.", "பகிரப்பட்ட இடங்கள் ஆலோசனையைவிட அதிகம் முக்கியமாக இருக்கலாம்.", "مشترکہ جگہیں اکثر مشورے سے زیادہ اہم ہوتی ہیں۔"), true),
+          buildPrivateIntakeQuestion("supportNeed", t("Who do you want to reach first?", "आप पहले किस तक पहुँचना चाहते हैं?", "ముందుగా ఎవరిని సంప్రదించాలనుకుంటున్నారు?", "முதலில் யாரை அணுக விரும்புகிறீர்கள்?", "آپ پہلے کس تک پہنچنا چاہتے ہیں؟"), t("One person, one group, or one safe space.", "एक व्यक्ति, एक समूह, या एक सुरक्षित जगह.", "ఒక వ్యక్తి, ఒక సమూహం, లేదా ఒక సురక్షిత స్థలం.", "ஒரு நபர், ஒரு குழு, அல்லது ஒரு பாதுகாப்பான இடம்.", "ایک شخص، ایک گروپ، یا ایک محفوظ جگہ۔"), t("The next contact should feel doable.", "अगला संपर्क संभव लगना चाहिए.", "తదుపరి సంప్రదింపు సాధ్యంగా అనిపించాలి.", "அடுத்த தொடர்பு செய்யக்கூடியதாக இருக்க வேண்டும்.", "اگلا رابطہ قابلِ عمل محسوس ہونا چاہیے۔"))
         ]
       },
       {
         id: "rhythm",
-        title: "3. Rhythm and routine",
-        meta: "Notice what keeps the day steadier.",
-        intro: "Connection often improves when the routine has some shape again.",
+        title: t("3. Rhythm and routine", "3. लय और दिनचर्या", "3. లయ మరియు అలవాటు", "3. ஓட்டம் மற்றும் தினசரி", "3. ردھم اور روٹین"),
+        meta: t("Notice what keeps the day steadier.", "देखिए क्या दिन को स्थिर रखता है.", "రోజును స్థిరంగా ఉంచేది ఏమిటో గమనించండి.", "நாளை மேலும் நிலையாக வைத்திருப்பதை கவனியுங்கள்.", "دیکھیں کیا دن کو زیادہ stable رکھتا ہے۔"),
+        intro: t("Connection often improves when the routine has some shape again.", "जब दिनचर्या फिर से कुछ आकार लेती है, तो जुड़ाव अक्सर बेहतर होता है.", "దినచర్య మళ్లీ కొంత ఆకారం పొందినప్పుడు సంబంధం తరచుగా మెరుగుపడుతుంది.", "routine மீண்டும் சில வடிவம் பெறும்போது தொடர்பு பெரும்பாலும் மேம்படும்.", "جب روٹین دوبارہ کچھ شکل اختیار کرتی ہے تو رابطہ اکثر بہتر ہوتا ہے۔"),
         questions: [
-          buildPrivateIntakeQuestion("timelineContext", "When did this feeling become stronger?", "Give the time or change that made it worse.", "Timing helps locate the gap."),
-          buildPrivateIntakeQuestion("triggerContext", "What tends to worsen it?", "Night time, silence, scrolling, conflict, or tiredness.", "Triggers help the app suggest the right rhythm.", true),
-          buildPrivateIntakeQuestion("dailyImpactContext", "How is it affecting daily life?", "Sleep, focus, mood, study, work, or appetite.", "Impact helps the report stay grounded."),
-          buildPrivateIntakeQuestion("behaviorPattern", "What pattern repeats?", "Feeling ignored, withdrawing, overthinking, or staying alone.", "Patterns give the app a better map.")
+          buildPrivateIntakeQuestion("timelineContext", t("When did this feeling become stronger?", "यह भावना कब और तेज़ हुई?", "ఈ భావన ఎప్పుడు బలపడింది?", "இந்த உணர்வு எப்போது வலுவானது?", "یہ احساس کب زیادہ شدید ہوا؟"), t("Give the time or change that made it worse.", "वह समय या बदलाव बताइए जिसने इसे और बिगाड़ा.", "దీనిని మరింత చెడగొట్టిన సమయం లేదా మార్పును చెప్పండి.", "அதை மோசமாக்கிய நேரம் அல்லது மாற்றத்தைச் சொல்லுங்கள்.", "وہ وقت یا تبدیلی بتائیں جس نے اسے بگاڑا۔"), t("Timing helps locate the gap.", "समय से कमी का स्थान पता चलता है.", "సమయం లోటును గుర్తించడంలో సహాయపడుతుంది.", "நேரம் குறைவைக் கண்டறிய உதவுகிறது.", "وقت کمی کی جگہ معلوم کرنے میں مدد دیتا ہے۔")),
+          buildPrivateIntakeQuestion("triggerContext", t("What tends to worsen it?", "इसे क्या और बिगाड़ता है?", "దీన్ని ఏమి మరింత చెడగొడుతోంది?", "எது அதை மோசமாக்குகிறது?", "کیا چیز اسے بگاڑتی ہے؟"), t("Night time, silence, scrolling, conflict, or tiredness.", "रात, ख़ामोशी, scrolling, संघर्ष, या थकान.", "రాత్రి, నిశ్శబ్దం, స్క్రోలింగ్, వివాదం, లేదా అలసట.", "இரவு, அமைதி, scrolling, மோதல், அல்லது சோர்வு.", "رات، خاموشی، اسکرولنگ، تنازعہ، یا تھکن۔"), t("Triggers help the app suggest the right rhythm.", "ट्रिगर से ऐप सही rhythm सुझा सकता है.", "ట్రిగ్గర్లు యాప్‌కు సరైన rhythm సూచించడంలో సహాయపడతాయి.", "தூண்டிகள் app-க்கு சரியான rhythm-ஐ பரிந்துரைக்க உதவுகின்றன.", "ٹرگر ایپ کو صحیح rhythm تجویز کرنے میں مدد دیتے ہیں۔"), true),
+          buildPrivateIntakeQuestion("dailyImpactContext", t("How is it affecting daily life?", "यह रोज़मर्रा की ज़िंदगी को कैसे प्रभावित कर रहा है?", "ఇది రోజువారీ జీవితాన్ని ఎలా ప్రభావితం చేస్తోంది?", "இது தினசரி வாழ்க்கையை எப்படி பாதிக்கிறது?", "یہ روزمرہ زندگی کو کیسے متاثر کر رہا ہے؟"), t("Sleep, focus, mood, study, work, or appetite.", "नींद, ध्यान, मूड, पढ़ाई, काम, या भूख.", "నిద్ర, దృష్టి, మూడ్, చదువు, పని, లేదా ఆకలి.", "தூக்கம், கவனம், mood, படிப்பு, வேலை, அல்லது பசி.", "نیند، توجہ، mood، پڑھائی، کام، یا بھوک۔"), t("Impact helps the report stay grounded.", "असर रिपोर्ट को ज़मीन से जुड़ा रखता है.", "ప్రభావం report‌ను స్థిరంగా ఉంచుతుంది.", "தாக்கம் report-ஐ grounded ஆக வைத்திருக்கும்.", "اثر رپورٹ کو grounded رکھتا ہے۔")),
+          buildPrivateIntakeQuestion("behaviorPattern", t("What pattern repeats?", "कौन-सा पैटर्न दोहराता है?", "ఏ నమూనా తిరిగి జరుగుతోంది?", "எந்த pattern மீண்டும் நடக்கிறது?", "کون سا pattern دہراتا ہے؟"), t("Feeling ignored, withdrawing, overthinking, or staying alone.", "नज़रअंदाज़ महसूस होना, पीछे हटना, ज़्यादा सोचना, या अकेले रहना.", "పట్టించుకోనట్లు అనిపించడం, వెనక్కి తగ్గడం, అతిగా ఆలోచించడం, లేదా ఒంటరిగా ఉండడం.", "கவனிக்கப்படாதது போல உணர்தல், விலகுதல், அதிகமாக யோசித்தல், அல்லது தனியாக இருப்பது.", "نظرانداز محسوس ہونا، پیچھے ہٹنا، زیادہ سوچنا، یا اکیلے رہنا۔"), t("Patterns give the app a better map.", "पैटर्न ऐप को बेहतर नक्शा देते हैं.", "నమూనాలు యాప్‌కు మెరుగైన మ్యాప్ ఇస్తాయి.", "Pattern-கள் app-க்கு நல்ல வரைபடம் தருகின்றன.", "patterns ایپ کو بہتر نقشہ دیتے ہیں۔"))
         ]
       },
       {
         id: "support",
-        title: "4. Support style",
-        meta: "Ask for the kind of contact that feels safe.",
-        intro: "The report becomes more useful when it knows how you want support to feel.",
+        title: t("4. Support style", "4. सहारे की शैली", "4. సహాయం శైలి", "4. ஆதரவு முறை", "4. مدد کا انداز"),
+        meta: t("Ask for the kind of contact that feels safe.", "उस तरह के संपर्क की माँग करें जो सुरक्षित लगे.", "సురక్షితంగా అనిపించే సంపర్క రకాన్ని అడగండి.", "பாதுகாப்பாக உணரும் தொடர்பு வகையை கேளுங்கள்.", "اس طرح کے رابطے کی مانگ کریں جو محفوظ لگے۔"),
+        intro: t("The report becomes more useful when it knows how you want support to feel.", "रिपोर्ट तब ज़्यादा उपयोगी होती है जब उसे पता हो कि आप सहारे को कैसा महसूस करना चाहते हैं.", "మద్దతు ఎలా అనిపించాలనుకుంటున్నారో report‌కు తెలిసినప్పుడు అది మరింత ఉపయోగకరంగా ఉంటుంది.", "ஆதரவு எப்படி உணர வேண்டும் என்பதை report அறிந்தால் அது மேலும் பயனுள்ளதாகிறது.", "رپورٹ زیادہ مفید ہو جاتی ہے جب اسے معلوم ہو کہ آپ مدد کو کیسا محسوس کرنا چاہتے ہیں۔"),
         questions: [
-          buildPrivateIntakeQuestion("supportNeed", "What kind of support would help now?", "Listen, company, practical help, calm, or professional support.", "The support type should be concrete."),
-          buildPrivateIntakeQuestion("supportPreferences", "How should support be offered?", "Private, gentle, direct, faith-aware, family-aware, or step-by-step.", "Tone matters for follow-through."),
-          buildPrivateIntakeQuestion("strengthsContext", "What helps even a little?", "Music, prayer, walking, messaging, work, sleep, or routine.", "Small strengths can become the next route.")
+          buildPrivateIntakeQuestion("supportNeed", t("What kind of support would help now?", "अभी किस तरह का सहारा मदद करेगा?", "ఇప్పుడు ఎలాంటి మద్దతు సహాయపడుతుంది?", "இப்போது எந்த வகை ஆதரவு உதவும்?", "اب کس طرح کی مدد فائدہ دے گی؟"), t("Listen, company, practical help, calm, or professional support.", "सुनना, साथ, व्यावहारिक मदद, शांति, या पेशेवर सहारा.", "వినడం, సహవాసం, ప్రాక్టికల్ సహాయం, శాంతి, లేదా వృత్తిపరమైన మద్దతు.", "கேட்பது, துணை, நடைமுறை உதவி, அமைதி, அல்லது தொழில்முறை ஆதரவு.", "سننا، ساتھ، عملی مدد، سکون، یا پیشہ ورانہ support۔"), t("The support type should be concrete.", "सहारे का प्रकार ठोस होना चाहिए.", "మద్దతు రకం స్పష్టంగా ఉండాలి.", "ஆதரவு வகை concrete ஆக இருக்க வேண்டும்.", "مدد کی قسم concrete ہونی چاہیے۔")),
+          buildPrivateIntakeQuestion("supportPreferences", t("How should support be offered?", "सहारा किस तरह दिया जाना चाहिए?", "మద్దతు ఎలా ఇవ్వాలి?", "ஆதரவு எப்படி வழங்கப்பட வேண்டும்?", "مدد کیسے دی جانی چاہیے؟"), t("Private, gentle, direct, faith-aware, family-aware, or step-by-step.", "निजी, कोमल, सीधे, आस्था-समझने वाला, परिवार-समझने वाला, या चरण-दर-चरण.", "ప్రైవేట్, మృదువుగా, నేరుగా, విశ్వాసాన్ని పరిగణించే, కుటుంబాన్ని పరిగణించే, లేదా దశలవారీగా.", "தனிப்பட்ட, மென்மையான, நேரடி, நம்பிக்கை-அறிந்த, குடும்ப-அறிந்த, அல்லது படிப்படியான.", "نجی، نرم، سیدھی، عقیدے سے واقف، خاندانی طور پر واقف، یا مرحلہ وار۔"), t("Tone matters for follow-through.", "लहजा आगे बढ़ने में मायने रखता है.", "శైలి కొనసాగింపుకు ముఖ్యం.", "தோன் தொடர்ச்சிக்கு முக்கியம்.", "لہجہ follow-through کے لیے اہم ہے۔")),
+          buildPrivateIntakeQuestion("strengthsContext", t("What helps even a little?", "थोड़ा भी क्या मदद करता है?", "కొంచెం అయినా ఏమి సహాయపడుతోంది?", "சிறிதளவாவது எது உதவுகிறது?", "تھوڑا سا بھی کیا مدد کرتا ہے؟"), t("Music, prayer, walking, messaging, work, sleep, or routine.", "संगीत, प्रार्थना, चलना, संदेश, काम, नींद, या दिनचर्या.", "సంగీతం, ప్రార్థన, నడక, సందేశాలు, పని, నిద్ర, లేదా దినచర్య.", "இசை, பிரார்த்தனை, நடை, செய்தி, வேலை, தூக்கம், அல்லது routine.", "موسیقی، دعا، چہل قدمی، میسیجنگ، کام، نیند، یا روٹین۔"), t("Small strengths can become the next route.", "छोटी ताक़तें अगले रास्ते का आधार बन सकती हैं.", "చిన్న బలాలు తదుపరి మార్గంగా మారవచ్చు.", "சிறிய வலிமைகள் அடுத்த வழியாக மாறலாம்.", "چھوٹی طاقتیں اگلے راستے بن سکتی ہیں۔"))
         ]
       },
       {
         id: "next",
-        title: "5. Next move",
-        meta: "End with the first useful contact or action.",
-        intro: "A good intake should end in a real next connection, not just a finished form.",
+        title: t("5. Next move", "5. अगला कदम", "5. తదుపరి అడుగు", "5. அடுத்த நகர்வு", "5. اگلا قدم"),
+        meta: t("End with the first useful contact or action.", "सबसे पहले उपयोगी संपर्क या कार्रवाई के साथ समाप्त करें.", "మొదటి ఉపయోగకరమైన సంపర్కం లేదా చర్యతో ముగించండి.", "முதலில் பயனுள்ள தொடர்பு அல்லது நடவடிக்கையுடன் முடிக்கவும்.", "پہلے مفید رابطے یا action کے ساتھ ختم کریں۔"),
+        intro: t("A good intake should end in a real next connection, not just a finished form.", "एक अच्छा intake सिर्फ़ भरी हुई form पर नहीं, बल्कि एक असली अगले संपर्क पर खत्म होना चाहिए.", "మంచి intake కేవలం పూర్తి form‌తో కాక, నిజమైన తదుపరి సంబంధంతో ముగియాలి.", "நல்ல intake வெறும் முடிந்த form-ஆக அல்ல, ஒரு உண்மையான அடுத்த தொடர்புடன் முடிவடைய வேண்டும்.", "اچھا intake صرف مکمل form پر نہیں بلکہ ایک حقیقی اگلے رابطے پر ختم ہونا چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("neededOutcome", "What would feel better by tonight?", "One contact, one plan, one calmer hour, or one safe check-in.", "The outcome should be reachable."),
-          buildPrivateIntakeQuestion("safetyNote", "Any safety concern to mention?", "Say if hopelessness, fear, or unsafe thoughts are present.", "Safety stays visible."),
-          buildPrivateIntakeQuestion("privacyBoundary", "Any privacy boundary to protect?", "What should not be shared or repeated.", "Privacy can make support easier to use.")
+          buildPrivateIntakeQuestion("neededOutcome", t("What would feel better by tonight?", "आज रात तक क्या बेहतर लगेगा?", "ఈ రాత్రి నాటికి ఏమి బాగుంటుంది?", "இன்றிரவு வரை எது சிறந்ததாக இருக்கும்?", "آج رات تک کیا بہتر لگے گا؟"), t("One contact, one plan, one calmer hour, or one safe check-in.", "एक संपर्क, एक योजना, एक शांत घंटा, या एक सुरक्षित check-in.", "ఒక సంపర్కం, ఒక ప్రణాళిక, ఒక శాంతమైన గంట, లేదా ఒక సురక్షిత check-in.", "ஒரு தொடர்பு, ஒரு திட்டம், ஒரு அமைதியான மணி, அல்லது ஒரு பாதுகாப்பான check-in.", "ایک رابطہ، ایک منصوبہ، ایک پرسکون گھنٹہ، یا ایک محفوظ check-in۔"), t("The outcome should be reachable.", "परिणाम हासिल होने लायक होना चाहिए.", "ఫలితం సాధ్యమైనదిగా ఉండాలి.", "முடிவு அடையக்கூடியதாக இருக்க வேண்டும்.", "نتیجہ قابلِ حصول ہونا چاہیے۔")),
+          buildPrivateIntakeQuestion("safetyNote", t("Any safety concern to mention?", "कोई सुरक्षा चिंता लिखनी है?", "ఏదైనా భద్రతా ఆందోళనను పేర్కొనాలా?", "பாதுகாப்பு கவலை ஏதேனும் குறிப்பிட வேண்டுமா?", "کوئی حفاظتی تشویش درج کرنی ہے؟"), t("Say if hopelessness, fear, or unsafe thoughts are present.", "यदि निराशा, डर, या असुरक्षित विचार हों तो बताइए.", "నిరాశ, భయం, లేదా అసురక్షిత ఆలోచనలు ఉంటే చెప్పండి.", "நம்பிக்கையின்மை, பயம், அல்லது பாதுகாப்பற்ற எண்ணங்கள் இருந்தால் சொல்லுங்கள்.", "اگر ناامیدی، خوف، یا غیر محفوظ خیالات موجود ہوں تو بتائیں۔"), t("Safety stays visible.", "सुरक्षा दिखाई देती रहे.", "భద్రత కనిపించేలా ఉంటుంది.", "பாதுகாப்பு தெளிவாக இருக்கும்.", "حفاظت واضح رہے۔")),
+          buildPrivateIntakeQuestion("privacyBoundary", t("Any privacy boundary to protect?", "कोई गोपनीयता सीमा बचानी है?", "రక్షించాల్సిన గోప్యతా హద్దు ఏదైనా ఉందా?", "பாதுகாக்க வேண்டிய தனியுரிமை எல்லை ஏதேனும் உள்ளதா?", "کوئی رازداری کی حد بچانی ہے؟"), t("What should not be shared or repeated.", "क्या साझा या दोहराया नहीं जाना चाहिए.", "ఏది పంచుకోకూడదు లేదా తిరిగి చెప్పకూడదు.", "எது பகிரப்படக்கூடாது அல்லது மீண்டும் சொல்லப்படக்கூடாது.", "کیا شیئر یا دہرایا نہیں جانا چاہیے۔"), t("Privacy can make support easier to use.", "गोपनीयता सहारे को इस्तेमाल करना आसान बनाती है.", "గోప్యత మద్దతును ఉపయోగించడాన్ని సులభం చేస్తుంది.", "தனியுரிமை ஆதரவை பயன்படுத்துவதைக் எளிதாக்குகிறது.", "رازداری مدد کو استعمال کرنا آسان بنا سکتی ہے۔"))
         ]
       }
     ],
     conflict: [
       {
         id: "moment",
-        title: "1. The moment",
-        meta: "Capture the exact event first.",
-        intro: "Conflict and anger become easier to handle when the app sees the moment clearly.",
+        title: t("1. The moment", "1. वह क्षण", "1. ఆ క్షణం", "1. தருணம்", "1. وہ لمحہ"),
+        meta: t("Capture the exact event first.", "सबसे पहले ठीक-ठीक घटना लिखें.", "ముందుగా ఖచ్చితమైన సంఘటనను నమోదు చేయండి.", "முதலில் துல்லியமான நிகழ்வைப் பதிவு செய்யுங்கள்.", "سب سے پہلے عین واقعہ درج کریں۔"),
+        intro: t("Conflict and anger become easier to handle when the app sees the moment clearly.", "जब ऐप उस पल को साफ़ देख लेता है, तो संघर्ष और ग़ुस्से को संभालना आसान हो जाता है.", "యాప్ ఆ క్షణాన్ని స్పష్టంగా చూసినప్పుడు వివాదం మరియు కోపాన్ని నిర్వహించడం సులభమవుతుంది.", "app அந்த தருணத்தை தெளிவாகப் பார்க்கும்போது மோதலும் கோபமும் எளிதாக கையாளப்படுகின்றன.", "جب ایپ اس لمحے کو صاف دیکھ لے تو تنازعہ اور غصے کو سنبھالنا آسان ہو جاتا ہے۔"),
         questions: [
-          buildPrivateIntakeQuestion("overview", "What happened?", "Describe the event in a few direct lines.", "Facts first."),
-          buildPrivateIntakeQuestion("timelineContext", "When did it happen?", "Give the time, day, or sequence.", "Timing gives shape to the story."),
-          buildPrivateIntakeQuestion("triggerContext", "What set it off?", "What was said, done, or missed right before it started?", "Trigger matters more than blame.", true),
-          buildPrivateIntakeQuestion("frequencyContext", "How often does this happen?", "Once, repeated, or a pattern?", "Frequency helps the report judge the loop.")
+          buildPrivateIntakeQuestion("overview", t("What happened?", "क्या हुआ?", "ఏం జరిగింది?", "என்ன நடந்தது?", "کیا ہوا؟"), t("Describe the event in a few direct lines.", "घटना को कुछ सीधे पंक्तियों में बताइए.", "సంఘటనను కొన్ని సూటి పంక్తుల్లో వివరించండి.", "நிகழ்வை சில நேரடி வரிகளில் விவரிக்கவும்.", "واقعے کو چند سیدھی سطروں میں بیان کریں۔"), t("Facts first.", "पहले तथ्य.", "ముందుగా వాస్తవాలు.", "முதலில் உண்மைகள்.", "پہلے حقائق۔")),
+          buildPrivateIntakeQuestion("timelineContext", t("When did it happen?", "यह कब हुआ?", "ఇది ఎప్పుడు జరిగింది?", "இது எப்போது நடந்தது?", "یہ کب ہوا؟"), t("Give the time, day, or sequence.", "समय, दिन, या क्रम बताइए.", "సమయం, రోజు, లేదా క్రమాన్ని చెప్పండి.", "நேரம், நாள், அல்லது வரிசையைச் சொல்லுங்கள்.", "وقت، دن، یا ترتیب بتائیں۔"), t("Timing gives shape to the story.", "समय से कहानी का ढाँचा बनता है.", "సమయం కథకు ఆకారం ఇస్తుంది.", "நேரம் கதைக்கு வடிவம் தருகிறது.", "وقت کہانی کو shape دیتا ہے۔")),
+          buildPrivateIntakeQuestion("triggerContext", t("What set it off?", "इसे किसने शुरू किया?", "దీనిని ఏమి ప్రారంభించింది?", "அதை எது தொடங்கியது?", "اسے کس نے شروع کیا؟"), t("What was said, done, or missed right before it started?", "शुरू होने से ठीक पहले क्या कहा, किया, या छोड़ा गया था?", "అది మొదలయ్యే ముందు ఏమి చెప్పబడింది, చేయబడింది, లేదా మిస్సైంది?", "தொடங்குவதற்கு முன் என்ன சொல்லப்பட்டது, செய்யப்பட்டது, அல்லது தவறவிடப்பட்டது?", "شروع ہونے سے پہلے کیا کہا گیا، کیا گیا، یا چھوڑ دیا گیا؟"), t("Trigger matters more than blame.", "दोष से ज़्यादा ट्रिगर मायने रखता है.", "నిందకంటే ట్రిగ్గర్ ఎక్కువ ముఖ్యం.", "குற்றத்தைவிட trigger முக்கியம்.", "ٹرگر الزام سے زیادہ اہم ہے۔"), true),
+          buildPrivateIntakeQuestion("frequencyContext", t("How often does this happen?", "यह कितनी बार होता है?", "ఇది ఎంతసార్లు జరుగుతుంది?", "இது எத்தனை முறை நடக்கிறது?", "یہ کتنی بار ہوتا ہے؟"), t("Once, repeated, or a pattern?", "एक बार, बार-बार, या पैटर्न?", "ఒక్కసారి, పునరావృతం, లేదా నమూనా?", "ஒரு முறை, மீண்டும் மீண்டும், அல்லது pattern?", "ایک بار، بار بار، یا ایک pattern؟"), t("Frequency helps the report judge the loop.", "बारंबारता से रिपोर्ट को चक्र समझने में मदद मिलती है.", "తరచుదనం report‌కు లూప్‌ను అర్థం చేసుకోవడంలో సహాయపడుతుంది.", "அதிர்வெண் report-க்கு loop-ஐ மதிப்பிட உதவுகிறது.", "تکرار رپورٹ کو loop کا اندازہ لگانے میں مدد دیتی ہے۔"))
         ]
       },
       {
         id: "reaction",
-        title: "2. Reaction and body",
-        meta: "Track the reaction without judgment.",
-        intro: "Separate the reaction from who you are. Describe what triggered it and what you actually need.",
+        title: t("2. Reaction and body", "2. प्रतिक्रिया और शरीर", "2. ప్రతిక్రియ మరియు శరీరం", "2. எதிர்வினை மற்றும் உடல்", "2. ردعمل اور جسم"),
+        meta: t("Track the reaction without judgment.", "प्रतिक्रिया को बिना निर्णय के दर्ज करें.", "ప్రతిక్రియను తీర్పు లేకుండా నమోదు చేయండి.", "எதிர்வினையை தீர்ப்பின்றி பதிவு செய்யுங்கள்.", "ردعمل کو بغیر judgment کے نوٹ کریں۔"),
+        intro: t("Separate the reaction from who you are. Describe what triggered it and what you actually need.", "प्रतिक्रिया को अपनी पहचान से अलग रखें. बताइए किसने उसे शुरू किया और आपको सच में क्या चाहिए.", "ప్రతిక్రియను మీ వ్యక్తిత్వం నుండి వేరు చేయండి. దాన్ని ఏమి trigger చేసిందో మరియు మీకు నిజంగా ఏమి అవసరమో చెప్పండి.", "எதிர்வினையை நீங்கள் யார் என்பதிலிருந்து பிரிக்கவும். அதை எது தூண்டியது மற்றும் உங்களுக்கு உண்மையில் என்ன வேண்டும் என்பதைக் கூறுங்கள்.", "ردعمل کو اپنی ذات سے الگ رکھیں۔ بتائیں اسے کس نے شروع کیا اور آپ کو اصل میں کیا چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("currentFeeling", "What did you feel in that moment?", "Anger, heat, shame, fear, or frustration.", "Feeling names the reaction."),
-          buildPrivateIntakeQuestion("emotionIntensity", "How strong was it?", "Low, medium, high, or overwhelming.", "Intensity shows whether calm first is needed."),
-          buildPrivateIntakeQuestion("bodySignal", "What did your body do?", "Heart, breath, tension, shaking, tears, or silence.", "Body response matters in conflict."),
-          buildPrivateIntakeQuestion("dailyImpactContext", "How did it affect the rest of the day?", "Work, study, sleep, appetite, or relationships.", "Impact helps the next step.")
+          buildPrivateIntakeQuestion("currentFeeling", t("What did you feel in that moment?", "उस पल आपने क्या महसूस किया?", "ఆ క్షణంలో మీరు ఏమి అనుభవించారు?", "அந்த தருணத்தில் நீங்கள் என்ன உணர்ந்தீர்கள்?", "اس لمحے آپ نے کیا محسوس کیا؟"), t("Anger, heat, shame, fear, or frustration.", "ग़ुस्सा, गर्मी, शर्म, डर, या झुंझलाहट.", "కోపం, వేడి, సిగ్గు, భయం, లేదా నిరాశ.", "கோபம், வெப்பம், அவமானம், பயம், அல்லது ஏமாற்றம்.", "غصہ، گرمی، شرمندگی، خوف، یا جھنجھلاہٹ۔"), t("Feeling names the reaction.", "भावना प्रतिक्रिया को नाम देती है.", "భావం ప్రతిక్రియకు పేరు ఇస్తుంది.", "உணர்வு எதிர்வினையை பெயரிடுகிறது.", "احساس ردعمل کو نام دیتا ہے۔")),
+          buildPrivateIntakeQuestion("emotionIntensity", t("How strong was it?", "वह कितना तीव्र था?", "అది ఎంత తీవ్రంగా ఉంది?", "அது எவ்வளவு வலுவாக இருந்தது?", "وہ کتنا شدید تھا؟"), t("Low, medium, high, or overwhelming.", "कम, मध्यम, ज़्यादा, या बहुत भारी.", "తక్కువ, మధ్య, అధిక, లేదా overwhelming.", "குறைவு, நடுத்தரம், அதிகம், அல்லது overwhelming.", "کم، درمیانہ، زیادہ، یا بہت شدید۔"), t("Intensity shows whether calm first is needed.", "तीव्रता से पता चलता है कि पहले शांत होना चाहिए या नहीं.", "తీవ్రత ముందు శాంతి అవసరమా అని చూపుతుంది.", "தீவிரம் முதலில் அமைதி வேண்டுமா என்பதை காட்டுகிறது.", "شدت دکھاتی ہے کہ پہلے پرسکون ہونا ضروری ہے یا نہیں۔")),
+          buildPrivateIntakeQuestion("bodySignal", t("What did your body do?", "आपके शरीर ने क्या किया?", "మీ శరీరం ఏమి చేసింది?", "உங்கள் உடல் என்ன செய்தது?", "آپ کے جسم نے کیا کیا؟"), t("Heart, breath, tension, shaking, tears, or silence.", "धड़कन, साँस, तनाव, काँपना, आँसू, या चुप्पी.", "గుండెధడ, శ్వాస, ఒత్తిడి, వణుకు, కన్నీళ్లు, లేదా నిశ్శబ్దం.", "இதயதுடிப்பு, மூச்சு, இறுக்கம், நடுக்கம், கண்ணீர், அல்லது மௌனம்.", "دل کی دھڑکن، سانس، تناؤ، کپکپی، آنسو، یا خاموشی۔"), t("Body response matters in conflict.", "संघर्ष में शरीर की प्रतिक्रिया मायने रखती है.", "వివాదంలో శరీర ప్రతిస్పందన ముఖ్యం.", "மோதலில் உடல் எதிர்வினை முக்கியம்.", "تنازعہ میں جسم کا ردعمل اہم ہوتا ہے۔")),
+          buildPrivateIntakeQuestion("dailyImpactContext", t("How did it affect the rest of the day?", "इसका दिन के बाकी हिस्से पर क्या असर पड़ा?", "ఇది మిగతా రోజును ఎలా ప్రభావితం చేసింది?", "இது நாளின் மீதியை எப்படி பாதித்தது?", "اس نے دن کے باقی حصے کو کیسے متاثر کیا؟"), t("Work, study, sleep, appetite, or relationships.", "काम, पढ़ाई, नींद, भूख, या रिश्ते.", "పని, చదువు, నిద్ర, ఆకలి, లేదా సంబంధాలు.", "வேலை, படிப்பு, தூக்கம், பசி, அல்லது உறவுகள்.", "کام، پڑھائی، نیند، بھوک، یا رشتے۔"), t("Impact helps the next step.", "असर अगले कदम में मदद करता है.", "ప్రభావం తదుపరి అడుగుకు సహాయపడుతుంది.", "தாக்கம் அடுத்த படிக்கு உதவுகிறது.", "اثر اگلے قدم میں مدد دیتا ہے۔"))
         ]
       },
       {
         id: "people",
-        title: "3. People involved",
-        meta: "Note who was part of the conflict.",
-        intro: `The report should know who was affected around ${safeIdentity}.`,
+        title: t("3. People involved", "3. शामिल लोग", "3. సంబంధిత వ్యక్తులు", "3. தொடர்புடையவர்கள்", "3. شامل لوگ"),
+        meta: t("Note who was part of the conflict.", "संघर्ष में कौन शामिल था, यह लिखिए.", "వివాదంలో ఎవరు భాగమయ్యారో నమోదు చేయండి.", "மோதலில் யார் ஈடுபட்டனர் என்பதை குறிப்பிடுங்கள்.", "لکھیں کہ تنازعے میں کون شامل تھا۔"),
+        intro: t(
+          `The report should know who was affected around ${safeIdentity}.`,
+          `रिपोर्ट को पता होना चाहिए कि ${safeIdentity} के आसपास किस पर असर पड़ा.`,
+          `రిపోర్ట్‌కు ${safeIdentity} చుట్టూ ఎవరిపై ప్రభావం పడ్డిందో తెలిసి ఉండాలి.`,
+          `report-க்கு ${safeIdentity} சுற்றிலும் யாருக்கு பாதிப்பு ஏற்பட்டது என்பதைத் தெரிந்திருக்க வேண்டும்.`,
+          `رپورٹ کو معلوم ہونا چاہیے کہ ${safeIdentity} کے اردگرد کس پر اثر پڑا۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("familyContext", "Any family or home link?", "If the conflict touched home, say how.", "Family context can matter.", true),
-          buildPrivateIntakeQuestion("relativeContext", "Any relatives involved or affected?", "Add the wider family context if relevant.", "This can change the best support.", true),
-          buildPrivateIntakeQuestion("friendsContext", "Any friends or close people involved?", "Who saw it or got pulled into it?", "Social support matters."),
-          buildPrivateIntakeQuestion("coworkerContext", "Any class, office, or duty context?", "Name the place or role if it mattered.", "Conflict at work or study can need different handling.", true)
+          buildPrivateIntakeQuestion("familyContext", t("Any family or home link?", "परिवार या घर से कोई संबंध है?", "కుటుంబం లేదా ఇంటి సంబంధమా?", "குடும்பம் அல்லது வீட்டுடன் தொடர்பா?", "خاندان یا گھر سے کوئی تعلق؟"), t("If the conflict touched home, say how.", "अगर संघर्ष घर तक पहुँचा, तो कैसे, लिखिए.", "వివాదం ఇంటిని తాకితే, ఎలా అనేది చెప్పండి.", "மோதல் வீட்டைத் தொட்டால், எப்படி என்பதைச் சொல்லுங்கள்.", "اگر تنازعہ گھر تک پہنچا تو کیسے، بتائیں۔"), t("Family context can matter.", "परिवार का संदर्भ मायने रख सकता है.", "కుటుంబ సందర్భం ముఖ్యం కావచ్చు.", "குடும்ப சூழல் முக்கியமாக இருக்கலாம்.", "خاندانی پس منظر اہم ہو سکتا ہے۔"), true),
+          buildPrivateIntakeQuestion("relativeContext", t("Any relatives involved or affected?", "कोई रिश्तेदार शामिल या प्रभावित हुए?", "ఏ బంధువులు పాల్గొన్నారు లేదా ప్రభావితమయ్యారు?", "எந்த உறவினர்கள் ஈடுபட்டனர் அல்லது பாதிக்கப்பட்டனர்?", "کوئی رشتہ دار شامل یا متاثر ہوا؟"), t("Add the wider family context if relevant.", "यदि ज़रूरी हो तो व्यापक परिवार का संदर्भ जोड़ें.", "అవసరమైతే విస్తృత కుటుంబ సందర్భాన్ని జోడించండి.", "தேவைப்பட்டால் விரிந்த குடும்ப சூழலைச் சேர்க்கவும்.", "اگر ضروری ہو تو وسیع خاندانی پس منظر شامل کریں۔"), t("This can change the best support.", "यह सबसे अच्छा सहारा बदल सकता है.", "ఇది ఉత్తమ మద్దతును మార్చవచ్చు.", "இது சிறந்த ஆதரவை மாற்றலாம்.", "یہ بہترین مدد کو بدل سکتا ہے۔"), true),
+          buildPrivateIntakeQuestion("friendsContext", t("Any friends or close people involved?", "कोई दोस्त या करीबी लोग शामिल हैं?", "ఏమైనా స్నేహితులు లేదా దగ్గరి వ్యక్తులు ఉన్నారా?", "நண்பர்கள் அல்லது நெருங்கியவர்கள் ஈடுபட்டுள்ளனரா?", "کوئی دوست یا قریبی لوگ شامل ہیں؟"), t("Who saw it or got pulled into it?", "इसे किसने देखा या इसमें खिंच गया?", "దాన్ని ఎవరు చూశారు లేదా అందులోకి లాగబడ్డారు?", "யார் இதைப் பார்த்தார்கள் அல்லது அதில் இழுக்கப்பட்டார்கள்?", "کس نے دیکھا یا اس میں کھینچا گیا؟"), t("Social support matters.", "सामाजिक सहारा मायने रखता है.", "సామాజిక మద్దతు ముఖ్యం.", "சமூக ஆதரவு முக்கியம்.", "سماجی مدد اہم ہے۔")),
+          buildPrivateIntakeQuestion("coworkerContext", t("Any class, office, or duty context?", "कोई कक्षा, दफ़्तर, या ड्यूटी का संदर्भ है?", "ఏమైనా తరగతి, కార్యాలయం, లేదా duty సందర్భమా?", "வகுப்பு, அலுவலகம், அல்லது duty சூழல் உள்ளதா?", "کوئی کلاس، دفتر، یا ڈیوٹی کا پس منظر؟"), t("Name the place or role if it mattered.", "अगर जगह या भूमिका अहम थी, तो लिखिए.", "స్థలం లేదా పాత్ర ముఖ్యమైతే వాటిని పేర్కొనండి.", "இடம் அல்லது பங்கு முக்கியமானதாக இருந்தால் குறிப்பிடுங்கள்.", "اگر جگہ یا کردار اہم تھا تو اس کا نام دیں۔"), t("Conflict at work or study can need different handling.", "काम या पढ़ाई का संघर्ष अलग तरीके से संभालना पड़ सकता है.", "పని లేదా చదువులోని వివాదం వేరే రీతిలో నిర్వహించాల్సి రావచ్చు.", "வேலை அல்லது படிப்பில் மோதல் வேறுபட்ட கையாளுதலைக் கேட்கலாம்.", "کام یا پڑھائی کا تنازعہ مختلف handling مانگ سکتا ہے۔"), true)
         ]
       },
       {
         id: "repair",
-        title: "4. Repair and pattern",
-        meta: "See what repeats and what helps repair it.",
-        intro: "This is where the app learns how to prevent the same reaction from running again.",
+        title: t("4. Repair and pattern", "4. सुधार और पैटर्न", "4. సరిచేయడం మరియు నమూనా", "4. சரிசெய்தல் மற்றும் முறை", "4. مرمت اور پیٹرن"),
+        meta: t("See what repeats and what helps repair it.", "देखिए क्या दोहराता है और उसे ठीक करने में क्या मदद करता है.", "ఏది తిరిగి జరుగుతోందో మరియు దాన్ని సరిచేయడంలో ఏమి సహాయపడుతోందో చూడండి.", "எது மீண்டும் நடக்கிறது, அதைச் சரிசெய்ய எது உதவுகிறது என்பதைக் காணவும்.", "دیکھیں کیا دہرا رہا ہے اور اسے درست کرنے میں کیا مدد کرتی ہے۔"),
+        intro: t("This is where the app learns how to prevent the same reaction from running again.", "यहाँ ऐप सीखता है कि वही प्रतिक्रिया दोबारा कैसे न चले.", "ఇక్కడ యాప్ అదే ప్రతిక్రియ మళ్లీ రాకుండా ఎలా నివారించాలో నేర్చుకుంటుంది.", "இங்கே app அதே எதிர்வினை மீண்டும் ஓடாமல் எப்படி தடுப்பது என்பதை கற்றுக்கொள்கிறது.", "یہاں ایپ سیکھتی ہے کہ وہی ردعمل دوبارہ نہ چلے۔"),
         questions: [
-          buildPrivateIntakeQuestion("behaviorPattern", "What repeats in this conflict?", "The same words, same trigger, same ending, or same role.", "Repeating pattern is the useful signal."),
-          buildPrivateIntakeQuestion("previousAttempts", "What have you tried already?", "Apologies, breaks, distance, talking, boundaries, or silence.", "The report should not ignore prior attempts."),
-          buildPrivateIntakeQuestion("strengthsContext", "What still helps you recover?", "Walk, prayer, talk, rest, humor, or a safe person.", "Recovery strengths deserve attention."),
-          buildPrivateIntakeQuestion("supportPreferences", "What support style feels best?", "Private, direct, calm, step-by-step, or family-aware.", "The tone should lower heat.")
+          buildPrivateIntakeQuestion("behaviorPattern", t("What repeats in this conflict?", "इस संघर्ष में क्या दोहराता है?", "ఈ వివాదంలో ఏమి పునరావృతమవుతోంది?", "இந்த மோதலில் எது மீண்டும் நடக்கிறது?", "اس تنازعہ میں کیا دہراتا ہے؟"), t("The same words, same trigger, same ending, or same role.", "वही शब्द, वही ट्रिगर, वही अंत, या वही भूमिका.", "అదే మాటలు, అదే trigger, అదే ముగింపు, లేదా అదే పాత్ర.", "அதே சொற்கள், அதே trigger, அதே முடிவு, அல்லது அதே பங்கு.", "وہی الفاظ، وہی trigger، وہی اختتام، یا وہی کردار۔"), t("Repeating pattern is the useful signal.", "दोहराने वाला पैटर्न ही उपयोगी संकेत है.", "పునరావృత నమూనానే ఉపయోగకరమైన సంకేతం.", "மீண்டும் வரும் pattern-தான் பயனுள்ள signal.", "دہرایا جانے والا pattern ہی مفید اشارہ ہے۔")),
+          buildPrivateIntakeQuestion("previousAttempts", t("What have you tried already?", "आप पहले क्या आज़मा चुके हैं?", "మీరు ఇప్పటికే ఏమి ప్రయత్నించారు?", "நீங்கள் ஏற்கனவே என்ன முயற்சி செய்தீர்கள்?", "آپ پہلے کیا آزما چکے ہیں؟"), t("Apologies, breaks, distance, talking, boundaries, or silence.", "माफ़ी, ब्रेक, दूरी, बातचीत, सीमाएँ, या ख़ामोशी.", "క్షమాపణలు, విరామాలు, దూరం, మాట్లాడటం, హద్దులు, లేదా నిశ్శబ్దం.", "மன்னிப்புகள், இடைவெளிகள், தூரம், பேசுதல், எல்லைகள், அல்லது மௌனம்.", "معذرت، وقفے، فاصلہ، بات چیت، حدود، یا خاموشی۔"), t("The report should not ignore prior attempts.", "रिपोर्ट को पहले के प्रयास नज़रअंदाज़ नहीं करने चाहिए.", "report మునుపటి ప్రయత్నాలను పట్టించుకోకుండా ఉండకూడదు.", "report முந்தைய முயற்சிகளை புறக்கணிக்கக் கூடாது.", "رپورٹ کو پچھلی کوششوں کو نظرانداز نہیں کرنا چاہیے۔")),
+          buildPrivateIntakeQuestion("strengthsContext", t("What still helps you recover?", "आपको रिकवर करने में अभी क्या मदद करता है?", "ఇంకా మీకు కోలుకోవడంలో ఏమి సహాయపడుతోంది?", "இன்னும் உங்களை மீள உதவுவது எது?", "اب بھی آپ کی بحالی میں کیا مدد کر رہا ہے؟"), t("Walk, prayer, talk, rest, humor, or a safe person.", "चलना, प्रार्थना, बात करना, आराम, हास्य, या कोई सुरक्षित व्यक्ति.", "నడక, ప్రార్థన, మాట్లాడటం, విశ్రాంతి, హాస్యం, లేదా సురక్షిత వ్యక్తి.", "நடை, பிரார்த்தனை, பேச்சு, ஓய்வு, நகைச்சுவை, அல்லது பாதுகாப்பான நபர்.", "چہل قدمی، دعا، بات، آرام، مزاح، یا محفوظ شخص۔"), t("Recovery strengths deserve attention.", "रिकवरी की ताक़तों पर ध्यान दिया जाना चाहिए.", "కోలుకునే బలాలకు శ్రద్ధ ఇవ్వాలి.", "மீட்பு வலிமைகள் கவனத்திற்கு உரியவை.", "بحالی کی طاقتیں توجہ کی مستحق ہیں۔")),
+          buildPrivateIntakeQuestion("supportPreferences", t("What support style feels best?", "किस तरह का सहारा सबसे अच्छा लगेगा?", "ఎలాంటి మద్దతు శైలి బాగా అనిపిస్తుంది?", "எந்த வகை ஆதரவு சிறந்ததாக இருக்கும்?", "کس طرح کی مدد سب سے بہتر لگتی ہے؟"), t("Private, direct, calm, step-by-step, or family-aware.", "निजी, सीधे, शांत, चरण-दर-चरण, या परिवार-समझने वाला.", "ప్రైవేట్, నేరుగా, శాంతంగా, దశలవారీగా, లేదా కుటుంబాన్ని పరిగణించే.", "தனிப்பட்ட, நேரடி, அமைதியான, படிப்படியான, அல்லது குடும்ப-அறிந்த.", "نجی، سیدھی، پرسکون، مرحلہ وار، یا خاندانی طور پر واقف۔"), t("The tone should lower heat.", "लहजा गर्मी कम करना चाहिए.", "శైలి వేడిని తగ్గించాలి.", "தோன் வெப்பத்தை குறைக்க வேண்டும்.", "لہجہ گرمی کم کرے۔"))
         ]
       },
       {
         id: "boundary",
-        title: "5. Boundary and outcome",
-        meta: "State the repair, boundary, or next move you want.",
-        intro: "The last part tells the app what should change next.",
+        title: t("5. Boundary and outcome", "5. सीमा और परिणाम", "5. హద్దు మరియు ఫలితం", "5. எல்லை மற்றும் முடிவு", "5. حد اور نتیجہ"),
+        meta: t("State the repair, boundary, or next move you want.", "आप जो सुधार, सीमा, या अगला कदम चाहते हैं, वह लिखें.", "మీరు కోరుకునే సవరణ, హద్దు, లేదా తదుపరి అడుగును చెప్పండి.", "நீங்கள் விரும்பும் சரிசெய்தல், எல்லை, அல்லது அடுத்த படியை சொல்லுங்கள்.", "آپ جو مرمت، حد، یا اگلا قدم چاہتے ہیں، اسے لکھیں۔"),
+        intro: t("The last part tells the app what should change next.", "अंतिम भाग ऐप को बताता है कि आगे क्या बदलना चाहिए.", "చివరి భాగం తరువాత ఏమి మారాలో యాప్‌కు చెబుతుంది.", "கடைசி பகுதி app-க்கு அடுத்து என்ன மாற வேண்டும் என்பதைச் சொல்கிறது.", "آخری حصہ ایپ کو بتاتا ہے کہ آگے کیا بدلنا چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("supportNeed", "What support do you want first?", "Help talking, writing, calming, or handling the next step.", "Start with the most useful help."),
-          buildPrivateIntakeQuestion("neededOutcome", "What outcome do you want now?", "Repair, distance, apology, boundary, or mediation.", "The result should be realistic."),
-          buildPrivateIntakeQuestion("safetyNote", "Any safety concern to mention?", "If there is threat, intimidation, or unsafe escalation, say so.", "Safety changes the route."),
-          buildPrivateIntakeQuestion("privacyBoundary", "What should stay private?", "Any detail you do not want repeated or saved.", "Privacy keeps the intake usable.")
+          buildPrivateIntakeQuestion("supportNeed", t("What support do you want first?", "सबसे पहले आपको कौन-सा सहारा चाहिए?", "ముందుగా మీరు ఏ మద్దతు కోరుకుంటున్నారు?", "முதலில் எந்த ஆதரவு வேண்டும்?", "سب سے پہلے آپ کو کون سی مدد چاہیے؟"), t("Help talking, writing, calming, or handling the next step.", "बात करने, लिखने, शांत होने, या अगले कदम को संभालने में मदद.", "మాట్లాడటం, రాయటం, శాంతించటం, లేదా తదుపరి అడుగును నిర్వహించడంలో సహాయం.", "பேசுதல், எழுதுதல், அமைதியாகுதல், அல்லது அடுத்த படியை கையாளுதல் உதவி.", "بات کرنے، لکھنے، پرسکون ہونے، یا اگلے قدم کو سنبھالنے میں مدد۔"), t("Start with the most useful help.", "सबसे उपयोगी मदद से शुरू करें.", "అత్యంత ఉపయోగకరమైన సహాయంతో ప్రారంభించండి.", "மிகவும் பயனுள்ள உதவியிலிருந்து தொடங்குங்கள்.", "سب سے مفید مدد سے شروع کریں۔")),
+          buildPrivateIntakeQuestion("neededOutcome", t("What outcome do you want now?", "अब आप कौन-सा परिणाम चाहते हैं?", "ఇప్పుడు మీరు ఏ ఫలితాన్ని కోరుకుంటున్నారు?", "இப்போது எந்த முடிவை விரும்புகிறீர்கள்?", "اب آپ کون سا نتیجہ چاہتے ہیں؟"), t("Repair, distance, apology, boundary, or mediation.", "सुधार, दूरी, माफ़ी, सीमा, या मध्यस्थता.", "సవరణ, దూరం, క్షమాపణ, హద్దు, లేదా మధ్యవర్తిత్వం.", "சரி செய்தல், தூரம், மன்னிப்பு, எல்லை, அல்லது நடுவர் பேச்சு.", "مرمت، فاصلہ، معذرت، حد، یا mediation۔"), t("The result should be realistic.", "परिणाम यथार्थवादी होना चाहिए.", "ఫలితం వాస్తవికంగా ఉండాలి.", "முடிவு நிஜமானதாக இருக்க வேண்டும்.", "نتیجہ حقیقت پسندانہ ہونا چاہیے۔")),
+          buildPrivateIntakeQuestion("safetyNote", t("Any safety concern to mention?", "कोई सुरक्षा चिंता लिखनी है?", "ఏదైనా భద్రతా ఆందోళనను పేర్కొనాలా?", "பாதுகாப்பு கவலை ஏதேனும் குறிப்பிட வேண்டுமா?", "کوئی حفاظتی تشویش درج کرنی ہے؟"), t("If there is threat, intimidation, or unsafe escalation, say so.", "अगर धमकी, डराने-धमकाने, या असुरक्षित बढ़त है, तो बताइए.", "భయపెట్టడం, బెదిరింపు, లేదా అసురక్షిత పెరుగుదల ఉంటే చెప్పండి.", "அச்சுறுத்தல், மிரட்டல், அல்லது பாதுகாப்பற்ற உயர்வு இருந்தால் சொல்லுங்கள்.", "اگر دھمکی، خوفزدگی، یا غیر محفوظ escalation ہو تو بتائیں۔"), t("Safety changes the route.", "सुरक्षा मार्ग बदल देती है.", "భద్రత మార్గాన్ని మార్చుతుంది.", "பாதுகாப்பு வழியை மாற்றுகிறது.", "حفاظت راستہ بدل دیتی ہے۔")),
+          buildPrivateIntakeQuestion("privacyBoundary", t("What should stay private?", "क्या निजी रहना चाहिए?", "ఏది ప్రైవేట్‌గా ఉండాలి?", "எது தனிப்பட்டதாக இருக்க வேண்டும்?", "کیا نجی رہنا چاہیے؟"), t("Any detail you do not want repeated or saved.", "कोई भी विवरण जो आप दोहराना या सहेजना नहीं चाहते.", "మీరు తిరిగి చెప్పకూడని లేదా సేవ్ చేయకూడని ఏ వివరమైనా.", "நீங்கள் மீண்டும் சொல்லவோ சேமிக்கவோ விரும்பாத எந்த விவரமும்.", "کوئی بھی تفصیل جسے آپ دہرایا یا محفوظ نہیں کرنا چاہتے۔"), t("Privacy keeps the intake usable.", "गोपनीयता intake को उपयोगी रखती है.", "గోప్యత intake‌ను ఉపయోగకరంగా ఉంచుతుంది.", "தனியுரிமை intake-ஐ பயனுள்ளதாக வைத்திருக்கும்.", "رازداری intake کو مفید رکھتی ہے۔"))
         ]
       }
     ],
     selfview: [
       {
         id: "signal",
-        title: "1. The signal",
-        meta: "What thought or pressure is rising?",
-        intro: "This version helps when certainty, shame, or self-judgment is getting too loud.",
+        title: t("1. The signal", "1. संकेत", "1. సంకేతం", "1. சிக்னல்", "1. اشارہ"),
+        meta: t("What thought or pressure is rising?", "कौन-सा विचार या दबाव बढ़ रहा है?", "ఏ ఆలోచన లేదా ఒత్తిడి పెరుగుతోంది?", "எந்த எண்ணம் அல்லது pressure உயர்கிறது?", "کون سا خیال یا دباؤ بڑھ رہا ہے؟"),
+        intro: t("This version helps when certainty, shame, or self-judgment is getting too loud.", "यह संस्करण तब मदद करता है जब यक़ीन, शर्म, या self-judgment बहुत तेज़ हो रहे हों.", "నిశ్చయత, సిగ్గు, లేదా self-judgment చాలా ఎక్కువగా ఉన్నప్పుడు ఈ వెర్షన్ సహాయపడుతుంది.", "நிச்சயம், அவமானம், அல்லது self-judgment அதிகமாகி விட்டால் இந்த பதிப்பு உதவுகிறது.", "یہ ورژن اس وقت مدد کرتا ہے جب یقین، شرمندگی، یا self-judgment بہت زیادہ ہو جائیں۔"),
         questions: [
-          buildPrivateIntakeQuestion("overview", "What is the main thought or pressure?", "Say it plainly, even if it feels awkward.", "Put the thought on paper."),
-          buildPrivateIntakeQuestion("currentFeeling", "How does it feel emotionally?", "Unsure, defensive, proud, ashamed, tense, or mixed.", "The emotion guides the route."),
-          buildPrivateIntakeQuestion("emotionIntensity", "How strong does it feel?", "Low, medium, high, or overwhelming.", "Intensity helps the report slow down."),
-          buildPrivateIntakeQuestion("bodySignal", "What is your body doing?", "Breath, chest, shoulders, sleep, appetite, or restlessness.", "Body signals still matter here.")
+          buildPrivateIntakeQuestion("overview", t("What is the main thought or pressure?", "मुख्य विचार या दबाव क्या है?", "ప్రధాన ఆలోచన లేదా ఒత్తిడి ఏమిటి?", "முக்கிய எண்ணம் அல்லது pressure என்ன?", "اصل خیال یا دباؤ کیا ہے؟"), t("Say it plainly, even if it feels awkward.", "इसे सीधे शब्दों में बताइए, भले अजीब लगे.", "వింతగా అనిపించినా, సూటిగా చెప్పండి.", "அசௌகரியமாக இருந்தாலும் நேராக சொல்லுங்கள்.", "چاہے عجیب لگے، اسے سیدھے الفاظ میں کہیں۔"), t("Put the thought on paper.", "विचार को लिख दीजिए.", "ఆలోచనను కాగితం మీద పెట్టండి.", "எண்ணத்தை காகிதத்தில் எழுதுங்கள்.", "خیال کو کاغذ پر لکھ دیں۔")),
+          buildPrivateIntakeQuestion("currentFeeling", t("How does it feel emotionally?", "भावनात्मक रूप से कैसा लग रहा है?", "భావోద్వేగంగా ఎలా అనిపిస్తోంది?", "உணர்ச்சியாக எப்படி உணருகிறது?", "جذباتی طور پر کیسا محسوس ہو رہا ہے؟"), t("Unsure, defensive, proud, ashamed, tense, or mixed.", "अनिश्चित, बचाव में, गर्व, शर्मिंदा, तनावग्रस्त, या मिला-जुला.", "అనిశ్చితంగా, రక్షణాత్మకంగా, గర్వంగా, సిగ్గుతో, ఒత్తిడిగా, లేదా మిశ్రమంగా.", "தெளிவில்லாத, பாதுகாப்பாக, பெருமையாக, அவமானமாக, இறுக்கமாக, அல்லது கலவையாக.", "غیر یقینی، دفاعی، فخر، شرمندہ، تناؤ میں، یا ملا جلا۔"), t("The emotion guides the route.", "भावना मार्ग दिखाती है.", "భావోద్వేగం మార్గాన్ని నిర్దేశిస్తుంది.", "உணர்ச்சி வழியை வழிநடத்துகிறது.", "جذبات راستہ دکھاتے ہیں۔")),
+          buildPrivateIntakeQuestion("emotionIntensity", t("How strong does it feel?", "यह कितना तीव्र लगता है?", "ఇది ఎంత బలంగా అనిపిస్తోంది?", "இது எவ்வளவு வலுவாக உணரப்படுகிறது?", "یہ کتنا شدید محسوس ہو رہا ہے؟"), t("Low, medium, high, or overwhelming.", "कम, मध्यम, ज़्यादा, या बहुत भारी.", "తక్కువ, మధ్య, అధిక, లేదా overwhelming.", "குறைவு, நடுத்தரம், அதிகம், அல்லது overwhelming.", "کم، درمیانہ، زیادہ، یا بہت زیادہ۔"), t("Intensity helps the report slow down.", "तीव्रता से रिपोर्ट धीमी होती है.", "తీవ్రత report‌ను నెమ్మదించడంలో సహాయపడుతుంది.", "தீவிரம் report-ஐ மெதுவாக்க உதவுகிறது.", "شدت رپورٹ کو سست کرنے میں مدد دیتی ہے۔")),
+          buildPrivateIntakeQuestion("bodySignal", t("What is your body doing?", "आपका शरीर क्या कर रहा है?", "మీ శరీరం ఏమి చేస్తోంది?", "உங்கள் உடல் என்ன செய்கிறது?", "آپ کا جسم کیا کر رہا ہے؟"), t("Breath, chest, shoulders, sleep, appetite, or restlessness.", "साँस, सीना, कंधे, नींद, भूख, या बेचैनी.", "శ్వాస, ఛాతీ, భుజాలు, నిద్ర, ఆకలి, లేదా అశాంతి.", "மூச்சு, மார்பு, தோள்கள், தூக்கம், பசி, அல்லது restlessness.", "سانس، سینہ، کندھے، نیند، بھوک، یا بےچینی۔"), t("Body signals still matter here.", "यहाँ शरीर के संकेत भी मायने रखते हैं.", "ఇక్కడ కూడా శరీర సంకేతాలు ముఖ్యం.", "இங்கேயும் உடல் signals முக்கியம்.", "یہاں بھی جسمانی اشارے اہم ہیں۔"))
         ]
       },
       {
         id: "evidence",
-        title: "2. Evidence and feedback",
-        meta: "Check what is fact and what is assumption.",
-        intro: "What evidence or facts do you have? List only what you know for certain.",
+        title: t("2. Evidence and feedback", "2. साक्ष्य और प्रतिक्रिया", "2. సాక్ష్యం మరియు ఫీడ్‌బ్యాక్", "2. சான்று மற்றும் பின்னூட்டம்", "2. ثبوت اور فیڈبیک"),
+        meta: t("Check what is fact and what is assumption.", "देखिए क्या तथ्य है और क्या मान्यता.", "ఏది వాస్తవమో, ఏది ఊహో చూడండి.", "எது உண்மை, எது ஊகம் என்பதைச் சரிபார்க்கவும்.", "دیکھیں کیا حقیقت ہے اور کیا مفروضہ۔"),
+        intro: t("What evidence or facts do you have? List only what you know for certain.", "आपके पास कौन-सा साक्ष्य या तथ्य है? केवल वही लिखें जो निश्चित हो.", "మీ వద్ద ఏ సాక్ష్యం లేదా వాస్తవాలు ఉన్నాయి? మీకు ఖచ్చితంగా తెలిసినవే జాబితా చేయండి.", "உங்களிடம் என்ன சான்று அல்லது உண்மைகள் உள்ளன? உறுதியாகத் தெரிந்தவற்றை மட்டும் பட்டியலிடுங்கள்.", "آپ کے پاس کون سے ثبوت یا حقائق ہیں؟ صرف وہی لکھیں جو یقینی طور پر معلوم ہو۔"),
         questions: [
-          buildPrivateIntakeQuestion("timelineContext", "When did this belief or pressure start?", "Mention the time or trigger that made it stronger.", "Timing helps define the pattern."),
-          buildPrivateIntakeQuestion("frequencyContext", "How often does this happen?", "Once, sometimes, often, or nearly every day.", "Frequency shows whether it is a loop."),
-          buildPrivateIntakeQuestion("triggerContext", "What tends to trigger it?", "Feedback, comparison, praise, pressure, or conflict.", "Triggers help separate fact from reaction.", true),
-          buildPrivateIntakeQuestion("previousAttempts", "What feedback or checks have you already tried?", "Who reviewed it, what you tested, and what changed.", "Prior checks matter.")
+          buildPrivateIntakeQuestion("timelineContext", t("When did this belief or pressure start?", "यह विश्वास या दबाव कब शुरू हुआ?", "ఈ నమ్మకం లేదా ఒత్తిడి ఎప్పుడు ప్రారంభమైంది?", "இந்த நம்பிக்கை அல்லது pressure எப்போது தொடங்கியது?", "یہ یقین یا دباؤ کب شروع ہوا؟"), t("Mention the time or trigger that made it stronger.", "वह समय या ट्रिगर लिखिए जिसने इसे और मज़बूत किया.", "దీనిని మరింత బలంగా 만든 సమయం లేదా triggerను పేర్కొనండి.", "அதை மேலும் வலுவாக்கிய நேரம் அல்லது trigger-ஐ குறிப்பிடுங்கள்.", "وہ وقت یا trigger بتائیں جس نے اسے مزید شدید کیا۔"), t("Timing helps define the pattern.", "समय पैटर्न समझने में मदद करता है.", "సమయం నమూనాను నిర్దేశించడంలో సహాయపడుతుంది.", "நேரம் pattern-ஐ வரையறுக்க உதவுகிறது.", "وقت pattern کو سمجھنے میں مدد دیتا ہے۔")),
+          buildPrivateIntakeQuestion("frequencyContext", t("How often does this happen?", "यह कितनी बार होता है?", "ఇది ఎంతసార్లు జరుగుతుంది?", "இது எத்தனை முறை நடக்கிறது?", "یہ کتنی بار ہوتا ہے؟"), t("Once, sometimes, often, or nearly every day.", "एक बार, कभी-कभी, अक्सर, या लगभग रोज़.", "ఒక్కసారి, కొన్నిసార్లు, తరచుగా, లేదా దాదాపు ప్రతి రోజు.", "ஒரு முறை, சில நேரம், அடிக்கடி, அல்லது almost every day.", "ایک بار، کبھی کبھی، اکثر، یا تقریباً ہر روز۔"), t("Frequency shows whether it is a loop.", "बारंबारता से पता चलता है कि यह चक्र है या नहीं.", "తరచుదనం ఇది లూప్ కాదా అని చూపుతుంది.", "அதிர்வெண் இது loop-ஆ என்பதை காட்டுகிறது.", "تکرار سے پتہ چلتا ہے کہ یہ loop ہے یا نہیں۔")),
+          buildPrivateIntakeQuestion("triggerContext", t("What tends to trigger it?", "इसे आम तौर पर क्या ट्रिगर करता है?", "దీనిని సాధారణంగా ఏమి trigger చేస్తుంది?", "இதற்கு பொதுவாக எது trigger ஆகிறது?", "اسے عموماً کیا trigger کرتا ہے؟"), t("Feedback, comparison, praise, pressure, or conflict.", "प्रतिक्रिया, तुलना, तारीफ़, दबाव, या संघर्ष.", "ఫీడ్‌బ్యాక్, పోలిక, ప్రశంస, ఒత్తిడి, లేదా వివాదం.", "பின்னூட்டம், ஒப்பீடு, பாராட்டு, pressure, அல்லது மோதல்.", "فیڈبیک، موازنہ، تعریف، دباؤ، یا تنازعہ۔"), t("Triggers help separate fact from reaction.", "ट्रिगर तथ्य को प्रतिक्रिया से अलग करने में मदद करते हैं.", "ట్రిగ్గర్లు వాస్తవాన్ని ప్రతిక్రియ నుంచి వేరు చేయడంలో సహాయపడతాయి.", "Trigger-கள் உண்மையை எதிர்வினையிலிருந்து பிரிக்க உதவுகின்றன.", "ٹرگر حقیقت کو ردعمل سے الگ کرنے میں مدد دیتے ہیں۔"), true),
+          buildPrivateIntakeQuestion("previousAttempts", t("What feedback or checks have you already tried?", "आप पहले कौन-सी प्रतिक्रिया या जाँच कर चुके हैं?", "మీరు ఇప్పటికే ఏ ఫీడ్‌బ్యాక్ లేదా checks ప్రయత్నించారు?", "நீங்கள் ஏற்கனவே என்ன feedback அல்லது checks செய்தீர்கள்?", "آپ پہلے کون سا فیڈبیک یا چیک آزما چکے ہیں؟"), t("Who reviewed it, what you tested, and what changed.", "किसने देखा, आपने क्या टेस्ट किया, और क्या बदला.", "ఎవరు పరిశీలించారు, మీరు ఏమి పరీక్షించారు, మరియు ఏమి మారింది.", "யார் பார்த்தனர், நீங்கள் எதை சோதித்தீர்கள், எது மாறியது.", "کس نے دیکھا، آپ نے کیا آزمایا، اور کیا بدلا؟"), t("Prior checks matter.", "पहले की जाँच मायने रखती है.", "మునుపటి checks ముఖ్యం.", "முன்னைய checks முக்கியம்.", "پچھلے checks اہم ہیں۔"))
         ]
       },
       {
         id: "people",
-        title: "3. People and reality check",
-        meta: "Bring in a steady outside view.",
-        intro: `A reality check often works best when it comes from a trusted person around ${safeIdentity}.`,
+        title: t("3. People and reality check", "3. लोग और reality check", "3. వ్యక్తులు మరియు reality check", "3. மக்கள் மற்றும் reality check", "3. لوگ اور حقیقت کی جانچ"),
+        meta: t("Bring in a steady outside view.", "एक स्थिर बाहरी नज़र जोड़ें.", "ఒక స్థిరమైన బయటి దృష్టిని తీసుకురండి.", "நிலையான வெளிப்புற பார்வையை கொண்டுவருங்கள்.", "ایک مستحکم بیرونی نظر شامل کریں۔"),
+        intro: t(
+          `A reality check often works best when it comes from a trusted person around ${safeIdentity}.`,
+          `रियलिटी चेक अक्सर तब सबसे अच्छा काम करता है जब वह ${safeIdentity} के आसपास किसी भरोसेमंद व्यक्ति से आए.`,
+          `రీయాలిటీ చెక్ తరచుగా ${safeIdentity} చుట్టూ ఉన్న నమ్మకమైన వ్యక్తి నుంచి వచ్చినప్పుడు బాగా పనిచేస్తుంది.`,
+          `ஒரு reality check பெரும்பாலும் ${safeIdentity} சுற்றியுள்ள நம்பகமான நபரிடமிருந்து வந்தால் சிறப்பாக வேலை செய்கிறது.`,
+          `reality check اکثر تب بہتر کام کرتا ہے جب یہ ${safeIdentity} کے اردگرد کسی قابلِ اعتماد شخص سے آئے۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("familyContext", "Who at home can stay steady with this?", "Family or home context if useful.", "Support should feel grounded.", true),
-          buildPrivateIntakeQuestion("relativeContext", "Any relatives who can give perspective?", "Add family perspective if relevant.", "Perspective can calm pressure.", true),
-          buildPrivateIntakeQuestion("friendsContext", "Any friends who give honest feedback?", "Who can tell you the truth kindly?", "Trusted feedback matters."),
-          buildPrivateIntakeQuestion("coworkerContext", "Any teacher, coworker, or peer context?", "If a role or peer matters, add it.", "Reality checks can come from work or study too.", true)
+          buildPrivateIntakeQuestion("familyContext", t("Who at home can stay steady with this?", "घर में कौन इसे शांति से संभाल सकता है?", "ఇంట్లో ఎవరు దీనితో స్థిరంగా ఉండగలరు?", "வீட்டில் யார் இதோடு நிலையாக இருக்க முடியும்?", "گھر میں کون اس کے ساتھ steady رہ سکتا ہے؟"), t("Family or home context if useful.", "यदि उपयोगी हो तो परिवार या घर का संदर्भ.", "ఉపయోగకరమైతే కుటుంబం లేదా ఇంటి సందర్భం.", "உதவுமானால் குடும்பம் அல்லது வீட்டு சூழல்.", "اگر مفید ہو تو خاندانی یا گھریلو پس منظر۔"), t("Support should feel grounded.", "सहारा ज़मीन से जुड़ा हुआ महसूस होना चाहिए.", "మద్దతు స్థిరంగా అనిపించాలి.", "ஆதரவு நிலைபெற்றதாக உணரப்பட வேண்டும்.", "مدد grounded محسوس ہونی چاہیے۔"), true),
+          buildPrivateIntakeQuestion("relativeContext", t("Any relatives who can give perspective?", "कोई रिश्तेदार सही नज़रिया दे सकता है?", "దృక్కోణం ఇవ్వగల బంధువులు ఉన్నారా?", "பார்வை கொடுக்கக்கூடிய உறவினர்கள் உள்ளனரா?", "کیا کوئی رشتہ دار perspective دے سکتا ہے؟"), t("Add family perspective if relevant.", "यदि ज़रूरी हो तो परिवार का नज़रिया जोड़ें.", "అవసరమైతే కుటుంబ దృక్కోణాన్ని జోడించండి.", "தேவைப்பட்டால் குடும்ப பார்வையைச் சேர்க்கவும்.", "اگر متعلق ہو تو خاندانی perspective شامل کریں۔"), t("Perspective can calm pressure.", "दृष्टिकोण दबाव को शांत कर सकता है.", "దృక్కోణం ఒత్తిడిని శాంతపరచగలదు.", "பார்வை pressure-ஐ அமைதிப்படுத்தலாம்.", "نقطۂ نظر دباؤ کو پرسکون کر سکتا ہے۔"), true),
+          buildPrivateIntakeQuestion("friendsContext", t("Any friends who give honest feedback?", "कोई दोस्त सच्ची प्रतिक्रिया देता है?", "నిజాయితీగల ఫీడ్‌బ్యాక్ ఇచ్చే స్నేహితులు ఉన్నారా?", "உண்மையான feedback கொடுக்கும் நண்பர்கள் உள்ளனரா?", "کوئی دوست ہے جو ایماندار feedback دے؟"), t("Who can tell you the truth kindly?", "कौन आपको शालीनता से सच बता सकता है?", "ఎవరు మీకు సున్నితంగా నిజం చెప్పగలరు?", "யார் உங்களுக்கு மென்மையாக உண்மையைச் சொல்ல முடியும்?", "کون آپ کو نرمی سے سچ بتا سکتا ہے؟"), t("Trusted feedback matters.", "भरोसेमंद प्रतिक्रिया मायने रखती है.", "నమ్మకమైన ఫీడ్‌బ్యాక్ ముఖ్యం.", "நம்பகமான feedback முக்கியம்.", "قابلِ اعتماد feedback اہم ہے۔")),
+          buildPrivateIntakeQuestion("coworkerContext", t("Any teacher, coworker, or peer context?", "कोई शिक्षक, सहकर्मी, या साथी का संदर्भ है?", "ఏ ఉపాధ్యాయుడు, సహోద్యోగి, లేదా సహపాఠి సందర్భమా?", "ஆசிரியர், சக ஊழியர், அல்லது தோழர் சூழல் உள்ளதா?", "کوئی استاد، ساتھی کارکن، یا peer کا پس منظر؟"), t("If a role or peer matters, add it.", "यदि कोई भूमिका या साथी मायने रखता है, तो जोड़ें.", "పాత్ర లేదా సహచరుడు ముఖ్యమైతే, జోడించండి.", "பங்கு அல்லது peer முக்கியமானதாக இருந்தால் சேர்க்கவும்.", "اگر کوئی کردار یا peer اہم ہو تو شامل کریں۔"), t("Reality checks can come from work or study too.", "रियलिटी चेक काम या पढ़ाई से भी मिल सकते हैं.", "రీయాలిటీ చెక్స్ పని లేదా చదువులోనూ రావచ్చు.", "Reality checks வேலை அல்லது படிப்பிலிருந்தும் வரலாம்.", "Reality checks کام یا پڑھائی سے بھی آ سکتے ہیں۔"), true)
         ]
       },
       {
         id: "pattern",
-        title: "4. Pattern and change",
-        meta: "See what repeats and what should shift.",
-        intro: "Is this a habit, a confident choice, or evidence-backed? Describe what you know versus what you assume.",
+        title: t("4. Pattern and change", "4. पैटर्न और बदलाव", "4. నమూనా మరియు మార్పు", "4. முறை மற்றும் மாற்றம்", "4. پیٹرن اور تبدیلی"),
+        meta: t("See what repeats and what should shift.", "देखिए क्या दोहराता है और क्या बदलना चाहिए.", "ఏది తిరిగి జరుగుతోందో మరియు ఏమి మారాలో చూడండి.", "எது மீண்டும் நடக்கிறது, எது மாற வேண்டும் என்பதைக் காணவும்.", "دیکھیں کیا دہرا رہا ہے اور کیا بدلنا چاہیے۔"),
+        intro: t("Is this a habit, a confident choice, or evidence-backed? Describe what you know versus what you assume.", "क्या यह आदत है, भरोसेमंद चुनाव है, या साक्ष्य-आधारित? जो जानते हैं और जो मानते हैं, दोनों को बताइए.", "ఇది అలవాటా, నమ్మకంతో చేసిన ఎంపికా, లేదా సాక్ష్యంతో మద్దతు పొందిందా? మీకు తెలిసినదాన్ని మరియు ఊహించేదాన్ని వేరు చేసి చెప్పండి.", "இது பழக்கமா, நம்பிக்கையுள்ள தேர்வா, அல்லது சான்றால் ஆதரிக்கப்படுகிறதா? நீங்கள் அறிந்ததையும் நீங்கள் ஊகிப்பதையும் விவரிக்கவும்.", "کیا یہ عادت ہے، پراعتماد انتخاب ہے، یا ثبوت پر مبنی؟ جو آپ جانتے ہیں اور جو آپ سمجھتے ہیں، دونوں بیان کریں۔"),
         questions: [
-          buildPrivateIntakeQuestion("behaviorPattern", "What pattern repeats?", "Where do you rush, hesitate, defend, or assume?", "Pattern is the real signal."),
-          buildPrivateIntakeQuestion("strengthsContext", "What part of this is already working?", "Any review, skill, discipline, or feedback that helps.", "Strengths anchor the next step."),
-          buildPrivateIntakeQuestion("supportPreferences", "How should support be delivered?", "Direct, quiet, step-by-step, or challenge-friendly.", "Tone should not create more noise."),
-          buildPrivateIntakeQuestion("dailyImpactContext", "How is this affecting the day?", "Focus, mood, sleep, or relationships.", "Impact helps balance judgment.")
+          buildPrivateIntakeQuestion("behaviorPattern", t("What pattern repeats?", "कौन-सा पैटर्न दोहराता है?", "ఏ నమూనా తిరిగి జరుగుతోంది?", "எந்த pattern மீண்டும் நடக்கிறது?", "کون سا pattern دہرا رہا ہے؟"), t("Where do you rush, hesitate, defend, or assume?", "कहाँ आप जल्दी करते हैं, हिचकते हैं, बचाव करते हैं, या मान लेते हैं?", "ఎక్కడ మీరు తొందరపడతారు, సంకోచిస్తారు, రక్షణాత్మకంగా ఉంటారు, లేదా ఊహిస్తారు?", "எங்கே நீங்கள் அவசரப்படுகிறீர்கள், தயங்குகிறீர்கள், பாதுகாப்பு எடுக்கிறீர்கள், அல்லது ஊகிக்கிறீர்கள்?", "کہاں آپ جلدی کرتے ہیں، ہچکچاتے ہیں، دفاع کرتے ہیں، یا فرض کر لیتے ہیں؟"), t("Pattern is the real signal.", "पैटर्न ही असली संकेत है.", "నమూనానే అసలైన సంకేతం.", "Pattern-தான் உண்மையான signal.", "pattern ہی اصل اشارہ ہے۔")),
+          buildPrivateIntakeQuestion("strengthsContext", t("What part of this is already working?", "इसमें कौन-सा हिस्सा पहले से काम कर रहा है?", "ఇందులో ఏ భాగం ఇప్పటికే పనిచేస్తోంది?", "இதில் எந்த பகுதி ஏற்கனவே வேலை செய்கிறது?", "اس میں کون سا حصہ پہلے سے کام کر رہا ہے؟"), t("Any review, skill, discipline, or feedback that helps.", "कोई समीक्षा, कौशल, अनुशासन, या प्रतिक्रिया जो मदद करती हो.", "సహాయపడే ఏదైనా సమీక్ష, నైపుణ్యం, క్రమశిక్షణ, లేదా ఫీడ్‌బ్యాక్.", "உதவுகின்ற எந்த review, skill, discipline, அல்லது feedback.", "کوئی review، skill، discipline، یا feedback جو مدد کرے۔"), t("Strengths anchor the next step.", "मज़बूत पक्ष अगले कदम को सहारा देते हैं.", "బలాలు తదుపరి అడుగుకు ఆధారమవుతాయి.", "வலிமைகள் அடுத்த படியை நிலைநிறுத்துகின்றன.", "طاقتیں اگلے قدم کو سہارا دیتی ہیں۔")),
+          buildPrivateIntakeQuestion("supportPreferences", t("How should support be delivered?", "सहारा किस तरह दिया जाना चाहिए?", "మద్దతు ఎలా ఇవ్వాలి?", "ஆதரவு எப்படி வழங்கப்பட வேண்டும்?", "مدد کیسے دی جانی چاہیے؟"), t("Direct, quiet, step-by-step, or challenge-friendly.", "सीधा, शांत, चरण-दर-चरण, या चुनौती-समझने वाला.", "నేరుగా, నిశ్శబ్దంగా, దశలవారీగా, లేదా challenge-friendly.", "நேரடி, அமைதியான, படிப்படியான, அல்லது challenge-friendly.", "سیدھا، خاموش، مرحلہ وار، یا challenge-friendly۔"), t("Tone should not create more noise.", "लहजे से और शोर नहीं होना चाहिए.", "శైలితో మరింత శబ్దం కాకూడదు.", "தோன் மேலும் சத்தம் உருவாக்கக் கூடாது.", "لہجہ مزید شور پیدا نہیں کرنا چاہیے۔")),
+          buildPrivateIntakeQuestion("dailyImpactContext", t("How is this affecting the day?", "यह दिन को कैसे प्रभावित कर रहा है?", "ఇది రోజును ఎలా ప్రభావితం చేస్తోంది?", "இது நாளை எப்படி பாதிக்கிறது?", "یہ دن کو کیسے متاثر کر رہا ہے؟"), t("Focus, mood, sleep, or relationships.", "ध्यान, मूड, नींद, या रिश्ते.", "దృష్టి, మూడ్, నిద్ర, లేదా సంబంధాలు.", "கவனம், mood, தூக்கம், அல்லது உறவுகள்.", "توجہ، mood، نیند، یا رشتے۔"), t("Impact helps balance judgment.", "असर निर्णय को संतुलित करने में मदद करता है.", "ప్రభావం తీర్పును సమతుల్యం చేయడంలో సహాయపడుతుంది.", "தாக்கம் judgment-ஐ சமநிலைப்படுத்த உதவுகிறது.", "اثر judgment کو متوازن کرنے میں مدد دیتا ہے۔"))
         ]
       },
       {
         id: "next",
-        title: "5. Outcome and boundary",
-        meta: "End with a useful next adjustment.",
-        intro: "The report should end with a real adjustment, not just a reflection.",
+        title: t("5. Outcome and boundary", "5. परिणाम और सीमा", "5. ఫలితం మరియు హద్దు", "5. முடிவு மற்றும் எல்லை", "5. نتیجہ اور حد"),
+        meta: t("End with a useful next adjustment.", "एक उपयोगी अगले बदलाव के साथ समाप्त करें.", "ఉపయోగకరమైన తదుపరి సర్దుబాటుతో ముగించండి.", "பயனுள்ள அடுத்த மாற்றத்துடன் முடிக்கவும்.", "ایک مفید اگلی adjustment کے ساتھ ختم کریں۔"),
+        intro: t("The report should end with a real adjustment, not just a reflection.", "रिपोर्ट केवल सोच पर नहीं, बल्कि वास्तविक बदलाव पर खत्म होनी चाहिए.", "report కేవలం ప్రతిబింబంతో కాక, నిజమైన సర్దుబాటుతో ముగియాలి.", "report வெறும் reflection-ஆக değil, ஒரு உண்மையான adjustment-ஆக முடிக்க வேண்டும்.", "رپورٹ کو صرف reflection پر نہیں بلکہ ایک حقیقی adjustment پر ختم ہونا چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("supportNeed", "What do you want from the next step?", "Reality check, plan, boundary, calming, or help deciding.", "The next step should be specific."),
-          buildPrivateIntakeQuestion("neededOutcome", "What should change now?", "A better decision, calmer pace, or more evidence before acting.", "The outcome should slow mistakes."),
-          buildPrivateIntakeQuestion("safetyNote", "Any safety concern to mention?", "If the pressure is pushing risky decisions, say so.", "Safety still matters."),
-          buildPrivateIntakeQuestion("privacyBoundary", "Any privacy boundary to respect?", "What should not be repeated or saved.", "Boundaries keep the report safe.")
+          buildPrivateIntakeQuestion("supportNeed", t("What do you want from the next step?", "अगले कदम से आप क्या चाहते हैं?", "తదుపరి అడుగు నుంచి మీరు ఏమి కోరుకుంటున్నారు?", "அடுத்த படியிலிருந்து நீங்கள் என்ன விரும்புகிறீர்கள்?", "اگلے قدم سے آپ کیا چاہتے ہیں؟"), t("Reality check, plan, boundary, calming, or help deciding.", "रियलिटी चेक, योजना, सीमा, शांति, या निर्णय लेने में मदद.", "రీయాలిటీ చెక్, ప్రణాళిక, హద్దు, శాంతి, లేదా నిర్ణయించడంలో సహాయం.", "Reality check, திட்டம், எல்லை, அமைதி, அல்லது முடிவு எடுக்க உதவி.", "حقیقت کی جانچ، منصوبہ، حد، سکون، یا فیصلہ کرنے میں مدد۔"), t("The next step should be specific.", "अगला कदम स्पष्ट होना चाहिए.", "తదుపరి అడుగు నిర్దిష్టంగా ఉండాలి.", "அடுத்த படி குறிப்பிட்டதாக இருக்க வேண்டும்.", "اگلا قدم واضح ہونا چاہیے۔")),
+          buildPrivateIntakeQuestion("neededOutcome", t("What should change now?", "अब क्या बदलना चाहिए?", "ఇప్పుడు ఏమి మారాలి?", "இப்போது என்ன மாற வேண்டும்?", "اب کیا بدلنا چاہیے؟"), t("A better decision, calmer pace, or more evidence before acting.", "बेहतर निर्णय, शांत गति, या कार्रवाई से पहले अधिक साक्ष्य.", "మంచి నిర్ణయం, నిశ్శబ్ద వేగం, లేదా చర్యకు ముందు మరింత సాక్ష్యం.", "சிறந்த முடிவு, அமைதியான வேகம், அல்லது செயல்படுவதற்கு முன் மேலும் சான்று.", "بہتر فیصلہ، پرسکون رفتار، یا عمل سے پہلے مزید ثبوت۔"), t("The outcome should slow mistakes.", "परिणाम से गलतियाँ धीमी होनी चाहिए.", "ఫలితం తప్పులను నెమ్మదించాలి.", "முடிவு தவறுகளை மெதுவாக்க வேண்டும்.", "نتیجہ غلطیوں کو سست کرے۔")),
+          buildPrivateIntakeQuestion("safetyNote", t("Any safety concern to mention?", "कोई सुरक्षा चिंता लिखनी है?", "ఏ భద్రతా ఆందోళనను పేర్కొనాలా?", "பாதுகாப்பு கவலை ஏதேனும் குறிப்பிட வேண்டுமா?", "کوئی حفاظتی تشویش درج کرنی ہے؟"), t("If the pressure is pushing risky decisions, say so.", "अगर दबाव ख़तरनाक फ़ैसलों की ओर धकेल रहा है, तो बताइए.", "ఒత్తిడి ప్రమాదకర నిర్ణయాల వైపు నెట్టుకుంటే, చెప్పండి.", "pressure ஆபத்தான முடிவுகளுக்கு தள்ளினால், சொல்லுங்கள்.", "اگر دباؤ خطرناک فیصلوں کی طرف دھکیل رہا ہے تو بتائیں۔"), t("Safety still matters.", "सुरक्षा अब भी मायने रखती है.", "భద్రత ఇప్పటికీ ముఖ్యం.", "பாதுகாப்பு இன்னும் முக்கியம்.", "حفاظت اب بھی اہم ہے۔")),
+          buildPrivateIntakeQuestion("privacyBoundary", t("Any privacy boundary to respect?", "कोई गोपनीयता सीमा माननी है?", "గమనించాల్సిన గోప్యతా హద్దు ఏదైనా ఉందా?", "மதிக்க வேண்டிய தனியுரிமை எல்லை ஏதேனும் உள்ளதா?", "کوئی رازداری کی حد جس کا احترام کرنا ہے؟"), t("What should not be repeated or saved.", "क्या दोहराया या सहेजा नहीं जाना चाहिए?", "ఏది తిరిగి చెప్పకూడదు లేదా సేవ్ చేయకూడదు?", "எது மீண்டும் சொல்லக்கூடாது அல்லது சேமிக்கக்கூடாது?", "کیا دہرایا یا محفوظ نہیں کیا جانا چاہیے؟"), t("Boundaries keep the report safe.", "सीमाएँ रिपोर्ट को सुरक्षित रखती हैं.", "హద్దులు report‌ను సురక్షితంగా ఉంచుతాయి.", "எல்லைகள் report-ஐ பாதுகாப்பாக வைத்திருக்கும்.", "حدود رپورٹ کو محفوظ رکھتی ہیں۔"))
         ]
       }
     ],
     general: [
       {
         id: "situation",
-        title: "1. Situation",
-        meta: "Start with the cleanest description you can.",
-        intro: `This is the broad version for ${issueLabel.toLowerCase()} when the app needs to learn more before choosing a tighter path.`,
+        title: t("1. Situation", "1. स्थिति", "1. పరిస్థితి", "1. நிலைமை", "1. صورت حال"),
+        meta: t("Start with the cleanest description you can.", "सबसे साफ़ विवरण से शुरू करें.", "మీకు వీలైనంత స్పష్టమైన వివరణతో ప్రారంభించండి.", "மிகவும் தெளிவான விளக்கத்திலிருந்து தொடங்குங்கள்.", "جتنا صاف بیان کر سکتے ہیں، اسی سے شروع کریں۔"),
+        intro: t(
+          `This is the broad version for ${issueLabel.toLowerCase()} when the app needs to learn more before choosing a tighter path.`,
+          `यह ${issueLabel.toLowerCase()} के लिए व्यापक संस्करण है, जब ऐप को सही रास्ता चुनने से पहले और जानना हो.`,
+          `తగ్గిన మార్గాన్ని ఎంచుకునే ముందు యాప్‌కు మరింత తెలుసుకోవాల్సినప్పుడు ఇది ${issueLabel.toLowerCase()} కోసం విస్తృత వెర్షన్.`,
+          `இது ${issueLabel.toLowerCase()}-க்கு பரந்த பதிப்பு; app குறுகிய வழியைத் தேர்வுசெய்யும் முன் மேலும் அறிய வேண்டியபோது பயன்படுத்தப்படுகிறது.`,
+          `یہ ${issueLabel.toLowerCase()} کے لیے وسیع ورژن ہے، جب ایپ کو تنگ راستہ منتخب کرنے سے پہلے مزید جاننا ہو۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("overview", "What is happening?", "Give the situation in a few clear lines.", "Start with the main event."),
-          buildPrivateIntakeQuestion("timelineContext", "When did it begin or change?", "Give the date, time, or moment it shifted.", "Timing helps the report."),
-          buildPrivateIntakeQuestion("frequencyContext", "How often does it happen?", "Once, repeated, weekly, or daily.", "Frequency makes the route smarter."),
-          buildPrivateIntakeQuestion("triggerContext", "What usually sets it off?", "People, places, thoughts, or duties.", "Triggers help sort the case.", true)
+          buildPrivateIntakeQuestion("overview", t("What is happening?", "क्या हो रहा है?", "ఏం జరుగుతోంది?", "என்ன நடக்கிறது?", "کیا ہو رہا ہے؟"), t("Give the situation in a few clear lines.", "स्थिति को कुछ साफ़ पंक्तियों में बताइए.", "పరిస్థితిని కొన్ని స్పష్టమైన పంక్తుల్లో చెప్పండి.", "நிலையை சில தெளிவான வரிகளில் கூறுங்கள்.", "صورت حال کو چند صاف سطروں میں بتائیں۔"), t("Start with the main event.", "मुख्य घटना से शुरू करें.", "ముఖ్య సంఘటనతో ప్రారంభించండి.", "முக்கிய நிகழ்விலிருந்து தொடங்குங்கள்.", "اہم واقعے سے شروع کریں۔")),
+          buildPrivateIntakeQuestion("timelineContext", t("When did it begin or change?", "यह कब शुरू या बदला?", "ఇది ఎప్పుడు ప్రారంభమైంది లేదా మారింది?", "இது எப்போது தொடங்கியது அல்லது மாறியது?", "یہ کب شروع ہوا یا بدلا؟"), t("Give the date, time, or moment it shifted.", "तारीख़, समय, या बदलाव का पल बताइए.", "తేదీ, సమయం, లేదా మారిన క్షణాన్ని చెప్పండి.", "தேதி, நேரம், அல்லது அது மாறிய தருணத்தைச் சொல்லுங்கள்.", "تاریخ، وقت، یا وہ لمحہ بتائیں جب یہ بدلا۔"), t("Timing helps the report.", "समय रिपोर्ट को मदद करता है.", "సమయం report‌కు సహాయపడుతుంది.", "நேரம் report-க்கு உதவுகிறது.", "وقت رپورٹ کی مدد کرتا ہے۔")),
+          buildPrivateIntakeQuestion("frequencyContext", t("How often does it happen?", "यह कितनी बार होता है?", "ఇది ఎంతసార్లు జరుగుతుంది?", "இது எத்தனை முறை நடக்கிறது?", "یہ کتنی بار ہوتا ہے؟"), t("Once, repeated, weekly, or daily.", "एक बार, बार-बार, साप्ताहिक, या दैनिक.", "ఒక్కసారి, పునరావృతం, వారానికి, లేదా రోజుకు.", "ஒரு முறை, மீண்டும் மீண்டும், வாரந்தோறும், அல்லது தினமும்.", "ایک بار، بار بار، ہفتہ وار، یا روزانہ۔"), t("Frequency makes the route smarter.", "बारंबारता से मार्ग और स्मार्ट बनता है.", "తరచుదనం మార్గాన్ని మరింత తెలివిగా చేస్తుంది.", "அதிர்வெண் வழியை மேலும் புத்திசாலியாக்குகிறது.", "تکرار راستے کو زیادہ ذہین بناتی ہے۔")),
+          buildPrivateIntakeQuestion("triggerContext", t("What usually sets it off?", "आमतौर पर इसे क्या शुरू करता है?", "సాధారణంగా దీన్ని ఏమి ప్రారంభిస్తుంది?", "பொதுவாக இதை எது தூண்டுகிறது?", "عام طور پر اسے کیا شروع کرتا ہے؟"), t("People, places, thoughts, or duties.", "लोग, जगह, विचार, या ज़िम्मेदारियाँ.", "వ్యక్తులు, ప్రదేశాలు, ఆలోచనలు, లేదా బాధ్యతలు.", "மக்கள், இடங்கள், எண்ணங்கள், அல்லது கடமைகள்.", "لوگ، جگہیں، خیالات، یا ذمہ داریاں۔"), t("Triggers help sort the case.", "ट्रिगर मामले को छाँटने में मदद करते हैं.", "ట్రిగ్గర్లు కేసును క్రమబద్ధీకరించడంలో సహాయపడతాయి.", "தூண்டிகள் வழக்கை ஒழுங்குபடுத்த உதவுகின்றன.", "ٹرگر کیس کو ترتیب دینے میں مدد دیتے ہیں۔"), true)
         ]
       },
       {
         id: "feeling",
-        title: "2. Feeling and body",
-        meta: "Capture the emotional side too.",
-        intro: "A useful intake always needs the feeling and the body signal, not only the facts.",
+        title: t("2. Feeling and body", "2. भावना और शरीर", "2. భావం మరియు శరీరం", "2. உணர்வு மற்றும் உடல்", "2. احساس اور جسم"),
+        meta: t("Capture the emotional side too.", "भावनात्मक पक्ष भी दर्ज करें.", "భావోద్వేగ భాగాన్ని కూడా నమోదు చేయండి.", "உணர்ச்சி பக்கத்தையும் பதிவு செய்யுங்கள்.", "جذباتی پہلو بھی نوٹ کریں۔"),
+        intro: t("A useful intake always needs the feeling and the body signal, not only the facts.", "एक उपयोगी intake में केवल तथ्य नहीं, भावना और शरीर के संकेत भी होने चाहिए.", "ఉపయోగకరమైన intakeలో కేవలం వాస్తవాలే కాదు, భావన మరియు శరీర సంకేతాలు కూడా కావాలి.", "பயனுள்ள intake-க்கு facts மட்டும் அல்ல, feeling மற்றும் body signal-உம் தேவை.", "ایک مفید intake میں صرف حقائق نہیں بلکہ احساس اور جسمانی اشارے بھی ضروری ہیں۔"),
         questions: [
-          buildPrivateIntakeQuestion("currentFeeling", "What are you feeling right now?", "Use short plain words.", "Feelings help the app respond better."),
-          buildPrivateIntakeQuestion("emotionIntensity", "How strong is it?", "Low, medium, high, or overwhelming.", "Intensity helps with routing."),
-          buildPrivateIntakeQuestion("bodySignal", "What is your body telling you?", "Breath, tension, sleep, appetite, pain, or fatigue.", "Body signal is a strong clue."),
-          buildPrivateIntakeQuestion("dailyImpactContext", "How is this affecting daily life?", "Study, work, home, or routine.", "Impact matters for the report.")
+          buildPrivateIntakeQuestion("currentFeeling", t("What are you feeling right now?", "अभी आप क्या महसूस कर रहे हैं?", "ఇప్పుడు మీరు ఏమి అనుభవిస్తున్నారు?", "இப்போது நீங்கள் என்ன உணர்கிறீர்கள்?", "ابھی آپ کیا محسوس کر رہے ہیں؟"), t("Use short plain words.", "छोटे और सीधे शब्दों का उपयोग करें.", "చిన్న సూటి పదాలు వాడండి.", "சிறிய, எளிய வார்த்தைகளைப் பயன்படுத்துங்கள்.", "چھوٹے اور سادہ الفاظ استعمال کریں۔"), t("Feelings help the app respond better.", "भावनाएँ ऐप को बेहतर प्रतिक्रिया देने में मदद करती हैं.", "భావాలు యాప్‌ను మెరుగైన ప్రతిస్పందన ఇవ్వడంలో సహాయపడతాయి.", "உணர்வுகள் app-ஐ சிறப்பாக பதிலளிக்க உதவுகின்றன.", "احساسات ایپ کو بہتر جواب دینے میں مدد کرتے ہیں۔")),
+          buildPrivateIntakeQuestion("emotionIntensity", t("How strong is it?", "यह कितना तीव्र है?", "ఇది ఎంత బలంగా ఉంది?", "இது எவ்வளவு வலுவாக உள்ளது?", "یہ کتنا شدید ہے؟"), t("Low, medium, high, or overwhelming.", "कम, मध्यम, ज़्यादा, या बहुत भारी.", "తక్కువ, మధ్య, అధిక, లేదా overwhelming.", "குறைவு, நடுத்தரம், அதிகம், அல்லது overwhelming.", "کم، درمیانہ، زیادہ، یا بہت زیادہ۔"), t("Intensity helps with routing.", "तीव्रता मार्ग चुनने में मदद करती है.", "తీవ్రత routing‌కు సహాయపడుతుంది.", "தீவிரம் route செய்ய உதவுகிறது.", "شدت routing میں مدد دیتی ہے۔")),
+          buildPrivateIntakeQuestion("bodySignal", t("What is your body telling you?", "आपका शरीर क्या बता रहा है?", "మీ శరీరం ఏమి చెబుతోంది?", "உங்கள் உடல் என்ன சொல்கிறது?", "آپ کا جسم کیا بتا رہا ہے؟"), t("Breath, tension, sleep, appetite, pain, or fatigue.", "साँस, तनाव, नींद, भूख, दर्द, या थकान.", "శ్వాస, ఒత్తిడి, నిద్ర, ఆకలి, నొప్పి, లేదా అలసట.", "மூச்சு, இறுக்கம், தூக்கம், பசி, வலி, அல்லது சோர்வு.", "سانس، تناؤ، نیند، بھوک، درد، یا تھکن۔"), t("Body signal is a strong clue.", "शरीर का संकेत एक मज़बूत सुराग है.", "శరీర సంకేతం బలమైన సూచన.", "உடல் signal ஒரு வலுவான clue.", "جسمانی اشارہ ایک مضبوط clue ہے۔")),
+          buildPrivateIntakeQuestion("dailyImpactContext", t("How is this affecting daily life?", "यह रोज़मर्रा की ज़िंदगी को कैसे प्रभावित कर रहा है?", "ఇది రోజువారీ జీవితాన్ని ఎలా ప్రభావితం చేస్తోంది?", "இது தினசரி வாழ்க்கையை எப்படி பாதிக்கிறது?", "یہ روزمرہ زندگی کو کیسے متاثر کر رہا ہے؟"), t("Study, work, home, or routine.", "पढ़ाई, काम, घर, या दिनचर्या.", "చదువు, పని, ఇల్లు, లేదా దినచర్య.", "படிப்பு, வேலை, வீடு, அல்லது routine.", "پڑھائی، کام، گھر، یا روٹین۔"), t("Impact matters for the report.", "रिपोर्ट के लिए असर मायने रखता है.", "ప్రభావం report‌కు ముఖ్యం.", "தாக்கம் report-க்கு முக்கியம்.", "اثر رپورٹ کے لیے اہم ہے۔"))
         ]
       },
       {
         id: "people",
-        title: "3. People and support",
-        meta: "Capture the people around the issue.",
-        intro: `This helps the report understand the human context around ${safeIdentity}.`,
+        title: t("3. People and support", "3. लोग और सहारा", "3. వ్యక్తులు మరియు సహాయం", "3. மக்கள் மற்றும் ஆதரவு", "3. لوگ اور مدد"),
+        meta: t("Capture the people around the issue.", "समस्या के आसपास के लोगों को दर्ज करें.", "సమస్య చుట్టూ ఉన్న వ్యక్తులను నమోదు చేయండి.", "பிரச்சினையைச் சுற்றியுள்ள மக்களைப் பதிவு செய்யுங்கள்.", "مسئلے کے اردگرد لوگوں کو درج کریں۔"),
+        intro: t(
+          `This helps the report understand the human context around ${safeIdentity}.`,
+          `इससे रिपोर्ट को ${safeIdentity} के आसपास का मानवीय संदर्भ समझने में मदद मिलती है.`,
+          `ఇది report‌కు ${safeIdentity} చుట్టూ ఉన్న మానవ సందర్భాన్ని అర్థం చేసుకోవడంలో సహాయపడుతుంది.`,
+          `இது report-க்கு ${safeIdentity} சுற்றியுள்ள மனித சூழலைப் புரிந்துகொள்ள உதவுகிறது.`,
+          `اس سے رپورٹ کو ${safeIdentity} کے اردگرد انسانی پس منظر سمجھنے میں مدد ملتی ہے۔`
+        ),
         questions: [
-          buildPrivateIntakeQuestion("familyContext", "Family or home context?", "Who is involved, close, or affected?", "Home support can change the route.", true),
-          buildPrivateIntakeQuestion("relativeContext", "Relatives or extended family?", "Any wider family context to note.", "Useful if pressure or help comes from there.", true),
-          buildPrivateIntakeQuestion("friendsContext", "Friends or close people?", "Who is safe, who knows, who helps?", "Connection helps recovery."),
-          buildPrivateIntakeQuestion("coworkerContext", "School, office, or team context?", "Mentor, teacher, coworker, boss, or peer.", "Work and study matter too.", true)
+          buildPrivateIntakeQuestion("familyContext", t("Family or home context?", "परिवार या घर का संदर्भ?", "కుటుంబం లేదా ఇంటి సందర్భం?", "குடும்பம் அல்லது வீட்டுச் சூழல்?", "خاندان یا گھر کا پس منظر؟"), t("Who is involved, close, or affected?", "कौन शामिल है, करीब है, या प्रभावित हुआ है?", "ఎవరు పాల్గొన్నారు, దగ్గరగా ఉన్నారు, లేదా ప్రభావితమయ్యారు?", "யார் ஈடுபட்டுள்ளனர், நெருக்கமாக உள்ளனர், அல்லது பாதிக்கப்பட்டுள்ளனர்?", "کون شامل ہے، قریب ہے، یا متاثر ہوا ہے؟"), t("Home support can change the route.", "घर का सहारा मार्ग बदल सकता है.", "ఇంటి మద్దతు మార్గాన్ని మార్చగలదు.", "வீட்டு ஆதரவு வழியை மாற்றலாம்.", "گھریلو مدد راستہ بدل سکتی ہے۔"), true),
+          buildPrivateIntakeQuestion("relativeContext", t("Relatives or extended family?", "रिश्तेदार या विस्तृत परिवार?", "బంధువులు లేదా విస్తృత కుటుంబం?", "உறவினர்கள் அல்லது விரிந்த குடும்பம்?", "رشتہ دار یا بڑا خاندان؟"), t("Any wider family context to note.", "लिखने लायक कोई व्यापक परिवार संदर्भ?", "పేర్కొనాల్సిన విస్తృత కుటుంబ సందర్భం ఏదైనా ఉందా?", "குறிப்பிட வேண்டிய விரிந்த குடும்பச் சூழல் ஏதேனும்?", "کوئی وسیع خاندانی پس منظر درج کرنا ہو؟"), t("Useful if pressure or help comes from there.", "यदि दबाव या मदद वहीं से आती हो तो उपयोगी.", "ఒత్తిడి లేదా సహాయం అక్కడి నుంచే వస్తే ఇది ఉపయోగకరం.", "அழுத்தம் அல்லது உதவி அங்கிருந்து வந்தால் இது உதவும்.", "اگر دباؤ یا مدد وہاں سے آتی ہو تو مفید ہے۔"), true),
+          buildPrivateIntakeQuestion("friendsContext", t("Friends or close people?", "दोस्त या करीबी लोग?", "స్నేహితులు లేదా దగ్గరి వ్యక్తులు?", "நண்பர்கள் அல்லது நெருங்கியவர்கள்?", "دوست یا قریبی لوگ؟"), t("Who is safe, who knows, who helps?", "कौन सुरक्षित है, कौन जानता है, कौन मदद करता है?", "ఎవరు సురక్షితులు, ఎవరికీ తెలుసు, ఎవరు సహాయం చేస్తారు?", "யார் பாதுகாப்பானவர், யாருக்குத் தெரியும், யார் உதவுகிறார்கள்?", "کون محفوظ ہے، کون جانتا ہے، کون مدد کرتا ہے؟"), t("Connection helps recovery.", "जुड़ाव रिकवरी में मदद करता है.", "సంబంధం కోలుకునేందుకు సహాయపడుతుంది.", "தொடர்பு மீட்புக்கு உதவுகிறது.", "رابطہ بحالی میں مدد کرتا ہے۔")),
+          buildPrivateIntakeQuestion("coworkerContext", t("School, office, or team context?", "स्कूल, दफ़्तर, या टीम का संदर्भ?", "పాఠశాల, కార్యాలయం, లేదా బృంద సందర్భమా?", "பள்ளி, அலுவலகம், அல்லது குழு சூழல்?", "اسکول، دفتر، یا ٹیم کا پس منظر؟"), t("Mentor, teacher, coworker, boss, or peer.", "मेंटर, शिक्षक, सहकर्मी, बॉस, या साथी.", "మెంటర్, ఉపాధ్యాయుడు, సహోద్యోగి, బాస్, లేదా సహచరుడు.", "மென்டர், ஆசிரியர், சக ஊழியர், மேலாளர், அல்லது peer.", "مینٹر، استاد، ساتھی کارکن، باس، یا ہم منصب۔"), t("Work and study matter too.", "काम और पढ़ाई भी मायने रखते हैं.", "పని మరియు చదువు కూడా ముఖ్యం.", "வேலை மற்றும் படிப்பும் முக்கியம்.", "کام اور پڑھائی بھی اہم ہیں۔"), true)
         ]
       },
       {
         id: "pattern",
-        title: "4. Pattern and support",
-        meta: "See what repeats and what has worked before.",
-        intro: "The same problem often has a repeating shape, and the report should learn that shape.",
+        title: t("4. Pattern and support", "4. पैटर्न और सहारा", "4. నమూనా మరియు సహాయం", "4. முறை மற்றும் ஆதரவு", "4. پیٹرن اور مدد"),
+        meta: t("See what repeats and what has worked before.", "देखिए क्या दोहराता है और पहले क्या काम आया.", "ఏది పునరావృతమవుతోందో మరియు ముందు ఏమి పనిచేసిందో చూడండి.", "எது மீண்டும் நடக்கிறது, முன்பு என்ன வேலை செய்தது என்பதைக் காணவும்.", "دیکھیں کیا دہرا رہا ہے اور پہلے کیا کام آیا۔"),
+        intro: t("The same problem often has a repeating shape, and the report should learn that shape.", "एक ही समस्या अक्सर दोहराने वाला रूप लेती है, और रिपोर्ट को वह रूप समझना चाहिए.", "అదే సమస్యకు తరచుగా పునరావృతమయ్యే ఆకారం ఉంటుంది, మరియు report ఆ ఆకారాన్ని నేర్చుకోవాలి.", "அதே பிரச்சினைக்கு அடிக்கடி மீண்டும் நடக்கும் வடிவம் இருக்கும்; report அந்த வடிவத்தை கற்றுக்கொள்ள வேண்டும்.", "ایک ہی مسئلہ اکثر دہرائے جانے والی شکل لیتا ہے، اور رپورٹ کو وہ شکل سیکھنی چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("behaviorPattern", "What repeats?", "The loop, habit, or recurring pressure.", "Patterns help the app stop guessing."),
-          buildPrivateIntakeQuestion("previousAttempts", "What have you already tried?", "What helped, what failed, what was ignored.", "The report should build on reality."),
-          buildPrivateIntakeQuestion("strengthsContext", "What is still helping a little?", "Any skill, habit, person, or routine that helps.", "Small strengths matter."),
-          buildPrivateIntakeQuestion("supportPreferences", "What support style feels best?", "Private, direct, gentle, practical, or faith-aware.", "Tone matters for follow-through.")
+          buildPrivateIntakeQuestion("behaviorPattern", t("What repeats?", "क्या दोहराता है?", "ఏది పునరావృతమవుతోంది?", "எது மீண்டும் நடக்கிறது?", "کیا دہراتا ہے؟"), t("The loop, habit, or recurring pressure.", "लूप, आदत, या बार-बार आने वाला दबाव.", "లూప్, అలవాటు, లేదా తిరిగి వచ్చే ఒత్తిడి.", "loop, பழக்கம், அல்லது மீண்டும் வரும் pressure.", "loop، عادت، یا بار بار آنے والا دباؤ۔"), t("Patterns help the app stop guessing.", "पैटर्न से ऐप अंदाज़ा लगाना बंद करता है.", "నమూనాలు యాప్‌ను ఊహించడం ఆపడానికి సహాయపడతాయి.", "Pattern-கள் app-ஐ ஊகிக்காமல் இருக்க உதவுகின்றன.", "patterns ایپ کو اندازہ لگانا بند کرنے میں مدد دیتے ہیں۔")),
+          buildPrivateIntakeQuestion("previousAttempts", t("What have you already tried?", "आप पहले क्या आज़मा चुके हैं?", "మీరు ఇప్పటికే ఏమి ప్రయత్నించారు?", "நீங்கள் ஏற்கனவே என்ன முயற்சி செய்தீர்கள்?", "آپ پہلے کیا آزما چکے ہیں؟"), t("What helped, what failed, what was ignored.", "किससे मदद मिली, क्या असफल हुआ, क्या नज़रअंदाज़ हुआ.", "ఏది సహాయపడింది, ఏమి విఫలమైంది, ఏమి పట్టించుకోబడలేదు.", "எது உதவியது, எது தோல்வியடைந்தது, எது கவனிக்கப்படவில்லை.", "کیا مددگار رہا، کیا ناکام ہوا، اور کیا نظرانداز ہوا۔"), t("The report should build on reality.", "रिपोर्ट को हकीकत पर टिकना चाहिए.", "report వాస్తవం మీద నిర్మించాలి.", "report நிஜத்தின் மேல் கட்டப்பட வேண்டும்.", "رپورٹ کو حقیقت پر بننا چاہیے۔")),
+          buildPrivateIntakeQuestion("strengthsContext", t("What is still helping a little?", "अभी भी थोड़ा क्या मदद कर रहा है?", "ఇంకా కొంచెం ఏమి సహాయపడుతోంది?", "இன்னும் சிறிதளவு எது உதவுகிறது?", "ابھی بھی تھوڑا کیا مدد کر رہا ہے؟"), t("Any skill, habit, person, or routine that helps.", "कोई कौशल, आदत, व्यक्ति, या दिनचर्या जो मदद करे.", "సహాయపడే ఏదైనా నైపుణ్యం, అలవాటు, వ్యక్తి, లేదా దినచర్య.", "உதவும் எந்த skill, habit, person, அல்லது routine.", "کوئی skill، عادت، شخص، یا روٹین جو مدد کرے۔"), t("Small strengths matter.", "छोटी ताक़तें भी मायने रखती हैं.", "చిన్న బలాలు కూడా ముఖ్యం.", "சிறிய வலிமைகளும் முக்கியம்.", "چھوٹی طاقتیں بھی اہم ہیں۔")),
+          buildPrivateIntakeQuestion("supportPreferences", t("What support style feels best?", "किस तरह का सहारा सबसे अच्छा लगेगा?", "ఎలాంటి మద్దతు శైలి బాగా అనిపిస్తుంది?", "எந்த வகை ஆதரவு சிறந்ததாக இருக்கும்?", "کس طرح کی مدد سب سے بہتر لگتی ہے؟"), t("Private, direct, gentle, practical, or faith-aware.", "निजी, सीधे, कोमल, व्यावहारिक, या आस्था-समझने वाला.", "ప్రైవేట్, నేరుగా, మృదువుగా, ప్రాక్టికల్‌గా, లేదా విశ్వాసాన్ని పరిగణించే.", "தனிப்பட்ட, நேரடி, மென்மையான, நடைமுறை, அல்லது நம்பிக்கை-அறிந்த.", "نجی، سیدھی، نرم، عملی، یا عقیدے سے واقف۔"), t("Tone matters for follow-through.", "लहजा आगे बढ़ने में मायने रखता है.", "శైలి కొనసాగింపుకు ముఖ్యం.", "தோன் தொடர்ச்சிக்கு முக்கியம்.", "لہجہ follow-through کے لیے اہم ہے۔"))
         ]
       },
       {
         id: "next",
-        title: "5. Next move and safety",
-        meta: "Close with the next useful step.",
-        intro: "A clear intake should end by naming the next move and the boundaries that matter.",
+        title: t("5. Next move and safety", "5. अगला कदम और सुरक्षा", "5. తదుపరి అడుగు మరియు భద్రత", "5. அடுத்த நகர்வு மற்றும் பாதுகாப்பு", "5. اگلا قدم اور حفاظت"),
+        meta: t("Close with the next useful step.", "अगले उपयोगी कदम के साथ समाप्त करें.", "తదుపరి ఉపయోగకరమైన అడుగుతో ముగించండి.", "அடுத்த பயனுள்ள படியுடன் முடிக்கவும்.", "اگلے مفید قدم کے ساتھ ختم کریں۔"),
+        intro: t("A clear intake should end by naming the next move and the boundaries that matter.", "एक साफ़ intake को अगले कदम और अहम सीमाओं को बताकर समाप्त होना चाहिए.", "స్పష్టమైన intake తదుపరి అడుగు మరియు ముఖ్యమైన హద్దులను పేర్కొంటూ ముగియాలి.", "தெளிவான intake அடுத்த படியையும் முக்கியமான எல்லைகளையும் குறிப்பிடி முடிவடைய வேண்டும்.", "ایک واضح intake کو اگلے قدم اور اہم حدود کا ذکر کرکے ختم ہونا چاہیے۔"),
         questions: [
-          buildPrivateIntakeQuestion("supportNeed", "What kind of help do you want now?", "Calm, advice, documentation, action, or professional help.", "The app can route by the help type."),
-          buildPrivateIntakeQuestion("neededOutcome", "What result are you hoping for?", "What should be true after the next step?", "Outcome keeps the report focused."),
-          buildPrivateIntakeQuestion("safetyNote", "Anything urgent or safety-related?", "Tell me if this needs urgent help or a safety plan.", "Safety stays visible."),
-          buildPrivateIntakeQuestion("privacyBoundary", "Any detail to keep private?", "What should not be repeated, stored, or shared.", "Privacy is respected.")
+          buildPrivateIntakeQuestion("supportNeed", t("What kind of help do you want now?", "अब आपको किस तरह की मदद चाहिए?", "ఇప్పుడు మీకు ఎలాంటి సహాయం కావాలి?", "இப்போது எந்த வகை உதவி வேண்டும்?", "اب آپ کو کس طرح کی مدد چاہیے؟"), t("Calm, advice, documentation, action, or professional help.", "शांति, सलाह, दस्तावेज़, कार्रवाई, या पेशेवर मदद.", "శాంతి, సలహా, డాక్యుమెంటేషన్, చర్య, లేదా వృత్తిపరమైన సహాయం.", "அமைதி, ஆலோசனை, ஆவணங்கள், செயல்பாடு, அல்லது தொழில்முறை உதவி.", "پرسکون مدد، مشورہ، دستاویزات، کارروائی، یا پیشہ ورانہ مدد۔"), t("The app can route by the help type.", "ऐप मदद के प्रकार के हिसाब से मार्ग तय कर सकता है.", "యాప్ సహాయం రకం ఆధారంగా మార్గాన్ని ఎంచుకోగలదు.", "உதவி வகையை வைத்து app வழிநடத்த முடியும்.", "ایپ مدد کی قسم کے مطابق route بنا سکتی ہے۔")),
+          buildPrivateIntakeQuestion("neededOutcome", t("What result are you hoping for?", "आप किस परिणाम की उम्मीद कर रहे हैं?", "మీరు ఏ ఫలితాన్ని ఆశిస్తున్నారు?", "நீங்கள் எந்த முடிவை எதிர்பார்க்கிறீர்கள்?", "آپ کس نتیجے کی امید کر رہے ہیں؟"), t("What should be true after the next step?", "अगले कदम के बाद क्या सच होना चाहिए?", "తదుపరి అడుగు తర్వాత ఏది నిజం కావాలి?", "அடுத்த படிக்குப் பிறகு என்ன உண்மையாக இருக்க வேண்டும்?", "اگلے قدم کے بعد کیا سچ ہونا چاہیے؟"), t("Outcome keeps the report focused.", "परिणाम रिपोर्ट को केंद्रित रखता है.", "ఫలితం report‌ను కేంద్రీకృతంగా ఉంచుతుంది.", "முடிவு report-ஐ கவனமாக வைத்திருக்கும்.", "نتیجہ رپورٹ کو مرکوز رکھتا ہے۔")),
+          buildPrivateIntakeQuestion("safetyNote", t("Anything urgent or safety-related?", "कुछ तुरंत या सुरक्षा से जुड़ा है?", "ఏదైనా అత్యవసరమా లేదా భద్రతా సంబంధమా?", "அவசரமானது அல்லது பாதுகாப்பு தொடர்புடையது ஏதேனும் உள்ளதா?", "کوئی فوری یا حفاظتی بات؟"), t("Tell me if this needs urgent help or a safety plan.", "अगर तुरंत मदद या सुरक्षा योजना चाहिए, तो बताइए.", "ఇది అత్యవసర సహాయం లేదా భద్రతా ప్రణాళిక అవసరమైతే చెప్పండి.", "இதற்கு அவசர உதவி அல்லது பாதுகாப்புத் திட்டம் தேவைப்பட்டால் சொல்லுங்கள்.", "اگر فوری مدد یا حفاظتی منصوبہ چاہیے تو بتائیں۔"), t("Safety stays visible.", "सुरक्षा हमेशा दिखाई देती रहे.", "భద్రత కనిపించేలా ఉంటుంది.", "பாதுகாப்பு தெளிவாக இருக்கும்.", "حفاظت واضح رہتی ہے۔")),
+          buildPrivateIntakeQuestion("privacyBoundary", t("Any detail to keep private?", "कोई विवरण निजी रखना है?", "ఏదైనా వివరాన్ని ప్రైవేట్‌గా ఉంచాలా?", "எந்த விவரத்தை தனிப்பட்டதாக வைத்திருக்க வேண்டும்?", "کوئی تفصیل نجی رکھنی ہے؟"), t("What should not be repeated, stored, or shared.", "क्या दोहराया, सहेजा, या साझा नहीं किया जाना चाहिए.", "ఏది తిరిగి చెప్పకూడదు, సేవ్ చేయకూడదు, లేదా పంచుకోకూడదు.", "எது மீண்டும் சொல்லப்படக்கூடாது, சேமிக்கப்படக்கூடாது, அல்லது பகிரப்படக்கூடாது.", "کیا دہرایا، محفوظ، یا شیئر نہیں کیا جانا چاہیے۔"), t("Privacy is respected.", "गोपनीयता का सम्मान किया जाता है.", "గోప్యత గౌరవించబడుతుంది.", "தனியுரிமை மதிக்கப்படுகிறது.", "رازداری کا احترام کیا جاتا ہے۔"))
         ]
       }
     ]
@@ -5492,7 +5736,7 @@ function getPrivateIntakeBlueprint(
     analysisLenses: analysisLensesByMode[mode],
     flowSteps: flowStepsByMode[mode],
     sections,
-    sourcePack: getPrivateIntakeReferencePack(mode)
+    sourcePack: getPrivateIntakeReferencePack(mode, languageId)
   };
 }
 
@@ -5504,9 +5748,24 @@ function buildPrivateIntakeReport(
   draft: PrivateIntakeDraft,
   selectedIdentityLabel: string,
   selectedIssueGuide: IssueGuide,
-  routeTab: "guide" | "redress"
+  routeTab: "guide" | "redress",
+  languageId: LanguageId
 ) {
-  const blueprint = getPrivateIntakeBlueprint(selectedIssueGuide.id, selectedIdentityLabel, routeTab);
+  const blueprint = getPrivateIntakeBlueprint(selectedIssueGuide.id, selectedIdentityLabel, routeTab, languageId);
+  const t = (
+    english: string,
+    hindi: string,
+    telugu?: string,
+    tamil?: string,
+    urdu?: string
+  ) =>
+    pickLocalizedText(languageId, {
+      english,
+      hindi,
+      ...(telugu ? { telugu } : {}),
+      ...(tamil ? { tamil } : {}),
+      ...(urdu ? { urdu } : {})
+    });
   const filledCount = countPrivateIntakeFields(draft);
   const totalCount = Object.keys(draft).length;
   const coverage = `${filledCount}/${totalCount}`;
@@ -5532,57 +5791,163 @@ function buildPrivateIntakeReport(
       `${draft.supportNeed} ${draft.supportPreferences} ${draft.neededOutcome}`.toLowerCase()
     );
   const recommendedRoute = hasSafetyCue
-    ? "SOS / Help"
+    ? t("SOS / Help", "SOS / मदद", "SOS / సహాయం", "SOS / உதவி", "SOS / مدد")
     : emotionalHigh
-      ? "Reset"
+      ? t("Reset", "रीसेट", "రీసెట్", "ரீசெட்", "ری سیٹ")
       : practicalHigh
-        ? "Path"
+        ? t("Path", "मार्ग", "మార్గం", "பாதை", "راہ")
         : supportHigh
-          ? "Guidance"
-          : "Explore";
+          ? t("Guidance", "मार्गदर्शन", "మార్గదర్శకత్వం", "வழிகாட்டுதல்", "رہنمائی")
+          : t("Explore", "खोजें", "అన్వేషించండి", "ஆராயுங்கள்", "جائزہ لیں");
   const emotionalRead = emotionalHigh
-    ? "The emotional load looks high and deserves a calm, slower first step."
+    ? t(
+        "The emotional load looks high and deserves a calm, slower first step.",
+        "भावनात्मक भार अधिक लग रहा है और इसे एक शांत, धीमे पहले कदम की ज़रूरत है.",
+        "భావోద్వేగ భారం ఎక్కువగా కనిపిస్తోంది మరియు దీనికి శాంతమైన, నెమ్మదైన మొదటి అడుగు అవసరం.",
+        "உணர்ச்சி சுமை அதிகமாக உள்ளது; இதற்கு அமைதியான, மெதுவான முதல் படி தேவை.",
+        "جذباتی بوجھ زیادہ لگ رہا ہے اور اسے ایک پرسکون، سست پہلے قدم کی ضرورت ہے۔"
+      )
     : draft.currentFeeling.trim().length > 0
-      ? "The emotional side is visible and can be guided with a cleaner route."
-      : "The emotional picture still needs a little more detail.";
+      ? t(
+          "The emotional side is visible and can be guided with a cleaner route.",
+          "भावनात्मक पक्ष दिख रहा है और इसे एक साफ़ मार्ग से संभाला जा सकता है.",
+          "భావోద్వేగ వైపు కనిపిస్తోంది మరియు దీనిని మరింత స్పష్టమైన route‌తో మార్గనిర్దేశం చేయవచ్చు.",
+          "உணர்ச்சி பக்கம் தெரிகிறது; இதை இன்னும் தெளிவான வழியால் வழிநடத்தலாம்.",
+          "جذباتی پہلو نظر آ رہا ہے اور اسے ایک صاف route سے رہنمائی دی جا سکتی ہے۔"
+        )
+      : t(
+          "The emotional picture still needs a little more detail.",
+          "भावनात्मक तस्वीर को अभी थोड़ा और विस्तार चाहिए.",
+          "భావోద్వేగ చిత్రం ఇంకా కొంచెం మరింత వివరాలు కోరుతోంది.",
+          "உணர்ச்சி படம் இன்னும் கொஞ்சம் கூடுதல் விவரம் தேவை.",
+          "جذباتی تصویر کو ابھی تھوڑی اور تفصیل چاہیے۔"
+        );
   const practicalRead = practicalHigh
-    ? "The practical side is active: the issue is touching time, work, study, home, money, or routine."
+    ? t(
+        "The practical side is active: the issue is touching time, work, study, home, money, or routine.",
+        "व्यावहारिक पक्ष सक्रिय है: issue समय, काम, पढ़ाई, घर, पैसे, या routine को छू रहा है.",
+        "ప్రాక్టికల్ వైపు క్రియాశీలంగా ఉంది: సమస్య time, work, study, home, money, లేదా routine ను తాకుతోంది.",
+        "நடைமுறை பக்கம் செயல்பாட்டில் உள்ளது: issue நேரம், வேலை, படிப்பு, வீடு, பணம், அல்லது routine-ஐ தொடுகிறது.",
+        "عملی پہلو سرگرم ہے: مسئلہ وقت، کام، پڑھائی، گھر، پیسے، یا routine کو چھو رہا ہے۔"
+      )
     : draft.dailyImpactContext.trim().length > 0 || draft.previousAttempts.trim().length > 0
-      ? "There is enough practical context to shape a next action."
-      : "The practical impact still needs a few more concrete details.";
+      ? t(
+          "There is enough practical context to shape a next action.",
+          "अगला कदम तय करने के लिए पर्याप्त practical context है.",
+          "తదుపరి చర్యను రూపొందించడానికి సరిపడా practical context ఉంది.",
+          "அடுத்த செயலை அமைக்க போதுமான practical context உள்ளது.",
+          "اگلے قدم کو شکل دینے کے لیے کافی practical context موجود ہے۔"
+        )
+      : t(
+          "The practical impact still needs a few more concrete details.",
+          "व्यावहारिक प्रभाव को अभी कुछ और ठोस विवरण चाहिए.",
+          "ప్రాక్టికల్ ప్రభావానికి ఇంకా కొంచెం మరిన్ని స్పష్టమైన వివరాలు అవసరం.",
+          "நடைமுறை பாதிப்புக்கு இன்னும் சில உறுதியான விவரங்கள் தேவை.",
+          "عملی اثر کو ابھی کچھ اور ٹھوس تفصیلات چاہییں۔"
+        );
   const socialRead = socialHigh
-    ? "The people layer is important here, so the app should keep family, friends, or coworkers in view."
+    ? t(
+        "The people layer is important here, so the app should keep family, friends, or coworkers in view.",
+        "यहाँ लोगों का स्तर महत्वपूर्ण है, इसलिए ऐप को परिवार, दोस्तों, या सहकर्मियों को ध्यान में रखना चाहिए.",
+        "ఇక్కడ people layer ముఖ్యమైనది, కాబట్టి app కుటుంబం, స్నేహితులు, లేదా coworkers ను దృష్టిలో ఉంచాలి.",
+        "இங்கே people layer முக்கியமானது; app குடும்பம், நண்பர்கள், அல்லது coworkers-ஐ கவனத்தில் வைத்திருக்க வேண்டும்.",
+        "یہاں people layer اہم ہے، اس لیے app کو خاندان، دوستوں، یا coworkers کو نظر میں رکھنا چاہیے۔"
+      )
     : draft.familyContext.trim().length > 0 ||
         draft.relativeContext.trim().length > 0 ||
         draft.friendsContext.trim().length > 0 ||
         draft.coworkerContext.trim().length > 0
-      ? "The people layer is present, even if the pressure is still being filled in."
-      : "The people layer is not yet fully described.";
+      ? t(
+          "The people layer is present, even if the pressure is still being filled in.",
+          "लोगों का पक्ष मौजूद है, भले ही दबाव अभी पूरी तरह भरा नहीं गया हो.",
+          "people layer ఉంది, అయినా pressure ఇంకా పూర్తిగా నింపబడలేదు.",
+          "people layer உள்ளது, pressure இன்னும் முழுவதும் நிரப்பப்படவில்லை என்றாலும்.",
+          "people layer موجود ہے، چاہے pressure ابھی پوری طرح بھرا نہیں گیا۔"
+        )
+      : t(
+          "The people layer is not yet fully described.",
+          "लोगों का पक्ष अभी पूरी तरह वर्णित नहीं है.",
+          "people layer ఇంకా పూర్తిగా వివరించబడలేదు.",
+          "people layer இன்னும் முழுமையாக விளக்கப்படவில்லை.",
+          "people layer ابھی مکمل طور پر بیان نہیں ہوا۔"
+        );
   const safetyRead = hasSafetyCue
-    ? "A safety note is present, so the route should keep urgent help visible."
-    : "No urgent safety cue is visible in the intake so far.";
+    ? t(
+        "A safety note is present, so the route should keep urgent help visible.",
+        "एक safety note मौजूद है, इसलिए route में urgent help दिखनी चाहिए.",
+        "ఒక safety note ఉంది, కాబట్టి route‌లో urgent help కనిపించాలి.",
+        "ஒரு safety note உள்ளது, எனவே route urgent help-ஐ தெளிவாக வைத்திருக்க வேண்டும்.",
+        "ایک safety note موجود ہے، اس لیے route میں urgent help نظر آنی چاہیے۔"
+      )
+    : t(
+        "No urgent safety cue is visible in the intake so far.",
+        "अब तक intake में कोई urgent safety cue नहीं दिखा.",
+        "ఇప్పటివరకు intake‌లో ఎలాంటి urgent safety cue కనిపించలేదు.",
+        "இதுவரை intake-இல் எந்த urgent safety cue-யும் இல்லை.",
+        "ابھی تک intake میں کوئی urgent safety cue نظر نہیں آ رہا۔"
+      );
 
   const modeLabel = blueprint.modeLabel;
-  const summary = `${selectedIdentityLabel} / ${selectedIssueGuide.label}. This ${modeLabel.toLowerCase()} intake changes with the situation, uses your answers, and leans on verified reference pages chosen for this route.`;
-  const reportBasis = `Question set: ${modeLabel}. Evidence style: ${
-    routeTab === "redress" ? "official grievance and safety sources" : "official mental-health and coping sources"
-  }.`;
+  const summary = t(
+    `${selectedIdentityLabel} / ${selectedIssueGuide.label}. This ${modeLabel.toLowerCase()} intake changes with the situation, uses your answers, and leans on verified reference pages chosen for this route.`,
+    `${selectedIdentityLabel} / ${selectedIssueGuide.label}. यह ${modeLabel.toLowerCase()} intake स्थिति के साथ बदलता है, आपके उत्तरों का उपयोग करता है, और इस route के लिए चुने गए verified reference pages पर निर्भर करता है.`,
+    `${selectedIdentityLabel} / ${selectedIssueGuide.label}. ఈ ${modeLabel.toLowerCase()} intake పరిస్థితికి అనుగుణంగా మారుతుంది, మీ సమాధానాలను ఉపయోగిస్తుంది, మరియు ఈ route కోసం ఎంచుకున్న verified reference pages‌పై ఆధారపడుతుంది.`,
+    `${selectedIdentityLabel} / ${selectedIssueGuide.label}. இந்த ${modeLabel.toLowerCase()} intake சூழ்நிலைக்கேற்ப மாறுகிறது, உங்கள் பதில்களைப் பயன்படுத்துகிறது, மற்றும் இந்த route-க்கு தேர்ந்தெடுக்கப்பட்ட verified reference pages-ஐ நம்புகிறது.`,
+    `${selectedIdentityLabel} / ${selectedIssueGuide.label}. یہ ${modeLabel.toLowerCase()} intake صورتحال کے ساتھ بدلتا ہے، آپ کے جوابات استعمال کرتا ہے، اور اس route کے لیے منتخب کیے گئے verified reference pages پر انحصار کرتا ہے۔`
+  );
+  const reportBasis = t(
+    `Question set: ${modeLabel}. Evidence style: ${routeTab === "redress" ? "official grievance and safety sources" : "official mental-health and coping sources"}.`,
+    `प्रश्न सेट: ${modeLabel}. evidence style: ${routeTab === "redress" ? "official grievance and safety sources" : "official mental-health and coping sources"}.`,
+    `ప్రశ్నల సమాహారం: ${modeLabel}. evidence style: ${routeTab === "redress" ? "official grievance and safety sources" : "official mental-health and coping sources"}.`,
+    `கேள்வித் தொகுப்பு: ${modeLabel}. evidence style: ${routeTab === "redress" ? "official grievance and safety sources" : "official mental-health and coping sources"}.`,
+    `سوالات کا مجموعہ: ${modeLabel}. evidence style: ${routeTab === "redress" ? "official grievance and safety sources" : "official mental-health and coping sources"}.`
+  );
   const nextStep = hasSafetyCue
-    ? "Open SOS or Help first, then keep the complaint or support path visible."
+    ? t(
+        "Open SOS or Help first, then keep the complaint or support path visible.",
+        "पहले SOS या Help खोलें, फिर complaint या support path को visible रखें.",
+        "ముందుగా SOS లేదా Help తెరవండి, తర్వాత complaint లేదా support path visible‌గా ఉంచండి.",
+        "முதலில் SOS அல்லது Help-ஐத் திறக்கவும், பின்னர் complaint அல்லது support path-ஐ visible-ஆக வைத்திருக்கவும்.",
+        "پہلے SOS یا Help کھولیں، پھر complaint یا support path کو visible رکھیں۔"
+      )
     : routeTab === "redress" || blueprint.mode === "redress"
-      ? "Open Help first, then keep the complaint route and evidence together."
+      ? t(
+          "Open Help first, then keep the complaint route and evidence together.",
+          "पहले Help खोलें, फिर complaint route और evidence को साथ रखें.",
+          "ముందుగా Help తెరవండి, తర్వాత complaint route మరియు evidence ను కలిపి ఉంచండి.",
+          "முதலில் Help-ஐத் திறக்கவும், பின்னர் complaint route மற்றும் evidence-ஐ ஒன்றாக வைத்திருக்கவும்.",
+          "پہلے Help کھولیں، پھر complaint route اور evidence کو ساتھ رکھیں۔"
+        )
       : emotionalHigh
-        ? "Open Reset first, then move to Path once the body feels steadier."
+        ? t(
+            "Open Reset first, then move to Path once the body feels steadier.",
+            "पहले Reset खोलें, फिर शरीर के स्थिर लगते ही Path पर जाएँ.",
+            "ముందుగా Reset తెరవండి, తర్వాత శరీరం కొంచెం స్థిరంగా అనిపించినప్పుడు Path‌కు వెళ్లండి.",
+            "முதலில் Reset-ஐத் திறக்கவும், உடல் கொஞ்சம் நிலையாக உணர்ந்ததும் Path-க்கு செல்லவும்.",
+            "پہلے Reset کھولیں، پھر جسم قدرے steady محسوس ہو تو Path پر جائیں۔"
+          )
         : practicalHigh
-          ? "Open Path first, then move to Help if you need a complaint or authority route."
-          : "Open Guidance for one clean next step, then continue from there.";
+          ? t(
+              "Open Path first, then move to Help if you need a complaint or authority route.",
+              "पहले Path खोलें, फिर यदि complaint या authority route चाहिए तो Help पर जाएँ.",
+              "ముందుగా Path తెరవండి, తర్వాత complaint లేదా authority route అవసరమైతే Help‌కు వెళ్లండి.",
+              "முதலில் Path-ஐத் திறக்கவும், complaint அல்லது authority route தேவைப்பட்டால் Help-க்கு செல்லவும்.",
+              "پہلے Path کھولیں، پھر اگر complaint یا authority route چاہیے تو Help پر جائیں۔"
+            )
+          : t(
+              "Open Guidance for one clean next step, then continue from there.",
+              "एक साफ़ अगले कदम के लिए Guidance खोलें, फिर वहीं से आगे बढ़ें.",
+              "ఒక స్పష్టమైన తదుపరి అడుగుకు Guidance తెరవండి, తర్వాత అక్కడి నుంచి కొనసాగండి.",
+              "ஒரு தெளிவான அடுத்த படிக்கு Guidance-ஐத் திறக்கவும், பின்னர் அங்கிருந்து தொடரவும்.",
+              "ایک صاف اگلے قدم کے لیے Guidance کھولیں، پھر وہاں سے آگے بڑھیں۔"
+            );
 
   return {
     coverage,
-    emotionalLabel: emotionalHigh ? "High" : draft.currentFeeling.trim().length > 0 ? "Present" : "Light",
-    practicalLabel: practicalHigh ? "High" : draft.dailyImpactContext.trim().length > 0 ? "Present" : "Light",
-    socialLabel: socialHigh ? "Strong" : draft.familyContext.trim().length > 0 ? "Present" : "Light",
-    safetyLabel: hasSafetyCue ? "Urgent" : "Clear",
+    emotionalLabel: emotionalHigh ? t("High", "उच्च", "అధిక", "உயர்", "زیادہ") : draft.currentFeeling.trim().length > 0 ? t("Present", "मौजूद", "ఉంది", "ఉள்ளது", "موجود") : t("Light", "हल्का", "తేలికగా", "இலகுவாக", "ہلکا"),
+    practicalLabel: practicalHigh ? t("High", "उच्च", "అధిక", "உயர்", "زیادہ") : draft.dailyImpactContext.trim().length > 0 ? t("Present", "मौजूद", "ఉంది", "உள்ளது", "موجود") : t("Light", "हल्का", "తేలికగా", "இலகுவாக", "ہلکا"),
+    socialLabel: socialHigh ? t("Strong", "मज़बूत", "బలమైన", "வலுவான", "مضبوط") : draft.familyContext.trim().length > 0 ? t("Present", "मौजूद", "ఉంది", "உள்ளது", "موجود") : t("Light", "हल्का", "తేలికగా", "இலகுவாக", "ہلکا"),
+    safetyLabel: hasSafetyCue ? t("Urgent", "तत्काल", "అత్యవసరం", "அவசரம்", "فوری") : t("Clear", "स्पष्ट", "స్పష్టంగా", "தெளிவாக", "واضح"),
     emotionalRead,
     practicalRead,
     socialRead,
@@ -6412,23 +6777,23 @@ const englishUiCopy: UiCopy = {
   help: "Help",
   read: "Read",
   openHelpAndRedress: "Open Help and Redress",
-  homeSupportTitle: "Four clear paths in one tap.",
-  homeSupportLead: "Start with counselling, then move to calm, insight, or community when you need it.",
+  homeSupportTitle: "One calm start, four clear paths.",
+  homeSupportLead: "Begin with counselling, then move into calm, insight, or community when it fits.",
   homeSupportCounsellingTitle: "Counselling",
-  homeSupportCounsellingBody: "A private guided room with a clean next-step checkpoint.",
+  homeSupportCounsellingBody: "A private first step with a clear checkpoint.",
   homeSupportCounsellingCta: "Primary support",
   homeSupportCalmTitle: "Calm / Tones",
-  homeSupportCalmBody: "Issue-matched sound and breath that hand off into Path.",
+  homeSupportCalmBody: "Sound and breath that hand off into Path.",
   homeSupportCalmCta: "Open calm",
   homeSupportVedicTitle: "Vedic Insight",
-  homeSupportVedicBody: "Moon-chart insight with practical remedies for the same situation.",
+  homeSupportVedicBody: "Moon-chart insight with practical remedies.",
   homeSupportVedicCta: "View insight",
   homeSupportCommunityTitle: "Community",
-  homeSupportCommunityBody: "Verified support conversations when human input is the right next step.",
+  homeSupportCommunityBody: "Verified support when human input is the right next step.",
   homeSupportCommunityCta: "Open messages",
-  homePrivacyNote: "Private by default: notes stay local unless you share or export.",
+  homePrivacyNote: "Private by default. Notes stay local unless you share or export.",
   brandTagline: "One route, one next step",
-  homeFlowLabel: "Premium flow",
+  homeFlowLabel: "Guided flow",
   flowBack: "Back",
   flowNext: "Next",
   flowHome: "Home",
@@ -6559,23 +6924,23 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     help: "मदद",
     read: "पढ़ें",
     openHelpAndRedress: "मदद और शिकायत खोलें",
-    homeSupportTitle: "एक टैप में चार साफ़ रास्ते।",
-    homeSupportLead: "परामर्श से शुरू करें, फिर ज़रूरत पड़ने पर शांत, दृष्टि, या समुदाय तक जाएँ।",
+    homeSupportTitle: "एक शांत शुरुआत, चार साफ़ रास्ते।",
+    homeSupportLead: "परामर्श से शुरू करें, फिर ज़रूरत के अनुसार शांत, दृष्टि, या समुदाय तक जाएँ।",
     homeSupportCounsellingTitle: "परामर्श",
-    homeSupportCounsellingBody: "एक निजी मार्गदर्शित कक्ष, साफ़ अगले-चरण जाँच-बिंदु के साथ।",
+    homeSupportCounsellingBody: "एक निजी पहला कदम, साफ़ अगले-चरण जाँच-बिंदु के साथ।",
     homeSupportCounsellingCta: "मुख्य सहायता",
     homeSupportCalmTitle: "शांत / स्वर",
-    homeSupportCalmBody: "समस्या के अनुसार ध्वनि और श्वास, जो Path तक सहज जुड़ते हैं।",
+    homeSupportCalmBody: "ध्वनि और श्वास, जो Path तक सहज जुड़ते हैं।",
     homeSupportCalmCta: "शांत खोलें",
     homeSupportVedicTitle: "वैदिक दृष्टि",
-    homeSupportVedicBody: "चंद्र-चार्ट दृष्टि, उसी स्थिति के लिए व्यावहारिक उपायों के साथ।",
+    homeSupportVedicBody: "चंद्र-चार्ट दृष्टि, व्यावहारिक उपायों के साथ।",
     homeSupportVedicCta: "दृष्टि देखें",
     homeSupportCommunityTitle: "समुदाय",
-    homeSupportCommunityBody: "जब मानवीय सहायता सबसे सही अगला कदम हो, तब सत्यापित बातचीत तैयार रहती है।",
+    homeSupportCommunityBody: "जब मानवीय सहायता सही अगला कदम हो, तब सत्यापित बातचीत तैयार रहती है।",
     homeSupportCommunityCta: "संदेश खोलें",
-    homePrivacyNote: "डिफ़ॉल्ट रूप से निजी: नोट्स तभी बाहर जाती हैं जब आप साझा या निर्यात करें।",
+    homePrivacyNote: "डिफ़ॉल्ट रूप से निजी। नोट्स तभी बाहर जाती हैं जब आप साझा या निर्यात करें।",
     brandTagline: "एक मार्ग, एक अगला कदम",
-    homeFlowLabel: "प्रीमियम प्रवाह",
+    homeFlowLabel: "मार्गदर्शित प्रवाह",
     flowBack: "पिछला",
     flowNext: "अगला",
     flowHome: "होम",
@@ -6838,6 +7203,48 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     complaint: "ఫిర్యాదు",
     help: "సహాయం",
     read: "చదవండి",
+    openHelpAndRedress: "సహాయం మరియు ఫిర్యాదు తెరవండి",
+    homeSupportTitle: "ఒక ప్రశాంత ఆరంభం, నాలుగు స్పష్టమైన మార్గాలు.",
+    homeSupportLead: "ముందు counselling తో ప్రారంభించి, అవసరమైనప్పుడు calm, insight, లేదా community కి వెళ్లండి.",
+    homeSupportCounsellingTitle: "కౌన్సెలింగ్",
+    homeSupportCounsellingBody: "స్పష్టమైన తదుపరి దశతో ఒక private మొదటి అడుగు.",
+    homeSupportCounsellingCta: "ప్రధాన సహాయం",
+    homeSupportCalmTitle: "ప్రశాంతత / స్వరాలు",
+    homeSupportCalmBody: "ధ్వని మరియు శ్వాస, ఇవి Path కి hand off అవుతాయి.",
+    homeSupportCalmCta: "ప్రశాంతత తెరవండి",
+    homeSupportVedicTitle: "వేద దర్శనం",
+    homeSupportVedicBody: "Moon-chart insight, practical remedies తో.",
+    homeSupportVedicCta: "దర్శనం చూడండి",
+    homeSupportCommunityTitle: "సమాజం",
+    homeSupportCommunityBody: "మనిషి input సరైన తదుపరి దశ అయినప్పుడు verified support conversations.",
+    homeSupportCommunityCta: "సందేశాలు తెరవండి",
+    homePrivacyNote: "డిఫాల్ట్‌గా private. మీరు share లేదా export చేయనంత వరకు notes లోకల్‌గా ఉంటాయి.",
+    brandTagline: "ఒక మార్గం, ఒక తదుపరి అడుగు",
+    homeFlowLabel: "మార్గదర్శిత ప్రవాహం",
+    flowBack: "వెనుకకు",
+    flowNext: "తదుపరి",
+    flowHome: "హోమ్",
+    flowPages: "పేజీలు",
+    flowMore: "మరిన్ని",
+    flowExit: "నిష్క్రమించు",
+    homeOpenProfileSettingsA11y: "ప్రొఫైల్ మరియు సెట్టింగ్స్ తెరవండి",
+    homeOpenLanguagePageA11y: "భాష పేజీ తెరవండి",
+    sectionSwitcherTitle: "ఒక పేజీ తెరవండి",
+    sectionSwitcherPrompt: "నేరుగా వెళ్లడానికి ఒక పేజీని తట్టండి.",
+    sectionSwitcherClose: "మూసివేయండి",
+    weekAheadTitle: "మీ వచ్చే వారం సిద్ధంగా ఉంది",
+    weekAheadSub: "కొత్త వారం కొత్త transit చిత్రం తెస్తుంది. చదవడానికి ఒక నిమిషం పడుతుంది.",
+    weekAheadRead: "చదవండి",
+    greetingStillAwake: "ఇంకా నిద్రలేకపోయారా?",
+    greetingMorning: "శుభోదయం",
+    greetingAfternoon: "శుభ మద్యాహ్నం",
+    greetingEvening: "శుభ సాయంత్రం",
+    greetingNight: "శుభ రాత్రి",
+    homeSupportCardOpenCounselling: "Counselling ప్రారంభించండి",
+    homeSupportCardContinue: "కొనసాగించండి",
+    quickExitPriority: "అత్యున్నత ప్రాధాన్యం",
+    footerReassurance: "ఇది మీరు ఒంటరిగా మోయాల్సిన అవసరం లేదు.",
+    footerMadeWithCare: "శ్రద్ధతో రూపొందించబడింది",
     journalEyebrow: "జర్నల్",
     journalTitle: "వ్రాయండి, తర్వాత కొనసాగండి",
     journalLoopEyebrow: "loop",
@@ -6930,6 +7337,48 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     complaint: "புகார்",
     help: "உதவி",
     read: "படி",
+    openHelpAndRedress: "உதவி மற்றும் புகார் திறக்கவும்",
+    homeSupportTitle: "ஒரு அமைதியான தொடக்கம், நான்கு தெளிவான வழிகள்.",
+    homeSupportLead: "முதலில் counselling-இல் தொடங்கி, தேவையாயின் calm, insight, அல்லது community-க்கு நகருங்கள்.",
+    homeSupportCounsellingTitle: "ஆலோசனை",
+    homeSupportCounsellingBody: "தெளிவான அடுத்த படியுடன் ஒரு private முதல் அடி.",
+    homeSupportCounsellingCta: "முதன்மை உதவி",
+    homeSupportCalmTitle: "அமைதி / ஒலிகள்",
+    homeSupportCalmBody: "Path-க்கு hand off ஆகும் ஒலி மற்றும் மூச்சு.",
+    homeSupportCalmCta: "அமைதியைத் திறக்கவும்",
+    homeSupportVedicTitle: "வேத பார்வை",
+    homeSupportVedicBody: "Moon-chart insight, practical remedies உடன்.",
+    homeSupportVedicCta: "பார்வையைப் பார்க்கவும்",
+    homeSupportCommunityTitle: "சமூகம்",
+    homeSupportCommunityBody: "மனித input சரியான அடுத்த படி ஆகும் போது verified support conversations.",
+    homeSupportCommunityCta: "செய்திகளைத் திறக்கவும்",
+    homePrivacyNote: "இயல்பாக private. நீங்கள் share அல்லது export செய்யும் வரை குறிப்புகள் device-இலேயே இருக்கும்.",
+    brandTagline: "ஒரு பாதை, ஒரு அடுத்த படி",
+    homeFlowLabel: "வழிகாட்டப்பட்ட ஓட்டம்",
+    flowBack: "முந்தைய",
+    flowNext: "அடுத்து",
+    flowHome: "முகப்பு",
+    flowPages: "பக்கங்கள்",
+    flowMore: "மேலும்",
+    flowExit: "வெளியேறு",
+    homeOpenProfileSettingsA11y: "சுயவிவரம் மற்றும் அமைப்புகளைத் திறக்கவும்",
+    homeOpenLanguagePageA11y: "மொழிப் பக்கத்தைத் திறக்கவும்",
+    sectionSwitcherTitle: "ஒரு பக்கத்தைத் திறக்கவும்",
+    sectionSwitcherPrompt: "நேரடியாக செல்ல ஒரு பக்கத்தைத் தட்டவும்.",
+    sectionSwitcherClose: "மூடவும்",
+    weekAheadTitle: "உங்கள் அடுத்த வாரம் தயாராக உள்ளது",
+    weekAheadSub: "புதிய வாரம் புதிய transit படம் கொண்டு வருகிறது. படிக்க ஒரு நிமிடம் மட்டுமே தேவை.",
+    weekAheadRead: "படிக்கவும்",
+    greetingStillAwake: "இன்னும் விழித்திருக்கிறீர்களா?",
+    greetingMorning: "காலை வணக்கம்",
+    greetingAfternoon: "மதிய வணக்கம்",
+    greetingEvening: "மாலை வணக்கம்",
+    greetingNight: "இரவு வணக்கம்",
+    homeSupportCardOpenCounselling: "Counselling தொடங்கவும்",
+    homeSupportCardContinue: "தொடரவும்",
+    quickExitPriority: "மிக உயர்ந்த முன்னுரிமை",
+    footerReassurance: "இதைக் கடத்த நீங்கள் தனியாக இருக்க வேண்டியதில்லை.",
+    footerMadeWithCare: "கவனத்துடன் உருவாக்கப்பட்டது",
     journalEyebrow: "ஜர்னல்",
     journalTitle: "எழுதி, பிறகு முன்னேறுங்கள்",
     journalLoopEyebrow: "loop",
@@ -7022,6 +7471,48 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     complaint: "شکایت",
     help: "مدد",
     read: "پڑھیں",
+    openHelpAndRedress: "مدد اور شکایت کھولیں",
+    homeSupportTitle: "ایک پُرسکون آغاز، چار واضح راستے۔",
+    homeSupportLead: "پہلے counselling سے شروع کریں، پھر ضرورت کے مطابق calm، insight، یا community کی طرف جائیں۔",
+    homeSupportCounsellingTitle: "مشاورت",
+    homeSupportCounsellingBody: "واضح اگلے قدم کے ساتھ ایک نجی پہلا مرحلہ۔",
+    homeSupportCounsellingCta: "بنیادی مدد",
+    homeSupportCalmTitle: "سکون / آوازیں",
+    homeSupportCalmBody: "آواز اور سانس جو Path تک hand off ہو جائیں۔",
+    homeSupportCalmCta: "سکون کھولیں",
+    homeSupportVedicTitle: "ویدک بصیرت",
+    homeSupportVedicBody: "Moon-chart insight، practical remedies کے ساتھ۔",
+    homeSupportVedicCta: "بصیرت دیکھیں",
+    homeSupportCommunityTitle: "برادری",
+    homeSupportCommunityBody: "جب انسانی input صحیح اگلا قدم ہو تو verified support conversations.",
+    homeSupportCommunityCta: "پیغامات کھولیں",
+    homePrivacyNote: "بطورِ ڈیفالٹ نجی۔ نوٹس تب تک local رہتی ہیں جب تک آپ share یا export نہ کریں۔",
+    brandTagline: "ایک راستہ، ایک اگلا قدم",
+    homeFlowLabel: "رہنمائی والا بہاؤ",
+    flowBack: "پیچھے",
+    flowNext: "اگلا",
+    flowHome: "ہوم",
+    flowPages: "صفحات",
+    flowMore: "مزید",
+    flowExit: "باہر نکلیں",
+    homeOpenProfileSettingsA11y: "پروفائل اور سیٹنگز کھولیں",
+    homeOpenLanguagePageA11y: "زبان کا صفحہ کھولیں",
+    sectionSwitcherTitle: "ایک صفحہ کھولیں",
+    sectionSwitcherPrompt: "براہِ راست جانے کے لیے ایک صفحہ tap کریں۔",
+    sectionSwitcherClose: "بند کریں",
+    weekAheadTitle: "آپ کا آئندہ ہفتہ تیار ہے",
+    weekAheadSub: "نیا ہفتہ نیا transit تصویر لاتا ہے۔ پڑھنے میں ایک منٹ لگتا ہے۔",
+    weekAheadRead: "پڑھیں",
+    greetingStillAwake: "ابھی تک جاگ رہے ہیں؟",
+    greetingMorning: "صبح بخیر",
+    greetingAfternoon: "دوپہر بخیر",
+    greetingEvening: "شام بخیر",
+    greetingNight: "شب بخیر",
+    homeSupportCardOpenCounselling: "Counselling شروع کریں",
+    homeSupportCardContinue: "جاری رکھیں",
+    quickExitPriority: "سب سے اہم",
+    footerReassurance: "آپ کو یہ اکیلے اٹھانے کی ضرورت نہیں ہے۔",
+    footerMadeWithCare: "محبت اور توجہ کے ساتھ",
     journalEyebrow: "جرنل",
     journalTitle: "لکھیں، پھر آگے بڑھیں",
     journalLoopEyebrow: "لوپ",
@@ -7412,6 +7903,261 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     telugu: "ఖాతా సెటప్",
     tamil: "கணக்கு அமைப்பு",
     urdu: "اکاؤنٹ سیٹ اپ"
+  },
+  "Close welcome prompt": {
+    telugu: "స్వాగత సూచన మూసివేయండి",
+    tamil: "வரவேற்பு குறிப்பை மூடவும்",
+    urdu: "خوش آمدید پرامپٹ بند کریں"
+  },
+  "Complete a brief profile for personalised guidance": {
+    telugu: "వ్యక్తిగత మార్గదర్శకత్వం కోసం చిన్న ప్రొఫైల్‌ను పూర్తిచేయండి",
+    tamil: "தனிப்பயன் வழிகாட்டுதலுக்காக ஒரு சிறிய சுயவிவரத்தை முடிக்கவும்",
+    urdu: "ذاتی رہنمائی کے لیے ایک مختصر پروفائل مکمل کریں"
+  },
+  "Counselling": {
+    telugu: "కౌన్సెలింగ్",
+    tamil: "ஆலோசனை",
+    urdu: "مشاورت"
+  },
+  "Calm / Tones": {
+    telugu: "ప్రశాంతత / స్వరాలు",
+    tamil: "அமைதி / ஒலிகள்",
+    urdu: "سکون / آوازیں"
+  },
+  "Community": {
+    telugu: "సమాజం",
+    tamil: "சமூகம்",
+    urdu: "برادری"
+  },
+  "Vedic Insight": {
+    telugu: "వేద దర్శనం",
+    tamil: "வேத பார்வை",
+    urdu: "ویدک بصیرت"
+  },
+  "Choose what you need today.": {
+    telugu: "ఈరోజు మీకు అవసరమైనదాన్ని ఎంచుకోండి.",
+    tamil: "இன்றைக்கு உங்களுக்கு தேவையானதைத் தேர்வு செய்யுங்கள்.",
+    urdu: "آج آپ کو جو چاہیے اسے منتخب کریں۔"
+  },
+  "Birth details (optional)": {
+    telugu: "పుట్టిన వివరాలు (ఐచ్ఛికం)",
+    tamil: "பிறந்த விவரங்கள் (விருப்பம்)",
+    urdu: "پیدائش کی تفصیلات (اختیاری)"
+  },
+  "Exit review": {
+    telugu: "సమీక్ష నుంచి బయటకు",
+    tamil: "மதிப்பாய்விலிருந்து வெளியேறு",
+    urdu: "جائزہ سے باہر"
+  },
+  "Emergency support rating": {
+    telugu: "అత్యవసర సహాయ రేటింగ్",
+    tamil: "அவசர ஆதரவு மதிப்பீடு",
+    urdu: "ہنگامی مدد کی درجہ بندی"
+  },
+  "Leave one rating. A short note is optional and helps us smooth the next visit.": {
+    telugu: "ఒక రేటింగ్ ఇవ్వండి. చిన్న గమనిక ఐచ్ఛికం; అది తదుపరి సందర్శనను మరింత మృదువుగా చేయడంలో సహాయపడుతుంది.",
+    tamil: "ஒரு மதிப்பீட்டை விடுங்கள். ஒரு குறுகிய குறிப்பு விருப்பமானது; அடுத்த வருகையை மென்மையாக மாற்ற உதவும்.",
+    urdu: "ایک ریٹنگ دیں۔ ایک مختصر نوٹ اختیاری ہے اور اگلے visit کو ہموار کرنے میں مدد دیتا ہے۔"
+  },
+  "Optional note, one short line": {
+    telugu: "ఐచ్ఛిక గమనిక, ఒక చిన్న పంక్తి",
+    tamil: "விருப்ப குறிப்பு, ஒரு குறுகிய வரி",
+    urdu: "اختیاری نوٹ، ایک مختصر سطر"
+  },
+  "Not now": {
+    telugu: "ఇప్పుడే కాదు",
+    tamil: "இப்போது வேண்டாம்",
+    urdu: "ابھی نہیں"
+  },
+  "Set up your profile": {
+    telugu: "మీ ప్రొఫైల్‌ను సిద్ధం చేయండి",
+    tamil: "உங்கள் சுயவிவரத்தை அமைக்கவும்",
+    urdu: "اپنا پروفائل سیٹ کریں"
+  },
+  "Your data stays on this device. Nothing is shared unless you explicitly share it.": {
+    telugu: "మీ డేటా ఈ పరికరంలోనే ఉంటుంది. మీరు స్పష్టంగా పంచుకున్నంత వరకు ఏదీ షేర్ కాదు.",
+    tamil: "உங்கள் தரவு இந்த சாதனத்திலேயே இருக்கும். நீங்கள் வெளிப்படையாகப் பகிரும் வரை எதுவும் பகிரப்படாது.",
+    urdu: "آپ کا ڈیٹا اسی device پر رہتا ہے۔ جب تک آپ خود share نہ کریں، کچھ بھی شیئر نہیں ہوتا۔"
+  },
+  "Identity": {
+    telugu: "గుర్తింపు",
+    tamil: "அடையாளம்",
+    urdu: "شناخت"
+  },
+  "Focus": {
+    telugu: "దృష్టి",
+    tamil: "கவனம்",
+    urdu: "توجہ"
+  },
+  "Step": {
+    telugu: "దశ",
+    tamil: "படி",
+    urdu: "مرحلہ"
+  },
+  "Welcome to Aethon Beacon": {
+    telugu: "Aethon Beacon‌కు స్వాగతం",
+    tamil: "Aethon Beacon-க்கு வரவேற்கிறோம்",
+    urdu: "Aethon Beacon میں خوش آمدید"
+  },
+  "Where do you want to start?": {
+    telugu: "మీరు ఎక్కడ ప్రారంభించాలనుకుంటున్నారు?",
+    tamil: "எங்கு தொடங்க விரும்புகிறீர்கள்?",
+    urdu: "آپ کہاں سے شروع کرنا چاہتے ہیں؟"
+  },
+  "Privacy first. Profile details are optional. Help and Redress remains available from every page.": {
+    telugu: "ముందు privacy. ప్రొఫైల్ వివరాలు ఐచ్ఛికం. Help and Redress ప్రతి పేజీ నుంచీ అందుబాటులో ఉంటుంది.",
+    tamil: "முதலில் தனியுரிமை. சுயவிவர விவரங்கள் விருப்பமானவை. Help and Redress ஒவ்வொரு பக்கத்திலிருந்தும் கிடைக்கும்.",
+    urdu: "پہلے پرائیویسی۔ پروفائل کی تفصیلات اختیاری ہیں۔ Help and Redress ہر صفحے سے دستیاب رہتا ہے۔"
+  },
+  "Explore first": {
+    telugu: "ముందు అన్వేషించండి",
+    tamil: "முதலில் ஆராயவும்",
+    urdu: "پہلے دیکھیں"
+  },
+  "Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.": {
+    telugu: "స్వయంచాలక counselling engine, calm support, Vedic insight, లేదా communityతో ప్రారంభించండి. ఐచ్ఛిక వివరాలను తరువాత చేర్చొచ్చు, మరియు మీరు export లేదా share చేయనంత వరకు notes ఈ పరికరంలోనే ఉంటాయి.",
+    tamil: "தானியங்கி counselling engine, calm support, Vedic insight, அல்லது community-இல் தொடங்குங்கள். விருப்ப விவரங்களை பின்னர் சேர்க்கலாம், மேலும் நீங்கள் export அல்லது share செய்யும் வரை குறிப்புகள் இந்த சாதனத்திலேயே இருக்கும்.",
+    urdu: "خودکار counselling engine، calm support، Vedic insight، یا community سے شروع کریں۔ اختیاری تفصیلات بعد میں شامل کی جا سکتی ہیں، اور جب تک آپ export یا share نہ کریں notes اسی device پر رہتی ہیں۔"
+  },
+  "Start a private guided support room.": {
+    telugu: "ఒక private మార్గదర్శిత సహాయ గదిని ప్రారంభించండి.",
+    tamil: "ஒரு private வழிகாட்டப்பட்ட ஆதரவு அறையைத் தொடங்கவும்.",
+    urdu: "ایک نجی رہنمائی والا مدد کمرہ شروع کریں۔"
+  },
+  "Settle the body with breath and sound.": {
+    telugu: "శ్వాస మరియు ధ్వనితో శరీరాన్ని శాంతపరచండి.",
+    tamil: "மூச்சு மற்றும் ஒலியால் உடலை அமைதிப்படுத்துங்கள்.",
+    urdu: "سانس اور آواز سے جسم کو سکون دیں۔"
+  },
+  "Open moon-chart based guidance and remedies.": {
+    telugu: "చంద్ర-చార్ట్ ఆధారిత మార్గదర్శకత్వం మరియు పరిహారాలను తెరవండి.",
+    tamil: "Moon-chart அடிப்படையிலான வழிகாட்டுதல் மற்றும் நிவாரணங்களைத் திறக்கவும்.",
+    urdu: "Moon-chart پر مبنی رہنمائی اور remedies کھولیں۔"
+  },
+  "Open verified support messages when access is confirmed.": {
+    telugu: "ప్రవేశం ధృవీకరించబడినప్పుడు verified support messages తెరవండి.",
+    tamil: "அணுகல் உறுதிசெய்யப்பட்டபோது verified support messages-ஐத் திறக்கவும்.",
+    urdu: "جب access تصدیق ہو جائے تو verified support messages کھولیں۔"
+  },
+  "Save rating": {
+    telugu: "రేటింగ్ సేవ్ చేయండి",
+    tamil: "மதிப்பீட்டை சேமிக்கவும்",
+    urdu: "ریٹنگ محفوظ کریں"
+  },
+  "Rating saved": {
+    telugu: "రేటింగ్ సేవ్ అయింది",
+    tamil: "மதிப்பீடு சேமிக்கப்பட்டது",
+    urdu: "ریٹنگ محفوظ ہو گئی"
+  },
+  "Private intake": {
+    telugu: "ప్రైవేట్ intake",
+    tamil: "தனிப்பட்ட intake",
+    urdu: "نجی intake"
+  },
+  "Information flow": {
+    telugu: "సమాచార ప్రవాహం",
+    tamil: "தகவல் ஓட்டம்",
+    urdu: "معلومات کا بہاؤ"
+  },
+  "Guided analysis report": {
+    telugu: "మార్గదర్శక విశ్లేషణ నివేదిక",
+    tamil: "வழிகாட்டும் பகுப்பாய்வு அறிக்கை",
+    urdu: "رہنمائی والا تجزیاتی رپورٹ"
+  },
+  "Coverage": {
+    telugu: "పూర్తితనం",
+    tamil: "முழுமை",
+    urdu: "کوریج"
+  },
+  "People and support": {
+    telugu: "వ్యక్తులు మరియు సహాయం",
+    tamil: "மக்கள் மற்றும் ஆதரவு",
+    urdu: "لوگ اور مدد"
+  },
+  "Recommended next route": {
+    telugu: "సిఫారసు చేసిన తదుపరి మార్గం",
+    tamil: "பரிந்துரைக்கப்பட்ட அடுத்த பாதை",
+    urdu: "تجویز کردہ اگلا راستہ"
+  },
+  "Next step": {
+    telugu: "తదుపరి అడుగు",
+    tamil: "அடுத்த படி",
+    urdu: "اگلا قدم"
+  },
+  "Safety note": {
+    telugu: "భద్రత గమనిక",
+    tamil: "பாதுகாப்பு குறிப்பு",
+    urdu: "حفاظتی نوٹ"
+  },
+  "Analysis lens": {
+    telugu: "విశ్లేషణ కోణం",
+    tamil: "பகுப்பாய்வு கோணம்",
+    urdu: "تجزیاتی زاویہ"
+  },
+  "Next and save": {
+    telugu: "తదుపరి మరియు సేవ్",
+    tamil: "அடுத்து மற்றும் சேமி",
+    urdu: "اگلا اور محفوظ کریں"
+  },
+  "Back to Guide": {
+    telugu: "మళ్లీ గైడ్‌కు",
+    tamil: "மீண்டும் Guide-க்கு",
+    urdu: "Guide پر واپس"
+  },
+  "Last saved": {
+    telugu: "చివరి సేవ్",
+    tamil: "கடைசியாக சேமிக்கப்பட்டது",
+    urdu: "آخری بار محفوظ ہوا"
+  },
+  "Not saved yet": {
+    telugu: "ఇంకా సేవ్ కాలేదు",
+    tamil: "இன்னும் சேமிக்கப்படவில்லை",
+    urdu: "ابھی تک محفوظ نہیں ہوا"
+  },
+  "Safety": {
+    telugu: "భద్రత",
+    tamil: "பாதுகாப்பு",
+    urdu: "حفاظت"
+  },
+  "The intake changes with the situation you chose, so the report does not stay generic.": {
+    telugu: "మీరు ఎంచుకున్న పరిస్థితికి అనుగుణంగా intake మారుతుంది, కాబట్టి నివేదిక సాధారణంగా ఉండదు.",
+    tamil: "நீங்கள் தேர்ந்தெடுத்த நிலைக்கேற்ப intake மாறும், அதனால் report பொதுவாகவே இருக்காது.",
+    urdu: "آپ نے جو صورتحال چنی ہے اس کے مطابق intake بدلتا ہے، اس لیے رپورٹ عام نہیں رہتی۔"
+  },
+  "This questionnaire is tuned for the route you chose, then it turns the answers into a report that matches the situation.": {
+    telugu: "మీరు ఎంచుకున్న మార్గానికి సరిపడేలా ఈ ప్రశ్నావళి సర్దుబాటు అయింది, తర్వాత సమాధానాలను పరిస్థితికి సరిపోయే నివేదికగా మారుస్తుంది.",
+    tamil: "நீங்கள் தேர்ந்தெடுத்த பாதைக்கு ஏற்றவாறு இந்த questionnaire அமைக்கப்பட்டுள்ளது; பின்னர் பதில்களை நிலைக்கு பொருந்தும் report ஆக மாற்றுகிறது.",
+    urdu: "یہ questionnaire آپ کے چنے ہوئے route کے مطابق ترتیب دیا گیا ہے، پھر جوابات کو ایسی رپورٹ میں بدلتا ہے جو صورتحال سے میل کھاتی ہے۔"
+  },
+  "The flow shifts by issue. Complaint routes ask for evidence and outcomes, distress routes ask more about feelings and support, and practical routes ask more about load and recovery.": {
+    telugu: "ప్రవాహం సమస్యను బట్టి మారుతుంది. ఫిర్యాదు మార్గాలు evidence మరియు outcomes ను అడుగుతాయి, distress మార్గాలు feelings మరియు support గురించి ఎక్కువగా అడుగుతాయి, practical మార్గాలు load మరియు recovery పై దృష్టి పెడతాయి.",
+    tamil: "ஓட்டம் பிரச்சினைக்கேற்ப மாறுகிறது. Complaint வழிகள் evidence மற்றும் outcomes-ஐ கேட்கும், distress வழிகள் feelings மற்றும் support பற்றி அதிகம் கேட்கும், practical வழிகள் load மற்றும் recovery மீது அதிகம் கவனம் செலுத்தும்.",
+    urdu: "فلو مسئلے کے حساب سے بدلتا ہے۔ Complaint routes ثبوت اور نتائج پوچھتے ہیں، distress routes جذبات اور support کے بارے میں زیادہ پوچھتے ہیں، اور practical routes load اور recovery پر زیادہ توجہ دیتے ہیں۔"
+  },
+  "This is a guided synthesis, not a diagnosis. It combines your answers with verified reference pages chosen for this route.": {
+    telugu: "ఇది guided synthesis మాత్రమే, diagnosis కాదు. ఇది మీ సమాధానాలను ఈ route కోసం ఎంచుకున్న verified reference pages‌తో కలుపుతుంది.",
+    tamil: "இது ஒரு guided synthesis, diagnosis அல்ல. இது உங்கள் பதில்களை இந்த route-க்கு தேர்ந்தெடுக்கப்பட்ட verified reference pages-உடன் இணைக்கிறது.",
+    urdu: "یہ ایک guided synthesis ہے، diagnosis نہیں۔ یہ آپ کے جوابات کو اس route کے لیے منتخب شدہ verified reference pages کے ساتھ جوڑتا ہے۔"
+  },
+  "The report uses your intake, local app context, and verified reference pages. Open the sources below if you want the official material behind this route.": {
+    telugu: "ఈ report మీ intake, local app context, మరియు verified reference pages‌ను ఉపయోగిస్తుంది. ఈ route వెనుక ఉన్న official material కావాలంటే క్రింది sources‌ను తెరవండి.",
+    tamil: "இந்த report உங்கள் intake, local app context, மற்றும் verified reference pages-ஐப் பயன்படுத்துகிறது. இந்த route-க்கு பின்னுள்ள official material வேண்டும் என்றால் கீழுள்ள sources-ஐத் திறக்கவும்.",
+    urdu: "یہ رپورٹ آپ کے intake، local app context، اور verified reference pages استعمال کرتی ہے۔ اگر آپ اس route کے پیچھے موجود official material دیکھنا چاہتے ہیں تو نیچے کے sources کھولیں۔"
+  },
+  "Anything urgent to avoid": {
+    telugu: "తక్షణంగా తప్పించాల్సింది ఏదైనా ఉందా?",
+    tamil: "உடனடியாக தவிர்க்க வேண்டியது ஏதேனும் உள்ளதா?",
+    urdu: "فوری طور پر بچنا ہے تو کیا ہے؟"
+  },
+  "Sensitive or private notes": {
+    telugu: "సున్నితమైన లేదా ప్రైవేట్ notes",
+    tamil: "உணர்வுப்பூர்வமான அல்லது தனிப்பட்ட குறிப்புகள்",
+    urdu: "حساس یا نجی نوٹس"
+  },
+  "The report uses your answers to keep the route specific.": {
+    telugu: "మీ సమాధానాలను ఉపయోగించి report మార్గాన్ని ప్రత్యేకంగా ఉంచుతుంది.",
+    tamil: "உங்கள் பதில்களைப் பயன்படுத்தி report பாதையை குறிப்பாக வைத்திருக்கிறது.",
+    urdu: "رپورٹ آپ کے جوابات استعمال کر کے route کو مخصوص رکھتی ہے۔"
   },
   "Add exact birth date, 24-hour birth time, and full birth place. Moon-chart analysis stays locked until all three are precise.": {
     telugu: "ఖచ్చితమైన పుట్టిన తేదీ, 24 గంటల పుట్టిన సమయం, మరియు పూర్తి పుట్టిన స్థలాన్ని చేర్చండి. ఈ మూడు ఖచ్చితంగా ఉన్నప్పుడే Moon-chart విశ్లేషణ తెరుచుకుంటుంది.",
@@ -14511,6 +15257,7 @@ export default function App() {
   const [communityRealtimeStatus, setCommunityRealtimeStatus] = useState(
     communityRealtimeConfigured ? "Connecting…" : "Offline mode — posts stay on this device"
   );
+  const [communityRealtimeRefreshNonce, setCommunityRealtimeRefreshNonce] = useState(0);
   // ── Typing indicators (feed + chat composers) ─────────────────────────────
   // Keyed by the other member's clientId so multiple people typing at once
   // are tracked independently; each entry expires on its own after a few
@@ -14574,6 +15321,7 @@ export default function App() {
   const [guidanceDailyBrief, setGuidanceDailyBrief] = useState<string | null>(null);
   const [guidanceInsightText, setGuidanceInsightText] = useState<string | null>(null);
   const [guidanceInsightLoading, setGuidanceInsightLoading] = useState(false);
+  const [guidanceInsightErrorKind, setGuidanceInsightErrorKind] = useState<"network" | "empty" | null>(null);
   const [guidanceBirthChartHoroscope, setGuidanceBirthChartHoroscope] = useState<string | null>(null);
   const [guidanceBirthChartHoroscopeLoading, setGuidanceBirthChartHoroscopeLoading] = useState(false);
   const [privateIntakeDraft, setPrivateIntakeDraft] = useState<PrivateIntakeDraft>(() =>
@@ -14793,6 +15541,9 @@ export default function App() {
   const showFullHomeHero = activeTab === "today";
   const isAdmin = accessRole === "admin";
   const communityVerifiedAccess = accessRole === "verified" && (profilePhoneVerified || profileEmailVerified);
+  const refreshCommunityRealtime = useCallback(() => {
+    setCommunityRealtimeRefreshNonce((current) => current + 1);
+  }, []);
 
   useEffect(() => {
     if (!communityVerifiedAccess) {
@@ -14878,7 +15629,7 @@ export default function App() {
       cancelled = true;
       subscription.unsubscribe();
     };
-  }, [communityVerifiedAccess]);
+  }, [communityVerifiedAccess, communityRealtimeRefreshNonce]);
 
   useEffect(() => {
     const TYPING_TTL_MS = 4000;
@@ -16362,8 +17113,8 @@ export default function App() {
   const hasVerifiedSensitiveAccess = profilePhoneVerified || profileEmailVerified || accessRole === "admin";
   const privateIntakeRouteTab = pendingPrivateIntakeRoute?.routeTab ?? "guide";
   const privateIntakeReport = useMemo(
-    () => buildPrivateIntakeReport(privateIntakeDraft, profileDisplayName, selectedIssueGuide, privateIntakeRouteTab),
-    [privateIntakeDraft, privateIntakeRouteTab, profileDisplayName, selectedIssueGuide]
+    () => buildPrivateIntakeReport(privateIntakeDraft, profileDisplayName, selectedIssueGuide, privateIntakeRouteTab, languageId),
+    [languageId, privateIntakeDraft, privateIntakeRouteTab, profileDisplayName, selectedIssueGuide]
   );
   const latestCheckInEntry = useMemo(() => entries[0] ?? null, [entries]);
   const stepVisitReport = useMemo(
@@ -18261,7 +19012,8 @@ export default function App() {
       privateIntakeDraft,
       profileDisplayName,
       selectedIssueGuide,
-      pendingPrivateIntakeRoute?.routeTab ?? "guide"
+      pendingPrivateIntakeRoute?.routeTab ?? "guide",
+      languageId
     );
     const stepReport = buildStepVisitReport(
       entry,
@@ -20585,7 +21337,8 @@ async function fetchGuidanceHelp(
       privateIntakeDraft,
       profileDisplayName,
       selectedIssueGuide,
-      pendingPrivateIntakeRoute?.routeTab ?? "guide"
+      pendingPrivateIntakeRoute?.routeTab ?? "guide",
+      languageId
     );
     setVisitReports((current) => [
       {
@@ -21714,24 +22467,14 @@ function isTrustedExternalUrl(url: string) {
                 const scoreLabel =
                   languageId === "hindi"
                     ? (clarityScore >= 75 ? "मज़बूत" : clarityScore >= 55 ? "बढ़ रहा" : "बन रहा")
+                    : languageId === "telugu"
+                      ? (clarityScore >= 75 ? "బలంగా" : clarityScore >= 55 ? "పెరుగుతోంది" : "నిర్మాణంలో")
+                      : languageId === "tamil"
+                        ? (clarityScore >= 75 ? "வலுவாக" : clarityScore >= 55 ? "வளர்கிறது" : "உருவாகிறது")
+                        : languageId === "urdu"
+                          ? (clarityScore >= 75 ? "مضبوط" : clarityScore >= 55 ? "بڑھ رہا" : "بن رہا")
                     : (clarityScore >= 75 ? "Strong" : clarityScore >= 55 ? "Growing" : "Building");
-                const motivations = languageId === "hindi"
-                  ? [
-                      "हर छोटा कदम प्रगति है।",
-                      "आप अपनी मुश्किल नहीं हैं।",
-                      "स्पष्टता निरंतरता से आती है।",
-                      "आज आगे बढ़ने का एक और मौका है।",
-                      "ठीक होना परतों में होता है।",
-                      "आप यहाँ आए — यही मायने रखता है।",
-                      "आपकी यात्रा सिर्फ़ आपकी है।",
-                      "हिम्मत है जारी रखना।",
-                      "पूर्णता से बेहतर प्रगति।",
-                    ]
-                  : [
-                      "Every small step is progress.", "You are not your struggle.", "Clarity comes with consistency.",
-                      "Today is another chance to move forward.", "Healing happens in layers.", "You showed up — that matters.",
-                      "Your journey is uniquely yours.", "Courage is choosing to continue.", "Progress over perfection.",
-                    ];
+                const motivations = HOME_HERO_MOTIVATIONS.map((line) => pickLocalizedText(languageId, line));
                 // Prefer the connected brief -- it is written from this
                 // person's own streak, focus and scores -- and fall back to
                 // the rotating line whenever it was skipped (local-only
@@ -21746,9 +22489,13 @@ function isTrustedExternalUrl(url: string) {
                 // the same voice as the Journal mood responses.
                 const moodAwareLine =
                   crossSectionSignal.recentMoodTagLeaning === "negative"
-                  ? (languageId === "hindi"
-                      ? "पिछले कुछ चेक-इन भारी रहे हैं — इसे नोटिस करना ज़रूरी है, ज़बरदस्ती आगे बढ़ना नहीं।"
-                      : "The last few check-ins have leaned heavy — that's worth noticing, not pushing past.")
+                  ? pickLocalizedText(languageId, {
+                      english: "The last few check-ins have leaned heavy — that's worth noticing, not pushing past.",
+                      hindi: "पिछले कुछ चेक-इन भारी रहे हैं — इसे नोटिस करना ज़रूरी है, ज़बरदस्ती आगे बढ़ना नहीं।",
+                      telugu: "గత కొన్ని check-ins భారంగా ఉన్నాయి — దాన్ని గమనించడం ముఖ్యం, దాటేయడం కాదు.",
+                      tamil: "கடைசிக் சில check-ins பாரமாக இருந்தன — அதை கவனிப்பதே முக்கியம், தாண்டிச் செல்ல வேண்டாம்.",
+                      urdu: "پچھلے چند check-ins بھاری رہے ہیں — اسے محسوس کرنا اہم ہے، زبردستی آگے بڑھنا نہیں۔"
+                    })
                     : null;
                 return (
                   <View style={{ marginHorizontal: 16, marginTop: 10, marginBottom: 10 }}>
@@ -21785,7 +22532,13 @@ function isTrustedExternalUrl(url: string) {
                             }}
                             numberOfLines={1}
                           >
-                            {profileDisplayName || pickLocalizedText(languageId, { english: "Welcome back", hindi: "फिर से स्वागत है" })}
+                            {profileDisplayName || pickLocalizedText(languageId, {
+                              english: "Welcome back",
+                              hindi: "फिर से स्वागत है",
+                              telugu: "మళ్లీ స్వాగతం",
+                              tamil: "மீண்டும் வரவேற்கிறோம்",
+                              urdu: "خوش آمدید"
+                            })}
                           </Text>
                           <Text style={{ color: "#334155", fontSize: 12, marginTop: 3, fontStyle: "italic" }} numberOfLines={1}>
                             {moodAwareLine ?? motivation}
@@ -21814,7 +22567,13 @@ function isTrustedExternalUrl(url: string) {
                         ) : (
                           <View style={{ backgroundColor: "rgba(71,85,105,0.2)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(71,85,105,0.3)" }}>
                             <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
-                              {pickLocalizedText(languageId, { english: "No active focus", hindi: "कोई सक्रिय फोकस नहीं" })}
+                              {pickLocalizedText(languageId, {
+                                english: "No active focus",
+                                hindi: "कोई सक्रिय फोकस नहीं",
+                                telugu: "ప్రస్తుతం ఫోకస్ లేదు",
+                                tamil: "செயலில் கவனம் இல்லை",
+                                urdu: "اس وقت کوئی فوکس نہیں"
+                              })}
                             </Text>
                           </View>
                         )}
@@ -21824,7 +22583,10 @@ function isTrustedExternalUrl(url: string) {
                             <Text style={{ color: "#B88400", fontSize: 12, fontWeight: "700" }}>
                               {pickLocalizedText(languageId, {
                                 english: `${checkInStreak} day streak`,
-                                hindi: `${checkInStreak} दिन लगातार`
+                                hindi: `${checkInStreak} दिन लगातार`,
+                                telugu: `${checkInStreak} రోజులు వరుసగా`,
+                                tamil: `${checkInStreak} நாட்கள் தொடர்ச்சி`,
+                                urdu: `${checkInStreak} دن مسلسل`
                               })}
                             </Text>
                           </Animated.View>
@@ -21834,7 +22596,10 @@ function isTrustedExternalUrl(url: string) {
                             <Text style={{ color: "#3730A3", fontSize: 12, fontWeight: "700" }}>
                               {pickLocalizedText(languageId, {
                                 english: `${visitReports.length} session${visitReports.length !== 1 ? "s" : ""}`,
-                                hindi: `${visitReports.length} सत्र`
+                                hindi: `${visitReports.length} सत्र`,
+                                telugu: `${visitReports.length} సెషన్${visitReports.length !== 1 ? "లు" : ""}`,
+                                tamil: `${visitReports.length} அமர்வு${visitReports.length !== 1 ? "கள்" : ""}`,
+                                urdu: `${visitReports.length} سیشن${visitReports.length !== 1 ? "ز" : ""}`
                               })}
                             </Text>
                           </View>
@@ -21851,11 +22616,23 @@ function isTrustedExternalUrl(url: string) {
                         <View style={{ marginTop: 10 }}>
                           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
                             <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
-                              {pickLocalizedText(languageId, { english: "Multi-dimensional redressal", hindi: "बहु-आयामी सहायता" })}
+                              {pickLocalizedText(languageId, {
+                                english: "Multi-dimensional redressal",
+                                hindi: "बहु-आयामी सहायता",
+                                telugu: "బహుళ-మార్గ సహాయం",
+                                tamil: "பலஅடுக்கு உதவி",
+                                urdu: "کثیر جہتی مدد"
+                              })}
                             </Text>
                             <Pressable onPress={() => handleTabPress("insights")} accessibilityRole="button">
                               <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700" }}>
-                                {pickLocalizedText(languageId, { english: "Details →", hindi: "विवरण →" })}
+                                {pickLocalizedText(languageId, {
+                                  english: "Details →",
+                                  hindi: "विवरण →",
+                                  telugu: "వివరాలు →",
+                                  tamil: "விவரங்கள் →",
+                                  urdu: "تفصیل →"
+                                })}
                               </Text>
                             </Pressable>
                           </View>
@@ -22643,6 +23420,7 @@ function isTrustedExternalUrl(url: string) {
                 setGuidedSupportDraft={setGuidedSupportDraft}
                 aiHelpLoading={aiHelpLoading}
                 aiHelpProviderLabel={aiHelpProviderLabel}
+                languageId={languageId}
                 privateIntakeSavedAt={privateIntakeSavedAt}
                 routePreview={aiHelpRoutePreview}
                 onPostGuidedSupport={postGuidedSupportMessage}
@@ -22717,6 +23495,7 @@ function isTrustedExternalUrl(url: string) {
               <CommunitySection
                 communityMessages={visibleCommunityMessages}
                 communityRealtimeStatus={communityRealtimeStatus}
+                languageId={languageId}
                 communityClientId={presenceSessionId}
                 communityFilter={communityFilter}
                 setCommunityFilter={setCommunityFilter}
@@ -22763,6 +23542,7 @@ function isTrustedExternalUrl(url: string) {
                 selectedIdentity={selectedIdentity}
                 canUseCommunityFeatures={communityVerifiedAccess}
                 onOpenProfileVerification={() => openProfileAccessPanel(true)}
+                onRetryCommunitySync={refreshCommunityRealtime}
                 postingLocked={communityPostingLocked}
                 safetyLockReason={communitySafetyLockReason}
                 isWide={isWide}
@@ -22935,6 +23715,7 @@ function isTrustedExternalUrl(url: string) {
               {/* ── Personal Pattern Summary ── */}
               <GuidanceInsightsCard
                 apiBase={verificationApiBaseUrl}
+                languageId={languageId}
                 name={profileDisplayName || accessName || ""}
                 issueLabel={selectedIssueGuide.label}
                 weekAvg={weeklyAverage}
@@ -22945,6 +23726,7 @@ function isTrustedExternalUrl(url: string) {
                 recentNotes={entries.slice(0, 5).map((e) => e.note.slice(0, 80))}
                 insightText={guidanceInsightText}
                 loading={guidanceInsightLoading}
+                errorKind={guidanceInsightErrorKind}
                 localOnly={localOnly}
                 onFetch={() => {
                   if (verificationApiBaseUrl.length === 0 || guidanceInsightLoading) return;
@@ -22953,10 +23735,19 @@ function isTrustedExternalUrl(url: string) {
                   // either sending them anyway or failing silently.
                   if (localOnly) {
                     setGuidanceInsightText(
-                      "Local-only journal is on, so your notes stay on this device and are not sent for a written insight. Turn it off in Settings if you would like one."
+                      pickLocalizedText(languageId, {
+                        english: "Local-only journal is on, so your notes stay on this device and are not sent for a written insight. Turn it off in Settings if you would like one.",
+                        hindi: "लोकल-ओनली जर्नल चालू है, इसलिए आपके नोट्स इस डिवाइस पर ही रहते हैं और लिखित विश्लेषण के लिए नहीं भेजे जाते। अगर आप चाहें तो Settings में इसे बंद करें।",
+                        telugu: "లోకల్-ఒన్లీ జర్నల్ ఆన్‌లో ఉంది, కాబట్టి మీ నోట్లు ఈ డివైస్‌లోనే ఉంటాయి మరియు రాతపూర్వక విశ్లేషణ కోసం పంపబడవు. మీరు కావాలంటే Settingsలో దీన్ని ఆపండి.",
+                        tamil: "லோகல்-ஒன்லி ஜர்னல் இயக்கத்தில் உள்ளது, ஆகவே உங்கள் குறிப்புகள் இந்த சாதனத்திலேயே இருக்கும் மற்றும் எழுதப்பட்ட பகுப்பாய்விற்காக அனுப்பப்படாது. விரும்பினால் Settings-இல் இதை அணைக்கலாம்.",
+                        urdu: "لوکل-اونلی جرنل آن ہے، اس لیے آپ کے نوٹس اسی ڈیوائس پر رہتے ہیں اور تحریری تجزیے کے لیے نہیں بھیجے جاتے۔ اگر آپ چاہیں تو Settings میں اسے بند کریں۔"
+                      })
                     );
+                    setGuidanceInsightErrorKind(null);
                     return;
                   }
+                  setGuidanceInsightText(null);
+                  setGuidanceInsightErrorKind(null);
                   setGuidanceInsightLoading(true);
                   const topToneLabel = entries.length > 0 ? entries[0].toneLabel : "";
                   fetch(`${verificationApiBaseUrl}/guidance/insights`, {
@@ -22970,15 +23761,26 @@ function isTrustedExternalUrl(url: string) {
                       streakDays: checkInStreak,
                       entryCount: entries.length,
                       topTone: topToneLabel,
-                      recentNotes: entries.slice(0, 5).map((e) => e.note.slice(0, 80))
+                      recentNotes: entries.slice(0, 5).map((e) => e.note.slice(0, 80)),
+                      languageId
                     })
                   })
-                    .then((r) => r.json().catch(() => null))
+                    .then(async (r) => {
+                      if (!r.ok) throw new Error(`guidance_insights_${r.status}`);
+                      return r.json().catch(() => null);
+                    })
                     .then((payload) => {
                       const text = typeof payload?.text === "string" ? payload.text.trim() : "";
-                      if (text.length > 0) setGuidanceInsightText(text);
+                      if (text.length > 0) {
+                        setGuidanceInsightText(text);
+                        setGuidanceInsightErrorKind(null);
+                      } else {
+                        setGuidanceInsightErrorKind("empty");
+                      }
                     })
-                    .catch(() => undefined)
+                    .catch(() => {
+                      setGuidanceInsightErrorKind("network");
+                    })
                     .finally(() => setGuidanceInsightLoading(false));
                 }}
               />
@@ -23295,6 +24097,7 @@ function isTrustedExternalUrl(url: string) {
         {showOnboarding && (
       <OnboardingOverlay
         selectedIdentity={selectedIdentity}
+        languageId={languageId}
             launchNeedId={launchNeedId}
             setLaunchNeedId={setLaunchNeedId}
             onContinue={completeOnboarding}
@@ -23401,6 +24204,7 @@ function isTrustedExternalUrl(url: string) {
         )}
         {showPrivateIntakePanel && (
           <PrivateIntakeOverlay
+            languageId={languageId}
             selectedIdentityLabel={profileDisplayName}
             selectedIssueGuide={selectedIssueGuide}
             privateIntakeRouteTab={pendingPrivateIntakeRoute?.routeTab ?? "guide"}
@@ -26073,6 +26877,7 @@ function GuidedSupportSection({
   onEmergencyCall,
   selectedIdentityLabel,
   selectedIssueGuideLabel,
+  languageId,
   routePreview,
   isWide,
   isPrivateIntakeOpen,
@@ -26096,6 +26901,7 @@ function GuidedSupportSection({
   onEmergencyCall: () => Promise<void>;
   selectedIdentityLabel: string;
   selectedIssueGuideLabel: string;
+  languageId: LanguageId;
   routePreview: RoutePreview;
   isWide: boolean;
   isPrivateIntakeOpen: boolean;
@@ -26114,11 +26920,13 @@ function GuidedSupportSection({
     latestGuidedSupportMessage.route === "redress" || latestGuidedSupportMessage.route === "urgent";
   const needsPrivateIntake =
     latestGuidedSupportMessage.route !== "urgent" && !privateIntakeSavedAt;
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const routePrimaryLabel = needsPrivateIntake
-    ? "Open intake"
+    ? l("Open intake", { hindi: "इंटेक खोलें", telugu: "ఇన్‌టేక్ తెరవండి", tamil: "இணைப்பைத் திறக்கவும்", urdu: "انٹیک کھولیں" })
     : routeIsRedress
-      ? "Open Help"
-      : "Open Path";
+      ? l("Open Help", { hindi: "सहायता खोलें", telugu: "సహాయం తెరవండి", tamil: "உதவியைத் திறக்கவும்", urdu: "مدد کھولیں" })
+      : l("Open Path", { hindi: "मार्ग खोलें", telugu: "మార్గం తెరవండి", tamil: "பாதையைத் திறக்கவும்", urdu: "راستہ کھولیں" });
   const routePrimaryAction = needsPrivateIntake
     ? onOpenPrivateIntake
     : routeIsRedress
@@ -26317,7 +27125,19 @@ function GuidedSupportSection({
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
             <Text style={styles.helpButtonSecondaryLabel}>
-              {showHistory ? "Hide previous guidance" : "View previous guidance"}
+              {showHistory
+                ? l("Hide previous guidance", {
+                    hindi: "पिछली मार्गदर्शिका छिपाएँ",
+                    telugu: "మునుపటి మార్గదర్శకత్వాన్ని దాచండి",
+                    tamil: "முந்தைய வழிகாட்டலை மறைக்கவும்",
+                    urdu: "پچھلی رہنمائی چھپائیں"
+                  })
+                : l("View previous guidance", {
+                    hindi: "पिछली मार्गदर्शिका देखें",
+                    telugu: "మునుపటి మార్గదర్శకత్వాన్ని చూడండి",
+                    tamil: "முந்தைய வழிகாட்டலைப் பார்க்கவும்",
+                    urdu: "پچھلی رہنمائی دیکھیں"
+                  })}
             </Text>
           </Pressable>
 
@@ -26325,25 +27145,45 @@ function GuidedSupportSection({
             <View style={styles.aiHelpPreviousContent}>
               <View style={[styles.aiHelpSummaryBand, compact && styles.aiHelpSummaryBandCompact]}>
                 <View style={[styles.aiHelpSummaryRow, styles.aiHelpSafetySummaryRow]}>
-                  <Text style={styles.aiHelpSummaryLabel}>Scope and safety</Text>
+                  <Text style={styles.aiHelpSummaryLabel}>{l("Scope and safety", {
+                    hindi: "दायरा और सुरक्षा",
+                    telugu: "పరిధి మరియు భద్రత",
+                    tamil: "விரிவு மற்றும் பாதுகாப்பு",
+                    urdu: "دائرہ اور حفاظت"
+                  })}</Text>
                   <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
                     {COUNSELLING_SAFETY_COPY["supported-self-care"]}
                   </Text>
                 </View>
                 <View style={styles.aiHelpSummaryRow}>
-                  <Text style={styles.aiHelpSummaryLabel}>Meaning</Text>
+                  <Text style={styles.aiHelpSummaryLabel}>{l("Meaning", {
+                    hindi: "अर्थ",
+                    telugu: "అర్థం",
+                    tamil: "அர்த்தம்",
+                    urdu: "مطلب"
+                  })}</Text>
                   <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
                     {latestReplySummary}
                   </Text>
                 </View>
                 <View style={styles.aiHelpSummaryRow}>
-                  <Text style={styles.aiHelpSummaryLabel}>Next step</Text>
+                  <Text style={styles.aiHelpSummaryLabel}>{l("Next step", {
+                    hindi: "अगला कदम",
+                    telugu: "తదుపరి అడుగు",
+                    tamil: "அடுத்த படி",
+                    urdu: "اگلا قدم"
+                  })}</Text>
                   <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
                     {latestReplyStep}
                   </Text>
                 </View>
                 <View style={styles.aiHelpSummaryRow}>
-                  <Text style={styles.aiHelpSummaryLabel}>Escalate when</Text>
+                  <Text style={styles.aiHelpSummaryLabel}>{l("Escalate when", {
+                    hindi: "और ऊपर बढ़ाएँ जब",
+                    telugu: "ఎప్పుడు పెంచాలి",
+                    tamil: "எப்போது மேலும் எடுத்துச் செல்ல வேண்டும்",
+                    urdu: "بڑھائیں جب"
+                  })}</Text>
                   <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
                     {latestReplyEscalate}
                   </Text>
@@ -26372,7 +27212,12 @@ function GuidedSupportSection({
                   onPress={onClearGuidedSupport}
                   style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
                 >
-                  <Text style={styles.helpButtonSecondaryLabel}>Clear previous guidance</Text>
+                  <Text style={styles.helpButtonSecondaryLabel}>{l("Clear previous guidance", {
+                    hindi: "पिछली मार्गदर्शिका साफ़ करें",
+                    telugu: "మునుపటి మార్గదర్శకత్వాన్ని క్లియర్ చేయండి",
+                    tamil: "முந்தைய வழிகாட்டலை அழிக்கவும்",
+                    urdu: "پچھلی رہنمائی صاف کریں"
+                  })}</Text>
                 </Pressable>
               </View>
 
@@ -26454,6 +27299,7 @@ function confirmDestructive(title: string, message: string, onConfirm: () => voi
 function CommunitySection({
   communityMessages,
   communityRealtimeStatus,
+  languageId,
   communityClientId,
   communityFilter,
   setCommunityFilter,
@@ -26500,6 +27346,7 @@ function CommunitySection({
   selectedIdentity,
   canUseCommunityFeatures,
   onOpenProfileVerification,
+  onRetryCommunitySync,
   postingLocked,
   safetyLockReason,
   isWide,
@@ -26507,6 +27354,7 @@ function CommunitySection({
 }: {
   communityMessages: CommunityMessage[];
   communityRealtimeStatus: string;
+  languageId: LanguageId;
   communityClientId: string;
   communityFilter: CommunityFilterId;
   setCommunityFilter: (value: CommunityFilterId) => void;
@@ -26561,6 +27409,7 @@ function CommunitySection({
   selectedIdentity: (typeof identityProfiles)[number];
   canUseCommunityFeatures: boolean;
   onOpenProfileVerification: () => void;
+  onRetryCommunitySync: () => void;
   postingLocked: boolean;
   safetyLockReason: string | null;
   isWide: boolean;
@@ -26587,6 +27436,8 @@ function CommunitySection({
   const [privateSpaceTitleDraft, setPrivateSpaceTitleDraft] = useState("");
   const [privateSpaceMembersDraft, setPrivateSpaceMembersDraft] = useState("");
   const [privateSpaceDraft, setPrivateSpaceDraft] = useState("");
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
 
   useEffect(() => {
     setShowFullCommunity(false);
@@ -26665,11 +27516,77 @@ function CommunitySection({
     error: "#B3261E"
   };
   const communitySyncToneLabel: Record<"live" | "connecting" | "offline" | "error", string> = {
-    live: "Live",
-    connecting: "Connecting",
-    offline: "Offline",
-    error: "Sync issue"
+    live: l("Live", { hindi: "लाइव", telugu: "లైవ్", tamil: "லைவ்", urdu: "لائیو" }),
+    connecting: l("Connecting", { hindi: "कनेक्ट हो रहा है", telugu: "కనెక్ట్ అవుతోంది", tamil: "இணைக்கப்படுகிறது", urdu: "کنیکٹ ہو رہا ہے" }),
+    offline: l("Offline", { hindi: "ऑफ़लाइन", telugu: "ఆఫ్‌లైన్", tamil: "ஆஃப்லைன்", urdu: "آف لائن" }),
+    error: l("Sync issue", { hindi: "सिंक समस्या", telugu: "సింక్ సమస్య", tamil: "ஒத்திசைவு சிக்கல்", urdu: "ہم آہنگی کا مسئلہ" })
   };
+  const localizedCommunityStatus = useMemo(() => {
+    const normalized = communityRealtimeStatus.toLowerCase();
+    if (normalized.includes("live")) {
+      return l("Live — connected", {
+        hindi: "लाइव — जुड़ा हुआ",
+        telugu: "లైవ్ — కనెక్ట్ అయింది",
+        tamil: "நேரலையில் — இணைக்கப்பட்டுள்ளது",
+        urdu: "لائیو — جڑا ہوا"
+      });
+    }
+    if (normalized.includes("offline mode")) {
+      return l("Offline mode — posts stay on this device", {
+        hindi: "ऑफ़लाइन मोड — पोस्ट इस डिवाइस पर रहेंगी",
+        telugu: "ఆఫ్‌లైన్ మోడ్ — పోస్టులు ఈ డివైస్‌లోనే ఉంటాయి",
+        tamil: "ஆஃப்லைன் முறை — பதிவுகள் இந்த சாதனத்திலேயே இருக்கும்",
+        urdu: "آف لائن موڈ — پوسٹس اسی ڈیوائس پر رہیں گی"
+      });
+    }
+    if (normalized.includes("verify")) {
+      return l("Verify one contact to connect realtime", {
+        hindi: "रियलटाइम जोड़ने के लिए एक संपर्क सत्यापित करें",
+        telugu: "రియల్‌టైమ్ కోసం ఒక సంప్రదింపును ధృవీకరించండి",
+        tamil: "நேரலை இணைப்புக்கு ஒரு தொடர்பை உறுதிப்படுத்துங்கள்",
+        urdu: "ریئل ٹائم کے لیے ایک رابطہ کی تصدیق کریں"
+      });
+    }
+    if (normalized.includes("reconnecting")) {
+      return l("Reconnecting…", {
+        hindi: "फिर से कनेक्ट हो रहा है…",
+        telugu: "మళ్లీ కనెక్ట్ అవుతోంది…",
+        tamil: "மீண்டும் இணைக்கப்படுகிறது…",
+        urdu: "دوبارہ کنیکٹ ہو رہا ہے…"
+      });
+    }
+    if (normalized.includes("couldn't send")) {
+      return l("Couldn't send live — saved on this device, it'll retry.", {
+        hindi: "लाइव नहीं भेज पाए — यह इस डिवाइस पर सुरक्षित है, फिर कोशिश होगी।",
+        telugu: "లైవ్‌గా పంపలేకపోయాం — ఇది ఈ డివైస్‌లో సేవ్ అయింది, మళ్లీ ప్రయత్నిస్తుంది.",
+        tamil: "நேரலையில் அனுப்ப முடியவில்லை — இது இந்த சாதனத்தில் சேமிக்கப்பட்டுள்ளது, மீண்டும் முயற்சிக்கும்.",
+        urdu: "لائیو نہیں بھیج سکے — یہ اسی ڈیوائس پر محفوظ ہے، دوبارہ کوشش ہوگی۔"
+      });
+    }
+    if (normalized.includes("having trouble syncing live") || normalized.includes("couldn't reach")) {
+      return l("Live sync is having trouble — you can still post, it'll catch up.", {
+        hindi: "लाइव सिंक में समस्या है — फिर भी पोस्ट कर सकते हैं, यह बाद में जुड़ जाएगा।",
+        telugu: "లైవ్ సింక్‌లో సమస్య ఉంది — అయినా మీరు పోస్ట్ చేయవచ్చు, తర్వాత చేరుతుంది.",
+        tamil: "நேரலை ஒத்திசைவில் சிக்கல் உள்ளது — இருந்தாலும் நீங்கள் பதிவிடலாம், அது பின்னர் சேரும்.",
+        urdu: "لائیو سنک میں مسئلہ ہے — پھر بھی آپ پوسٹ کر سکتے ہیں، یہ بعد میں جڑ جائے گا۔"
+      });
+    }
+    if (normalized.includes("connecting")) {
+      return l("Connecting…", {
+        hindi: "कनेक्ट हो रहा है…",
+        telugu: "కనెక్ట్ అవుతోంది…",
+        tamil: "இணைக்கப்படுகிறது…",
+        urdu: "کنیکٹ ہو رہا ہے…"
+      });
+    }
+    return communityRealtimeStatus;
+  }, [communityRealtimeStatus, l]);
+  const communityRetryLabel = l("Retry sync", {
+    hindi: "फिर से सिंक करें",
+    telugu: "మళ్లీ సింక్ చేయండి",
+    tamil: "மீண்டும் ஒத்திசைக்கவும்",
+    urdu: "دوبارہ سنک کریں"
+  });
 
   const renderCommunityReactionRow = (messageId: string) => {
     if (!communityRealtimeConfigured) return null;
@@ -26737,10 +27654,20 @@ function CommunitySection({
         <View style={styles.panel}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.eyebrow}>Community</Text>
-              <Text style={styles.sectionTitleSmall}>Peer support space</Text>
+              <Text style={styles.eyebrow}>{l("Community")}</Text>
+              <Text style={styles.sectionTitleSmall}>{l("Peer support space", {
+                hindi: "सहकर्मी सहायता स्थान",
+                telugu: "పీర్ సపోర్ట్ స్థలం",
+                tamil: "உறுப்பினர் ஆதரவு இடம்",
+                urdu: "ہم مرتبہ مدد کی جگہ"
+              })}</Text>
             </View>
-            <Text style={styles.smallMeta}>Verified · Moderated · Safe</Text>
+            <Text style={styles.smallMeta}>{l("Verified · Moderated · Safe", {
+              hindi: "सत्यापित · मॉडरेटेड · सुरक्षित",
+              telugu: "ధృవీకరించబడిన · నియంత్రిత · సురక్షితం",
+              tamil: "உறுதிப்படுத்தப்பட்டது · கண்காணிக்கப்பட்ட · பாதுகாப்பானது",
+              urdu: "تصدیق شدہ · معتدل · محفوظ"
+            })}</Text>
           </View>
           {/* ── Demo community posts preview ── */}
           <View style={{ gap: 10, marginBottom: 16 }}>
@@ -26753,7 +27680,12 @@ function CommunitySection({
                     <Text style={{ color: "#1F2937", fontSize: 12 }}>{post.time}</Text>
                   </View>
                   <View style={{ backgroundColor: "#E6F4F2", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
-                    <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "600" }}>✓ Verified</Text>
+                    <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "600" }}>{l("✓ Verified", {
+                      hindi: "✓ सत्यापित",
+                      telugu: "✓ ధృవీకరించబడింది",
+                      tamil: "✓ உறுதிப்படுத்தப்பட்டது",
+                      urdu: "✓ تصدیق شدہ"
+                    })}</Text>
                   </View>
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 20 }}>{post.text}</Text>
@@ -26762,37 +27694,97 @@ function CommunitySection({
           </View>
           {/* ── Verification unlock section ── */}
           <View style={[styles.communitySafetyBand, { borderTopWidth: 1, borderTopColor: "#DCE7EE", paddingTop: 16 }]}>
-            <Text style={styles.communitySafetyTitle}>Join the conversation</Text>
+            <Text style={styles.communitySafetyTitle}>{l("Join the conversation", {
+              hindi: "बातचीत में शामिल हों",
+              telugu: "సంభాషణలో చేరండి",
+              tamil: "உரையாடலில் சேரவும்",
+              urdu: "گفتگو میں شامل ہوں"
+            })}</Text>
             <Text style={styles.communitySafetyText}>
-              Verify one contact method (phone or email) to post, reply, and open private rooms. Takes under a minute.
+              {l("Verify one contact method (phone or email) to post, reply, and open private rooms. Takes under a minute.", {
+                hindi: "पोस्ट करने, जवाब देने और निजी कमरे खोलने के लिए एक संपर्क माध्यम (फोन या ईमेल) सत्यापित करें। इसमें एक मिनट से कम लगता है।",
+                telugu: "పోస్ట్ చేయడానికి, ప్రత్యుత్తరం ఇవ్వడానికి మరియు ప్రైవేట్ గదులు తెరవడానికి ఒక సంప్రదింపు విధానాన్ని (ఫోన్ లేదా ఇమెయిల్) ధృవీకరించండి. దీనికి ఒక నిమిషం కంటే తక్కువ సమయం పడుతుంది.",
+                tamil: "பதிவிட, பதிலளிக்க மற்றும் தனிப்பட்ட அறைகளைத் திறக்க ஒரு தொடர்பு முறையை (தொலைபேசி அல்லது மின்னஞ்சல்) உறுதிப்படுத்தவும். ஒரு நிமிடத்திற்கும் குறைவாகும்.",
+                urdu: "پوسٹ کرنے، جواب دینے، اور نجی کمرے کھولنے کے لیے ایک رابطہ طریقہ (فون یا ای میل) کی تصدیق کریں۔ اس میں ایک منٹ سے کم وقت لگتا ہے۔"
+              })}
             </Text>
             <View style={styles.communityFeatureRow}>
               <View style={styles.communityFeaturePill}>
-                <Text style={styles.communityFeatureLabel}>📱 One OTP</Text>
-                <Text style={styles.communityFeatureMeta}>Phone or email</Text>
+                <Text style={styles.communityFeatureLabel}>📱 {l("One OTP", {
+                  hindi: "एक OTP",
+                  telugu: "ఒక OTP",
+                  tamil: "ஒரு OTP",
+                  urdu: "ایک OTP"
+                })}</Text>
+                <Text style={styles.communityFeatureMeta}>{l("Phone or email", {
+                  hindi: "फ़ोन या ईमेल",
+                  telugu: "ఫోన్ లేదా ఇమెయిల్",
+                  tamil: "தொலைபேசி அல்லது மின்னஞ்சல்",
+                  urdu: "فون یا ای میل"
+                })}</Text>
               </View>
               <View style={styles.communityFeaturePill}>
-                <Text style={styles.communityFeatureLabel}>💬 Private rooms</Text>
-                <Text style={styles.communityFeatureMeta}>Verified members only</Text>
+                <Text style={styles.communityFeatureLabel}>💬 {l("Private rooms", {
+                  hindi: "निजी कमरे",
+                  telugu: "ప్రైవేట్ గదులు",
+                  tamil: "தனிப்பட்ட அறைகள்",
+                  urdu: "نجی کمرے"
+                })}</Text>
+                <Text style={styles.communityFeatureMeta}>{l("Verified members only", {
+                  hindi: "केवल सत्यापित सदस्य",
+                  telugu: "ధృవీకరించిన సభ్యులు మాత్రమే",
+                  tamil: "உறுதிப்படுத்தப்பட்ட உறுப்பினர்கள் மட்டும்",
+                  urdu: "صرف تصدیق شدہ اراکین"
+                })}</Text>
               </View>
               <View style={styles.communityFeaturePill}>
-                <Text style={styles.communityFeatureLabel}>🛡️ Safe space</Text>
-                <Text style={styles.communityFeatureMeta}>Moderated & filtered</Text>
+                <Text style={styles.communityFeatureLabel}>🛡️ {l("Safe space", {
+                  hindi: "सुरक्षित स्थान",
+                  telugu: "సురక్షిత స్థలం",
+                  tamil: "பாதுகாப்பான இடம்",
+                  urdu: "محفوظ جگہ"
+                })}</Text>
+                <Text style={styles.communityFeatureMeta}>{l("Moderated & filtered", {
+                  hindi: "मॉडरेटेड और फ़िल्टर्ड",
+                  telugu: "నియంత్రిత మరియు ఫిల్టర్ చేయబడింది",
+                  tamil: "கண்காணிக்கப்பட்ட மற்றும் வடிகட்டப்பட்டது",
+                  urdu: "معتدل اور فلٹر شدہ"
+                })}</Text>
               </View>
             </View>
           </View>
           <View style={styles.communityActions}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Verify your identity to join the community"
-              accessibilityHint="Opens verification so you can post, chat, and open private rooms"
+              accessibilityLabel={l("Verify your identity to join the community", {
+                hindi: "समुदाय में शामिल होने के लिए अपनी पहचान सत्यापित करें",
+                telugu: "సమాజంలో చేరడానికి మీ గుర్తింపును ధృవీకరించండి",
+                tamil: "சமூகத்தில் சேர உங்கள் அடையாளத்தை உறுதிப்படுத்தவும்",
+                urdu: "برادری میں شامل ہونے کے لیے اپنی شناخت کی تصدیق کریں"
+              })}
+              accessibilityHint={l("Opens verification so you can post, chat, and open private rooms", {
+                hindi: "सत्यापन खोलता है ताकि आप पोस्ट, चैट और निजी कमरे खोल सकें",
+                telugu: "పోస్ట్ చేయడానికి, చాట్ చేయడానికి మరియు ప్రైవేట్ గదులు తెరవడానికి ధృవీకరణను తెరుస్తుంది",
+                tamil: "பதிவிட, அரட்டை அடிக்க மற்றும் தனிப்பட்ட அறைகளைத் திறக்க உறுதிப்படுத்தலைத் திறக்கும்",
+                urdu: "تصدیق کھولتا ہے تاکہ آپ پوسٹ، چیٹ، اور نجی کمرے کھول سکیں"
+              })}
               onPress={onOpenProfileVerification}
               style={({ pressed }) => [styles.helpButton, pressed && styles.pressed]}
             >
-              <Text style={styles.helpButtonLabel}>Verify & join the community</Text>
+              <Text style={styles.helpButtonLabel}>{l("Verify & join the community", {
+                hindi: "सत्यापित करें और समुदाय से जुड़ें",
+                telugu: "ధృవీకరించి సమాజంలో చేరండి",
+                tamil: "உறுதிப்படுத்தி சமூகத்தில் சேரவும்",
+                urdu: "تصدیق کریں اور برادری میں شامل ہوں"
+              })}</Text>
             </Pressable>
           </View>
-          <Text style={styles.smallMeta}>Your identity stays private. Moderation applies to all members.</Text>
+          <Text style={styles.smallMeta}>{l("Your identity stays private. Moderation applies to all members.", {
+            hindi: "आपकी पहचान निजी रहती है। मॉडरेशन सभी सदस्यों पर लागू होता है।",
+            telugu: "మీ గుర్తింపు గోప్యంగా ఉంటుంది. నియంత్రణ అన్ని సభ్యులపై వర్తిస్తుంది.",
+            tamil: "உங்கள் அடையாளம் தனிப்பட்டதாக இருக்கும். கண்காணிப்பு எல்லா உறுப்பினர்களுக்கும் பொருந்தும்.",
+            urdu: "آپ کی شناخت نجی رہتی ہے۔ moderation تمام اراکین پر لاگو ہوتا ہے۔"
+          })}</Text>
         </View>
       </View>
     );
@@ -26808,47 +27800,135 @@ function CommunitySection({
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Community</Text>
-            <Text style={styles.sectionTitleSmall}>Verified feed and chat</Text>
+            <Text style={styles.eyebrow}>{l("Community")}</Text>
+            <Text style={styles.sectionTitleSmall}>{l("Verified feed and chat", {
+              hindi: "सत्यापित फ़ीड और चैट",
+              telugu: "ధృవీకరించిన ఫీడ్ మరియు చాట్",
+              tamil: "உறுதிப்படுத்தப்பட்ட feed மற்றும் chat",
+              urdu: "تصدیق شدہ فیڈ اور چیٹ"
+            })}</Text>
           </View>
           <Text style={styles.smallMeta}>
-            {communityVerifiedCount} verified voices / {communityReports.length} reports
+            {communityVerifiedCount} {l("verified voices", {
+              hindi: "सत्यापित आवाज़ें",
+              telugu: "ధృవీకరించిన స్వరాలు",
+              tamil: "உறுதிப்படுத்தப்பட்ட குரல்கள்",
+              urdu: "تصدیق شدہ آوازیں"
+            })} / {communityReports.length} {l("reports", {
+              hindi: "रिपोर्ट",
+              telugu: "ఫిర్యాదులు",
+              tamil: "அறிக்கைகள்",
+              urdu: "رپورٹس"
+            })}
           </Text>
         </View>
         <View
-          style={styles.communitySyncRow}
+          style={[styles.communitySyncRow, { flexDirection: "row", alignItems: "center", gap: 10, justifyContent: "space-between" }]}
           accessibilityRole="text"
-          accessibilityLabel={`Sync status: ${communitySyncToneLabel[communitySyncTone]}. ${communityRealtimeStatus}`}
+          accessibilityLabel={`${l("Sync status", {
+            hindi: "सिंक स्थिति",
+            telugu: "సింక్ స్థితి",
+            tamil: "ஒத்திசைவு நிலை",
+            urdu: "سنک حالت"
+          })}: ${communitySyncToneLabel[communitySyncTone]}. ${localizedCommunityStatus}`}
         >
-          <View style={[styles.communitySyncDot, { backgroundColor: communitySyncDotColor[communitySyncTone] }]} />
-          <Text style={styles.smallMeta}>{communityRealtimeStatus}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+            <View style={[styles.communitySyncDot, { backgroundColor: communitySyncDotColor[communitySyncTone] }]} />
+            <Text style={styles.smallMeta}>{localizedCommunityStatus}</Text>
+          </View>
+          {communitySyncTone !== "live" && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={communityRetryLabel}
+              accessibilityHint={l("Tries the live connection again", {
+                hindi: "लाइव कनेक्शन को फिर से आज़माता है",
+                telugu: "లైవ్ కనెక్షన్‌ను మళ్లీ ప్రయత్నిస్తుంది",
+                tamil: "நேரலை இணைப்பை மீண்டும் முயற்சிக்கிறது",
+                urdu: "لائیو کنیکشن کو دوبارہ آزماتا ہے"
+              })}
+              onPress={onRetryCommunitySync}
+              style={({ pressed }) => [
+                {
+                  borderRadius: 999,
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderWidth: 1,
+                  borderColor: "#B6C9D9",
+                  backgroundColor: pressed ? "#E5ECF3" : "#F3F7FB"
+                },
+                pressed && styles.pressed
+              ]}
+            >
+              <Text style={{ color: "#1A3A55", fontSize: 12, fontWeight: "700" }}>{communityRetryLabel}</Text>
+            </Pressable>
+          )}
         </View>
         {/* ── How to use this section ── */}
         <View style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
-          <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, marginBottom: 6 }}>HOW TO USE COMMUNITY</Text>
+          <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, marginBottom: 6 }}>{l("How to use community", {
+            hindi: "समुदाय का उपयोग कैसे करें",
+            telugu: "సమాజాన్ని ఎలా ఉపయోగించాలి",
+            tamil: "சமூகத்தை எப்படி பயன்படுத்துவது",
+            urdu: "برادری کا استعمال کیسے کریں"
+          })}</Text>
           <Text style={{ color: "#263244", fontSize: 13, lineHeight: 20, marginBottom: 4 }}>
-            {"1. Read the feed — see what others in similar situations are sharing. Tap a post to save or report it."}
+            {l("1. Read the feed — see what others in similar situations are sharing. Tap a post to save or report it.", {
+              hindi: "1. फ़ीड पढ़ें — देखें कि समान स्थिति वाले लोग क्या साझा कर रहे हैं। किसी पोस्ट को सहेजने या रिपोर्ट करने के लिए उस पर टैप करें।",
+              telugu: "1. ఫీడ్ చదవండి — ఇలాంటి పరిస్థితుల్లో ఉన్నవారు ఏమి పంచుకుంటున్నారో చూడండి. పోస్ట్‌ను సేవ్ చేయడానికి లేదా రిపోర్ట్ చేయడానికి దానిపై ట్యాప్ చేయండి.",
+              tamil: "1. feed-ஐப் படிக்கவும் — இதே போன்ற சூழ்நிலைகளில் இருப்பவர்கள் என்ன பகிர்கிறார்கள் என்பதைப் பார்க்கவும். பதிவை சேமிக்க அல்லது புகாரளிக்க அதைத் தட்டவும்.",
+              urdu: "1. فیڈ پڑھیں — دیکھیں کہ ملتی جلتی صورتحال والے لوگ کیا شیئر کر رہے ہیں۔ کسی پوسٹ کو محفوظ یا رپورٹ کرنے کے لیے اس پر ٹیپ کریں۔"
+            })}
           </Text>
           <Text style={{ color: "#263244", fontSize: 13, lineHeight: 20, marginBottom: 4 }}>
-            {"2. Use the chat — drop a short message to the group. Keep it to one issue and stay supportive."}
+            {l("2. Use the chat — drop a short message to the group. Keep it to one issue and stay supportive.", {
+              hindi: "2. चैट का उपयोग करें — समूह को एक छोटा संदेश भेजें। इसे एक ही मुद्दे तक सीमित रखें और सहायक बने रहें।",
+              telugu: "2. చాట్ ఉపయోగించండి — సమూహానికి ఒక చిన్న సందేశం వదలండి. ఒక సమస్యకే పరిమితం చేసి సహాయకంగా ఉండండి.",
+              tamil: "2. அரட்டையைப் பயன்படுத்தவும் — குழுவுக்கு ஒரு குறுகிய செய்தியை இடவும். ஒன்றே ஒரு விஷயத்தில் இருக்கவும், ஆதரவாக இருங்கள்.",
+              urdu: "2. چیٹ استعمال کریں — گروپ کو ایک مختصر پیغام بھیجیں۔ اسے ایک ہی مسئلے تک رکھیں اور مددگار رہیں۔"
+            })}
           </Text>
           <Text style={{ color: "#263244", fontSize: 13, lineHeight: 20, marginBottom: 4 }}>
-            {"3. Open a private room — create a safe space with one or two trusted people. Only members you invite can see it."}
+            {l("3. Open a private room — create a safe space with one or two trusted people. Only members you invite can see it.", {
+              hindi: "3. एक निजी कमरा खोलें — एक या दो भरोसेमंद लोगों के साथ एक सुरक्षित स्थान बनाएं। केवल आपके आमंत्रित सदस्य ही इसे देख सकते हैं।",
+              telugu: "3. ఒక ప్రైవేట్ గదిని తెరవండి — ఒకటి లేదా రెండు నమ్మకమైన వ్యక్తులతో సురక్షిత స్థలాన్ని సృష్టించండి. మీరు ఆహ్వానించిన సభ్యులే దీన్ని చూడగలరు.",
+              tamil: "3. ஒரு தனிப்பட்ட அறையைத் திறக்கவும் — ஒரு அல்லது இரண்டு நம்பகமானவர்களுடன் பாதுகாப்பான இடத்தை உருவாக்குங்கள். நீங்கள் அழைக்கும் உறுப்பினர்கள் மட்டுமே அதை பார்க்க முடியும்.",
+              urdu: "3. ایک نجی کمرہ کھولیں — ایک یا دو قابلِ اعتماد لوگوں کے ساتھ ایک محفوظ جگہ بنائیں۔ صرف وہی اراکین اسے دیکھ سکتے ہیں جنہیں آپ مدعو کریں۔"
+            })}
           </Text>
           <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 18, marginTop: 4 }}>
-            All content is moderated. Share only what you are comfortable making visible to verified members.
+            {l("All content is moderated. Share only what you are comfortable making visible to verified members.", {
+              hindi: "सभी सामग्री मॉडरेट की जाती है। केवल वही साझा करें जिसे आप सत्यापित सदस्यों को दिखाने में सहज हों।",
+              telugu: "అన్ని కంటెంట్ నియంత్రించబడుతుంది. ధృవీకరించిన సభ్యులకు కనిపించడానికి మీరు సౌకర్యంగా ఉన్నదాన్ని మాత్రమే పంచుకోండి.",
+              tamil: "அனைத்து உள்ளடக்கமும் கண்காணிக்கப்படுகிறது. உறுதிப்படுத்தப்பட்ட உறுப்பினர்களுக்கு காண்பிக்க நீங்கள் வசதியாக இருக்கும் ஒன்றை மட்டும் பகிரவும்.",
+              urdu: "تمام مواد معتدل کیا جاتا ہے۔ صرف وہی شیئر کریں جو آپ تصدیق شدہ اراکین کو دکھانے میں آرام محسوس کریں۔"
+            })}
           </Text>
         </View>
         {/* ── Crisis safety notice ── */}
         <View style={styles.communityCrisisNotice}>
           <Text style={styles.communityCrisisNoticeText}>
-            🔒 {"Peer support space. Not a substitute for professional help. In a crisis, use the emergency button or call iCall: 9152987821 (India)."}
+            🔒 {l("Peer support space. Not a substitute for professional help. In a crisis, use the emergency button or call iCall: 9152987821 (India).", {
+              hindi: "सहकर्मी सहायता स्थान। यह पेशेवर मदद का विकल्प नहीं है। संकट में इमरजेंसी बटन का उपयोग करें या iCall: 9152987821 (India) पर कॉल करें।",
+              telugu: "పీర్ సపోర్ట్ స్థలం. ఇది నిపుణుల సహాయానికి ప్రత్యామ్నాయం కాదు. సంక్షోభంలో ఎమర్జెన్సీ బటన్‌ను ఉపయోగించండి లేదా iCall: 9152987821 (India) కు కాల్ చేయండి.",
+              tamil: "உறுப்பினர் ஆதரவு இடம். இது நிபுணர் உதவிக்கு மாற்றாகாது. நெருக்கடியில் அவசர பொத்தானைப் பயன்படுத்தவும் அல்லது iCall: 9152987821 (India) என்ற எண்ணை அழைக்கவும்.",
+              urdu: "ہم مرتبہ مدد کی جگہ۔ یہ پیشہ ور مدد کا متبادل نہیں ہے۔ بحران میں ایمرجنسی بٹن استعمال کریں یا iCall: 9152987821 (India) پر کال کریں۔"
+            })}
           </Text>
         </View>
         <View style={styles.communitySafetyBand}>
-          <Text style={styles.communitySafetyTitle}>Verified and moderated</Text>
+          <Text style={styles.communitySafetyTitle}>{l("Verified and moderated", {
+            hindi: "सत्यापित और मॉडरेटेड",
+            telugu: "ధృవీకరించబడిన మరియు నియంత్రిత",
+            tamil: "உறுதிப்படுத்தப்பட்ட மற்றும் கண்காணிக்கப்பட்ட",
+            urdu: "تصدیق شدہ اور معتدل"
+          })}</Text>
           <Text style={styles.communitySafetyText}>
-            One verified contact unlocks chat. Posts, replies, and saved lines stay moderated, and adult content is blocked before it appears.
+            {l("One verified contact unlocks chat. Posts, replies, and saved lines stay moderated, and adult content is blocked before it appears.", {
+              hindi: "एक सत्यापित संपर्क चैट खोलता है। पोस्ट, उत्तर और सहेजी गई पंक्तियाँ मॉडरेटेड रहती हैं, और आपत्तिजनक सामग्री दिखने से पहले ही ब्लॉक कर दी जाती है।",
+              telugu: "ఒక ధృవీకరించిన సంప్రదింపు చాట్‌ను తెరుస్తుంది. పోస్టులు, ప్రత్యుత్తరాలు, మరియు సేవ్ చేసిన లైన్లు నియంత్రణలో ఉంటాయి, అలాగే అప్రయోజనకర కంటెంట్ కనిపించే ముందు బ్లాక్ చేయబడుతుంది.",
+              tamil: "ஒரு உறுதிப்படுத்தப்பட்ட தொடர்பு chat-ஐத் திறக்கிறது. பதிவுகள், பதில்கள், மற்றும் சேமிக்கப்பட்ட வரிகள் கண்காணிப்பில் இருக்கும்; பெரியவர்களுக்கு உகந்த உள்ளடக்கம் தோன்றுவதற்கு முன்பே தடுக்கப்படுகிறது.",
+              urdu: "ایک تصدیق شدہ رابطہ چیٹ کھولتا ہے۔ پوسٹس، جوابات، اور محفوظ کی گئی لائنیں معتدل رہتی ہیں، اور بالغ مواد ظاہر ہونے سے پہلے بلاک ہو جاتا ہے۔"
+            })}
           </Text>
           <View style={styles.communityFeatureRow}>
             <View style={styles.communityFeaturePill}>
@@ -28681,30 +29761,50 @@ function IssueGuideSection({
     {
       id: "steady",
       number: "1",
-      eyebrow: "Stabilise now",
-      title: `Use ${pathCalmProgram.name} for ${pathCalmProgram.duration} minutes`,
-      text: `${pathCalmProgram.purpose} Return here afterwards for the practical action.` ,
-      action: "Open Calm",
+      eyebrow: l("Stabilise now", { hindi: "अभी स्थिर करें", telugu: "ఇప్పుడే స్థిరపరచండి", tamil: "இப்போது நிலைநிறுத்தவும்", urdu: "ابھی متوازن کریں" }),
+      title: l(`Use ${pathCalmProgram.name} for ${pathCalmProgram.duration} minutes`, {
+        hindi: `${pathCalmProgram.duration} मिनट के लिए ${pathCalmProgram.name} का उपयोग करें`,
+        telugu: `${pathCalmProgram.duration} నిమిషాల పాటు ${pathCalmProgram.name} ఉపయోగించండి`,
+        tamil: `${pathCalmProgram.duration} நிமிடங்களுக்கு ${pathCalmProgram.name}-ஐப் பயன்படுத்தவும்`,
+        urdu: `${pathCalmProgram.duration} منٹ کے لیے ${pathCalmProgram.name} استعمال کریں`
+      }),
+      text: l(`${pathCalmProgram.purpose} Return here afterwards for the practical action.`, {
+        hindi: `${pathCalmProgram.purpose} बाद में व्यावहारिक कदम के लिए यहाँ लौटें.`,
+        telugu: `${pathCalmProgram.purpose} తర్వాత ఆచరణాత్మక చర్య కోసం ఇక్కడికి తిరిగి రండి.`,
+        tamil: `${pathCalmProgram.purpose} பின்னர் நடைமுறை நடவடிக்கைக்காக இங்கே திரும்பவும்.`,
+        urdu: `${pathCalmProgram.purpose} کے بعد عملی اقدام کے لیے یہاں واپس آئیں۔`
+      }),
+      action: l("Open Calm", { hindi: "शांति खोलें", telugu: "ప్రశాంతత తెరవండి", tamil: "அமைதியைத் திறக்கவும்", urdu: "سکون کھولیں" }),
       onPress: onOpenCalm,
       accent: "#0E6F69"
     },
     {
       id: "understand",
       number: "2",
-      eyebrow: "Understand the core",
-      title: "Name what this situation is asking from you",
+      eyebrow: l("Understand the core", { hindi: "मूल बात समझें", telugu: "మూలాన్ని అర్థం చేసుకోండి", tamil: "மையத்தைப் புரிந்துகொள்ளுங்கள்", urdu: "بنیاد کو سمجھیں" }),
+      title: l("Name what this situation is asking from you", {
+        hindi: "यह स्थिति आपसे क्या चाहती है, उसे नाम दें",
+        telugu: "ఈ పరిస్థితి మీ నుండి ఏమి కోరుతోంది, దానికి పేరు పెట్టండి",
+        tamil: "இந்த நிலை உங்களிடம் என்ன கேட்கிறது என்பதை பெயரிடுங்கள்",
+        urdu: "یہ صورتحال آپ سے کیا چاہتی ہے، اسے نام دیں"
+      }),
       text: pathDepth.discernmentQuestion,
-      action: "Continue counselling",
+      action: l("Continue counselling", { hindi: "परामर्श जारी रखें", telugu: "కౌన్సెలింగ్ కొనసాగించండి", tamil: "ஆலோசனையைத் தொடரவும்", urdu: "مشاورت جاری رکھیں" }),
       onPress: () => onOpenTab("aihelp"),
       accent: "#6D28D9"
     },
     {
       id: "act",
       number: "3",
-      eyebrow: "Act with care",
-      title: "Protect the boundary and take one measured step",
+      eyebrow: l("Act with care", { hindi: "सावधानी से आगे बढ़ें", telugu: "జాగ్రత్తతో ముందుకు సాగండి", tamil: "கவனமாக செயல்படுங்கள்", urdu: "احتیاط سے عمل کریں" }),
+      title: l("Protect the boundary and take one measured step", {
+        hindi: "सीमा की रक्षा करें और एक मापा हुआ कदम लें",
+        telugu: "హద్దును రక్షించి, ఒక కొలిచిన అడుగు వేయండి",
+        tamil: "எல்லையைப் பாதுகாத்து, ஒரு அளவிட்ட படி எடுக்கவும்",
+        urdu: "حد کو محفوظ رکھیں اور ایک نپا تلا قدم اٹھائیں"
+      }),
       text: pathDepth.boundary,
-      action: "Open Help if needed",
+      action: l("Open Help if needed", { hindi: "ज़रूरत हो तो Help खोलें", telugu: "అవసరమైతే Help తెరవండి", tamil: "தேவைப்பட்டால் Help திறக்கவும்", urdu: "اگر ضرورت ہو تو Help کھولیں" }),
       onPress: onOpenRedress,
       accent: "#9A3412"
     }
@@ -28721,49 +29821,79 @@ function IssueGuideSection({
     {
       id: "counselling",
       icon: "🤝",
-      title: "Counselling",
-      benefit: "Clarify the core issue through a private two-way conversation.",
-      action: "Refine this concern",
+      title: l("Counselling", { hindi: "परामर्श", telugu: "కౌన్సెలింగ్", tamil: "ஆலோசனை", urdu: "مشاورت" }),
+      benefit: l("Clarify the core issue through a private two-way conversation.", {
+        hindi: "निजी दो-तरफ़ा बातचीत से मुख्य मुद्दा स्पष्ट करें.",
+        telugu: "గోప్యమైన రెండు-మార్గాల సంభాషణ ద్వారా ప్రధాన సమస్యను స్పష్టంగా చేసుకోండి.",
+        tamil: "தனிப்பட்ட இருபுற உரையாடலின் மூலம் மையப் பிரச்சினையைத் தெளிவாக்கவும்.",
+        urdu: "نجی دو طرفہ گفتگو کے ذریعے بنیادی مسئلہ واضح کریں۔"
+      }),
+      action: l("Refine this concern", { hindi: "इस चिंता को और साफ़ करें", telugu: "ఈ అంశాన్ని స్పష్టీకరించండి", tamil: "இந்த கவலையைத் தெளிவாக்கவும்", urdu: "اس مسئلے کو واضح کریں" }),
       onPress: () => onOpenTab("aihelp")
     },
     {
       id: "calm",
       icon: "🌿",
-      title: "Calm",
-      benefit: "Settle the body before making a difficult decision.",
-      action: "Begin a reset",
+      title: l("Calm", { hindi: "शांति", telugu: "ప్రశాంతత", tamil: "அமைதி", urdu: "سکون" }),
+      benefit: l("Settle the body before making a difficult decision.", {
+        hindi: "कठिन निर्णय से पहले शरीर को शांत करें.",
+        telugu: "కష్టం అయిన నిర్ణయం తీసుకునే ముందు శరీరాన్ని శాంతపరచండి.",
+        tamil: "கடினமான முடிவுக்கு முன் உடலை அமைதிப்படுத்துங்கள்.",
+        urdu: "مشکل فیصلہ کرنے سے پہلے جسم کو پرسکون کریں۔"
+      }),
+      action: l("Begin a reset", { hindi: "रीसेट शुरू करें", telugu: "రీసెట్ ప్రారంభించండి", tamil: "ரீசெட் தொடங்கவும்", urdu: "ری سیٹ شروع کریں" }),
       onPress: onOpenCalm
     },
     {
       id: "journal",
       icon: "✍️",
-      title: "Journal",
-      benefit: "Record facts, feelings, and the next commitment privately.",
-      action: "Write a note",
+      title: l("Journal", { hindi: "जर्नल", telugu: "జర్నల్", tamil: "ஜர்னல்", urdu: "جرنل" }),
+      benefit: l("Record facts, feelings, and the next commitment privately.", {
+        hindi: "तथ्य, भावनाएँ, और अगला संकल्प निजी रूप से दर्ज करें.",
+        telugu: "వాస్తవాలు, భావాలు, మరియు తదుపరి నిర్ణయాన్ని గోప్యంగా నమోదు చేయండి.",
+        tamil: "விவரங்கள், உணர்வுகள், மற்றும் அடுத்த உறுதியை தனிப்பட்ட முறையில் பதிவு செய்யுங்கள்.",
+        urdu: "حقائق، احساسات، اور اگلے عزم کو نجی طور پر محفوظ کریں۔"
+      }),
+      action: l("Write a note", { hindi: "नोट लिखें", telugu: "ఒక నోట్ రాయండి", tamil: "ஒரு குறிப்பு எழுதுங்கள்", urdu: "ایک نوٹ لکھیں" }),
       onPress: () => onOpenTab("journal")
     },
     {
       id: "vedic",
       icon: "🌙",
-      title: "Vedic Insight",
-      benefit: "Add neutral Moon-chart context and a practical remedy.",
-      action: "View insight",
+      title: l("Vedic Insight", { hindi: "वैदिक दृष्टि", telugu: "వేద దృష్టి", tamil: "வேத பார்வை", urdu: "ویدک بصیرت" }),
+      benefit: l("Add neutral Moon-chart context and a practical remedy.", {
+        hindi: "तटस्थ चंद्र-चार्ट संदर्भ और व्यावहारिक उपाय जोड़ें.",
+        telugu: "నిరపేక్ష Moon-chart సందర్భం మరియు ఉపయోగకరమైన పరిష్కారాన్ని జోడించండి.",
+        tamil: "நடுநிலை Moon-chart சூழலும் நடைமுறை remedy-யும் சேர்க்கவும்.",
+        urdu: "غیر جانب دار Moon-chart سیاق اور عملی remedy شامل کریں۔"
+      }),
+      action: l("View insight", { hindi: "दृष्टि देखें", telugu: "దృష్టిని చూడండి", tamil: "பார்வையைப் பார்க்கவும்", urdu: "بصیرت دیکھیں" }),
       onPress: () => onOpenTab("vedic")
     },
     {
       id: "help",
       icon: "🛡️",
-      title: "Help and Redress",
-      benefit: "Use official support, evidence, complaint, and escalation routes.",
-      action: "Open action hub",
+      title: l("Help and Redress", { hindi: "मदद और शिकायत", telugu: "సహాయం మరియు పరిష్కారం", tamil: "உதவி மற்றும் தீர்வு", urdu: "مدد اور ازالہ" }),
+      benefit: l("Use official support, evidence, complaint, and escalation routes.", {
+        hindi: "आधिकारिक सहायता, साक्ष्य, शिकायत, और ऊपर बढ़ाने वाले रास्तों का उपयोग करें.",
+        telugu: "అధికారిక మద్దతు, సాక్ష్యం, ఫిర్యాదు, మరియు escalation మార్గాలను ఉపయోగించండి.",
+        tamil: "அதிகாரப்பூர்வ ஆதரவு, சான்று, புகார், மற்றும் escalation வழிகளைப் பயன்படுத்துங்கள்.",
+        urdu: "سرکاری مدد، ثبوت، شکایت، اور escalation راستوں کا استعمال کریں۔"
+      }),
+      action: l("Open action hub", { hindi: "एक्शन हब खोलें", telugu: "యాక్షన్ హబ్ తెరవండి", tamil: "செயல் மையத்தைத் திறக்கவும்", urdu: "ایکشن ہب کھولیں" }),
       onPress: onOpenRedress
     },
     {
       id: "community",
       icon: "💬",
-      title: "Community",
-      benefit: "Seek moderated peer perspective without replacing professional care.",
-      action: "Open messages",
+      title: l("Community", { hindi: "समुदाय", telugu: "సమాజం", tamil: "சமூகம்", urdu: "برادری" }),
+      benefit: l("Seek moderated peer perspective without replacing professional care.", {
+        hindi: "पेशेवर देखभाल की जगह लिए बिना moderated peer perspective लें.",
+        telugu: "వృత్తిపరమైన సంరక్షణను భర్తీ చేయకుండా నియంత్రిత సహచర దృష్టిని పొందండి.",
+        tamil: "தொழில்முறை பராமரிப்பை மாற்றாமல், moderated peer perspective-ஐப் பெறுங்கள்.",
+        urdu: "پیشہ ورانہ دیکھ بھال کی جگہ لیے بغیر moderated peer perspective حاصل کریں۔"
+      }),
+      action: l("Open messages", { hindi: "संदेश खोलें", telugu: "సందేశాలు తెరవండి", tamil: "செய்திகளைத் திறக்கவும்", urdu: "پیغامات کھولیں" }),
       onPress: () => onOpenTab("community")
     }
   ];
@@ -28781,34 +29911,44 @@ function IssueGuideSection({
       >
         <View style={styles.issuePlanHeroHeader}>
           <View style={styles.issuePlanHeroCopy}>
-            <Text style={styles.eyebrow}>Your coordinated plan</Text>
+            <Text style={styles.eyebrow}>{l("Your coordinated plan", { hindi: "आपकी समन्वित योजना", telugu: "మీ సమన్విత ప్రణాళిక", tamil: "உங்கள் ஒருங்கிணைந்த திட்டம்", urdu: "آپ کا مربوط منصوبہ" })}</Text>
             <Text style={styles.issuePlanHeroTitle}>{issueDisplayLabel}</Text>
             <Text style={styles.issuePlanHeroLead}>{selectedIssueGuide.summary}</Text>
           </View>
           <View style={styles.issuePlanStatusPill}>
             <Text style={styles.issuePlanStatusValue}>{issueCompletionCount}/3</Text>
-            <Text style={styles.issuePlanStatusLabel}>steps complete</Text>
+            <Text style={styles.issuePlanStatusLabel}>{l("steps complete", { hindi: "कदम पूरे", telugu: "దశలు పూర్తయ్యాయి", tamil: "படிகள் முடிந்தது", urdu: "اقدامات مکمل" })}</Text>
           </View>
         </View>
         <View style={styles.issuePlanPrincipleBand}>
-          <Text style={styles.issuePlanPrincipleLabel}>Guiding principle</Text>
+          <Text style={styles.issuePlanPrincipleLabel}>{l("Guiding principle", { hindi: "मार्गदर्शक सिद्धांत", telugu: "మార్గనిర్దేశక సూత్రం", tamil: "வழிகாட்டும் கோட்பாடு", urdu: "رہنما اصول" })}</Text>
           <Text style={styles.issuePlanPrincipleText}>{pathDepth.principle}</Text>
         </View>
         <Text style={styles.issuePlanHeroMeta}>
-          One concern. Three practical steps. Connected support when you need it.
+          {l("One concern. Three practical steps. Connected support when you need it.", {
+            hindi: "एक चिंता। तीन व्यावहारिक कदम। ज़रूरत पर जुड़ा हुआ सहारा।",
+            telugu: "ఒక సమస్య. మూడు ఆచరణాత్మక దశలు. అవసరమైనప్పుడు కలిసిన మద్దతు.",
+            tamil: "ஒரு கவலை. மூன்று நடைமுறை படிகள். தேவையான போது இணைந்த ஆதரவு.",
+            urdu: "ایک مسئلہ۔ تین عملی قدم۔ ضرورت پڑنے پر مربوط مدد۔"
+          })}
         </Text>
       </View>
 
       <View style={styles.issueFocusCard}>
         <View style={styles.sectionHeader}>
           <View style={styles.issuePlanHeaderCopy}>
-            <Text style={styles.eyebrow}>Focus</Text>
-            <Text style={styles.sectionTitleSmall}>Is this the right concern?</Text>
+            <Text style={styles.eyebrow}>{l("Focus", { hindi: "फोकस", telugu: "ఫోకస్", tamil: "கவனம்", urdu: "فوکس" })}</Text>
+            <Text style={styles.sectionTitleSmall}>{l("Is this the right concern?", { hindi: "क्या यह सही चिंता है?", telugu: "ఇదే సరైన అంశమా?", tamil: "இது சரியான கவலையா?", urdu: "کیا یہی درست مسئلہ ہے؟" })}</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <Text style={styles.promptText}>
-          Keep this focus or choose another. Counselling can refine an unclear concern without forcing a label.
+          {l("Keep this focus or choose another. Counselling can refine an unclear concern without forcing a label.", {
+            hindi: "इसी फोकस को रखें या कोई और चुनें। परामर्श बिना लेबल थोपे अस्पष्ट चिंता को साफ़ कर सकता है।",
+            telugu: "ఈ ఫోకస్‌ను కొనసాగించండి లేదా మరొకదాన్ని ఎంచుకోండి. counselling ఒక స్పష్టంకాని అంశాన్ని బలవంతంగా పేరు పెట్టకుండా మెరుగుపరచగలదు.",
+            tamil: "இந்த கவனத்தை வைத்திருக்கவும் அல்லது வேறொன்றைத் தேர்வு செய்யவும். counselling ஒரு தெளிவில்லாத கவலையை பெயர் திணிக்காமல் தெளிவாக்கலாம்.",
+            urdu: "یہی فوکس رکھیں یا کوئی اور چنیں۔ counselling بغیر لیبل تھوپے غیر واضح مسئلے کو بہتر بنا سکتی ہے۔"
+          })}
         </Text>
         <View style={styles.issueChipGrid}>
           {visibleIssueGuides.map((guide) => {
@@ -28851,10 +29991,10 @@ function IssueGuideSection({
       <View style={styles.issuePlanSection}>
         <View style={styles.sectionHeader}>
           <View style={styles.issuePlanHeaderCopy}>
-            <Text style={styles.eyebrow}>Start with what helps most</Text>
-            <Text style={styles.sectionTitle}>Your next-step plan</Text>
+            <Text style={styles.eyebrow}>{l("Start with what helps most", { hindi: "जो सबसे ज़्यादा मदद करे, उससे शुरू करें", telugu: "ఎక్కువగా సహాయపడేదానితో ప్రారంభించండి", tamil: "மிகவும் உதவும் ஒன்றிலிருந்து தொடங்குங்கள்", urdu: "جو سب سے زیادہ مدد دے، اس سے شروع کریں" })}</Text>
+            <Text style={styles.sectionTitle}>{l("Your next-step plan", { hindi: "आपकी अगली-चरण योजना", telugu: "మీ తదుపరి దశ ప్రణాళిక", tamil: "உங்கள் அடுத்த படி திட்டம்", urdu: "آپ کا اگلا منصوبہ" })}</Text>
           </View>
-          <Text style={styles.smallMeta}>Work at your pace</Text>
+          <Text style={styles.smallMeta}>{l("Work at your pace", { hindi: "अपनी गति से काम करें", telugu: "మీ వేగంతో ముందుకు సాగండి", tamil: "உங்கள் வேகத்தில் முன்னேறுங்கள்", urdu: "اپنی رفتار سے کام کریں" })}</Text>
         </View>
         <View style={[styles.issuePlanCardGrid, isWide && styles.issuePlanCardGridWide]}>
           {planCards.map((card) => (
@@ -28886,12 +30026,17 @@ function IssueGuideSection({
         <View style={styles.issueStepBand}>
           <View style={styles.sectionHeader}>
             <View style={styles.issuePlanHeaderCopy}>
-              <Text style={styles.eyebrow}>Practical steps</Text>
-              <Text style={styles.sectionTitle}>Move forward without rushing</Text>
+              <Text style={styles.eyebrow}>{l("Practical steps", { hindi: "व्यावहारिक कदम", telugu: "ఆచరణాత్మక దశలు", tamil: "நடைமுறை படிகள்", urdu: "عملی اقدامات" })}</Text>
+              <Text style={styles.sectionTitle}>{l("Move forward without rushing", { hindi: "बिना हड़बड़ी आगे बढ़ें", telugu: "తొందరపడకుండా ముందుకు సాగండి", tamil: "அவசரப்படாமல் முன்னேறுங்கள்", urdu: "جلدبازی کے بغیر آگے بڑھیں" })}</Text>
             </View>
-            <Text style={styles.smallMeta}>{issueCompletionCount}/3 complete</Text>
+            <Text style={styles.smallMeta}>{l("steps complete", { hindi: "कदम पूरे", telugu: "దశలు పూర్తయ్యాయి", tamil: "படிகள் முடிந்தது", urdu: "اقدامات مکمل" })} · {issueCompletionCount}/3</Text>
           </View>
-          <Text style={styles.promptText}>Complete only what feels useful today. Your progress is saved on this device.</Text>
+          <Text style={styles.promptText}>{l("Complete only what feels useful today. Your progress is saved on this device.", {
+            hindi: "आज सिर्फ़ वही पूरा करें जो उपयोगी लगे। आपकी प्रगति इस डिवाइस पर सेव रहती है।",
+            telugu: "ఈ రోజు ఉపయోగకరంగా అనిపించేదానిని మాత్రమే పూర్తి చేయండి. మీ పురోగతి ఈ device లో సేవ్ అవుతుంది.",
+            tamil: "இன்று பயனுள்ளதாகத் தோன்றும் ஒன்றை மட்டுமே முடிக்கவும். உங்கள் முன்னேற்றம் இந்த சாதனத்தில் சேமிக்கப்படுகிறது.",
+            urdu: "آج صرف وہی مکمل کریں جو مفید لگے۔ آپ کی پیش رفت اس device پر محفوظ رہتی ہے۔"
+          })}</Text>
           <View style={styles.issueStepList}>
             {selectedIssueGuide.steps.map((step, index) => {
               const done = selectedIssueProgress[index];
@@ -28915,7 +30060,7 @@ function IssueGuideSection({
                   </View>
                   <View style={styles.issueStepCopy}>
                     <Text style={[styles.issueStepText, done && styles.issueStepTextActive]}>{step}</Text>
-                    <Text style={styles.issueStepReason}>{done ? "Completed" : reason}</Text>
+                    <Text style={styles.issueStepReason}>{done ? l("Completed", { hindi: "पूरा हुआ", telugu: "పూర్తైంది", tamil: "முடிந்தது", urdu: "مکمل" }) : reason}</Text>
                   </View>
                 </Pressable>
               );
@@ -28936,13 +30081,18 @@ function IssueGuideSection({
       <View style={styles.issuePlanSection}>
         <View style={styles.sectionHeader}>
           <View style={styles.issuePlanHeaderCopy}>
-            <Text style={styles.eyebrow}>Connected support</Text>
-            <Text style={styles.sectionTitle}>Continue without losing context</Text>
+            <Text style={styles.eyebrow}>{l("Connected support", { hindi: "जुड़ा हुआ सहारा", telugu: "కలిసిన మద్దతు", tamil: "இணைந்த ஆதரவு", urdu: "مربوط مدد" })}</Text>
+            <Text style={styles.sectionTitle}>{l("Continue without losing context", { hindi: "संदर्भ खोए बिना जारी रखें", telugu: "సందర్భాన్ని కోల్పోకుండా కొనసాగండి", tamil: "சூழலை இழக்காமல் தொடருங்கள்", urdu: "سیاق کھوئے بغیر جاری رکھیں" })}</Text>
           </View>
-          <Text style={styles.smallMeta}>Each section supports this plan</Text>
+          <Text style={styles.smallMeta}>{l("One system, four routes", { hindi: "एक सिस्टम, चार रास्ते", telugu: "ఒక వ్యవస్థ, నాలుగు మార్గాలు", tamil: "ஒரு அமைப்பு, நான்கு வழிகள்", urdu: "ایک نظام، چار راستے" })}</Text>
         </View>
         <Text style={styles.promptText}>
-          Choose the support that fits this moment. Your active focus remains {selectedIssueGuide.label.toLowerCase()} across the app.
+          {l("Choose the support that fits this moment. Your active focus remains within the same plan across the app.", {
+            hindi: "इस पल के लिए सही सहारा चुनें। आपका सक्रिय फोकस ऐप में उसी योजना के भीतर बना रहता है।",
+            telugu: "ఈ క్షణానికి సరిపోయే మద్దతును ఎంచుకోండి. మీ active focus app అంతటా అదే ప్రణాళికలో ఉంటుంది.",
+            tamil: "இந்த தருணத்திற்கு ஏற்ற ஆதரவைத் தேர்ந்தெடுக்கவும். உங்கள் active focus app முழுவதும் அதே திட்டத்துக்குள் இருக்கும்.",
+            urdu: "اس لمحے کے لیے مناسب مدد منتخب کریں۔ آپ کی active focus app بھر میں اسی منصوبے کے اندر رہتی ہے۔"
+          })}
         </Text>
         <View style={[styles.issueConnectedGrid, isWide && styles.issueConnectedGridWide]}>
           {connectedRoutes.map((route) => (
@@ -28965,15 +30115,20 @@ function IssueGuideSection({
 
       <View style={styles.issueSafetyBar}>
         <View style={styles.issueSafetyCopy}>
-          <Text style={styles.issueSafetyTitle}>Safety remains available at every step</Text>
-          <Text style={styles.issueSafetyText}>If there is immediate danger, call 112. For a complaint, evidence, or formal escalation route, open Help and Redress.</Text>
+          <Text style={styles.issueSafetyTitle}>{l("Safety remains available at every step", { hindi: "हर कदम पर सुरक्षा उपलब्ध है", telugu: "ప్రతి దశలో భద్రత అందుబాటులో ఉంటుంది", tamil: "ஒவ்வொரு படியிலும் பாதுகாப்பு கிடைக்கும்", urdu: "ہر قدم پر حفاظت دستیاب ہے" })}</Text>
+          <Text style={styles.issueSafetyText}>{l("If there is immediate danger, call 112. For a complaint, evidence, or formal escalation route, open Help and Redress.", {
+            hindi: "अगर तुरंत खतरा है, तो 112 पर कॉल करें। शिकायत, साक्ष्य, या औपचारिक ऊपर-बढ़ाने के लिए Help and Redress खोलें।",
+            telugu: "తక్షణ ప్రమాదం ఉంటే 112 కి కాల్ చేయండి. ఫిర్యాదు, సాక్ష్యం, లేదా అధికారిక escalation కోసం Help and Redress తెరవండి.",
+            tamil: "உடனடி ஆபத்து இருந்தால் 112-ஐ அழைக்கவும். புகார், சான்று, அல்லது formal escalation route-க்கு Help and Redress-ஐத் திறக்கவும்.",
+            urdu: "اگر فوری خطرہ ہو تو 112 پر کال کریں۔ شکایت، ثبوت، یا رسمی escalation کے لیے Help and Redress کھولیں۔"
+          })}</Text>
         </View>
         <View style={styles.issueSafetyActions}>
           <Pressable accessibilityRole="button" onPress={onEmergencyCall} style={styles.issueSafetyPrimaryButton}>
-            <Text style={styles.issueSafetyPrimaryLabel}>Call 112</Text>
+            <Text style={styles.issueSafetyPrimaryLabel}>{l("Call 112", { hindi: "112 पर कॉल करें", telugu: "112 కి కాల్ చేయండి", tamil: "112-ஐ அழைக்கவும்", urdu: "112 پر کال کریں" })}</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={onOpenRedress} style={styles.issueSafetySecondaryButton}>
-            <Text style={styles.issueSafetySecondaryLabel}>Open Help</Text>
+            <Text style={styles.issueSafetySecondaryLabel}>{l("Open Help", { hindi: "मदद खोलें", telugu: "సహాయం తెరవండి", tamil: "உதவி திறக்கவும்", urdu: "مدد کھولیں" })}</Text>
           </Pressable>
         </View>
       </View>
@@ -28981,8 +30136,8 @@ function IssueGuideSection({
       <View style={styles.issuePlanSection}>
         <View style={styles.issueDetailToggleRow}>
           <View style={styles.issuePlanHeaderCopy}>
-            <Text style={styles.eyebrow}>Further context</Text>
-            <Text style={styles.sectionTitleSmall}>Reasoning, nearby support, insight, and follow-up</Text>
+            <Text style={styles.eyebrow}>{l("Further context", { hindi: "अतिरिक्त संदर्भ", telugu: "మరిన్ని సందర్భాలు", tamil: "மேலும் சூழல்", urdu: "مزید سیاق" })}</Text>
+            <Text style={styles.sectionTitleSmall}>{l("Reasoning, nearby support, insight, and follow-up", { hindi: "तर्क, नज़दीकी सहारा, दृष्टि, और follow-up", telugu: "తర్కం, సమీప మద్దతు, insight, మరియు follow-up", tamil: "காரணம், அருகிலுள்ள ஆதரவு, insight, மற்றும் follow-up", urdu: "منطق، قریبی مدد، بصیرت، اور follow-up" })}</Text>
           </View>
           <Pressable
             accessibilityRole="button"
@@ -28990,15 +30145,15 @@ function IssueGuideSection({
             onPress={() => { animateDisclosure(); setShowFullPathDetails((value) => !value); }}
             style={({ pressed }) => [styles.issueSubtleButton, pressed && styles.pressed]}
           >
-            <Text style={styles.issueSubtleButtonLabel}>{showFullPathDetails ? "Hide details" : "View full reasoning"}</Text>
+            <Text style={styles.issueSubtleButtonLabel}>{showFullPathDetails ? l("Hide details", { hindi: "विवरण छुपाएँ", telugu: "వివరాలు దాచండి", tamil: "விவரங்களை மறைக்கவும்", urdu: "تفصیل چھپائیں" }) : l("View full reasoning", { hindi: "पूरा तर्क देखें", telugu: "పూర్తి కారణాన్ని చూడండి", tamil: "முழு காரணத்தைப் பார்க்கவும்", urdu: "مکمل منطق دیکھیں" })}</Text>
           </Pressable>
         </View>
 
         {showFullPathDetails ? (
           <View style={styles.issueDetailStack}>
             <View style={styles.issueSupportBand}>
-              <Text style={styles.eyebrow}>Five complementary lenses</Text>
-              <Text style={styles.sectionTitleSmall}>A fuller view of this concern</Text>
+              <Text style={styles.eyebrow}>{l("Five complementary lenses", { hindi: "पाँच पूरक दृष्टिकोण", telugu: "ఐదు పరస్పరపూరక దృష్టికోణాలు", tamil: "ஐந்து துணை பார்வைகள்", urdu: "پانچ تکمیلی زاویے" })}</Text>
+              <Text style={styles.sectionTitleSmall}>{l("A fuller view of this concern", { hindi: "इस चिंता का अधिक पूरा दृष्टिकोण", telugu: "ఈ అంశంపై మరింత సంపూర్ణ దృష్టి", tamil: "இந்த கவலையை இன்னும் முழுமையாகப் பார்ப்பது", urdu: "اس مسئلے کا مزید مکمل منظر" })}</Text>
               <View style={styles.issueLensList}>
                 <IssueLensRow label={l("Logical")} text={selectedIssueGuide.logicalLens} />
                 <IssueLensRow label={l("Psychological")} text={selectedIssueGuide.theoreticalLens} />
@@ -29011,34 +30166,45 @@ function IssueGuideSection({
             <View style={styles.issueSupportBand}>
               <View style={styles.sectionHeader}>
                 <View style={styles.issuePlanHeaderCopy}>
-                  <Text style={styles.eyebrow}>Moon-chart complement</Text>
-                  <Text style={styles.sectionTitleSmall}>Optional timing and remedy context</Text>
+                  <Text style={styles.eyebrow}>{l("Moon-chart complement", { hindi: "चंद्र-चार्ट पूरक", telugu: "చంద్ర-చార్ట్ సహాయకం", tamil: "Moon-chart துணை", urdu: "مون چارٹ تکمیلی" })}</Text>
+                  <Text style={styles.sectionTitleSmall}>{l("Optional timing and remedy context", { hindi: "वैकल्पिक समय और उपाय संदर्भ", telugu: "ఐచ్ఛిక సమయం మరియు remedy సందర్భం", tamil: "விருப்பமான நேரம் மற்றும் remedy சூழல்", urdu: "اختیاری وقت اور remedy سیاق" })}</Text>
                 </View>
                 {moonChartComplement ? <Text style={styles.smallMeta}>{moonChartComplement.average}/100 · {moonChartComplement.verdict}</Text> : null}
               </View>
               {moonChartComplement ? (
                 <>
                   <Text style={styles.promptText}>
-                    The relevant {moonChartComplement.categories.join(", ")} factors average {moonChartComplement.average}/100. Use this as reflective context, not as medical, legal, or emergency advice.
+                    {pickLocalizedText(languageId, {
+                      english: `The relevant factors average ${moonChartComplement.average}/100. Use this as reflective context, not as medical, legal, or emergency advice.`,
+                      hindi: `संबंधित कारकों का औसत ${moonChartComplement.average}/100 है। इसे reflective context के रूप में उपयोग करें, medical, legal, या emergency advice के रूप में नहीं.`,
+                      telugu: `సంబంధిత అంశాల సగటు ${moonChartComplement.average}/100. దీనిని reflective context గా మాత్రమే ఉపయోగించండి; medical, legal, లేదా emergency advice గా కాదు.`,
+                      tamil: `தொடர்புடைய காரணிகளின் சராசரி ${moonChartComplement.average}/100. இதை reflective context ஆக மட்டும் பயன்படுத்துங்கள்; medical, legal, அல்லது emergency advice ஆக அல்ல.`,
+                      urdu: `متعلقہ عوامل کا اوسط ${moonChartComplement.average}/100 ہے۔ اسے صرف reflective context کے طور پر استعمال کریں، medical، legal، یا emergency advice کے طور پر نہیں۔`
+                    })}
                   </Text>
                   <Text style={styles.issuePracticeText}>{moonChartComplement.remedyTitle}: {moonChartComplement.remedy}</Text>
                   <Pressable accessibilityRole="button" onPress={() => onOpenTab("vedic")} style={styles.issueSubtleButton}>
-                    <Text style={styles.issueSubtleButtonLabel}>Open full Moon Chart</Text>
+                    <Text style={styles.issueSubtleButtonLabel}>{l("Open full Moon Chart", { hindi: "पूरा चंद्र-चार्ट खोलें", telugu: "పూర్తి Moon Chart తెరవండి", tamil: "முழு Moon Chart-ஐத் திறக்கவும்", urdu: "مکمل Moon Chart کھولیں" })}</Text>
                   </Pressable>
                 </>
               ) : (
                 <>
-                  <Text style={styles.promptText}>Add birth details in Vedic Insight to connect this plan with a neutral Moon-chart reading.</Text>
+                  <Text style={styles.promptText}>{l("Add birth details in Vedic Insight to connect this plan with a neutral Moon-chart reading.", {
+                    hindi: "इस योजना को एक तटस्थ चंद्र-चार्ट पठन से जोड़ने के लिए Vedic Insight में जन्म विवरण जोड़ें।",
+                    telugu: "ఈ ప్రణాళికను neutral Moon-chart reading తో కలపడానికి Vedic Insight లో జనన వివరాలు జోడించండి.",
+                    tamil: "இந்த திட்டத்தை neutral Moon-chart reading உடன் இணைக்க Vedic Insight-இல் பிறப்பு விவரங்களைச் சேர்க்கவும்.",
+                    urdu: "اس منصوبے کو غیر جانب دار Moon-chart reading سے جوڑنے کے لیے Vedic Insight میں پیدائشی تفصیل شامل کریں۔"
+                  })}</Text>
                   <Pressable accessibilityRole="button" onPress={() => onOpenTab("vedic")} style={styles.issueSubtleButton}>
-                    <Text style={styles.issueSubtleButtonLabel}>Open Vedic Insight</Text>
+                    <Text style={styles.issueSubtleButtonLabel}>{l("Open Vedic Insight", { hindi: "वैदिक दृष्टि खोलें", telugu: "వేద దృష్టి తెరవండి", tamil: "வேத பார்வையைத் திறக்கவும்", urdu: "ویدک بصیرت کھولیں" })}</Text>
                   </Pressable>
                 </>
               )}
             </View>
 
             <View style={styles.issueSupportBand}>
-              <Text style={styles.eyebrow}>Nearby and professional support</Text>
-              <Text style={styles.sectionTitleSmall}>Use a real person when the issue needs one</Text>
+              <Text style={styles.eyebrow}>{l("Nearby and professional support", { hindi: "निकट और पेशेवर सहायता", telugu: "సమీప మరియు వృత్తిపరమైన మద్దతు", tamil: "அருகிலுள்ள மற்றும் தொழில்முறை ஆதரவு", urdu: "قریبی اور پیشہ ورانہ مدد" })}</Text>
+              <Text style={styles.sectionTitleSmall}>{l("Use a real person when the issue needs one", { hindi: "जब समस्या को इंसान चाहिए, तब एक वास्तविक व्यक्ति का उपयोग करें", telugu: "అవసరమైతే నిజమైన వ్యక్తిని తీసుకోండి", tamil: "பிரச்சினைக்கு மனிதரின் உதவி தேவைப்பட்டால், அதை பயன்படுத்துங்கள்", urdu: "جب مسئلے کو انسان چاہیے تو حقیقی شخص کی مدد لیں" })}</Text>
               <View style={styles.issueSupportGrid}>
                 {selectedIssueGuide.supportPath.map((path) => (
                   <Pressable
@@ -29083,38 +30249,43 @@ function IssueGuideSection({
             <View style={styles.issueReminderBand}>
               <View style={styles.sectionHeader}>
                 <View style={styles.issuePlanHeaderCopy}>
-                  <Text style={styles.eyebrow}>Follow-up</Text>
-                  <Text style={styles.sectionTitleSmall}>Return when you have more distance</Text>
+                  <Text style={styles.eyebrow}>{l("Follow-up", { hindi: "फॉलो-अप", telugu: "ఫాలో-అప్", tamil: "தொடர்ச்சி", urdu: "فالو اپ" })}</Text>
+                  <Text style={styles.sectionTitleSmall}>{l("Return when you have more distance", { hindi: "थोड़ी दूरी बनने पर लौटें", telugu: "కొంచెం దూరం వచ్చినప్పుడు తిరిగి రండి", tamil: "சற்று இடைவெளி வந்த பிறகு திரும்பவும்", urdu: "کچھ فاصلہ آنے پر واپس آئیں" })}</Text>
                 </View>
                 <Text style={styles.smallMeta}>
                   {issueReminderIssueId === selectedIssueGuide.id
                     ? issueReminderMode === "tomorrow"
-                      ? "Tomorrow"
+                      ? l("Tomorrow", { hindi: "कल", telugu: "రేపు", tamil: "நாளை", urdu: "کل" })
                       : issueReminderMode === "week"
-                        ? "Next week"
-                        : "Not set"
-                    : "Not set"}
+                        ? l("Next week", { hindi: "अगले हफ़्ते", telugu: "తరువాతి వారం", tamil: "அடுத்த வாரம்", urdu: "اگلے ہفتے" })
+                        : l("Not set", { hindi: "सेट नहीं", telugu: "సెట్ చేయలేదు", tamil: "அமைக்கப்படவில்லை", urdu: "سیٹ نہیں" })
+                    : l("Not set", { hindi: "सेट नहीं", telugu: "సెట్ చేయలేదు", tamil: "அமைக்கப்படவில்லை", urdu: "سیٹ نہیں" })}
                 </Text>
               </View>
               <Text style={styles.promptText}>{selectedIssueGuide.followUp}</Text>
               <View style={styles.issueReminderActions}>
                 <Pressable accessibilityRole="button" onPress={() => onScheduleIssueReminder("tomorrow")} style={styles.helpButton}>
-                  <Text style={styles.helpButtonLabel}>Remind tomorrow</Text>
+                  <Text style={styles.helpButtonLabel}>{l("Remind tomorrow", { hindi: "कल याद दिलाएँ", telugu: "రేపు గుర్తు చేయండి", tamil: "நாளை நினைவூட்டவும்", urdu: "کل یاد دلائیں" })}</Text>
                 </Pressable>
                 <Pressable accessibilityRole="button" onPress={() => onScheduleIssueReminder("week")} style={styles.helpButtonSecondary}>
-                  <Text style={styles.helpButtonSecondaryLabel}>Remind next week</Text>
+                  <Text style={styles.helpButtonSecondaryLabel}>{l("Remind next week", { hindi: "अगले हफ़्ते याद दिलाएँ", telugu: "తరువాతి వారం గుర్తు చేయండి", tamil: "அடுத்த வாரம் நினைவூட்டவும்", urdu: "اگلے ہفتے یاد دلائیں" })}</Text>
                 </Pressable>
                 <Pressable accessibilityRole="button" onPress={onClearIssueReminder} style={styles.textButton}>
-                  <Text style={styles.textButtonLabel}>Clear reminder</Text>
+                  <Text style={styles.textButtonLabel}>{l("Clear reminder", { hindi: "रिमाइंडर हटाएँ", telugu: "రిమైండర్ తీసివేయండి", tamil: "நினைவூட்டலை அகற்றவும்", urdu: "یاد دہانی ہٹائیں" })}</Text>
                 </Pressable>
               </View>
             </View>
           </View>
         ) : (
           <View style={styles.issueSupportBand}>
-            <Text style={styles.visionGuidanceTitle}>Details stay available without crowding your plan</Text>
+            <Text style={styles.visionGuidanceTitle}>{l("Details stay available without crowding your plan", { hindi: "विवरण आपकी योजना को भीड़ नहीं बनाते", telugu: "వివరాలు మీ ప్రణాళికను గందరగోళంగా చేయకుండా అందుబాటులో ఉంటాయి", tamil: "விவரங்கள் உங்கள் திட்டத்தை கூட்டமாக்காமல் கிடைக்கும்", urdu: "تفصیل آپ کے منصوبے کو بھرے بغیر دستیاب رہتی ہے" })}</Text>
             <Text style={styles.visionGuidanceText}>
-              Open this only when you want the full reasoning, Moon-chart context, nearby support, urgent guidance, export, or reminder controls.
+              {l("Open this only when you want the full reasoning, Moon-chart context, nearby support, urgent guidance, export, or reminder controls.", {
+                hindi: "इसे तभी खोलें जब आपको पूरा तर्क, चंद्र-चार्ट संदर्भ, नज़दीकी सहारा, urgent guidance, export, या reminder controls चाहिए.",
+                telugu: "మీకు పూర్తి కారణం, Moon-chart context, సమీప మద్దతు, urgent guidance, export, లేదా reminder controls కావాలనుకున్నప్పుడు మాత్రమే దీన్ని తెరవండి.",
+                tamil: "முழு காரணம், Moon-chart context, அருகிலுள்ள ஆதரவு, urgent guidance, export, அல்லது reminder controls வேண்டும் என்றால் மட்டுமே இதைத் திறக்கவும்.",
+                urdu: "اسے صرف اس وقت کھولیں جب آپ کو مکمل منطق، Moon-chart سیاق، قریبی مدد، urgent guidance، export، یا reminder controls چاہئیں۔"
+              })}
             </Text>
           </View>
         )}
@@ -35832,6 +37003,7 @@ function AccessOverlay({
 
 function OnboardingOverlay({
   selectedIdentity,
+  languageId,
   launchNeedId,
   setLaunchNeedId,
   onContinue,
@@ -35848,6 +37020,7 @@ function OnboardingOverlay({
   onDismissExitReview
 }: {
   selectedIdentity: (typeof identityProfiles)[number];
+  languageId: LanguageId;
   launchNeedId: LaunchNeedId;
   setLaunchNeedId: (value: LaunchNeedId) => void;
   onContinue: (value: LaunchNeedId) => void;
@@ -35867,6 +37040,35 @@ function OnboardingOverlay({
   const compactOnboarding = onboardingWidth < 620;
   const onboardingScrollRef = React.useRef<ScrollView>(null);
   const [exitReviewSectionY, setExitReviewSectionY] = useState(0);
+  const t = makeLocalizedTextPicker(languageId, profileOnboardingTextCatalog);
+  const onboardingLaunchNeeds = launchNeeds.map((need) => {
+    if (need.id === "guide") {
+      return {
+        ...need,
+        label: t("Counselling", "परामर्श"),
+        meta: t("Start a private guided support room.", "एक निजी मार्गदर्शित सहायता कक्ष शुरू करें.")
+      };
+    }
+    if (need.id === "calm") {
+      return {
+        ...need,
+        label: t("Calm / Tones", "शांत / स्वर"),
+        meta: t("Settle the body with breath and sound.", "श्वास और ध्वनि से शरीर को शांत करें.")
+      };
+    }
+    if (need.id === "vedic") {
+      return {
+        ...need,
+        label: t("Vedic Insight", "वैदिक दृष्टि"),
+        meta: t("Open moon-chart based guidance and remedies.", "चंद्र-चार्ट आधारित मार्गदर्शन और उपाय खोलें.")
+      };
+    }
+    return {
+      ...need,
+      label: t("Community", "समुदाय"),
+      meta: t("Open verified support messages when access is confirmed.", "प्रवेश सत्यापित होने पर सत्यापित सहायता संदेश खोलें.")
+    };
+  });
 
   function scrollToExitReviewSection() {
     if (exitReviewSectionY <= 0) return;
@@ -35892,7 +37094,7 @@ function OnboardingOverlay({
         <View style={styles.onboardingTopRow}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Close welcome prompt"
+            accessibilityLabel={t("Close welcome prompt", "स्वागत संकेत बंद करें")}
             onPress={onExit}
             style={({ pressed }) => [styles.sheetCloseIconButton, pressed && styles.pressed]}
           >
@@ -35911,25 +37113,25 @@ function OnboardingOverlay({
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
               <Text style={{ fontSize: 24 }}>👋</Text>
               <View style={{ flex: 1 }}>
-                <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                  Set up your profile
+              <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                  {t("Set up your profile", "अपना प्रोफ़ाइल सेट करें")}
                 </Text>
                 <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800", marginTop: 2 }}>
-                  Complete a brief profile for personalised guidance
+                  {t("Complete a brief profile for personalised guidance", "व्यक्तिगत मार्गदर्शन के लिए एक संक्षिप्त प्रोफ़ाइल पूरी करें।")}
                 </Text>
                 <Text style={{ color: "#111827", fontSize: 12, marginTop: 3, lineHeight: 17 }}>
-                  Your data stays on this device. Nothing is shared unless you explicitly share it.
+                  {t("Your data stays on this device. Nothing is shared unless you explicitly share it.", "आपका डेटा इसी device पर रहता है। जब तक आप खुद share न करें, कुछ भी साझा नहीं होता।")}
                 </Text>
               </View>
             </View>
             <View style={{ flexDirection: "row", gap: 6, marginTop: 4 }}>
               {[
-                { n: "1", label: "Identity" },
-                { n: "2", label: "Focus" },
-                { n: "3", label: "Birth details (optional)" },
+                { n: "1", label: t("Identity", "पहचान") },
+                { n: "2", label: t("Focus", "फ़ोकस") },
+                { n: "3", label: t("Birth details (optional)", "जन्म विवरण (वैकल्पिक)") },
               ].map((s) => (
                 <View key={s.n} style={{ flex: 1, backgroundColor: "rgba(56,189,248,0.1)", borderRadius: 10, padding: 8, borderWidth: 1, borderColor: "rgba(56,189,248,0.25)" }}>
-                  <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "700" }}>STEP {s.n}</Text>
+                  <Text style={{ color: "#007FB8", fontSize: 12, fontWeight: "700" }}>{t("Step", "चरण")} {s.n}</Text>
                   <Text style={{ color: "#25364D", fontSize: 12, fontWeight: "700", marginTop: 2 }}>{s.label}</Text>
                 </View>
               ))}
@@ -35943,10 +37145,10 @@ function OnboardingOverlay({
               setExitReviewSectionY(event.nativeEvent.layout.y);
             }}
           >
-            <Text style={styles.eyebrow}>Exit review</Text>
-            <Text style={styles.settingsTitle}>Emergency support rating</Text>
+            <Text style={styles.eyebrow}>{t("Exit review", "निरगमन समीक्षा")}</Text>
+            <Text style={styles.settingsTitle}>{t("Emergency support rating", "आपात सहायता रेटिंग")}</Text>
             <Text style={styles.promptText}>
-              Leave one rating. A short note is optional and helps us smooth the next visit.
+              {t("Leave one rating. A short note is optional and helps us smooth the next visit.", "एक रेटिंग दें। छोटा नोट वैकल्पिक है और अगली यात्रा को नरम बनाने में मदद करता है।")}
             </Text>
             <View style={styles.segmentRow}>
               {[1, 2, 3, 4, 5].map((rating) => {
@@ -35970,7 +37172,7 @@ function OnboardingOverlay({
               multiline
               value={reviewDraft}
               onChangeText={setReviewDraft}
-              placeholder="Optional note, one short line"
+              placeholder={t("Optional note, one short line", "वैकल्पिक नोट, एक छोटी पंक्ति")}
               placeholderTextColor="#9A8F82"
               style={[styles.settingsInput, styles.reviewInput]}
               textAlignVertical="top"
@@ -35986,10 +37188,10 @@ function OnboardingOverlay({
                 }}
                 style={styles.onboardingButton}
               >
-                <Text style={styles.onboardingButtonLabel}>Save rating</Text>
+                <Text style={styles.onboardingButtonLabel}>{t("Save rating", "रेटिंग सहेजें")}</Text>
               </Pressable>
               <Pressable accessibilityRole="button" onPress={onDismissExitReview} style={styles.onboardingButtonSecondary}>
-                <Text style={styles.onboardingButtonSecondaryLabel}>Not now</Text>
+                <Text style={styles.onboardingButtonSecondaryLabel}>{t("Not now", "अभी नहीं")}</Text>
               </Pressable>
             </View>
           </View>
@@ -35998,20 +37200,20 @@ function OnboardingOverlay({
         {!showExitReviewPrompt ? (
           <>
             <View style={styles.onboardingHeader}>
-              <Text style={styles.eyebrow}>Welcome to Aethon Beacon</Text>
-              <Text style={styles.onboardingTitle}>Choose what you need today.</Text>
+              <Text style={styles.eyebrow}>{t("Welcome to Aethon Beacon", "Aethon Beacon में आपका स्वागत है")}</Text>
+              <Text style={styles.onboardingTitle}>{t("Choose what you need today.", "आज आपको जो चाहिए, उसे चुनें।")}</Text>
               <Text style={styles.onboardingText}>
-                Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.
+                {t("Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.", "स्वचालित counselling engine, calm support, Vedic insight, या community से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप export या share न करें, notes इस device पर ही रहेंगी।")}
               </Text>
             </View>
 
             <View style={styles.onboardingVision}>
-              <Text style={styles.settingsTitle}>Where do you want to start?</Text>
+              <Text style={styles.settingsTitle}>{t("Where do you want to start?", "आप कहाँ से शुरू करना चाहते हैं?")}</Text>
               <Text style={styles.promptText}>
-                Privacy first. Profile details are optional. Help and Redress remains available from every page.
+                {t("Privacy first. Profile details are optional. Help and Redress remains available from every page.", "पहले गोपनीयता। प्रोफ़ाइल विवरण वैकल्पिक हैं। Help and Redress हर पेज से उपलब्ध रहता है।")}
               </Text>
               <View style={styles.launchNeedGrid}>
-                {launchNeeds.map((need) => {
+                {onboardingLaunchNeeds.map((need) => {
                   const isSelected = need.id === launchNeedId;
                   return (
                     <Pressable
@@ -36040,7 +37242,7 @@ function OnboardingOverlay({
                 })}
               </View>
               <Pressable accessibilityRole="button" onPress={onExit} style={styles.onboardingButtonSecondary}>
-                <Text style={styles.onboardingButtonSecondaryLabel}>Explore first</Text>
+                <Text style={styles.onboardingButtonSecondaryLabel}>{t("Explore first", "पहले अन्वेषण करें")}</Text>
               </Pressable>
             </View>
           </>
@@ -36051,6 +37253,7 @@ function OnboardingOverlay({
 }
 
 function PrivateIntakeOverlay({
+  languageId,
   selectedIdentityLabel,
   selectedIssueGuide,
   privateIntakeRouteTab,
@@ -36060,6 +37263,7 @@ function PrivateIntakeOverlay({
   onCompletePrivateIntake,
   onClose
 }: {
+  languageId: LanguageId;
   selectedIdentityLabel: string;
   selectedIssueGuide: IssueGuide;
   privateIntakeRouteTab: "guide" | "redress";
@@ -36071,18 +37275,21 @@ function PrivateIntakeOverlay({
 }) {
   const { width } = useWindowDimensions();
   const compact = width < 620;
+  const t = makeLocalizedTextPicker(languageId, profileOnboardingTextCatalog);
   const updateField = <K extends keyof PrivateIntakeDraft>(field: K, value: string) => {
     setPrivateIntakeDraft((current) => ({ ...current, [field]: value }));
   };
 
   const intakeBlueprint = useMemo(
-    () => getPrivateIntakeBlueprint(selectedIssueGuide.id, selectedIdentityLabel, privateIntakeRouteTab),
-    [privateIntakeRouteTab, selectedIdentityLabel, selectedIssueGuide.id]
+    () => getPrivateIntakeBlueprint(selectedIssueGuide.id, selectedIdentityLabel, privateIntakeRouteTab, languageId),
+    [languageId, privateIntakeRouteTab, selectedIdentityLabel, selectedIssueGuide.id]
   );
-  const savedMeta = privateIntakeSavedAt ? `Last saved ${formatDate(privateIntakeSavedAt)}` : "Not saved yet";
+  const savedMeta = privateIntakeSavedAt
+    ? `${t("Last saved", "अंतिम बार सहेजा गया")} ${formatDate(privateIntakeSavedAt)}`
+    : t("Not saved yet", "अभी सहेजा नहीं गया");
   const privateIntakeReport = useMemo(
-    () => buildPrivateIntakeReport(privateIntakeDraft, selectedIdentityLabel, selectedIssueGuide, privateIntakeRouteTab),
-    [privateIntakeDraft, privateIntakeRouteTab, selectedIdentityLabel, selectedIssueGuide]
+    () => buildPrivateIntakeReport(privateIntakeDraft, selectedIdentityLabel, selectedIssueGuide, privateIntakeRouteTab, languageId),
+    [languageId, privateIntakeDraft, privateIntakeRouteTab, selectedIdentityLabel, selectedIssueGuide]
   );
 
   return (
@@ -36100,10 +37307,11 @@ function PrivateIntakeOverlay({
         >
           <View style={[styles.onboardingHeaderRow, compact && styles.onboardingHeaderRowCompact]}>
             <View style={styles.onboardingHeader}>
-              <Text style={styles.eyebrow}>Private intake</Text>
+              <Text style={styles.eyebrow}>{t("Private intake", "निजी intake")}</Text>
               <Text style={[styles.onboardingTitle, compact && styles.onboardingTitleCompact]}>{intakeBlueprint.modeLabel}</Text>
               <Text style={[styles.onboardingText, compact && styles.onboardingTextCompact]}>
-                {intakeBlueprint.modeSummary} The intake changes with the situation you chose, so the report does not stay generic.
+                {intakeBlueprint.modeSummary}{" "}
+                {t("The intake changes with the situation you chose, so the report does not stay generic.", "आपके चुने हुए situation के साथ intake बदलता है, इसलिए रिपोर्ट सामान्य नहीं रहती।")}
               </Text>
             </View>
             <View style={[styles.onboardingHeaderActions, compact && styles.onboardingHeaderActionsCompact]}>
@@ -36112,18 +37320,18 @@ function PrivateIntakeOverlay({
                 onPress={onClose}
                 style={({ pressed }) => [styles.onboardingCloseButton, compact && styles.onboardingCloseButtonCompact, pressed && styles.pressed]}
               >
-                <Text style={[styles.onboardingCloseButtonLabel, compact && styles.onboardingCloseButtonLabelCompact]}>Exit</Text>
+                <Text style={[styles.onboardingCloseButtonLabel, compact && styles.onboardingCloseButtonLabelCompact]}>{t("Exit", "बाहर निकलें")}</Text>
               </Pressable>
             </View>
           </View>
 
           <View style={[styles.accessFlowBand, compact && styles.accessFlowBandCompact]}>
             <View style={styles.accessFlowBandHeader}>
-              <Text style={[styles.accessFlowBandTitle, compact && styles.accessFlowBandTitleCompact]}>Information flow</Text>
+              <Text style={[styles.accessFlowBandTitle, compact && styles.accessFlowBandTitleCompact]}>{t("Information flow", "जानकारी का प्रवाह")}</Text>
               <Text style={styles.accessFlowBandMeta}>{selectedIssueGuide.label}</Text>
             </View>
             <Text style={[styles.accessFlowBandText, compact && styles.accessFlowBandTextCompact]}>
-              This questionnaire is tuned for the route you chose, then it turns the answers into a report that matches the situation.
+              {t("This questionnaire is tuned for the route you chose, then it turns the answers into a report that matches the situation.", "यह questionnaire आपके चुने हुए route के अनुसार tuned है, फिर यह जवाबों को स्थिति से मेल खाने वाली report में बदल देता है।")}
             </Text>
             <View style={styles.privateIntakeFlowList}>
               {intakeBlueprint.flowSteps.map((step, index) => (
@@ -36140,16 +37348,19 @@ function PrivateIntakeOverlay({
               ))}
             </View>
             <Text style={[styles.accessFlowBandText, compact && styles.accessFlowBandTextCompact]}>
-              The flow shifts by issue. Complaint routes ask for evidence and outcomes, distress routes ask more about feelings and support, and practical routes ask more about load and recovery.
+              {t(
+                "The flow shifts by issue. Complaint routes ask for evidence and outcomes, distress routes ask more about feelings and support, and practical routes ask more about load and recovery.",
+                "प्रवाह issue के अनुसार बदलता है। शिकायत वाले route साक्ष्य और परिणाम पूछते हैं, distress वाले route भावनाओं और support के बारे में अधिक पूछते हैं, और practical routes load और recovery पर अधिक ध्यान देते हैं।"
+              )}
             </Text>
             <View style={[styles.accessFlowPills, compact && styles.accessFlowPillsCompact]}>
               <View style={[styles.accessFlowPill, compact && styles.accessFlowPillCompact]}>
-                <Text style={[styles.accessFlowPillLabel, compact && styles.accessFlowPillLabelCompact]}>Safety</Text>
-                <Text style={[styles.accessFlowPillMeta, compact && styles.accessFlowPillMetaCompact]}>Anything urgent to avoid</Text>
+                <Text style={[styles.accessFlowPillLabel, compact && styles.accessFlowPillLabelCompact]}>{t("Safety", "सुरक्षा")}</Text>
+                <Text style={[styles.accessFlowPillMeta, compact && styles.accessFlowPillMetaCompact]}>{t("Anything urgent to avoid", "कुछ भी तुरंत टालना है?")}</Text>
               </View>
               <View style={[styles.accessFlowPill, compact && styles.accessFlowPillCompact]}>
-                <Text style={[styles.accessFlowPillLabel, compact && styles.accessFlowPillLabelCompact]}>Privacy</Text>
-                <Text style={[styles.accessFlowPillMeta, compact && styles.accessFlowPillMetaCompact]}>Sensitive or private notes</Text>
+                <Text style={[styles.accessFlowPillLabel, compact && styles.accessFlowPillLabelCompact]}>{t("Privacy", "गोपनीयता")}</Text>
+                <Text style={[styles.accessFlowPillMeta, compact && styles.accessFlowPillMetaCompact]}>{t("Sensitive or private notes", "संवेदनशील या निजी नोट्स")}</Text>
               </View>
             </View>
           </View>
@@ -36181,13 +37392,16 @@ function PrivateIntakeOverlay({
           ))}
 
           <View style={styles.onboardingBlock}>
-            <Text style={styles.settingsTitle}>Guided analysis report</Text>
+            <Text style={styles.settingsTitle}>{t("Guided analysis report", "मार्गदर्शित विश्लेषण रिपोर्ट")}</Text>
             <Text style={styles.promptText}>
-              This is a guided synthesis, not a diagnosis. It combines your answers with verified reference pages chosen for this route.
+              {t(
+                "This is a guided synthesis, not a diagnosis. It combines your answers with verified reference pages chosen for this route.",
+                "यह एक guided synthesis है, diagnosis नहीं। यह आपके उत्तरों को इस route के लिए चुने गए verified reference pages के साथ जोड़ता है।"
+              )}
             </Text>
             <View style={styles.profileSummaryGrid}>
               <View style={styles.profileSummaryCard}>
-                <Text style={styles.profileSummaryLabel}>Coverage</Text>
+                <Text style={styles.profileSummaryLabel}>{t("Coverage", "कवरेज")}</Text>
                 <Text style={styles.profileSummaryValue}>{privateIntakeReport.coverage}</Text>
               </View>
               <View style={styles.profileSummaryCard}>
@@ -36205,15 +37419,18 @@ function PrivateIntakeOverlay({
             </View>
             <View style={styles.launchSummaryList}>
               <Text style={styles.launchSummaryItem}>{privateIntakeReport.summary}</Text>
-              <Text style={styles.launchSummaryItem}>People and support: {privateIntakeReport.socialRead}</Text>
-              <Text style={styles.launchSummaryItem}>Recommended next route: {privateIntakeReport.recommendedRoute}</Text>
-              <Text style={styles.launchSummaryItem}>Next step: {privateIntakeReport.nextStep}</Text>
-              <Text style={styles.launchSummaryItem}>Safety note: {privateIntakeReport.safetyRead}</Text>
+              <Text style={styles.launchSummaryItem}>{t("People and support", "लोग और सहारा")}: {privateIntakeReport.socialRead}</Text>
+              <Text style={styles.launchSummaryItem}>{t("Recommended next route", "सुझाया गया अगला मार्ग")}: {privateIntakeReport.recommendedRoute}</Text>
+              <Text style={styles.launchSummaryItem}>{t("Next step", "अगला कदम")}: {privateIntakeReport.nextStep}</Text>
+              <Text style={styles.launchSummaryItem}>{t("Safety note", "सुरक्षा नोट")}: {privateIntakeReport.safetyRead}</Text>
               <Text style={styles.launchSummaryItem}>{privateIntakeReport.reportBasis}</Text>
-              <Text style={styles.launchSummaryItem}>Analysis lens: {privateIntakeReport.analysisLenses.join(" · ")}</Text>
+              <Text style={styles.launchSummaryItem}>{t("Analysis lens", "विश्लेषण दृष्टि")}: {privateIntakeReport.analysisLenses.join(" · ")}</Text>
             </View>
             <Text style={styles.smallMeta}>
-              The report uses your intake, local app context, and verified reference pages. Open the sources below if you want the official material behind this route.
+              {t(
+                "The report uses your intake, local app context, and verified reference pages. Open the sources below if you want the official material behind this route.",
+                "यह report आपके intake, local app context, और verified reference pages का उपयोग करती है। यदि आप इस route के पीछे का official material देखना चाहते हैं, तो नीचे के sources खोलें।"
+              )}
             </Text>
             <View style={styles.recommendList}>
               {privateIntakeReport.sourcePack.map((source) => (
@@ -36242,14 +37459,14 @@ function PrivateIntakeOverlay({
               onPress={onCompletePrivateIntake}
               style={({ pressed }) => [styles.onboardingButton, pressed && styles.pressed]}
             >
-              <Text style={styles.onboardingButtonLabel}>Next and save</Text>
+              <Text style={styles.onboardingButtonLabel}>{t("Next and save", "अगला और सहेजें")}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={onClose}
               style={({ pressed }) => [styles.onboardingButtonSecondary, pressed && styles.pressed]}
             >
-              <Text style={styles.onboardingButtonSecondaryLabel}>Back to Guide</Text>
+              <Text style={styles.onboardingButtonSecondaryLabel}>{t("Back to Guide", "गाइड पर वापस")}</Text>
             </Pressable>
           </View>
 
@@ -38576,6 +39793,9 @@ function CounselingChatModal({
   // Real device top inset for the full-screen header, instead of a hardcoded
   // status-bar guess (see comment on the ExitReportModal header).
   const insets = useSafeAreaInsets();
+  const { width: modalWidth } = useWindowDimensions();
+  const isCompactPhone = modalWidth < 430;
+  const isVeryCompactPhone = modalWidth < 380;
   const [session, setSession] = React.useState<CounselingSession>(() => ({
     stage: "listening",
     originalIssue: initialIssue,
@@ -38629,7 +39849,7 @@ function CounselingChatModal({
   // now (defaults open, same as before); resets open on each new session
   // via the "Reset when modal opens" effect below so it's never silently
   // hidden for a person who hasn't seen it yet.
-  const [safetyNoticeExpanded, setSafetyNoticeExpanded] = React.useState(true);
+  const [safetyNoticeExpanded, setSafetyNoticeExpanded] = React.useState(() => !isCompactPhone);
   const typingTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const typingDotsAnim = React.useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
@@ -38690,6 +39910,7 @@ function CounselingChatModal({
   React.useEffect(() => {
     if (!visible) return;
     setSafetyNoticeExpanded(true);
+    if (isCompactPhone) setSafetyNoticeExpanded(false);
     const themes = detectThemes(recentJournalNotesText ? `${initialIssue} ${recentJournalNotesText}` : initialIssue);
     const firstQuestion = buildCounselingQuestions(themes, 0, initialIssue);
     const opening = buildCounselingAcknowledgment(initialIssue, issueId, detectGuidedSupportRouteFromText(initialIssue));
@@ -38735,7 +39956,7 @@ function CounselingChatModal({
     // This effect must only reset the conversation when the modal actually
     // opens or the issue text changes, not on unrelated parent re-renders.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, initialIssue]);
+  }, [visible, initialIssue, isCompactPhone]);
 
   React.useEffect(() => {
     if (visible) return;
@@ -39058,6 +40279,9 @@ function CounselingChatModal({
     );
     onClose();
   };
+  const counsellingDepthCopy = isVeryCompactPhone
+    ? `Replies: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} · next step once context is ready.`
+    : `Counselling depth: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step available after context is ready.`;
 
   return (
     <Modal
@@ -39094,17 +40318,28 @@ function CounselingChatModal({
           </View>
         )}
         {/* Header */}
-        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: Platform.OS === "ios" ? 10 : Math.max(insets.top, 12) + 12, paddingBottom: 12, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#DCE9E6", backgroundColor: "#FFFFFF" }}>
+        <View style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingTop: Platform.OS === "ios" ? 10 : Math.max(insets.top, 12) + (isCompactPhone ? 8 : 12),
+          paddingBottom: isCompactPhone ? 10 : 12,
+          paddingHorizontal: isCompactPhone ? 16 : 20,
+          borderBottomWidth: 1,
+          borderBottomColor: "#DCE9E6",
+          backgroundColor: "#FFFFFF"
+        }}>
           <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
-            <Text style={{ color: "#0A6F66", fontSize: 22 }}>←</Text>
+            <Text style={{ color: "#0A6F66", fontSize: isCompactPhone ? 20 : 22 }}>←</Text>
           </Pressable>
-          <View style={{ flex: 1, marginLeft: 12 }}>
+          <View style={{ flex: 1, minWidth: 0, marginLeft: isCompactPhone ? 10 : 12 }}>
             {/* Consistent branding -- the enrichment card below and the
                 system prompt both already say "Beacon Guide"; the header
                 previously said the generic "Your guide", reading as two
                 different guides in the same conversation. */}
-            <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800" }}>Beacon Guide is listening</Text>
-            <Text style={{ color: "#1F2937", fontSize: 12 }}>
+            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 13 : isCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 16 : isCompactPhone ? 18 : 20, fontWeight: "800" }} numberOfLines={2}>
+              Beacon Guide is listening
+            </Text>
+            <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 15 : 16 }} numberOfLines={2}>
               {voiceAssistEnabled ? "Private · Read-aloud available on request" : "Private · Speaker is off"}
             </Text>
           </View>
@@ -39119,18 +40354,20 @@ function CounselingChatModal({
             accessibilityRole="button"
             accessibilityLabel={voiceAssistEnabled ? "Disable read aloud" : "Enable read aloud"}
             accessibilityState={{ selected: !voiceAssistEnabled }}
-            style={{ marginRight: 14, flexDirection: "row", alignItems: "center", gap: 4 }}
+            style={{ marginRight: isCompactPhone ? 8 : 14, flexDirection: "row", alignItems: "center", gap: isCompactPhone ? 0 : 4 }}
           >
-            <Text style={{ fontSize: 20 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
+            <Text style={{ fontSize: isVeryCompactPhone ? 17 : isCompactPhone ? 18 : 20 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
             {/* Icon-only was ambiguous (mute vs. unmute isn't obvious from the
                 glyph alone) -- a short label next to it makes the tap target
                 self-explanatory without the person needing to guess. */}
-            <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
-              {voiceAssistEnabled ? "Disable speaker" : "Enable speaker"}
-            </Text>
+            {!isCompactPhone && (
+              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
+                {voiceAssistEnabled ? "Disable speaker" : "Enable speaker"}
+              </Text>
+            )}
           </Pressable>
           <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
-            <Text style={{ color: "#1F2937", fontSize: 13 }}>Skip →</Text>
+            <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 13, fontWeight: "700" }}>Skip →</Text>
           </Pressable>
         </View>
 
@@ -39138,26 +40375,30 @@ function CounselingChatModal({
           accessibilityRole="summary"
           accessibilityLabel={safetyNoticeExpanded ? "Scope and safety notice, expanded. Tap to collapse." : "Scope and safety notice, collapsed. Tap to expand."}
           onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setSafetyNoticeExpanded((v) => !v); }}
-          style={{ marginHorizontal: 20, marginTop: 12, borderRadius: 12, padding: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
+          style={{ marginHorizontal: isCompactPhone ? 16 : 20, marginTop: isCompactPhone ? 8 : 12, borderRadius: 12, padding: isVeryCompactPhone ? 9 : isCompactPhone ? 10 : 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
         >
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "700" }}>Scope and safety</Text>
-            <Text style={{ color: "#3A577D", fontSize: 12, fontWeight: "700" }}>{safetyNoticeExpanded ? "Hide ▲" : "Show ▼"}</Text>
+            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>Scope and safety</Text>
+            <Text style={{ color: "#3A577D", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>{safetyNoticeExpanded ? "Hide ▲" : "Show ▼"}</Text>
           </View>
           {safetyNoticeExpanded && (
-            <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18, marginTop: 3 }}>
+            <Text style={{ color: "#25364D", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 18, marginTop: 3 }}>
               {COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]}
             </Text>
           )}
         </Pressable>
 
         {/* Chat messages */}
-        <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
-          <View style={{ backgroundColor: "#FFFFFF", borderRadius: 18, borderCurve: "continuous", padding: 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
+        <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 20, gap: isCompactPhone ? 12 : 16 }} showsVerticalScrollIndicator={false}>
+          <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
             <Text style={{ color: "#0A6F66", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Guided support room</Text>
-            <Text style={{ color: "#0D1F22", fontSize: 20, lineHeight: 25, fontWeight: "900", marginTop: 4 }}>What brings you here?</Text>
-            <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700", marginTop: 6 }}>
-              Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies.
+            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 16 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 20 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 4 }} numberOfLines={2}>
+              What brings you here?
+            </Text>
+            <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 14, lineHeight: isVeryCompactPhone ? 16 : isCompactPhone ? 18 : 21, fontWeight: "700", marginTop: 5 }}>
+              {isCompactPhone
+                ? "We’ll listen first, then shape the next step together."
+                : "Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies."}
             </Text>
           </View>
           {session.turns.map((turn, i) => {
@@ -39368,22 +40609,22 @@ function CounselingChatModal({
 
         {/* Input area */}
         {session.stage !== "synthesizing" && (
-          <View style={{ backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#DCE9E6", paddingHorizontal: 16, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 12), flexDirection: "row", alignItems: "flex-end", gap: 10, shadowColor: "#0E9488", shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 }}>
+          <View style={{ backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#DCE9E6", paddingHorizontal: isVeryCompactPhone ? 12 : 16, paddingTop: isVeryCompactPhone ? 10 : 12, paddingBottom: Math.max(insets.bottom, isVeryCompactPhone ? 10 : 12), flexDirection: "row", alignItems: "flex-end", gap: isVeryCompactPhone ? 8 : 10, shadowColor: "#0E9488", shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "800", marginBottom: 6 }}>
-                Counselling depth: {counselingUserResponseCount}/{COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} replies · next step available after context is ready.
+              <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "800", marginBottom: isVeryCompactPhone ? 4 : 6 }} numberOfLines={2}>
+                {counsellingDepthCopy}
               </Text>
               <TextInput
                 value={draft}
                 onChangeText={setDraft}
                 placeholder={isListening ? "Listening..." : "Reply here..."}
                 placeholderTextColor="#5B7480"
-                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, padding: 12, color: "#213A4A", fontSize: 16, lineHeight: 22, maxHeight: 120, borderWidth: 1, borderColor: isListening ? "#0B6F66" : "#C4D8D4" }}
+                style={{ backgroundColor: "#F1F6F5", borderRadius: 12, paddingHorizontal: isVeryCompactPhone ? 10 : 12, paddingVertical: isVeryCompactPhone ? 10 : 12, color: "#213A4A", fontSize: isVeryCompactPhone ? 15 : 16, lineHeight: isVeryCompactPhone ? 20 : 22, maxHeight: isVeryCompactPhone ? 108 : 120, borderWidth: 1, borderColor: isListening ? "#0B6F66" : "#C4D8D4" }}
                 multiline
                 textAlignVertical="top"
               />
               {speechInputNotice ? (
-                <Text style={{ color: isListening ? "#0B6F66" : "#1F2937", fontSize: 12, marginTop: 6 }}>
+                <Text style={{ color: isListening ? "#0B6F66" : "#1F2937", fontSize: 12, marginTop: 5 }}>
                   {speechInputNotice}
                 </Text>
               ) : null}
@@ -40510,6 +41751,7 @@ function getRespectfulAddressLabel(
 
 function GuidanceInsightsCard({
   apiBase,
+  languageId,
   name,
   issueLabel,
   weekAvg,
@@ -40520,10 +41762,12 @@ function GuidanceInsightsCard({
   recentNotes,
   insightText,
   loading,
+  errorKind,
   localOnly,
   onFetch,
 }: {
   apiBase: string;
+  languageId: LanguageId;
   name: string;
   issueLabel: string;
   weekAvg: number;
@@ -40534,11 +41778,168 @@ function GuidanceInsightsCard({
   recentNotes: string[];
   insightText: string | null;
   loading: boolean;
+  errorKind: "network" | "empty" | null;
   localOnly: boolean;
   onFetch: () => void;
 }) {
-  if (apiBase.length === 0) return null;
-  if (entryCount === 0) return null;
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
+  const enoughEntries = entryCount >= 3;
+  const checkInLabel = l(
+    `${entryCount} check-in${entryCount === 1 ? "" : "s"}`,
+    {
+      hindi: `${entryCount} चेक-इन`,
+      telugu: `${entryCount} చెక్-ఇన్‌లు`,
+      tamil: `${entryCount} செக்-இன்கள்`,
+      urdu: `${entryCount} چیک اِن`
+    }
+  );
+  const streakLabel =
+    streakDays > 0
+      ? l(
+          `${streakDays}-day streak`,
+          {
+            hindi: `${streakDays}-दिन की लगातार शृंखला`,
+            telugu: `${streakDays}-రోజుల నిరంతర శ్రేణి`,
+            tamil: `${streakDays}-நாள் தொடர்ச்சி`,
+            urdu: `${streakDays}-دن کی مسلسل سلسلہ`
+          }
+        )
+      : l(
+          "No active streak",
+          {
+            hindi: "कोई सक्रिय लगातार शृंखला नहीं",
+            telugu: "సక్రియ శ్రేణి లేదు",
+            tamil: "செயலில் உள்ள தொடர்ச்சி இல்லை",
+            urdu: "کوئی فعال سلسلہ نہیں"
+          }
+        );
+  const loadingTitle = l(
+    "Reading your patterns…",
+    {
+      hindi: "आपके पैटर्न पढ़े जा रहे हैं…",
+      telugu: "మీ నమూనాలు చదువుతున్నాం…",
+      tamil: "உங்கள் முறைகளைப் படிக்கிறோம்…",
+      urdu: "آپ کے پیٹرن پڑھ رہے ہیں…"
+    }
+  );
+  const loadingBody = l(
+    "This usually takes a moment while we gather your recent check-ins.",
+    {
+      hindi: "यह आपके हालिया चेक-इन इकट्ठा करने में एक पल लेता है।",
+      telugu: "మీ ఇటీవలి చెక్-ఇన్‌లను సమకూర్చడానికి ఇది కొంచెం సమయం పడుతుంది.",
+      tamil: "உங்கள் சமீபத்திய செக்-இன்களை ஒன்றாகக் கூட்ட சிறிது நேரம் ஆகும்.",
+      urdu: "آپ کے حالیہ چیک اِنز اکٹھے کرنے میں تھوڑا وقت لگتا ہے۔"
+    }
+  );
+  const unavailableTitle = l(
+    "Pattern analysis isn't connected yet",
+    {
+      hindi: "पैटर्न विश्लेषण अभी जुड़ा नहीं है",
+      telugu: "ప్యాటర్న్ విశ్లేషణ ఇంకా కనెక్ట్ కాలేదు",
+      tamil: "முறை பகுப்பாய்வு இன்னும் இணைக்கப்படவில்லை",
+      urdu: "پیٹرن تجزیہ ابھی منسلک نہیں ہے"
+    }
+  );
+  const unavailableBody = l(
+    "The rest of your journal still works normally. Connect the analysis service to generate a written reading.",
+    {
+      hindi: "आपकी जर्नल बाकी सामान्य रूप से चलती रहेगी। लिखित विश्लेषण बनाने के लिए analysis service जोड़ें।",
+      telugu: "మీ జర్నల్ మిగతా భాగం సాధారణంగా పనిచేస్తుంది. రాతపూర్వక విశ్లేషణ కోసం analysis service‌ను కలపండి.",
+      tamil: "உங்கள் ஜர்னலின் மற்ற பகுதி வழக்கம்போல் செயல்படும். எழுதப்பட்ட பகுப்பாய்வுக்கு analysis service-ஐ இணைக்கவும்.",
+      urdu: "آپ کی جرنل باقی عام طور پر چلتی رہے گی۔ تحریری تجزیہ کے لیے analysis service کو جوڑیں۔"
+    }
+  );
+  const emptyTitle = l(
+    "Add a few check-ins first",
+    {
+      hindi: "पहले कुछ चेक-इन जोड़ें",
+      telugu: "ముందుగా కొన్ని చెక్-ఇన్‌లు జోడించండి",
+      tamil: "முதலில் சில செக்-இன்களைச் சேர்க்கவும்",
+      urdu: "پہلے کچھ چیک اِنز شامل کریں"
+    }
+  );
+  const emptyBody = l(
+    "Once you have three or more check-ins, we can generate a sharper pattern read.",
+    {
+      hindi: "तीन या उससे अधिक चेक-इन के बाद हम एक साफ़ और उपयोगी पैटर्न पढ़ बना पाएँगे।",
+      telugu: "మూడు లేదా అంతకంటే ఎక్కువ చెక్-ఇన్‌ల తర్వాత మేము మరింత స్పష్టమైన ప్యాటర్న్ చదువును తయారు చేయగలము.",
+      tamil: "மூன்று அல்லது அதற்கு மேற்பட்ட செக்-இன்கள் இருந்தால், இன்னும் தெளிவான முறை வாசிப்பை உருவாக்கலாம்.",
+      urdu: "تین یا اس سے زیادہ چیک اِنز کے بعد ہم زیادہ واضح پیٹرن ریڈنگ بنا سکیں گے۔"
+    }
+  );
+  const readyBody = l(
+    "You have enough recent check-ins for a personalized reading.",
+    {
+      hindi: "आपके पास व्यक्तिगत पढ़ के लिए पर्याप्त हालिया चेक-इन हैं।",
+      telugu: "వ్యక్తిగత చదువు కోసం మీ వద్ద తగినంత తాజా చెక్-ఇన్‌లు ఉన్నాయి.",
+      tamil: "தனிப்பட்ட வாசிப்புக்குப் போதுமான சமீபத்திய செக்-இன்கள் உங்களிடம் உள்ளன.",
+      urdu: "ذاتی ریڈنگ کے لیے آپ کے پاس کافی حالیہ چیک اِنز ہیں۔"
+    }
+  );
+  const localOnlyNote = l(
+    "Local-only journal is on, so this reading is unavailable until you allow notes to leave the device.",
+    {
+      hindi: "लोकल-ओनली जर्नल चालू है, इसलिए यह पढ़ तब तक उपलब्ध नहीं है जब तक आप नोट्स को डिवाइस से बाहर जाने की अनुमति नहीं देते।",
+      telugu: "లోకల్-ఒన్లీ జర్నల్ ఆన్‌లో ఉంది, కాబట్టి మీరు నోట్స్ ఈ డివైస్‌ను వదిలేందుకు అనుమతించే వరకు ఈ చదువు అందుబాటులో ఉండదు.",
+      tamil: "லோகல்-ஒன்லி ஜர்னல் இயக்கத்தில் உள்ளது, எனவே குறிப்புகள் இந்த சாதனத்திலிருந்து வெளியே செல்ல அனுமதிக்கும் வரை இந்த வாசிப்பு கிடைக்காது.",
+      urdu: "لوکل-اونلی جرنل آن ہے، اس لیے یہ ریڈنگ اس وقت تک دستیاب نہیں جب تک آپ نوٹس کو ڈیوائس سے باہر جانے کی اجازت نہ دیں۔"
+    }
+  );
+  const networkErrorTitle = l(
+    "We couldn't generate the reading",
+    {
+      hindi: "अभी पढ़ नहीं बन पाई",
+      telugu: "ఇప్పుడే చదువును తయారు చేయలేకపోయాం",
+      tamil: "இப்போது வாசிப்பை உருவாக்க முடியவில்லை",
+      urdu: "ابھی ریڈنگ نہیں بن سکی"
+    }
+  );
+  const networkErrorBody = l(
+    "Please try again in a moment.",
+    {
+      hindi: "कृपया कुछ पल बाद फिर कोशिश करें।",
+      telugu: "దయచేసి కాసేపటికి మళ్లీ ప్రయత్నించండి.",
+      tamil: "சிறிது நேரத்திற்குப் பிறகு மீண்டும் முயற்சிக்கவும்.",
+      urdu: "براہِ کرم کچھ دیر بعد دوبارہ کوشش کریں۔"
+    }
+  );
+  const emptyErrorTitle = l(
+    "The service answered, but nothing was ready",
+    {
+      hindi: "सेवा ने जवाब दिया, लेकिन दिखाने के लिए कुछ नहीं था",
+      telugu: "సర్వీస్ స్పందించింది, కానీ చూపించడానికి ఏమీ సిద్ధంగా లేదు",
+      tamil: "சேவை பதிலளித்தது, ஆனால் காட்ட எதுவும் தயாராக இல்லை",
+      urdu: "سروس نے جواب دیا، لیکن دکھانے کے لیے کچھ بھی تیار نہیں تھا"
+    }
+  );
+  const emptyErrorBody = l(
+    "Try again in a moment — your notes are still saved.",
+    {
+      hindi: "थोड़ी देर बाद फिर कोशिश करें — आपके नोट्स अभी भी सुरक्षित हैं।",
+      telugu: "క్షణంలో మళ్లీ ప్రయత్నించండి — మీ నోట్లు ఇంకా సేవ్‌లో ఉన్నాయి.",
+      tamil: "சற்றுப்பின் மீண்டும் முயற்சிக்கவும் — உங்கள் குறிப்புகள் இன்னும் சேமிக்கப்பட்டுள்ளன.",
+      urdu: "کچھ دیر بعد دوبارہ کوشش کریں — آپ کے نوٹس ابھی بھی محفوظ ہیں۔"
+    }
+  );
+  const retryLabel = l(
+    "Try again",
+    {
+      hindi: "फिर कोशिश करें",
+      telugu: "మళ్లీ ప్రయత్నించండి",
+      tamil: "மீண்டும் முயற்சிக்கவும்",
+      urdu: "دوبارہ کوشش کریں"
+    }
+  );
+  const generateLabel = l(
+    "Generate my pattern reading →",
+    {
+      hindi: "मेरी पैटर्न पढ़ बनाइए →",
+      telugu: "నా ప్యాటర్న్ చదువును సృష్టించండి →",
+      tamil: "என் முறை வாசிப்பை உருவாக்கு →",
+      urdu: "میری پیٹرن ریڈنگ بنائیں →"
+    }
+  );
 
   return (
     <View style={{
@@ -40552,56 +41953,114 @@ function GuidanceInsightsCard({
         <Text style={{ fontSize: 18, marginRight: 10 }}>✦</Text>
         <View style={{ flex: 1 }}>
           <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            Personal Pattern Analysis
+            {l("Personal Pattern Analysis", {
+              hindi: "व्यक्तिगत पैटर्न विश्लेषण",
+              telugu: "వ్యక్తిగత నమూనా విశ్లేషణ",
+              tamil: "தனிப்பட்ட முறைப் பகுப்பாய்வு",
+              urdu: "ذاتی پیٹرن تجزیہ"
+            })}
           </Text>
           <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 1 }}>
-            {entryCount} check-ins · {streakDays > 0 ? `${streakDays}-day streak` : "No active streak"}
+            {checkInLabel} · {streakLabel}
           </Text>
         </View>
         <Text style={{ color: "#A14A08", fontSize: 12, opacity: 0.7 }}>Beacon</Text>
       </View>
 
       {/* Content */}
-      {loading ? (
-        <View style={{ paddingVertical: 12 }}>
-          <Text style={{ color: "#1F2937", fontSize: 13, fontStyle: "italic" }}>Reading your patterns…</Text>
-        </View>
-      ) : insightText ? (
-        <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 21 }}>{insightText}</Text>
-      ) : (
-        <View>
-          <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 19, marginBottom: localOnly ? 8 : 14 }}>
-            {entryCount >= 3
-              ? `You have ${entryCount} check-ins to analyse. Get a personalised reading of your emotional patterns.`
-              : `Add a few more check-ins and come back for your pattern reading.`}
-          </Text>
-          {/* Said before the tap, not after it. A written reading needs the
-              notes to leave the device, which is exactly what the person
-              switched off -- so the trade-off belongs next to the button. */}
-          {localOnly && entryCount >= 3 && (
-            <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 18, marginBottom: 14 }}>
-              🔒 Local-only journal is on, so this reading is unavailable — it needs your recent notes to leave the device. You can turn it off in Settings.
+      <View style={{ minHeight: 72 }}>
+        {apiBase.length === 0 ? (
+          <View style={{ backgroundColor: "#EAF2F8", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(26,96,128,0.18)", gap: 8 }}>
+            <Text style={{ color: "#1A3A55", fontSize: 13, fontWeight: "700" }}>{unavailableTitle}</Text>
+            <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 20 }}>{unavailableBody}</Text>
+          </View>
+        ) : loading ? (
+          <View style={{ backgroundColor: "#EAF2F8", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(26,96,128,0.18)", gap: 8 }}>
+            <Text style={{ color: "#1A3A55", fontSize: 13, fontWeight: "700" }}>{loadingTitle}</Text>
+            <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 20 }}>{loadingBody}</Text>
+            <View style={{ flexDirection: "row", gap: 8, alignItems: "center", marginTop: 2 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#1A6080" }} />
+              <Text style={{ color: "#3A577D", fontSize: 12 }}>{l("Gathering a fresh read from your recent check-ins.", {
+                hindi: "हालिया चेक-इन से नया पढ़ इकट्ठा किया जा रहा है।",
+                telugu: "మీ తాజా చెక్-ఇన్‌ల నుంచి కొత్త చదువును సమకూరుస్తున్నాం.",
+                tamil: "உங்கள் சமீபத்திய செக்-இன்களில் இருந்து புதிய வாசிப்பை சேகரிக்கிறோம்.",
+                urdu: "آپ کے حالیہ چیک اِنز سے ایک نیا ریڈ جمع کیا جا رہا ہے۔"
+              })}</Text>
+            </View>
+          </View>
+        ) : insightText ? (
+          <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 21 }}>{insightText}</Text>
+        ) : errorKind ? (
+          <View style={{ backgroundColor: "#F4E8EA", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(179,38,30,0.18)", gap: 8 }}>
+            <Text style={{ color: "#7A1F19", fontSize: 13, fontWeight: "700" }}>
+              {errorKind === "empty" ? emptyErrorTitle : networkErrorTitle}
             </Text>
-          )}
-          {entryCount >= 3 && (
+            <Text style={{ color: "#5B2630", fontSize: 13, lineHeight: 20 }}>
+              {errorKind === "empty" ? emptyErrorBody : networkErrorBody}
+            </Text>
             <Pressable
               onPress={onFetch}
               accessibilityRole="button"
               style={({ pressed }) => ({
                 alignSelf: "flex-start",
-                backgroundColor: pressed ? "#C4D9E9" : "#DEEAF2",
+                backgroundColor: pressed ? "#EBC9CE" : "#F5D9DD",
                 borderRadius: 10,
                 paddingHorizontal: 16,
                 paddingVertical: 9,
                 borderWidth: 1,
-                borderColor: "#1A6080"
+                borderColor: "#B3261E"
               })}
             >
-              <Text style={{ color: "#0A6F66", fontSize: 13, fontWeight: "700" }}>Generate my pattern reading →</Text>
+              <Text style={{ color: "#7A1F19", fontSize: 13, fontWeight: "700" }}>{retryLabel}</Text>
             </Pressable>
-          )}
-        </View>
-      )}
+          </View>
+        ) : (
+          <View>
+            <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 19, marginBottom: 12 }}>
+              {enoughEntries ? readyBody : emptyBody}
+            </Text>
+            {localOnly && enoughEntries && (
+              <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 18, marginBottom: 14 }}>
+                🔒 {localOnlyNote}
+              </Text>
+            )}
+            {!enoughEntries && (
+              <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 18, marginBottom: 14 }}>
+                {entryCount === 0
+                  ? l("Your first reading appears after a few check-ins.", {
+                    hindi: "आपका पहला पढ़ कुछ चेक-इन के बाद दिखाई देगा।",
+                    telugu: "మీ మొదటి చదువు కొన్ని చెక్-ఇన్‌ల తర్వాత కనిపిస్తుంది.",
+                    tamil: "உங்கள் முதல் வாசிப்பு சில செக்-இன்களுக்கு பிறகு தோன்றும்.",
+                    urdu: "آپ کی پہلی ریڈنگ کچھ چیک اِنز کے بعد دکھائی دے گی۔"
+                  })
+                  : l("You're close — add a little more context and we'll sharpen the read.", {
+                    hindi: "आप करीब हैं — थोड़ा और संदर्भ जोड़ें और हम पढ़ को और साफ़ करेंगे।",
+                    telugu: "మీరు దగ్గరలోనే ఉన్నారు — కొంచెం మరింత సందర్భం జోడించండి, మేము చదువును మరింత పదును పెడతాము.",
+                    tamil: "நீங்கள் அருகில் இருக்கிறீர்கள் — இன்னும் கொஞ்சம் சூழலைச் சேர்த்தால் வாசிப்பு இன்னும் தெளிவாகும்.",
+                    urdu: "آپ قریب ہیں — تھوڑا مزید سیاق شامل کریں اور ہم ریڈنگ کو مزید واضح کریں گے۔"
+                  })}
+              </Text>
+            )}
+            {enoughEntries && (
+              <Pressable
+                onPress={onFetch}
+                accessibilityRole="button"
+                style={({ pressed }) => ({
+                  alignSelf: "flex-start",
+                  backgroundColor: pressed ? "#C4D9E9" : "#DEEAF2",
+                  borderRadius: 10,
+                  paddingHorizontal: 16,
+                  paddingVertical: 9,
+                  borderWidth: 1,
+                  borderColor: "#1A6080"
+                })}
+              >
+                <Text style={{ color: "#0A6F66", fontSize: 13, fontWeight: "700" }}>{generateLabel}</Text>
+              </Pressable>
+            )}
+          </View>
+        )}
+      </View>
     </View>
   );
 }

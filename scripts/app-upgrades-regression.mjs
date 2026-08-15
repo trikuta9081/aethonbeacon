@@ -78,20 +78,20 @@ const mergedHelp = indexOf('In immediate danger, call 112.');
 // The Patterns/insights tab's own "Progress Report Card" is a richer version
 // of what the front-page report card used to show.
 const premiumCommandCenter = indexOf('Premium command center');
-const premiumCommandTitle = indexOf('Four clear paths in one tap.');
+const premiumCommandTitle = indexOf('One calm start, four clear paths.');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
 assert(mergedHelp < premiumCommandCenter, 'Help and Redress must remain the first Home action surface');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
 assert(!source.includes('Moderated community support and private conversations'), 'Community/Messages preview must not remain on the front UI');
 indexOf('Open Help and Redress');
 indexOf('Open Path');
-indexOf('Start Calm');
-indexOf('A private guided room with a clean next-step checkpoint.');
-indexOf('Issue-matched sound and breath that hand off into Path.');
-indexOf('Moon-chart insight with practical remedies for the same situation.');
-indexOf('Verified support conversations when human input is the right next step.');
+indexOf('Open calm');
+indexOf('A private first step with a clear checkpoint.');
+indexOf('Sound and breath that hand off into Path.');
+indexOf('Moon-chart insight with practical remedies.');
+indexOf('Verified support when human input is the right next step.');
 indexOf('Open messages');
-indexOf('Private by default: notes stay local unless you share or export.');
+indexOf('Private by default. Notes stay local unless you share or export.');
 // homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
 // safety strip was trimmed down to SOS + "Open Help and Redress" (the 4-number
 // grid they styled no longer exists in JSX) -- see mergedHelp marker above.
