@@ -42290,12 +42290,12 @@ function GuidanceInsightsCard({
     }
   );
   const retryLabel = l(
-    "Try again",
+    "Retry reading",
     {
-      hindi: "फिर कोशिश करें",
-      telugu: "మళ్లీ ప్రయత్నించండి",
-      tamil: "மீண்டும் முயற்சிக்கவும்",
-      urdu: "دوبارہ کوشش کریں"
+      hindi: "फिर से पढ़ें",
+      telugu: "మళ్లీ చదవండి",
+      tamil: "மீண்டும் வாசிக்கவும்",
+      urdu: "دوبارہ ریڈنگ کریں"
     }
   );
   const generateLabel = l(
@@ -42307,6 +42307,35 @@ function GuidanceInsightsCard({
       urdu: "میری پیٹرن ریڈنگ بنائیں →"
     }
   );
+
+  const patternStatusLabel = apiBase.length === 0
+    ? l("Not connected", {
+        hindi: "जुड़ा नहीं है",
+        telugu: "కనెక్ట్ కాలేదు",
+        tamil: "இணைக்கப்படவில்லை",
+        urdu: "منسلک نہیں"
+      })
+    : loading
+      ? l("Reading", { hindi: "पढ़ा जा रहा है", telugu: "చదువుతోంది", tamil: "வாசிக்கிறது", urdu: "ریڈنگ ہو رہی ہے" })
+      : errorKind
+        ? l(errorKind === "empty" ? "Needs more check-ins" : "Connection issue", {
+            hindi: errorKind === "empty" ? "और चेक-इन चाहिए" : "कनेक्शन समस्या",
+            telugu: errorKind === "empty" ? "మరిన్ని చెక్-ఇన్‌లు కావాలి" : "కనెక్షన్ సమస్య",
+            tamil: errorKind === "empty" ? "மேலும் செக்-இன்கள் தேவை" : "இணைப்பு சிக்கல்",
+            urdu: errorKind === "empty" ? "مزید چیک اِنز درکار ہیں" : "کنیکشن کا مسئلہ"
+          })
+        : insightText
+          ? l("Ready", { hindi: "तैयार", telugu: "సిద్ధం", tamil: "தயார்", urdu: "تیار" })
+          : enoughEntries
+            ? l("Ready", { hindi: "तैयार", telugu: "సిద్ధం", tamil: "தயார்", urdu: "تیار" })
+            : l("Waiting for context", {
+                hindi: "संदर्भ की प्रतीक्षा",
+                telugu: "సందర్భం కోసం వేచి ఉంది",
+                tamil: "சூழலை எதிர்பார்க்கிறது",
+                urdu: "سیاق کا انتظار"
+              });
+  const patternStatusTone: "offline" | "error" | "loading" | "ready" =
+    apiBase.length === 0 ? "offline" : errorKind ? "error" : loading ? "loading" : "ready";
 
   return (
     <View style={{
@@ -42331,7 +42360,49 @@ function GuidanceInsightsCard({
             {checkInLabel} · {streakLabel}
           </Text>
         </View>
-        <Text style={{ color: "#A14A08", fontSize: 12, opacity: 0.7 }}>Beacon</Text>
+        <View
+          style={{
+            borderRadius: 999,
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            backgroundColor:
+              patternStatusTone === "offline"
+                ? "#EEF3F6"
+                : patternStatusTone === "error"
+                ? "#F6E3E4"
+                : patternStatusTone === "loading"
+                  ? "#EAF2F8"
+                  : "#E7F4EF",
+            borderWidth: 1,
+            borderColor:
+              patternStatusTone === "offline"
+                ? "rgba(107,114,128,0.22)"
+                : patternStatusTone === "error"
+                ? "rgba(179,38,30,0.22)"
+                : patternStatusTone === "loading"
+                  ? "rgba(26,96,128,0.18)"
+                  : "rgba(14,148,136,0.18)"
+          }}
+        >
+          <Text
+            style={{
+              color:
+                patternStatusTone === "offline"
+                  ? "#57646F"
+                  : patternStatusTone === "error"
+                  ? "#7A1F19"
+                  : patternStatusTone === "loading"
+                    ? "#1A3A55"
+                    : "#0A6F66",
+              fontSize: 12,
+              fontWeight: "800",
+              letterSpacing: 0.5,
+              textTransform: "uppercase"
+            }}
+          >
+            {patternStatusLabel}
+          </Text>
+        </View>
       </View>
 
       {/* Content */}
@@ -42340,11 +42411,21 @@ function GuidanceInsightsCard({
           <View style={{ backgroundColor: "#EAF2F8", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(26,96,128,0.18)", gap: 8 }}>
             <Text style={{ color: "#1A3A55", fontSize: 13, fontWeight: "700" }}>{unavailableTitle}</Text>
             <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 20 }}>{unavailableBody}</Text>
+            <View style={{ flexDirection: "row", gap: 6, marginTop: 2 }}>
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#1A6080", opacity: 0.9 }} />
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#1A6080", opacity: 0.55 }} />
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#1A6080", opacity: 0.3 }} />
+            </View>
           </View>
         ) : loading ? (
           <View style={{ backgroundColor: "#EAF2F8", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(26,96,128,0.18)", gap: 8 }}>
             <Text style={{ color: "#1A3A55", fontSize: 13, fontWeight: "700" }}>{loadingTitle}</Text>
             <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 20 }}>{loadingBody}</Text>
+            <View style={{ flexDirection: "row", gap: 6, alignItems: "center", marginTop: 2 }}>
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#1A6080" }} />
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#1A6080", opacity: 0.65 }} />
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#1A6080", opacity: 0.35 }} />
+            </View>
             <View style={{ flexDirection: "row", gap: 8, alignItems: "center", marginTop: 2 }}>
               <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#1A6080" }} />
               <Text style={{ color: "#3A577D", fontSize: 12 }}>{l("Gathering a fresh read from your recent check-ins.", {
