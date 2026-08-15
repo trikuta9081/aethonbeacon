@@ -31283,90 +31283,86 @@ function SettingsSection({
           })}
         </View>
       </View>
-      {Platform.OS !== "web" && (
-        <>
-          {/* ── Invite a friend ── */}
-          <View style={styles.settingsBlock}>
-            <Text style={styles.settingsTitle}>Invite a friend</Text>
-            <Text style={styles.promptText}>
-              Share your code with someone who could use a quieter place to think. Codes are generated on this
-              device and only record who invited whom — they are not an account, and they do not change anyone&apos;s
-              subscription or unlock paid features.
+      {/* ── Invite a friend ── */}
+      <View style={styles.settingsBlock}>
+        <Text style={styles.settingsTitle}>Invite a friend</Text>
+        <Text style={styles.promptText}>
+          Share your code with someone who could use a quieter place to think. Codes are generated on this
+          device and only record who invited whom — they are not an account, and they do not change anyone&apos;s
+          subscription or unlock paid features.
+        </Text>
+        <View
+          style={{
+            marginTop: 12,
+            backgroundColor: "#E1EEEC",
+            borderWidth: 1.5,
+            borderColor: "#0891B2",
+            borderRadius: 12,
+            paddingVertical: 14,
+            paddingHorizontal: 16,
+            alignItems: "center"
+          }}
+        >
+          <Text style={{ color: "#374151", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
+            Your invite code
+          </Text>
+          <Text selectable style={{ color: "#0E5C6B", fontSize: 24, fontWeight: "900", letterSpacing: 3, marginTop: 6 }}>
+            {referralCode.length > 0 ? formatReferralCode(referralCode) : "…"}
+          </Text>
+          {referralShareCount > 0 && (
+            <Text style={{ color: "#374151", fontSize: 12, marginTop: 6 }}>
+              Shared {referralShareCount} time{referralShareCount === 1 ? "" : "s"}
             </Text>
-            <View
-              style={{
-                marginTop: 12,
-                backgroundColor: "#E1EEEC",
-                borderWidth: 1.5,
-                borderColor: "#0891B2",
-                borderRadius: 12,
-                paddingVertical: 14,
-                paddingHorizontal: 16,
-                alignItems: "center"
-              }}
-            >
-              <Text style={{ color: "#374151", fontSize: 12, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" }}>
-                Your invite code
-              </Text>
-              <Text selectable style={{ color: "#0E5C6B", fontSize: 24, fontWeight: "900", letterSpacing: 3, marginTop: 6 }}>
-                {referralCode.length > 0 ? formatReferralCode(referralCode) : "…"}
-              </Text>
-              {referralShareCount > 0 && (
-                <Text style={{ color: "#374151", fontSize: 12, marginTop: 6 }}>
-                  Shared {referralShareCount} time{referralShareCount === 1 ? "" : "s"}
-                </Text>
-              )}
-            </View>
+          )}
+        </View>
+        <View style={styles.backupActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Share your invite code"
+            disabled={referralCode.length === 0}
+            onPress={onShareReferral}
+            style={[styles.dangerButton, referralCode.length === 0 ? { opacity: 0.5 } : null]}
+          >
+            <Text style={styles.dangerButtonLabel}>Share invite</Text>
+          </Pressable>
+        </View>
+        {referredByCode.length > 0 ? (
+          <Text style={[styles.promptText, { marginTop: 12, color: "#0E5C6B", fontWeight: "700" }]}>
+            ✓ Invited by {formatReferralCode(referredByCode)} — thank them for you.
+          </Text>
+        ) : (
+          <View style={{ marginTop: 12 }}>
+            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700", marginBottom: 6 }}>
+              Were you invited? Enter their code
+            </Text>
+            <TextInput
+              value={referralCodeDraft}
+              onChangeText={setReferralCodeDraft}
+              placeholder="AB-XXXXXXXX"
+              placeholderTextColor="#6B7280"
+              autoCapitalize="characters"
+              autoCorrect={false}
+              maxLength={12}
+              accessibilityLabel="Friend's invite code"
+              style={styles.settingsInput}
+            />
             <View style={styles.backupActions}>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Share your invite code"
-                disabled={referralCode.length === 0}
-                onPress={onShareReferral}
-                style={[styles.dangerButton, referralCode.length === 0 ? { opacity: 0.5 } : null]}
+                accessibilityLabel="Apply invite code"
+                onPress={() => {
+                  if (onRedeemReferralCode(referralCodeDraft)) {
+                    setReferralCodeDraft("");
+                  }
+                }}
+                style={styles.secondaryDangerButton}
               >
-                <Text style={styles.dangerButtonLabel}>Share invite</Text>
+                <Text style={styles.secondaryDangerButtonLabel}>Apply code</Text>
               </Pressable>
             </View>
-            {referredByCode.length > 0 ? (
-              <Text style={[styles.promptText, { marginTop: 12, color: "#0E5C6B", fontWeight: "700" }]}>
-                ✓ Invited by {formatReferralCode(referredByCode)} — thank them for you.
-              </Text>
-            ) : (
-              <View style={{ marginTop: 12 }}>
-                <Text style={{ color: "#263244", fontSize: 12, fontWeight: "700", marginBottom: 6 }}>
-                  Were you invited? Enter their code
-                </Text>
-                <TextInput
-                  value={referralCodeDraft}
-                  onChangeText={setReferralCodeDraft}
-                  placeholder="AB-XXXXXXXX"
-                  placeholderTextColor="#6B7280"
-                  autoCapitalize="characters"
-                  autoCorrect={false}
-                  maxLength={12}
-                  accessibilityLabel="Friend's invite code"
-                  style={styles.settingsInput}
-                />
-                <View style={styles.backupActions}>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Apply invite code"
-                    onPress={() => {
-                      if (onRedeemReferralCode(referralCodeDraft)) {
-                        setReferralCodeDraft("");
-                      }
-                    }}
-                    style={styles.secondaryDangerButton}
-                  >
-                    <Text style={styles.secondaryDangerButtonLabel}>Apply code</Text>
-                  </Pressable>
-                </View>
-              </View>
-            )}
           </View>
-        </>
-      )}
+        )}
+      </View>
       {/* ── Voice gender + humanized speech settings ── */}
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>Voice character</Text>

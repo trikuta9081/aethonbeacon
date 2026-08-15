@@ -38,7 +38,6 @@ assert(source.includes('COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initia
 assert(source.includes('VEDIC_CALCULATION_STANDARD.zodiac'), "Vedic methodology is not rendered.");
 assert(source.includes('हिन्दी') && source.includes('मार्गदर्शन के लिए हिंदी'), "Hindi language option must be native-labeled.");
 assert(source.includes('label={uiCopy.languagePageVoiceAssistLabel}'), "Language page voice-assistance toggle is not localized.");
-assert(source.includes('Platform.OS !== "web"'), "Invite-a-friend section must stay hidden on web.");
 
 // ── Crisis lifeline safeguard ───────────────────────────────────────────────
 // A self-directed safety signal (self-harm / suicidal ideation) must lead with
