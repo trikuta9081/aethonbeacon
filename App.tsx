@@ -6868,7 +6868,32 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     patternLoopTitle: "Pattern చదవండి, తరువాత route చేయండి",
     patternLoopSummary: "Pattern review evidence అర్థం మరియు ఎక్కడికి వెళ్లాలో చూపాలి.",
     settingsLanguageTitle: "భాష సహాయం",
-    settingsLanguagePrompt: "Replies మరియు voice readout ను guide చేసే భాషను ఎంచుకోండి."
+    settingsLanguagePrompt: "Replies మరియు voice readout ను guide చేసే భాషను ఎంచుకోండి.",
+    languagePageEyebrow: "భాష",
+    languagePageTitle: "ప్రాధాన్య భాష",
+    languagePageIntro: "నావిగేషన్ మరియు spoken support కోసం కావలసిన భాషను ఎంచుకోండి. క్రింద ఉన్న support badge పూర్తి వ్రాత interface అనువదించబడిందో లేదా menus మాత్రమేనా అని నిజంగా చెబుతుంది.",
+    languagePageIdentityMeta: "మీ పరికరంలో భారతీయ locale voice ఉన్నట్లయితే spoken guidance దానినే ప్రాధాన్యం ఇస్తుంది.",
+    languagePageSpeechLocaleLabel: "ప్రస్తుత speech locale",
+    languagePageSupportedLanguagesLabel: "మద్దతున్న భాషలు",
+    languagePageChoicesTitle: "భాషను ఎంచుకోండి",
+    languagePageChoicesIntro: "22 ఎంపికలు device voice support ఉన్న చోట translated navigation అందిస్తాయి. మొబైల్‌లో compact preview చిన్నగా ఉంటుంది, పూర్తి జాబితా అవసరమైనప్పుడు మాత్రమే తెరుచుకుంటుంది.",
+    languagePageToggleCompact: "సంక్షిప్తం చూపించు",
+    languagePageToggleExpanded: "22 భాషలు చూపించు",
+    languagePageCompactSummaryOpen: "పూర్తి భాషా జాబితా తెరిచి ఉంది. భాష మార్చడానికి ట్యాప్ చేయండి, పేజీ కేంద్రీకృతంగా ఉంటుంది.",
+    languagePageCompactSummaryClosed: "సంక్షిప్త preview తెరిచి ఉంది. అవసరమైనప్పుడు మాత్రమే మిగతా భాగాన్ని చూపించండి.",
+    languagePageVoiceTitle: "స్వర ముందస్తు వీక్షణ",
+    languagePageVoiceIntro: "మాట్లాడే support అందుబాటులో ఉన్నప్పుడు, ఎంచుకున్న భాషలో క్రియాశీల మార్గాన్ని వినడానికి current guidance చదవండి.",
+    languagePageVoiceAssistLabel: "స్వర సహాయం",
+    languagePageVoiceRead: "ప్రస్తుత మార్గాన్ని చదవండి",
+    languagePageVoiceStop: "స్వరాన్ని ఆపండి",
+    voiceAssistOff: "స్వర పఠనం ఆఫ్‌లో ఉంది",
+    languageSupportDefault: "అప్రమేయం",
+    languageSupportFullInterface: "పూర్తి ఇంటర్‌ఫేస్",
+    languageSupportFullInterfaceNoVoice: "పూర్తి ఇంటర్‌ఫేస్ · స్వరం లేదు",
+    languageSupportMenusVoice: "మెనూలు + స్వరం",
+    languageSupportMenusNoVoice: "మెనూలు · స్వరం లేదు",
+    languageSupportVoiceEnglishText: "స్వరం + ఇంగ్లీష్ పాఠ్యం",
+    languageSupportEnglishTextOnly: "ఇంగ్లీష్ పాఠ్యం మాత్రమే"
   },
   tamil: {
     homeEyebrow: "முகப்பு",
@@ -6935,7 +6960,32 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     patternLoopTitle: "Pattern-ஐ படித்து, பின்னர் route செய்யவும்",
     patternLoopSummary: "Pattern review evidence என்ன சொல்கிறது மற்றும் எங்கு செல்ல வேண்டும் என்பதை காட்ட வேண்டும்.",
     settingsLanguageTitle: "மொழி உதவி",
-    settingsLanguagePrompt: "Replies மற்றும் voice readout-ஐ வழிநடத்தும் மொழியை தேர்வு செய்யவும்."
+    settingsLanguagePrompt: "Replies மற்றும் voice readout-ஐ வழிநடத்தும் மொழியை தேர்வு செய்யவும்.",
+    languagePageEyebrow: "மொழி",
+    languagePageTitle: "விருப்ப மொழி",
+    languagePageIntro: "வழிசெலுத்தல் மற்றும் spoken support க்காக வேண்டிய மொழியைத் தேர்வு செய்யுங்கள். கீழே உள்ள support badge முழு எழுதப்பட்ட interface மொழிபெயர்க்கப்பட்டதா அல்லது menus மட்டும் தானா என்பதை நேர்மையாக சொல்கிறது.",
+    languagePageIdentityMeta: "உங்கள் சாதனத்தில் இந்திய locale voice இருந்தால் spoken guidance அதையே முன்னுரிமை கொடுக்கும்.",
+    languagePageSpeechLocaleLabel: "தற்போதைய speech locale",
+    languagePageSupportedLanguagesLabel: "ஆதரிக்கும் மொழிகள்",
+    languagePageChoicesTitle: "மொழியைத் தேர்வுசெய்க",
+    languagePageChoicesIntro: "22 தேர்வுகளும் device voice support இருக்கும் இடங்களில் மொழிபெயர்க்கப்பட்ட navigation-ஐ வழங்கும். mobile-ல் compact preview சிறியதாக இருக்கும், full list தேவைப்படும்போது மட்டும் திறக்கப்படும்.",
+    languagePageToggleCompact: "சுருக்கமாக காட்டு",
+    languagePageToggleExpanded: "22 மொழிகளை காட்டு",
+    languagePageCompactSummaryOpen: "முழு மொழிப் பட்டியல் திறந்துள்ளது. மொழியை மாற்றத் தட்டவும், பக்கம் கவனமாக இருக்கும்.",
+    languagePageCompactSummaryClosed: "சுருக்க preview திறந்துள்ளது. தேவைப்படும்போது மட்டும் மீதியைத் திறக்கவும்.",
+    languagePageVoiceTitle: "குரல் முன்னோட்டம்",
+    languagePageVoiceIntro: "குரல் support கிடைக்கும் போது, தேர்ந்த மொழியில் செயலில் உள்ள பாதையை கேட்க தற்போதைய guidance-ஐ வாசிக்கவும்.",
+    languagePageVoiceAssistLabel: "குரல் உதவி",
+    languagePageVoiceRead: "தற்போதைய பாதையை வாசிக்கவும்",
+    languagePageVoiceStop: "குரலை நிறுத்து",
+    voiceAssistOff: "குரல் வாசிப்பு அணைக்கப்பட்டுள்ளது",
+    languageSupportDefault: "இயல்புநிலை",
+    languageSupportFullInterface: "முழு இடைமுகம்",
+    languageSupportFullInterfaceNoVoice: "முழு இடைமுகம் · குரல் இல்லை",
+    languageSupportMenusVoice: "Menus + குரல்",
+    languageSupportMenusNoVoice: "Menus · குரல் இல்லை",
+    languageSupportVoiceEnglishText: "குரல் + English text",
+    languageSupportEnglishTextOnly: "English text மட்டும்"
   },
   urdu: {
     homeEyebrow: "مرکزی",
@@ -7002,7 +7052,32 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     patternLoopTitle: "پیٹرن پڑھیں، پھر راستہ چنیں",
     patternLoopSummary: "Pattern review دکھائے کہ evidence کا مطلب کیا ہے اور آگے کہاں جانا ہے۔",
     settingsLanguageTitle: "زبان کی مدد",
-    settingsLanguagePrompt: "وہ زبان منتخب کریں جو replies اور voice readout کی رہنمائی کرے۔"
+    settingsLanguagePrompt: "وہ زبان منتخب کریں جو replies اور voice readout کی رہنمائی کرے۔",
+    languagePageEyebrow: "زبان",
+    languagePageTitle: "ترجیحی زبان",
+    languagePageIntro: "navigation اور spoken support کے لیے پسندیدہ زبان منتخب کریں۔ نیچے support badge صاف بتاتا ہے کہ مکمل تحریری interface ترجمہ ہوا ہے یا صرف menus۔",
+    languagePageIdentityMeta: "اگر آپ کے device میں بھارتی locale voice ہو تو spoken guidance اسی کو ترجیح دے گی۔",
+    languagePageSpeechLocaleLabel: "موجودہ speech locale",
+    languagePageSupportedLanguagesLabel: "معاون زبانیں",
+    languagePageChoicesTitle: "زبان منتخب کریں",
+    languagePageChoicesIntro: "22 choices میں translated navigation ملتا ہے جہاں device voice support دستیاب ہو۔ mobile پر compact preview چھوٹا رہتا ہے، اور پوری فہرست صرف ضرورت پر کھلتی ہے۔",
+    languagePageToggleCompact: "مختصر دکھائیں",
+    languagePageToggleExpanded: "22 زبانیں دکھائیں",
+    languagePageCompactSummaryOpen: "مکمل زبان فہرست کھلی ہے۔ زبان بدلنے کے لیے tap کریں، اور صفحہ focused رہے گا.",
+    languagePageCompactSummaryClosed: "مختصر preview کھلا ہے۔ باقی صرف ضرورت پر دکھائیں.",
+    languagePageVoiceTitle: "آواز کا پیش نظارہ",
+    languagePageVoiceIntro: "جب speech support دستیاب ہو تو منتخب زبان میں active route سننے کے لیے current guidance پڑھیں.",
+    languagePageVoiceAssistLabel: "آوازی مدد",
+    languagePageVoiceRead: "موجودہ راستہ پڑھیں",
+    languagePageVoiceStop: "آواز روکیں",
+    voiceAssistOff: "آواز پڑھنا بند ہے",
+    languageSupportDefault: "ڈیفالٹ",
+    languageSupportFullInterface: "مکمل interface",
+    languageSupportFullInterfaceNoVoice: "مکمل interface · آواز نہیں",
+    languageSupportMenusVoice: "Menus + آواز",
+    languageSupportMenusNoVoice: "Menus · آواز نہیں",
+    languageSupportVoiceEnglishText: "آواز + English text",
+    languageSupportEnglishTextOnly: "صرف English text"
   },
   gujarati: {
     homeEyebrow: "મુખ્ય",
@@ -7318,6 +7393,417 @@ function pickLocalizedText(
 ) {
   return textByLanguage[languageId] ?? textByLanguage.english;
 }
+
+type LocalizedExtraText = Partial<Record<Exclude<LanguageId, "english" | "hindi">, string>>;
+type LocalizedTextCatalog = Record<string, LocalizedExtraText>;
+
+function makeLocalizedTextPicker(languageId: LanguageId, catalog: LocalizedTextCatalog) {
+  return (english: string, hindi: string) =>
+    pickLocalizedText(languageId, { english, hindi, ...(catalog[english] ?? {}) });
+}
+
+const profileOnboardingTextCatalog: LocalizedTextCatalog = {
+  "Account access level": {
+    telugu: "ఖాతా ప్రాప్యత స్థాయి",
+    tamil: "கணக்கு அணுகல் நிலை",
+    urdu: "اکاؤنٹ رسائی کی سطح"
+  },
+  "Account setup": {
+    telugu: "ఖాతా సెటప్",
+    tamil: "கணக்கு அமைப்பு",
+    urdu: "اکاؤنٹ سیٹ اپ"
+  },
+  "Add exact birth date, 24-hour birth time, and full birth place. Moon-chart analysis stays locked until all three are precise.": {
+    telugu: "ఖచ్చితమైన పుట్టిన తేదీ, 24 గంటల పుట్టిన సమయం, మరియు పూర్తి పుట్టిన స్థలాన్ని చేర్చండి. ఈ మూడు ఖచ్చితంగా ఉన్నప్పుడే Moon-chart విశ్లేషణ తెరుచుకుంటుంది.",
+    tamil: "சரியான பிறந்த தேதி, 24 மணி நேர பிறந்த நேரம், மற்றும் முழு பிறந்த இடத்தை சேர்க்கவும். மூன்றும் துல்லியமாகும் வரை Moon-chart பகுப்பாய்வு பூட்டியே இருக்கும்.",
+    urdu: "درست تاریخِ پیدائش، 24 گھنٹے والی پیدائش کی گھڑی، اور مکمل جائے پیدائش شامل کریں۔ Moon-chart تجزیہ تب تک بند رہے گا جب تک تینوں درست نہ ہوں۔"
+  },
+  "Admin locked out of profile edits": {
+    telugu: "అడ్మిన్‌కు ప్రొఫైల్ మార్పుల నుండి నిరోధం ఉంది",
+    tamil: "நிர்வாகி சுயவிவரத் திருத்தங்களில் இருந்து தடுக்கப்பட்டுள்ளார்",
+    urdu: "ایڈمن کو پروفائل تبدیلیوں سے روکا گیا ہے"
+  },
+  "Birth date: YYYY-MM-DD": {
+    telugu: "పుట్టిన తేదీ: YYYY-MM-DD",
+    tamil: "பிறந்த தேதி: YYYY-MM-DD",
+    urdu: "تاریخِ پیدائش: YYYY-MM-DD"
+  },
+  "Birth details": {
+    telugu: "పుట్టిన వివరాలు",
+    tamil: "பிறந்த விவரங்கள்",
+    urdu: "پیدائش کی تفصیلات"
+  },
+  "Birth place: city, district, state, country": {
+    telugu: "పుట్టిన స్థలం: నగరం, జిల్లా, రాష్ట్రం, దేశం",
+    tamil: "பிறந்த இடம்: நகரம், மாவட்டம், மாநிலம், நாடு",
+    urdu: "جائے پیدائش: شہر، ضلع، ریاست، ملک"
+  },
+  "Browse without saving a role": {
+    telugu: "పాత్రను సేవ్ చేయకుండా చూడండి",
+    tamil: "பங்கைக் சேமிக்காமல் உலாவுங்கள்",
+    urdu: "کسی کردار کو محفوظ کیے بغیر دیکھیں"
+  },
+  "Choose one contact method, send its OTP, then enter the received six-digit code in Verification below.": {
+    telugu: "ఒక సంప్రదింపు విధానాన్ని ఎంచుకుని, దాని OTP పంపించి, వచ్చిన ఆరు అంకెల కోడ్‌ను క్రింది Verification లో నమోదు చేయండి.",
+    tamil: "ஒரு தொடர்பு முறையைத் தேர்ந்தெடுத்து, அதன் OTP-ஐ அனுப்பி, கிடைத்த ஆறு இலக்க குறியீட்டை கீழே உள்ள Verification-இல் உள்ளிடவும்.",
+    urdu: "ایک رابطہ طریقہ منتخب کریں، اس کا OTP بھیجیں، پھر موصول ہونے والا چھ ہندسوں کا کوڈ نیچے Verification میں درج کریں۔"
+  },
+  "City, district, or pincode": {
+    telugu: "నగరం, జిల్లా, లేదా పిన్‌కోడ్",
+    tamil: "நகரம், மாவட்டம், அல்லது பின்கோடு",
+    urdu: "شہر، ضلع، یا پِن کوڈ"
+  },
+  "Complete your profile, add a contact method, then verify to unlock community chat and private spaces.": {
+    telugu: "మీ ప్రొఫైల్ పూర్తిచేసి, ఒక సంప్రదింపు విధానాన్ని చేర్చి, ఆపై verify చేసి community chat మరియు private spaces ను తెరవండి.",
+    tamil: "உங்கள் சுயவிவரத்தை முடித்து, ஒரு தொடர்பு முறையை சேர்த்து, பின்னர் verify செய்து community chat மற்றும் private spaces-ஐத் திறக்கவும்.",
+    urdu: "اپنا پروفائل مکمل کریں، ایک رابطہ طریقہ شامل کریں، پھر verify کر کے community chat اور private spaces کھولیں۔"
+  },
+  "Connected provider sends the verification codes.": {
+    telugu: "కనెక్ట్ చేసిన provider verification codes పంపుతుంది.",
+    tamil: "இணைக்கப்பட்ட provider verification codes அனுப்புகிறது.",
+    urdu: "جڑا ہوا provider verification codes بھیجتا ہے۔"
+  },
+  "Contact": {
+    telugu: "సంప్రదింపు",
+    tamil: "தொடர்பு",
+    urdu: "رابطہ"
+  },
+  "Contact details": {
+    telugu: "సంప్రదింపు వివరాలు",
+    tamil: "தொடர்பு விவரங்கள்",
+    urdu: "رابطے کی تفصیلات"
+  },
+  "Display name": {
+    telugu: "ప్రదర్శన పేరు",
+    tamil: "காண்பிக்கும் பெயர்",
+    urdu: "نمایشی نام"
+  },
+  "Done": {
+    telugu: "పూర్తి",
+    tamil: "முடிந்தது",
+    urdu: "ہو گیا"
+  },
+  "Email address": {
+    telugu: "ఇమెయిల్ చిరునామా",
+    tamil: "மின்னஞ்சல் முகவரி",
+    urdu: "ای میل پتہ"
+  },
+  "Email pending": {
+    telugu: "ఇమెయిల్ పెండింగ్‌లో ఉంది",
+    tamil: "மின்னஞ்சல் நிலுவையில் உள்ளது",
+    urdu: "ای میل زیر التواء ہے"
+  },
+  "Email verified": {
+    telugu: "ఇమెయిల్ ధృవీకరించబడింది",
+    tamil: "மின்னஞ்சல் சரிபார்க்கப்பட்டது",
+    urdu: "ای میل کی تصدیق ہو گئی"
+  },
+  "Exact birth time: HH:MM, 24-hour": {
+    telugu: "ఖచ్చితమైన పుట్టిన సమయం: HH:MM, 24 గంటలు",
+    tamil: "சரியான பிறந்த நேரம்: HH:MM, 24 மணி நேரம்",
+    urdu: "درست وقتِ پیدائش: HH:MM، 24 گھنٹے"
+  },
+  "Exit": {
+    telugu: "నిష్క్రమించు",
+    tamil: "வெளியேறு",
+    urdu: "باہر نکلیں"
+  },
+  "Exit profile details": {
+    telugu: "ప్రొఫైల్ వివరాలను మూసివేయండి",
+    tamil: "சுயவிவர விவரங்களை மூடவும்",
+    urdu: "پروفائل کی تفصیلات بند کریں"
+  },
+  "Female": {
+    telugu: "స్త్రీ",
+    tamil: "பெண்",
+    urdu: "عورت"
+  },
+  "Gender": {
+    telugu: "లింగం",
+    tamil: "பாலினம்",
+    urdu: "جنس"
+  },
+  "Guest": {
+    telugu: "అతిథి",
+    tamil: "விருந்தினர்",
+    urdu: "مہمان"
+  },
+  "Guest access": {
+    telugu: "అతిథి ప్రాప్యత",
+    tamil: "விருந்தினர் அணுகல்",
+    urdu: "مہمان رسائی"
+  },
+  "Jump to verification section": {
+    telugu: "ధృవీకరణ విభాగానికి వెళ్లండి",
+    tamil: "சரிபார்ப்பு பகுதியிற்கு செல்லவும்",
+    urdu: "تصدیقی حصے پر جائیں"
+  },
+  "Local fallback generates the code inside the app for beta testing.": {
+    telugu: "బీటా పరీక్ష కోసం స్థానిక fallback యాప్ లోపలే code సృష్టిస్తుంది.",
+    tamil: "பீட்டா சோதனைக்காக local fallback code-ஐ app-க்குள் உருவாக்குகிறது.",
+    urdu: "بیٹا ٹیسٹنگ کے لیے local fallback code ایپ کے اندر تیار کرتا ہے۔"
+  },
+  "Male": {
+    telugu: "పురుషుడు",
+    tamil: "ஆண்",
+    urdu: "مرد"
+  },
+  "Member": {
+    telugu: "సభ్యుడు",
+    tamil: "உறுப்பினர்",
+    urdu: "رکن"
+  },
+  "Member access": {
+    telugu: "సభ్య ప్రాప్యత",
+    tamil: "உறுப்பினர் அணுகல்",
+    urdu: "رکن رسائی"
+  },
+  "Name": {
+    telugu: "పేరు",
+    tamil: "பெயர்",
+    urdu: "نام"
+  },
+  "Non-binary": {
+    telugu: "నాన్-బైనరీ",
+    tamil: "பைனரி அல்லாதது",
+    urdu: "غیر بائنری"
+  },
+  "One OTP unlocks it": {
+    telugu: "ఒక OTP దాన్ని తెరుస్తుంది",
+    tamil: "ஒரே OTP அதைத் திறக்கும்",
+    urdu: "ایک OTP اسے کھول دیتا ہے"
+  },
+  "Other": {
+    telugu: "ఇతర",
+    tamil: "மற்றவை",
+    urdu: "دیگر"
+  },
+  "Pending verification": {
+    telugu: "ధృవీకరణ పెండింగ్‌లో ఉంది",
+    tamil: "சரிபார்ப்பு நிலுவையில் உள்ளது",
+    urdu: "تصدیق زیر التواء ہے"
+  },
+  "Phone number": {
+    telugu: "ఫోన్ నంబర్",
+    tamil: "தொலைபேசி எண்",
+    urdu: "فون نمبر"
+  },
+  "Phone or email": {
+    telugu: "ఫోన్ లేదా ఇమెయిల్",
+    tamil: "தொலைபேசி அல்லது மின்னஞ்சல்",
+    urdu: "فون یا ای میل"
+  },
+  "Phone pending": {
+    telugu: "ఫోన్ పెండింగ్‌లో ఉంది",
+    tamil: "தொலைபேசி நிலுவையில் உள்ளது",
+    urdu: "فون زیر التواء ہے"
+  },
+  "Phone verified": {
+    telugu: "ఫోన్ ధృవీకరించబడింది",
+    tamil: "தொலைபேசி சரிபார்க்கப்பட்டது",
+    urdu: "فون کی تصدیق ہو گئی"
+  },
+  "Prefer not to say": {
+    telugu: "తెలిపేందుకు ఇష్టంలేదు",
+    tamil: "சொல்ல விருப்பமில்லை",
+    urdu: "بتانا پسند نہیں"
+  },
+  "Profile": {
+    telugu: "ప్రొఫైల్",
+    tamil: "சுயவிவரம்",
+    urdu: "پروفائل"
+  },
+  "Profile center": {
+    telugu: "ప్రొఫైల్ కేంద్రం",
+    tamil: "சுயவிவர மையம்",
+    urdu: "پروفائل مرکز"
+  },
+  "Profile not named yet": {
+    telugu: "ప్రొఫైల్‌కు ఇంకా పేరు పెట్టలేదు",
+    tamil: "சுயவிவரத்திற்கு இன்னும் பெயர் இல்லை",
+    urdu: "پروفائل کو ابھی نام نہیں دیا گیا"
+  },
+  "Send email OTP": {
+    telugu: "ఇమెయిల్ OTP పంపండి",
+    tamil: "மின்னஞ்சல் OTP அனுப்பவும்",
+    urdu: "ای میل OTP بھیجیں"
+  },
+  "Send phone OTP": {
+    telugu: "ఫోన్ OTP పంపండి",
+    tamil: "தொலைபேசி OTP அனுப்பவும்",
+    urdu: "فون OTP بھیجیں"
+  },
+  "Sending email OTP…": {
+    telugu: "ఇమెయిల్ OTP పంపుతోంది…",
+    tamil: "மின்னஞ்சல் OTP அனுப்பப்படுகிறது…",
+    urdu: "ای میل OTP بھیجا جا رہا ہے…"
+  },
+  "Sending phone OTP…": {
+    telugu: "ఫోన్ OTP పంపుతోంది…",
+    tamil: "தொலைபேசி OTP அனுப்பப்படுகிறது…",
+    urdu: "فون OTP بھیجا جا رہا ہے…"
+  },
+  "Set your name, add a contact method, and verify to unlock community features.": {
+    telugu: "మీ పేరు పెట్టండి, ఒక సంప్రదింపు విధానాన్ని చేర్చండి, మరియు ధృవీకరించి community features ను తెరవండి.",
+    tamil: "உங்கள் பெயரை அமைத்து, ஒரு தொடர்பு முறையைச் சேர்த்து, verify செய்து community features-ஐத் திறக்கவும்.",
+    urdu: "اپنا نام رکھیں، ایک رابطہ طریقہ شامل کریں، اور verify کر کے community features کھولیں۔"
+  },
+  "Standard local profile": {
+    telugu: "ప్రామాణిక స్థానిక ప్రొఫైల్",
+    tamil: "தரமான உள்ளக சுயவிவரம்",
+    urdu: "معیاری مقامی پروفائل"
+  },
+  "Startup prompt": {
+    telugu: "ప్రారంభ సూచన",
+    tamil: "தொடக்க அறிவிப்பு",
+    urdu: "اسٹارٹ اپ پرامپٹ"
+  },
+  "This controls what you can do in the app — not who you are. Verified unlocks chat and private rooms once you confirm a phone or email.": {
+    telugu: "ఇది యాప్‌లో మీరు చేయగలదాన్ని నియంత్రిస్తుంది — మీరు ఎవరో కాదు. ఫోన్ లేదా ఇమెయిల్ ధృవీకరించిన వెంటనే Verified chat మరియు private rooms తెరుచుకుంటాయి.",
+    tamil: "இது பயன்பாட்டில் நீங்கள் என்ன செய்ய முடியும் என்பதைக் கட்டுப்படுத்துகிறது — நீங்கள் யார் என்பதையல்ல. தொலைபேசி அல்லது மின்னஞ்சலை உறுதிப்படுத்தியவுடன் Verified chat மற்றும் private rooms திறக்கப்படும்.",
+    urdu: "یہ ایپ میں آپ کیا کر سکتے ہیں اسے کنٹرول کرتا ہے — آپ کون ہیں اسے نہیں۔ فون یا ای میل کی تصدیق ہوتے ہی Verified chat اور private rooms کھل جاتے ہیں۔"
+  },
+  "This panel stays open for 10 seconds so you can pick a profile and verify before closing it.": {
+    telugu: "ఈ ప్యానెల్ 10 సెకన్లు తెరిచి ఉంటుంది, కాబట్టి మూసే ముందు మీరు ఒక profile ఎంచుకుని verify చేయవచ్చు.",
+    tamil: "இந்த panel 10 விநாடிகள் திறந்தே இருக்கும், ஆகையால் மூடுவதற்கு முன் ஒரு profile-ஐத் தேர்ந்தெடுத்து verify செய்யலாம்.",
+    urdu: "یہ panel 10 سیکنڈ تک کھلا رہتا ہے تاکہ آپ بند کرنے سے پہلے ایک profile منتخب کر کے verify کر سکیں۔"
+  },
+  "Unlocked for verified chat": {
+    telugu: "ధృవీకరించిన chat కోసం తెరవబడింది",
+    tamil: "உறுதிப்படுத்தப்பட்ட chat-க்கு திறக்கப்பட்டது",
+    urdu: "تصدیق شدہ chat کے لیے کھلا"
+  },
+  "Unlocks after one OTP check": {
+    telugu: "ఒక OTP తనిఖీ తర్వాత తెరుచుకుంటుంది",
+    tamil: "ஒரு OTP சரிபார்ப்புக்குப் பிறகு திறக்கும்",
+    urdu: "ایک OTP جانچ کے بعد کھلتا ہے"
+  },
+  "Verification": {
+    telugu: "ధృవీకరణ",
+    tamil: "சரிபார்ப்பு",
+    urdu: "تصدیق"
+  },
+  "Verification needed": {
+    telugu: "ధృవీకరణ అవసరం",
+    tamil: "சரிபார்ப்பு தேவை",
+    urdu: "تصدیق درکار ہے"
+  },
+  "Verified": {
+    telugu: "ధృవీకరించబడింది",
+    tamil: "சரிபார்க்கப்பட்டது",
+    urdu: "تصدیق شدہ"
+  },
+  "Verified access": {
+    telugu: "ధృవీకరించిన ప్రాప్యత",
+    tamil: "சரிபார்க்கப்பட்ட அணுகல்",
+    urdu: "تصدیق شدہ رسائی"
+  },
+  "Verify your phone or email first.": {
+    telugu: "ముందుగా మీ ఫోన్ లేదా ఇమెయిల్‌ను ధృవీకరించండి.",
+    tamil: "முதலில் உங்கள் தொலைபேசி அல்லது மின்னஞ்சலைச் சரிபார்க்கவும்.",
+    urdu: "پہلے اپنا فون یا ای میل verify کریں۔"
+  },
+  "Your Account": {
+    telugu: "మీ ఖాతా",
+    tamil: "உங்கள் கணக்கு",
+    urdu: "آپ کا اکاؤنٹ"
+  },
+  "Your name or handle": {
+    telugu: "మీ పేరు లేదా handle",
+    tamil: "உங்கள் பெயர் அல்லது handle",
+    urdu: "آپ کا نام یا handle"
+  },
+  "Your profile": {
+    telugu: "మీ ప్రొఫైల్",
+    tamil: "உங்கள் சுயவிவரம்",
+    urdu: "آپ کا پروفائل"
+  },
+  left: {
+    telugu: "మిగిలింది",
+    tamil: "மீதம்",
+    urdu: "باقی"
+  },
+  locked: {
+    telugu: "లాక్ చేయబడింది",
+    tamil: "பூட்டப்பட்டது",
+    urdu: "مقفل"
+  },
+  "App vision": {
+    telugu: "యాప్ దృష్టి",
+    tamil: "பயன்பாட்டு பார்வை",
+    urdu: "ایپ وژن"
+  },
+  "Privacy-conscious improvement": {
+    telugu: "గోప్యత-జాగ్రత్తగా మెరుగుదల",
+    tamil: "தனியுரிமையை கருத்தில் கொண்ட மேம்பாடு",
+    urdu: "پرائیویسی کے ساتھ بہتری"
+  },
+  "Access commitment": {
+    telugu: "ప్రాప్యత ప్రతిజ్ఞ",
+    tamil: "அணுகல் உறுதி",
+    urdu: "رسائی کا عہد"
+  },
+  "Controlled beta standard": {
+    telugu: "నియంత్రిత beta ప్రమాణం",
+    tamil: "கட்டுப்படுத்தப்பட்ட beta தரம்",
+    urdu: "کنٹرولڈ بیٹا معیار"
+  },
+  "Launch status": {
+    telugu: "లాంచ్ స్థితి",
+    tamil: "தொடக்க நிலை",
+    urdu: "لانچ کی صورتحال"
+  },
+  "Release readiness": {
+    telugu: "విడుదల సిద్ధత",
+    tamil: "ரிலீஸ் தயார்நிலை",
+    urdu: "ریلیز تیاری"
+  },
+  "Quick review": {
+    telugu: "త్వరిత సమీక్ష",
+    tamil: "விரைவு மதிப்பாய்வு",
+    urdu: "فوری جائزہ"
+  },
+  "Privacy": {
+    telugu: "గోప్యత",
+    tamil: "தனியுரிமை",
+    urdu: "پرائیویسی"
+  },
+  "Storage": {
+    telugu: "నిల్వ",
+    tamil: "சேமிப்பு",
+    urdu: "ذخیرہ"
+  },
+  "Owner access": {
+    telugu: "యజమాని ప్రాప్యత",
+    tamil: "உரிமையாளர் அணுகல்",
+    urdu: "مالک رسائی"
+  },
+  "Admin sign-in": {
+    telugu: "అడ్మిన్ సైన్-ఇన్",
+    tamil: "நிர்வாகி உள்நுழைவு",
+    urdu: "ایڈمن سائن اِن"
+  },
+  "Family": {
+    telugu: "కుటుంబం",
+    tamil: "குடும்பம்",
+    urdu: "خاندان"
+  },
+  "Relatives": {
+    telugu: "బంధువులు",
+    tamil: "உறவினர்கள்",
+    urdu: "رشتہ دار"
+  },
+  "Friends": {
+    telugu: "స్నేహితులు",
+    tamil: "நண்பர்கள்",
+    urdu: "دوست"
+  },
+  "Coworkers": {
+    telugu: "సహోద్యోగులు",
+    tamil: "உடன்பணியாளர்கள்",
+    urdu: "ساتھی کارکن"
+  }
+};
 
 const careLenses: Array<{
   id: "practical" | "emotional" | "psychological" | "spiritual" | "cultural";
@@ -27276,7 +27762,7 @@ function SearchSection({
   selectedIssueGuide: IssueGuide;
   isWide: boolean;
 }) {
-  const t = (english: string, hindi: string) => pickLocalizedText(languageId, { english, hindi });
+  const t = makeLocalizedTextPicker(languageId, profileOnboardingTextCatalog);
   const queryActive = searchQuery.trim().length > 0;
   const [showFullSearchResults, setShowFullSearchResults] = useState(false);
   const recommendedRedressRouteId =
@@ -31170,7 +31656,7 @@ function SettingsSection({
   onShareReferral: () => void;
   onRedeemReferralCode: (code: string) => boolean;
 }) {
-  const t = (english: string, hindi: string) => pickLocalizedText(languageId, { english, hindi });
+  const t = makeLocalizedTextPicker(languageId, profileOnboardingTextCatalog);
   const [referralCodeDraft, setReferralCodeDraft] = useState("");
   const reminderChoice = reminderOptions.find((option) => option.id === reminderMode) ?? reminderOptions[0];
   const followUpChoice = followUpOptions.find((option) => option.id === followUpMode) ?? followUpOptions[0];
@@ -31205,7 +31691,13 @@ function SettingsSection({
       : reminderAccess === "denied"
         ? t("Enable notifications in system settings to use reminders.", "reminders के लिए सिस्टम सेटिंग्स में notifications चालू करें।")
           : reminderEnabled
-          ? t(`Asks one daily emotional question at ${reminderChoice.timeLabel} and keeps follow-up alerts ready.`, `${reminderChoice.timeLabel} पर हर दिन एक भावनात्मक सवाल पूछता है और follow-up alerts तैयार रखता है।`)
+          ? pickLocalizedText(languageId, {
+              english: `Asks one daily emotional question at ${reminderChoice.timeLabel} and keeps follow-up alerts ready.`,
+              hindi: `${reminderChoice.timeLabel} पर हर दिन एक भावनात्मक सवाल पूछता है और follow-up alerts तैयार रखता है।`,
+              telugu: `${reminderChoice.timeLabel}కి రోజుకు ఒక భావోద్వేగ ప్రశ్న అడుగుతుంది మరియు follow-up alerts సిద్ధంగా ఉంచుతుంది.`,
+              tamil: `${reminderChoice.timeLabel}-க்கு தினமும் ஒரு உணர்ச்சி கேள்வி கேட்டு, follow-up alerts-ஐ தயாராக வைத்திருக்கும்.`,
+              urdu: `${reminderChoice.timeLabel} پر روزانہ ایک جذباتی سوال پوچھتا ہے اور follow-up alerts تیار رکھتا ہے۔`
+            })
           : t("Turn on reminders to get a daily emotional question prompt.", "दैनिक भावनात्मक सवाल पाने के लिए reminders चालू करें।");
   const localizedLegalTrustItems = legalTrustItems.map((item) => {
     if (item.title === "Privacy policy") {
@@ -31320,7 +31812,15 @@ function SettingsSection({
             <Text style={styles.eyebrow}>{t("Settings", "सेटिंग्स")}</Text>
             <Text style={styles.sectionTitle}>{t("Your wellness profile", "आपकी कल्याण प्रोफ़ाइल")}</Text>
           </View>
-        <Text style={styles.smallMeta}>{t(`${entries.length} entries`, `${entries.length} प्रविष्टियाँ`)}</Text>
+        <Text style={styles.smallMeta}>
+          {pickLocalizedText(languageId, {
+            english: `${entries.length} entries`,
+            hindi: `${entries.length} प्रविष्टियाँ`,
+            telugu: `${entries.length} ఎంట్రీలు`,
+            tamil: `${entries.length} பதிவுகள்`,
+            urdu: `${entries.length} اندراجات`
+          })}
+        </Text>
         </View>
       {/* ─── FREE ACCESS BANNER ────────────────────────────────────── */}
       <View style={{
@@ -31380,7 +31880,15 @@ function SettingsSection({
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>{t("Allow local product measurements", "स्थानीय उत्पाद माप चालू करें")}</Text>
             <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>
-              {productAnalyticsEnabled ? t(`${localProductMetrics.length} local events retained`, `${localProductMetrics.length} स्थानीय घटनाएँ रखी गईं`) : t("Off by default", "डिफ़ॉल्ट रूप से बंद")}
+              {productAnalyticsEnabled
+                ? pickLocalizedText(languageId, {
+                    english: `${localProductMetrics.length} local events retained`,
+                    hindi: `${localProductMetrics.length} स्थानीय घटनाएँ रखी गईं`,
+                    telugu: `${localProductMetrics.length} స్థానిక ఈవెంట్లు నిల్వయ్యాయి`,
+                    tamil: `${localProductMetrics.length} உள்ளக நிகழ்வுகள் தக்கவைக்கப்பட்டன`,
+                    urdu: `${localProductMetrics.length} مقامی واقعات محفوظ رکھے گئے`
+                  })
+                : t("Off by default", "डिफ़ॉल्ट रूप से बंद")}
             </Text>
           </View>
           <Switch value={productAnalyticsEnabled} onValueChange={setProductAnalyticsEnabled} />
@@ -31974,7 +32482,13 @@ function SettingsSection({
         <Text style={styles.promptText}>
           {followUpChoice.id === "off"
             ? t("No weekly follow-up series is active.", "कोई साप्ताहिक follow-up श्रृंखला सक्रिय नहीं है।")
-            : t(`A follow-up check-in will run for ${followUpChoice.weeks} weeks after the selected issue to keep the loop alive.`, `चुनी गई समस्या के बाद ${followUpChoice.weeks} हफ्तों तक follow-up check-in चलेगा ताकि लूप सक्रिय रहे।`)}
+            : pickLocalizedText(languageId, {
+                english: `A follow-up check-in will run for ${followUpChoice.weeks} weeks after the selected issue to keep the loop alive.`,
+                hindi: `चुनी गई समस्या के बाद ${followUpChoice.weeks} हफ्तों तक follow-up check-in चलेगा ताकि लूप सक्रिय रहे।`,
+                telugu: `ఎంచుకున్న సమస్య తర్వాత లూప్‌ను సజీవంగా ఉంచడానికి ${followUpChoice.weeks} వారాల పాటు follow-up check-in నడుస్తుంది.`,
+                tamil: `தேர்ந்தெடுக்கப்பட்ட பிரச்சினைக்குப் பிறகு லூப்பை உயிருடன் வைத்திருக்க ${followUpChoice.weeks} வாரங்களுக்கு follow-up check-in இயங்கும்.`,
+                urdu: `منتخب مسئلے کے بعد لوپ کو زندہ رکھنے کے لیے ${followUpChoice.weeks} ہفتوں تک follow-up check-in چلے گا۔`
+              })}
         </Text>
         <Text style={styles.smallMeta}>{t("Follow-up alerts are scheduled automatically once this is turned on.", "एक बार चालू होने पर follow-up alerts अपने-आप तय हो जाते हैं।")}</Text>
         <View style={styles.segmentRow}>
@@ -32088,7 +32602,15 @@ function SettingsSection({
           <Pressable accessibilityRole="button" onPress={onSubmitReview} style={styles.dangerButton}>
             <Text style={styles.dangerButtonLabel}>{t("Submit review", "समीक्षा भेजें")}</Text>
           </Pressable>
-          <Text style={styles.smallMeta}>{t(`${userReviews.length} reviews saved`, `${userReviews.length} समीक्षाएँ सहेजी गईं`)}</Text>
+          <Text style={styles.smallMeta}>
+            {pickLocalizedText(languageId, {
+              english: `${userReviews.length} reviews saved`,
+              hindi: `${userReviews.length} समीक्षाएँ सहेजी गईं`,
+              telugu: `${userReviews.length} సమీక్షలు సేవ్ అయ్యాయి`,
+              tamil: `${userReviews.length} மதிப்புரைகள் சேமிக்கப்பட்டன`,
+              urdu: `${userReviews.length} جائزے محفوظ ہو گئے`
+            })}
+          </Text>
         </View>
       </View>
       <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 2 }}>

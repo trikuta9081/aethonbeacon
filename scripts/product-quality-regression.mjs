@@ -38,6 +38,8 @@ assert(source.includes('COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initia
 assert(source.includes('VEDIC_CALCULATION_STANDARD.zodiac'), "Vedic methodology is not rendered.");
 assert(source.includes('हिन्दी') && source.includes('मार्गदर्शन के लिए हिंदी'), "Hindi language option must be native-labeled.");
 assert(source.includes('label={uiCopy.languagePageVoiceAssistLabel}'), "Language page voice-assistance toggle is not localized.");
+assert(source.includes('languagePageTitle: "ప్రాధాన్య భాష"') && source.includes('languagePageTitle: "விருப்ப மொழி"') && source.includes('languagePageTitle: "ترجیحی زبان"'), "Telugu/Tamil/Urdu language pages must have localized titles.");
+assert(source.includes('makeLocalizedTextPicker(languageId, profileOnboardingTextCatalog)'), "Profile/onboarding text must use the shared multilingual picker.");
 assert(source.includes('आपका आने वाला सप्ताह तैयार है') && source.includes('पढ़ें'), "Hindi Home hero and weekly banner must be localized.");
 assert(source.includes('परामर्श शुरू करें') && source.includes('जारी रखें'), "Hindi Home support-card actions must be localized.");
 assert(source.includes('एक पेज खोलें') && source.includes('सीधे जाने के लिए कोई पेज टैप करें।'), "Hindi section chooser must be localized.");
