@@ -27836,10 +27836,30 @@ function CommunitySection({
 
   if (!canUseCommunityFeatures) {
     const demoPosts = [
-      { emoji: "🎓", role: "Student", time: "2h ago", text: "First week at university and already feeling the pressure. Anyone else find that writing things down actually helps before a big exam?" },
-      { emoji: "💼", role: "Professional", time: "5h ago", text: "Had a really difficult conversation with my manager today. Used the redress guide here and it helped me think clearly before responding." },
-      { emoji: "🌱", role: "Member", time: "Yesterday", text: "Day 14 of my daily check-in streak. Small habit, but it's genuinely changing how I process hard days." },
-      { emoji: "🤝", role: "Caregiver", time: "Yesterday", text: "Caring for an elderly parent while working full time. The calm practices in this app are the only 5 minutes I get for myself each day." },
+      { emoji: "🎓", role: l("Student", { hindi: "छात्र", telugu: "విద్యార్థి", tamil: "மாணவர்", urdu: "طالب علم" }), time: l("2h ago", { hindi: "2 घंटे पहले", telugu: "2 గంటల క్రితం", tamil: "2 மணி நேரத்திற்கு முன்", urdu: "2 گھنٹے پہلے" }), text: l("First week at university and already feeling the pressure. Anyone else find that writing things down actually helps before a big exam?", {
+        hindi: "यूनिवर्सिटी का पहला हफ़्ता है और पहले से ही दबाव महसूस हो रहा है। क्या किसी और को भी लगता है कि बड़ा exam से पहले बातें लिख लेना वाकई मदद करता है?",
+        telugu: "యూనివర్సిటీలో మొదటి వారం అయినప్పటికీ ఇప్పటికే ఒత్తిడి అనిపిస్తోంది. పెద్ద పరీక్ష ముందు విషయాలను రాసుకోవడం నిజంగా సహాయపడుతుందని ఇంకెవరైనా అనుభవించారా?",
+        tamil: "பல்கலைக்கழகத்தில் முதல் வாரமே, ஏற்கனவே அழுத்தமாக உணர்கிறேன். பெரிய தேர்வுக்கு முன் விஷயங்களை எழுதி வைப்பது உண்மையில் உதவுகிறது என்று வேறு யாருக்காவது தோன்றுகிறதா?",
+        urdu: "یونیورسٹی کا پہلا ہفتہ ہے اور پہلے ہی دباؤ محسوس ہو رہا ہے۔ کیا کسی اور کو بھی لگتا ہے کہ بڑے امتحان سے پہلے باتیں لکھ لینا واقعی مدد کرتا ہے؟"
+      }) },
+      { emoji: "💼", role: l("Professional", { hindi: "पेशेवर", telugu: "ప్రొఫెషనల్", tamil: "தொழில்முறை", urdu: "پیشہ ور" }), time: l("5h ago", { hindi: "5 घंटे पहले", telugu: "5 గంటల క్రితం", tamil: "5 மணி நேரத்திற்கு முன்", urdu: "5 گھنٹے پہلے" }), text: l("Had a really difficult conversation with my manager today. Used the redress guide here and it helped me think clearly before responding.", {
+        hindi: "आज अपने manager के साथ बहुत कठिन बातचीत हुई। यहाँ का redress guide इस्तेमाल किया और जवाब देने से पहले साफ़ सोचने में मदद मिली।",
+        telugu: "ఈరోజు నా మేనేజర్‌తో చాలా కష్టమైన సంభాషణ జరిగింది. ఇక్కడి redress guide వాడాను, స్పందించే ముందు స్పష్టంగా ఆలోచించడానికి అది సహాయపడింది.",
+        tamil: "இன்று என் மேலாளருடன் மிகவும் கடினமான உரையாடல் நடந்தது. இங்குள்ள redress guide-ஐ பயன்படுத்தினேன்; பதிலளிக்கும் முன் தெளிவாக சிந்திக்க உதவியது.",
+        urdu: "آج اپنے مینیجر کے ساتھ ایک بہت مشکل گفتگو ہوئی۔ یہاں کا redress guide استعمال کیا اور جواب دینے سے پہلے واضح سوچنے میں مدد ملی۔"
+      }) },
+      { emoji: "🌱", role: l("Member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" }), time: l("Yesterday", { hindi: "कल", telugu: "నిన్న", tamil: "நேற்று", urdu: "کل" }), text: l("Day 14 of my daily check-in streak. Small habit, but it's genuinely changing how I process hard days.", {
+        hindi: "मेरे daily check-in streak का 14वाँ दिन है। छोटी सी आदत, लेकिन यह सचमुच मुश्किल दिनों को समझने का तरीका बदल रही है।",
+        telugu: "నా daily check-in streakలో 14వ రోజు. చిన్న అలవాటు, కానీ కష్టమైన రోజులను నేను ఎలా ఎదుర్కొంటానో నిజంగా మార్చుతోంది.",
+        tamil: "என் daily check-in streak-இன் 14ஆம் நாள். சிறிய பழக்கம், ஆனால் கடினமான நாட்களை நான் எப்படி புரிந்து கொள்கிறேன் என்பதை இது உண்மையில் மாற்றுகிறது.",
+        urdu: "میری daily check-in streak کا 14واں دن ہے۔ چھوٹی سی عادت ہے، مگر یہ واقعی مشکل دنوں کو سمجھنے کا میرا طریقہ بدل رہی ہے۔"
+      }) },
+      { emoji: "🤝", role: l("Caregiver", { hindi: "देखभालकर्ता", telugu: "సంరక్షకుడు", tamil: "பராமரிப்பாளர்", urdu: "نگہداشت کرنے والا" }), time: l("Yesterday", { hindi: "कल", telugu: "నిన్న", tamil: "நேற்று", urdu: "کل" }), text: l("Caring for an elderly parent while working full time. The calm practices in this app are the only 5 minutes I get for myself each day.", {
+        hindi: "पूरी नौकरी करते हुए बुज़ुर्ग माता-पिता की देखभाल कर रहा/रही हूँ। इस app की calm practices ही मेरे लिए रोज़ के वे 5 मिनट हैं।",
+        telugu: "పూర్తి సమయంగా పనిచేస్తూ వృద్ధ తల్లిదండ్రిని చూసుకుంటున్నాను. ఈ app లోని calm practices మాత్రమే నాకు ప్రతి రోజు దొరికే 5 నిమిషాలు.",
+        tamil: "முழுநேர வேலை செய்துகொண்டே வயதான பெற்றோரைப் பார்த்துக்கொள்கிறேன். இந்த app-இல் உள்ள calm practices தான் தினமும் எனக்குக் கிடைக்கும் 5 நிமிடங்கள்.",
+        urdu: "پورا وقت کام کرتے ہوئے بزرگ والدین کی دیکھ بھال کر رہا/رہی ہوں۔ اس app کی calm practices ہی وہ 5 منٹ ہیں جو مجھے روز اپنے لیے ملتے ہیں۔"
+      }) },
     ];
     return (
       <View style={[styles.grid, isWide && styles.gridWide]}>
