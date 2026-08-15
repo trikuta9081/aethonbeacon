@@ -39720,18 +39720,18 @@ function SupportDimensionLibraryPanel({
   );
   const routeLabel = (route: GuidedSupportRoute) =>
     route === "redress"
-      ? pickLocalizedText(languageId, { english: "Formal remedy · Redress", hindi: "औपचारिक समाधान · शिकायत" })
+      ? pickLocalizedText(languageId, { english: "Formal remedy · Redress", hindi: "औपचारिक समाधान · शिकायत", telugu: "అధికారిక పరిష్కారం · పరిహారం", tamil: "அதிகாரப்பூர்வ நிவாரணம் · உதவி", urdu: "باضابطہ حل · ازالہ" })
       : route === "professional"
-        ? pickLocalizedText(languageId, { english: "Professional support", hindi: "पेशेवर सहायता" })
+        ? pickLocalizedText(languageId, { english: "Professional support", hindi: "पेशेवर सहायता", telugu: "వృత్తిపరమైన మద్దతు", tamil: "தொழில்முறை ஆதரவு", urdu: "پیشہ ورانہ مدد" })
         : route === "urgent"
-          ? pickLocalizedText(languageId, { english: "Urgent safety support", hindi: "तत्काल सुरक्षा सहायता" })
-          : pickLocalizedText(languageId, { english: "Guided practical action · Path", hindi: "मार्गदर्शित व्यावहारिक कदम · मार्ग" });
+          ? pickLocalizedText(languageId, { english: "Urgent safety support", hindi: "तत्काल सुरक्षा सहायता", telugu: "తక్షణ భద్రతా మద్దతు", tamil: "உடனடி பாதுகாப்பு ஆதரவு", urdu: "فوری حفاظتی مدد" })
+          : pickLocalizedText(languageId, { english: "Guided practical action · Path", hindi: "मार्गदर्शित व्यावहारिक कदम · मार्ग", telugu: "మార్గదర్శిత ప్రాయోగిక చర్య · మార్గం", tamil: "வழிகாட்டப்பட்ட நடைமுறை செயல் · பாதை", urdu: "رہنمائی والی عملی کارروائی · راستہ" });
 
   return (
     <View style={{ marginHorizontal: 16, marginBottom: 14, backgroundColor: "#E1EEEC", borderRadius: 16, borderWidth: 1, borderColor: accentColor + "33", overflow: "hidden" }}>
       <View style={{ backgroundColor: accentColor + "14", paddingHorizontal: 14, paddingVertical: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
-          {eyebrow} · {pickLocalizedText(languageId, { english: "multidimensional support", hindi: "बहु-आयामी सहायता" })}
+          {eyebrow} · {pickLocalizedText(languageId, { english: "multidimensional support", hindi: "बहु-आयामी सहायता", telugu: "బహుళ-మానదండాల మద్దతు", tamil: "பல பரிமாண ஆதரவு", urdu: "کثیر جہتی مدد" })}
         </Text>
         <Text style={{ color: "#4C6674", fontSize: 12 }}>{issueGuide.label}</Text>
       </View>
@@ -39739,11 +39739,17 @@ function SupportDimensionLibraryPanel({
         {relevantCount > 0
           ? pickLocalizedText(languageId, {
               english: `${relevantCount} relevant support perspectives match your active focus${detectedThemes.length > 0 ? " and Path conversation" : ""} and are shown first. Tap any perspective for its full escalation guidance and route.`,
-              hindi: `${relevantCount} प्रासंगिक सहायता दृष्टिकोण आपके सक्रिय फोकस${detectedThemes.length > 0 ? " और Path बातचीत" : ""} से मेल खाते हैं और पहले दिखते हैं। किसी भी दृष्टिकोण पर टैप करके उसका पूरा मार्गदर्शन और रास्ता देखें।`
+              hindi: `${relevantCount} प्रासंगिक सहायता दृष्टिकोण आपके सक्रिय फोकस${detectedThemes.length > 0 ? " और Path बातचीत" : ""} से मेल खाते हैं और पहले दिखते हैं। किसी भी दृष्टिकोण पर टैप करके उसका पूरा मार्गदर्शन और रास्ता देखें।`,
+              telugu: `${relevantCount} సంబంధిత మద్దతు దృష్టికోణాలు మీ క్రియాశీల దృష్టి${detectedThemes.length > 0 ? " మరియు Path సంభాషణ" : ""}కి సరిపోతాయి మరియు ముందుగా చూపబడతాయి. ఏ దృష్టికోణాన్నైనా ట్యాప్ చేసి దాని పూర్తి escalation మార్గదర్శకత మరియు route చూడండి.`,
+              tamil: `${relevantCount} தொடர்புடைய ஆதரவு பார்வைகள் உங்கள் செயலில் உள்ள கவனம்${detectedThemes.length > 0 ? " மற்றும் Path உரையாடல்" : ""}க்கு பொருந்துகின்றன, முதலில் காட்டப்படுகின்றன. எந்தப் பார்வையையும் தட்டினால் அதன் முழு escalation வழிகாட்டல் மற்றும் பாதை கிடைக்கும்.`,
+              urdu: `${relevantCount} متعلقہ مدد کے زاویے آپ کی فعال توجہ${detectedThemes.length > 0 ? " اور Path گفتگو" : ""} سے ملتے ہیں اور پہلے دکھائے جاتے ہیں۔ کسی بھی زاویے پر ٹیپ کریں اور اس کی مکمل escalation رہنمائی اور راستہ دیکھیں۔`
             })
           : pickLocalizedText(languageId, {
               english: "The complete multidimensional support library used by the counselling engine. Tap any perspective for its full escalation guidance and route.",
-              hindi: "परामर्श इंजन द्वारा इस्तेमाल की जाने वाली पूरी बहु-आयामी सहायता लाइब्रेरी। किसी भी दृष्टिकोण पर टैप करके उसका पूरा मार्गदर्शन और रास्ता देखें।"
+              hindi: "परामर्श इंजन द्वारा इस्तेमाल की जाने वाली पूरी बहु-आयामी सहायता लाइब्रेरी। किसी भी दृष्टिकोण पर टैप करके उसका पूरा मार्गदर्शन और रास्ता देखें।",
+              telugu: "కౌన్సెలింగ్ ఇంజిన్ ఉపయోగించే పూర్తి బహుళ-మానదండాల మద్దతు గ్రంథాలయం. ఏ దృష్టికోణాన్నైనా ట్యాప్ చేసి దాని పూర్తి escalation మార్గదర్శకత మరియు route చూడండి.",
+              tamil: "ஆலோசனை இயந்திரம் பயன்படுத்தும் முழு பல பரிமாண ஆதரவு நூலகம். எந்தப் பார்வையையும் தட்டினால் அதன் முழு escalation வழிகாட்டல் மற்றும் பாதை கிடைக்கும்.",
+              urdu: "کاؤنسلنگ انجن کی مکمل کثیر جہتی مدد لائبریری۔ کسی بھی زاویے پر ٹیپ کریں اور اس کی مکمل escalation رہنمائی اور راستہ دیکھیں۔"
             })}
       </Text>
       {visible.map((guide, i) => {
@@ -39754,7 +39760,7 @@ function SupportDimensionLibraryPanel({
             <Pressable
               accessibilityRole="button"
               accessibilityState={{ expanded: isOpen }}
-              accessibilityLabel={`${guide.label}, ${pickLocalizedText(languageId, { english: "tap for escalation guidance and route", hindi: "विस्तृत मार्गदर्शन और रास्ते के लिए टैप करें" })}`}
+              accessibilityLabel={`${guide.label}, ${pickLocalizedText(languageId, { english: "tap for escalation guidance and route", hindi: "विस्तृत मार्गदर्शन और रास्ते के लिए टैप करें", telugu: "escalation మార్గదర్శకత మరియు route కోసం ట్యాప్ చేయండి", tamil: "escalation வழிகாட்டல் மற்றும் பாதைக்குத் தட்டவும்", urdu: "escalation رہنمائی اور راستے کے لیے ٹیپ کریں" })}`}
               onPress={() => setOpenDimensionId(isOpen ? null : guide.id)}
               style={({ pressed }) => [{
                 flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 14, paddingVertical: 8,
@@ -39778,7 +39784,7 @@ function SupportDimensionLibraryPanel({
                 </View>
                 <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 8 }}>{guide.context}</Text>
                 <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 4 }}>
-                  {pickLocalizedText(languageId, { english: "Path to resolution", hindi: "समाधान का रास्ता" })}
+                  {pickLocalizedText(languageId, { english: "Path to resolution", hindi: "समाधान का रास्ता", telugu: "పరిష్కారానికి మార్గం", tamil: "தீர்வுக்கான பாதை", urdu: "حل تک راستہ" })}
                 </Text>
                 {guide.resolutionSteps.map((step, stepIndex) => (
                   <View key={`${guide.id}-step-${stepIndex}`} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 4, gap: 6 }}>
@@ -39787,14 +39793,14 @@ function SupportDimensionLibraryPanel({
                   </View>
                 ))}
                 <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginTop: 6, marginBottom: 6 }}>
-                  <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Resolved when: ", hindi: "सुलझा माना जाए जब: " })}</Text>{guide.conclusionMarker}
+                  <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Resolved when: ", hindi: "सुलझा माना जाए जब: ", telugu: "పరిష్కారమైనప్పుడు: ", tamil: "தீர்வு எனக் கருதப்படும் போது: ", urdu: "حل ہو جائے جب: " })}</Text>{guide.conclusionMarker}
                 </Text>
                 <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 6 }}>
-                  <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Escalate when: ", hindi: "और ऊपर बढ़ाएँ जब: " })}</Text>{guide.escalation}
+                  <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Escalate when: ", hindi: "और ऊपर बढ़ाएँ जब: ", telugu: "ఎప్పుడు పైకి పంపాలి: ", tamil: "மேலேற்ற வேண்டிய போது: ", urdu: "اس وقت اوپر بڑھائیں جب: " })}</Text>{guide.escalation}
                 </Text>
                 {openDimensionMoonChart ? (
                   <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginBottom: 8 }}>
-                    <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Moon Chart: ", hindi: "चंद्र-चार्ट: " })}</Text>
+                    <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Moon Chart: ", hindi: "चंद्र-चार्ट: ", telugu: "చంద్ర చార్ట్: ", tamil: "சந்திர அட்டவணை: ", urdu: "چاندی چارٹ: " })}</Text>
                     {openDimensionMoonChart.average}/100 ({openDimensionMoonChart.verdict.toLowerCase()}) · {openDimensionMoonChart.remedyTitle}: {openDimensionMoonChart.remedy}
                   </Text>
                 ) : null}
@@ -39802,14 +39808,14 @@ function SupportDimensionLibraryPanel({
                   {onOpenTab && guide.route === "redress" ? (
                     <Pressable accessibilityRole="button" onPress={() => onOpenTab("redress")} style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}>
                       <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>
-                        {pickLocalizedText(languageId, { english: "Open Redress", hindi: "शिकायत खोलें" })}
+                        {pickLocalizedText(languageId, { english: "Open Redress", hindi: "शिकायत खोलें", telugu: "పరిహారం తెరవండి", tamil: "நிவாரணத்தைத் திறக்கவும்", urdu: "ازالہ کھولیں" })}
                       </Text>
                     </Pressable>
                   ) : null}
                   {onOpenTab && guide.route === "guide" ? (
                     <Pressable accessibilityRole="button" onPress={() => onOpenTab("guide")} style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}>
                       <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>
-                        {pickLocalizedText(languageId, { english: "Open Path", hindi: "मार्ग खोलें" })}
+                        {pickLocalizedText(languageId, { english: "Open Path", hindi: "मार्ग खोलें", telugu: "మార్గం తెరవండి", tamil: "பாதையைத் திறக்கவும்", urdu: "راستہ کھولیں" })}
                       </Text>
                     </Pressable>
                   ) : null}
@@ -39822,7 +39828,7 @@ function SupportDimensionLibraryPanel({
                           style={{ backgroundColor: accentColor, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                         >
                           <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>
-                            {pickLocalizedText(languageId, { english: "Find: ", hindi: "खोजें: " })}{target.label}
+                            {pickLocalizedText(languageId, { english: "Find: ", hindi: "खोजें: ", telugu: "కనుగొనండి: ", tamil: "தேடு: ", urdu: "تلاش کریں: " })}{target.label}
                           </Text>
                         </Pressable>
                       ))
@@ -39842,14 +39848,14 @@ function SupportDimensionLibraryPanel({
         onPress={() => { animateDisclosure(); setExpanded((value) => !value); }}
         accessibilityRole="button"
         accessibilityLabel={expanded
-          ? pickLocalizedText(languageId, { english: "Show fewer perspectives", hindi: "कम दृष्टिकोण दिखाएँ" })
-          : pickLocalizedText(languageId, { english: "Show all support perspectives", hindi: "सभी सहायता दृष्टिकोण दिखाएँ" })}
+          ? pickLocalizedText(languageId, { english: "Show fewer perspectives", hindi: "कम दृष्टिकोण दिखाएँ", telugu: "తక్కువ దృష్టికోణాలు చూపించు", tamil: "குறைவான பார்வைகள் காட்டவும்", urdu: "کم زاویے دکھائیں" })
+          : pickLocalizedText(languageId, { english: "Show all support perspectives", hindi: "सभी सहायता दृष्टिकोण दिखाएँ", telugu: "అన్ని మద్దతు దృష్టికోణాలను చూపించు", tamil: "அனைத்து ஆதரவு பார்வைகளையும் காட்டவும்", urdu: "تمام مدد کے زاویے دکھائیں" })}
         style={{ paddingVertical: 10, alignItems: "center", borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.06)" }}
       >
         <Text style={{ color: accentColor, fontSize: 12, fontWeight: "800" }}>
           {expanded
-            ? pickLocalizedText(languageId, { english: "Show fewer ↑", hindi: "कम दिखाएँ ↑" })
-            : pickLocalizedText(languageId, { english: `Show all perspectives ↓ (${ordered.length - visible.length} more)`, hindi: `सभी दृष्टिकोण दिखाएँ ↓ (${ordered.length - visible.length} और)` })}
+            ? pickLocalizedText(languageId, { english: "Show fewer ↑", hindi: "कम दिखाएँ ↑", telugu: "తక్కువ చూపించు ↑", tamil: "குறைவாகக் காட்டவும் ↑", urdu: "کم دکھائیں ↑" })
+            : pickLocalizedText(languageId, { english: `Show all perspectives ↓ (${ordered.length - visible.length} more)`, hindi: `सभी दृष्टिकोण दिखाएँ ↓ (${ordered.length - visible.length} और)`, telugu: `అన్ని దృష్టికోణాలు చూపించు ↓ (${ordered.length - visible.length} మరిన్ని)`, tamil: `அனைத்து பார்வைகளையும் காட்டவும் ↓ (${ordered.length - visible.length} மேலும்)`, urdu: `تمام زاویے دکھائیں ↓ (${ordered.length - visible.length} مزید)` })}
         </Text>
       </Pressable>
     </View>
