@@ -24224,6 +24224,7 @@ function isTrustedExternalUrl(url: string) {
           initialIssue={counselingInitialText || homeIssueDraft.trim() || "I need some guidance"}
           identityLabel={profileDisplayName}
           issueId={selectedIssueGuide.id}
+          languageId={languageId}
           speakText={(text) => { void speakGuidance(text); }}
           stopSpeech={stopVoiceGuidance}
           speechLocale={selectedLanguage.speechLang}
@@ -26943,17 +26944,32 @@ function GuidedSupportSection({
   const latestReplySummary =
     latestReplySections
       .find((line) => line.toLowerCase().startsWith("what this means:"))
-      ?.replace(/^what this means:\s*/i, "") ?? "One clear step is ready below.";
+      ?.replace(/^what this means:\s*/i, "") ?? l("One clear step is ready below.", {
+        hindi: "एक स्पष्ट कदम नीचे तैयार है।",
+        telugu: "ఒక స్పష్టమైన అడుగు క్రింద సిద్ధంగా ఉంది.",
+        tamil: "ஒரு தெளிவான அடுத்த படி கீழே தயாராக உள்ளது.",
+        urdu: "ایک واضح قدم نیچے تیار ہے۔"
+      });
   const latestReplyStep =
     latestReplySections
       .find((line) => line.toLowerCase().startsWith("safest next step:"))
       ?.replace(/^safest next step:\s*/i, "") ??
-    "Open the right section and take the smallest useful step.";
+    l("Open the right section and take the smallest useful step.", {
+      hindi: "सही सेक्शन खोलें और सबसे छोटा उपयोगी कदम उठाएँ।",
+      telugu: "సరైన విభాగాన్ని తెరిచి, అత్యంత చిన్న ఉపయోగకరమైన అడుగు వేయండి.",
+      tamil: "சரியான பகுதியைத் திறந்து, மிகச் சிறிய பயனுள்ள படியை எடுக்கவும்.",
+      urdu: "صحیح حصہ کھولیں اور سب سے چھوٹا مفید قدم اٹھائیں۔"
+    });
   const latestReplyEscalate =
     latestReplySections
       .find((line) => line.toLowerCase().startsWith("escalate when:"))
       ?.replace(/^escalate when:\s*/i, "") ??
-    "Move to Help or SOS if the situation becomes urgent or unsafe.";
+    l("Move to Help or SOS if the situation becomes urgent or unsafe.", {
+      hindi: "यदि स्थिति तात्कालिक या असुरक्षित हो जाए तो Help या SOS पर जाएँ।",
+      telugu: "పరిస్థితి అత్యవసరమై లేదా అసురక్షితమైందిగా మారితే Help లేదా SOS కి వెళ్ళండి.",
+      tamil: "நிலை அவசரமாகவோ அல்லது பாதுகாப்பற்றதாகவோ மாறினால் Help அல்லது SOS-க்கு செல்லுங்கள்.",
+      urdu: "اگر صورتحال فوری یا غیر محفوظ ہو جائے تو Help یا SOS پر جائیں۔"
+    });
   const visibleStarters = buildGuidedSupportQuickStarters(
     latestGuidedSupportMessage.route,
     selectedIssueGuideLabel,
@@ -26990,25 +27006,50 @@ function GuidedSupportSection({
       pointerEvents={isPrivateIntakeOpen ? "none" : "auto"}
     >
       <View style={[styles.aiHelpEntryCard, compact && styles.aiHelpEntryCardCompact]}>
-        <Text style={styles.aiHelpEntryEyebrow}>Private counselling</Text>
+        <Text style={styles.aiHelpEntryEyebrow}>{l("Private counselling", {
+          hindi: "निजी काउंसलिंग",
+          telugu: "ప్రైవేట్ కౌన్సెలింగ్",
+          tamil: "தனிப்பட்ட ஆலோசனை",
+          urdu: "نجی مشاورت"
+        })}</Text>
         <Text style={[styles.aiHelpEntryTitle, compact && styles.aiHelpEntryTitleCompact]}>
-          What brings you here?
+          {l("What brings you here?", {
+            hindi: "आप यहाँ किस लिए आए हैं?",
+            telugu: "మీరు ఇక్కడికి ఎందుకు వచ్చారు?",
+            tamil: "நீங்கள் இங்கு எதற்காக வந்துள்ளீர்கள்?",
+            urdu: "آپ یہاں کس لیے آئے ہیں؟"
+          })}
         </Text>
         <Text style={[styles.aiHelpEntryLead, compact && styles.aiHelpEntryLeadCompact]}>
-          Describe what is happening in your own words. A private two-way conversation will begin immediately, ask focused follow-up questions, and help you reach the core issue before suggesting action.
+          {l("Describe what is happening in your own words. A private two-way conversation will begin immediately, ask focused follow-up questions, and help you reach the core issue before suggesting action.", {
+            hindi: "जो हो रहा है उसे अपने शब्दों में बताइए। एक निजी दो-तरफ़ा बातचीत तुरंत शुरू होगी, केंद्रित फ़ॉलो-अप प्रश्न पूछेगी, और कार्रवाई सुझाने से पहले मुख्य मुद्दे तक पहुँचने में मदद करेगी।",
+            telugu: "ఏం జరుగుతుందో మీ మాటల్లో వివరించండి. ఒక ప్రైవేట్ రెండు-వైపుల సంభాషణ వెంటనే ప్రారంభమవుతుంది, కేంద్రీకృత ఫాలో-అప్ ప్రశ్నలు అడుగుతుంది, మరియు చర్య సూచించే ముందు ప్రధాన అంశానికి చేరుకోవడంలో సహాయపడుతుంది.",
+            tamil: "என்ன நடக்கிறது என்பதை உங்கள் சொந்த வார்த்தைகளில் விவரிக்கவும். ஒரு தனிப்பட்ட இருபுற உரையாடல் உடனே தொடங்கி, கவனமான தொடர்ச்சி கேள்விகளை கேட்டு, செயலை பரிந்துரைக்கும் முன் முக்கிய பிரச்சினையை அடைய உதவும்.",
+            urdu: "جو کچھ ہو رہا ہے اسے اپنے الفاظ میں بیان کریں۔ ایک نجی دو طرفہ گفتگو فوراً شروع ہوگی، مرکوز follow-up سوالات پوچھے گی، اور کسی عمل کی تجویز سے پہلے اصل مسئلے تک پہنچنے میں مدد کرے گی۔"
+          })}
         </Text>
 
         <TextInput
           multiline
           value={aiHelpDraft}
           onChangeText={setGuidedSupportDraft}
-          placeholder="Enter what you would like help with…"
+          placeholder={l("Enter what you would like help with…", {
+            hindi: "जिसमें आपको मदद चाहिए उसे लिखें…",
+            telugu: "మీకు ఏ సహాయం కావాలో నమోదు చేయండి…",
+            tamil: "உங்களுக்கு உதவி வேண்டும் என்பதை உள்ளிடவும்…",
+            urdu: "جس میں آپ مدد چاہتے ہیں اسے درج کریں…"
+          })}
           placeholderTextColor="#5B6F78"
           editable={!inputLocked}
           returnKeyType="send"
           blurOnSubmit
           onSubmitEditing={startCounsellingConversation}
-          accessibilityLabel="Enter what you would like counselling support with"
+          accessibilityLabel={l("Enter what you would like counselling support with", {
+            hindi: "जिसमें आपको काउंसलिंग सहायता चाहिए, उसे दर्ज करें",
+            telugu: "మీకు కౌన్సెలింగ్ సహాయం కావాల్సిన దాన్ని నమోదు చేయండి",
+            tamil: "உங்களுக்கு ஆலோசனை உதவி வேண்டியதை உள்ளிடவும்",
+            urdu: "جس میں آپ مشاورتی مدد چاہتے ہیں اسے درج کریں"
+          })}
           style={[
             styles.communityInput,
             styles.aiHelpInput,
@@ -27022,7 +27063,12 @@ function GuidedSupportSection({
         <View style={[styles.communityActions, styles.aiHelpEntryActions, compact && styles.aiHelpActionRow]}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Start counselling conversation"
+            accessibilityLabel={l("Start counselling conversation", {
+              hindi: "काउंसलिंग बातचीत शुरू करें",
+              telugu: "కౌన్సెలింగ్ సంభాషణ ప్రారంభించండి",
+              tamil: "ஆலோசனை உரையாடலைத் தொடங்கவும்",
+              urdu: "مشاورت کی گفتگو شروع کریں"
+            })}
             onPress={startCounsellingConversation}
             disabled={startDisabled}
             style={({ pressed }) => [
@@ -27034,25 +27080,50 @@ function GuidedSupportSection({
           >
             <Text style={[styles.helpButtonLabel, startDisabled && styles.helpButtonLabelDisabled]}>
               {aiHelpLoading
-                ? "Opening counselling…"
+                ? l("Opening counselling…", {
+                    hindi: "काउंसलिंग खुल रही है…",
+                    telugu: "కౌన్సెలింగ్ తెరవబడుతోంది…",
+                    tamil: "ஆலோசனை திறக்கப்படுகிறது…",
+                    urdu: "مشاورت کھول رہی ہے…"
+                  })
                 : isPrivateIntakeOpen
-                  ? "Intake open"
-                  : "Start counselling"}
+                  ? l("Intake open", { hindi: "इंटेक खुला", telugu: "ఇన్‌టేక్ తెరిచి ఉంది", tamil: "இணைப்பு திறந்திருக்கும்", urdu: "انٹیک کھلا ہے" })
+                  : l("Start counselling", { hindi: "काउंसलिंग शुरू करें", telugu: "కౌన్సెలింగ్ ప్రారంభించండి", tamil: "ஆலோசனை தொடங்கவும்", urdu: "مشاورت شروع کریں" })}
             </Text>
           </Pressable>
         </View>
 
         <View style={styles.aiHelpEntryTrustRow}>
-          <Text style={styles.aiHelpEntryTrustText}>Private on this device</Text>
+          <Text style={styles.aiHelpEntryTrustText}>{l("Private on this device", {
+            hindi: "इस डिवाइस पर निजी",
+            telugu: "ఈ పరికరంలో ప్రైవేట్",
+            tamil: "இந்த சாதனத்தில் தனிப்பட்டது",
+            urdu: "اس ڈیوائس پر نجی"
+          })}</Text>
           <Text style={styles.aiHelpEntryTrustDot}>•</Text>
-          <Text style={styles.aiHelpEntryTrustText}>Up to 30 replies</Text>
+          <Text style={styles.aiHelpEntryTrustText}>{l("Up to 30 replies", {
+            hindi: "30 जवाब तक",
+            telugu: "30 ప్రత్యుత్తరాల వరకు",
+            tamil: "30 பதில்கள் வரை",
+            urdu: "30 جوابات تک"
+          })}</Text>
           <Text style={styles.aiHelpEntryTrustDot}>•</Text>
-          <Text style={styles.aiHelpEntryTrustText}>Optional next step every 6 replies</Text>
+          <Text style={styles.aiHelpEntryTrustText}>{l("Optional next step every 6 replies", {
+            hindi: "हर 6 जवाब पर वैकल्पिक अगला कदम",
+            telugu: "ప్రతి 6 ప్రత్యుత్తరాలకు ఒక ఐచ్ఛిక తదుపరి అడుగు",
+            tamil: "ஒவ்வொரு 6 பதில்களுக்கும் ஒரு விருப்பமான அடுத்த படி",
+            urdu: "ہر 6 جوابات کے بعد ایک اختیاری اگلا قدم"
+          })}</Text>
         </View>
       </View>
 
       <View style={styles.aiHelpStarterBlock}>
-        <Text style={styles.aiHelpStarterHeading}>Or begin with one of these</Text>
+        <Text style={styles.aiHelpStarterHeading}>{l("Or begin with one of these", {
+          hindi: "या इनमें से किसी एक से शुरू करें",
+          telugu: "లేదా వీటిలో ఒకదానితో ప్రారంభించండి",
+          tamil: "அல்லது இவற்றில் ஒன்றில் தொடங்கவும்",
+          urdu: "یا ان میں سے کسی ایک سے شروع کریں"
+        })}</Text>
         <View style={[styles.aiStarterRow, compact && styles.aiStarterRowCompact]}>
           {starterButtons.map((starter) => (
             <Pressable
@@ -27092,7 +27163,12 @@ function GuidedSupportSection({
             {useBirthChart ? <Text style={styles.aiHelpOptionalCheckLabel}>✓</Text> : null}
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.aiHelpOptionalTitle}>Include my Moon-chart context</Text>
+            <Text style={styles.aiHelpOptionalTitle}>{l("Include my Moon-chart context", {
+              hindi: "मेरा चंद्र-चार्ट संदर्भ शामिल करें",
+              telugu: "నా మూన్-చార్ట్ సందర్భాన్ని చేర్చండి",
+              tamil: "என் Moon-chart சூழலைச் சேர்க்கவும்",
+              urdu: "میرا Moon-chart context شامل کریں"
+            })}</Text>
             <Text style={styles.aiHelpOptionalMeta}>
               {"Janma Rashi: " + birthChartRashiInfo.rashi.name +
                 (birthChartNakshatra ? " · Nakshatra: " + birthChartNakshatra.name : "") +
@@ -27103,12 +27179,20 @@ function GuidedSupportSection({
       ) : null}
 
       <View style={styles.aiHelpSafetyLine}>
-        <Text style={styles.aiHelpSafetyText}>
-          If you are in immediate danger, use emergency support instead of waiting for counselling.
-        </Text>
+        <Text style={styles.aiHelpSafetyText}>{l("If you are in immediate danger, use emergency support instead of waiting for counselling.", {
+          hindi: "यदि आप तुरंत खतरे में हैं, तो काउंसलिंग की प्रतीक्षा करने के बजाय आपातकालीन सहायता का उपयोग करें।",
+          telugu: "మీరు తక్షణ ప్రమాదంలో ఉంటే, కౌన్సెలింగ్ కోసం వేచి ఉండకుండా అత్యవసర సహాయాన్ని ఉపయోగించండి.",
+          tamil: "நீங்கள் உடனடி ஆபத்தில் இருந்தால், ஆலோசனைக்காக காத்திருப்பதற்கு பதிலாக அவசர உதவியைப் பயன்படுத்துங்கள்.",
+          urdu: "اگر آپ فوری خطرے میں ہیں تو مشاورت کا انتظار کرنے کے بجائے ایمرجنسی مدد استعمال کریں۔"
+        })}</Text>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Call emergency services at 112"
+          accessibilityLabel={l("Call emergency services at 112", {
+            hindi: "112 पर आपातकालीन सेवाओं को कॉल करें",
+            telugu: "112 వద్ద అత్యవసర సేవలకు కాల్ చేయండి",
+            tamil: "112 இல் அவசர சேவைகளை அழைக்கவும்",
+            urdu: "112 پر ایمرجنسی خدمات کو کال کریں"
+          })}
           onPress={() => { void onEmergencyCall(); }}
           style={({ pressed }) => [styles.aiHelpSafetyButton, pressed && styles.pressed]}
         >
@@ -27940,15 +28024,35 @@ function CommunitySection({
               <Text style={styles.communityFeatureMeta}>Reports and filters</Text>
             </View>
             <View style={styles.communityFeaturePill}>
-              <Text style={styles.communityFeatureLabel}>Save and report</Text>
-              <Text style={styles.communityFeatureMeta}>Useful lines only</Text>
+              <Text style={styles.communityFeatureLabel}>{l("Save and report", {
+                hindi: "सहेजें और रिपोर्ट करें",
+                telugu: "సేవ్ చేసి రిపోర్ట్ చేయండి",
+                tamil: "சேமித்து அறிக்கையிடவும்",
+                urdu: "محفوظ کریں اور رپورٹ کریں"
+              })}</Text>
+              <Text style={styles.communityFeatureMeta}>{l("Useful lines only", {
+                hindi: "केवल उपयोगी पंक्तियाँ",
+                telugu: "ఉపయోగకరమైన పంక్తులు మాత్రమే",
+                tamil: "பயனுள்ள வரிகள் மட்டும்",
+                urdu: "صرف مفید سطور"
+              })}</Text>
             </View>
           </View>
         </View>
         <View style={styles.communityPreviewBand}>
-          <Text style={styles.visionGuidanceTitle}>Community flow</Text>
+          <Text style={styles.visionGuidanceTitle}>{l("Community flow", {
+            hindi: "समुदाय प्रवाह",
+            telugu: "సమాజ ప్రవాహం",
+            tamil: "சமூக ஓட்டம்",
+            urdu: "برادری کا بہاؤ"
+          })}</Text>
           <Text style={styles.visionGuidanceText}>
-            The first view stays short: chat, feed, and the next useful route. Open the full view for private rooms and saved lines.
+            {l("The first view stays short: chat, feed, and the next useful route. Open the full view for private rooms and saved lines.", {
+              hindi: "पहला दृश्य छोटा रहता है: चैट, फ़ीड और अगला उपयोगी मार्ग। निजी कमरे और सहेजी गई पंक्तियों के लिए पूरा दृश्य खोलें।",
+              telugu: "మొదటి వీక్షణ చిన్నగానే ఉంటుంది: చాట్, ఫీడ్, మరియు తదుపరి ఉపయోగకర మార్గం. ప్రైవేట్ గదులు మరియు సేవ్ చేసిన లైన్ల కోసం పూర్తి వీక్షణను తెరవండి.",
+              tamil: "முதல் காட்சி குறுகியதாக இருக்கும்: அரட்டை, feed, மற்றும் அடுத்த பயனுள்ள பாதை. தனிப்பட்ட அறைகள் மற்றும் சேமித்த வரிகளுக்காக முழு காட்சியைத் திறக்கவும்.",
+              urdu: "پہلا منظر مختصر رہتا ہے: چیٹ، فیڈ، اور اگلا مفید راستہ۔ نجی کمروں اور محفوظ شدہ سطور کے لیے مکمل منظر کھولیں۔"
+            })}
           </Text>
           <View style={styles.homeOverviewActions}>
             <Pressable
@@ -27963,24 +28067,44 @@ function CommunitySection({
               style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
             >
               <Text style={styles.homeOverviewButtonLabel}>
-                {showFullCommunity ? "Show compact" : "Show full community"}
+                {showFullCommunity ? l("Show compact", {
+                  hindi: "संक्षिप्त दिखाएँ",
+                  telugu: "సంక్షిప్తంగా చూపించండి",
+                  tamil: "சுருக்கமாகக் காட்டு",
+                  urdu: "مختصر دکھائیں"
+                }) : l("Show full community", {
+                  hindi: "पूरा समुदाय दिखाएँ",
+                  telugu: "పూర్తి సమాజాన్ని చూపించండి",
+                  tamil: "முழு சமூகத்தை காட்டு",
+                  urdu: "مکمل برادری دکھائیں"
+                })}
               </Text>
             </Pressable>
           </View>
         </View>
         {postingLocked ? (
           <View style={styles.alertBanner}>
-            <Text style={styles.alertBannerTitle}>Posting paused for safety review</Text>
+            <Text style={styles.alertBannerTitle}>{l("Posting paused for safety review", {
+              hindi: "सुरक्षा समीक्षा के लिए पोस्टिंग रुकी हुई है",
+              telugu: "భద్రత సమీక్ష కోసం పోస్టింగ్ నిలిపివేయబడింది",
+              tamil: "பாதுகாப்பு மதிப்பாய்விற்காக பதிவிடுதல் இடைநிறுத்தப்பட்டுள்ளது",
+              urdu: "حفاظتی جائزے کے لیے پوسٹنگ روک دی گئی ہے"
+            })}</Text>
             <Text style={styles.alertBannerText}>
-              {safetyLockReason ?? "New posts and chat replies are temporarily locked from the admin panel."}
+              {safetyLockReason ?? l("New posts and chat replies are temporarily locked from the admin panel.", {
+                hindi: "नए पोस्ट और चैट जवाब अस्थायी रूप से एडमिन पैनल से बंद हैं।",
+                telugu: "కొత్త పోస్టులు మరియు చాట్ ప్రత్యుత్తరాలు తాత్కాలికంగా అడ్మిన్ ప్యానెల్ నుండి లాక్ చేయబడ్డాయి.",
+                tamil: "புதிய பதிவுகள் மற்றும் அரட்டை பதில்கள் நிர்வாகப் பலகையிலிருந்து தற்காலிகமாக பூட்டப்பட்டுள்ளன.",
+                urdu: "نئی پوسٹس اور چیٹ جوابات عارضی طور پر ایڈمن پینل سے بند ہیں۔"
+              })}
             </Text>
           </View>
         ) : null}
         <View style={styles.segmentRow}>
           {[
-            { id: "all", label: "All" },
-            { id: "verified", label: "Verified" },
-            { id: "discussion", label: "Members" }
+            { id: "all", label: l("All", { hindi: "सभी", telugu: "అన్నీ", tamil: "அனைத்தும்", urdu: "سب" }) },
+            { id: "verified", label: l("Verified", { hindi: "सत्यापित", telugu: "ధృవీకరించిన", tamil: "உறுதிப்படுத்தப்பட்ட", urdu: "تصدیق شدہ" }) },
+            { id: "discussion", label: l("Members", { hindi: "सदस्य", telugu: "సభ్యులు", tamil: "உறுப்பினர்கள்", urdu: "اراکین" }) }
           ].map((item) => {
             const isSelected = communityFilter === item.id;
             return (
@@ -28001,26 +28125,27 @@ function CommunitySection({
         </View>
         <View style={[styles.segmentRow, compact && styles.communityTopicRowCompact]}>
           {[
-            { id: "all", label: "All topics" },
-            { id: "general", label: "General" },
-            { id: "grief", label: "Grief" },
-            { id: "trauma", label: "Trauma" },
-            { id: "addiction", label: "Recovery" },
-            { id: "relationships", label: "Relationships" },
-            { id: "financial", label: "Financial" },
-            { id: "parenting", label: "Parenting" },
+            { id: "all", label: l("All topics", { hindi: "सभी विषय", telugu: "అన్ని అంశాలు", tamil: "அனைத்து தலைப்புகள்", urdu: "تمام موضوعات" }) },
+            { id: "general", label: l("General", { hindi: "सामान्य", telugu: "సాధారణ", tamil: "பொது", urdu: "عمومی" }) },
+            { id: "grief", label: l("Grief", { hindi: "शोक", telugu: "వేదన", tamil: "துயரம்", urdu: "غم" }) },
+            { id: "trauma", label: l("Trauma", { hindi: "आघात", telugu: "గాయము", tamil: "அதிர்ச்சி", urdu: "صدمہ" }) },
+            { id: "addiction", label: l("Recovery", { hindi: "पुनर्प्राप्ति", telugu: "పునరుద్ధరణ", tamil: "மீட்பு", urdu: "بحالی" }) },
+            { id: "relationships", label: l("Relationships", { hindi: "रिश्ते", telugu: "సంబంధాలు", tamil: "உறவுகள்", urdu: "رشتے" }) },
+            { id: "financial", label: l("Financial", { hindi: "वित्तीय", telugu: "ఆర్థిక", tamil: "நிதி", urdu: "مالی" }) },
+            { id: "parenting", label: l("Parenting", { hindi: "पालन-पोषण", telugu: "తల్లిదండ్రత్వం", tamil: "பெற்றோர் பராமரிப்பு", urdu: "پرورش" }) },
             { id: "identity", label: "Identity" },
-            { id: "student", label: "Student" },
-            { id: "care", label: "Care" },
-            { id: "work", label: "Work" },
-            { id: "complaint", label: "Complaint" },
-            { id: "support", label: "Support" },
-            { id: "anxiety", label: "Anxiety" },
-            { id: "anger", label: "Anger" },
-            { id: "burnout", label: "Burnout" },
-            { id: "loneliness", label: "Loneliness" },
-            { id: "health", label: "Health" },
-            { id: "academic", label: "Academic" }
+            { id: "identity", label: l("Identity", { hindi: "पहचान", telugu: "గుర్తింపు", tamil: "அடையாளம்", urdu: "شناخت" }) },
+            { id: "student", label: l("Student", { hindi: "छात्र", telugu: "విద్యార్థి", tamil: "மாணவர்", urdu: "طالب علم" }) },
+            { id: "care", label: l("Care", { hindi: "देखभाल", telugu: "సంరక్షణ", tamil: "பராமரிப்பு", urdu: "دیکھ بھال" }) },
+            { id: "work", label: l("Work", { hindi: "काम", telugu: "పని", tamil: "வேலை", urdu: "کام" }) },
+            { id: "complaint", label: l("Complaint", { hindi: "शिकायत", telugu: "ఫిర్యాదు", tamil: "புகார்", urdu: "شکایت" }) },
+            { id: "support", label: l("Support", { hindi: "सहायता", telugu: "సహాయం", tamil: "ஆதரவு", urdu: "مدد" }) },
+            { id: "anxiety", label: l("Anxiety", { hindi: "चिंता", telugu: "ఆందోళన", tamil: "கவலை", urdu: "اضطراب" }) },
+            { id: "anger", label: l("Anger", { hindi: "क्रोध", telugu: "కోపం", tamil: "கோபம்", urdu: "غصہ" }) },
+            { id: "burnout", label: l("Burnout", { hindi: "थकावट", telugu: "మానసిక అలసట", tamil: "சோர்வு", urdu: "ذہنی تھکن" }) },
+            { id: "loneliness", label: l("Loneliness", { hindi: "अकेलापन", telugu: "ఒంటరితనం", tamil: "தனிமை", urdu: "تنہائی" }) },
+            { id: "health", label: l("Health", { hindi: "स्वास्थ्य", telugu: "ఆరోగ్యం", tamil: "ஆரோக்கியம்", urdu: "صحت" }) },
+            { id: "academic", label: l("Academic", { hindi: "शैक्षणिक", telugu: "విద్యా", tamil: "கல்வி", urdu: "تعلیمی" }) }
           ].map((item) => {
             const isSelected = communityTopicFilter === item.id;
             return (
@@ -28055,15 +28180,35 @@ function CommunitySection({
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Chat box</Text>
-            <Text style={styles.sectionTitleSmall}>Verified chat</Text>
+            <Text style={styles.eyebrow}>{l("Chat box", {
+              hindi: "चैट बॉक्स",
+              telugu: "చాట్ బాక్స్",
+              tamil: "அரட்டை பெட்டி",
+              urdu: "چیٹ باکس"
+            })}</Text>
+            <Text style={styles.sectionTitleSmall}>{l("Verified chat", {
+              hindi: "सत्यापित चैट",
+              telugu: "ధృవీకరించిన చాట్",
+              tamil: "உறுதிப்படுத்தப்பட்ட அரட்டை",
+              urdu: "تصدیق شدہ چیٹ"
+            })}</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
         <View style={styles.communityPreviewBand}>
-          <Text style={styles.visionGuidanceTitle}>Private chats</Text>
+          <Text style={styles.visionGuidanceTitle}>{l("Private chats", {
+            hindi: "निजी चैट",
+            telugu: "ప్రైవేట్ చాట్స్",
+            tamil: "தனிப்பட்ட அரட்டைகள்",
+            urdu: "نجی چیٹس"
+          })}</Text>
           <Text style={styles.visionGuidanceText}>
-            Verified users can open named one-to-one or group rooms. Public feed and private rooms stay separate.
+            {l("Verified users can open named one-to-one or group rooms. Public feed and private rooms stay separate.", {
+              hindi: "सत्यापित उपयोगकर्ता नामित एक-से-एक या समूह कमरे खोल सकते हैं। सार्वजनिक फ़ीड और निजी कमरे अलग रहते हैं।",
+              telugu: "ధృవీకరించిన వినియోగదారులు పేరుతో ఉన్న ఒక్కొక్కటి లేదా గ్రూప్ గదులు తెరవగలరు. పబ్లిక్ ఫీడ్ మరియు ప్రైవేట్ గదులు వేరుగా ఉంటాయి.",
+              tamil: "உறுதிப்படுத்தப்பட்ட பயனர்கள் பெயரிடப்பட்ட ஒருவருக்கு ஒருவர் அல்லது குழு அறைகளைத் திறக்கலாம். பொது feed மற்றும் தனிப்பட்ட அறைகள் தனித்தே இருக்கும்.",
+              urdu: "تصدیق شدہ صارفین نامزد one-to-one یا group کمرے کھول سکتے ہیں۔ عوامی فیڈ اور نجی کمرے الگ رہتے ہیں۔"
+            })}
           </Text>
         </View>
         <View style={styles.segmentRow}>
@@ -28252,24 +28397,49 @@ function CommunitySection({
               <Text style={styles.helpButtonSecondaryLabel}>Reset thread</Text>
             </Pressable>
         </View>
-        <Text style={styles.smallMeta}>Chat is reserved for verified users and checked for safety.</Text>
+        <Text style={styles.smallMeta}>{l("Chat is reserved for verified users and checked for safety.", {
+          hindi: "चैट केवल सत्यापित उपयोगकर्ताओं के लिए आरक्षित है और सुरक्षा के लिए जाँची जाती है।",
+          telugu: "చాట్ ధృవీకరించిన వినియోగదారుల కోసం మాత్రమే, మరియు భద్రత కోసం తనిఖీ చేయబడుతుంది.",
+          tamil: "அரட்டை உறுதிப்படுத்தப்பட்ட பயனர்களுக்கே ஒதுக்கப்பட்டுள்ளது; பாதுகாப்புக்காகச் சோதிக்கப்படுகிறது.",
+          urdu: "چیٹ صرف تصدیق شدہ صارفین کے لیے مخصوص ہے اور حفاظت کے لیے جانچی جاتی ہے۔"
+        })}</Text>
 
         {showFullCommunity ? (
           <View style={[styles.communitySubpanel, !showFullCommunity && styles.hiddenSection]}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.eyebrow}>Chat Rooms</Text>
-              <Text style={styles.sectionTitleSmall}>Named private rooms</Text>
+              <Text style={styles.eyebrow}>{l("Chat Rooms", {
+                hindi: "चैट रूम",
+                telugu: "చాట్ గదులు",
+                tamil: "அரட்டை அறைகள்",
+                urdu: "چیٹ کمرے"
+              })}</Text>
+              <Text style={styles.sectionTitleSmall}>{l("Named private rooms", {
+                hindi: "नामित निजी कमरे",
+                telugu: "పేరుతో ఉన్న ప్రైవేట్ గదులు",
+                tamil: "பெயரிடப்பட்ட தனிப்பட்ட அறைகள்",
+                urdu: "نامزد نجی کمرے"
+              })}</Text>
             </View>
-            <Text style={styles.smallMeta}>Verified only / local device</Text>
+            <Text style={styles.smallMeta}>{l("Verified only / local device", {
+              hindi: "केवल सत्यापित / स्थानीय डिवाइस",
+              telugu: "ధృవీకరించినవి మాత్రమే / స్థానిక పరికరం",
+              tamil: "உறுதிப்படுத்தப்பட்டவர்கள் மட்டும் / உள்ளக சாதனம்",
+              urdu: "صرف تصدیق شدہ / مقامی ڈیوائس"
+            })}</Text>
           </View>
           <Text style={styles.promptText}>
-            Create a room with a name you choose. It stays local for private notes, small groups, and verified-only chat.
+            {l("Create a room with a name you choose. It stays local for private notes, small groups, and verified-only chat.", {
+              hindi: "अपनी पसंद का नाम देकर एक कमरा बनाएं। यह निजी नोट्स, छोटे समूहों और केवल सत्यापित चैट के लिए स्थानीय रहता है।",
+              telugu: "మీరు ఎంచుకున్న పేరుతో గది సృష్టించండి. ఇది ప్రైవేట్ నోట్స్, చిన్న గ్రూపులు, మరియు ధృవీకరించిన చాట్ కోసం స్థానికంగా ఉంటుంది.",
+              tamil: "நீங்கள் தேர்ந்தெடுக்கும் பெயருடன் ஒரு அறையை உருவாக்கவும். தனிப்பட்ட குறிப்புகள், சிறிய குழுக்கள், மற்றும் உறுதிப்படுத்தப்பட்ட chat க்காக இது உள்ளகமாக இருக்கும்.",
+              urdu: "اپنی پسند کے نام کے ساتھ ایک کمرہ بنائیں۔ یہ نجی نوٹس، چھوٹے گروپس، اور صرف تصدیق شدہ چیٹ کے لیے مقامی رہتا ہے۔"
+            })}
           </Text>
           <View style={styles.segmentRow}>
             {[
-              { id: "group", label: "Group room" },
-              { id: "dm", label: "Direct chat" }
+              { id: "group", label: l("Group room", { hindi: "समूह कमरा", telugu: "గ్రూప్ గది", tamil: "குழு அறை", urdu: "گروپ کمرہ" }) },
+              { id: "dm", label: l("Direct chat", { hindi: "सीधी चैट", telugu: "ప్రత్యక్ష చాట్", tamil: "நேரடி அரட்டை", urdu: "براہِ راست چیٹ" }) }
             ].map((item) => {
               const isSelected = privateSpaceKindDraft === item.id;
               return (
@@ -28291,7 +28461,12 @@ function CommunitySection({
           <TextInput
             value={privateSpaceTitleDraft}
             onChangeText={setPrivateSpaceTitleDraft}
-            placeholder="Name this chat room"
+            placeholder={l("Name this chat room", {
+              hindi: "इस चैट रूम का नाम रखें",
+              telugu: "ఈ చాట్ గదికి పేరు పెట్టండి",
+              tamil: "இந்த அரட்டை அறைக்கு பெயரிடவும்",
+              urdu: "اس چیٹ کمرے کا نام رکھیں"
+            })}
             placeholderTextColor="#9A8F82"
             editable={!interactionLocked}
             accessibilityLabel="Room title"
@@ -28301,7 +28476,12 @@ function CommunitySection({
           <TextInput
             value={privateSpaceMembersDraft}
             onChangeText={setPrivateSpaceMembersDraft}
-            placeholder="Add members or roles, separated by commas"
+            placeholder={l("Add members or roles, separated by commas", {
+              hindi: "सदस्य या भूमिकाएँ कॉमा से अलग करें",
+              telugu: "సభ్యులు లేదా పాత్రలను కామాలతో వేరు చేసి జోడించండి",
+              tamil: "உறுப்பினர்கள் அல்லது பங்குகளை கமாவால் பிரித்து சேர்க்கவும்",
+              urdu: "اراکین یا کرداروں کو کوما سے الگ کر کے شامل کریں"
+            })}
             placeholderTextColor="#9A8F82"
             editable={!interactionLocked}
             accessibilityLabel="Room members"
@@ -28312,7 +28492,12 @@ function CommunitySection({
             multiline
             value={privateSpaceDraft}
             onChangeText={setPrivateSpaceDraft}
-            placeholder="Add a first message, or leave this blank."
+            placeholder={l("Add a first message, or leave this blank.", {
+              hindi: "पहला संदेश जोड़ें, या इसे खाली छोड़ दें।",
+              telugu: "మొదటి సందేశాన్ని జోడించండి, లేదా ఖాళీగా ఉంచండి.",
+              tamil: "முதல் செய்தியைச் சேர்க்கவும், அல்லது காலியாக விடவும்.",
+              urdu: "پہلا پیغام شامل کریں، یا اسے خالی چھوڑ دیں۔"
+            })}
             placeholderTextColor="#9A8F82"
             editable={!postingLocked && !interactionLocked}
             accessibilityLabel="First message for new room"
@@ -28326,7 +28511,7 @@ function CommunitySection({
           <View style={styles.communityActions}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={postingLocked ? "Posting paused" : interactionLocked ? "Room creation locked while intake is open" : "Create private room"}
+              accessibilityLabel={postingLocked ? l("Posting paused", { hindi: "पोस्टिंग रुकी हुई है", telugu: "పోస్టింగ్ నిలిపివేయబడింది", tamil: "பதிவிடுதல் இடைநிறுத்தப்பட்டது", urdu: "پوسٹنگ روک دی گئی ہے" }) : interactionLocked ? l("Room creation locked while intake is open", { hindi: "इंटेक खुला होने पर कमरा बनाना बंद है", telugu: "ఇన్‌టేక్ తెరిచి ఉన్నప్పుడు గది సృష్టి లాక్ చేయబడింది", tamil: "இணைப்பு திறந்திருக்கும் போது அறை உருவாக்கம் பூட்டப்பட்டுள்ளது", urdu: "انٹیک کھلا ہونے پر کمرہ بنانا بند ہے" }) : l("Create private room", { hindi: "निजी कमरा बनाएं", telugu: "ప్రైవేట్ గది సృష్టించండి", tamil: "தனிப்பட்ட அறை உருவாக்கவும்", urdu: "نجی کمرہ بنائیں" })}
               accessibilityHint="Creates a new private room with the title and members you entered"
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={() => {
@@ -28352,12 +28537,17 @@ function CommunitySection({
               ]}
             >
               <Text style={[styles.helpButtonLabel, (postingLocked || interactionLocked) && styles.helpButtonLabelDisabled]}>
-                {postingLocked ? "Paused" : interactionLocked ? "Intake open" : "Create room"}
+                {postingLocked ? l("Paused", { hindi: "रुका हुआ", telugu: "నిలిపివేయబడింది", tamil: "இடைநிறுத்தம்", urdu: "روک دیا گیا" }) : interactionLocked ? l("Intake open", { hindi: "इंटेक खुला", telugu: "ఇన్‌టేక్ తెరిచి ఉంది", tamil: "இணைப்பு திறந்திருக்கும்", urdu: "انٹیک کھلا ہے" }) : l("Create room", { hindi: "कमरा बनाएं", telugu: "గదిని సృష్టించండి", tamil: "அறை உருவாக்கவும்", urdu: "کمرہ بنائیں" })}
               </Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Send message to selected private room"
+              accessibilityLabel={l("Send message to selected private room", {
+                hindi: "चयनित निजी कमरे में संदेश भेजें",
+                telugu: "ఎంచుకున్న ప్రైవేట్ గదికి సందేశం పంపండి",
+                tamil: "தேர்ந்தெடுத்த தனிப்பட்ட அறைக்கு செய்தி அனுப்பவும்",
+                urdu: "منتخب نجی کمرے کو پیغام بھیجیں"
+              })}
               accessibilityHint="Sends your draft message to the currently selected room"
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={() => {
@@ -28370,11 +28560,21 @@ function CommunitySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={styles.helpButtonSecondaryLabel}>Send message</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>{l("Send message", {
+                hindi: "संदेश भेजें",
+                telugu: "సందేశం పంపండి",
+                tamil: "செய்தி அனுப்பவும்",
+                urdu: "پیغام بھیجیں"
+              })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Clear private room draft"
+              accessibilityLabel={l("Clear private room draft", {
+                hindi: "निजी कमरे का ड्राफ्ट साफ़ करें",
+                telugu: "ప్రైవేట్ గది డ్రాఫ్ట్‌ను క్లియర్ చేయండి",
+                tamil: "தனிப்பட்ட அறை வரைவினை அழிக்கவும்",
+                urdu: "نجی کمرے کا مسودہ صاف کریں"
+              })}
               accessibilityHint="Erases the message you were about to send, without sending it"
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={() => setPrivateSpaceDraft("")}
@@ -28385,7 +28585,12 @@ function CommunitySection({
                 pressed && styles.pressed
               ]}
             >
-              <Text style={styles.helpButtonSecondaryLabel}>Clear draft</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>{l("Clear draft", {
+                hindi: "ड्राफ्ट साफ़ करें",
+                telugu: "డ్రాఫ్ట్‌ను క్లియర్ చేయండి",
+                tamil: "வரைவை அழிக்கவும்",
+                urdu: "مسودہ صاف کریں"
+              })}</Text>
             </Pressable>
           </View>
           <View style={styles.privateRoomList}>
@@ -28396,7 +28601,7 @@ function CommunitySection({
                   key={thread.id}
                   accessibilityRole="button"
                   accessibilityLabel={`Open room ${thread.title}`}
-                  accessibilityHint={`${thread.kind === "group" ? "Group room" : "Direct chat"} with ${thread.members.length} member${thread.members.length === 1 ? "" : "s"}`}
+                  accessibilityHint={`${thread.kind === "group" ? l("Group room", { hindi: "समूह कमरा", telugu: "గ్రూప్ గది", tamil: "குழு அறை", urdu: "گروپ کمرہ" }) : l("Direct chat", { hindi: "सीधी चैट", telugu: "ప్రత్యక్ష చాట్", tamil: "நேரடி அரட்டை", urdu: "براہِ راست چیٹ" })} with ${thread.members.length} ${l("member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" })}${thread.members.length === 1 ? "" : "s"}`}
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => setPrivateSpaceSelectedThreadId(thread.id)}
                   style={[
@@ -28411,7 +28616,7 @@ function CommunitySection({
                         {thread.title}
                       </Text>
                       <Text style={styles.privateRoomMeta}>
-                        {thread.kind === "group" ? "Group room" : "Direct chat"} / {thread.members.length} member
+                        {thread.kind === "group" ? l("Group room", { hindi: "समूह कमरा", telugu: "గ్రూప్ గది", tamil: "குழு அறை", urdu: "گروپ کمرہ" }) : l("Direct chat", { hindi: "सीधी चैट", telugu: "ప్రత్యక్ష చాట్", tamil: "நேரடி அரட்டை", urdu: "براہِ راست چیٹ" })} / {thread.members.length} {l("member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" })}
                         {thread.members.length === 1 ? "" : "s"}
                       </Text>
                     </View>
@@ -28445,7 +28650,12 @@ function CommunitySection({
                     )}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.textButtonLabel}>Clear room</Text>
+                    <Text style={styles.textButtonLabel}>{l("Clear room", {
+                      hindi: "कमरा साफ़ करें",
+                      telugu: "గదిని క్లియర్ చేయండి",
+                      tamil: "அறையை அழிக்கவும்",
+                      urdu: "کمرہ صاف کریں"
+                    })}</Text>
                   </Pressable>
                 </View>
                 {selectedPrivateRoom.members.length > 0 ? (
@@ -28460,8 +28670,8 @@ function CommunitySection({
                 <View style={styles.privateRoomMessageList}>
                   {selectedPrivateRoom.messages.length === 0 ? (
                     <View style={styles.emptyStateLarge}>
-                      <Text style={styles.emptyTitle}>Room is empty</Text>
-                      <Text style={styles.emptyText}>Send the first message or add a room note.</Text>
+                      <Text style={styles.emptyTitle}>{l("Room is empty", { hindi: "कमरा खाली है", telugu: "గది ఖాళీగా ఉంది", tamil: "அறை காலியாக உள்ளது", urdu: "کمرہ خالی ہے" })}</Text>
+                      <Text style={styles.emptyText}>{l("Send the first message or add a room note.", { hindi: "पहला संदेश भेजें या कमरे का नोट जोड़ें।", telugu: "మొదటి సందేశం పంపండి లేదా గది గమనికను జోడించండి.", tamil: "முதல் செய்தியை அனுப்பவும் அல்லது அறை குறிப்பைச் சேர்க்கவும்.", urdu: "پہلا پیغام بھیجیں یا کمرے کا نوٹ شامل کریں۔" })}</Text>
                     </View>
                   ) : (
                     selectedPrivateRoom.messages.map((message) => {
@@ -28497,22 +28707,37 @@ function CommunitySection({
                   )}
                 </View>
                 <Text style={styles.smallMeta}>
-                  These rooms are local to this device for now. Verified users only. Adult content is blocked.
+                  {l("These rooms are local to this device for now. Verified users only. Adult content is blocked.", {
+                    hindi: "ये कमरे अभी इस डिवाइस तक सीमित हैं। केवल सत्यापित उपयोगकर्ता। वयस्क सामग्री अवरुद्ध है।",
+                    telugu: "ఈ గదులు ప్రస్తుతం ఈ పరికరానికి మాత్రమే స్థానికంగా ఉంటాయి. ధృవీకరించిన వినియోగదారులే. వయోజన కంటెంట్ బ్లాక్ చేయబడింది.",
+                    tamil: "இந்த அறைகள் இப்போதைக்கு இந்த சாதனத்திலேயே உள்ளன. உறுதிப்படுத்தப்பட்ட பயனர்கள் மட்டும். பெரியவர் உள்ளடக்கம் தடுக்கப்பட்டுள்ளது.",
+                    urdu: "یہ کمرے فی الحال اسی ڈیوائس تک محدود ہیں۔ صرف تصدیق شدہ صارفین۔ بالغ مواد بلاک ہے۔"
+                  })}
                 </Text>
               </>
             ) : (
               <View style={styles.emptyStateLarge}>
-                <Text style={styles.emptyTitle}>No room selected</Text>
-                <Text style={styles.emptyText}>Create a room or select one from the list above.</Text>
+                <Text style={styles.emptyTitle}>{l("No room selected", { hindi: "कोई कमरा चयनित नहीं", telugu: "గది ఎంపిక కాలేదు", tamil: "அறை தேர்வு செய்யப்படவில்லை", urdu: "کوئی کمرہ منتخب نہیں کیا گیا" })}</Text>
+                <Text style={styles.emptyText}>{l("Create a room or select one from the list above.", { hindi: "एक कमरा बनाएं या ऊपर की सूची से एक चुनें।", telugu: "గది సృష్టించండి లేదా పై జాబితా నుండి ఒకదాన్ని ఎంచుకోండి.", tamil: "ஒரு அறையை உருவாக்கவும் அல்லது மேலுள்ள பட்டியலில் இருந்து ஒன்றைத் தேர்ந்தெடுக்கவும்.", urdu: "ایک کمرہ بنائیں یا اوپر کی فہرست سے ایک منتخب کریں۔" })}</Text>
               </View>
             )}
           </View>
         </View>
         ) : (
           <View style={styles.communityPreviewBand}>
-            <Text style={styles.visionGuidanceTitle}>Private rooms tucked away</Text>
+            <Text style={styles.visionGuidanceTitle}>{l("Private rooms tucked away", {
+              hindi: "निजी कमरे अलग रखे गए हैं",
+              telugu: "ప్రైవేట్ గదులు దాచబడ్డాయి",
+              tamil: "தனிப்பட்ட அறைகள் ஒதுக்கி வைக்கப்பட்டுள்ளன",
+              urdu: "نجی کمرے الگ رکھے گئے ہیں"
+            })}</Text>
             <Text style={styles.visionGuidanceText}>
-              Verified private rooms, room notes, and saved lines stay available when you open the full community view.
+              {l("Verified private rooms, room notes, and saved lines stay available when you open the full community view.", {
+                hindi: "सत्यापित निजी कमरे, कमरे के नोट और सहेजी गई पंक्तियाँ पूरा समुदाय दृश्य खोलने पर उपलब्ध रहती हैं।",
+                telugu: "ధృవీకరించిన ప్రైవేట్ గదులు, గది గమనికలు, మరియు సేవ్ చేసిన లైన్లు పూర్తి సమాజ వీక్షణను తెరిచినప్పుడు అందుబాటులో ఉంటాయి.",
+                tamil: "உறுதிப்படுத்தப்பட்ட தனிப்பட்ட அறைகள், அறை குறிப்புகள், மற்றும் சேமித்த வரிகள் முழு சமூகக் காட்சியைத் திறக்கும்போது கிடைக்கும்.",
+                urdu: "تصدیق شدہ نجی کمرے، کمرے کے نوٹس، اور محفوظ شدہ سطور مکمل برادری منظر کھولنے پر دستیاب رہتے ہیں۔"
+              })}
             </Text>
           </View>
         )}
@@ -28521,8 +28746,13 @@ function CommunitySection({
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Post</Text>
-            <Text style={styles.sectionTitleSmall}>Shared feed</Text>
+            <Text style={styles.eyebrow}>{l("Post", { hindi: "पोस्ट", telugu: "పోస్ట్", tamil: "பதிவு", urdu: "پوسٹ" })}</Text>
+            <Text style={styles.sectionTitleSmall}>{l("Shared feed", {
+              hindi: "साझा फ़ीड",
+              telugu: "షేర్డ్ ఫీడ్",
+              tamil: "பகிரப்பட்ட feed",
+              urdu: "مشترکہ فیڈ"
+            })}</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
         </View>
@@ -28538,7 +28768,12 @@ function CommunitySection({
             setCommunityDraft(value);
             onCommunityFeedTyping(value);
           }}
-          placeholder="Write one useful question, experience, or idea."
+          placeholder={l("Write one useful question, experience, or idea.", {
+            hindi: "एक उपयोगी प्रश्न, अनुभव, या विचार लिखें।",
+            telugu: "ఒక ఉపయోగకరమైన ప్రశ్న, అనుభవం, లేదా ఆలోచన రాయండి.",
+            tamil: "ஒரு பயனுள்ள கேள்வி, அனுபவம், அல்லது யோசனையை எழுதுங்கள்.",
+            urdu: "ایک مفید سوال، تجربہ، یا خیال لکھیں۔"
+          })}
           placeholderTextColor="#9A8F82"
           editable={!postingLocked}
           accessibilityLabel="Community feed post input"
@@ -28549,7 +28784,7 @@ function CommunitySection({
         <View style={styles.communityActions}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={postingLocked ? "Posting paused" : "Post message to shared feed"}
+            accessibilityLabel={postingLocked ? l("Posting paused", { hindi: "पोस्टिंग रुकी हुई है", telugu: "పోస్టింగ్ నిలిపివేయబడింది", tamil: "பதிவிடுதல் இடைநிறுத்தப்பட்டது", urdu: "پوسٹنگ روک دی گئی ہے" }) : l("Post message to shared feed", { hindi: "साझा फ़ीड पर संदेश पोस्ट करें", telugu: "షేర్డ్ ఫీడ్‌లో సందేశం పోస్ట్ చేయండి", tamil: "பகிரப்பட்ட feed-இல் செய்தியைப் பதிவு செய்யவும்", urdu: "مشترکہ فیڈ پر پیغام پوسٹ کریں" })}
             accessibilityHint="Publishes your message to the community feed"
             accessibilityState={{ disabled: postingLocked }}
             onPress={() => {
@@ -28572,12 +28807,17 @@ function CommunitySection({
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Reset feed"
-            accessibilityHint="Clears the community feed on this device. This cannot be undone."
+            accessibilityLabel={l("Reset feed", { hindi: "फ़ीड रीसेट करें", telugu: "ఫీడ్‌ను రీసెట్ చేయండి", tamil: "feed-ஐ மீட்டமைக்கவும்", urdu: "فیڈ ری سیٹ کریں" })}
+            accessibilityHint={l("Clears the community feed on this device. This cannot be undone.", { hindi: "इस डिवाइस पर समुदाय फ़ीड साफ़ करता है। इसे वापस नहीं लाया जा सकता।", telugu: "ఈ పరికరంలో కమ్యూనిటీ ఫీడ్‌ను క్లియర్ చేస్తుంది. ఇది తిరిగి మార్చలేం.", tamil: "இந்த சாதனத்தில் சமூக feed-ஐ அழிக்கிறது. இதைத் திரும்பப் பெற முடியாது.", urdu: "اس ڈیوائس پر برادری فیڈ صاف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔" })}
             onPress={() => confirmDestructive("Reset feed?", "This clears the community feed on this device. This cannot be undone.", onClearCommunityMessages)}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
-            <Text style={styles.helpButtonSecondaryLabel}>Reset feed</Text>
+            <Text style={styles.helpButtonSecondaryLabel}>{l("Reset feed", {
+              hindi: "फ़ीड रीसेट करें",
+              telugu: "ఫీడ్‌ను రీసెట్ చేయండి",
+              tamil: "feed-ஐ மீட்டமைக்கவும்",
+              urdu: "فیڈ ری سیٹ کریں"
+            })}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -28586,7 +28826,12 @@ function CommunitySection({
             onPress={onClearCommunityFilters}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
-            <Text style={styles.helpButtonSecondaryLabel}>Clear filters</Text>
+            <Text style={styles.helpButtonSecondaryLabel}>{l("Clear filters", {
+              hindi: "फ़िल्टर साफ़ करें",
+              telugu: "ఫిల్టర్లను క్లియర్ చేయండి",
+              tamil: "வடிப்பான்களை அழிக்கவும்",
+              urdu: "فلٹرز صاف کریں"
+            })}</Text>
           </Pressable>
         </View>
         <Text style={styles.smallMeta}>Adult or explicit content is checked before the feed updates.</Text>
@@ -39715,6 +39960,7 @@ function CounselingChatModal({
   initialIssue,
   identityLabel,
   issueId,
+  languageId,
   speakText,
   stopSpeech,
   speechLocale,
@@ -39736,6 +39982,7 @@ function CounselingChatModal({
   initialIssue: string;
   identityLabel: string;
   issueId: IssueId;
+  languageId: LanguageId;
   speakText: (text: string) => void;
   stopSpeech: () => void;
   speechLocale: string;
@@ -39864,6 +40111,8 @@ function CounselingChatModal({
     return () => loop.stop();
   }, [isGuideTyping, typingDotsAnim, chatReduceMotion]);
   const isStartingVoiceInputRef = React.useRef(false);
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
 
   useSpeechRecognitionEvent("start", () => {
     if (!visible) return;
@@ -40204,9 +40453,9 @@ function CounselingChatModal({
     }
     const tabId: TabId = choice === "calmness" ? "focus" : choice === "redress" ? "redress" : "meditation";
     const label =
-      choice === "meditation" ? "Meditation" :
-      choice === "chakra" ? "Body focus" :
-      choice === "calmness" ? "Calm Focus" : "Redressal guidance";
+      choice === "meditation" ? l("Meditation", { hindi: "ध्यान", telugu: "ధ్యానం", tamil: "தியானம்", urdu: "مراقبہ" }) :
+      choice === "chakra" ? l("Body focus", { hindi: "शरीर पर ध्यान", telugu: "శరీరంపై దృష్టి", tamil: "உடல் கவனம்", urdu: "جسم پر توجہ" }) :
+      choice === "calmness" ? l("Calm Focus", { hindi: "शांत ध्यान", telugu: "ప్రశాంత దృష్టి", tamil: "அமைதியான கவனம்", urdu: "پرسکون توجہ" }) : l("Redressal guidance", { hindi: "निवारण मार्गदर्शन", telugu: "పరిహార మార్గదర్శనం", tamil: "நிவாரண வழிகாட்டுதல்", urdu: "ازالہ رہنمائی" });
     const emoji = choice === "meditation" ? "🧘" : choice === "chakra" ? "🫁" : choice === "calmness" ? "🌿" : "🧭";
     const chosenStep: JourneyStep = {
       tabId, label, emoji,
@@ -40265,17 +40514,25 @@ function CounselingChatModal({
     void Haptics.selectionAsync();
     const summary = buildCounsellingSessionSummary();
     try {
-      await Share.share({ title: "Aethon Beacon counselling summary", message: summary });
+      await Share.share({
+        title: l("Aethon Beacon counselling summary", {
+          hindi: "Aethon Beacon काउंसलिंग सारांश",
+          telugu: "Aethon Beacon కౌన్సెలింగ్ సారాంశం",
+          tamil: "Aethon Beacon ஆலோசனை சுருக்கம்",
+          urdu: "Aethon Beacon مشاورت کا خلاصہ"
+        }),
+        message: summary
+      });
     } catch {
-      Alert.alert("Save summary", summary);
+      Alert.alert(l("Save summary", { hindi: "सारांश सहेजें", telugu: "సారాంశాన్ని సేవ్ చేయండి", tamil: "சுருக்கத்தை சேமிக்கவும்", urdu: "خلاصہ محفوظ کریں" }), summary);
     }
   };
 
   const continueCounsellingLater = () => {
     void Haptics.selectionAsync();
     Alert.alert(
-      "Continue later",
-      "Your counselling progress remains in this private room until you close or start a new session. You can return when you are ready."
+      l("Continue later", { hindi: "बाद में जारी रखें", telugu: "తర్వాత కొనసాగించండి", tamil: "பின்னர் தொடரவும்", urdu: "بعد میں جاری رکھیں" }),
+      l("Your counselling progress remains in this private room until you close or start a new session. You can return when you are ready.", { hindi: "आपकी काउंसलिंग प्रगति इस निजी कक्ष में बनी रहेगी, जब तक आप इसे बंद नहीं करते या नया सत्र शुरू नहीं करते। आप तैयार होने पर वापस आ सकते हैं।", telugu: "మీ కౌన్సెలింగ్ పురోగతి ఈ ప్రైవేట్ గదిలో మీరు మూసివేసే వరకు లేదా కొత్త సెషన్ ప్రారంభించే వరకు అలాగే ఉంటుంది. మీరు సిద్ధమైనప్పుడు తిరిగి రావచ్చు.", tamil: "உங்கள் ஆலோசனை முன்னேற்றம் இந்த தனிப்பட்ட அறையில் நீங்கள் மூடும்வரை அல்லது புதிய அமர்வைத் தொடங்கும்வரை இருக்கும். நீங்கள் தயாரானதும் திரும்பலாம்.", urdu: "آپ کی مشاورتی پیش رفت اس نجی کمرے میں اس وقت تک موجود رہے گی جب تک آپ اسے بند نہیں کرتے یا نیا سیشن شروع نہیں کرتے۔ آپ تیار ہوں تو واپس آ سکتے ہیں۔" })
     );
     onClose();
   };
@@ -40328,7 +40585,17 @@ function CounselingChatModal({
           borderBottomColor: "#DCE9E6",
           backgroundColor: "#FFFFFF"
         }}>
-          <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
+          <Pressable
+            onPress={onClose}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel={l("Close counselling", {
+              hindi: "काउंसलिंग बंद करें",
+              telugu: "కౌన్సెలింగ్ మూసివేయండి",
+              tamil: "ஆலோசனையை மூடவும்",
+              urdu: "مشاورت بند کریں"
+            })}
+          >
             <Text style={{ color: "#0A6F66", fontSize: isCompactPhone ? 20 : 22 }}>←</Text>
           </Pressable>
           <View style={{ flex: 1, minWidth: 0, marginLeft: isCompactPhone ? 10 : 12 }}>
@@ -40337,10 +40604,27 @@ function CounselingChatModal({
                 previously said the generic "Your guide", reading as two
                 different guides in the same conversation. */}
             <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 13 : isCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 16 : isCompactPhone ? 18 : 20, fontWeight: "800" }} numberOfLines={2}>
-              Beacon Guide is listening
+              {l("Beacon Guide is listening", {
+                hindi: "Beacon Guide सुन रहा है",
+                telugu: "Beacon Guide వినుతోంది",
+                tamil: "Beacon Guide கேட்கிறது",
+                urdu: "Beacon Guide سن رہا ہے"
+              })}
             </Text>
             <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 15 : 16 }} numberOfLines={2}>
-              {voiceAssistEnabled ? "Private · Read-aloud available on request" : "Private · Speaker is off"}
+              {voiceAssistEnabled
+                ? l("Private · Read-aloud available on request", {
+                    hindi: "निजी · अनुरोध पर read-aloud उपलब्ध",
+                    telugu: "ప్రైవేట్ · అభ్యర్థనపై చదివి వినిపింపు అందుబాటులో ఉంది",
+                    tamil: "தனிப்பட்டது · கோரிக்கையின்படி உரையாடல் ஒலியாக கிடைக்கும்",
+                    urdu: "نجی · درخواست پر بلند آواز میں پڑھنا دستیاب ہے"
+                  })
+                : l("Private · Speaker is off", {
+                    hindi: "निजी · स्पीकर बंद है",
+                    telugu: "ప్రైవేట్ · స్పీకర్ ఆఫ్‌లో ఉంది",
+                    tamil: "தனிப்பட்டது · ஸ்பீக்கர் அணைந்துள்ளது",
+                    urdu: "نجی · اسپیکر بند ہے"
+                  })}
             </Text>
           </View>
           {/* Read-aloud is always manual. This control only enables or disables
@@ -40352,7 +40636,7 @@ function CounselingChatModal({
             }}
             hitSlop={12}
             accessibilityRole="button"
-            accessibilityLabel={voiceAssistEnabled ? "Disable read aloud" : "Enable read aloud"}
+            accessibilityLabel={voiceAssistEnabled ? l("Disable read aloud", { hindi: "read-aloud बंद करें", telugu: "చదివి వినిపింపును నిలిపివేయండి", tamil: "உரையாடல் ஒலியை அணைக்கவும்", urdu: "بلند آواز میں پڑھنا بند کریں" }) : l("Enable read aloud", { hindi: "read-aloud चालू करें", telugu: "చదివి వినిపింపును ప్రారంభించండి", tamil: "உரையாடல் ஒலியை இயக்கவும்", urdu: "بلند آواز میں پڑھنا شروع کریں" })}
             accessibilityState={{ selected: !voiceAssistEnabled }}
             style={{ marginRight: isCompactPhone ? 8 : 14, flexDirection: "row", alignItems: "center", gap: isCompactPhone ? 0 : 4 }}
           >
@@ -40362,24 +40646,63 @@ function CounselingChatModal({
                 self-explanatory without the person needing to guess. */}
             {!isCompactPhone && (
               <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
-                {voiceAssistEnabled ? "Disable speaker" : "Enable speaker"}
+                {voiceAssistEnabled
+                  ? l("Disable speaker", { hindi: "स्पीकर बंद करें", telugu: "స్పీకర్‌ను నిలిపివేయండి", tamil: "ஸ்பீக்கரை அணைக்கவும்", urdu: "اسپیکر بند کریں" })
+                  : l("Enable speaker", { hindi: "स्पीकर चालू करें", telugu: "స్పీకర్‌ను ప్రారంభించండి", tamil: "ஸ்பீக்கரை இயக்கவும்", urdu: "اسپیکر شروع کریں" })}
               </Text>
             )}
           </Pressable>
-          <Pressable onPress={skipToRoute} hitSlop={12} accessibilityRole="button" accessibilityLabel="Skip to route">
-            <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 13, fontWeight: "700" }}>Skip →</Text>
+          <Pressable
+            onPress={skipToRoute}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel={l("Skip to route", {
+              hindi: "मार्ग पर जाएँ",
+              telugu: "మార్గానికి దాటవేయండి",
+              tamil: "வழிக்குச் செல்லவும்",
+              urdu: "راستے پر جائیں"
+            })}
+          >
+            <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 13, fontWeight: "700" }}>
+              {l("Skip →", { hindi: "छोड़ें →", telugu: "దాటవేయి →", tamil: "தவிர் →", urdu: "چھوڑیں →" })}
+            </Text>
           </Pressable>
         </View>
 
         <Pressable
           accessibilityRole="summary"
-          accessibilityLabel={safetyNoticeExpanded ? "Scope and safety notice, expanded. Tap to collapse." : "Scope and safety notice, collapsed. Tap to expand."}
+          accessibilityLabel={
+            safetyNoticeExpanded
+              ? l("Scope and safety notice, expanded. Tap to collapse.", {
+                  hindi: "दायरा और सुरक्षा सूचना खुली है। बंद करने के लिए टैप करें।",
+                  telugu: "పరిధి మరియు భద్రతా గమనిక తెరవబడింది. మూసివేయడానికి టాప్ చేయండి.",
+                  tamil: "விரிவு மற்றும் பாதுகாப்பு குறிப்பு விரிவாக்கப்பட்டுள்ளது. சுருக்க தட்டவும்.",
+                  urdu: "دائرہ اور حفاظت کا نوٹس کھلا ہوا ہے۔ بند کرنے کے لیے ٹیپ کریں۔"
+                })
+              : l("Scope and safety notice, collapsed. Tap to expand.", {
+                  hindi: "दायरा और सुरक्षा सूचना बंद है। खोलने के लिए टैप करें।",
+                  telugu: "పరిధి మరియు భద్రతా గమనిక మూసివేయబడింది. విస్తరించడానికి టాప్ చేయండి.",
+                  tamil: "விரிவு மற்றும் பாதுகாப்பு குறிப்பு சுருக்கப்பட்டுள்ளது. விரிவாக்க தட்டவும்.",
+                  urdu: "دائرہ اور حفاظت کا نوٹس بند ہے۔ کھولنے کے لیے ٹیپ کریں۔"
+                })
+          }
           onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setSafetyNoticeExpanded((v) => !v); }}
           style={{ marginHorizontal: isCompactPhone ? 16 : 20, marginTop: isCompactPhone ? 8 : 12, borderRadius: 12, padding: isVeryCompactPhone ? 9 : isCompactPhone ? 10 : 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#9CB9C0" }}
         >
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>Scope and safety</Text>
-            <Text style={{ color: "#3A577D", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>{safetyNoticeExpanded ? "Hide ▲" : "Show ▼"}</Text>
+            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>
+              {l("Scope and safety", {
+                hindi: "दायरा और सुरक्षा",
+                telugu: "పరిధి మరియు భద్రత",
+                tamil: "விரிவு மற்றும் பாதுகாப்பு",
+                urdu: "دائرہ اور حفاظت"
+              })}
+            </Text>
+            <Text style={{ color: "#3A577D", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, fontWeight: "700" }}>
+              {safetyNoticeExpanded
+                ? l("Hide ▲", { hindi: "छिपाएँ ▲", telugu: "దాచండి ▲", tamil: "மறைக்கவும் ▲", urdu: "چھپائیں ▲" })
+                : l("Show ▼", { hindi: "दिखाएँ ▼", telugu: "చూపించండి ▼", tamil: "காட்டவும் ▼", urdu: "دکھائیں ▼" })}
+            </Text>
           </View>
           {safetyNoticeExpanded && (
             <Text style={{ color: "#25364D", fontSize: isVeryCompactPhone ? 10 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 18, marginTop: 3 }}>
@@ -40391,14 +40714,29 @@ function CounselingChatModal({
         {/* Chat messages */}
         <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 20, gap: isCompactPhone ? 12 : 16 }} showsVerticalScrollIndicator={false}>
           <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
-            <Text style={{ color: "#0A6F66", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>Guided support room</Text>
+            <Text style={{ color: "#0A6F66", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Guided support room", { hindi: "मार्गदर्शित सहायता कक्ष", telugu: "మార్గదర్శిత మద్దతు గది", tamil: "வழிகாட்டப்பட்ட ஆதரவு அறை", urdu: "رہنمائی والا مدد کمرہ" })}</Text>
             <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 16 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 20 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 4 }} numberOfLines={2}>
-              What brings you here?
+              {l("What brings you here?", {
+                hindi: "आप यहाँ किस लिए आए हैं?",
+                telugu: "మీరు ఇక్కడికి ఎందుకు వచ్చారు?",
+                tamil: "நீங்கள் இங்கு எதற்காக வந்துள்ளீர்கள்?",
+                urdu: "آپ یہاں کس لیے آئے ہیں؟"
+              })}
             </Text>
             <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 14, lineHeight: isVeryCompactPhone ? 16 : isCompactPhone ? 18 : 21, fontWeight: "700", marginTop: 5 }}>
               {isCompactPhone
-                ? "We’ll listen first, then shape the next step together."
-                : "Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies."}
+                ? l("We’ll listen first, then shape the next step together.", {
+                    hindi: "पहले हम सुनेंगे, फिर अगला कदम साथ मिलकर बनाएँगे।",
+                    telugu: "ముందుగా మేము వింటాము, ఆపై తదుపరి అడుగును కలిసి రూపొందిస్తాము.",
+                    tamil: "முதலில் நாங்கள் கேட்போம், பின்னர் அடுத்த படியை ஒன்றாக வடிவமைப்போம்.",
+                    urdu: "پہلے ہم سنیں گے، پھر اگلا قدم مل کر بنائیں گے۔"
+                  })
+                : l("Understanding your situation gently first; every sixth reply offers an optional next step, and the full conversation can continue to 30 replies.", {
+                    hindi: "पहले आपकी स्थिति को धीरे से समझेंगे; हर छठे जवाब पर वैकल्पिक अगला कदम मिलता है, और पूरी बातचीत 30 जवाब तक चल सकती है।",
+                    telugu: "ముందుగా మీ పరిస్థితిని సౌమ్యంగా అర్థం చేసుకుంటాం; ప్రతి ఆరవ ప్రతిస్పందనలో ఐచ్ఛిక తదుపరి అడుగు ఉంటుంది, మరియు మొత్తం సంభాషణ 30 ప్రత్యుత్తరాల వరకు కొనసాగుతుంది.",
+                    tamil: "முதலில் உங்கள் நிலையை மெதுவாகப் புரிந்துகொள்வோம்; ஒவ்வொரு ஆறாவது பதிலும் ஒரு விருப்பமான அடுத்த படியை வழங்கும், மேலும் முழு உரையாடல் 30 பதில்கள் வரை தொடரலாம்.",
+                    urdu: "پہلے آپ کی صورتحال کو نرمی سے سمجھیں گے؛ ہر چھٹے جواب پر ایک اختیاری اگلا قدم ملتا ہے، اور پوری گفتگو 30 جوابات تک جاری رہ سکتی ہے۔"
+                  })}
             </Text>
           </View>
           {session.turns.map((turn, i) => {
@@ -40459,17 +40797,37 @@ function CounselingChatModal({
           {canPrepareNextStepNow && (
             <View style={{ backgroundColor: "#F6FBFA", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "#B9D8D2", gap: 10 }}>
               <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 19, fontWeight: "700" }}>
-                I have enough context to prepare a practical next step, and you can also continue the counselling conversation.
+                {l("I have enough context to prepare a practical next step, and you can also continue the counselling conversation.", {
+                  hindi: "मेरे पास एक व्यावहारिक अगला कदम तैयार करने के लिए पर्याप्त संदर्भ है, और आप काउंसलिंग बातचीत जारी भी रख सकते हैं।",
+                  telugu: "ప్రాక్టికల్ తదుపరి అడుగు సిద్ధం చేయడానికి నాకు తగినంత సందర్భం ఉంది, మరియు మీరు కౌన్సెలింగ్ సంభాషణను కొనసాగించవచ్చు.",
+                  tamil: "ஒரு நடைமுறை அடுத்த படியைத் தயாரிக்க எனக்கு போதுமான சூழல் உள்ளது, மேலும் நீங்கள் ஆலோசனை உரையாடலைத் தொடரலாம்.",
+                  urdu: "میرے پاس ایک عملی اگلا قدم تیار کرنے کے لیے کافی سیاق موجود ہے، اور آپ مشاورت کی گفتگو جاری رکھ سکتے ہیں۔"
+                })}
               </Text>
               <Text style={{ color: "#34515B", fontSize: 12, lineHeight: 18 }}>
                 {counselingRepliesUntilAutoSummary > 0
-                  ? `${counselingRepliesUntilAutoSummary} guided replies remain before an automatic summary.`
-                  : "I can prepare your summary and route now."}
+                  ? l(`${counselingRepliesUntilAutoSummary} guided replies remain before an automatic summary.`, {
+                      hindi: `स्वचालित सारांश से पहले ${counselingRepliesUntilAutoSummary} मार्गदर्शित उत्तर शेष हैं।`,
+                      telugu: `స్వయంచాలక సారాంశానికి ముందు ${counselingRepliesUntilAutoSummary} మార్గదర్శిత ప్రతిస్పందనలు మిగిలి ఉన్నాయి.`,
+                      tamil: `தானியங்கி சுருக்கத்திற்கு முன் ${counselingRepliesUntilAutoSummary} வழிகாட்டப்பட்ட பதில்கள் மீதமுள்ளன.`,
+                      urdu: `خودکار خلاصے سے پہلے ${counselingRepliesUntilAutoSummary} رہنمائی والے جوابات باقی ہیں۔`
+                    })
+                  : l("I can prepare your summary and route now.", {
+                      hindi: "मैं अभी आपका सारांश और मार्ग तैयार कर सकता हूँ।",
+                      telugu: "నేను ఇప్పుడు మీ సారాంశం మరియు మార్గాన్ని సిద్ధం చేయగలను.",
+                      tamil: "நான் இப்போது உங்கள் சுருக்கத்தையும் வழியையும் தயாரிக்க முடியும்.",
+                      urdu: "میں ابھی آپ کا خلاصہ اور راستہ تیار کر سکتا ہوں۔"
+                    })}
               </Text>
               <Pressable
                 onPress={prepareNextStepFromCurrentConversation}
                 accessibilityRole="button"
-                accessibilityLabel="Prepare my next step from this counselling conversation"
+                accessibilityLabel={l("Prepare my next step from this counselling conversation", {
+                  hindi: "इस काउंसलिंग बातचीत से मेरा अगला कदम तैयार करें",
+                  telugu: "ఈ కౌన్సెలింగ్ సంభాషణ నుండి నా తదుపరి అడుగును సిద్ధం చేయండి",
+                  tamil: "இந்த ஆலோசனை உரையாடலிலிருந்து என் அடுத்த படியைத் தயாரிக்கவும்",
+                  urdu: "اس مشاورتی گفتگو سے میرا اگلا قدم تیار کریں"
+                })}
                 style={({ pressed }) => ({
                   backgroundColor: pressed ? "#0E4A46" : "#0E6F69",
                   borderRadius: 12,
@@ -40478,7 +40836,14 @@ function CounselingChatModal({
                   alignItems: "center"
                 })}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "700" }}>Prepare next step now</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "700" }}>
+                  {l("Prepare next step now", {
+                    hindi: "अगला कदम अभी तैयार करें",
+                    telugu: "తదుపరి అడుగును ఇప్పుడే సిద్ధం చేయండి",
+                    tamil: "அடுத்த படியை இப்போது தயாரிக்கவும்",
+                    urdu: "اگلا قدم ابھی تیار کریں"
+                  })}
+                </Text>
               </Pressable>
             </View>
           )}
@@ -40496,13 +40861,13 @@ function CounselingChatModal({
               {guidanceEnrichmentLoading && (
                 <Animated.View style={{ opacity: enrichmentPulseAnim, paddingVertical: 2, paddingHorizontal: 2 }}>
                   <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "700" }}>
-                    Beacon Guide is looking a little deeper…
+                    {l("Beacon Guide is looking a little deeper…", { hindi: "Beacon Guide थोड़ा और गहराई से देख रहा है…", telugu: "Beacon Guide మరింత లోతుగా చూస్తోంది…", tamil: "Beacon Guide சிறிது மேலும் ஆழமாகப் பார்க்கிறது…", urdu: "Beacon Guide تھوڑی مزید گہرائی سے دیکھ رہا ہے…" })}
                   </Text>
                 </Animated.View>
               )}
               {guidanceEnrichment && guidanceEnrichment.trim().length > 0 && (
                 <View style={{ backgroundColor: "#F2F1E8", borderRadius: 12, padding: 14, borderLeftWidth: 3, borderLeftColor: "#B45309", marginBottom: 4 }}>
-                  <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>A closer look</Text>
+                  <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{l("A closer look", { hindi: "थोड़ा और करीब से देखें", telugu: "కొంచెం దగ్గరగా చూడండి", tamil: "இன்னும் நெருக்கமாகப் பார்ப்போம்", urdu: "مزید قریب سے دیکھیں" })}</Text>
                   <Text style={{ color: "#3A617D", fontSize: 13, lineHeight: 20 }}>{guidanceEnrichment}</Text>
                 </View>
               )}
@@ -40512,18 +40877,18 @@ function CounselingChatModal({
                   amplifying). */}
               <View style={{ backgroundColor: "#EAF6F4", borderRadius: 12, borderCurve: "continuous", padding: 12, borderWidth: 1, borderColor: "#CFE7E2", marginBottom: 2 }}>
                 <Text style={{ color: "#0B6E67", fontSize: 13, lineHeight: 20, fontWeight: "600" }}>
-                  Thank you for talking this through — putting it into words is a real step, and it's the part most people never do. You don't have to fix everything at once. Here's a gentle path you can take from here, one step at a time.
+                  {l("Thank you for talking this through — putting it into words is a real step, and it's the part most people never do. You don't have to fix everything at once. Here's a gentle path you can take from here, one step at a time.", { hindi: "इसे शब्दों में रखने के लिए धन्यवाद — यह अपने आप में एक वास्तविक कदम है, और यही वह हिस्सा है जो ज़्यादातर लोग कभी नहीं करते। आपको सब कुछ एक साथ ठीक करने की ज़रूरत नहीं है। यहाँ से आप एक-एक करके धीरे-धीरे आगे बढ़ सकते हैं।", telugu: "దీనిని మాటల్లో చెప్పినందుకు ధన్యవాదాలు — ఇది నిజమైన అడుగు, మరియు చాలా మంది ఎప్పుడూ చేయని భాగం ఇదే. మీరు అన్నీ ఒకేసారి సరిచేయాల్సిన అవసరం లేదు. ఇక్కడి నుంచి మీరు ఒక సున్నితమైన మార్గంలో అడుగులు వేయొచ్చు.", tamil: "இதைக் குறித்து பேசித் தெளிவுபடுத்தியதற்கு நன்றி — அதை வார்த்தைகளில் சொல்லுவது ஒரு உண்மையான படி, மேலும் அதை பலர் ஒருபோதும் செய்ய மாட்டார்கள். எல்லாவற்றையும் ஒரே நேரத்தில் சரி செய்ய வேண்டியதில்லை. இங்கிருந்து மெதுவான பாதையைப் பின்பற்றலாம், ஒவ்வொரு படியாக.", urdu: "اسے بات کر کے واضح کرنے کا شکریہ — اسے الفاظ میں لانا خود ایک حقیقی قدم ہے، اور یہی وہ حصہ ہے جو زیادہ تر لوگ کبھی نہیں کرتے۔ آپ کو سب کچھ ایک ساتھ ٹھیک کرنے کی ضرورت نہیں۔ یہاں سے آپ ایک نرم راستہ لے سکتے ہیں، ایک قدم ایک وقت میں۔" })}
                 </Text>
                 {/* Ties the retention loop into the guide: if the person has a
                     real check-in streak, acknowledge that steadiness -- warm and
                     affirming, never pressure. */}
                 {streak >= 2 && (
                   <Text style={{ color: "#0D6B36", fontSize: 12, lineHeight: 17, fontWeight: "700", marginTop: 8 }}>
-                    🔥 And you've shown up {streak} days running — that steadiness is its own kind of strength to build on.
+                    {l(`🔥 And you've shown up ${streak} days running — that steadiness is its own kind of strength to build on.`, { hindi: `🔥 और आप लगातार ${streak} दिन से आए हैं — वह निरंतरता अपने-आप में एक ताकत है जिस पर आगे बढ़ा जा सकता है।`, telugu: `🔥 మరియు మీరు వరుసగా ${streak} రోజులు వచ్చారు — ఆ స్థిరత్వమే ముందుకు నిర్మించగల ఒక బలం.`, tamil: `🔥 மேலும் நீங்கள் தொடர்ச்சியாக ${streak} நாட்கள் வந்துள்ளீர்கள் — அந்த நிலைத்தன்மையே கட்டிக்கொள்ளக்கூடிய ஒரு வலிமை.`, urdu: `🔥 اور آپ لگاتار ${streak} دن حاضر ہوئے ہیں — وہ مستقل مزاجی خود ایک طاقت ہے جس پر آگے بڑھا جا سکتا ہے۔` })}
                   </Text>
                 )}
               </View>
-              <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Your recommended journey</Text>
+              <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>{l("Your recommended journey", { hindi: "आपकी सुझाई गई यात्रा", telugu: "మీకు సూచించిన ప్రయాణం", tamil: "உங்களுக்கான பரிந்துரைக்கப்பட்ட பயணம்", urdu: "آپ کا تجویز کردہ سفر" })}</Text>
               {journeySteps.map((step, i) => (
                 <View key={step.tabId} style={{ backgroundColor: "#FFFFFF", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: "#E0EBE8", borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
                   <Text style={{ fontSize: 22 }}>{step.emoji}</Text>
@@ -40538,39 +40903,39 @@ function CounselingChatModal({
                 <Pressable
                   onPress={() => speakText(synthText)}
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#FFFFFF", borderRadius: 12, padding: 12, marginTop: 4, opacity: pressed ? 0.7 : 1, borderWidth: 1, borderColor: "#B7CEC9" })}
-                  accessibilityLabel="Replay guide summary aloud"
+                  accessibilityLabel={l("Replay guide summary aloud", { hindi: "मार्गदर्शक सारांश ज़ोर से दोहराएँ", telugu: "మార్గదర్శక సారాంశాన్ని మళ్లీ వినిపించండి", tamil: "வழிகாட்டி சுருக்கத்தை ஒலியாக மீண்டும் இயக்கவும்", urdu: "رہنمائی کا خلاصہ بلند آواز میں دوبارہ سنائیں" })}
                 >
                   <Text style={{ fontSize: 18 }}>🔊</Text>
-                  <Text style={{ color: "#0A6F66", fontSize: 13, fontWeight: "700" }}>Replay guide summary aloud</Text>
+                  <Text style={{ color: "#0A6F66", fontSize: 13, fontWeight: "700" }}>{l("Replay guide summary aloud", { hindi: "मार्गदर्शक सारांश ज़ोर से दोहराएँ", telugu: "మార్గదర్శక సారాంశాన్ని మళ్లీ వినిపించండి", tamil: "வழிகாட்டி சுருக்கத்தை ஒலியாக மீண்டும் இயக்கவும்", urdu: "رہنمائی کا خلاصہ بلند آواز میں دوبارہ سنائیں" })}</Text>
                 </Pressable>
               )}
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                 <Pressable
                   onPress={saveCounsellingSummary}
                   accessibilityRole="button"
-                  accessibilityLabel="Save counselling summary"
+                  accessibilityLabel={l("Save counselling summary", { hindi: "काउंसलिंग सारांश सहेजें", telugu: "కౌన్సెలింగ్ సారాంశాన్ని సేవ్ చేయండి", tamil: "ஆலோசனை சுருக்கத்தை சேமிக்கவும்", urdu: "مشاورت کا خلاصہ محفوظ کریں" })}
                   style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, borderWidth: 1, borderColor: "#0E9488", backgroundColor: pressed ? "#E1F3F0" : "#FFFFFF", paddingVertical: 12, paddingHorizontal: 12, alignItems: "center" })}
                 >
-                  <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>Save summary</Text>
+                  <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>{l("Save summary", { hindi: "सारांश सहेजें", telugu: "సారాంశాన్ని సేవ్ చేయండి", tamil: "சுருக்கத்தை சேமிக்கவும்", urdu: "خلاصہ محفوظ کریں" })}</Text>
                 </Pressable>
                 <Pressable
                   onPress={continueCounsellingLater}
                   accessibilityRole="button"
-                  accessibilityLabel="Continue counselling later"
+                  accessibilityLabel={l("Continue counselling later", { hindi: "बाद में काउंसलिंग जारी रखें", telugu: "తర్వాత కౌన్సెలింగ్ కొనసాగించండి", tamil: "பின்னர் ஆலோசனையைத் தொடரவும்", urdu: "بعد میں مشاورت جاری رکھیں" })}
                   style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, backgroundColor: pressed ? "#DDEAE7" : "#EEF6F4", paddingVertical: 12, paddingHorizontal: 12, alignItems: "center" })}
                 >
-                  <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>Continue later</Text>
+                  <Text style={{ color: "#1F2937", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>{l("Continue later", { hindi: "बाद में जारी रखें", telugu: "తర్వాత కొనసాగించండి", tamil: "பின்னர் தொடரவும்", urdu: "بعد میں جاری رکھیں" })}</Text>
                 </Pressable>
               </View>
               <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 12, marginBottom: 2 }}>
-                What would help most right now?
+                {l("What would help most right now?", { hindi: "अभी सबसे ज़्यादा किससे मदद मिलेगी?", telugu: "ఇప్పుడే ఏది ఎక్కువగా సహాయపడుతుంది?", tamil: "இப்போது எது மிகவும் உதவும்?", urdu: "ابھی سب سے زیادہ کس چیز سے مدد ملے گی؟" })}
               </Text>
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                 {[
-                  { choice: "meditation" as const, emoji: "🧘", label: "Meditation" },
-                  { choice: "chakra" as const, emoji: "🫁", label: "Body focus" },
-                  { choice: "calmness" as const, emoji: "🌿", label: "Calmness" },
-                  { choice: "redress" as const, emoji: "🧭", label: "Redressal guidance" },
+                  { choice: "meditation" as const, emoji: "🧘", label: l("Meditation", { hindi: "ध्यान", telugu: "ధ్యానం", tamil: "தியானம்", urdu: "مراقبہ" }) },
+                  { choice: "chakra" as const, emoji: "🫁", label: l("Body focus", { hindi: "शरीर पर ध्यान", telugu: "శరీరంపై దృష్టి", tamil: "உடல் கவனம்", urdu: "جسم پر توجہ" }) },
+                  { choice: "calmness" as const, emoji: "🌿", label: l("Calmness", { hindi: "शांति", telugu: "ప్రశాంతత", tamil: "அமைதி", urdu: "سکون" }) },
+                  { choice: "redress" as const, emoji: "🧭", label: l("Redressal guidance", { hindi: "निवारण मार्गदर्शन", telugu: "పరిహార మార్గదర్శనం", tamil: "நிவாரண வழிகாட்டுதல்", urdu: "ازالہ رہنمائی" }) },
                 ].map((option) => (
                   <Pressable
                     key={option.choice}
@@ -40598,10 +40963,10 @@ function CounselingChatModal({
               <Pressable
                 onPress={() => chooseJourneyNext("none")}
                 accessibilityRole="button"
-                accessibilityLabel="Not right now"
+                accessibilityLabel={l("Not right now", { hindi: "अभी नहीं", telugu: "ఇప్పుడే కాదు", tamil: "இப்போது வேண்டாம்", urdu: "ابھی نہیں" })}
                 style={({ pressed }) => ({ padding: 12, alignItems: "center", opacity: pressed ? 0.6 : 1 })}
               >
-                <Text style={{ color: "#1F2937", fontSize: 13 }}>Not right now</Text>
+                <Text style={{ color: "#1F2937", fontSize: 13 }}>{l("Not right now", { hindi: "अभी नहीं", telugu: "ఇప్పుడే కాదు", tamil: "இப்போது வேண்டாம்", urdu: "ابھی نہیں" })}</Text>
               </Pressable>
             </View>
           )}
@@ -40617,7 +40982,7 @@ function CounselingChatModal({
               <TextInput
                 value={draft}
                 onChangeText={setDraft}
-                placeholder={isListening ? "Listening..." : "Reply here..."}
+                placeholder={isListening ? l("Listening...", { hindi: "सुन रहा है…", telugu: "వింటోంది…", tamil: "கேட்கப்படுகிறது…", urdu: "سن رہا ہے…" }) : l("Reply here...", { hindi: "यहाँ जवाब लिखें…", telugu: "ఇక్కడ ప్రత్యుత్తరం ఇవ్వండి…", tamil: "இங்கே பதிலளிக்கவும்…", urdu: "یہاں جواب لکھیں…" })}
                 placeholderTextColor="#5B7480"
                 style={{ backgroundColor: "#F1F6F5", borderRadius: 12, paddingHorizontal: isVeryCompactPhone ? 10 : 12, paddingVertical: isVeryCompactPhone ? 10 : 12, color: "#213A4A", fontSize: isVeryCompactPhone ? 15 : 16, lineHeight: isVeryCompactPhone ? 20 : 22, maxHeight: isVeryCompactPhone ? 108 : 120, borderWidth: 1, borderColor: isListening ? "#0B6F66" : "#C4D8D4" }}
                 multiline
@@ -40632,9 +40997,9 @@ function CounselingChatModal({
             {/* Voice input button */}
             <Pressable
               onPress={isListening ? stopVoiceInput : startVoiceInput}
-              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+              style={{ width: isVeryCompactPhone ? 40 : 44, height: isVeryCompactPhone ? 40 : 44, borderRadius: isVeryCompactPhone ? 20 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
               accessibilityRole="button"
-              accessibilityLabel={isListening ? "Stop voice input" : "Start voice input"}
+              accessibilityLabel={isListening ? l("Stop voice input", { hindi: "आवाज़ इनपुट रोकें", telugu: "వాయిస్ ఇన్‌పుట్ ఆపండి", tamil: "குரல் உள்ளீட்டை நிறுத்தவும்", urdu: "آواز کا ان پٹ روکیں" }) : l("Start voice input", { hindi: "आवाज़ इनपुट शुरू करें", telugu: "వాయిస్ ఇన్‌పుట్ ప్రారంభించండి", tamil: "குரல் உள்ளீட்டைத் தொடங்கவும்", urdu: "آواز کا ان پٹ شروع کریں" })}
             >
               <Text style={{ fontSize: 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
             </Pressable>
@@ -40642,8 +41007,8 @@ function CounselingChatModal({
               onPress={handleSend}
               disabled={isGuideTyping}
               accessibilityRole="button"
-              accessibilityLabel={isGuideTyping ? "Your guide is replying" : "Send message"}
-              style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+              accessibilityLabel={isGuideTyping ? l("Your guide is replying", { hindi: "आपका मार्गदर्शक जवाब दे रहा है", telugu: "మీ మార్గదర్శి ప్రత్యుత్తరం ఇస్తున్నారు", tamil: "உங்கள் வழிகாட்டி பதிலளிக்கிறார்", urdu: "آپ کا رہنما جواب دے رہا ہے" }) : l("Send message", { hindi: "संदेश भेजें", telugu: "సందేశం పంపండి", tamil: "செய்தியை அனுப்பவும்", urdu: "پیغام بھیجیں" })}
+              style={({ pressed }) => ({ width: isVeryCompactPhone ? 40 : 44, height: isVeryCompactPhone ? 40 : 44, borderRadius: isVeryCompactPhone ? 20 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
             >
               <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068", fontSize: 20 }}>↑</Text>
             </Pressable>
