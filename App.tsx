@@ -23449,14 +23449,35 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#E4EDED" }]}>
                 <Text style={styles.tabBannerEmoji}>🤝</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Community</Text>
-                  <Text style={styles.tabBannerSub}>Peer support · Verified · Moderated</Text>
+                  <Text style={styles.tabBannerTitle}>{pickLocalizedText(languageId, {
+                    english: "Community",
+                    hindi: "समुदाय",
+                    telugu: "సమాజం",
+                    tamil: "சமூகம்",
+                    urdu: "برادری"
+                  })}</Text>
+                  <Text style={styles.tabBannerSub}>{pickLocalizedText(languageId, {
+                    english: "Peer support · Verified · Moderated",
+                    hindi: "सहकर्मी सहायता · सत्यापित · मॉडरेटेड",
+                    telugu: "పీర్ సపోర్ట్ · ధృవీకరించబడిన · నియంత్రిత",
+                    tamil: "உறுப்பினர் ஆதரவு · உறுதிப்படுத்தப்பட்டது · கண்காணிக்கப்பட்ட",
+                    urdu: "ہم مرتبہ مدد · تصدیق شدہ · معتدل"
+                  })}</Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
-                  <Text style={styles.activeFocusLabel}>Active focus: <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"community")}</Text></Text>
+                  <Text style={styles.activeFocusLabel}>
+                    {pickLocalizedText(languageId, {
+                      english: "Active focus:",
+                      hindi: "सक्रिय फोकस:",
+                      telugu: "సక్రియ దృష్టి:",
+                      tamil: "செயலில் உள்ள கவனம்:",
+                      urdu: "فعال توجہ:"
+                    })}{" "}
+                    <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"community")}</Text>
+                  </Text>
                 </View>
               )}
 
@@ -23478,16 +23499,70 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Text style={{ fontSize: 18 }}>🌱</Text>
                   <Text style={{ color: "#047857", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", flex: 1 }}>
-                    Safe-space rules
+                    {pickLocalizedText(languageId, {
+                      english: "Safe-space rules",
+                      hindi: "सुरक्षित-स्थान नियम",
+                      telugu: "సురక్షిత స్థల నియమాలు",
+                      tamil: "பாதுகாப்பு இட விதிகள்",
+                      urdu: "محفوظ جگہ کے اصول"
+                    })}
                   </Text>
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>
-                  Verified-only posting · Moderated for safety · No advice on self-harm — the app routes those to a helpline · Report anything harmful with the flag icon on any post.
+                  {pickLocalizedText(languageId, {
+                    english: "Verified-only posting · Moderated for safety · No advice on self-harm — the app routes those to a helpline · Report anything harmful with the flag icon on any post.",
+                    hindi: "केवल सत्यापित पोस्टिंग · सुरक्षा के लिए मॉडरेटेड · आत्म-हानि पर सलाह नहीं — ऐप ऐसे मामलों को हेल्पलाइन तक पहुँचाता है · किसी भी पोस्ट पर फ़्लैग आइकन से हानिकारक सामग्री रिपोर्ट करें।",
+                    telugu: "ధృవీకరించబడిన పోస్టింగ్ మాత్రమే · భద్రత కోసం నియంత్రితం · స్వీయహానికి సంబంధించి సలహా లేదు — యాప్ వాటిని హెల్ప్‌లైన్‌కు పంపుతుంది · ఏ పోస్ట్‌పైనైనా ఫ్లాగ్ ఐకాన్‌తో హానికరమైనదాన్ని రిపోర్ట్ చేయండి.",
+                    tamil: "உறுதிப்படுத்தப்பட்ட பதிவுகள் மட்டும் · பாதுகாப்புக்காக கண்காணிப்பு · தற்கொலை/தற்கொலை முயற்சி குறித்து ஆலோசனை இல்லை — அவற்றை பயன்பாடு உதவி வரிக்கு அனுப்புகிறது · எந்த பதிவிலும் உள்ள கொடி ஐகானால் பாதகமானவற்றை புகாரளிக்கவும்.",
+                    urdu: "صرف تصدیق شدہ پوسٹنگ · حفاظت کے لیے معتدل · خود کو نقصان پہنچانے پر کوئی مشورہ نہیں — ایپ ایسے معاملات کو ہیلپ لائن تک پہنچاتی ہے · کسی بھی پوسٹ پر فلیگ آئیکن سے نقصان دہ چیز رپورٹ کریں۔"
+                  })}
                 </Text>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
-                  {["Kind", "Specific", "First-person", "No diagnosis", "No shaming"].map((rule) => (
-                    <View key={rule} style={{ backgroundColor: "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(52,211,153,0.28)" }}>
-                      <Text style={{ color: "#10A76B", fontSize: 12, fontWeight: "800" }}>✓ {rule}</Text>
+                  {[
+                    {
+                      key: "Kind",
+                      hindi: "दयालु",
+                      telugu: "దయ",
+                      tamil: "அன்பாக",
+                      urdu: "مہربان"
+                    },
+                    {
+                      key: "Specific",
+                      hindi: "विशिष्ट",
+                      telugu: "నిర్దిష్ట",
+                      tamil: "தெளிவான",
+                      urdu: "واضح"
+                    },
+                    {
+                      key: "First-person",
+                      hindi: "पहले व्यक्ति में",
+                      telugu: "మొదటి వ్యక్తి",
+                      tamil: "முதல் நபரில்",
+                      urdu: "پہلی شخص میں"
+                    },
+                    {
+                      key: "No diagnosis",
+                      hindi: "कोई निदान नहीं",
+                      telugu: "నిర్ధారణ కాదు",
+                      tamil: "நோயறிதல் வேண்டாம்",
+                      urdu: "کوئی تشخیص نہیں"
+                    },
+                    {
+                      key: "No shaming",
+                      hindi: "कोई शर्मिंदा करना नहीं",
+                      telugu: "అవమానించకండి",
+                      tamil: "குற்றம் சுமத்த வேண்டாம்",
+                      urdu: "کوئی شرمندہ کرنا نہیں"
+                    }
+                  ].map((rule) => (
+                    <View key={rule.key} style={{ backgroundColor: "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(52,211,153,0.28)" }}>
+                      <Text style={{ color: "#10A76B", fontSize: 12, fontWeight: "800" }}>✓ {pickLocalizedText(languageId, {
+                        english: rule.key,
+                        hindi: rule.hindi,
+                        telugu: rule.telugu,
+                        tamil: rule.tamil,
+                        urdu: rule.urdu
+                      })}</Text>
                     </View>
                   ))}
                 </View>
@@ -28016,12 +28091,36 @@ function CommunitySection({
           </Text>
           <View style={styles.communityFeatureRow}>
             <View style={styles.communityFeaturePill}>
-              <Text style={styles.communityFeatureLabel}>Verified access</Text>
-              <Text style={styles.communityFeatureMeta}>Phone or email OTP</Text>
+              <Text style={styles.communityFeatureLabel}>{pickLocalizedText(languageId, {
+                english: "Verified access",
+                hindi: "सत्यापित पहुँच",
+                telugu: "ధృవీకరించిన ప్రాప్యత",
+                tamil: "சரிபார்க்கப்பட்ட அணுகல்",
+                urdu: "تصدیق شدہ رسائی"
+              })}</Text>
+              <Text style={styles.communityFeatureMeta}>{pickLocalizedText(languageId, {
+                english: "Phone or email OTP",
+                hindi: "फ़ोन या ईमेल OTP",
+                telugu: "ఫోన్ లేదా ఇమెయిల్ OTP",
+                tamil: "தொலைபேசி அல்லது மின்னஞ்சல் OTP",
+                urdu: "فون یا ای میل OTP"
+              })}</Text>
             </View>
             <View style={styles.communityFeaturePill}>
-              <Text style={styles.communityFeatureLabel}>Moderated</Text>
-              <Text style={styles.communityFeatureMeta}>Reports and filters</Text>
+              <Text style={styles.communityFeatureLabel}>{pickLocalizedText(languageId, {
+                english: "Moderated",
+                hindi: "मॉडरेटेड",
+                telugu: "నియంత్రిత",
+                tamil: "கண்காணிக்கப்பட்ட",
+                urdu: "معتدل"
+              })}</Text>
+              <Text style={styles.communityFeatureMeta}>{pickLocalizedText(languageId, {
+                english: "Reports and filters",
+                hindi: "रिपोर्ट और फ़िल्टर",
+                telugu: "రిపోర్టులు మరియు ఫిల్టర్లు",
+                tamil: "அறிக்கைகள் மற்றும் வடிகட்டிகள்",
+                urdu: "رپورٹس اور فلٹرز"
+              })}</Text>
             </View>
             <View style={styles.communityFeaturePill}>
               <Text style={styles.communityFeatureLabel}>{l("Save and report", {
@@ -28057,11 +28156,35 @@ function CommunitySection({
           <View style={styles.homeOverviewActions}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={showFullCommunity ? "Show compact view" : "Show full community view"}
+              accessibilityLabel={showFullCommunity ? pickLocalizedText(languageId, {
+                english: "Show compact community view",
+                hindi: "संक्षिप्त समुदाय दृश्य दिखाएँ",
+                telugu: "సంక్షిప్త సమాజ వీక్షణ చూపించండి",
+                tamil: "சுருக்கமான சமூகக் காட்சியை காட்டு",
+                urdu: "مختصر برادری منظر دکھائیں"
+              }) : pickLocalizedText(languageId, {
+                english: "Show full community view",
+                hindi: "पूरा समुदाय दृश्य दिखाएँ",
+                telugu: "పూర్తి సమాజ వీక్షణ చూపించండి",
+                tamil: "முழு சமூகக் காட்சியை காட்டு",
+                urdu: "مکمل برادری منظر دکھائیں"
+              })}
               accessibilityHint={
                 showFullCommunity
-                  ? "Collapses chat, feed, private rooms, and saved lines back to a short preview"
-                  : "Expands chat, feed, private rooms, and saved lines to show everything"
+                  ? pickLocalizedText(languageId, {
+                      english: "Collapses chat, feed, private rooms, and saved lines back to a short preview",
+                      hindi: "चैट, फ़ीड, निजी कमरे, और सहेजी गई पंक्तियों को फिर से छोटे पूर्वावलोकन में समेटता है",
+                      telugu: "చాట్, ఫీడ్, ప్రైవేట్ గదులు, మరియు సేవ్ చేసిన లైన్లను మళ్లీ చిన్న ప్రివ్యూలోకి కుదిస్తుంది",
+                      tamil: "அரட்டை, feed, தனிப்பட்ட அறைகள், மற்றும் சேமித்த வரிகளை மீண்டும் சிறிய முன்னோட்டமாக சுருக்குகிறது",
+                      urdu: "چیٹ، فیڈ، نجی کمرے، اور محفوظ شدہ سطور کو دوبارہ مختصر پیش نظارہ میں سمیٹتا ہے"
+                    })
+                  : pickLocalizedText(languageId, {
+                      english: "Expands chat, feed, private rooms, and saved lines to show everything",
+                      hindi: "चैट, फ़ीड, निजी कमरे, और सहेजी गई पंक्तियों को फैलाकर सब कुछ दिखाता है",
+                      telugu: "చాట్, ఫీడ్, ప్రైవేట్ గదులు, మరియు సేవ్ చేసిన లైన్లను విస్తరించి అన్నీ చూపిస్తుంది",
+                      tamil: "அரட்டை, feed, தனிப்பட்ட அறைகள், மற்றும் சேமித்த வரிகளை விரித்து அனைத்தையும் காட்டுகிறது",
+                      urdu: "چیٹ، فیڈ، نجی کمرے، اور محفوظ شدہ سطور کو پھیلا کر سب کچھ دکھاتا ہے"
+                    })
               }
               onPress={() => setShowFullCommunity((value) => !value)}
               style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
