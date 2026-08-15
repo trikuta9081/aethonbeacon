@@ -2848,7 +2848,7 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   // progressively disclosed practice library reached through Pages.
   { id: "meditation", label: "Meditation", mark: "🪷", icon: "flower" },
   // ── Ordered block: chart first, then the surfaces that read from it ──
-  // Birth Chart → Messages → Tones → Help and Redress. Kept adjacent so the
+  // Birth Chart → Messages → Tones → मदद और शिकायत. Kept adjacent so the
   // chart, the people you talk to about it, the tones it prescribes, and the
   // redress routes it may surface all sit together in the nav.
   { id: "vedic", label: "Birth Chart", mark: "🪐", icon: "planet" },
@@ -8220,9 +8220,9 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     urdu: "پہلے دیکھیں"
   },
   "Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.": {
-    telugu: "స్వయంచాలక కౌన్సెలింగ్ ఇంజిన్, ప్రశాంత సహాయం, వేద దృష్టి, లేదా సముదాయంతో ప్రారంభించండి. ఐచ్ఛిక వివరాలను తరువాత చేర్చొచ్చు, మరియు మీరు ఎగుమతి చేయకపోతే లేదా పంచుకోకపోతే notes ఈ పరికరంలోనే ఉంటాయి.",
-    tamil: "தானியங்கி ஆலோசனை இயந்திரம், அமைதியான உதவி, வேத பார்வை, அல்லது சமூகத்திலிருந்து தொடங்குங்கள். விருப்ப விவரங்களை பின்னர் சேர்க்கலாம்; நீங்கள் export செய்யவோ பகிரவோ செய்யும் வரை குறிப்புகள் இந்த சாதனத்திலேயே இருக்கும்.",
-    urdu: "خودکار مشاورت انجن، پُرسکون مدد، ویدک بصیرت، یا برادری سے شروع کریں۔ اختیاری تفصیلات بعد میں شامل کی جا سکتی ہیں، اور جب تک آپ برآمد یا شیئر نہ کریں نوٹس اسی آلے پر رہتی ہیں۔"
+    telugu: "స్వయంచాలక కౌన్సెలింగ్ ఇంజిన్, ప్రశాంత మద్దతు, వేద దృష్టి, లేదా సమాజంతో ప్రారంభించండి. ఐచ్ఛిక వివరాలను తరువాత చేర్చొచ్చు, మరియు మీరు ఎగుమతి చేయకపోతే లేదా పంచుకోకపోతే గమనికలు ఈ పరికరంలోనే ఉంటాయి.",
+    tamil: "தானியங்கி ஆலோசனை இயந்திரம், அமைதியான ஆதரவு, வேத பார்வை, அல்லது சமூகத்திலிருந்து தொடங்குங்கள். விருப்ப விவரங்களை பின்னர் சேர்க்கலாம்; நீங்கள் ஏற்றுமதி செய்யவோ பகிரவோ செய்யும் வரை குறிப்புகள் இந்த சாதனத்திலேயே இருக்கும்.",
+    urdu: "خودکار مشاورت انجن، پُرسکون مدد، ویدک بصیرت، یا کمیونٹی سے شروع کریں۔ اختیاری تفصیلات بعد میں شامل کی جا سکتی ہیں، اور جب تک آپ برآمد یا شیئر نہ کریں نوٹس اسی ڈیوائس پر رہیں گی۔"
   },
   "Start a private guided support room.": {
     telugu: "ఒక ప్రైవేట్ మార్గదర్శిత సహాయ గదిని ప్రారంభించండి.",
@@ -8404,7 +8404,7 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     tamil: "நகரம், மாவட்டம், அல்லது பின்கோடு",
     urdu: "شہر، ضلع، یا پِن کوڈ"
   },
-  "Complete your profile, add a contact method, then verify to unlock community chat and private spaces.": {
+  "Complete your profile, add a contact method, then verify to unlock सामुदायिक चैट और निजी स्थान.": {
     telugu: "మీ ప్రొఫైల్ పూర్తిచేసి, ఒక సంప్రదింపు విధానాన్ని చేర్చి, ఆపై ధృవీకరించి సముదాయం చాట్ మరియు ప్రైవేట్ స్థలాలను తెరవండి.",
     tamil: "உங்கள் சுயவிவரத்தை முடித்து, ஒரு தொடர்பு முறையை சேர்த்து, பின்னர் உறுதிப்படுத்தி சமூகம் அரட்டை மற்றும் தனிப்பட்ட இடங்களைத் திறக்கவும்.",
     urdu: "اپنا پروفائل مکمل کریں، ایک رابطہ طریقہ شامل کریں، پھر تصدیق کر کے برادری چیٹ اور نجی جگہیں کھولیں۔"
@@ -8595,9 +8595,9 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     urdu: "فون OTP بھیجا جا رہا ہے…"
   },
   "Set your name, add a contact method, and verify to unlock community features.": {
-    telugu: "మీ పేరు పెట్టండి, ఒక సంప్రదింపు విధానాన్ని చేర్చండి, మరియు ధృవీకరించి community features ను తెరవండి.",
-    tamil: "உங்கள் பெயரை அமைத்து, ஒரு தொடர்பு முறையைச் சேர்த்து, verify செய்து community features-ஐத் திறக்கவும்.",
-    urdu: "اپنا نام رکھیں، ایک رابطہ طریقہ شامل کریں، اور verify کر کے community features کھولیں۔"
+    telugu: "మీ పేరు పెట్టండి, ఒక సంప్రదింపు విధానాన్ని చేర్చండి, మరియు ధృవీకరించి సమాజ ఫీచర్లను తెరవండి.",
+    tamil: "உங்கள் பெயரை அமைத்து, ஒரு தொடர்பு முறையைச் சேர்த்து, verify செய்து சமூக அம்சங்களைத் திறக்கவும்.",
+    urdu: "اپنا نام رکھیں، ایک رابطہ طریقہ شامل کریں، اور verify کر کے برادری کی خصوصیات کھولیں۔"
   },
   "Standard local profile": {
     telugu: "ప్రామాణిక స్థానిక ప్రొఫైల్",
@@ -23009,8 +23009,8 @@ function isTrustedExternalUrl(url: string) {
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
                   <Text style={styles.activeFocusLabel}>
-                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:" })}{" "}
-                    <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"tones")}</Text>
+                    {pickLocalizedText(languageId, { english: "Active focus:", hindi: "सक्रिय फोकस:", telugu: "క్రియాశీల దృష్టి:", tamil: "செயலில் உள்ள கவனம்:", urdu: "فعال توجہ:" })}{" "}
+                    <Text style={styles.activeFocusValue}>{localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} — {getTabIssueHint(selectedIssueGuide.id,"tones")}</Text>
                   </Text>
                 </View>
               )}
@@ -23018,8 +23018,8 @@ function isTrustedExternalUrl(url: string) {
               {/* Real multidimensional library, not a 5-field table pretending to be
                   one -- see SupportDimensionLibraryPanel. */}
               <SupportDimensionLibraryPanel
-                eyebrow={pickLocalizedText(languageId, { english: "🎵 Tone guide", hindi: "🎵 ध्वनि मार्गदर्शिका" })}
-                actionLabel={pickLocalizedText(languageId, { english: "Try", hindi: "आजमाएँ" })}
+                eyebrow={pickLocalizedText(languageId, { english: "🎵 Tone guide", hindi: "🎵 ध्वनि मार्गदर्शिका", telugu: "🎵 స్వర మార్గదర్శి", tamil: "🎵 ஒலி வழிகாட்டி", urdu: "🎵 صوتی رہنما" })}
+                actionLabel={pickLocalizedText(languageId, { english: "Try", hindi: "आजमाएँ", telugu: "ప్రయత్నించండి", tamil: "முயற்சிக்கவும்", urdu: "آزمائیں" })}
                 languageId={languageId}
                 accentColor="#066C84"
                 moonChartInsightReadings={vedicMoonChartInsightReadings}
@@ -25032,8 +25032,8 @@ function JournalSection({
       </View>
       {/* Real multidimensional library, not a 5-field table pretending to be one. */}
       <SupportDimensionLibraryPanel
-        eyebrow="📝 Journal prompts"
-        actionLabel="Write about"
+        eyebrow={pickLocalizedText(languageId, { english: "📝 Journal prompts", hindi: "📝 जर्नल संकेत", telugu: "📝 జర్నల్ సూచనలు", tamil: "📝 ஜர்னல் குறிப்புகள்", urdu: "📝 جرنل اشارے" })}
+        actionLabel={pickLocalizedText(languageId, { english: "Write about", hindi: "इसके बारे में लिखें", telugu: "దీనిపై వ్రాయండి", tamil: "இதைக் குறித்து எழுதவும்", urdu: "اس کے بارے میں لکھیں" })}
         languageId={languageId}
         accentColor="#066C84"
         moonChartInsightReadings={moonChartInsightReadings}
@@ -25050,11 +25050,23 @@ function JournalSection({
           style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
         >
           <Text style={styles.homeOverviewButtonLabel}>
-            {showFullJournal ? "Hide history" : "Show history"}
+            {pickLocalizedText(languageId, {
+              english: showFullJournal ? "Hide history" : "Show history",
+              hindi: showFullJournal ? "इतिहास छिपाएँ" : "इतिहास दिखाएँ",
+              telugu: showFullJournal ? "చరిత్రను దాచండి" : "చరిత్రను చూపించండి",
+              tamil: showFullJournal ? "வரலாற்றை மறைக்கவும்" : "வரலாற்றைக் காட்டு",
+              urdu: showFullJournal ? "تاریخ چھپائیں" : "تاریخ دکھائیں"
+            })}
           </Text>
         </Pressable>
         <Text style={styles.smallMeta}>
-          {showFullJournal ? "Journal history is open." : "History stays tucked away until you need it."}
+          {pickLocalizedText(languageId, {
+            english: showFullJournal ? "Journal history is open." : "History stays tucked away until you need it.",
+            hindi: showFullJournal ? "जर्नल इतिहास खुला है।" : "इतिहास ज़रूरत पड़ने तक सुरक्षित रहता है।",
+            telugu: showFullJournal ? "జర్నల్ చరిత్ర తెరిచి ఉంది." : "మీకు అవసరమైన వరకు చరిత్ర దాచబడే ఉంటుంది.",
+            tamil: showFullJournal ? "ஜர்னல் வரலாறு திறந்துள்ளது." : "தேவைப்படும் வரை வரலாறு ஒதுக்கி வைக்கப்படுகிறது.",
+            urdu: showFullJournal ? "جرنل تاریخ کھلی ہے۔" : "تاریخ ضرورت پڑنے تک الگ رکھی جاتی ہے۔"
+          })}
         </Text>
       </View>
       <View style={[styles.journalDraftBand, compact && styles.journalDraftBandCompact]}>
@@ -26925,8 +26937,8 @@ function MeditationSection({
       </Pressable>
       {showMeditationPerspectives ? (
         <SupportDimensionLibraryPanel
-          eyebrow="Meditation guidance"
-          actionLabel="Try"
+          eyebrow={pickLocalizedText(languageId, { english: "Meditation guidance", hindi: "ध्यान मार्गदर्शन", telugu: "ధ్యాన మార్గదర్శనం", tamil: "தியான வழிகாட்டல்", urdu: "مراقبہ رہنمائی" })}
+          actionLabel={pickLocalizedText(languageId, { english: "Try", hindi: "आजमाएँ", telugu: "ప్రయత్నించండి", tamil: "முயற்சிக்கவும்", urdu: "آزمائیں" })}
           languageId={languageId}
           accentColor="#3730A3"
           moonChartInsightReadings={moonChartInsightReadings}
@@ -30380,19 +30392,39 @@ function PlaySection({
             style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
           >
             <Text style={styles.homeOverviewButtonLabel}>
-              {showFullPractice ? "Show compact" : "Show full practice"}
+              {pickLocalizedText(languageId, {
+                english: showFullPractice ? "Show compact" : "Show full practice",
+                hindi: showFullPractice ? "संक्षिप्त दिखाएँ" : "पूरा अभ्यास दिखाएँ",
+                telugu: showFullPractice ? "కాంపాక్ట్ చూపించు" : "పూర్తి ప్రాక్టీస్ చూపించు",
+                tamil: showFullPractice ? "சுருக்கமாகக் காட்டு" : "முழு பயிற்சியைக் காட்டு",
+                urdu: showFullPractice ? "مختصر دکھائیں" : "مکمل پریکٹس دکھائیں"
+              })}
             </Text>
           </Pressable>
           <Text style={styles.smallMeta}>
-            {showFullPractice
-              ? "Full practice deck is open."
-              : "The practice loop starts with a few useful cards only."}
+            {pickLocalizedText(languageId, {
+              english: showFullPractice
+                ? "Full practice deck is open."
+                : "The practice loop starts with a few useful cards only.",
+              hindi: showFullPractice
+                ? "पूरा अभ्यास डेक खुला है।"
+                : "अभ्यास लूप कुछ उपयोगी कार्डों से ही शुरू होता है।",
+              telugu: showFullPractice
+                ? "పూర్తి ప్రాక్టీస్ డెక్ తెరిచి ఉంది."
+                : "ప్రాక్టీస్ లూప్ కొన్ని ఉపయోగకరమైన కార్డులతో మాత్రమే ప్రారంభమవుతుంది.",
+              tamil: showFullPractice
+                ? "முழு பயிற்சி தொகுப்பு திறந்துள்ளது."
+                : "பயிற்சி ஓட்டம் சில பயனுள்ள அட்டைகளுடன் மட்டுமே தொடங்குகிறது.",
+              urdu: showFullPractice
+                ? "مکمل پریکٹس ڈیک کھلا ہے۔"
+                : "پریکٹس لوپ صرف چند مفید کارڈز سے شروع ہوتا ہے۔"
+            })}
           </Text>
         </View>
         {/* Real multidimensional library, not a 5-field table pretending to be one. */}
         <SupportDimensionLibraryPanel
-          eyebrow="🎯 Practice focus"
-          actionLabel="Try"
+          eyebrow={pickLocalizedText(languageId, { english: "🎯 Practice focus", hindi: "🎯 अभ्यास फोकस", telugu: "🎯 ప్రాక్టీస్ దృష్టి", tamil: "🎯 பயிற்சி கவனம்", urdu: "🎯 پریکٹس فوکس" })}
+          actionLabel={pickLocalizedText(languageId, { english: "Try", hindi: "आजमाएँ", telugu: "ప్రయత్నించండి", tamil: "முயற்சிக்கவும்", urdu: "آزمائیں" })}
           languageId={languageId}
           accentColor="#04714F"
           moonChartInsightReadings={moonChartInsightReadings}
@@ -30401,9 +30433,11 @@ function PlaySection({
           openWebsite={openWebsite}
           buildNearbySearchUrl={buildNearbySearchUrl}
         />
-        <Text style={styles.smallMeta}>Current issue: {selectedIssueGuide.label}</Text>
         <Text style={styles.smallMeta}>
-          Profile lens: {selectedIdentity.label} / {practiceCritique.priorityIds.length} practical loops
+          {pickLocalizedText(languageId, { english: "Current issue:", hindi: "वर्तमान मुद्दा:", telugu: "ప్రస్తుత విషయం:", tamil: "தற்போதைய விஷயம்:", urdu: "موجودہ مسئلہ:" })} {localizedIssueGuideLabel(selectedIssueGuide.id, languageId)}
+        </Text>
+        <Text style={styles.smallMeta}>
+          {pickLocalizedText(languageId, { english: "Profile lens:", hindi: "प्रोफ़ाइल दृष्टि:", telugu: "ప్రొఫైల్ దృష్టి:", tamil: "சுயவிவரப் பார்வை:", urdu: "پروفائل زاویہ:" })} {selectedIdentity.label} / {practiceCritique.priorityIds.length} practical loops
         </Text>
         <View style={styles.insightBand}>
           <Text style={styles.insightTitle}>{practiceCritique.title}</Text>
@@ -33845,23 +33879,23 @@ function InsightsSection({
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Signals</Text>
-            <Text style={styles.sectionTitle}>What the data is telling you</Text>
+            <Text style={styles.eyebrow}>{pickLocalizedText(languageId, { english: "Signals", hindi: "संकेत", telugu: "సంకేతాలు", tamil: "சமிக்ஞைகள்", urdu: "اشارے" })}</Text>
+            <Text style={styles.sectionTitle}>{pickLocalizedText(languageId, { english: "What the data is telling you", hindi: "डेटा क्या बता रहा है", telugu: "డేటా ఏమి చెబుతోంది", tamil: "தரவு என்ன சொல்கிறது", urdu: "ڈیٹا کیا بتا رہا ہے" })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{weekEntries.length} this week</Text>
+          <Text style={styles.smallMeta}>{weekEntries.length} {pickLocalizedText(languageId, { english: "this week", hindi: "इस हफ़्ते", telugu: "ఈ వారం", tamil: "இந்த வாரம்", urdu: "اس ہفتے" })}</Text>
         </View>
-        <SignalRow label="Most used routine" value={topRoutine} />
-        <SignalRow label="Data quality" value={`${weekEntries.length} check-ins`} />
-        <SignalRow label="Pattern read" value={getPatternRead(weeklyAverage)} />
-        <SignalRow label="Current issue" value={selectedIssueGuide.label} />
-        <SignalRow label="Profile lens" value={profilePatternFrame.lens} />
-        <SignalRow label="Weak spot" value={patternCritique.warning} />
-        <SignalRow label="Next test" value={patternCritique.next} />
-        <SignalRow label="Support lens" value={supportiveLens} />
+        <SignalRow label={pickLocalizedText(languageId, { english: "Most used routine", hindi: "सबसे उपयोगी दिनचर्या", telugu: "అత్యధికంగా ఉపయోగించిన దినచర్య", tamil: "அதிகம் பயன்படுத்திய நடைமுறை", urdu: "سب سے زیادہ استعمال شدہ معمول" })} value={topRoutine} />
+        <SignalRow label={pickLocalizedText(languageId, { english: "Data quality", hindi: "डेटा गुणवत्ता", telugu: "డేటా నాణ్యత", tamil: "தரவு தரம்", urdu: "ڈیٹا کوالٹی" })} value={`${weekEntries.length} check-ins`} />
+        <SignalRow label={pickLocalizedText(languageId, { english: "Pattern read", hindi: "पैटर्न पढ़ाई", telugu: "ప్యాటర్న్ పఠనం", tamil: "முறை வாசிப்பு", urdu: "پیٹرن ریڈ" })} value={getPatternRead(weeklyAverage)} />
+        <SignalRow label={pickLocalizedText(languageId, { english: "Current issue", hindi: "वर्तमान मुद्दा", telugu: "ప్రస్తుత విషయం", tamil: "தற்போதைய விஷயம்", urdu: "موجودہ مسئلہ" })} value={localizedIssueGuideLabel(selectedIssueGuide.id, languageId)} />
+        <SignalRow label={pickLocalizedText(languageId, { english: "Profile lens", hindi: "प्रोफ़ाइल दृष्टि", telugu: "ప్రొఫైల్ దృష్టి", tamil: "சுயவிவரப் பார்வை", urdu: "پروفائل زاویہ" })} value={profilePatternFrame.lens} />
+        <SignalRow label={pickLocalizedText(languageId, { english: "Weak spot", hindi: "कमज़ोर बिंदु", telugu: "బలహీనమైన అంశం", tamil: "பலவீனமான பகுதி", urdu: "کمزور پہلو" })} value={patternCritique.warning} />
+        <SignalRow label={pickLocalizedText(languageId, { english: "Next test", hindi: "अगला परीक्षण", telugu: "తదుపరి పరీక్ష", tamil: "அடுத்த சோதனை", urdu: "اگلا امتحان" })} value={patternCritique.next} />
+        <SignalRow label={pickLocalizedText(languageId, { english: "Support lens", hindi: "सहायता दृष्टि", telugu: "మద్దతు దృష్టి", tamil: "ஆதரவு பார்வை", urdu: "مدد کا زاویہ" })} value={supportiveLens} />
         {/* Real multidimensional library, not a 5-field table pretending to be one. */}
         <SupportDimensionLibraryPanel
-          eyebrow="📊 Watch for"
-          actionLabel="Signal"
+          eyebrow={pickLocalizedText(languageId, { english: "📊 Watch for", hindi: "📊 ध्यान रखें", telugu: "📊 గమనించండి", tamil: "📊 கவனிக்கவும்", urdu: "📊 دیکھیں" })}
+          actionLabel={pickLocalizedText(languageId, { english: "Signal", hindi: "संकेत", telugu: "సంకేతం", tamil: "சமிக்ஞை", urdu: "اشارہ" })}
           languageId={languageId}
           accentColor="#3730A3"
           moonChartInsightReadings={moonChartInsightReadings}
@@ -37772,7 +37806,7 @@ function AccessOverlay({
           <Text style={styles.eyebrow}>{t("Profile center", "प्रोफ़ाइल केंद्र")}</Text>
           <Text style={[styles.onboardingTitle, compactStartup && styles.onboardingTitleCompact]}>{t("Your Account", "आपका खाता")}</Text>
           <Text style={[styles.onboardingText, compactStartup && styles.onboardingTextCompact]}>
-            {t("Set your name, add a contact method, and verify to unlock community features.", "अपना नाम रखें, संपर्क माध्यम जोड़ें, और सत्यापन करके community सुविधाएँ खोलें।")}
+            {t("Set your name, add a contact method, and verify to unlock समुदाय सुविधाएँ.", "अपना नाम रखें, संपर्क माध्यम जोड़ें, और सत्यापन करके समुदाय सुविधाएँ खोलें।")}
           </Text>
         </View>
         {startupLockActive ? (
@@ -37818,7 +37852,7 @@ function AccessOverlay({
             </Text>
           </View>
           <Text style={[styles.accessFlowBandText, compactStartup && styles.accessFlowBandTextCompact]}>
-            {t("Complete your profile, add a contact method, then verify to unlock community chat and private spaces.", "अपनी प्रोफ़ाइल पूरी करें, एक संपर्क माध्यम जोड़ें, फिर सत्यापन करके community chat और private spaces खोलें।")}
+            {t("Complete your profile, add a contact method, then verify to unlock community chat and private spaces.", "अपनी प्रोफ़ाइल पूरी करें, एक संपर्क माध्यम जोड़ें, फिर सत्यापन करके सामुदायिक चैट और निजी स्थान खोलें।")}
           </Text>
           <View style={[styles.accessFlowPills, compactStartup && styles.accessFlowPillsCompact]}>
             {[
@@ -38441,14 +38475,14 @@ function OnboardingOverlay({
               <Text style={styles.eyebrow}>{t("Welcome to Aethon Beacon", "Aethon Beacon में आपका स्वागत है")}</Text>
               <Text style={styles.onboardingTitle}>{t("Choose what you need today.", "आज आपको जो चाहिए, उसे चुनें।")}</Text>
               <Text style={styles.onboardingText}>
-                {t("Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.", "स्वचालित counselling engine, calm support, Vedic insight, या community से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप export या share न करें, notes इस device पर ही रहेंगी।")}
+                {t("Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to निर्यात या साझा them.", "स्वचालित counselling engine, calm support, Vedic insight, या समुदाय से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप export या share न करें, नोट्स इस डिवाइस पर ही रहेंगी।")}
               </Text>
             </View>
 
             <View style={styles.onboardingVision}>
               <Text style={styles.settingsTitle}>{t("Where do you want to start?", "आप कहाँ से शुरू करना चाहते हैं?")}</Text>
               <Text style={styles.promptText}>
-                {t("Privacy first. Profile details are optional. Help and Redress remains available from every page.", "पहले गोपनीयता। प्रोफ़ाइल विवरण वैकल्पिक हैं। Help and Redress हर पेज से उपलब्ध रहता है।")}
+                {t("Privacy first. Profile details are optional. मदद और शिकायत remains available from every page.", "पहले गोपनीयता। प्रोफ़ाइल विवरण वैकल्पिक हैं। मदद और शिकायत हर पेज से उपलब्ध रहता है।")}
               </Text>
               <View style={styles.launchNeedGrid}>
                 {onboardingLaunchNeeds.map((need) => {
@@ -42288,7 +42322,24 @@ function CounselingChatModal({
 
         {/* Input area */}
         {session.stage !== "synthesizing" && (
-          <View style={{ backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#DCE9E6", paddingHorizontal: isVeryCompactPhone ? 8 : 16, paddingTop: isVeryCompactPhone ? 6 : 12, paddingBottom: Math.max(insets.bottom, isVeryCompactPhone ? 6 : 12), flexDirection: "row", alignItems: "flex-end", gap: isVeryCompactPhone ? 4 : 10, shadowColor: "#0E9488", shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 }}>
+          <View
+            style={{
+              backgroundColor: "#FFFFFF",
+              borderTopWidth: 1,
+              borderTopColor: "#DCE9E6",
+              paddingHorizontal: isVeryCompactPhone ? 8 : 16,
+              paddingTop: isVeryCompactPhone ? 6 : 12,
+              paddingBottom: Math.max(insets.bottom, isVeryCompactPhone ? 6 : 12),
+              flexDirection: isVeryCompactPhone ? "column" : "row",
+              alignItems: isVeryCompactPhone ? "stretch" : "flex-end",
+              gap: isVeryCompactPhone ? 8 : 10,
+              shadowColor: "#0E9488",
+              shadowOffset: { width: 0, height: -3 },
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              elevation: 8
+            }}
+          >
             <View style={{ flex: 1 }}>
               {!isVeryCompactPhone && (
                 <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "800", marginBottom: 6 }} numberOfLines={1} ellipsizeMode="tail">
@@ -42300,7 +42351,18 @@ function CounselingChatModal({
                 onChangeText={setDraft}
                 placeholder={isListening ? l("Listening...", { hindi: "सुन रहा है…", telugu: "వింటోంది…", tamil: "கேட்கப்படுகிறது…", urdu: "سن رہا ہے…" }) : l("Reply here...", { hindi: "यहाँ जवाब लिखें…", telugu: "ఇక్కడ ప్రత్యుత్తరం ఇవ్వండి…", tamil: "இங்கே பதிலளிக்கவும்…", urdu: "یہاں جواب لکھیں…" })}
                 placeholderTextColor="#5B7480"
-                style={{ backgroundColor: "#F1F6F5", borderRadius: isVeryCompactPhone ? 11 : 12, paddingHorizontal: isVeryCompactPhone ? 8 : 12, paddingVertical: isVeryCompactPhone ? 6 : 12, color: "#213A4A", fontSize: isVeryCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 18 : 22, maxHeight: isVeryCompactPhone ? 84 : 120, borderWidth: 1, borderColor: isListening ? "#0B6F66" : "#C4D8D4" }}
+                style={{
+                  backgroundColor: "#F1F6F5",
+                  borderRadius: isVeryCompactPhone ? 11 : 12,
+                  paddingHorizontal: isVeryCompactPhone ? 8 : 12,
+                  paddingVertical: isVeryCompactPhone ? 6 : 12,
+                  color: "#213A4A",
+                  fontSize: isVeryCompactPhone ? 14 : 16,
+                  lineHeight: isVeryCompactPhone ? 18 : 22,
+                  maxHeight: isVeryCompactPhone ? 78 : 120,
+                  borderWidth: 1,
+                  borderColor: isListening ? "#0B6F66" : "#C4D8D4"
+                }}
                 multiline
                 textAlignVertical="top"
               />
@@ -42310,24 +42372,26 @@ function CounselingChatModal({
                 </Text>
               ) : null}
             </View>
-            {/* Voice input button */}
-            <Pressable
-              onPress={isListening ? stopVoiceInput : startVoiceInput}
-              style={{ width: isVeryCompactPhone ? 34 : 44, height: isVeryCompactPhone ? 34 : 44, borderRadius: isVeryCompactPhone ? 17 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
-              accessibilityRole="button"
-              accessibilityLabel={isListening ? l("Stop voice input", { hindi: "आवाज़ इनपुट रोकें", telugu: "వాయిస్ ఇన్‌పుట్ ఆపండి", tamil: "குரல் உள்ளீட்டை நிறுத்தவும்", urdu: "آواز کا ان پٹ روکیں" }) : l("Start voice input", { hindi: "आवाज़ इनपुट शुरू करें", telugu: "వాయిస్ ఇన్‌పుట్ ప్రారంభించండి", tamil: "குரல் உள்ளீட்டைத் தொடங்கவும்", urdu: "آواز کا ان پٹ شروع کریں" })}
-            >
-              <Text style={{ fontSize: isVeryCompactPhone ? 18 : 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
-            </Pressable>
-            <Pressable
-              onPress={handleSend}
-              disabled={isGuideTyping}
-              accessibilityRole="button"
-              accessibilityLabel={isGuideTyping ? l("Your guide is replying", { hindi: "आपका मार्गदर्शक जवाब दे रहा है", telugu: "మీ మార్గదర్శి ప్రత్యుత్తరం ఇస్తున్నారు", tamil: "உங்கள் வழிகாட்டி பதிலளிக்கிறார்", urdu: "آپ کا رہنما جواب دے رہا ہے" }) : l("Send message", { hindi: "संदेश भेजें", telugu: "సందేశం పంపండి", tamil: "செய்தியை அனுப்பவும்", urdu: "پیغام بھیجیں" })}
-              style={({ pressed }) => ({ width: isVeryCompactPhone ? 34 : 44, height: isVeryCompactPhone ? 34 : 44, borderRadius: isVeryCompactPhone ? 17 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
-            >
-              <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068", fontSize: isVeryCompactPhone ? 18 : 20 }}>↑</Text>
-            </Pressable>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: isVeryCompactPhone ? "flex-end" : "flex-start", gap: 8 }}>
+              {/* Voice input button */}
+              <Pressable
+                onPress={isListening ? stopVoiceInput : startVoiceInput}
+                style={{ width: isVeryCompactPhone ? 32 : 44, height: isVeryCompactPhone ? 32 : 44, borderRadius: isVeryCompactPhone ? 16 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+                accessibilityRole="button"
+                accessibilityLabel={isListening ? l("Stop voice input", { hindi: "आवाज़ इनपुट रोकें", telugu: "వాయిస్ ఇన్‌పుట్ ఆపండి", tamil: "குரல் உள்ளீட்டை நிறுத்தவும்", urdu: "آواز کا ان پٹ روکیں" }) : l("Start voice input", { hindi: "आवाज़ इनपुट शुरू करें", telugu: "వాయిస్ ఇన్‌పుట్ ప్రారంభించండి", tamil: "குரல் உள்ளீட்டைத் தொடங்கவும்", urdu: "آواز کا ان پٹ شروع کریں" })}
+              >
+                <Text style={{ fontSize: isVeryCompactPhone ? 17 : 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSend}
+                disabled={isGuideTyping}
+                accessibilityRole="button"
+                accessibilityLabel={isGuideTyping ? l("Your guide is replying", { hindi: "आपका मार्गदर्शक जवाब दे रहा है", telugu: "మీ మార్గదర్శి ప్రత్యుత్తరం ఇస్తున్నారు", tamil: "உங்கள் வழிகாட்டி பதிலளிக்கிறார்", urdu: "آپ کا رہنما جواب دے رہا ہے" }) : l("Send message", { hindi: "संदेश भेजें", telugu: "సందేశం పంపండి", tamil: "செய்தியை அனுப்பவும்", urdu: "پیغام بھیجیں" })}
+                style={({ pressed }) => ({ width: isVeryCompactPhone ? 32 : 44, height: isVeryCompactPhone ? 32 : 44, borderRadius: isVeryCompactPhone ? 16 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+              >
+                <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068", fontSize: isVeryCompactPhone ? 17 : 20 }}>↑</Text>
+              </Pressable>
+            </View>
           </View>
         )}
       </View>
