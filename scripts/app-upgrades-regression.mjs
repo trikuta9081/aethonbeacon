@@ -86,12 +86,13 @@ assert(!source.includes('Moderated community support and private conversations')
 indexOf('Open Help and Redress');
 indexOf('Open Path');
 indexOf('Open calm');
-indexOf('A private first step that keeps the next Path clear.');
-indexOf('Sound and breath that settle you before Path.');
-indexOf('Moon-chart insight that complements the same next step.');
-indexOf('Verified support when a human handoff is the right next step.');
+indexOf('Start with Counselling. Calm steadies the body. Path becomes one next step. Vedic adds perspective when needed.');
+indexOf('Private first step. The next Path stays clear.');
+indexOf('Sound and breath to steady you before Path.');
+indexOf('Moon-chart insight when perspective helps.');
+indexOf('Verified support when a human handoff fits best.');
 indexOf('Open messages');
-indexOf('Private by default. Notes stay local unless you share or export.');
+indexOf('Private by default. Notes stay local unless shared or exported.');
 // homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
 // safety strip was trimmed down to SOS + "Open Help and Redress" (the 4-number
 // grid they styled no longer exists in JSX) -- see mergedHelp marker above.
