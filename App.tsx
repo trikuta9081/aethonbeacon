@@ -36629,7 +36629,7 @@ function AccessOverlay({
   onOpenAdminCenter: () => void;
   onClose: () => void;
 }) {
-  const t = (english: string, hindi: string) => pickLocalizedText(languageId, { english, hindi });
+  const t = makeLocalizedTextPicker(languageId, profileOnboardingTextCatalog);
   const [role, setRole] = useState<Exclude<AccessRole, "admin">>(
     accessRole === "admin" ? "verified" : accessRole
   );
