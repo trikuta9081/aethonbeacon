@@ -78,7 +78,7 @@ const mergedHelp = indexOf('In immediate danger, call 112.');
 // The Patterns/insights tab's own "Progress Report Card" is a richer version
 // of what the front-page report card used to show.
 const premiumCommandCenter = indexOf('Premium command center');
-const premiumCommandTitle = indexOf('Choose the right support in one tap.');
+const premiumCommandTitle = indexOf('Four clear paths in one tap.');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
 assert(mergedHelp < premiumCommandCenter, 'Help and Redress must remain the first Home action surface');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
@@ -86,11 +86,12 @@ assert(!source.includes('Moderated community support and private conversations')
 indexOf('Open Help and Redress');
 indexOf('Open Path');
 indexOf('Start Calm');
-indexOf('A private guided room with a 30-message arc, turn-by-turn acknowledgements, and a clean next-step checkpoint.');
-indexOf('Issue-matched sound, breath timing, and reset practices that hand off into Path or counselling.');
-indexOf('Moon-chart calculations with practical remedies that stay aligned with the same situation.');
+indexOf('A private guided room with a clean next-step checkpoint.');
+indexOf('Issue-matched sound and breath that hand off into Path.');
+indexOf('Moon-chart insight with practical remedies for the same situation.');
 indexOf('Verified support conversations when human input is the right next step.');
-indexOf('Privacy first: notes stay local unless you choose verified sharing or export.');
+indexOf('Open messages');
+indexOf('Private by default: notes stay local unless you share or export.');
 // homeRedressInfoGrid/Card styles were removed as dead code once the front-screen
 // safety strip was trimmed down to SOS + "Open Help and Redress" (the 4-number
 // grid they styled no longer exists in JSX) -- see mergedHelp marker above.
