@@ -41,6 +41,10 @@ assert(source.includes('label={uiCopy.languagePageVoiceAssistLabel}'), "Language
 assert(source.includes('आपका आने वाला सप्ताह तैयार है') && source.includes('पढ़ें'), "Hindi Home hero and weekly banner must be localized.");
 assert(source.includes('परामर्श शुरू करें') && source.includes('जारी रखें'), "Hindi Home support-card actions must be localized.");
 assert(source.includes('एक पेज खोलें') && source.includes('सीधे जाने के लिए कोई पेज टैप करें।'), "Hindi section chooser must be localized.");
+assert(source.includes('accessibilityLabel={homeUiCopy.homeOpenProfileSettingsA11y}'), "Home profile chip accessibility label must be localized.");
+assert(source.includes('accessibilityLabel={homeUiCopy.flowExitA11y}'), "Home Exit control accessibility label must be localized.");
+assert(source.includes('{homeUiCopy.flowExit}'), "Home Exit button label must be localized.");
+assert(source.includes('accessibilityLabel={homeUiCopy.closeSectionSwitcherA11y}'), "Section chooser close label must be localized.");
 
 // ── Crisis lifeline safeguard ───────────────────────────────────────────────
 // A self-directed safety signal (self-harm / suicidal ideation) must lead with

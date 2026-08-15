@@ -6275,6 +6275,18 @@ type UiCopy = {
   flowHome: string;
   flowPages: string;
   flowMore: string;
+  flowExit: string;
+  homeOpenProfileSettingsA11y: string;
+  homeOpenLanguagePageA11y: string;
+  flowBackA11y: string;
+  flowNextA11y: string;
+  flowHomeA11y: string;
+  flowPagesA11y: string;
+  flowExitA11y: string;
+  openSectionSwitcherA11y: string;
+  closeSectionSwitcherA11y: string;
+  openWeeklyReadingA11y: string;
+  dismissWeeklyReadingA11y: string;
   sectionSwitcherTitle: string;
   sectionSwitcherPrompt: string;
   sectionSwitcherClose: string;
@@ -6404,6 +6416,18 @@ const englishUiCopy: UiCopy = {
   flowHome: "Home",
   flowPages: "Pages",
   flowMore: "More",
+  flowExit: "Exit",
+  homeOpenProfileSettingsA11y: "Open profile and settings",
+  homeOpenLanguagePageA11y: "Open language page",
+  flowBackA11y: "Back to previous tab",
+  flowNextA11y: "Go to next tab",
+  flowHomeA11y: "Go to home page",
+  flowPagesA11y: "Open pages chooser",
+  flowExitA11y: "Exit to start screen",
+  openSectionSwitcherA11y: "Open section chooser",
+  closeSectionSwitcherA11y: "Close section chooser",
+  openWeeklyReadingA11y: "Open this week's reading",
+  dismissWeeklyReadingA11y: "Dismiss this week's reading prompt",
   sectionSwitcherTitle: "Open a page",
   sectionSwitcherPrompt: "Tap a page to go there directly.",
   sectionSwitcherClose: "Close",
@@ -6539,6 +6563,18 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     flowHome: "होम",
     flowPages: "पेज",
     flowMore: "और",
+    flowExit: "बाहर निकलें",
+    homeOpenProfileSettingsA11y: "प्रोफ़ाइल और सेटिंग्स खोलें",
+    homeOpenLanguagePageA11y: "भाषा पेज खोलें",
+    flowBackA11y: "पिछले टैब पर जाएँ",
+    flowNextA11y: "अगले टैब पर जाएँ",
+    flowHomeA11y: "होम पेज पर जाएँ",
+    flowPagesA11y: "पेज चुनने वाला खोलें",
+    flowExitA11y: "स्टार्ट स्क्रीन पर निकलें",
+    openSectionSwitcherA11y: "सेक्शन चुनने वाला खोलें",
+    closeSectionSwitcherA11y: "सेक्शन चुनने वाला बंद करें",
+    openWeeklyReadingA11y: "इस हफ्ते का पढ़ना खोलें",
+    dismissWeeklyReadingA11y: "इस हफ्ते का पढ़ना सुझाव बंद करें",
     sectionSwitcherTitle: "एक पेज खोलें",
     sectionSwitcherPrompt: "सीधे जाने के लिए कोई पेज टैप करें।",
     sectionSwitcherClose: "बंद करें",
@@ -20753,7 +20789,7 @@ function isTrustedExternalUrl(url: string) {
             <View style={[styles.topBeaconSecondaryRow, isCompact && styles.topBeaconSecondaryRowCompact]}>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Open profile and settings"
+                accessibilityLabel={homeUiCopy.homeOpenProfileSettingsA11y}
                 onPress={() => openProfileAccessPanel()}
                 style={({ pressed }) => [
                   styles.topStatusChip,
@@ -20779,7 +20815,7 @@ function isTrustedExternalUrl(url: string) {
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Preferred language ${selectedLanguage.label}. ${selectedLanguage.meta}. Open language page.`}
+                accessibilityLabel={`Preferred language ${selectedLanguage.label}. ${selectedLanguage.meta}. ${homeUiCopy.homeOpenLanguagePageA11y}.`}
                 onPress={() => {
                   handleTabPress("language");
                   scrollViewRef.current?.scrollTo({ y: 0, animated: false });
@@ -20857,7 +20893,7 @@ function isTrustedExternalUrl(url: string) {
                   })}
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Open all pages"
+                    accessibilityLabel={homeUiCopy.flowPagesA11y}
                     onPress={() => setShowSectionSwitcher(true)}
                     style={({ pressed }) => [
                       styles.topTabButton,
@@ -20905,7 +20941,7 @@ function isTrustedExternalUrl(url: string) {
                   })}
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Open all pages"
+                    accessibilityLabel={homeUiCopy.flowPagesA11y}
                     onPress={() => setShowSectionSwitcher(true)}
                     style={({ pressed }) => [
                       styles.topTabButton,
@@ -20939,7 +20975,7 @@ function isTrustedExternalUrl(url: string) {
               {!showFullHomeHero ? (
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Back to previous tab"
+                  accessibilityLabel={homeUiCopy.flowBackA11y}
                   onPress={goBackOneTab}
                   style={({ pressed }) => [
                     styles.flowRailButton,
@@ -20963,7 +20999,7 @@ function isTrustedExternalUrl(url: string) {
               {!showFullHomeHero ? (
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Go to next tab"
+                  accessibilityLabel={homeUiCopy.flowNextA11y}
                   onPress={handleNextTab}
                   style={({ pressed }) => [
                     styles.flowRailButton,
@@ -20988,7 +21024,7 @@ function isTrustedExternalUrl(url: string) {
               {!showFullHomeHero ? (
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Go to home page"
+                  accessibilityLabel={homeUiCopy.flowHomeA11y}
                   onPress={enterMainFlow}
                   style={({ pressed }) => [
                     styles.flowRailButton,
@@ -21013,7 +21049,7 @@ function isTrustedExternalUrl(url: string) {
               ) : null}
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={showFullHomeHero ? "Open section chooser" : "Open pages chooser"}
+                accessibilityLabel={showFullHomeHero ? homeUiCopy.openSectionSwitcherA11y : homeUiCopy.flowPagesA11y}
                 onPress={() => setShowSectionSwitcher((value) => !value)}
                 style={({ pressed }) => [
                   styles.flowRailButton,
@@ -21029,7 +21065,7 @@ function isTrustedExternalUrl(url: string) {
               {!showFullHomeHero ? (
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Exit to start screen"
+                  accessibilityLabel={homeUiCopy.flowExitA11y}
                   onPress={exitToStart}
                   style={({ pressed }) => [
                     styles.flowRailButton,
@@ -21038,7 +21074,7 @@ function isTrustedExternalUrl(url: string) {
                   ]}
                 >
                   <Text style={[styles.flowRailButtonLabel, isCompact && styles.flowRailButtonLabelCompact]}>
-                    Exit
+                    {homeUiCopy.flowExit}
                   </Text>
                 </Pressable>
               ) : null}
@@ -21060,7 +21096,7 @@ function isTrustedExternalUrl(url: string) {
                     </View>
                     <Pressable
                       accessibilityRole="button"
-                      accessibilityLabel="Close section chooser"
+                      accessibilityLabel={homeUiCopy.closeSectionSwitcherA11y}
                       onPress={() => setShowSectionSwitcher(false)}
                       style={({ pressed }) => [styles.sectionSwitcherPanelClose, { backgroundColor: theme.bgDeep }, pressed && styles.pressed]}
                     >
@@ -21131,7 +21167,7 @@ function isTrustedExternalUrl(url: string) {
                   <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
                     <Pressable
                       accessibilityRole="button"
-                      accessibilityLabel="Open this week's reading"
+                      accessibilityLabel={homeUiCopy.openWeeklyReadingA11y}
                       onPress={() => {
                         void Haptics.selectionAsync();
                         setShowWeeklyVedicBanner(false);
@@ -21149,7 +21185,7 @@ function isTrustedExternalUrl(url: string) {
                     </Pressable>
                     <Pressable
                       accessibilityRole="button"
-                      accessibilityLabel="Dismiss this week's reading prompt"
+                      accessibilityLabel={homeUiCopy.dismissWeeklyReadingA11y}
                       onPress={() => setShowWeeklyVedicBanner(false)}
                       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                       style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, paddingHorizontal: 4 })}
