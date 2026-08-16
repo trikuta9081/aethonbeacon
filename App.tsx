@@ -27438,10 +27438,15 @@ function MeditationSection({
             {pickLocalizedText(languageId, { english: "48-dimension synchronized focus", hindi: "48-आयाम समन्वित फोकस", telugu: "48-పరిమాణ సమన్వయ దృష్టి", tamil: "48-பரிமாண ஒருங்கிணைந்த கவனம்", urdu: "48 جہتی مربوط توجہ" })}
           </Text>
           <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
-            <Text style={{ fontWeight: "900" }}>{localizedSupportDimensionLabel(supportDimensionGuides[activeSupportDimensionId], languageId)} · Calm: </Text>{activeSupportPracticeCopy.calmCue}
+            <Text style={{ fontWeight: "900" }}>
+              {localizedSupportDimensionLabel(supportDimensionGuides[activeSupportDimensionId], languageId)}
+              {pickLocalizedText(languageId, { english: " · Calm: ", hindi: " · शांति-सहायता: ", telugu: " · శాంతి సహాయం: ", tamil: " · அமைதி உதவி: ", urdu: " · سکون کی مدد: " })}
+            </Text>{activeSupportPracticeCopy.calmCue}
           </Text>
           <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
-            <Text style={{ fontWeight: "900" }}>Path / Help / Redress · </Text>{activeSupportPracticeCopy.pathHandoff}
+            <Text style={{ fontWeight: "900" }}>
+              {pickLocalizedText(languageId, { english: "Path / Help / Redress · ", hindi: "मार्ग / सहायता / निवारण · ", telugu: "మార్గం / సహాయం / పరిహారం · ", tamil: "வழி / உதவி / நிவாரணம் · ", urdu: "راستہ / مدد / ازالہ · " })}
+            </Text>{activeSupportPracticeCopy.pathHandoff}
           </Text>
           <Text style={{ color: "#5A6674", fontSize: 12, lineHeight: 16 }}>{activeSupportPracticeCopy.vedicRole}</Text>
         </View>
@@ -27452,10 +27457,10 @@ function MeditationSection({
         <Text style={styles.visionGuidanceText}>
           {pickLocalizedText(languageId, {
             english: `Begin with one matched method for ${selectedIssueGuide.label.toLowerCase()}. Settle the body, regain perspective, then continue to Path, Counselling, Help, or Redress.`,
-            hindi: `${selectedIssueGuide.label.toLowerCase()} के लिए एक उपयुक्त विधि से शुरू करें। शरीर को स्थिर करें, दृष्टि साफ करें, फिर Path, Counselling, Help या Redress पर जाएँ।`,
-            telugu: `${selectedIssueGuide.label.toLowerCase()} కోసం సరిపోలిన ఒక పద్ధతితో ప్రారంభించండి. శరీరాన్ని స్థిరపరచి, దృక్పథాన్ని తిరిగి పొందిన తర్వాత Path, Counselling, Help లేదా Redress‌కు వెళ్లండి.`,
-            tamil: `${selectedIssueGuide.label.toLowerCase()}க்கு பொருந்தும் ஒரு முறையுடன் தொடங்குங்கள். உடலை நிலைப்படுத்தி, தெளிவைப் பெற்று, பின்னர் Path, Counselling, Help அல்லது Redress-க்கு செல்லுங்கள்.`,
-            urdu: `${selectedIssueGuide.label.toLowerCase()} کے لیے ایک موزوں طریقے سے شروع کریں۔ جسم کو سنبھالیں، نقطۂ نظر واضح کریں، پھر Path، Counselling، Help یا Redress کی طرف جائیں۔`
+            hindi: `${selectedIssueGuide.label.toLowerCase()} के लिए एक उपयुक्त विधि से शुरू करें। शरीर को स्थिर करें, दृष्टि साफ करें, फिर मार्ग, परामर्श, सहायता या निवारण पर जाएँ।`,
+            telugu: `${selectedIssueGuide.label.toLowerCase()} కోసం సరిపోలిన ఒక పద్ధతితో ప్రారంభించండి. శరీరాన్ని స్థిరపరచి, దృక్పథాన్ని తిరిగి పొందిన తర్వాత మార్గం, పరామర్శ, సహాయం లేదా పరిహారానికి వెళ్లండి.`,
+            tamil: `${selectedIssueGuide.label.toLowerCase()}க்கு பொருந்தும் ஒரு முறையுடன் தொடங்குங்கள். உடலை நிலைப்படுத்தி, தெளிவைப் பெற்று, பின்னர் வழி, ஆலோசனை, உதவி அல்லது நிவாரணத்துக்கு செல்லுங்கள்.`,
+            urdu: `${selectedIssueGuide.label.toLowerCase()} کے لیے ایک موزوں طریقے سے شروع کریں۔ جسم کو سنبھالیں، نقطۂ نظر واضح کریں، پھر راستہ، مشاورت، مدد یا ازالہ کی طرف جائیں۔`
           })}
         </Text>
       </View>
@@ -27463,10 +27468,14 @@ function MeditationSection({
       <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>{showMeditationLibrary ? "Practice library" : "Recommended practice"}</Text>
+            <Text style={styles.eyebrow}>
+              {showMeditationLibrary
+                ? pickLocalizedText(languageId, { english: "Practice library", hindi: "अभ्यास पुस्तकालय", telugu: "అభ్యాస గ్రంథాలయం", tamil: "பயிற்சி நூலகம்", urdu: "مشق لائبریری" })
+                : pickLocalizedText(languageId, { english: "Recommended practice", hindi: "सुझाया गया अभ्यास", telugu: "సిఫార్సు చేసిన అభ్యాసం", tamil: "பரிந்துரைக்கப்பட்ட பயிற்சி", urdu: "تجویز کردہ مشق" })}
+            </Text>
             <Text style={styles.sectionTitleSmall}>{primaryMeditationMethod.label}</Text>
           </View>
-          <Text style={styles.smallMeta}>Neutral guidance</Text>
+          <Text style={styles.smallMeta}>{pickLocalizedText(languageId, { english: "Neutral guidance", hindi: "तटस्थ मार्गदर्शन", telugu: "తటస్థ మార్గదర్శనం", tamil: "நடுநிலை வழிகாட்டல்", urdu: "غیر جانبدار رہنمائی" })}</Text>
         </View>
         <Text style={styles.beaconXWisdomLead}>
           {showMeditationLibrary
@@ -39167,14 +39176,14 @@ function OnboardingOverlay({
               <Text style={styles.eyebrow}>{t("Welcome to Aethon Beacon", "Aethon Beacon में आपका स्वागत है")}</Text>
               <Text style={styles.onboardingTitle}>{t("Choose what you need today.", "आज आपको जो चाहिए, उसे चुनें।")}</Text>
               <Text style={styles.onboardingText}>
-                {t("Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to निर्यात या साझा them.", "स्वचालित counselling engine, calm support, Vedic insight, या समुदाय से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप export या share न करें, नोट्स इस डिवाइस पर ही रहेंगी।")}
+                {t("Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.", "स्वचालित परामर्श, शांति-सहायता, वैदिक दृष्टि या समुदाय से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप निर्यात या साझा न करें, नोट्स इसी डिवाइस पर रहेंगी।")}
               </Text>
             </View>
 
             <View style={styles.onboardingVision}>
               <Text style={styles.settingsTitle}>{t("Where do you want to start?", "आप कहाँ से शुरू करना चाहते हैं?")}</Text>
               <Text style={styles.promptText}>
-                {t("Privacy first. Profile details are optional. मदद और शिकायत remains available from every page.", "पहले गोपनीयता। प्रोफ़ाइल विवरण वैकल्पिक हैं। मदद और शिकायत हर पेज से उपलब्ध रहता है।")}
+                {t("Privacy first. Profile details are optional. Help and Redress remain available from every page.", "पहले गोपनीयता। प्रोफ़ाइल विवरण वैकल्पिक हैं। सहायता और निवारण हर पेज से उपलब्ध रहते हैं।")}
               </Text>
               <View style={styles.launchNeedGrid}>
                 {onboardingLaunchNeeds.map((need) => {
@@ -41251,7 +41260,9 @@ function SupportDimensionLibraryPanel({
                       </Text>
                     </View>
                     <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
-                      <Text style={{ fontWeight: "900" }}>Calm · </Text>{openDimensionPracticeCopy.calmCue}
+                      <Text style={{ fontWeight: "900" }}>
+                        {pickLocalizedText(languageId, { english: "Calm · ", hindi: "शांति-सहायता · ", telugu: "శాంతి సహాయం · ", tamil: "அமைதி உதவி · ", urdu: "سکون کی مدد · " })}
+                      </Text>{openDimensionPracticeCopy.calmCue}
                     </Text>
                     <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
                       <Text style={{ fontWeight: "900" }}>
@@ -41261,7 +41272,9 @@ function SupportDimensionLibraryPanel({
                       {openDimensionChakra ? ` · ${openDimensionChakra.label}` : ""}
                     </Text>
                     <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
-                      <Text style={{ fontWeight: "900" }}>Path / Help / Redress · </Text>{openDimensionPracticeCopy.pathHandoff}
+                      <Text style={{ fontWeight: "900" }}>
+                        {pickLocalizedText(languageId, { english: "Path / Help / Redress · ", hindi: "मार्ग / सहायता / निवारण · ", telugu: "మార్గం / సహాయం / పరిహారం · ", tamil: "வழி / உதவி / நிவாரணம் · ", urdu: "راستہ / مدد / ازالہ · " })}
+                      </Text>{openDimensionPracticeCopy.pathHandoff}
                     </Text>
                     <Text style={{ color: "#5A6674", fontSize: 12, lineHeight: 16 }}>
                       <Text style={{ fontWeight: "900" }}>
@@ -42032,17 +42045,17 @@ function buildPrimaryLanguageCounsellingSynthesis(
     }),
     pickLocalizedText(languageId, {
       english: "Your recommended journey below coordinates Calm, Path, Vedic perspective, Messages, and Help / Redress only where each one fits. You remain in control and may skip any optional step.",
-      hindi: "नीचे दी गई सुझाई गई यात्रा Calm, Path, वैदिक दृष्टि, Messages और Help / Redress को केवल वहीं जोड़ती है जहाँ वे उपयुक्त हैं। नियंत्रण आपके पास है और आप किसी भी वैकल्पिक कदम को छोड़ सकते हैं।",
-      telugu: "క్రింద సూచించిన ప్రయాణం Calm, Path, వేద దృష్టి, Messages మరియు Help / Redress‌ను అవసరమైన చోట మాత్రమే సమన్వయిస్తుంది. నియంత్రణ మీ వద్దే ఉంటుంది; ఏ ఐచ్ఛిక అడుగునైనా దాటవేయవచ్చు.",
-      tamil: "கீழே பரிந்துரைக்கப்பட்ட பயணம் Calm, Path, வேதப் பார்வை, Messages மற்றும் Help / Redress ஆகியவற்றை பொருத்தமான இடங்களில் மட்டுமே ஒருங்கிணைக்கிறது. கட்டுப்பாடு உங்களிடமே உள்ளது; எந்த விருப்பப் படியையும் தவிர்க்கலாம்.",
-      urdu: "نیچے تجویز کردہ سفر Calm، Path، ویدک بصیرت، Messages اور Help / Redress کو صرف وہاں مربوط کرتا ہے جہاں ہر ایک مناسب ہو۔ اختیار آپ کے پاس ہے اور آپ کسی بھی اختیاری قدم کو چھوڑ سکتے ہیں۔"
+      hindi: "नीचे दी गई सुझाई गई यात्रा शांति-सहायता, मार्ग, वैदिक दृष्टि, संदेश और सहायता / निवारण को केवल वहीं जोड़ती है जहाँ वे उपयुक्त हैं। नियंत्रण आपके पास है और आप किसी भी वैकल्पिक कदम को छोड़ सकते हैं।",
+      telugu: "క్రింద సూచించిన ప్రయాణం శాంతి సహాయం, మార్గం, వేద దృష్టి, సందేశాలు మరియు సహాయం / పరిహారాన్ని అవసరమైన చోట మాత్రమే సమన్వయిస్తుంది. నియంత్రణ మీ వద్దే ఉంటుంది; ఏ ఐచ్ఛిక అడుగునైనా దాటవేయవచ్చు.",
+      tamil: "கீழே பரிந்துரைக்கப்பட்ட பயணம் அமைதி உதவி, வழி, வேதப் பார்வை, செய்திகள் மற்றும் உதவி / நிவாரணம் ஆகியவற்றை பொருத்தமான இடங்களில் மட்டுமே ஒருங்கிணைக்கிறது. கட்டுப்பாடு உங்களிடமே உள்ளது; எந்த விருப்பப் படியையும் தவிர்க்கலாம்.",
+      urdu: "نیچے تجویز کردہ سفر سکون کی مدد، راستہ، ویدک بصیرت، پیغامات اور مدد / ازالہ کو صرف وہاں مربوط کرتا ہے جہاں ہر ایک مناسب ہو۔ اختیار آپ کے پاس ہے اور آپ کسی بھی اختیاری قدم کو چھوڑ سکتے ہیں۔"
     }),
     pickLocalizedText(languageId, {
       english: "If the situation becomes urgent or unsafe at any point, move directly to Help / Redress, SOS, a qualified professional, or local emergency services.",
-      hindi: "यदि किसी भी समय स्थिति तात्कालिक या असुरक्षित हो जाए, तो सीधे Help / Redress, SOS, किसी योग्य पेशेवर या स्थानीय आपातकालीन सेवा पर जाएँ।",
-      telugu: "ఏ సమయంలోనైనా పరిస్థితి అత్యవసరంగా లేదా అసురక్షితంగా మారితే, నేరుగా Help / Redress, SOS, అర్హత కలిగిన నిపుణుడు లేదా స్థానిక అత్యవసర సేవలను సంప్రదించండి.",
-      tamil: "எந்த நேரத்திலும் நிலை அவசரமாகவோ பாதுகாப்பற்றதாகவோ மாறினால், நேரடியாக Help / Redress, SOS, தகுதியான நிபுணர் அல்லது உள்ளூர் அவசர சேவையை அணுகுங்கள்.",
-      urdu: "اگر کسی بھی وقت صورتحال فوری یا غیر محفوظ ہو جائے تو براہِ راست Help / Redress، SOS، کسی اہل پیشہ ور یا مقامی ہنگامی خدمات سے رابطہ کریں۔"
+      hindi: "यदि किसी भी समय स्थिति तात्कालिक या असुरक्षित हो जाए, तो सीधे सहायता / निवारण, SOS, किसी योग्य पेशेवर या स्थानीय आपातकालीन सेवा पर जाएँ।",
+      telugu: "ఏ సమయంలోనైనా పరిస్థితి అత్యవసరంగా లేదా అసురక్షితంగా మారితే, నేరుగా సహాయం / పరిహారం, SOS, అర్హత కలిగిన నిపుణుడు లేదా స్థానిక అత్యవసర సేవలను సంప్రదించండి.",
+      tamil: "எந்த நேரத்திலும் நிலை அவசரமாகவோ பாதுகாப்பற்றதாகவோ மாறினால், நேரடியாக உதவி / நிவாரணம், SOS, தகுதியான நிபுணர் அல்லது உள்ளூர் அவசர சேவையை அணுகுங்கள்.",
+      urdu: "اگر کسی بھی وقت صورتحال فوری یا غیر محفوظ ہو جائے تو براہِ راست مدد / ازالہ، SOS، کسی اہل پیشہ ور یا مقامی ہنگامی خدمات سے رابطہ کریں۔"
     })
   ].filter(Boolean).join("\n\n");
 }
