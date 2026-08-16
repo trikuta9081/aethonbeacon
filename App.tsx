@@ -7427,15 +7427,15 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     journalLoopEyebrow: "लूप",
     journalLoopTitle: "लिखें, फिर बढ़ें",
     journalLoopSummary:
-      "जर्नल एक अधूरी note को अगले साफ़ route में बदले, ताकि user पेज पर अटका न रहे।",
+      "जर्नल अधूरी बात को अगले साफ़ मार्ग में बदलता है, ताकि आप पेज पर अटके न रहें।",
     oneClearLineTitle: "एक साफ़ लाइन",
     oneClearLineMeta: "सरल रखें: क्या हुआ, क्या चाहिए, और आगे क्या होना चाहिए।",
     useStarter: "शुरुआती लाइन",
-    openPathFromJournal: "Path खोलें",
+    openPathFromJournal: "मार्ग खोलें",
     startCalm: "शांत शुरुआत",
     clearHistory: "इतिहास हटाएँ",
-    saveAndOpenPath: "सहेजें और Path खोलें",
-    continuePath: "Path जारी रखें",
+    saveAndOpenPath: "सहेजें और मार्ग खोलें",
+    continuePath: "मार्ग जारी रखें",
     journalButton: "जर्नल",
     practiceButton: "प्रैक्टिस",
     patternButton: "पैटर्न",
@@ -7695,18 +7695,18 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     footerMadeWithCare: "శ్రద్ధతో రూపొందించబడింది",
     journalEyebrow: "జర్నల్",
     journalTitle: "వ్రాయండి, తర్వాత కొనసాగండి",
-    journalLoopEyebrow: "loop",
+    journalLoopEyebrow: "సహాయక చక్రం",
     journalLoopTitle: "వ్రాయండి, తర్వాత కదలండి",
     journalLoopSummary:
-      "Journal ఒక rough note ని తదుపరి clean route గా మార్చాలి, అప్పుడు user పేజీపై ఇరుక్కోడు.",
+      "జర్నల్ అసంపూర్ణ గమనికను తదుపరి స్పష్టమైన మార్గంగా మార్చుతుంది, కాబట్టి మీరు పేజీలో ఇరుక్కోరు.",
     oneClearLineTitle: "ఒక స్పష్టమైన లైన్",
     oneClearLineMeta: "సులభంగా ఉంచండి: ఏమైంది, ఏమి కావాలి, తరువాత ఏమి జరగాలి.",
-    useStarter: "starter వాడండి",
+    useStarter: "ప్రారంభ వాక్యాన్ని వాడండి",
     openPathFromJournal: "మార్గం తెరవండి",
     startCalm: "శాంతంగా ప్రారంభించండి",
     clearHistory: "చరిత్రను తొలగించండి",
-    saveAndOpenPath: "Save చేసి Path తెరవండి",
-    continuePath: "Path కొనసాగించండి",
+    saveAndOpenPath: "సేవ్ చేసి మార్గం తెరవండి",
+    continuePath: "మార్గాన్ని కొనసాగించండి",
     journalButton: "జర్నల్",
     practiceButton: "ప్రాక్టీస్",
     patternButton: "ప్యాటర్న్",
@@ -7829,18 +7829,18 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     footerMadeWithCare: "கவனத்துடன் உருவாக்கப்பட்டது",
     journalEyebrow: "ஜர்னல்",
     journalTitle: "எழுதி, பிறகு முன்னேறுங்கள்",
-    journalLoopEyebrow: "loop",
+    journalLoopEyebrow: "வழிகாட்டு வட்டம்",
     journalLoopTitle: "எழுதி, பிறகு நகருங்கள்",
     journalLoopSummary:
-      "Journal ஒரு rough note-ஐ அடுத்த சுத்தமான route-ஆக மாற்ற வேண்டும்; அப்போதுதான் user பக்கத்தில் சிக்கமாட்டார்.",
+      "ஜர்னல் முடிவடையாத குறிப்பை அடுத்த தெளிவான பாதையாக மாற்றுகிறது; அதனால் நீங்கள் பக்கத்தில் சிக்கிக்கொள்ள மாட்டீர்கள்.",
     oneClearLineTitle: "ஒரு தெளிவான வரி",
     oneClearLineMeta: "எளிமையாக வைத்துக்கொள்ளுங்கள்: என்ன நடந்தது, என்ன வேண்டும், அடுத்து என்ன வேண்டும்.",
-    useStarter: "starter பயன்படுத்தவும்",
+    useStarter: "தொடக்க வரியைப் பயன்படுத்தவும்",
     openPathFromJournal: "பாதையைத் திறக்கவும்",
     startCalm: "அமைதியாக தொடங்குங்கள்",
     clearHistory: "வரலாற்றை அழிக்கவும்",
-    saveAndOpenPath: "சேமித்து Path திறக்கவும்",
-    continuePath: "Path தொடரவும்",
+    saveAndOpenPath: "சேமித்து பாதையைத் திறக்கவும்",
+    continuePath: "பாதையைத் தொடரவும்",
     journalButton: "ஜர்னல்",
     practiceButton: "பயிற்சி",
     patternButton: "Pattern",
@@ -7966,15 +7966,15 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     journalLoopEyebrow: "لوپ",
     journalLoopTitle: "لکھیں، پھر حرکت کریں",
     journalLoopSummary:
-      "Journal ایک rough note کو اگلے صاف route میں بدلے تاکہ user صفحہ پر اٹکا نہ رہے۔",
+      "جرنل ادھوری بات کو اگلے صاف راستے میں بدلتا ہے تاکہ آپ صفحے پر اٹکے نہ رہیں۔",
     oneClearLineTitle: "ایک صاف لائن",
     oneClearLineMeta: "سادہ رکھیں: کیا ہوا، کیا چاہیے، اور آگے کیا ہونا چاہیے۔",
     useStarter: "ابتدائی لائن",
     openPathFromJournal: "راستہ کھولیں",
     startCalm: "پرسکون آغاز",
     clearHistory: "تاریخ صاف کریں",
-    saveAndOpenPath: "محفوظ کریں اور Path کھولیں",
-    continuePath: "Path جاری رکھیں",
+    saveAndOpenPath: "محفوظ کریں اور راستہ کھولیں",
+    continuePath: "راستہ جاری رکھیں",
     journalButton: "جرنل",
     practiceButton: "پریکٹس",
     patternButton: "پیٹرن",
@@ -25477,7 +25477,16 @@ function JournalSection({
       ? getJournalInsight(latestEntry, entries.length, weeklyAverage, selectedIssueGuide, languageId)
       : null;
   const compact = true;
-  const templateLine = `What happened:\nWhat do I need:\nNext step:`;
+  const journalText = (
+    english: string,
+    translations: Partial<Record<Exclude<LanguageId, "english">, string>>
+  ) => pickLocalizedText(languageId, { english, ...translations });
+  const templateLine = journalText("What happened:\nWhat do I need:\nNext step:", {
+    hindi: "क्या हुआ:\nमुझे क्या चाहिए:\nअगला कदम:",
+    telugu: "ఏమైంది:\nనాకు ఏమి కావాలి:\nతదుపరి అడుగు:",
+    tamil: "என்ன நடந்தது:\nஎனக்கு என்ன வேண்டும்:\nஅடுத்த படி:",
+    urdu: "کیا ہوا:\nمجھے کیا چاہیے:\nاگلا قدم:"
+  });
   const [showFullJournal, setShowFullJournal] = useState(false);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
@@ -25509,29 +25518,186 @@ function JournalSection({
   ];
 
   const WRITING_PROMPTS = [
-    "What is the one thing weighing on you most right now?",
-    "What would feel like a small win today?",
-    "What are you avoiding, and why?",
-    "Describe how your body feels in three words.",
-    "What would you tell a friend in your situation?",
-    "What is one thing you are grateful for today?",
-    "What do you need more of right now — rest, clarity, or connection?",
-    "What have you lost recently, and what do you still have?",
-    "If your grief could speak, what would it say it needs?",
-    "What does safety feel like to you, and how close are you to it today?",
-    "What is one thing that felt true about your trauma today that you want to acknowledge?",
-    "What triggered the craving or urge today, and what helped you through it?",
-    "Name one thing that restored a small sense of control today.",
-    "What is one honest step you can take toward your health this week?",
-    "Write down the exact number or situation causing financial stress — facts, not fear.",
-    "What do you wish the other person in this relationship understood about you?",
-    "What kind of parent do you want to be today, even if only for one moment?",
-    "What is one thing you studied or worked on today that actually made sense?",
-    "Who am I when no one is watching or expecting anything from me?",
-    "What kind of anger am I holding, and what does it actually need?",
-    "What is one thing I fear that I have survived before?",
-    "Write one sentence about where I am, and one about where I want to be.",
+    journalText("What is the one thing weighing on you most right now?", {
+      hindi: "अभी सबसे अधिक कौन-सी एक बात मन पर भारी है?",
+      telugu: "ఇప్పుడే మీ మనసుపై ఎక్కువగా భారంగా ఉన్న ఒక విషయం ఏమిటి?",
+      tamil: "இப்போது உங்கள் மனதில் மிக அதிகமாக கனமாக இருப்பது என்ன?",
+      urdu: "اس وقت آپ کے دل پر سب سے زیادہ بوجھ ڈالنے والی ایک بات کیا ہے؟"
+    }),
+    journalText("What would feel like a small win today?", {
+      hindi: "आज कौन-सी छोटी जीत जैसी लगेगी?",
+      telugu: "ఈ రోజు చిన్న విజయం లాగా అనిపించేది ఏమిటి?",
+      tamil: "இன்று ஒரு சிறிய வெற்றியாக எது உணரப்படும்?",
+      urdu: "آج کون سی چھوٹی بات کامیابی جیسی محسوس ہوگی؟"
+    }),
+    journalText("What are you avoiding, and why?", {
+      hindi: "आप किससे बच रहे हैं, और क्यों?",
+      telugu: "మీరు దేనిని తప్పించుకుంటున్నారు, ఎందుకు?",
+      tamil: "நீங்கள் எதைத் தவிர்க்கிறீர்கள், ஏன்?",
+      urdu: "آپ کس چیز سے بچ رہے ہیں، اور کیوں؟"
+    }),
+    journalText("Describe how your body feels in three words.", {
+      hindi: "अपने शरीर की अनुभूति तीन शब्दों में लिखें।",
+      telugu: "మీ శరీరం ఎలా అనిపిస్తోందో మూడు మాటల్లో వ్రాయండి.",
+      tamil: "உங்கள் உடல் எப்படி உணர்கிறது என்பதை மூன்று சொற்களில் எழுதுங்கள்.",
+      urdu: "اپنے جسم کا احساس تین الفاظ میں لکھیں۔"
+    }),
+    journalText("What would you tell a friend in your situation?", {
+      hindi: "इसी स्थिति में किसी मित्र से आप क्या कहते?",
+      telugu: "మీ పరిస్థితిలో ఉన్న మిత్రునికి మీరు ఏమి చెబుతారు?",
+      tamil: "உங்கள் நிலைமையில் இருக்கும் நண்பரிடம் நீங்கள் என்ன சொல்வீர்கள்?",
+      urdu: "اپنی صورتحال میں کسی دوست کو آپ کیا کہتے؟"
+    }),
+    journalText("What is one thing you are grateful for today?", {
+      hindi: "आज आप किस एक बात के लिए आभारी हैं?",
+      telugu: "ఈ రోజు మీరు కృతజ్ఞతతో గుర్తించే ఒక విషయం ఏమిటి?",
+      tamil: "இன்று நீங்கள் நன்றியுடன் நினைக்கும் ஒரு விஷயம் என்ன?",
+      urdu: "آج آپ کس ایک بات کے لیے شکر گزار ہیں؟"
+    }),
+    journalText("What do you need more of right now — rest, clarity, or connection?", {
+      hindi: "अभी आपको किसकी अधिक ज़रूरत है — विश्राम, स्पष्टता, या जुड़ाव?",
+      telugu: "ఇప్పుడే మీకు ఎక్కువగా ఏది కావాలి — విశ్రాంతి, స్పష్టత లేదా అనుబంధం?",
+      tamil: "இப்போது உங்களுக்கு அதிகம் தேவைப்படுவது எது — ஓய்வு, தெளிவு, அல்லது தொடர்பு?",
+      urdu: "ابھی آپ کو کس چیز کی زیادہ ضرورت ہے — آرام، وضاحت، یا تعلق؟"
+    }),
+    journalText("What have you lost recently, and what do you still have?", {
+      hindi: "हाल में आपने क्या खोया है, और अब भी आपके पास क्या है?",
+      telugu: "ఇటీవల మీరు ఏమి కోల్పోయారు, ఇంకా మీ వద్ద ఏముంది?",
+      tamil: "சமீபத்தில் நீங்கள் எதை இழந்தீர்கள், இன்னும் உங்களிடம் என்ன உள்ளது?",
+      urdu: "حال ہی میں آپ نے کیا کھویا، اور اب بھی آپ کے پاس کیا ہے؟"
+    }),
+    journalText("If your grief could speak, what would it say it needs?", {
+      hindi: "यदि आपका शोक बोल पाता, तो वह क्या कहता कि उसे क्या चाहिए?",
+      telugu: "మీ దుఃఖం మాట్లాడగలిగితే, దానికి ఏమి కావాలని చెబుతుంది?",
+      tamil: "உங்கள் துயரம் பேச முடிந்தால், அதற்கு என்ன தேவை என்று சொல்வது?",
+      urdu: "اگر آپ کا غم بول سکتا، تو وہ اپنی کس ضرورت کا نام لیتا؟"
+    }),
+    journalText("What does safety feel like to you, and how close are you to it today?", {
+      hindi: "आपके लिए सुरक्षा कैसी महसूस होती है, और आज आप उसके कितने पास हैं?",
+      telugu: "మీకు భద్రత ఎలా అనిపిస్తుంది, ఈ రోజు మీరు దానికి ఎంత దగ్గరగా ఉన్నారు?",
+      tamil: "உங்களுக்கு பாதுகாப்பு எப்படி உணரப்படுகிறது, இன்று அதற்கு எவ்வளவு அருகில் உள்ளீர்கள்?",
+      urdu: "آپ کے لیے تحفظ کیسا محسوس ہوتا ہے، اور آج آپ اس کے کتنے قریب ہیں؟"
+    }),
+    journalText("What is one thing that felt true about your trauma today that you want to acknowledge?", {
+      hindi: "आज अपने आघात के बारे में कौन-सी एक सच्चाई स्वीकार करना चाहते हैं?",
+      telugu: "ఈ రోజు మీ గాయం గురించి నిజంగా అనిపించిన ఒక విషయాన్ని మీరు గుర్తించాలనుకుంటున్నారు?",
+      tamil: "இன்று உங்கள் மனக் காயம் பற்றி உண்மையாக உணர்ந்த ஒரு விஷயத்தை ஏற்க விரும்புகிறீர்களா?",
+      urdu: "آج اپنے صدمے کے بارے میں کون سی ایک سچائی آپ تسلیم کرنا چاہتے ہیں؟"
+    }),
+    journalText("What triggered the craving or urge today, and what helped you through it?", {
+      hindi: "आज लालसा या आवेग किससे उठा, और उससे निकलने में किसने मदद की?",
+      telugu: "ఈ రోజు కోరిక లేదా ప్రేరణను ఏమి రేపింది, దాన్ని దాటడానికి ఏమి సహాయపడింది?",
+      tamil: "இன்று தூண்டுதல் அல்லது ஆசையை எது எழுப்பியது, அதை கடக்க எது உதவியது?",
+      urdu: "آج خواہش یا دباؤ کو کس چیز نے ابھارا، اور اس سے گزرنے میں کیا مدد ملی؟"
+    }),
+    journalText("Name one thing that restored a small sense of control today.", {
+      hindi: "आज नियंत्रण की छोटी-सी भावना लौटाने वाली एक बात लिखें।",
+      telugu: "ఈ రోజు కొంచెం నియంత్రణ భావనను తిరిగి ఇచ్చిన ఒక విషయాన్ని చెప్పండి.",
+      tamil: "இன்று சிறிய கட்டுப்பாட்டு உணர்வை மீட்ட ஒரு விஷயத்தை எழுதுங்கள்.",
+      urdu: "آج جس ایک بات نے تھوڑا سا اختیار واپس دیا، اسے لکھیں۔"
+    }),
+    journalText("What is one honest step you can take toward your health this week?", {
+      hindi: "इस सप्ताह अपने स्वास्थ्य की ओर कौन-सा एक ईमानदार कदम ले सकते हैं?",
+      telugu: "ఈ వారం మీ ఆరోగ్యానికి మీరు తీసుకోగల నిజాయితీ గల ఒక అడుగు ఏమిటి?",
+      tamil: "இந்த வாரம் உங்கள் ஆரோக்கியத்திற்காக எடுக்கக்கூடிய ஒரு நேர்மையான படி என்ன?",
+      urdu: "اس ہفتے اپنی صحت کے لیے آپ کون سا ایک دیانت دار قدم اٹھا سکتے ہیں؟"
+    }),
+    journalText("Write down the exact number or situation causing financial stress — facts, not fear.", {
+      hindi: "आर्थिक तनाव पैदा करने वाली सही संख्या या स्थिति लिखें — तथ्य, डर नहीं।",
+      telugu: "ఆర్థిక ఒత్తిడికి కారణమైన నిజమైన సంఖ్య లేదా పరిస్థితిని వ్రాయండి — భయాలు కాదు, నిజాలు.",
+      tamil: "பண அழுத்தத்தை ஏற்படுத்தும் சரியான எண் அல்லது நிலையை எழுதுங்கள் — பயமல்ல, உண்மை.",
+      urdu: "مالی دباؤ پیدا کرنے والی اصل رقم یا صورتحال لکھیں — حقیقت، خوف نہیں۔"
+    }),
+    journalText("What do you wish the other person in this relationship understood about you?", {
+      hindi: "इस रिश्ते में आप चाहते हैं कि दूसरा व्यक्ति आपके बारे में क्या समझे?",
+      telugu: "ఈ సంబంధంలో ఎదుటి వ్యక్తి మీ గురించి ఏమి అర్థం చేసుకోవాలని మీరు కోరుకుంటున్నారు?",
+      tamil: "இந்த உறவில் மற்றவர் உங்களைப் பற்றி என்ன புரிந்துகொள்ள வேண்டும் என்று விரும்புகிறீர்கள்?",
+      urdu: "اس رشتے میں آپ چاہتے ہیں کہ دوسرا شخص آپ کے بارے میں کیا سمجھے؟"
+    }),
+    journalText("What kind of parent do you want to be today, even if only for one moment?", {
+      hindi: "आज, एक पल के लिए भी, आप कैसे अभिभावक बनना चाहते हैं?",
+      telugu: "ఈ రోజు ఒక్క క్షణమైనా, మీరు ఎలాంటి తల్లిదండ్రిగా ఉండాలనుకుంటున్నారు?",
+      tamil: "இன்று ஒரு கணம் மட்டுமாயினும், நீங்கள் எப்படிப்பட்ட பெற்றோராக இருக்க விரும்புகிறீர்கள்?",
+      urdu: "آج، ایک لمحے کے لیے بھی، آپ کیسے والد/والدہ بننا چاہتے ہیں؟"
+    }),
+    journalText("What is one thing you studied or worked on today that actually made sense?", {
+      hindi: "आज पढ़ाई या काम में कौन-सी एक बात सच में समझ आई?",
+      telugu: "ఈ రోజు చదువులో లేదా పనిలో నిజంగా అర్థమైన ఒక విషయం ఏమిటి?",
+      tamil: "இன்று படிப்பில் அல்லது வேலையில் உண்மையில் புரிந்த ஒரு விஷயம் என்ன?",
+      urdu: "آج پڑھائی یا کام میں کون سی ایک بات واقعی سمجھ آئی؟"
+    }),
+    journalText("Who am I when no one is watching or expecting anything from me?", {
+      hindi: "जब कोई देख नहीं रहा और कोई अपेक्षा नहीं है, तब मैं कौन हूँ?",
+      telugu: "ఎవరూ చూడనప్పుడు, ఎవరికీ ఆశలు లేనప్పుడు నేను ఎవరు?",
+      tamil: "யாரும் பார்க்காதபோது, யாரும் எதிர்பார்க்காதபோது நான் யார்?",
+      urdu: "جب کوئی دیکھ نہیں رہا اور کوئی توقع نہیں رکھتا، تب میں کون ہوں؟"
+    }),
+    journalText("What kind of anger am I holding, and what does it actually need?", {
+      hindi: "मैं किस तरह का क्रोध पकड़े हुए हूँ, और उसे सच में क्या चाहिए?",
+      telugu: "నేను ఏ రకమైన కోపాన్ని పట్టుకుని ఉన్నాను, దానికి నిజంగా ఏమి కావాలి?",
+      tamil: "நான் எந்த வகை கோபத்தை சுமக்கிறேன், அதற்கு உண்மையில் என்ன தேவை?",
+      urdu: "میں کس قسم کا غصہ پکڑے ہوئے ہوں، اور اسے اصل میں کیا چاہیے؟"
+    }),
+    journalText("What is one thing I fear that I have survived before?", {
+      hindi: "जिस बात से मैं डरता हूँ, वैसी कौन-सी एक बात पहले भी पार कर चुका हूँ?",
+      telugu: "నేను భయపడుతున్న దాంట్లో ముందెప్పుడో దాటిన ఒక విషయం ఏమిటి?",
+      tamil: "நான் பயப்படுகிற ஒன்றில், முன்பு தாண்டிய ஒன்று எது?",
+      urdu: "جس بات سے میں ڈرتا ہوں، ایسی کون سی چیز میں پہلے بھی سہہ چکا ہوں؟"
+    }),
+    journalText("Write one sentence about where I am, and one about where I want to be.", {
+      hindi: "मैं कहाँ हूँ — इस पर एक वाक्य, और कहाँ पहुँचना चाहता हूँ — इस पर एक वाक्य लिखें।",
+      telugu: "నేను ఎక్కడ ఉన్నాను అనే ఒక వాక్యం, ఎక్కడికి చేరాలనుకుంటున్నాను అనే ఒక వాక్యం వ్రాయండి.",
+      tamil: "நான் எங்கே இருக்கிறேன் என்று ஒரு வாக்கியம், எங்கே செல்ல விரும்புகிறேன் என்று ஒரு வாக்கியம் எழுதுங்கள்.",
+      urdu: "میں کہاں ہوں — ایک جملہ، اور کہاں پہنچنا چاہتا ہوں — ایک جملہ لکھیں۔"
+    }),
   ];
+
+  const localizedMoodLabel = (label: string) => {
+    switch (label) {
+      case "Grateful":
+        return journalText("Grateful", { hindi: "आभारी", telugu: "కృతజ్ఞత", tamil: "நன்றி உணர்வு", urdu: "شکر گزار" });
+      case "Happy":
+        return journalText("Happy", { hindi: "प्रसन्न", telugu: "ఆనందంగా", tamil: "மகிழ்ச்சி", urdu: "خوش" });
+      case "Calm":
+        return journalText("Calm", { hindi: "शांत", telugu: "శాంతంగా", tamil: "அமைதி", urdu: "پرسکون" });
+      case "Motivated":
+        return journalText("Motivated", { hindi: "प्रेरित", telugu: "ప్రేరణతో", tamil: "உந்துதல்", urdu: "حوصلہ مند" });
+      case "Proud":
+        return journalText("Proud", { hindi: "गर्वित", telugu: "గర్వంగా", tamil: "பெருமை", urdu: "فخر" });
+      case "Hopeful":
+        return journalText("Hopeful", { hindi: "आशावान", telugu: "ఆశతో", tamil: "நம்பிக்கை", urdu: "امیدوار" });
+      case "Excited":
+        return journalText("Excited", { hindi: "उत्साहित", telugu: "ఉత్సాహంగా", tamil: "உற்சாகம்", urdu: "پرجوش" });
+      case "Content":
+        return journalText("Content", { hindi: "संतुष्ट", telugu: "సంతృప్తిగా", tamil: "திருப்தி", urdu: "مطمئن" });
+      case "Relieved":
+        return journalText("Relieved", { hindi: "राहत मिली", telugu: "ఉపశమనం", tamil: "நிம்மதி", urdu: "راحت" });
+      case "Reflective":
+        return journalText("Reflective", { hindi: "विचारशील", telugu: "ఆలోచనాత్మకంగా", tamil: "சிந்தனை", urdu: "غور و فکر" });
+      case "Tired":
+        return journalText("Tired", { hindi: "थका हुआ", telugu: "అలసట", tamil: "சோர்வு", urdu: "تھکا ہوا" });
+      case "Frustrated":
+        return journalText("Frustrated", { hindi: "हताश", telugu: "నిరాశగా", tamil: "விரக்தி", urdu: "مایوس" });
+      case "Anxious":
+        return journalText("Anxious", { hindi: "चिंतित", telugu: "ఆందోళన", tamil: "கவலை", urdu: "فکر مند" });
+      case "Sad":
+        return journalText("Sad", { hindi: "उदास", telugu: "విషాదం", tamil: "சோகம்", urdu: "اداس" });
+      case "Overwhelmed":
+        return journalText("Overwhelmed", { hindi: "बहुत दबाव में", telugu: "భారంగా", tamil: "அழுத்தம் அதிகம்", urdu: "بہت دباؤ میں" });
+      case "Angry":
+        return journalText("Angry", { hindi: "क्रोधित", telugu: "కోపంగా", tamil: "கோபம்", urdu: "غصہ" });
+      case "Lonely":
+        return journalText("Lonely", { hindi: "अकेला", telugu: "ఒంటరిగా", tamil: "தனிமை", urdu: "تنہا" });
+      case "Hurt":
+        return journalText("Hurt", { hindi: "आहत", telugu: "గాయపడినట్లు", tamil: "காயம்", urdu: "دل آزردہ" });
+      case "Scared":
+        return journalText("Scared", { hindi: "डरा हुआ", telugu: "భయంగా", tamil: "பயம்", urdu: "خوف زدہ" });
+      case "Numb":
+        return journalText("Numb", { hindi: "सुन्न", telugu: "మొద్దుబారినట్లు", tamil: "உணர்வற்றது", urdu: "بے حس" });
+      default:
+        return label;
+    }
+  };
 
   const todayPromptIndex = useMemo(
     () => new Date().getDay() % WRITING_PROMPTS.length,
@@ -25601,26 +25767,34 @@ function JournalSection({
             <Text style={styles.journalInsightTitle}>{uiCopy.oneClearLineTitle}</Text>
             <Text style={styles.journalInsightText}>{uiCopy.oneClearLineMeta}</Text>
           </View>
-          <View style={styles.journalWordCountBadge}>
-            <Text style={styles.journalWordCount}>{wordCount}</Text>
-            <Text style={styles.journalWordCountLabel}>words</Text>
-          </View>
+        <View style={styles.journalWordCountBadge}>
+          <Text style={styles.journalWordCount}>{wordCount}</Text>
+            <Text style={styles.journalWordCountLabel}>
+              {journalText("words", { hindi: "शब्द", telugu: "పదాలు", tamil: "சொற்கள்", urdu: "الفاظ" })}
+            </Text>
+        </View>
         </View>
         {/* Mood tag chips */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.journalMoodRow} contentContainerStyle={{ gap: 6, paddingRight: 4 }}>
           {MOOD_TAGS.map((mood) => {
             const isActive = selectedMood === mood.label;
+            const moodLabel = localizedMoodLabel(mood.label);
             return (
               <Pressable
                 key={mood.label}
                 accessibilityRole="button"
-                accessibilityLabel={`Mood: ${mood.label}`}
+                accessibilityLabel={journalText(`Mood: ${moodLabel}`, {
+                  hindi: `भाव: ${moodLabel}`,
+                  telugu: `మనస్థితి: ${moodLabel}`,
+                  tamil: `மனநிலை: ${moodLabel}`,
+                  urdu: `مزاج: ${moodLabel}`
+                })}
                 accessibilityState={{ selected: isActive }}
                 onPress={() => setSelectedMood(isActive ? null : mood.label)}
                 style={[styles.journalMoodChip, isActive && styles.journalMoodChipActive]}
               >
                 <Text style={styles.journalMoodEmoji}>{mood.emoji}</Text>
-                <Text style={[styles.journalMoodLabel, isActive && styles.journalMoodLabelActive]}>{mood.label}</Text>
+                <Text style={[styles.journalMoodLabel, isActive && styles.journalMoodLabelActive]}>{moodLabel}</Text>
               </Pressable>
             );
           })}
@@ -25656,8 +25830,18 @@ function JournalSection({
           placeholderTextColor="rgba(255,255,255,0.28)"
           style={styles.journalDraftInput}
           textAlignVertical="top"
-          accessibilityLabel="Journal entry input"
-          accessibilityHint="Write your thoughts here. Today's prompt is shown as placeholder text."
+          accessibilityLabel={journalText("Journal entry input", {
+            hindi: "जर्नल लिखने का स्थान",
+            telugu: "జర్నల్ నమోదు స్థలం",
+            tamil: "ஜர்னல் உள்ளீட்டு இடம்",
+            urdu: "جرنل لکھنے کی جگہ"
+          })}
+          accessibilityHint={journalText("Write your thoughts here. Today's prompt is shown as placeholder text.", {
+            hindi: "अपने विचार यहाँ लिखें। आज का संकेत हल्के अक्षरों में दिख रहा है।",
+            telugu: "మీ ఆలోచనలను ఇక్కడ వ్రాయండి. ఈ రోజు సూచన స్థానధారి వచనంగా కనిపిస్తుంది.",
+            tamil: "உங்கள் எண்ணங்களை இங்கே எழுதுங்கள். இன்றைய குறிப்பு இடம்பிடி உரையாக தெரிகிறது.",
+            urdu: "اپنے خیالات یہاں لکھیں۔ آج کا اشارہ ہلکے متن کے طور پر دکھ رہا ہے۔"
+          })}
         />
         <View style={[styles.routePreviewCard, styles.routePreviewCardSecondary]}>
           <Text style={styles.routePreviewTitle} numberOfLines={1}>
@@ -25741,8 +25925,22 @@ function JournalSection({
         <View style={styles.historyList}>
           {entries.length === 0 ? (
             <View style={styles.emptyStateLarge}>
-              <Text style={styles.emptyTitle}>No saved check-ins yet</Text>
-              <Text style={styles.emptyText}>Use the Today tab to save the first note.</Text>
+              <Text style={styles.emptyTitle}>
+                {journalText("No saved check-ins yet", {
+                  hindi: "अभी कोई चेक-इन सहेजा नहीं गया",
+                  telugu: "ఇంకా సేవ్ చేసిన చెక్-ఇన్‌లు లేవు",
+                  tamil: "இன்னும் சேமித்த செக்-இன்கள் இல்லை",
+                  urdu: "ابھی کوئی محفوظ چیک اِن نہیں ہے"
+                })}
+              </Text>
+              <Text style={styles.emptyText}>
+                {journalText("Use the Today tab to save the first note.", {
+                  hindi: "पहला नोट सहेजने के लिए आज वाला टैब खोलें।",
+                  telugu: "మొదటి గమనికను సేవ్ చేయడానికి ఈ రోజు ట్యాబ్‌ను ఉపయోగించండి.",
+                  tamil: "முதல் குறிப்பைச் சேமிக்க இன்று தாவலைப் பயன்படுத்துங்கள்.",
+                  urdu: "پہلا نوٹ محفوظ کرنے کے لیے آج والا ٹیب استعمال کریں۔"
+                })}
+              </Text>
             </View>
           ) : (
             entries.map((entry) => (
@@ -25769,11 +25967,28 @@ function JournalSection({
         </View>
       ) : (
         <View style={[styles.journalInsightBand, compact && styles.journalInsightBandCompact]}>
-          <Text style={styles.journalInsightTitle}>History hidden</Text>
+          <Text style={styles.journalInsightTitle}>
+            {journalText("History hidden", {
+              hindi: "इतिहास छिपा है",
+              telugu: "చరిత్ర దాచబడింది",
+              tamil: "வரலாறு மறைக்கப்பட்டுள்ளது",
+              urdu: "تاریخ چھپی ہوئی ہے"
+            })}
+          </Text>
           <Text style={styles.journalInsightText}>
             {entries.length > 0
-              ? `${entries.length} saved check-ins are tucked away to keep the page calmer.`
-              : "No saved check-ins yet. The first note will appear here after you save."}
+              ? journalText(`${entries.length} saved check-ins are tucked away to keep the page calmer.`, {
+                hindi: `${entries.length} सहेजे गए चेक-इन पेज को शांत रखने के लिए अलग रखे गए हैं।`,
+                telugu: `${entries.length} సేవ్ చేసిన చెక్-ఇన్‌లు పేజీని ప్రశాంతంగా ఉంచడానికి దాచబడ్డాయి.`,
+                tamil: `${entries.length} சேமித்த செக்-இன்கள் பக்கத்தை அமைதியாக வைத்திருக்க ஒதுக்கி வைக்கப்பட்டுள்ளன.`,
+                urdu: `${entries.length} محفوظ چیک اِن صفحے کو پرسکون رکھنے کے لیے الگ رکھے گئے ہیں۔`
+              })
+              : journalText("No saved check-ins yet. The first note will appear here after you save.", {
+                hindi: "अभी कोई चेक-इन सहेजा नहीं गया। सहेजने के बाद पहला नोट यहाँ दिखेगा।",
+                telugu: "ఇంకా సేవ్ చేసిన చెక్-ఇన్‌లు లేవు. మీరు సేవ్ చేసిన తర్వాత మొదటి గమనిక ఇక్కడ కనిపిస్తుంది.",
+                tamil: "இன்னும் சேமித்த செக்-இன்கள் இல்லை. சேமித்த பிறகு முதல் குறிப்பு இங்கே தோன்றும்.",
+                urdu: "ابھی کوئی محفوظ چیک اِن نہیں ہے۔ محفوظ کرنے کے بعد پہلا نوٹ یہاں دکھے گا۔"
+              })}
           </Text>
         </View>
       )}
