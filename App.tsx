@@ -7315,7 +7315,7 @@ const englishUiCopy: UiCopy = {
   languagePageSupportedLanguagesLabel: "supported languages",
   languagePageChoicesTitle: "Choose language",
   languagePageChoicesIntro:
-    "The profile shows the primary languages that are fully ready now. Tap Show all languages only when you need the rest.",
+    "The profile shows only the primary languages that are fully ready now. More languages will appear here after their full UI is complete.",
   languagePageToggleCompact: "Show compact",
   languagePageToggleExpanded: "Show all languages",
   languagePageCompactSummaryOpen: "Full language list open. Tap a language to switch and keep the page focused.",
@@ -7437,49 +7437,49 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     saveAndOpenPath: "सहेजें और मार्ग खोलें",
     continuePath: "मार्ग जारी रखें",
     journalButton: "जर्नल",
-    practiceButton: "प्रैक्टिस",
-    patternButton: "पैटर्न",
+    practiceButton: "अभ्यास",
+    patternButton: "रुझान",
     exportReport: "रिपोर्ट निर्यात करें",
-    practiceEyebrow: "प्रैक्टिस",
-    practiceTitle: "प्रैक्टिस लैब",
-    practiceLoopEyebrow: "प्रैक्टिस लूप",
+    practiceEyebrow: "अभ्यास",
+    practiceTitle: "अभ्यास कक्ष",
+    practiceLoopEyebrow: "अभ्यास चक्र",
     practiceLoopTitle: "एक कार्ड, फिर असली जीवन",
     practiceLoopSummary:
-      "Practice तब सबसे उपयोगी है जब user एक काम पूरा करे और उस जीत को main guidance flow में वापस लाए।",
-    patternEyebrow: "पैटर्न",
-    patternTitle: "पैटर्न समीक्षा",
-    patternLoopEyebrow: "पैटर्न लूप",
-    patternLoopTitle: "पैटर्न पढ़ें, फिर रास्ता चुनें",
-    patternLoopSummary: "Pattern review दिखाए कि evidence का मतलब क्या है और आगे कहाँ जाना है।",
+      "अभ्यास तब सबसे उपयोगी होता है जब व्यक्ति एक छोटा काम पूरा करके उस भरोसे को मुख्य मार्गदर्शन में वापस लाता है।",
+    patternEyebrow: "रुझान",
+    patternTitle: "रुझान समीक्षा",
+    patternLoopEyebrow: "रुझान चक्र",
+    patternLoopTitle: "रुझान पढ़ें, फिर मार्ग चुनें",
+    patternLoopSummary: "रुझान समीक्षा दिखाए कि प्रमाण का अर्थ क्या है और आगे किस दिशा में जाना है।",
     settingsLanguageTitle: "भाषा सहायता",
-    settingsLanguagePrompt: "वह भाषा चुनें जो replies और voice readout को guide करेगी।",
+    settingsLanguagePrompt: "वह भाषा चुनें जिसमें उत्तर और आवाज़ी पढ़ना चलेगा।",
     languagePageEyebrow: "भाषा",
     languagePageTitle: "पसंदीदा भाषा",
     languagePageIntro:
-      "नेविगेशन और आवाज़ी सहायता के लिए अपनी भाषा चुनें। नीचे का support badge साफ़ बताता है कि पूरा लिखित interface अनुवादित है या सिर्फ़ menus।",
-    languagePageIdentityMeta: "यदि आपके डिवाइस में उपयुक्त भारतीय voice होगी, तो spoken guidance उसी को प्राथमिकता देगा।",
-    languagePageSpeechLocaleLabel: "वर्तमान speech locale",
+      "नेविगेशन, उत्तर, और आवाज़ी सहायता के लिए अपनी भाषा चुनें। यहाँ अभी केवल पूरी तरह तैयार मुख्य भाषाएँ दिखती हैं।",
+    languagePageIdentityMeta: "यदि आपके डिवाइस में उपयुक्त भारतीय आवाज़ होगी, तो आवाज़ी मार्गदर्शन उसी को प्राथमिकता देगा।",
+    languagePageSpeechLocaleLabel: "वर्तमान आवाज़ी भाषा",
     languagePageSupportedLanguagesLabel: "समर्थित भाषाएँ",
     languagePageChoicesTitle: "भाषा चुनें",
     languagePageChoicesIntro:
-      "प्रोफ़ाइल में अभी केवल वे primary भाषाएँ दिखती हैं जो पूरी तरह तैयार हैं। बाकी के लिए Show all languages पर टैप करें।",
+      "प्रोफ़ाइल में अभी केवल वे मुख्य भाषाएँ दिखती हैं जो पूरी तरह तैयार हैं। बाकी भाषाएँ पूरा इंटरफ़ेस तैयार होने पर ही जोड़ी जाएँगी।",
     languagePageToggleCompact: "संक्षिप्त दिखाएँ",
     languagePageToggleExpanded: "सभी भाषाएँ दिखाएँ",
-    languagePageCompactSummaryOpen: "पूरी भाषा सूची खुली है। किसी भाषा पर टैप करके बदलें और पेज को focused रखें।",
-    languagePageCompactSummaryClosed: "प्राथमिक भाषा preview खुला है। बाकी तभी दिखाएँ जब ज़रूरत हो।",
+    languagePageCompactSummaryOpen: "पूरी तरह तैयार मुख्य भाषाएँ दिख रही हैं।",
+    languagePageCompactSummaryClosed: "केवल पूरी तरह तैयार मुख्य भाषाएँ दिख रही हैं।",
     languagePageVoiceTitle: "आवाज़ पूर्वावलोकन",
     languagePageVoiceIntro:
-      "उपलब्ध speech support होने पर चुनी हुई भाषा में सक्रिय मार्ग सुनने के लिए current guidance पढ़ें।",
+      "आवाज़ी सहायता उपलब्ध होने पर चुनी हुई भाषा में सक्रिय मार्ग सुनने के लिए वर्तमान मार्ग पढ़ें।",
     languagePageVoiceAssistLabel: "आवाज़ी सहायता",
     languagePageVoiceRead: "वर्तमान मार्ग पढ़ें",
     languagePageVoiceStop: "आवाज़ रोकें",
     voiceAssistOff: "आवाज़ी पढ़ना बंद है",
     languageSupportDefault: "डिफ़ॉल्ट",
     languageSupportFullInterface: "पूरा इंटरफ़ेस",
-    languageSupportFullInterfaceNoVoice: "पूरा इंटरफ़ेस · स्वर नहीं",
-    languageSupportMenusVoice: "मेनू + स्वर",
-    languageSupportMenusNoVoice: "मेनू · स्वर नहीं",
-    languageSupportVoiceEnglishText: "स्वर + अंग्रेज़ी पाठ",
+    languageSupportFullInterfaceNoVoice: "पूरा इंटरफ़ेस · आवाज़ नहीं",
+    languageSupportMenusVoice: "मेनू + आवाज़",
+    languageSupportMenusNoVoice: "मेनू · आवाज़ नहीं",
+    languageSupportVoiceEnglishText: "आवाज़ + अंग्रेज़ी पाठ",
     languageSupportEnglishTextOnly: "सिर्फ़ अंग्रेज़ी पाठ"
   },
   punjabi: {
@@ -7708,36 +7708,36 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     saveAndOpenPath: "సేవ్ చేసి మార్గం తెరవండి",
     continuePath: "మార్గాన్ని కొనసాగించండి",
     journalButton: "జర్నల్",
-    practiceButton: "ప్రాక్టీస్",
-    patternButton: "ప్యాటర్న్",
+    practiceButton: "అభ్యాసం",
+    patternButton: "రూపరేఖ",
     exportReport: "రిపోర్ట్ ఎగుమతి",
-    practiceEyebrow: "ప్రాక్టీస్",
-    practiceTitle: "ప్రాక్టీస్ ల్యాబ్",
-    practiceLoopEyebrow: "ప్రాక్టీస్ loop",
-    practiceLoopTitle: "ఒక card, తరువాత నిజమైన ప్రపంచం",
+    practiceEyebrow: "అభ్యాసం",
+    practiceTitle: "అభ్యాస విభాగం",
+    practiceLoopEyebrow: "అభ్యాస చక్రం",
+    practiceLoopTitle: "ఒక కార్డు, తర్వాత నిజ జీవితం",
     practiceLoopSummary:
-      "Practice app లో user ఒక ఉపయోగకరమైన చర్యను పూర్తిచేసి, ఆ win ను main guidance flow లోకి తీసుకెళ్లినప్పుడు అత్యుత్తమంగా పనిచేస్తుంది.",
-    patternEyebrow: "ప్యాటర్న్స్",
-    patternTitle: "ప్యాటర్న్ సమీక్ష",
-    patternLoopEyebrow: "ప్యాటర్న్ loop",
-    patternLoopTitle: "Pattern చదవండి, తరువాత route చేయండి",
-    patternLoopSummary: "Pattern review evidence అర్థం మరియు ఎక్కడికి వెళ్లాలో చూపాలి.",
+      "అభ్యాసం వ్యక్తి ఒక ఉపయోగకరమైన చర్యను పూర్తి చేసి, ఆ ధైర్యాన్ని ప్రధాన మార్గదర్శనంలోకి తీసుకెళ్లినప్పుడు ఉత్తమంగా పనిచేస్తుంది.",
+    patternEyebrow: "రూపరేఖ",
+    patternTitle: "రూపరేఖ సమీక్ష",
+    patternLoopEyebrow: "రూపరేఖ చక్రం",
+    patternLoopTitle: "రూపరేఖను చదివి, తర్వాత మార్గం ఎంచుకోండి",
+    patternLoopSummary: "రూపరేఖ సమీక్ష ఆధారాల అర్థం ఏమిటి, తరువాత ఎటు వెళ్లాలో చూపాలి.",
     settingsLanguageTitle: "భాష సహాయం",
-    settingsLanguagePrompt: "Replies మరియు voice readout ను guide చేసే భాషను ఎంచుకోండి.",
+    settingsLanguagePrompt: "జవాబులు మరియు స్వర పఠనం నడిచే భాషను ఎంచుకోండి.",
     languagePageEyebrow: "భాష",
     languagePageTitle: "ప్రాధాన్య భాష",
-    languagePageIntro: "నావిగేషన్ మరియు spoken support కోసం కావలసిన భాషను ఎంచుకోండి. క్రింద ఉన్న support badge పూర్తి వ్రాత interface అనువదించబడిందో లేదా menus మాత్రమేనా అని నిజంగా చెబుతుంది.",
-    languagePageIdentityMeta: "మీ పరికరంలో భారతీయ locale voice ఉన్నట్లయితే spoken guidance దానినే ప్రాధాన్యం ఇస్తుంది.",
-    languagePageSpeechLocaleLabel: "ప్రస్తుత speech locale",
+    languagePageIntro: "నావిగేషన్, జవాబులు, మరియు స్వర సహాయం కోసం కావలసిన భాషను ఎంచుకోండి. ఇక్కడ ఇప్పుడే పూర్తిగా సిద్ధమైన ప్రధాన భాషలే కనిపిస్తాయి.",
+    languagePageIdentityMeta: "మీ పరికరంలో సరైన భారతీయ స్వరం ఉంటే, స్వర మార్గదర్శనం దానినే ప్రాధాన్యం ఇస్తుంది.",
+    languagePageSpeechLocaleLabel: "ప్రస్తుత స్వర భాష",
     languagePageSupportedLanguagesLabel: "మద్దతున్న భాషలు",
     languagePageChoicesTitle: "భాషను ఎంచుకోండి",
-    languagePageChoicesIntro: "ప్రొఫైల్‌లో ఇప్పుడు పూర్తిగా సిద్ధంగా ఉన్న primary భాషలే కనిపిస్తాయి. మిగతావాటికి Show all languages ట్యాప్ చేయండి.",
+    languagePageChoicesIntro: "ప్రొఫైల్‌లో ఇప్పుడు పూర్తిగా సిద్ధమైన ప్రధాన భాషలే కనిపిస్తాయి. మిగిలిన భాషలు పూర్తి ఇంటర్‌ఫేస్ సిద్ధమైన తర్వాత మాత్రమే చేరతాయి.",
     languagePageToggleCompact: "సంక్షిప్తంగా చూపించు",
     languagePageToggleExpanded: "అన్ని భాషలు చూపించు",
-    languagePageCompactSummaryOpen: "పూర్తి భాషా జాబితా తెరిచి ఉంది. భాష మార్చడానికి ట్యాప్ చేయండి, పేజీ కేంద్రీకృతంగా ఉంటుంది.",
-    languagePageCompactSummaryClosed: "ప్రాథమిక భాష preview తెరిచి ఉంది. అవసరమైనప్పుడు మాత్రమే మిగతా భాగాన్ని చూపించండి.",
+    languagePageCompactSummaryOpen: "పూర్తిగా సిద్ధమైన ప్రధాన భాషలే కనిపిస్తున్నాయి.",
+    languagePageCompactSummaryClosed: "పూర్తిగా సిద్ధమైన ప్రధాన భాషలే కనిపిస్తున్నాయి.",
     languagePageVoiceTitle: "స్వర ముందస్తు వీక్షణ",
-    languagePageVoiceIntro: "మాట్లాడే support అందుబాటులో ఉన్నప్పుడు, ఎంచుకున్న భాషలో క్రియాశీల మార్గాన్ని వినడానికి current guidance చదవండి.",
+    languagePageVoiceIntro: "స్వర సహాయం అందుబాటులో ఉన్నప్పుడు, ఎంచుకున్న భాషలో క్రియాశీల మార్గాన్ని వినడానికి ప్రస్తుత మార్గాన్ని చదవండి.",
     languagePageVoiceAssistLabel: "స్వర సహాయం",
     languagePageVoiceRead: "ప్రస్తుత మార్గాన్ని చదవండి",
     languagePageVoiceStop: "స్వరాన్ని ఆపండి",
@@ -7747,8 +7747,8 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     languageSupportFullInterfaceNoVoice: "పూర్తి ఇంటర్‌ఫేస్ · స్వరం లేదు",
     languageSupportMenusVoice: "మెనూలు + స్వరం",
     languageSupportMenusNoVoice: "మెనూలు · స్వరం లేదు",
-    languageSupportVoiceEnglishText: "స్వరం + ఇంగ్లీష్ పాఠ్యం",
-    languageSupportEnglishTextOnly: "ఇంగ్లీష్ పాఠ్యం మాత్రమే"
+    languageSupportVoiceEnglishText: "స్వరం + ఆంగ్ల పాఠ్యం",
+    languageSupportEnglishTextOnly: "ఆంగ్ల పాఠ్యం మాత్రమే"
   },
   tamil: {
     homeEyebrow: "முகப்பு",
@@ -7843,35 +7843,35 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     continuePath: "பாதையைத் தொடரவும்",
     journalButton: "ஜர்னல்",
     practiceButton: "பயிற்சி",
-    patternButton: "Pattern",
+    patternButton: "முறை",
     exportReport: "அறிக்கையை ஏற்றுமதி செய்யவும்",
     practiceEyebrow: "பயிற்சி",
-    practiceTitle: "பயிற்சி லாப்",
-    practiceLoopEyebrow: "பயிற்சி loop",
-    practiceLoopTitle: "ஒரு card, பிறகு உண்மை உலகம்",
+    practiceTitle: "பயிற்சி அறை",
+    practiceLoopEyebrow: "பயிற்சி வட்டம்",
+    practiceLoopTitle: "ஒரு அட்டை, பிறகு உண்மை வாழ்க்கை",
     practiceLoopSummary:
-      "Practice app-இல் user ஒரு பயனுள்ள செயலை முடித்ததும், அந்த வெற்றியை main guidance flow-க்கு மீண்டும் கொண்டுவரும் போது சிறப்பாக செயல்படும்.",
-    patternEyebrow: "Pattern",
-    patternTitle: "Pattern review",
-    patternLoopEyebrow: "Pattern loop",
-    patternLoopTitle: "Pattern-ஐ படித்து, பின்னர் route செய்யவும்",
-    patternLoopSummary: "Pattern review evidence என்ன சொல்கிறது மற்றும் எங்கு செல்ல வேண்டும் என்பதை காட்ட வேண்டும்.",
+      "பயிற்சி, ஒருவர் ஒரு பயனுள்ள செயலை முடித்து அந்த நம்பிக்கையை முதன்மை வழிகாட்டலுக்கு மீண்டும் கொண்டுவரும் போது சிறப்பாக செயல்படும்.",
+    patternEyebrow: "முறை",
+    patternTitle: "முறை ஆய்வு",
+    patternLoopEyebrow: "முறை வட்டம்",
+    patternLoopTitle: "முறையைப் படித்து, பின்னர் பாதையைத் தேர்வு செய்யவும்",
+    patternLoopSummary: "முறை ஆய்வு ஆதாரம் என்ன சொல்கிறது, அடுத்து எங்கு செல்ல வேண்டும் என்பதை காட்ட வேண்டும்.",
     settingsLanguageTitle: "மொழி உதவி",
-    settingsLanguagePrompt: "Replies மற்றும் voice readout-ஐ வழிநடத்தும் மொழியை தேர்வு செய்யவும்.",
+    settingsLanguagePrompt: "பதில்களும் குரல் வாசிப்பும் இயங்க வேண்டிய மொழியைத் தேர்வு செய்யவும்.",
     languagePageEyebrow: "மொழி",
     languagePageTitle: "விருப்ப மொழி",
-    languagePageIntro: "வழிசெலுத்தல் மற்றும் spoken support க்காக வேண்டிய மொழியைத் தேர்வு செய்யுங்கள். கீழே உள்ள support badge முழு எழுதப்பட்ட interface மொழிபெயர்க்கப்பட்டதா அல்லது menus மட்டும் தானா என்பதை நேர்மையாக சொல்கிறது.",
-    languagePageIdentityMeta: "உங்கள் சாதனத்தில் இந்திய locale voice இருந்தால் spoken guidance அதையே முன்னுரிமை கொடுக்கும்.",
-    languagePageSpeechLocaleLabel: "தற்போதைய speech locale",
+    languagePageIntro: "வழிசெலுத்தல், பதில்கள், மற்றும் குரல் உதவிக்கான மொழியைத் தேர்வு செய்யுங்கள். இங்கு இப்போது முழுமையாகத் தயாரான முதன்மை மொழிகளே தெரியும்.",
+    languagePageIdentityMeta: "உங்கள் சாதனத்தில் பொருத்தமான இந்திய குரல் இருந்தால், குரல் வழிகாட்டல் அதையே முன்னுரிமை கொடுக்கும்.",
+    languagePageSpeechLocaleLabel: "தற்போதைய குரல் மொழி",
     languagePageSupportedLanguagesLabel: "ஆதரிக்கும் மொழிகள்",
     languagePageChoicesTitle: "மொழியைத் தேர்வுசெய்க",
-    languagePageChoicesIntro: "இப்போது profile-ல் முழுமையாக ready ஆக இருக்கும் primary மொழிகளே காட்டப்படும். மீதிக்கு Show all languages-ஐ தட்டவும்.",
+    languagePageChoicesIntro: "இப்போது சுயவிவரத்தில் முழுமையாகத் தயாரான முதன்மை மொழிகளே காட்டப்படும். மற்ற மொழிகள் முழு இடைமுகம் தயாரான பின் மட்டுமே சேர்க்கப்படும்.",
     languagePageToggleCompact: "சுருக்கமாக காட்டு",
     languagePageToggleExpanded: "அனைத்து மொழிகளை காட்டு",
-    languagePageCompactSummaryOpen: "முழு மொழிப் பட்டியல் திறந்துள்ளது. மொழியை மாற்றத் தட்டவும், பக்கம் கவனமாக இருக்கும்.",
-    languagePageCompactSummaryClosed: "முதன்மை மொழி preview திறந்துள்ளது. தேவைப்படும்போது மட்டும் மீதியைத் திறக்கவும்.",
+    languagePageCompactSummaryOpen: "முழுமையாகத் தயாரான முதன்மை மொழிகளே காட்டப்படுகின்றன.",
+    languagePageCompactSummaryClosed: "முழுமையாகத் தயாரான முதன்மை மொழிகளே காட்டப்படுகின்றன.",
     languagePageVoiceTitle: "குரல் முன்னோட்டம்",
-    languagePageVoiceIntro: "குரல் support கிடைக்கும் போது, தேர்ந்த மொழியில் செயலில் உள்ள பாதையை கேட்க தற்போதைய guidance-ஐ வாசிக்கவும்.",
+    languagePageVoiceIntro: "குரல் உதவி கிடைக்கும் போது, தேர்ந்த மொழியில் செயலில் உள்ள பாதையை கேட்க தற்போதைய வழிகாட்டலை வாசிக்கவும்.",
     languagePageVoiceAssistLabel: "குரல் உதவி",
     languagePageVoiceRead: "தற்போதைய பாதையை வாசிக்கவும்",
     languagePageVoiceStop: "குரலை நிறுத்து",
@@ -7879,10 +7879,10 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     languageSupportDefault: "இயல்புநிலை",
     languageSupportFullInterface: "முழு இடைமுகம்",
     languageSupportFullInterfaceNoVoice: "முழு இடைமுகம் · குரல் இல்லை",
-    languageSupportMenusVoice: "Menus + குரல்",
-    languageSupportMenusNoVoice: "Menus · குரல் இல்லை",
-    languageSupportVoiceEnglishText: "குரல் + English text",
-    languageSupportEnglishTextOnly: "English text மட்டும்"
+    languageSupportMenusVoice: "மெனுக்கள் + குரல்",
+    languageSupportMenusNoVoice: "மெனுக்கள் · குரல் இல்லை",
+    languageSupportVoiceEnglishText: "குரல் + ஆங்கில உரை",
+    languageSupportEnglishTextOnly: "ஆங்கில உரை மட்டும்"
   },
   urdu: {
     homeEyebrow: "مرکزی",
@@ -7976,47 +7976,47 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     saveAndOpenPath: "محفوظ کریں اور راستہ کھولیں",
     continuePath: "راستہ جاری رکھیں",
     journalButton: "جرنل",
-    practiceButton: "پریکٹس",
-    patternButton: "پیٹرن",
+    practiceButton: "مشق",
+    patternButton: "رجحان",
     exportReport: "رپورٹ برآمد کریں",
-    practiceEyebrow: "پریکٹس",
-    practiceTitle: "پریکٹس لیب",
-    practiceLoopEyebrow: "پریکٹس لوپ",
-    practiceLoopTitle: "ایک card، پھر اصل دنیا",
+    practiceEyebrow: "مشق",
+    practiceTitle: "مشق خانہ",
+    practiceLoopEyebrow: "مشق کا چکر",
+    practiceLoopTitle: "ایک کارڈ، پھر اصل زندگی",
     practiceLoopSummary:
-      "Practice سب سے بہتر تب کام کرتی ہے جب user ایک مفید عمل مکمل کرے اور اس جیت کو main guidance flow میں واپس لائے۔",
-    patternEyebrow: "پیٹرن",
-    patternTitle: "پیٹرن جائزہ",
-    patternLoopEyebrow: "پیٹرن لوپ",
-    patternLoopTitle: "پیٹرن پڑھیں، پھر راستہ چنیں",
-    patternLoopSummary: "Pattern review دکھائے کہ evidence کا مطلب کیا ہے اور آگے کہاں جانا ہے۔",
+      "مشق اس وقت سب سے بہتر کام کرتی ہے جب فرد ایک مفید عمل مکمل کر کے اس اعتماد کو بنیادی رہنمائی میں واپس لائے۔",
+    patternEyebrow: "رجحان",
+    patternTitle: "رجحان کا جائزہ",
+    patternLoopEyebrow: "رجحان کا چکر",
+    patternLoopTitle: "رجحان پڑھیں، پھر راستہ چنیں",
+    patternLoopSummary: "رجحان کا جائزہ دکھائے کہ ثبوت کا مطلب کیا ہے اور آگے کس طرف جانا ہے۔",
     settingsLanguageTitle: "زبان کی مدد",
-    settingsLanguagePrompt: "وہ زبان منتخب کریں جو replies اور voice readout کی رہنمائی کرے۔",
+    settingsLanguagePrompt: "وہ زبان منتخب کریں جس میں جواب اور آواز سے پڑھنا چلے۔",
     languagePageEyebrow: "زبان",
     languagePageTitle: "ترجیحی زبان",
-    languagePageIntro: "navigation اور spoken support کے لیے پسندیدہ زبان منتخب کریں۔ نیچے support badge صاف بتاتا ہے کہ مکمل تحریری interface ترجمہ ہوا ہے یا صرف menus۔",
-    languagePageIdentityMeta: "اگر آپ کے device میں بھارتی locale voice ہو تو spoken guidance اسی کو ترجیح دے گی۔",
-    languagePageSpeechLocaleLabel: "موجودہ speech locale",
+    languagePageIntro: "رہنمائی، جواب، اور آوازی مدد کے لیے پسندیدہ زبان منتخب کریں۔ یہاں ابھی صرف مکمل طور پر تیار بنیادی زبانیں دکھتی ہیں۔",
+    languagePageIdentityMeta: "اگر آپ کے آلے میں موزوں بھارتی آواز ہو تو آوازی رہنمائی اسی کو ترجیح دے گی۔",
+    languagePageSpeechLocaleLabel: "موجودہ آوازی زبان",
     languagePageSupportedLanguagesLabel: "معاون زبانیں",
     languagePageChoicesTitle: "زبان منتخب کریں",
-    languagePageChoicesIntro: "اب profile میں صرف وہ primary زبانیں دکھتی ہیں جو مکمل طور پر تیار ہیں۔ باقی کے لیے Show all languages پر ٹیپ کریں۔",
+    languagePageChoicesIntro: "اب پروفائل میں صرف وہ بنیادی زبانیں دکھتی ہیں جو مکمل طور پر تیار ہیں۔ باقی زبانیں مکمل انٹرفیس تیار ہونے کے بعد ہی شامل ہوں گی۔",
     languagePageToggleCompact: "مختصر دکھائیں",
     languagePageToggleExpanded: "تمام زبانیں دکھائیں",
-    languagePageCompactSummaryOpen: "مکمل زبان فہرست کھلی ہے۔ زبان بدلنے کے لیے tap کریں، اور صفحہ focused رہے گا.",
-    languagePageCompactSummaryClosed: "بنیادی زبان preview کھلا ہے۔ باقی صرف ضرورت پر دکھائیں.",
+    languagePageCompactSummaryOpen: "مکمل طور پر تیار بنیادی زبانیں ہی دکھ رہی ہیں۔",
+    languagePageCompactSummaryClosed: "مکمل طور پر تیار بنیادی زبانیں ہی دکھ رہی ہیں۔",
     languagePageVoiceTitle: "آواز کا پیش نظارہ",
-    languagePageVoiceIntro: "جب speech support دستیاب ہو تو منتخب زبان میں active route سننے کے لیے current guidance پڑھیں.",
+    languagePageVoiceIntro: "جب آوازی مدد دستیاب ہو تو منتخب زبان میں فعال راستہ سننے کے لیے موجودہ رہنمائی پڑھیں۔",
     languagePageVoiceAssistLabel: "آوازی مدد",
     languagePageVoiceRead: "موجودہ راستہ پڑھیں",
     languagePageVoiceStop: "آواز روکیں",
     voiceAssistOff: "آواز پڑھنا بند ہے",
     languageSupportDefault: "ڈیفالٹ",
-    languageSupportFullInterface: "مکمل interface",
-    languageSupportFullInterfaceNoVoice: "مکمل interface · آواز نہیں",
-    languageSupportMenusVoice: "Menus + آواز",
-    languageSupportMenusNoVoice: "Menus · آواز نہیں",
-    languageSupportVoiceEnglishText: "آواز + English text",
-    languageSupportEnglishTextOnly: "صرف English text"
+    languageSupportFullInterface: "مکمل انٹرفیس",
+    languageSupportFullInterfaceNoVoice: "مکمل انٹرفیس · آواز نہیں",
+    languageSupportMenusVoice: "مینو + آواز",
+    languageSupportMenusNoVoice: "مینو · آواز نہیں",
+    languageSupportVoiceEnglishText: "آواز + انگریزی متن",
+    languageSupportEnglishTextOnly: "صرف انگریزی متن"
   },
   gujarati: {
     homeEyebrow: "મુખ્ય",
@@ -36038,7 +36038,20 @@ function LanguageSection({
     languageOptions.find((option) => option.id === languageId) ?? languageOptions[0];
   const primaryLanguageOptions = languageOptions.filter((option) => PRIMARY_LANGUAGE_SET.has(option.id));
   const primaryLanguageCount = primaryLanguageOptions.length;
-  const [showFullLanguages, setShowFullLanguages] = useState(false);
+  const primaryLanguageCountLabel = pickLocalizedText(languageId, {
+    english: "primary languages",
+    hindi: "मुख्य भाषाएँ",
+    telugu: "ప్రధాన భాషలు",
+    tamil: "முதன்மை மொழிகள்",
+    urdu: "بنیادی زبانیں"
+  });
+  const primaryOnlySummary = pickLocalizedText(languageId, {
+    english: "Only fully-ready primary languages are shown here. More languages will appear after their complete UI pass.",
+    hindi: "यहाँ केवल पूरी तरह तैयार मुख्य भाषाएँ दिखती हैं। बाकी भाषाएँ पूरा इंटरफ़ेस तैयार होने के बाद जोड़ी जाएँगी।",
+    telugu: "ఇక్కడ పూర్తిగా సిద్ధమైన ప్రధాన భాషలే కనిపిస్తాయి. మిగిలిన భాషలు పూర్తి ఇంటర్‌ఫేస్ సిద్ధమైన తర్వాత చేరతాయి.",
+    tamil: "இங்கு முழுமையாகத் தயாரான முதன்மை மொழிகளே காட்டப்படுகின்றன. மற்ற மொழிகள் முழு இடைமுகம் தயாரான பின் சேர்க்கப்படும்.",
+    urdu: "یہاں صرف مکمل طور پر تیار بنیادی زبانیں دکھتی ہیں۔ باقی زبانیں مکمل انٹرفیس تیار ہونے کے بعد شامل ہوں گی۔"
+  });
   // Several of the 22 constitutional languages have no text-to-speech voice on
   // any shipping device (Bodo, Santali and Manipuri in particular). Claiming
   // "voice" for them and then playing nothing is exactly the kind of quiet
@@ -36082,11 +36095,7 @@ function LanguageSection({
     [spokenLocales]
   );
 
-  const visibleLanguages = showFullLanguages ? languageOptions : primaryLanguageOptions;
-
-  useEffect(() => {
-    setShowFullLanguages(false);
-  }, [languageId]);
+  const visibleLanguages = primaryLanguageOptions;
 
   return (
     <View style={styles.panel}>
@@ -36105,7 +36114,7 @@ function LanguageSection({
           <Text style={styles.identitySummaryTitle}>{selectedLanguage.label}</Text>
           <Text style={styles.identitySummaryText}>{uiCopy.languagePageIdentityMeta}</Text>
           <Text style={styles.smallMeta}>
-            {uiCopy.languagePageSpeechLocaleLabel}: {selectedLanguage.speechLang} • {primaryLanguageCount} primary languages
+            {uiCopy.languagePageSpeechLocaleLabel}: {selectedLanguage.speechLang} • {primaryLanguageCount} {primaryLanguageCountLabel}
           </Text>
         </View>
       </View>
@@ -36121,16 +36130,9 @@ function LanguageSection({
         <Text style={styles.settingsTitle}>{uiCopy.languagePageChoicesTitle}</Text>
         <Text style={styles.promptText}>{uiCopy.languagePageChoicesIntro}</Text>
         <View style={styles.homeOverviewActions}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ selected: showFullLanguages }}
-            onPress={() => { animateDisclosure(); setShowFullLanguages((value) => !value); }}
-            style={({ pressed }) => [styles.homeOverviewButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.homeOverviewButtonLabel}>
-              {showFullLanguages ? uiCopy.languagePageToggleCompact : uiCopy.languagePageToggleExpanded}
-            </Text>
-          </Pressable>
+          <View style={styles.homeOverviewButton}>
+            <Text style={styles.homeOverviewButtonLabel}>{primaryLanguageCountLabel}</Text>
+          </View>
           <Pressable
             accessibilityRole="button"
             onPress={onStopVoice}
@@ -36139,11 +36141,7 @@ function LanguageSection({
             <Text style={styles.homeOverviewButtonSecondaryLabel}>{uiCopy.languagePageVoiceStop}</Text>
           </Pressable>
         </View>
-        <Text style={styles.smallMeta}>
-          {showFullLanguages
-            ? uiCopy.languagePageCompactSummaryOpen
-            : uiCopy.languagePageCompactSummaryClosed}
-        </Text>
+        <Text style={styles.smallMeta}>{primaryOnlySummary}</Text>
         <View style={styles.languageGrid}>
           {visibleLanguages.map((option) => {
             const isSelected = option.id === languageId;
