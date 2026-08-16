@@ -2862,7 +2862,30 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   { id: "settings", label: "Settings", mark: "⚙️", icon: "settings" },
   { id: "admin", label: "Control", mark: "⚙️", icon: "settings" }
 ];
-
+const PRIMARY_HEADER_TAB_IDS: TabId[] = ["today", "guide", "aihelp", "redress", "insights"];
+const CORE_SERVICE_TAB_IDS: TabId[] = [
+      "today",
+      "aihelp",
+      "vedic",
+      "tones",
+      "community",
+      "redress"
+];
+const SECONDARY_PAGE_SEQUENCE: TabId[] = [
+      "tones",
+      "community",
+      "redress",
+      "insights"
+];
+const PRIMARY_HEADER_TABS: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof Ionicons.glyphMap }> = [
+  { id: "today", label: "Home", mark: "🏠", icon: "home" },
+  { id: "aihelp", label: "Ask", mark: "✨", icon: "sparkles" },
+  { id: "vedic", label: "Birth Chart", mark: "🪐", icon: "planet" },
+  { id: "tones", label: "Tones", mark: "🎵", icon: "musical-notes" },
+  { id: "community", label: "Messages", mark: "💬", icon: "chatbubbles" },
+  { id: "redress",    label: "Help", mark: "🛡️", icon: "shield-checkmark" },
+  { id: "settings",   label: "Profile", mark: "👤", icon: "person" },
+];
 // Concise labels for the top nav rail only. The rail pills are ~92px wide
 // (icon + text), so full labels like "Birth Chart" / "Messages" /
 // "Help and Redress" truncated to "Birth ..." / "Messa..." / "Help a...",
@@ -6517,6 +6540,9 @@ const languageOptions: Array<{
   { id: "dogri", label: "Dogri", meta: "डोगरी support for guidance", speechLang: "doi-IN" }
 ];
 
+const PRIMARY_LANGUAGE_IDS: LanguageId[] = ["english", "hindi", "telugu", "tamil", "urdu"];
+const PRIMARY_LANGUAGE_SET = new Set<LanguageId>(PRIMARY_LANGUAGE_IDS);
+
 // Navigation-label translations for the languages that already have full UI copy
 // support (see localizedUiCopyByLanguage below). Other languages fall back to the
 // English label — same graceful-degradation pattern used everywhere else in the
@@ -7072,11 +7098,11 @@ const englishUiCopy: UiCopy = {
   languagePageSupportedLanguagesLabel: "supported languages",
   languagePageChoicesTitle: "Choose language",
   languagePageChoicesIntro:
-    "All 22 choices provide translated navigation where supported by the device voice. The compact preview stays small on mobile, and the full list opens only when needed.",
+    "The profile shows the primary languages that are fully ready now. Tap Show all languages only when you need the rest.",
   languagePageToggleCompact: "Show compact",
-  languagePageToggleExpanded: "Show 22 languages",
+  languagePageToggleExpanded: "Show all languages",
   languagePageCompactSummaryOpen: "Full language list open. Tap a language to switch and keep the page focused.",
-  languagePageCompactSummaryClosed: "Compact preview open. Tap to reveal the rest only when needed.",
+  languagePageCompactSummaryClosed: "Primary-language preview open. Tap to reveal the rest only when needed.",
   languagePageVoiceTitle: "Voice preview",
   languagePageVoiceIntro:
     "Tap read current guidance to hear the active route in the selected language when speech support is available.",
@@ -7219,11 +7245,11 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     languagePageSupportedLanguagesLabel: "समर्थित भाषाएँ",
     languagePageChoicesTitle: "भाषा चुनें",
     languagePageChoicesIntro:
-      "22 विकल्पों में वही translated navigation मिलेगा, जहाँ device voice support उपलब्ध हो। मोबाइल पर compact preview दिखता है, और पूरी सूची ज़रूरत पड़ने पर ही खुलती है।",
+      "प्रोफ़ाइल में अभी केवल वे primary भाषाएँ दिखती हैं जो पूरी तरह तैयार हैं। बाकी के लिए Show all languages पर टैप करें।",
     languagePageToggleCompact: "संक्षिप्त दिखाएँ",
-    languagePageToggleExpanded: "22 भाषाएँ दिखाएँ",
+    languagePageToggleExpanded: "सभी भाषाएँ दिखाएँ",
     languagePageCompactSummaryOpen: "पूरी भाषा सूची खुली है। किसी भाषा पर टैप करके बदलें और पेज को focused रखें।",
-    languagePageCompactSummaryClosed: "संक्षिप्त preview खुला है। बाकी तभी दिखाएँ जब ज़रूरत हो।",
+    languagePageCompactSummaryClosed: "प्राथमिक भाषा preview खुला है। बाकी तभी दिखाएँ जब ज़रूरत हो।",
     languagePageVoiceTitle: "आवाज़ पूर्वावलोकन",
     languagePageVoiceIntro:
       "उपलब्ध speech support होने पर चुनी हुई भाषा में सक्रिय मार्ग सुनने के लिए current guidance पढ़ें।",
@@ -7488,11 +7514,11 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     languagePageSpeechLocaleLabel: "ప్రస్తుత speech locale",
     languagePageSupportedLanguagesLabel: "మద్దతున్న భాషలు",
     languagePageChoicesTitle: "భాషను ఎంచుకోండి",
-    languagePageChoicesIntro: "22 ఎంపికలు device voice support ఉన్న చోట translated navigation అందిస్తాయి. మొబైల్‌లో compact preview చిన్నగా ఉంటుంది, పూర్తి జాబితా అవసరమైనప్పుడు మాత్రమే తెరుచుకుంటుంది.",
-    languagePageToggleCompact: "సంక్షిప్తం చూపించు",
-    languagePageToggleExpanded: "22 భాషలు చూపించు",
+    languagePageChoicesIntro: "ప్రొఫైల్‌లో ఇప్పుడు పూర్తిగా సిద్ధంగా ఉన్న primary భాషలే కనిపిస్తాయి. మిగతావాటికి Show all languages ట్యాప్ చేయండి.",
+    languagePageToggleCompact: "సంక్షిప్తంగా చూపించు",
+    languagePageToggleExpanded: "అన్ని భాషలు చూపించు",
     languagePageCompactSummaryOpen: "పూర్తి భాషా జాబితా తెరిచి ఉంది. భాష మార్చడానికి ట్యాప్ చేయండి, పేజీ కేంద్రీకృతంగా ఉంటుంది.",
-    languagePageCompactSummaryClosed: "సంక్షిప్త preview తెరిచి ఉంది. అవసరమైనప్పుడు మాత్రమే మిగతా భాగాన్ని చూపించండి.",
+    languagePageCompactSummaryClosed: "ప్రాథమిక భాష preview తెరిచి ఉంది. అవసరమైనప్పుడు మాత్రమే మిగతా భాగాన్ని చూపించండి.",
     languagePageVoiceTitle: "స్వర ముందస్తు వీక్షణ",
     languagePageVoiceIntro: "మాట్లాడే support అందుబాటులో ఉన్నప్పుడు, ఎంచుకున్న భాషలో క్రియాశీల మార్గాన్ని వినడానికి current guidance చదవండి.",
     languagePageVoiceAssistLabel: "స్వర సహాయం",
@@ -7622,11 +7648,11 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     languagePageSpeechLocaleLabel: "தற்போதைய speech locale",
     languagePageSupportedLanguagesLabel: "ஆதரிக்கும் மொழிகள்",
     languagePageChoicesTitle: "மொழியைத் தேர்வுசெய்க",
-    languagePageChoicesIntro: "22 தேர்வுகளும் device voice support இருக்கும் இடங்களில் மொழிபெயர்க்கப்பட்ட navigation-ஐ வழங்கும். mobile-ல் compact preview சிறியதாக இருக்கும், full list தேவைப்படும்போது மட்டும் திறக்கப்படும்.",
+    languagePageChoicesIntro: "இப்போது profile-ல் முழுமையாக ready ஆக இருக்கும் primary மொழிகளே காட்டப்படும். மீதிக்கு Show all languages-ஐ தட்டவும்.",
     languagePageToggleCompact: "சுருக்கமாக காட்டு",
-    languagePageToggleExpanded: "22 மொழிகளை காட்டு",
+    languagePageToggleExpanded: "அனைத்து மொழிகளை காட்டு",
     languagePageCompactSummaryOpen: "முழு மொழிப் பட்டியல் திறந்துள்ளது. மொழியை மாற்றத் தட்டவும், பக்கம் கவனமாக இருக்கும்.",
-    languagePageCompactSummaryClosed: "சுருக்க preview திறந்துள்ளது. தேவைப்படும்போது மட்டும் மீதியைத் திறக்கவும்.",
+    languagePageCompactSummaryClosed: "முதன்மை மொழி preview திறந்துள்ளது. தேவைப்படும்போது மட்டும் மீதியைத் திறக்கவும்.",
     languagePageVoiceTitle: "குரல் முன்னோட்டம்",
     languagePageVoiceIntro: "குரல் support கிடைக்கும் போது, தேர்ந்த மொழியில் செயலில் உள்ள பாதையை கேட்க தற்போதைய guidance-ஐ வாசிக்கவும்.",
     languagePageVoiceAssistLabel: "குரல் உதவி",
@@ -7756,11 +7782,11 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     languagePageSpeechLocaleLabel: "موجودہ speech locale",
     languagePageSupportedLanguagesLabel: "معاون زبانیں",
     languagePageChoicesTitle: "زبان منتخب کریں",
-    languagePageChoicesIntro: "22 choices میں translated navigation ملتا ہے جہاں device voice support دستیاب ہو۔ mobile پر compact preview چھوٹا رہتا ہے، اور پوری فہرست صرف ضرورت پر کھلتی ہے۔",
+    languagePageChoicesIntro: "اب profile میں صرف وہ primary زبانیں دکھتی ہیں جو مکمل طور پر تیار ہیں۔ باقی کے لیے Show all languages پر ٹیپ کریں۔",
     languagePageToggleCompact: "مختصر دکھائیں",
-    languagePageToggleExpanded: "22 زبانیں دکھائیں",
+    languagePageToggleExpanded: "تمام زبانیں دکھائیں",
     languagePageCompactSummaryOpen: "مکمل زبان فہرست کھلی ہے۔ زبان بدلنے کے لیے tap کریں، اور صفحہ focused رہے گا.",
-    languagePageCompactSummaryClosed: "مختصر preview کھلا ہے۔ باقی صرف ضرورت پر دکھائیں.",
+    languagePageCompactSummaryClosed: "بنیادی زبان preview کھلا ہے۔ باقی صرف ضرورت پر دکھائیں.",
     languagePageVoiceTitle: "آواز کا پیش نظارہ",
     languagePageVoiceIntro: "جب speech support دستیاب ہو تو منتخب زبان میں active route سننے کے لیے current guidance پڑھیں.",
     languagePageVoiceAssistLabel: "آوازی مدد",
@@ -15860,16 +15886,23 @@ export default function App() {
     [activeTab, languageId, navActiveTab, visibleTabs]
   );
   const headerNavTabs = useMemo(() => {
-    const orderedIds: TabId[] = [
-      "today",
-      "aihelp",
-      "vedic",
-      "tones",
-      "community",
-      "redress",
-      "insights"
+    return PRIMARY_HEADER_TAB_IDS
+      .map((id) => visibleTabs.find((tab) => tab.id === id))
+      .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
+  }, [visibleTabs]);
+  const sectionSwitcherFeaturedTabs = useMemo(() => {
+    const featuredIds: TabId[] = ["community", "vedic", "tones"];
+    return featuredIds
+      .map((id) => visibleTabs.find((tab) => tab.id === id))
+      .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
+  }, [visibleTabs]);
+  const sectionSwitcherTabs = useMemo(() => {
+    const orderedIds = [
+      ...SECONDARY_PAGE_SEQUENCE,
+      ...CORE_SERVICE_TAB_IDS,
+      ...visibleTabs.map((tab) => tab.id)
     ];
-    return orderedIds
+    return Array.from(new Set(orderedIds))
       .map((id) => visibleTabs.find((tab) => tab.id === id))
       .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
   }, [visibleTabs]);
@@ -16343,7 +16376,7 @@ export default function App() {
       if (Number.isFinite(ts) && (!best || ts > best.ts)) best = { tab: key, ts };
     }
     if (!best) return null;
-    const meta = PRIMARY_NAV_TABS.find((t) => t.id === best!.tab);
+    const meta = PRIMARY_HEADER_TABS.find((t) => t.id === best!.tab);
     return meta ? { tab: best.tab, label: meta.label } : null;
   }, [lastTabViewedAt]);
 
@@ -16842,7 +16875,6 @@ export default function App() {
     () => visitReports.filter((report) => report.issueLabel === selectedIssueGuide.label).length,
     [visitReports, selectedIssueGuide]
   );
-
   // The last couple of journal notes (already real, already saved via
   // saveCheckIn/buildGuidedJournalNote) were never scanned for themes --
   // theme detection only ever ran on the Home intake text and the live
@@ -22645,6 +22677,37 @@ function isTrustedExternalUrl(url: string) {
                   </Text>
                 </Pressable>
               ) : null}
+              {sectionSwitcherFeaturedTabs.map((tab) => {
+                const selected = activeTab === tab.id;
+                return (
+                  <Pressable
+                    key={`flow-featured-${tab.id}`}
+                    accessibilityRole="tab"
+                    accessibilityLabel={tab.label}
+                    accessibilityState={{ selected }}
+                    onPress={() => handleTabPress(tab.id)}
+                    style={({ pressed }) => [
+                      styles.flowRailButton,
+                      isCompact && styles.flowRailButtonCompact,
+                      {
+                        minWidth: isCompact ? 44 : 86,
+                        flexDirection: "row",
+                        gap: isCompact ? 0 : 6,
+                        borderColor: selected ? theme.accentGold : "rgba(14,111,105,0.45)",
+                        backgroundColor: selected ? theme.surfaceAlt : "#EAF5F2"
+                      },
+                      pressed && styles.pressed
+                    ]}
+                  >
+                    <Ionicons name={tab.icon} size={16} color={selected ? theme.accentGold : "#0E6F69"} />
+                    {!isCompact ? (
+                      <Text style={[styles.flowRailButtonLabel, { color: "#0D1F22" }]} numberOfLines={1}>
+                        {getHeaderNavShortLabel(languageId, tab)}
+                      </Text>
+                    ) : null}
+                  </Pressable>
+                );
+              })}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={showFullHomeHero ? homeUiCopy.openSectionSwitcherA11y : homeUiCopy.flowPagesA11y}
@@ -22701,8 +22764,22 @@ function isTrustedExternalUrl(url: string) {
                       <Text style={[styles.sectionSwitcherPanelCloseLabel, { color: theme.textMuted }]}>{homeUiCopy.sectionSwitcherClose}</Text>
                     </Pressable>
                   </View>
+                  {sectionSwitcherFeaturedTabs.length > 0 ? (
+                    <View style={{ marginBottom: 10, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                      {sectionSwitcherFeaturedTabs.map((tab) => (
+                        <TabButton
+                          key={`featured-${tab.id}`}
+                          tab={tab}
+                          isActive={activeTab === tab.id}
+                          isCompact={true}
+                          onPress={handleTabPress}
+                          theme={theme}
+                        />
+                      ))}
+                    </View>
+                  ) : null}
                   <View style={styles.sectionSwitcherGrid}>
-                    {visibleTabs.map((tab) => (
+                    {sectionSwitcherTabs.map((tab) => (
                       <TabButton
                         key={tab.id}
                         tab={tab}
@@ -23097,6 +23174,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
               <JournalSection
@@ -23166,6 +23244,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
             </View>
@@ -23246,6 +23325,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
 
@@ -23353,6 +23433,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
 
@@ -23376,6 +23457,7 @@ function isTrustedExternalUrl(url: string) {
                 onStopVoice={stopVoiceGuidance}
                 onFocusSelectedRoutineLayout={captureFocusLayout}
                 calmPageNonce={calmPageNonce}
+                languageId={languageId}
               /> : null}
             </View>
             </TabErrorBoundary>
@@ -23409,6 +23491,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
               <BirthChartSection
@@ -23674,6 +23757,7 @@ function isTrustedExternalUrl(url: string) {
                       onContinue={() => advanceJourneyStep(false)}
                       onSkip={() => advanceJourneyStep(true)}
                       onEndJourney={endJourney}
+                      languageId={languageId}
                     />
                   )}
                   <PlaySection
@@ -23732,6 +23816,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
               <SearchSection
@@ -23774,6 +23859,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
               <GuidedSupportSection
@@ -23850,6 +23936,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
               {/* Safe-space rules banner — sets tone, tells users what's protected + expected */}
@@ -24033,6 +24120,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
 
@@ -24092,6 +24180,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
               <RedressSection
@@ -24243,6 +24332,7 @@ function isTrustedExternalUrl(url: string) {
                   onContinue={() => advanceJourneyStep(false)}
                   onSkip={() => advanceJourneyStep(true)}
                   onEndJourney={endJourney}
+                  languageId={languageId}
                 />
               )}
               <InsightsSection
@@ -24690,6 +24780,10 @@ function isTrustedExternalUrl(url: string) {
           recentJournalNotesText={recentJournalNotesText}
           sadeSatiNote={counselingSadeSatiNote}
           weeklyTrend={{ weeklyAverage, monthlyAverage, sampleSize: weekEntries.length }}
+          onOpenTool={(tabId) => {
+            setShowCounselingChat(false);
+            handleTabPress(tabId);
+          }}
         />
 
         {/* ── Crisis support overlay (self-harm / suicidal ideation) ── */}
@@ -25441,7 +25535,8 @@ function FocusSection({
   onReadCalm,
   onStopVoice,
   onFocusSelectedRoutineLayout,
-  calmPageNonce
+  calmPageNonce,
+  languageId
 }: {
   selectedRoutine: Routine;
   routineId: string;
@@ -25459,16 +25554,19 @@ function FocusSection({
   onStopVoice: () => void;
   onFocusSelectedRoutineLayout?: (key: string) => (event: { nativeEvent: { layout: { y: number } } }) => void;
   calmPageNonce?: number;
+  languageId: LanguageId;
 }) {
   const isCalmMode = selectedRoutine.id === "calm";
   const calmProgram = (ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS.general)[0];
   const adaptiveBeaconModes = getAdaptiveBeaconXModes(selectedIssueGuide.id);
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const calmLensCards = [
-    { id: "practical", label: "Practical", text: selectedIssueGuide.logicalLens, hint: "facts" },
-    { id: "emotional", label: "Emotional", text: selectedIssueGuide.emotionalLens, hint: "feelings" },
-    { id: "psychological", label: "Psychological", text: selectedIssueGuide.theoreticalLens, hint: "patterns" },
-    { id: "spiritual", label: "Reflective", text: selectedIssueGuide.spiritualLens, hint: "values" },
-    { id: "cultural", label: "Cultural", text: selectedIssueGuide.culturalLens, hint: "context" }
+    { id: "practical", label: l("Practical", { hindi: "व्यावहारिक", telugu: "వ్యావహారిక", tamil: "நடைமுறை", urdu: "عملی" }), text: selectedIssueGuide.logicalLens, hint: l("facts", { hindi: "तथ्य", telugu: "వాస్తవాలు", tamil: "உண்மைகள்", urdu: "حقائق" }) },
+    { id: "emotional", label: l("Emotional", { hindi: "भावनात्मक", telugu: "భావోద్వేగ", tamil: "உணர்ச்சி", urdu: "جذباتی" }), text: selectedIssueGuide.emotionalLens, hint: l("feelings", { hindi: "भावनाएँ", telugu: "భావాలు", tamil: "உணர்வுகள்", urdu: "احساسات" }) },
+    { id: "psychological", label: l("Psychological", { hindi: "मनोवैज्ञानिक", telugu: "మానసిక", tamil: "உளவியல்", urdu: "نفسیاتی" }), text: selectedIssueGuide.theoreticalLens, hint: l("patterns", { hindi: "पैटर्न", telugu: "పాటర్న్లు", tamil: "முறைகள்", urdu: "نمونے" }) },
+    { id: "spiritual", label: l("Reflective", { hindi: "चिंतनशील", telugu: "ఆత్మచింతనాత్మక", tamil: "சிந்தனை", urdu: "غور و فکر" }), text: selectedIssueGuide.spiritualLens, hint: l("values", { hindi: "मूल्य", telugu: "విలువలు", tamil: "மதிப்புகள்", urdu: "قدریں" }) },
+    { id: "cultural", label: l("Cultural", { hindi: "सांस्कृतिक", telugu: "సాంస్కృతిక", tamil: "கலாச்சார", urdu: "ثقافتی" }), text: selectedIssueGuide.culturalLens, hint: l("context", { hindi: "संदर्भ", telugu: "పరిస్థితి", tamil: "சூழல்", urdu: "پس منظر" }) }
   ] as const;
   const calmSituationCards = getSituationRouteCards(selectedIssueGuide, selectedIdentityLabel);
   const beaconXRouteCards = calmSituationCards.slice(0, 5);
@@ -25570,12 +25668,15 @@ function FocusSection({
       </Text>
       {isCalmMode ? (
         <View style={styles.visionGuidanceBox}>
-          <Text style={styles.visionGuidanceTitle}>Recommended now · {calmProgram.name}</Text>
+          <Text style={styles.visionGuidanceTitle}>
+            {/* Calm and Path share the same issue-matched programme: Recommended now · {calmProgram.name} */}
+            {l("Recommended now ·", { hindi: "अभी सुझाया गया ·", telugu: "ఇప్పుడే సూచించినది ·", tamil: "இப்போது பரிந்துரைக்கப்பட்டது ·", urdu: "ابھی تجویز کردہ ·" })} {calmProgram.name}
+          </Text>
           <Text style={styles.visionGuidanceText}>
             {calmProgram.purpose}
           </Text>
           <Text style={styles.smallMeta}>
-            {calmProgram.duration} minutes · {calmProgram.breathPattern} · then return to the practical Path.
+            {calmProgram.duration} {l("minutes", { hindi: "मिनट", telugu: "నిమిషాలు", tamil: "நிமிடங்கள்", urdu: "منٹ" })} · {calmProgram.breathPattern} · {l("then return to the practical Path.", { hindi: "फिर व्यावहारिक Path पर लौटें।", telugu: "తర్వాత వ్యావహారిక Path‌కు తిరిగి వెళ్లండి.", tamil: "பின்னர் நடைமுறை Path-க்கு திரும்பவும்.", urdu: "پھر عملی Path پر واپس جائیں۔" })}
           </Text>
           <View style={styles.calmQuickActionRow}>
             <Pressable
@@ -25583,14 +25684,14 @@ function FocusSection({
               onPress={() => onOpenTab("tones")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open matched sound</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Open matched sound", { hindi: "मेल खाती ध्वनि खोलें", telugu: "సరిపోయే ధ్వనిని తెరవండి", tamil: "பொருந்தும் ஒலியைத் திறக்கவும்", urdu: "ملتی آواز کھولیں" })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("guide")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Continue to Path</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Continue to Path", { hindi: "Path पर जारी रखें", telugu: "Path‌కు కొనసాగండి", tamil: "Path-க்கு தொடரவும்", urdu: "Path پر جاری رکھیں" })}</Text>
             </Pressable>
           </View>
         </View>
@@ -25599,12 +25700,12 @@ function FocusSection({
         <View style={styles.calmWisdomBand}>
           <View style={styles.calmWisdomHeader}>
             <View style={styles.calmWisdomHeaderCopy}>
-              <Text style={styles.eyebrow}>Optional reflection</Text>
+              <Text style={styles.eyebrow}>{l("Optional reflection", { hindi: "ऐच्छिक मनन", telugu: "ఐచ్ఛిక ఆత్మచింతన", tamil: "விருப்ப சிந்தனை", urdu: "اختیاری غور و فکر" })}</Text>
               <Text style={styles.calmWisdomTitle} numberOfLines={2}>
-                SETTLE, THEN ACT
+                {l("SETTLE, THEN ACT", { hindi: "शांत हों, फिर कदम लें", telugu: "శాంతపడండి, ఆపై చర్య తీసుకోండి", tamil: "அமைதி பெற்று, பின்னர் செயல்படுங்கள்", urdu: "پرسکون ہوں، پھر اقدام کریں" })}
               </Text>
             </View>
-            <Text style={styles.calmWisdomBadge}>Paraphrased</Text>
+            <Text style={styles.calmWisdomBadge}>{l("Paraphrased", { hindi: "पुनर्लेखित", telugu: "పునర్వ్యాఖ్య", tamil: "மறுபதிப்பு", urdu: "مفہومی" })}</Text>
           </View>
           <Text style={styles.calmWisdomIntro}>
             Use one brief reflection only if it helps you become steadier. Calm is a pause before
@@ -25613,12 +25714,12 @@ function FocusSection({
           <View style={styles.calmVoiceBand}>
             <View style={styles.calmVoiceHeader}>
             <View style={styles.calmVoiceHeaderCopy}>
-              <Text style={styles.calmVoiceTitle}>Voice calm</Text>
+              <Text style={styles.calmVoiceTitle}>{l("Voice calm", { hindi: "आवाज़ से शांत करें", telugu: "వాయిస్ శాంతి", tamil: "குரல் அமைதி", urdu: "آواز سے سکون" })}</Text>
               <Text style={styles.calmVoiceMeta}>
-                {voiceAssistEnabled ? voiceAssistStatus : "Voice is off"}
+                {voiceAssistEnabled ? voiceAssistStatus : l("Voice is off", { hindi: "आवाज़ बंद है", telugu: "వాయిస్ ఆఫ్‌లో ఉంది", tamil: "குரல் அணைந்துள்ளது", urdu: "آواز بند ہے" })}
               </Text>
             </View>
-            <Text style={styles.smallMeta}>Speak the loop aloud</Text>
+            <Text style={styles.smallMeta}>{l("Speak the loop aloud", { hindi: "लूप को ज़ोर से बोलें", telugu: "లూప్‌ను శబ్దంతో చదవండి", tamil: "சுழலைச் சத்தமாகப் பேசுங்கள்", urdu: "لوپ کو بلند آواز میں بولیں" })}</Text>
           </View>
             <Text style={styles.calmVoiceText}>
               Read the current lens and three steps only when you choose. Voice never starts automatically.
@@ -25629,14 +25730,14 @@ function FocusSection({
                 onPress={() => onReadCalm(calmVoiceText)}
                 style={styles.calmQuickActionButton}
               >
-                <Text style={styles.calmQuickActionLabel}>Read calm steps</Text>
+                <Text style={styles.calmQuickActionLabel}>{l("Read calm steps", { hindi: "शांत कदम पढ़ें", telugu: "శాంతి దశలను చదవండి", tamil: "அமைதிப் படிகளைப் படிக்கவும்", urdu: "سکون کے مراحل پڑھیں" })}</Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
                 onPress={onStopVoice}
                 style={styles.calmQuickActionButton}
               >
-                <Text style={styles.calmQuickActionLabel}>Stop voice</Text>
+                <Text style={styles.calmQuickActionLabel}>{l("Stop voice", { hindi: "आवाज़ रोकें", telugu: "వాయిస్ ఆపండి", tamil: "குரலை நிறுத்து", urdu: "آواز روکیں" })}</Text>
               </Pressable>
             </View>
           </View>
@@ -25646,28 +25747,28 @@ function FocusSection({
               onPress={() => onOpenTab("journal")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open Journal</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Open Journal", { hindi: "जर्नल खोलें", telugu: "జర్నల్ తెరవండి", tamil: "ஜர்னலைத் திறக்கவும்", urdu: "جرنل کھولیں" })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("guide")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open Path</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Open Path", { hindi: "मार्ग खोलें", telugu: "మార్గం తెరవండి", tamil: "பாதையைத் திறக்கவும்", urdu: "راستہ کھولیں" })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("meditation")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open Meditation</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Open Meditation", { hindi: "ध्यान खोलें", telugu: "ధ్యానం తెరవండి", tamil: "தியானத்தைத் திறக்கவும்", urdu: "مراقبہ کھولیں" })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("aihelp")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open Counselling</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Open Counselling", { hindi: "काउंसलिंग खोलें", telugu: "కౌన్సెలింగ్ తెరవండి", tamil: "ஆலோசனையைத் திறக்கவும்", urdu: "مشاورت کھولیں" })}</Text>
             </Pressable>
           </View>
           <Pressable
@@ -25677,7 +25778,9 @@ function FocusSection({
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
             <Text style={styles.helpButtonSecondaryLabel}>
-              {showCalmDetails ? "Hide deeper guidance" : "Explore deeper guidance"}
+              {showCalmDetails
+                ? l("Hide deeper guidance", { hindi: "गहरी मार्गदर्शन छिपाएँ", telugu: "లోతైన మార్గదర్శనాన్ని దాచండి", tamil: "ஆழமான வழிகாட்டலை மறைக்கவும்", urdu: "گہری رہنمائی چھپائیں" })
+                : l("Explore deeper guidance", { hindi: "गहरा मार्गदर्शन देखें", telugu: "లోతైన మార్గదర్శనాన్ని చూడండి", tamil: "ஆழமான வழிகாட்டலை ஆராயவும்", urdu: "گہری رہنمائی دیکھیں" })}
             </Text>
           </Pressable>
           {showCalmDetails ? (
@@ -25685,12 +25788,12 @@ function FocusSection({
               <View style={styles.calmSituationBand}>
                 <View style={styles.calmSituationHeader}>
                   <View style={styles.calmSituationHeaderCopy}>
-                    <Text style={styles.calmSituationTitle}>Situation map</Text>
+                    <Text style={styles.calmSituationTitle}>{l("Situation map", { hindi: "स्थिति मानचित्र", telugu: "పరిస్థితి పటం", tamil: "நிலை வரைபடம்", urdu: "صورتحال نقشہ" })}</Text>
                     <Text style={styles.calmSituationMeta}>
-                      Choose the card that matches the moment. Reset routes the user to the right page fast.
+                      {l("Choose the card that matches the moment. Reset routes the user to the right page fast.", { hindi: "उस क्षण से मेल खाने वाला कार्ड चुनें। Reset उपयोगकर्ता को जल्दी सही पेज पर ले जाता है।", telugu: "ఆ క్షణానికి సరిపోయే కార్డును ఎంచుకోండి। Reset వినియోగదారుని సరైన పేజీకి వేగంగా తీసుకెళ్తుంది।", tamil: "அந்த நேரத்துக்கு பொருந்தும் கார்டைத் தேர்ந்தெடுக்கவும். Reset பயனரை வேகமாக சரியான பக்கத்துக்கு கொண்டு செல்கிறது.", urdu: "اس لمحے سے میل کھانے والا کارڈ منتخب کریں۔ Reset صارف کو تیزی سے درست صفحے پر لے جاتا ہے۔" })}
                     </Text>
                   </View>
-                  <Text style={styles.calmWisdomBadge}>Active</Text>
+                  <Text style={styles.calmWisdomBadge}>{l("Active", { hindi: "सक्रिय", telugu: "క్రియాశీల", tamil: "செயலில்", urdu: "فعال" })}</Text>
                 </View>
                 <View style={styles.calmSituationGrid}>
                   {calmSituationCards.map((card) => (
@@ -25719,10 +25822,10 @@ function FocusSection({
                     <Text style={styles.calmTeachingText}>{item.teaching}</Text>
                     <Text style={styles.calmTeachingPractice}>{item.practice}</Text>
                     <View style={styles.wisdomShareRow}>
-                      <Text style={styles.calmTeachingRef}>Paraphrased</Text>
+                      <Text style={styles.calmTeachingRef}>{l("Paraphrased", { hindi: "पुनर्लेखित", telugu: "పునర్వ్యాఖ్య", tamil: "மறுபதிப்பு", urdu: "مفہومی" })}</Text>
                       <Pressable
                         accessibilityRole="button"
-                        accessibilityLabel={`Share this wisdom: ${item.theme}`}
+                        accessibilityLabel={`${l("Share this wisdom", { hindi: "इस ज्ञान को साझा करें", telugu: "ఈ జ్ఞానాన్ని పంచుకోండి", tamil: "இந்த அறிவைப் பகிரவும்", urdu: "اس حکمت کو شیئر کریں" })}: ${item.theme}`}
                         onPress={() => {
                           void Share.share({
                             message: `"${item.teaching}"\n\n— ${item.practice}\n\nShared from Aethon Beacon`,
@@ -25731,7 +25834,7 @@ function FocusSection({
                         }}
                         style={({ pressed }) => [styles.wisdomShareButton, pressed && styles.pressed]}
                       >
-                        <Text style={styles.wisdomShareButtonLabel}>Share ↗</Text>
+                        <Text style={styles.wisdomShareButtonLabel}>{l("Share ↗", { hindi: "साझा करें ↗", telugu: "పంచుకోండి ↗", tamil: "பகிரவும் ↗", urdu: "شیئر کریں ↗" })}</Text>
                       </Pressable>
                     </View>
                   </View>
@@ -25740,7 +25843,7 @@ function FocusSection({
             </>
           ) : (
             <Text style={styles.smallMeta}>
-              Deeper perspectives stay hidden until needed so this reset remains simple and focused.
+              {l("Deeper perspectives stay hidden until needed so this reset remains simple and focused.", { hindi: "गहरे दृष्टिकोण तब तक छिपे रहते हैं जब तक उनकी ज़रूरत न हो, ताकि यह रीसेट सरल और केंद्रित बना रहे।", telugu: "లోతైన దృక్కోణాలు అవసరం అయ్యే వరకు దాచబడి ఉంటాయి, అందువల్ల ఈ రీసెట్ సులభంగా మరియు కేంద్రీకృతంగా ఉంటుంది।", tamil: "ஆழமான பார்வைகள் தேவையான வரை மறைக்கப்பட்டிருக்கும்; அதனால் இந்த reset எளிமையும் கவனமுமாக இருக்கும்.", urdu: "گہری زاویے ضرورت تک چھپے رہتے ہیں تاکہ یہ ری سیٹ سادہ اور مرکوز رہے۔" })}
             </Text>
           )}
         </View>
@@ -25749,10 +25852,10 @@ function FocusSection({
         <View style={styles.calmLensBand}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.eyebrow}>Choose a lens</Text>
-              <Text style={styles.sectionTitleSmall}>Change the calm angle</Text>
+              <Text style={styles.eyebrow}>{l("Choose a lens", { hindi: "एक दृष्टिकोण चुनें", telugu: "ఒక కోణాన్ని ఎంచుకోండి", tamil: "ஒரு பார்வையைத் தேர்ந்தெடுக்கவும்", urdu: "ایک زاویہ منتخب کریں" })}</Text>
+              <Text style={styles.sectionTitleSmall}>{l("Change the calm angle", { hindi: "शांत कोण बदलें", telugu: "శాంతి కోణాన్ని మార్చండి", tamil: "அமைதிக் கோணத்தை மாற்றவும்", urdu: "سکون کا زاویہ بدلیں" })}</Text>
             </View>
-            <Text style={styles.smallMeta}>{calmDoneCount}/3 steps done</Text>
+            <Text style={styles.smallMeta}>{calmDoneCount}/3 {l("steps done", { hindi: "कदम पूरे", telugu: "దశలు పూర్తయ్యాయి", tamil: "படிகள் முடிந்தன", urdu: "مراحل مکمل" })}</Text>
           </View>
           <View style={styles.calmLensRow}>
             {calmLensCards.map((lens) => {
@@ -25785,9 +25888,9 @@ function FocusSection({
         <View style={styles.beaconXRouteBand}>
           <View style={styles.beaconXRouteHeader}>
             <View style={styles.beaconXRouteHeaderCopy}>
-              <Text style={styles.beaconXRouteTitle}>What to do next</Text>
+              <Text style={styles.beaconXRouteTitle}>{l("What to do next", { hindi: "अब क्या करें", telugu: "తర్వాత ఏమి చేయాలి", tamil: "அடுத்தது என்ன செய்ய வேண்டும்", urdu: "اب کیا کرنا ہے" })}</Text>
               <Text style={styles.beaconXRouteMeta}>
-                Choose the step that fits your situation right now.
+                {l("Choose the step that fits your situation right now.", { hindi: "अभी अपनी स्थिति के लिए उपयुक्त कदम चुनें।", telugu: "ఇప్పుడే మీ పరిస్థితికి సరిపోయే దశను ఎంచుకోండి।", tamil: "இப்போது உங்கள் நிலைக்கு பொருந்தும் படியைத் தேர்ந்தெடுக்கவும்.", urdu: "ابھی اپنی صورتحال کے مطابق قدم منتخب کریں۔" })}
               </Text>
             </View>
           </View>
@@ -25811,10 +25914,10 @@ function FocusSection({
         <View style={styles.calmPracticeBand}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.eyebrow}>Do now</Text>
-              <Text style={styles.sectionTitleSmall}>Three calm steps</Text>
+              <Text style={styles.eyebrow}>{l("Do now", { hindi: "अभी करें", telugu: "ఇప్పుడే చేయండి", tamil: "இப்போது செய்யவும்", urdu: "ابھی کریں" })}</Text>
+              <Text style={styles.sectionTitleSmall}>{l("Three calm steps", { hindi: "तीन शांत कदम", telugu: "మూడు శాంతి దశలు", tamil: "மூன்று அமைதிப் படிகள்", urdu: "تین سکون کے مراحل" })}</Text>
             </View>
-            <Text style={styles.smallMeta}>Tap each step as you do it</Text>
+            <Text style={styles.smallMeta}>{l("Tap each step as you do it", { hindi: "हर कदम को करते समय टैप करें", telugu: "ప్రతి దశను చేస్తూ టాప్ చేయండి", tamil: "ஒவ்வொரு படியையும் செய்யும் போது தொடவும்", urdu: "ہر مرحلہ کرتے ہوئے اسے ٹیپ کریں" })}</Text>
           </View>
           <View style={styles.calmPracticeList}>
             {selectedIssueGuide.steps.map((step, index) => {
@@ -25845,7 +25948,7 @@ function FocusSection({
                       {step}
                     </Text>
                     <Text style={styles.calmPracticeMeta}>
-                      {isDone ? "Completed" : index === 0 ? "Start here" : "Next calm move"}
+                      {isDone ? l("Completed", { hindi: "पूरा हुआ", telugu: "పూర్తయింది", tamil: "முடிந்தது", urdu: "مکمل" }) : index === 0 ? l("Start here", { hindi: "यहाँ से शुरू करें", telugu: "ఇక్కడ ప్రారంభించండి", tamil: "இங்கே தொடங்கவும்", urdu: "یہاں سے شروع کریں" }) : l("Next calm move", { hindi: "अगला शांत कदम", telugu: "తదుపరి శాంతి అడుగు", tamil: "அடுத்த அமைதிப் படி", urdu: "اگلا سکون والا قدم" })}
                     </Text>
                   </View>
                 </Pressable>
@@ -25854,7 +25957,7 @@ function FocusSection({
           </View>
           <Text style={styles.calmPracticeSummary}>
             {calmDoneCount === 3
-              ? "You have done the calm loop. Leave the section lighter and choose the next helpful tab."
+              ? l("You have done the calm loop. Leave the section lighter and choose the next helpful tab.", { hindi: "आपने शांत लूप पूरा कर लिया है। इस हिस्से को हल्का छोड़ें और अगला उपयोगी टैब चुनें।", telugu: "మీరు శాంతి లూప్‌ను పూర్తి చేశారు। ఈ విభాగాన్ని తేలికగా వదిలి, తదుపరి ఉపయోగకరమైన ట్యాబ్‌ను ఎంచుకోండి।", tamil: "நீங்கள் அமைதிச் சுழலை முடித்துவிட்டீர்கள். பகுதியை இலகுவாக விட்டுவிட்டு அடுத்த உதவியான தாவலைத் தேர்ந்தெடுக்கவும்.", urdu: "آپ نے سکون والا لوپ مکمل کر لیا ہے۔ اس حصے کو ہلکا چھوڑیں اور اگلا مفید ٹیب منتخب کریں۔" })
               : selectedIssueGuide.followUp}
           </Text>
           <View style={styles.calmQuickActionRow}>
@@ -25863,21 +25966,21 @@ function FocusSection({
               onPress={() => onOpenTab("guide")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Return to Path</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Return to Path", { hindi: "Path पर लौटें", telugu: "Path‌కు తిరిగి వెళ్ళండి", tamil: "Path-க்கு திரும்பவும்", urdu: "Path پر واپس جائیں" })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("journal")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Write note</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Write note", { hindi: "नोट लिखें", telugu: "గమనిక రాయండి", tamil: "குறிப்பு எழுதவும்", urdu: "نوٹ لکھیں" })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("aihelp")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open Guide</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Open Guide", { hindi: "मार्गदर्शक खोलें", telugu: "మార్గదర్శిని తెరవండి", tamil: "வழிகாட்டியைத் திறக்கவும்", urdu: "رہنما کھولیں" })}</Text>
             </Pressable>
           </View>
         </View>
@@ -25886,14 +25989,14 @@ function FocusSection({
         <View style={styles.beaconXWisdomPanel}>
           <View style={styles.sectionHeader}>
             <View style={styles.beaconXWisdomHeaderCopy}>
-              <Text style={styles.eyebrow}>Guidance paths</Text>
+              <Text style={styles.eyebrow}>{l("Guidance paths", { hindi: "मार्गदर्शन पथ", telugu: "మార్గదర్శక మార్గాలు", tamil: "வழிகாட்டல் பாதைகள்", urdu: "رہنمائی کے راستے" })}</Text>
               <Text style={styles.beaconXWisdomTitle} numberOfLines={2}>
-                Next steps for {selectedIssueGuide.label}
+                {l("Next steps for", { hindi: "अगले कदम", telugu: "తదుపరి దశలు", tamil: "அடுத்த படிகள்", urdu: "اگلے مراحل" })} {selectedIssueGuide.label}
               </Text>
             </View>
           </View>
           <Text style={styles.beaconXWisdomLead}>
-            Use the path below that matches what you need right now — facts, values, or a clearer head.
+            {l("Use the path below that matches what you need right now — facts, values, or a clearer head.", { hindi: "नीचे दिया गया वह पथ चुनें जो अभी आपकी ज़रूरत से मेल खाता हो — तथ्य, मूल्य, या अधिक स्पष्ट मन।", telugu: "ఇప్పుడే మీ అవసరానికి సరిపోయే మార్గాన్ని ఎంచుకోండి — వాస్తవాలు, విలువలు లేదా స్పష్టమైన మనస్సు.", tamil: "இப்போது உங்களுக்குத் தேவையானதைப் பொருந்தும் பாதையைத் தேர்ந்தெடுக்கவும் — உண்மைகள், மதிப்புகள், அல்லது தெளிவான மனம்.", urdu: "نیچے دیا گیا وہ راستہ چنیں جو ابھی آپ کی ضرورت سے میل کھاتا ہو — حقائق، اقدار، یا زیادہ صاف ذہن۔" })}
           </Text>
           <View style={styles.beaconXWisdomRow}>
             {adaptiveBeaconModes.map((mode) => (
@@ -25925,21 +26028,21 @@ function FocusSection({
               onPress={() => onOpenTab("guide")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open Path</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Open Path", { hindi: "मार्ग खोलें", telugu: "మార్గం తెరవండి", tamil: "பாதையைத் திறக்கவும்", urdu: "راستہ کھولیں" })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("journal")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Write note</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Write note", { hindi: "नोट लिखें", telugu: "గమనిక రాయండి", tamil: "குறிப்பு எழுதவும்", urdu: "نوٹ لکھیں" })}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => onOpenTab("redress")}
               style={styles.calmQuickActionButton}
             >
-              <Text style={styles.calmQuickActionLabel}>Open Help</Text>
+              <Text style={styles.calmQuickActionLabel}>{l("Open Help", { hindi: "मदद खोलें", telugu: "సహాయం తెరవండి", tamil: "உதவியைத் திறக்கவும்", urdu: "مدد کھولیں" })}</Text>
             </Pressable>
           </View>
         </View>
@@ -25977,16 +26080,16 @@ function FocusSection({
         onLayout={onFocusSelectedRoutineLayout ? onFocusSelectedRoutineLayout(`focus:card:${selectedRoutine.id}`) : undefined}
       >
         <Text style={styles.focusCount}>{selectedRoutine.duration}:00</Text>
-        <Text style={styles.focusLabel}>{isCalmMode ? "Reset window" : "Calm window"}</Text>
+        <Text style={styles.focusLabel}>{isCalmMode ? l("Reset window", { hindi: "रीसेट विंडो", telugu: "రీసెట్ విండో", tamil: "மீட்டமைப்பு சாளரம்", urdu: "ری سیٹ ونڈو" }) : l("Calm window", { hindi: "शांत विंडो", telugu: "శాంతి విండో", tamil: "அமைதி சாளரம்", urdu: "سکون ونڈو" })}</Text>
         <CommandButton
           label={
             sessionActive
               ? isCalmMode
-                ? "Pause Reset"
-                : "Pause focus"
+                ? l("Pause Reset", { hindi: "रीसेट रोकें", telugu: "రీసెట్ నిలిపివేయండి", tamil: "மீட்டமைப்பை இடைநிறுத்து", urdu: "ری سیٹ روکیں" })
+                : l("Pause focus", { hindi: "फोकस रोकें", telugu: "దృష్టి నిలిపివేయండి", tamil: "கவனத்தை இடைநிறுத்து", urdu: "توجہ روکیں" })
               : isCalmMode
-                ? "Begin calm"
-                : "Start focus"
+                ? l("Begin calm", { hindi: "शांति शुरू करें", telugu: "శాంతిని ప్రారంభించండి", tamil: "அமைதியைத் தொடங்கவும்", urdu: "سکون شروع کریں" })
+                : l("Start focus", { hindi: "फोकस शुरू करें", telugu: "దృష్టిని ప్రారంభించండి", tamil: "கவனத்தைத் தொடங்கவும்", urdu: "توجہ شروع کریں" })
           }
           mark={sessionActive ? "||" : ">"}
           onPress={() => setSessionActive(!sessionActive)}
@@ -26006,7 +26109,7 @@ function FocusSection({
         </View>
         {isCalmMode ? (
           <Text style={styles.smallMeta}>
-            After the reset, journal one line and return to the Path tab for the next clean step.
+            {l("After the reset, journal one line and return to the Path tab for the next clean step.", { hindi: "रीसेट के बाद एक पंक्ति जर्नल करें और अगले साफ़ कदम के लिए Path टैब पर लौटें।", telugu: "రీసెట్ తర్వాత ఒక పంక్తిని జర్నల్‌లో రాసి, తదుపరి స్పష్టమైన దశ కోసం Path ట్యాబ్‌కు తిరిగి వెళ్లండి.", tamil: "மீட்டமைப்புக்குப் பிறகு ஒரு வரி ஜர்னல் செய்து, அடுத்த சுத்தமான படிக்காக Path தாவலுக்கு திரும்புங்கள்.", urdu: "ری سیٹ کے بعد ایک سطر جرنل کریں اور اگلے صاف قدم کے لیے Path ٹیب پر واپس جائیں۔" })}
           </Text>
         ) : null}
         <Pressable
@@ -26014,7 +26117,7 @@ function FocusSection({
           onPress={onCompleteFocus}
           style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
         >
-          <Text style={styles.helpButtonSecondaryLabel}>Finish and journal</Text>
+          <Text style={styles.helpButtonSecondaryLabel}>{l("Finish and journal", { hindi: "पूरा करें और जर्नल करें", telugu: "పూర్తి చేసి జర్నల్‌లో నమోదు చేయండి", tamil: "முடித்து ஜர்னல் செய்யவும்", urdu: "مکمل کریں اور جرنل میں لکھیں" })}</Text>
         </Pressable>
       </View>
     </View>
@@ -27303,17 +27406,17 @@ function MeditationSection({
       <View style={styles.beaconXWisdomPanel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Voice and loop</Text>
+            <Text style={styles.eyebrow}>{pickLocalizedText(languageId, { english: "Voice and loop", hindi: "आवाज़ और लूप", telugu: "వాయిస్ మరియు లూప్", tamil: "குரல் மற்றும் சுழல்", urdu: "آواز اور لوپ" })}</Text>
             <Text style={styles.sectionTitleSmall}>
-              Speak, listen, then return
+              {pickLocalizedText(languageId, { english: "Speak, listen, then return", hindi: "बोलें, सुनें, फिर लौटें", telugu: "మాట్లాడండి, వినండి, ఆపై తిరిగి వెళ్లండి", tamil: "பேசுங்கள், கேளுங்கள், பின்னர் திரும்புங்கள்", urdu: "بولیں، سنیں، پھر واپس جائیں" })}
             </Text>
           </View>
           <Text style={styles.smallMeta}>
-            {voiceAssistEnabled ? voiceAssistStatus : "Voice off"}
+            {voiceAssistEnabled ? voiceAssistStatus : pickLocalizedText(languageId, { english: "Voice off", hindi: "आवाज़ बंद", telugu: "వాయిస్ ఆఫ్", tamil: "குரல் அணைப்பு", urdu: "آواز بند" })}
           </Text>
         </View>
         <Text style={styles.beaconXWisdomLead}>
-          Choose one method, hear one teaching, and then return to Path, Help, Journal, or Practice so meditation becomes part of the real workflow.
+          {pickLocalizedText(languageId, { english: "Choose one method, hear one teaching, and then return to Path, Help, Journal, or Practice so meditation becomes part of the real workflow.", hindi: "एक तरीका चुनें, एक शिक्षण सुनें, और फिर Path, Help, Journal, या Practice पर लौटें ताकि ध्यान असली कार्यप्रवाह का हिस्सा बने।", telugu: "ఒక పద్ధతిని ఎంచుకోండి, ఒక బోధనను వినండి, ఆపై Path, Help, Journal, లేదా Practice‌కు తిరిగి వెళ్లండి, అప్పుడు ధ్యానం నిజమైన వర్క్‌ఫ్లోలో భాగమవుతుంది।", tamil: "ஒரு முறையைத் தேர்ந்தெடுக்கவும், ஒரு போதனையைக் கேளுங்கள், பின்னர் Path, Help, Journal, அல்லது Practice-க்கு திரும்புங்கள்; அப்போதுதான் தியானம் உண்மையான பணிப்பாய்வின் பகுதியாகும்.", urdu: "ایک طریقہ چنیں، ایک تعلیم سنیں، پھر Path، Help، Journal، یا Practice پر واپس جائیں تاکہ مراقبہ اصل ورک فلو کا حصہ بن جائے۔" })}
         </Text>
         <View style={styles.calmQuickActionRow}>
           <Pressable
@@ -27321,28 +27424,28 @@ function MeditationSection({
             onPress={() => onOpenTab("focus")}
             style={styles.calmQuickActionButton}
           >
-            <Text style={styles.calmQuickActionLabel}>Open Calm Reset</Text>
+            <Text style={styles.calmQuickActionLabel}>{pickLocalizedText(languageId, { english: "Open Calm Reset", hindi: "शांत रीसेट खोलें", telugu: "శాంతి రీసెట్ తెరవండి", tamil: "அமைதி மீட்டமைப்பைத் திறக்கவும்", urdu: "سکون ری سیٹ کھولیں" })}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpenTab("guide")}
             style={styles.calmQuickActionButton}
           >
-            <Text style={styles.calmQuickActionLabel}>Open Path</Text>
+            <Text style={styles.calmQuickActionLabel}>{pickLocalizedText(languageId, { english: "Open Path", hindi: "मार्ग खोलें", telugu: "మార్గం తెరవండి", tamil: "பாதையைத் திறக்கவும்", urdu: "راستہ کھولیں" })}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpenTab("journal")}
             style={styles.calmQuickActionButton}
           >
-            <Text style={styles.calmQuickActionLabel}>Open Journal</Text>
+            <Text style={styles.calmQuickActionLabel}>{pickLocalizedText(languageId, { english: "Open Journal", hindi: "जर्नल खोलें", telugu: "జర్నల్ తెరవండి", tamil: "ஜர்னலைத் திறக்கவும்", urdu: "جرنل کھولیں" })}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpenTab("play")}
             style={styles.calmQuickActionButton}
           >
-            <Text style={styles.calmQuickActionLabel}>Open Practice</Text>
+            <Text style={styles.calmQuickActionLabel}>{pickLocalizedText(languageId, { english: "Open Practice", hindi: "अभ्यास खोलें", telugu: "ప్రాక్టీస్ తెరవండి", tamil: "பயிற்சியைத் திறக்கவும்", urdu: "پریکٹس کھولیں" })}</Text>
           </Pressable>
         </View>
         <View style={styles.calmQuickActionRow}>
@@ -27351,14 +27454,14 @@ function MeditationSection({
             onPress={onStopVoice}
             style={styles.calmQuickActionButton}
           >
-            <Text style={styles.calmQuickActionLabel}>Stop voice</Text>
+            <Text style={styles.calmQuickActionLabel}>{pickLocalizedText(languageId, { english: "Stop voice", hindi: "आवाज़ रोकें", telugu: "వాయిస్ ఆపండి", tamil: "குரலை நிறுத்து", urdu: "آواز روکیں" })}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onReadMeditation(selectedVoiceText)}
             style={styles.calmQuickActionButton}
           >
-            <Text style={styles.calmQuickActionLabel}>Replay teaching</Text>
+            <Text style={styles.calmQuickActionLabel}>{pickLocalizedText(languageId, { english: "Replay teaching", hindi: "शिक्षा फिर सुनें", telugu: "బోధనను మళ్లీ వినండి", tamil: "போதனையை மீண்டும் இயக்கவும்", urdu: "تعلیم دوبارہ سنیں" })}</Text>
           </Pressable>
         </View>
       </View>
@@ -32467,6 +32570,7 @@ function RedressSection({
           stacked in a single column guarantees each panel is exactly as
           tall as its own content, with no possibility of stretching to
           match a taller sibling and leaving a blank tail behind it. */}
+      {/* safety, SOS, complaint route, and immediate support must be one tap away */}
       <View style={[styles.panel, !isWide && { flexGrow: 0, flexBasis: "auto" }]}>
         <View style={styles.sectionHeader}>
           <View>
@@ -33436,7 +33540,7 @@ function RedressSection({
               onPress={onExportRedressPlan}
               style={({ pressed }) => [styles.helpButtonSecondary, { opacity: pressed ? 0.8 : 1 }]}
             >
-              <Text style={styles.helpButtonSecondaryLabel}>Share note ↗</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>{l("Share note ↗", { hindi: "नोट साझा करें ↗", telugu: "గమనిక పంచుకోండి ↗", tamil: "குறிப்பைப் பகிரவும் ↗", urdu: "نوٹ شیئر کریں ↗" })}</Text>
             </Pressable>
           </View>
         </View>
@@ -33448,10 +33552,10 @@ function RedressSection({
             <View style={styles.issueSupportBand}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.eyebrow}>Institution-specific path</Text>
+                  <Text style={styles.eyebrow}>{l("Institution-specific path", { hindi: "संस्थान-विशिष्ट मार्ग", telugu: "సంస్థ-ప్రత్యేక మార్గం", tamil: "நிறுவன-சிறப்பு பாதை", urdu: "ادارے کے مخصوص راستہ" })}</Text>
                   <Text style={styles.sectionTitle}>{selectedInstitutionSector.label}</Text>
                 </View>
-                <Text style={styles.smallMeta}>Tuned for this setting</Text>
+                <Text style={styles.smallMeta}>{l("Tuned for this setting", { hindi: "इस स्थिति के लिए समायोजित", telugu: "ఈ పరిస్థితికి సరిపోయేలా సెట్ చేయబడింది", tamil: "இந்த அமைப்புக்கு ஏற்ப சரிசெய்யப்பட்டது", urdu: "اس صورتِ حال کے مطابق ترتیب دیا گیا" })}</Text>
               </View>
               <Text style={styles.promptText}>{selectedInstitutionSector.subtitle}</Text>
               <View style={styles.issueLensList}>
@@ -33466,14 +33570,14 @@ function RedressSection({
                   onPress={() => openWebsite(selectedInstitutionSector.portal, selectedInstitutionSector.portalLabel)}
                   style={({ pressed }) => [styles.helpButton, { opacity: pressed ? 0.8 : 1 }]}
                 >
-                  <Text style={styles.helpButtonLabel}>Open portal ↗</Text>
+                  <Text style={styles.helpButtonLabel}>{l("Open portal ↗", { hindi: "पोर्टल खोलें ↗", telugu: "పోర్టల్ తెరవండి ↗", tamil: "போர்டலைத் திறக்கவும் ↗", urdu: "پورٹل کھولیں ↗" })}</Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
                   onPress={onExportRedressPlan}
                   style={({ pressed }) => [styles.helpButtonSecondary, { opacity: pressed ? 0.8 : 1 }]}
                 >
-                  <Text style={styles.helpButtonSecondaryLabel}>Share note ↗</Text>
+                  <Text style={styles.helpButtonSecondaryLabel}>{l("Share note ↗", { hindi: "नोट साझा करें ↗", telugu: "గమనిక పంచుకోండి ↗", tamil: "குறிப்பைப் பகிரவும் ↗", urdu: "نوٹ شیئر کریں ↗" })}</Text>
                 </Pressable>
               </View>
             </View>
@@ -33482,10 +33586,10 @@ function RedressSection({
             <View style={styles.issueSupportBand}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.eyebrow}>Follow-up portals</Text>
-                  <Text style={styles.sectionTitle}>Keep the complaint moving</Text>
+                  <Text style={styles.eyebrow}>{l("Follow-up portals", { hindi: "अनुवर्ती पोर्टल", telugu: "ఫాలో-అప్ పోర్టల్స్", tamil: "தொடர்ச்சி போர்டல்கள்", urdu: "فالو اپ پورٹلز" })}</Text>
+                  <Text style={styles.sectionTitle}>{l("Keep the complaint moving", { hindi: "शिकायत को आगे बढ़ाते रहें", telugu: "ఫిర్యాదును ముందుకు తీసుకెళ్తూ ఉండండి", tamil: "புகாரை தொடர்ந்து நகர்த்துங்கள்", urdu: "شکایت کو آگے بڑھاتے رہیں" })}</Text>
                 </View>
-                <Text style={styles.smallMeta}>No lost paper trail</Text>
+                <Text style={styles.smallMeta}>{l("No lost paper trail", { hindi: "कोई काग़ज़ी रिकॉर्ड नहीं खोएगा", telugu: "కాగితపు రికార్డు కోల్పోదు", tamil: "காகிதப் பாதை இழக்காது", urdu: "کوئی کاغذی ریکارڈ ضائع نہیں ہوگا" })}</Text>
               </View>
               <View style={styles.recommendList}>
                 <Pressable
@@ -33493,32 +33597,32 @@ function RedressSection({
                   onPress={onOpenGuide}
                   style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
                 >
-                  <Text style={styles.recommendLabel}>Return to Path</Text>
-                  <Text style={styles.recommendDetail}>Map facts, tone, and support lens before or after filing.</Text>
+                  <Text style={styles.recommendLabel}>{l("Return to Path", { hindi: "Path पर लौटें", telugu: "Path‌కు తిరిగి వెళ్లండి", tamil: "Path-க்கு திரும்பவும்", urdu: "Path پر واپس جائیں" })}</Text>
+                  <Text style={styles.recommendDetail}>{l("Map facts, tone, and support lens before or after filing.", { hindi: "दायर करने से पहले या बाद में तथ्य, लहजा, और सहायता दृष्टि को समझें।", telugu: "దాఖలు చేసే ముందు లేదా తర్వాత వాస్తవాలు, స్వరం, మరియు సహాయ దృష్టిని మ్యాప్ చేయండి.", tamil: "சமர்ப்பிப்பதற்கு முன் அல்லது பின் உண்மைகள், tone, மற்றும் ஆதரவு கோணத்தை வரைபடம் போடுங்கள்.", urdu: "درخواست دینے سے پہلے یا بعد میں حقائق، لہجہ، اور مدد کے زاویے کو نقشہ بند کریں۔" })}</Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => openWebsite("https://pgportal.gov.in/", "CPGRAMS")}
                   style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
                 >
-                  <Text style={styles.recommendLabel}>CPGRAMS — Government portal</Text>
-                  <Text style={styles.recommendDetail}>Best for public offices and service-delivery complaints requiring state/central tracking.</Text>
+                  <Text style={styles.recommendLabel}>{l("CPGRAMS — Government portal", { hindi: "CPGRAMS — सरकारी पोर्टल", telugu: "CPGRAMS — ప్రభుత్వ పోర్టల్", tamil: "CPGRAMS — அரசு போர்டல்", urdu: "CPGRAMS — سرکاری پورٹل" })}</Text>
+                  <Text style={styles.recommendDetail}>{l("Best for public offices and service-delivery complaints requiring state/central tracking.", { hindi: "सरकारी कार्यालयों और सेवा-संबंधी शिकायतों के लिए, जहाँ राज्य/केंद्र स्तर का ट्रैकिंग चाहिए।", telugu: "రాష్ట్ర/కేంద్ర ట్రాకింగ్ అవసరమైన ప్రభుత్వ కార్యాలయాలు మరియు సేవా ఫిర్యాదులకు ఉత్తమం.", tamil: "மாநில/மத்திய கண்காணிப்பு தேவைப்படும் அரசு அலுவலகங்கள் மற்றும் சேவை புகார்களுக்கு சிறந்தது.", urdu: "سرکاری دفاتر اور سروس ڈلیوری شکایات کے لیے بہترین، جہاں ریاست/مرکزی ٹریکنگ درکار ہو۔" })}</Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => openWebsite("https://consumerhelpline.gov.in/", "Consumer Helpline")}
                   style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
                 >
-                  <Text style={styles.recommendLabel}>Consumer Helpline Portal</Text>
-                  <Text style={styles.recommendDetail}>For product/service complaints. Free filing at District Consumer Commission for claims up to ₹50 lakh.</Text>
+                  <Text style={styles.recommendLabel}>{l("Consumer Helpline Portal", { hindi: "उपभोक्ता हेल्पलाइन पोर्टल", telugu: "కన్స్యూమర్ హెల్ప్‌లైన్ పోర్టల్", tamil: "நுகர்வோர் உதவி மையம்", urdu: "کنزیومر ہیلپ لائن پورٹل" })}</Text>
+                  <Text style={styles.recommendDetail}>{l("For product/service complaints. Free filing at District Consumer Commission for claims up to ₹50 lakh.", { hindi: "उत्पाद/सेवा शिकायतों के लिए। ₹50 लाख तक के दावों के लिए जिला उपभोक्ता आयोग में निशुल्क दायर कर सकते हैं।", telugu: "ఉత్పత్తి/సేవ ఫిర్యాదుల కోసం. ₹50 లక్షల వరకు దావాలకు జిల్లా వినియోగదారుల కమిషన్‌లో ఉచితంగా దాఖలు చేయవచ్చు.", tamil: "பொருள்/சேவை புகார்களுக்கு. ₹50 லட்சம் வரை கோரிக்கைகளுக்கு மாவட்ட நுகர்வோர் ஆணையத்தில் இலவசமாக தாக்கல் செய்யலாம்.", urdu: "مصنوعات/سروس شکایات کے لیے۔ ₹50 لاکھ تک کے دعوؤں کے لیے ضلع کنزیومر کمیشن میں مفت دائر کر سکتے ہیں۔" })}</Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => openWebsite("https://cybercrime.gov.in/", "Cybercrime Portal")}
                   style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
                 >
-                  <Text style={styles.recommendLabel}>Cybercrime.gov.in</Text>
-                  <Text style={styles.recommendDetail}>For online fraud, harassment, stalking, morphed images. Also call 1930 for financial cybercrime.</Text>
+                  <Text style={styles.recommendLabel}>{l("Cybercrime.gov.in", { hindi: "Cybercrime.gov.in", telugu: "Cybercrime.gov.in", tamil: "Cybercrime.gov.in", urdu: "Cybercrime.gov.in" })}</Text>
+                  <Text style={styles.recommendDetail}>{l("For online fraud, harassment, stalking, morphed images. Also call 1930 for financial cybercrime.", { hindi: "ऑनलाइन धोखाधड़ी, उत्पीड़न, पीछा करना, मॉर्फ़ की गई छवियों के लिए। वित्तीय साइबर अपराध के लिए 1930 पर भी कॉल करें।", telugu: "ఆన్‌లైన్ మోసం, వేధింపు, స్టాకింగ్, మార్చిన చిత్రాల కోసం. ఆర్థిక సైబర్ నేరాలకు 1930కు కూడా కాల్ చేయండి.", tamil: "ஆன்லைன் மோசடி, தொந்தரவு, பின்தொடர்தல், மாற்றிய படங்களுக்கு. நிதி சைபர் குற்றத்திற்கு 1930-க்கு அழையுங்கள்.", urdu: "آن لائن فراڈ، ہراسانی، تعاقب، تبدیل شدہ تصاویر کے لیے۔ مالی سائبر جرم کے لیے 1930 پر بھی کال کریں۔" })}</Text>
                 </Pressable>
               </View>
             </View>
@@ -33527,13 +33631,13 @@ function RedressSection({
             <View style={styles.issueReminderBand}>
               <View style={styles.sectionHeader}>
                 <View>
-                  <Text style={styles.eyebrow}>Locality</Text>
-                  <Text style={styles.sectionTitle}>Use the right local office</Text>
+                  <Text style={styles.eyebrow}>{l("Locality", { hindi: "स्थानीयता", telugu: "స్థానికత", tamil: "இடம்", urdu: "مقامی" })}</Text>
+                  <Text style={styles.sectionTitle}>{l("Use the right local office", { hindi: "सही स्थानीय कार्यालय का उपयोग करें", telugu: "సరైన స్థానిక కార్యాలయాన్ని ఉపయోగించండి", tamil: "சரியான உள்ளூர் அலுவலகத்தைப் பயன்படுத்துங்கள்", urdu: "درست مقامی دفتر استعمال کریں" })}</Text>
                 </View>
-                <Text style={styles.smallMeta}>{supportLocality.trim() || "Set in Settings"}</Text>
+                <Text style={styles.smallMeta}>{supportLocality.trim() || l("Set in Settings", { hindi: "सेटिंग्स में सेट करें", telugu: "సెట్టింగ్స్‌లో సెట్ చేయండి", tamil: "அமைப்புகளில் அமைக்கவும்", urdu: "سیٹنگز میں سیٹ کریں" })}</Text>
               </View>
               <Text style={styles.promptText}>
-                Keep the local office, grievance cell, or police station contact ready so the complaint does not get stuck in a general inbox.
+                {l("Keep the local office, grievance cell, or police station contact ready so the complaint does not get stuck in a general inbox.", { hindi: "स्थानीय कार्यालय, शिकायत प्रकोष्ठ, या पुलिस स्टेशन का संपर्क तैयार रखें ताकि शिकायत सामान्य इनबॉक्स में न अटके।", telugu: "ఫిర్యాదు సాధారణ ఇన్‌బాక్స్‌లో చిక్కుకోకుండా స్థానిక కార్యాలయం, గ్రీవెన్స్ సెల్, లేదా పోలీస్ స్టేషన్ సంప్రదింపును సిద్ధంగా ఉంచండి।", tamil: "புகார் பொதுவான inbox-இல் சிக்காமல் இருக்க, உள்ளூர் அலுவலகம், grievance cell, அல்லது காவல் நிலைய தொடர்பைத் தயாராக வைத்திருக்கவும்.", urdu: "شکایت عام ان باکس میں نہ پھنسے، اس کے لیے مقامی دفتر، شکایت سیل، یا پولیس اسٹیشن کا رابطہ تیار رکھیں۔" })}
               </Text>
               <View style={styles.issueReminderActions}>
                 <Pressable
@@ -34708,8 +34812,8 @@ function SettingsSection({
         onValueChange={setSoftPrompts}
       />
       <PreferenceRow
-        label={t("Voice assistance", "आवाज़ सहायता")}
-        meta={voiceAssistEnabled ? voiceAssistStatus : t("Voice readout is off", "आवाज़ पढ़ना बंद है")}
+        label={pickLocalizedText(languageId, { english: "Voice assistance", hindi: "आवाज़ सहायता", telugu: "వాయిస్ సహాయం", tamil: "குரல் உதவி", urdu: "آواز کی مدد" })}
+        meta={voiceAssistEnabled ? voiceAssistStatus : pickLocalizedText(languageId, { english: "Voice readout is off", hindi: "आवाज़ पढ़ना बंद है", telugu: "వాయిస్ చదవడం ఆఫ్‌లో ఉంది", tamil: "குரல் வாசிப்பு அணைந்துள்ளது", urdu: "آواز میں پڑھنا بند ہے" })}
         value={voiceAssistEnabled}
         onValueChange={setVoiceAssistEnabled}
       />
@@ -34913,19 +35017,22 @@ function SettingsSection({
         </Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>{t("Voice assistance", "आवाज़ सहायता")}</Text>
+        <Text style={styles.settingsTitle}>{pickLocalizedText(languageId, { english: "Voice assistance", hindi: "आवाज़ सहायता", telugu: "వాయిస్ సహాయం", tamil: "குரல் உதவி", urdu: "آواز کی مدد" })}</Text>
         <Text style={styles.promptText}>
-          {t(
-            "Reads the current recommended path aloud. Web uses browser speech, while iOS and Android use device speech. The app will try to use the closest Indian locale voice for the selected language whenever the device has one.",
-            "वर्तमान सुझाए गए रास्ते को ज़ोर से पढ़ता है। वेब browser speech का उपयोग करता है, जबकि iOS और Android device speech का उपयोग करते हैं। चयनित भाषा के लिए ऐप उपलब्ध होने पर सबसे निकट भारतीय locale voice का उपयोग करने की कोशिश करेगा।"
-          )}
+          {pickLocalizedText(languageId, {
+            english: "Reads the current recommended path aloud. Web uses browser speech, while iOS and Android use device speech. The app will try to use the closest Indian locale voice for the selected language whenever the device has one.",
+            hindi: "वर्तमान सुझाए गए रास्ते को ज़ोर से पढ़ता है। वेब browser speech का उपयोग करता है, जबकि iOS और Android device speech का उपयोग करते हैं। चयनित भाषा के लिए ऐप उपलब्ध होने पर सबसे निकट भारतीय locale voice का उपयोग करने की कोशिश करेगा।",
+            telugu: "ప్రస్తుతంగా సూచించిన మార్గాన్ని శబ్దంగా చదువుతుంది. వెబ్ బ్రౌజర్ స్పీచ్‌ను ఉపయోగిస్తుంది, iOS మరియు Android పరికర స్పీచ్‌ను ఉపయోగిస్తాయి. పరికరంలో అందుబాటులో ఉంటే, యాప్ ఎంపిక చేసిన భాషకు దగ్గరైన భారతీయ locale voice‌ను ఉపయోగించడానికి ప్రయత్నిస్తుంది.",
+            tamil: "தற்போது பரிந்துரைக்கப்பட்ட பாதையைச் சத்தமாகப் படிக்கிறது. வலை browser speech-ஐப் பயன்படுத்துகிறது; iOS மற்றும் Android device speech-ஐப் பயன்படுத்துகின்றன. சாதனத்தில் இருந்தால், தேர்ந்தெடுக்கப்பட்ட மொழிக்கான அருகிலுள்ள இந்திய locale voice-ஐப் பயன்படுத்த முயற்சிக்கும்.",
+            urdu: "موجودہ تجویز کردہ راستے کو بلند آواز میں پڑھتا ہے۔ ویب براؤزر اسپِیچ استعمال کرتا ہے، جبکہ iOS اور Android ڈیوائس اسپِیچ استعمال کرتے ہیں۔ ایپ منتخب زبان کے لیے قریب ترین بھارتی locale voice استعمال کرنے کی کوشش کرے گی جب بھی ڈیوائس پر دستیاب ہو۔"
+          })}
         </Text>
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onReadGuidance} style={styles.dangerButton}>
-            <Text style={styles.dangerButtonLabel}>{t("Read current guidance", "वर्तमान मार्गदर्शन पढ़ें")}</Text>
+            <Text style={styles.dangerButtonLabel}>{pickLocalizedText(languageId, { english: "Read current guidance", hindi: "वर्तमान मार्गदर्शन पढ़ें", telugu: "ప్రస్తుత మార్గదర్శకతను చదవండి", tamil: "தற்போதைய வழிகாட்டலைப் படிக்கவும்", urdu: "موجودہ رہنمائی پڑھیں" })}</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={onStopVoice} style={styles.secondaryDangerButton}>
-            <Text style={styles.secondaryDangerButtonLabel}>{t("Stop voice", "आवाज़ रोकें")}</Text>
+            <Text style={styles.secondaryDangerButtonLabel}>{pickLocalizedText(languageId, { english: "Stop voice", hindi: "आवाज़ रोकें", telugu: "వాయిస్ ఆపండి", tamil: "குரலை நிறுத்து", urdu: "آواز روکیں" })}</Text>
           </Pressable>
         </View>
       </View>
@@ -35296,7 +35403,8 @@ function LanguageSection({
   const uiCopy = getUiCopy(languageId);
   const selectedLanguage =
     languageOptions.find((option) => option.id === languageId) ?? languageOptions[0];
-  const languageCount = languageOptions.length;
+  const primaryLanguageOptions = languageOptions.filter((option) => PRIMARY_LANGUAGE_SET.has(option.id));
+  const primaryLanguageCount = primaryLanguageOptions.length;
   const [showFullLanguages, setShowFullLanguages] = useState(false);
   // Several of the 22 constitutional languages have no text-to-speech voice on
   // any shipping device (Bodo, Santali and Manipuri in particular). Claiming
@@ -35341,7 +35449,7 @@ function LanguageSection({
     [spokenLocales]
   );
 
-  const visibleLanguages = showFullLanguages ? languageOptions : languageOptions.slice(0, 4);
+  const visibleLanguages = showFullLanguages ? languageOptions : primaryLanguageOptions;
 
   useEffect(() => {
     setShowFullLanguages(false);
@@ -35364,7 +35472,7 @@ function LanguageSection({
           <Text style={styles.identitySummaryTitle}>{selectedLanguage.label}</Text>
           <Text style={styles.identitySummaryText}>{uiCopy.languagePageIdentityMeta}</Text>
           <Text style={styles.smallMeta}>
-            {uiCopy.languagePageSpeechLocaleLabel}: {selectedLanguage.speechLang} • {languageCount} {uiCopy.languagePageSupportedLanguagesLabel}
+            {uiCopy.languagePageSpeechLocaleLabel}: {selectedLanguage.speechLang} • {primaryLanguageCount} primary languages
           </Text>
         </View>
       </View>
@@ -41557,6 +41665,7 @@ function CounselingChatModal({
   recentJournalNotesText = "",
   sadeSatiNote = null,
   weeklyTrend = null,
+  onOpenTool,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -41618,6 +41727,7 @@ function CounselingChatModal({
   // genuine decline, to name an actual measured dip rather than a vague
   // feeling.
   weeklyTrend?: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null;
+  onOpenTool: (tabId: Extract<TabId, "community" | "vedic" | "tones" | "redress">) => void;
 }) {
   // Real device top inset for the full-screen header, instead of a hardcoded
   // status-bar guess (see comment on the ExitReportModal header).
@@ -41679,6 +41789,7 @@ function CounselingChatModal({
   // via the "Reset when modal opens" effect below so it's never silently
   // hidden for a person who hasn't seen it yet.
   const [safetyNoticeExpanded, setSafetyNoticeExpanded] = React.useState(() => !isCompactPhone);
+  const [isKeyboardVisible, setIsKeyboardVisible] = React.useState(false);
   const typingTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const typingDotsAnim = React.useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
@@ -41695,6 +41806,31 @@ function CounselingChatModal({
   const isStartingVoiceInputRef = React.useRef(false);
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
+  const connectedSupportTools: Array<{
+    tabId: Extract<TabId, "community" | "vedic" | "tones" | "redress">;
+    icon: keyof typeof Ionicons.glyphMap;
+    label: string;
+  }> = [
+    { tabId: "community", icon: "chatbubbles-outline", label: l("Message support", { hindi: "संदेश सहायता", telugu: "సందేశ సహాయం", tamil: "செய்தி உதவி", urdu: "پیغام کی مدد" }) },
+    { tabId: "vedic", icon: "planet-outline", label: l("Vedic insight", { hindi: "वैदिक दृष्टि", telugu: "వేద దృష్టి", tamil: "வேத பார்வை", urdu: "ویدک بصیرت" }) },
+    { tabId: "tones", icon: "musical-notes-outline", label: l("Calm tones", { hindi: "शांत स्वर", telugu: "ప్రశాంత స్వరాలు", tamil: "அமைதி ஒலிகள்", urdu: "پرسکون آوازیں" }) },
+    { tabId: "redress", icon: "shield-checkmark-outline", label: l("Help / Redress", { hindi: "सहायता / निवारण", telugu: "సహాయం / పరిహారం", tamil: "உதவி / நிவாரணம்", urdu: "مدد / ازالہ" }) }
+  ];
+
+  React.useEffect(() => {
+    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const showSubscription = Keyboard.addListener(showEvent, () => {
+      setIsKeyboardVisible(true);
+      setSafetyNoticeExpanded(false);
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 60);
+    });
+    const hideSubscription = Keyboard.addListener(hideEvent, () => setIsKeyboardVisible(false));
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useSpeechRecognitionEvent("start", () => {
     if (!visible) return;
@@ -42173,7 +42309,7 @@ function CounselingChatModal({
             dismiss. Only on iOS, where presentationStyle="pageSheet" actually
             renders a sheet; on the Android/web full-screen fallback there's no
             sheet to grab, so it would just be a stray bar under the status bar. */}
-        {Platform.OS === "ios" && (
+        {Platform.OS === "ios" && !isKeyboardVisible && (
           <View style={{ backgroundColor: "#FFFFFF", alignItems: "center", paddingTop: 8, paddingBottom: 2 }}>
             <View style={{ width: 36, height: 5, borderRadius: 3, backgroundColor: "#D2DEDB" }} />
           </View>
@@ -42182,8 +42318,8 @@ function CounselingChatModal({
         <View style={{
           flexDirection: "row",
           alignItems: "center",
-          paddingTop: Platform.OS === "ios" ? (isVeryCompactPhone ? 8 : 10) : Math.max(insets.top, 12) + (isCompactPhone ? 8 : 12),
-          paddingBottom: isVeryCompactPhone ? 8 : isCompactPhone ? 10 : 12,
+          paddingTop: isKeyboardVisible ? 6 : Platform.OS === "ios" ? (isVeryCompactPhone ? 8 : 10) : Math.max(insets.top, 12) + (isCompactPhone ? 8 : 12),
+          paddingBottom: isKeyboardVisible ? 6 : isVeryCompactPhone ? 8 : isCompactPhone ? 10 : 12,
           paddingHorizontal: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 20,
           borderBottomWidth: 1,
           borderBottomColor: "#DCE9E6",
@@ -42222,7 +42358,7 @@ function CounselingChatModal({
                 urdu: "Beacon Guide سن رہا ہے"
               })}
             </Text>
-            <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 15 : 16 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
+            {!isKeyboardVisible && <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 15 : 16 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {voiceAssistEnabled
                 ? l("Private · Read-aloud available on request", {
                     hindi: "निजी · अनुरोध पर read-aloud उपलब्ध",
@@ -42236,7 +42372,7 @@ function CounselingChatModal({
                     tamil: "தனிப்பட்டது · ஸ்பீக்கர் அணைந்துள்ளது",
                     urdu: "نجی · اسپیکر بند ہے"
                   })}
-            </Text>
+            </Text>}
           </View>
           {/* Read-aloud is always manual. This control only enables or disables
               the speaker; opening the room and receiving replies stay silent. */}
@@ -42280,7 +42416,7 @@ function CounselingChatModal({
           </Pressable>
         </View>
 
-        <Pressable
+        {!isKeyboardVisible && <Pressable
           accessibilityRole="summary"
           accessibilityLabel={
             safetyNoticeExpanded
@@ -42320,10 +42456,19 @@ function CounselingChatModal({
               {COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]}
             </Text>
           )}
-        </Pressable>
+        </Pressable>}
 
         {/* Chat messages */}
-        <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={{ padding: isVeryCompactPhone ? 10 : isCompactPhone ? 16 : 20, gap: isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16 }} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          ref={scrollRef}
+          style={{ flex: 1 }}
+          contentContainerStyle={{ padding: isKeyboardVisible ? 8 : isVeryCompactPhone ? 10 : isCompactPhone ? 16 : 20, gap: isKeyboardVisible ? 8 : isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          onContentSizeChange={() => {
+            if (isKeyboardVisible) scrollRef.current?.scrollToEnd({ animated: false });
+          }}
+        >
           <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
             <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 10 : 12, lineHeight: isVeryCompactPhone ? 12 : 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Guided support room", { hindi: "मार्गदर्शित सहायता कक्ष", telugu: "మార్గదర్శిత మద్దతు గది", tamil: "வழிகாட்டப்பட்ட ஆதரவு அறை", urdu: "رہنمائی والا مدد کمرہ" })}</Text>
             <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 14 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 17 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 2 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
@@ -42357,6 +42502,40 @@ function CounselingChatModal({
                     })}
             </Text>
           </View>
+          {!isKeyboardVisible && (
+            <View style={{ gap: 8 }}>
+              <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", letterSpacing: 0.9, textTransform: "uppercase" }}>
+                {l("Connected support tools", { hindi: "जुड़े हुए सहायता साधन", telugu: "అనుసంధాన సహాయ సాధనాలు", tamil: "இணைந்த ஆதரவு கருவிகள்", urdu: "منسلک مدد کے اوزار" })}
+              </Text>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                {connectedSupportTools.map((tool) => (
+                  <Pressable
+                    key={tool.tabId}
+                    accessibilityRole="button"
+                    accessibilityLabel={tool.label}
+                    onPress={() => onOpenTool(tool.tabId)}
+                    style={({ pressed }) => ({
+                      minHeight: 42,
+                      minWidth: isCompactPhone ? "47%" : 150,
+                      flexGrow: 1,
+                      borderRadius: 13,
+                      borderWidth: 1,
+                      borderColor: tool.tabId === "redress" ? "#A14A08" : "#9CCFC7",
+                      backgroundColor: tool.tabId === "redress" ? "#FFF7E8" : "#F1FAF8",
+                      paddingHorizontal: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                      opacity: pressed ? 0.72 : 1
+                    })}
+                  >
+                    <Ionicons name={tool.icon} size={18} color={tool.tabId === "redress" ? "#A14A08" : "#0E6F69"} />
+                    <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "800", flexShrink: 1 }} numberOfLines={1}>{tool.label}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          )}
           {session.turns.map((turn, i) => {
             // Local clock time under each bubble -- makes the exchange read
             // like a real conversation with a timeline instead of a
@@ -42597,12 +42776,12 @@ function CounselingChatModal({
               backgroundColor: "#FFFFFF",
               borderTopWidth: 1,
               borderTopColor: "#DCE9E6",
-              paddingHorizontal: isVeryCompactPhone ? 6 : 16,
-              paddingTop: isVeryCompactPhone ? 4 : 12,
-              paddingBottom: Math.max(insets.bottom, isVeryCompactPhone ? 4 : 12),
-              flexDirection: isVeryCompactPhone ? "column" : "row",
-              alignItems: isVeryCompactPhone ? "stretch" : "flex-end",
-              gap: isVeryCompactPhone ? 6 : 10,
+              paddingHorizontal: isKeyboardVisible || isVeryCompactPhone ? 8 : 16,
+              paddingTop: isKeyboardVisible || isVeryCompactPhone ? 6 : 12,
+              paddingBottom: Math.max(insets.bottom, isKeyboardVisible || isVeryCompactPhone ? 6 : 12),
+              flexDirection: "row",
+              alignItems: "flex-end",
+              gap: isKeyboardVisible || isVeryCompactPhone ? 6 : 10,
               shadowColor: "#0E9488",
               shadowOffset: { width: 0, height: -3 },
               shadowOpacity: 0.06,
@@ -42610,8 +42789,8 @@ function CounselingChatModal({
               elevation: 8
             }}
           >
-            <View style={{ flex: 1 }}>
-              {!isVeryCompactPhone && (
+            <View style={{ flex: 1, minWidth: 0 }}>
+              {!isVeryCompactPhone && !isKeyboardVisible && (
                 <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "800", marginBottom: 6 }} numberOfLines={1} ellipsizeMode="tail">
                   {counsellingDepthCopy}
                 </Text>
@@ -42623,44 +42802,44 @@ function CounselingChatModal({
                 placeholderTextColor="#5B7480"
                 style={{
                   backgroundColor: "#F1F6F5",
-                  borderRadius: isVeryCompactPhone ? 11 : 12,
-                  paddingHorizontal: isVeryCompactPhone ? 6 : 12,
-                  paddingVertical: isVeryCompactPhone ? 4 : 12,
-                  minHeight: isVeryCompactPhone ? 40 : undefined,
+                  borderRadius: isKeyboardVisible || isVeryCompactPhone ? 11 : 12,
+                  paddingHorizontal: isKeyboardVisible || isVeryCompactPhone ? 10 : 12,
+                  paddingVertical: isKeyboardVisible || isVeryCompactPhone ? 8 : 12,
+                  minHeight: isKeyboardVisible || isVeryCompactPhone ? 42 : undefined,
                   color: "#213A4A",
-                  fontSize: isVeryCompactPhone ? 13 : 16,
-                  lineHeight: isVeryCompactPhone ? 17 : 22,
-                  maxHeight: isVeryCompactPhone ? 68 : 120,
+                  fontSize: isKeyboardVisible || isVeryCompactPhone ? 14 : 16,
+                  lineHeight: isKeyboardVisible || isVeryCompactPhone ? 18 : 22,
+                  maxHeight: isKeyboardVisible || isVeryCompactPhone ? 76 : 120,
                   borderWidth: 1,
                   borderColor: isListening ? "#0B6F66" : "#C4D8D4"
                 }}
                 multiline
                 textAlignVertical="top"
               />
-              {speechInputNotice ? (
+              {speechInputNotice && !isKeyboardVisible ? (
                 <Text style={{ color: isListening ? "#0B6F66" : "#1F2937", fontSize: isVeryCompactPhone ? 11 : 12, marginTop: 4 }}>
                   {speechInputNotice}
                 </Text>
               ) : null}
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: isVeryCompactPhone ? "flex-end" : "flex-start", gap: isVeryCompactPhone ? 6 : 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: isKeyboardVisible || isVeryCompactPhone ? 5 : 8 }}>
               {/* Voice input button */}
               <Pressable
                 onPress={isListening ? stopVoiceInput : startVoiceInput}
-                style={{ width: isVeryCompactPhone ? 30 : 44, height: isVeryCompactPhone ? 30 : 44, borderRadius: isVeryCompactPhone ? 15 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+                style={{ width: isKeyboardVisible || isVeryCompactPhone ? 36 : 44, height: isKeyboardVisible || isVeryCompactPhone ? 36 : 44, borderRadius: isKeyboardVisible || isVeryCompactPhone ? 18 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
                 accessibilityRole="button"
                 accessibilityLabel={isListening ? l("Stop voice input", { hindi: "आवाज़ इनपुट रोकें", telugu: "వాయిస్ ఇన్‌పుట్ ఆపండి", tamil: "குரல் உள்ளீட்டை நிறுத்தவும்", urdu: "آواز کا ان پٹ روکیں" }) : l("Start voice input", { hindi: "आवाज़ इनपुट शुरू करें", telugu: "వాయిస్ ఇన్‌పుట్ ప్రారంభించండి", tamil: "குரல் உள்ளீட்டைத் தொடங்கவும்", urdu: "آواز کا ان پٹ شروع کریں" })}
               >
-                <Text style={{ fontSize: isVeryCompactPhone ? 16 : 20 }}>{isListening ? "⏹" : "🎙️"}</Text>
+                <Ionicons name={isListening ? "stop" : "mic"} size={isKeyboardVisible || isVeryCompactPhone ? 18 : 20} color="#FFFFFF" />
               </Pressable>
               <Pressable
                 onPress={handleSend}
                 disabled={isGuideTyping}
                 accessibilityRole="button"
                 accessibilityLabel={isGuideTyping ? l("Your guide is replying", { hindi: "आपका मार्गदर्शक जवाब दे रहा है", telugu: "మీ మార్గదర్శి ప్రత్యుత్తరం ఇస్తున్నారు", tamil: "உங்கள் வழிகாட்டி பதிலளிக்கிறார்", urdu: "آپ کا رہنما جواب دے رہا ہے" }) : l("Send message", { hindi: "संदेश भेजें", telugu: "సందేశం పంపండి", tamil: "செய்தியை அனுப்பவும்", urdu: "پیغام بھیجیں" })}
-                style={({ pressed }) => ({ width: isVeryCompactPhone ? 30 : 44, height: isVeryCompactPhone ? 30 : 44, borderRadius: isVeryCompactPhone ? 15 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+                style={({ pressed }) => ({ width: isKeyboardVisible || isVeryCompactPhone ? 36 : 44, height: isKeyboardVisible || isVeryCompactPhone ? 36 : 44, borderRadius: isKeyboardVisible || isVeryCompactPhone ? 18 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
               >
-                <Text style={{ color: draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068", fontSize: isVeryCompactPhone ? 16 : 20 }}>↑</Text>
+                <Ionicons name="arrow-up" size={isKeyboardVisible || isVeryCompactPhone ? 18 : 20} color={draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068"} />
               </Pressable>
             </View>
           </View>
