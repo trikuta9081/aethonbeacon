@@ -42304,7 +42304,10 @@ function CounselingChatModal({
         behavior="padding"
         keyboardVerticalOffset={0}
       >
-      <View style={{ flex: 1, backgroundColor: "#EAF3F1" }}>
+      <View
+        style={{ flex: 1, backgroundColor: "#EAF3F1" }}
+        accessibilityViewIsModal
+      >
         {/* Grabber -- the standard iOS sheet handle that signals swipe-to-
             dismiss. Only on iOS, where presentationStyle="pageSheet" actually
             renders a sheet; on the Android/web full-screen fallback there's no
@@ -42327,7 +42330,6 @@ function CounselingChatModal({
         }}>
           <Pressable
             onPress={onClose}
-            hitSlop={12}
             accessibilityRole="button"
             accessibilityLabel={l("Close counselling", {
               hindi: "काउंसलिंग बंद करें",
@@ -42335,10 +42337,11 @@ function CounselingChatModal({
               tamil: "ஆலோசனையை மூடவும்",
               urdu: "مشاورت بند کریں"
             })}
+            style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center", marginLeft: -8 }}
           >
-            <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 18 : isCompactPhone ? 20 : 22 }}>←</Text>
+            <Ionicons name="arrow-back" size={isCompactPhone ? 21 : 23} color="#0A6F66" />
           </Pressable>
-          <View style={{ flex: 1, minWidth: 0, marginLeft: isVeryCompactPhone ? 8 : isCompactPhone ? 10 : 12 }}>
+          <View style={{ flex: 1, minWidth: 0, marginLeft: isVeryCompactPhone ? 2 : isCompactPhone ? 4 : 6 }}>
             {/* Consistent branding -- the enrichment card below and the
                 system prompt both already say "Beacon Guide"; the header
                 previously said the generic "Your guide", reading as two
@@ -42376,18 +42379,17 @@ function CounselingChatModal({
           </View>
           {/* Read-aloud is always manual. This control only enables or disables
               the speaker; opening the room and receiving replies stay silent. */}
-          <Pressable
+          {!isKeyboardVisible && <Pressable
             onPress={() => {
               stopSpeech();
               onToggleVoiceAssist();
             }}
-            hitSlop={12}
             accessibilityRole="button"
             accessibilityLabel={voiceAssistEnabled ? l("Disable read aloud", { hindi: "read-aloud बंद करें", telugu: "చదివి వినిపింపును నిలిపివేయండి", tamil: "உரையாடல் ஒலியை அணைக்கவும்", urdu: "بلند آواز میں پڑھنا بند کریں" }) : l("Enable read aloud", { hindi: "read-aloud चालू करें", telugu: "చదివి వినిపింపును ప్రారంభించండి", tamil: "உரையாடல் ஒலியை இயக்கவும்", urdu: "بلند آواز میں پڑھنا شروع کریں" })}
             accessibilityState={{ selected: !voiceAssistEnabled }}
-            style={{ marginRight: isVeryCompactPhone ? 6 : isCompactPhone ? 8 : 14, flexDirection: "row", alignItems: "center", gap: isCompactPhone ? 0 : 4 }}
+            style={{ minWidth: 44, minHeight: 44, marginRight: isVeryCompactPhone ? 2 : isCompactPhone ? 4 : 8, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: isCompactPhone ? 0 : 4 }}
           >
-            <Text style={{ fontSize: isVeryCompactPhone ? 16 : isCompactPhone ? 18 : 20 }}>{voiceAssistEnabled ? "🔊" : "🔇"}</Text>
+            <Ionicons name={voiceAssistEnabled ? "volume-high-outline" : "volume-mute-outline"} size={isCompactPhone ? 20 : 21} color="#1F2937" />
             {/* Icon-only was ambiguous (mute vs. unmute isn't obvious from the
                 glyph alone) -- a short label next to it makes the tap target
                 self-explanatory without the person needing to guess. */}
@@ -42398,10 +42400,9 @@ function CounselingChatModal({
                   : l("Enable speaker", { hindi: "स्पीकर चालू करें", telugu: "స్పీకర్‌ను ప్రారంభించండి", tamil: "ஸ்பீக்கரை இயக்கவும்", urdu: "اسپیکر شروع کریں" })}
               </Text>
             )}
-          </Pressable>
-          <Pressable
+          </Pressable>}
+          {!isKeyboardVisible && <Pressable
             onPress={skipToRoute}
-            hitSlop={12}
             accessibilityRole="button"
             accessibilityLabel={l("Skip to route", {
               hindi: "मार्ग पर जाएँ",
@@ -42409,11 +42410,28 @@ function CounselingChatModal({
               tamil: "வழிக்குச் செல்லவும்",
               urdu: "راستے پر جائیں"
             })}
+            style={{ minHeight: 44, paddingHorizontal: isCompactPhone ? 4 : 8, flexDirection: "row", alignItems: "center", gap: 3 }}
           >
             <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 13, fontWeight: "700" }}>
-              {l("Skip →", { hindi: "छोड़ें →", telugu: "దాటవేయి →", tamil: "தவிர் →", urdu: "چھوڑیں →" })}
+              {l("Skip", { hindi: "छोड़ें", telugu: "దాటవేయి", tamil: "தவிர்", urdu: "چھوڑیں" })}
             </Text>
-          </Pressable>
+            <Ionicons name="arrow-forward" size={14} color="#1F2937" />
+          </Pressable>}
+          {isKeyboardVisible && (
+            <Pressable
+              onPress={Keyboard.dismiss}
+              accessibilityRole="button"
+              accessibilityLabel={l("Hide keyboard", {
+                hindi: "कीबोर्ड छिपाएँ",
+                telugu: "కీబోర్డ్‌ను దాచండి",
+                tamil: "விசைப்பலகையை மறைக்கவும்",
+                urdu: "کی بورڈ چھپائیں"
+              })}
+              style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
+            >
+              <Ionicons name="chevron-down-circle-outline" size={24} color="#0A6F66" />
+            </Pressable>
+          )}
         </View>
 
         {!isKeyboardVisible && <Pressable
@@ -42465,11 +42483,12 @@ function CounselingChatModal({
           contentContainerStyle={{ padding: isKeyboardVisible ? 8 : isVeryCompactPhone ? 10 : isCompactPhone ? 16 : 20, gap: isKeyboardVisible ? 8 : isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
           onContentSizeChange={() => {
             if (isKeyboardVisible) scrollRef.current?.scrollToEnd({ animated: false });
           }}
         >
-          <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
+          {!isKeyboardVisible && <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
             <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 10 : 12, lineHeight: isVeryCompactPhone ? 12 : 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Guided support room", { hindi: "मार्गदर्शित सहायता कक्ष", telugu: "మార్గదర్శిత మద్దతు గది", tamil: "வழிகாட்டப்பட்ட ஆதரவு அறை", urdu: "رہنمائی والا مدد کمرہ" })}</Text>
             <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 14 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 17 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 2 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {l("What brings you here?", {
@@ -42501,7 +42520,7 @@ function CounselingChatModal({
                       urdu: "پہلے آپ کی صورتحال کو نرمی سے سمجھیں گے؛ ہر چھٹے جواب پر ایک اختیاری اگلا قدم ملتا ہے، اور پوری گفتگو 30 جوابات تک جاری رہ سکتی ہے۔"
                     })}
             </Text>
-          </View>
+          </View>}
           {!isKeyboardVisible && (
             <View style={{ gap: 8 }}>
               <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", letterSpacing: 0.9, textTransform: "uppercase" }}>
@@ -42798,8 +42817,24 @@ function CounselingChatModal({
               <TextInput
                 value={draft}
                 onChangeText={setDraft}
+                onFocus={() => {
+                  setSafetyNoticeExpanded(false);
+                  setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 60);
+                }}
                 placeholder={isListening ? l("Listening...", { hindi: "सुन रहा है…", telugu: "వింటోంది…", tamil: "கேட்கப்படுகிறது…", urdu: "سن رہا ہے…" }) : l("Reply here...", { hindi: "यहाँ जवाब लिखें…", telugu: "ఇక్కడ ప్రత్యుత్తరం ఇవ్వండి…", tamil: "இங்கே பதிலளிக்கவும்…", urdu: "یہاں جواب لکھیں…" })}
                 placeholderTextColor="#5B7480"
+                accessibilityLabel={l("Counselling reply", {
+                  hindi: "काउंसलिंग जवाब",
+                  telugu: "కౌన్సెలింగ్ ప్రత్యుత్తరం",
+                  tamil: "ஆலோசனை பதில்",
+                  urdu: "مشاورتی جواب"
+                })}
+                accessibilityHint={l("Type your private reply to Beacon Guide", {
+                  hindi: "Beacon Guide को अपना निजी जवाब लिखें",
+                  telugu: "Beacon Guide కు మీ వ్యక్తిగత ప్రత్యుత్తరాన్ని టైప్ చేయండి",
+                  tamil: "Beacon Guide-க்கு உங்கள் தனிப்பட்ட பதிலை தட்டச்சு செய்யவும்",
+                  urdu: "Beacon Guide کو اپنا نجی جواب لکھیں"
+                })}
                 style={{
                   backgroundColor: "#F1F6F5",
                   borderRadius: isKeyboardVisible || isVeryCompactPhone ? 11 : 12,
@@ -42814,6 +42849,8 @@ function CounselingChatModal({
                   borderColor: isListening ? "#0B6F66" : "#C4D8D4"
                 }}
                 multiline
+                maxLength={4000}
+                selectionColor="#0E6F69"
                 textAlignVertical="top"
               />
               {speechInputNotice && !isKeyboardVisible ? (
@@ -42826,7 +42863,7 @@ function CounselingChatModal({
               {/* Voice input button */}
               <Pressable
                 onPress={isListening ? stopVoiceInput : startVoiceInput}
-                style={{ width: isKeyboardVisible || isVeryCompactPhone ? 36 : 44, height: isKeyboardVisible || isVeryCompactPhone ? 36 : 44, borderRadius: isKeyboardVisible || isVeryCompactPhone ? 18 : 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
+                style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: isListening ? "#7E22CE" : "#0E3040", alignItems: "center", justifyContent: "center" }}
                 accessibilityRole="button"
                 accessibilityLabel={isListening ? l("Stop voice input", { hindi: "आवाज़ इनपुट रोकें", telugu: "వాయిస్ ఇన్‌పుట్ ఆపండి", tamil: "குரல் உள்ளீட்டை நிறுத்தவும்", urdu: "آواز کا ان پٹ روکیں" }) : l("Start voice input", { hindi: "आवाज़ इनपुट शुरू करें", telugu: "వాయిస్ ఇన్‌పుట్ ప్రారంభించండి", tamil: "குரல் உள்ளீட்டைத் தொடங்கவும்", urdu: "آواز کا ان پٹ شروع کریں" })}
               >
@@ -42834,10 +42871,11 @@ function CounselingChatModal({
               </Pressable>
               <Pressable
                 onPress={handleSend}
-                disabled={isGuideTyping}
+                disabled={!draft.trim() || isGuideTyping}
                 accessibilityRole="button"
                 accessibilityLabel={isGuideTyping ? l("Your guide is replying", { hindi: "आपका मार्गदर्शक जवाब दे रहा है", telugu: "మీ మార్గదర్శి ప్రత్యుత్తరం ఇస్తున్నారు", tamil: "உங்கள் வழிகாட்டி பதிலளிக்கிறார்", urdu: "آپ کا رہنما جواب دے رہا ہے" }) : l("Send message", { hindi: "संदेश भेजें", telugu: "సందేశం పంపండి", tamil: "செய்தியை அனுப்பவும்", urdu: "پیغام بھیجیں" })}
-                style={({ pressed }) => ({ width: isKeyboardVisible || isVeryCompactPhone ? 36 : 44, height: isKeyboardVisible || isVeryCompactPhone ? 36 : 44, borderRadius: isKeyboardVisible || isVeryCompactPhone ? 18 : 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
+                accessibilityState={{ disabled: !draft.trim() || isGuideTyping }}
+                style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, backgroundColor: draft.trim() && !isGuideTyping ? "#0E6F69" : "#D0E2DE", alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1 })}
               >
                 <Ionicons name="arrow-up" size={isKeyboardVisible || isVeryCompactPhone ? 18 : 20} color={draft.trim() && !isGuideTyping ? "#FFFFFF" : "#4A6068"} />
               </Pressable>

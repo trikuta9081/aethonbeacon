@@ -255,6 +255,30 @@ assert(
 ].forEach((marker) => indexOf(marker));
 assert(!source.includes('>Your guide is listening<'), 'Counselling header must not regress to the inconsistent "Your guide" label');
 
+// Small-phone keyboard focus mode: opening the native keyboard must prioritise
+// the actual transcript and composer instead of leaving informational chrome
+// in the reduced viewport. The close, voice and send controls keep a 44pt
+// target even when their visual treatment is compact, matching Apple HIG.
+const counsellingModalSource = source.slice(
+  source.indexOf('function CounselingChatModal({'),
+  source.indexOf('// GUIDED JOURNEY BAR', source.indexOf('function CounselingChatModal({'))
+);
+[
+  'accessibilityViewIsModal',
+  'keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}',
+  'onPress={Keyboard.dismiss}',
+  'accessibilityLabel={l("Counselling reply"',
+  'disabled={!draft.trim() || isGuideTyping}',
+].forEach((marker) => assert(counsellingModalSource.includes(marker), `Missing counselling keyboard-focus marker: ${marker}`));
+assert(
+  (counsellingModalSource.match(/!isKeyboardVisible && <Pressable/g) ?? []).length >= 3,
+  'Safety, speaker and route controls must collapse while the keyboard is open'
+);
+assert(
+  (counsellingModalSource.match(/width: 44, height: 44/g) ?? []).length >= 3,
+  'Counselling close, keyboard, mic and send controls must retain 44pt touch targets'
+);
+
 // Chat message timestamps: CounselingTurn now carries an optional ts, set at
 // every visible construction site and rendered as a local clock time under
 // each bubble, so the counselling exchange reads like a real conversation with
