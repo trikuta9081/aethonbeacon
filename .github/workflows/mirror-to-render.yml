@@ -43,7 +43,7 @@ jobs:
     # Leave enough headroom for install, verification, export, and the live
     # polling window; otherwise a genuinely successful deploy is reported as
     # cancelled seconds before its build marker appears.
-    timeout-minutes: 30
+    timeout-minutes: 50
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -154,18 +154,27 @@ jobs:
           live_url="https://aethon-beacon-web.onrender.com"
 
           echo "Waiting for live Render bundle to include commit ${short_sha}"
-          for attempt in $(seq 1 150); do
-            html="$(curl -fsSL "${live_url}" || true)"
+          # Render's free/idle deployment path and its edge cache can take longer
+          # than the build itself. Poll for up to 45 minutes and cache-bust both
+          # the HTML shell and hashed bundle so a stale edge response cannot turn
+          # a successful deploy into a red workflow result.
+          for attempt in $(seq 1 270); do
+            cache_key="${GITHUB_SHA}-${attempt}"
+            html="$(curl -fsSL -H 'Cache-Control: no-cache' "${live_url}/?deploy=${cache_key}" || true)"
             bundle_path="$(printf '%s' "${html}" | sed -n 's/.*src="\([^"]*AppEntry-[^"]*\.js\)".*/\1/p' | head -n 1)"
 
             if [ -n "${bundle_path}" ]; then
-              bundle_url="${live_url}${bundle_path}"
-              if curl -fsSL "${bundle_url}" | grep -Fq "${short_sha}"; then
+              bundle_url="${live_url}${bundle_path}?deploy=${cache_key}"
+              if curl -fsSL -H 'Cache-Control: no-cache' "${bundle_url}" | grep -Fq "${short_sha}"; then
                 if printf '%s' "${html}" | grep -Fq '<title>Aethon Beacon</title>'; then
                   echo "Live Render smoke check passed for ${short_sha}"
                   exit 0
                 fi
               fi
+            fi
+
+            if [ "$((attempt % 30))" -eq 0 ]; then
+              echo "Still waiting for ${short_sha}; last bundle path: ${bundle_path:-not-yet-available}"
             fi
 
             sleep 10
