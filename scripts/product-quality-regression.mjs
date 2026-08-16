@@ -46,8 +46,12 @@ assert(source.includes('makeLocalizedTextPicker(languageId, profileOnboardingTex
 assert(source.includes('आपका आने वाला सप्ताह तैयार है') && source.includes('पढ़ें'), "Hindi Home hero and weekly banner must be localized.");
 assert(source.includes('परामर्श शुरू करें') && source.includes('जारी रखें'), "Hindi Home support-card actions must be localized.");
 assert(source.includes('एक पेज खोलें') && source.includes('सीधे जाने के लिए कोई पेज टैप करें।'), "Hindi section chooser must be localized.");
-assert(source.includes('const HEADER_NAV_SHORT_LABEL_HINDI'), "Hindi top-rail short labels are not wired.");
-assert(source.includes('होम') && source.includes('कुंडली') && source.includes('पैटर्न'), "Hindi top-rail short labels must be localized.");
+assert(source.includes('const HEADER_NAV_SHORT_LABEL_SOURCE'), "Top-rail short-label sources are not centralized.");
+assert(source.includes('translateNavLabel(languageId, HEADER_NAV_SHORT_LABEL_SOURCE[tab.id] ?? tab.label)'), "Top-rail short labels must use the shared multilingual catalogue.");
+assert(source.includes('Ask: "అడగండి"') && source.includes('Messages: "సందేశాలు"'), "Telugu top navigation must be fully localized.");
+assert(source.includes('Ask: "கேளுங்கள்"') && source.includes('Messages: "செய்திகள்"'), "Tamil top navigation must be fully localized.");
+assert(source.includes('Ask: "پوچھیں"') && source.includes('Messages: "پیغامات"'), "Urdu top navigation must be fully localized.");
+assert(source.includes('పూర్తయ్యాక ← వెనుకకు నొక్కండి') && source.includes('முடித்ததும் ← பின்செல்') && source.includes('کام مکمل ہونے پر ← واپس'), "Primary-language page-mode guidance must not fall back to English.");
 assert(source.includes('अगला कदम चुनें') && source.includes('विश्लेषण') && source.includes('विवरण →'), "Hindi route overlay and hero helper labels must be localized.");
 assert(source.includes('accessibilityLabel={homeUiCopy.homeOpenProfileSettingsA11y}'), "Home profile chip accessibility label must be localized.");
 assert(source.includes('accessibilityLabel={homeUiCopy.flowExitA11y}'), "Home Exit control accessibility label must be localized.");

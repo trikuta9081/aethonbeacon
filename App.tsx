@@ -2886,34 +2886,19 @@ const PRIMARY_HEADER_TABS: Array<{ id: TabId; label: string; mark: string; icon:
   { id: "redress",    label: "Help", mark: "🛡️", icon: "shield-checkmark" },
   { id: "settings",   label: "Profile", mark: "👤", icon: "person" },
 ];
-// Concise labels for the top nav rail only. The rail pills are ~92px wide
-// (icon + text), so full labels like "Birth Chart" / "Messages" /
-// "Help and Redress" truncated to "Birth ..." / "Messa..." / "Help a...",
-// which reads as unfinished. These short forms fit cleanly; the full label is
-// still used everywhere else (bottom nav, page switcher) and as the pill's
-// accessibilityLabel, so screen readers and other surfaces are unchanged.
-const HEADER_NAV_SHORT_LABEL: Partial<Record<TabId, string>> = {
+// Concise source labels for the top nav rail only. The rail pills are ~92px
+// wide, so the longer destination names need compact equivalents. Resolve the
+// compact source through the shared navigation catalogue instead of keeping a
+// second language table here; this prevents the persistent rail from falling
+// back to English after the rest of the interface changes language.
+const HEADER_NAV_SHORT_LABEL_SOURCE: Partial<Record<TabId, string>> = {
   vedic: "Chart",
   community: "Chat",
-  redress: "Help",
-};
-
-const HEADER_NAV_SHORT_LABEL_HINDI: Partial<Record<TabId, string>> = {
-  today: "होम",
-  aihelp: "पूछें",
-  vedic: "कुंडली",
-  tones: "स्वर",
-  community: "चैट",
-  redress: "मदद",
-  insights: "पैटर्न"
+  redress: "Help"
 };
 
 function getHeaderNavShortLabel(languageId: LanguageId, tab: { id: TabId; label: string }): string {
-  return (
-    (languageId === "hindi" ? HEADER_NAV_SHORT_LABEL_HINDI[tab.id] : undefined) ??
-    HEADER_NAV_SHORT_LABEL[tab.id] ??
-    tab.label
-  );
+  return translateNavLabel(languageId, HEADER_NAV_SHORT_LABEL_SOURCE[tab.id] ?? tab.label);
 }
 
 const launchNeeds: Array<{
@@ -6549,10 +6534,10 @@ const PRIMARY_LANGUAGE_SET = new Set<LanguageId>(PRIMARY_LANGUAGE_IDS);
 // language system, rather than guessing at translations we can't vouch for.
 const navLabelTranslations: Partial<Record<LanguageId, Record<string, string>>> = {
   hindi: {
-    Home: "होम", Today: "आज", Path: "मार्ग", Insights: "जानकारी", Chat: "चैट",
-    Community: "समुदाय", Journal: "डायरी", Calm: "शांति", Tones: "ध्वनि",
-    Meditation: "ध्यान", Wellness: "स्वास्थ्य", "Birth Chart": "कुंडली",
-    Help: "सहायता", Patterns: "पैटर्न", Explore: "खोजें", Practice: "अभ्यास",
+    Home: "होम", Today: "आज", Path: "मार्ग", Ask: "पूछें", Insights: "जानकारी", Chat: "चैट",
+    Community: "समुदाय", Messages: "संदेश", Journal: "डायरी", Calm: "शांति", Tones: "ध्वनि",
+    Meditation: "ध्यान", Wellness: "स्वास्थ्य", Chart: "कुंडली", "Birth Chart": "कुंडली",
+    Help: "सहायता", "Help and Redress": "मदद और शिकायत", Patterns: "पैटर्न", Explore: "खोजें", Practice: "अभ्यास",
     Language: "भाषा", Control: "नियंत्रण", Profile: "प्रोफ़ाइल", More: "और", Settings: "सेटिंग्स"
   },
   punjabi: {
@@ -6570,24 +6555,24 @@ const navLabelTranslations: Partial<Record<LanguageId, Record<string, string>>> 
     Language: "भाषा", Control: "नियंत्रण", Profile: "प्रोफाइल", More: "आणखी", Settings: "सेटिंग्ज"
   },
   telugu: {
-    Home: "హోమ్", Today: "ఈరోజు", Path: "మార్గం", Insights: "అంతర్దృష్టులు", Chat: "చాట్",
-    Community: "సమాజం", Journal: "డైరీ", Calm: "ప్రశాంతత", Tones: "శబ్దాలు",
-    Meditation: "ధ్యానం", Wellness: "ఆరోగ్యం", "Birth Chart": "జాతకం",
-    Help: "సహాయం", Patterns: "నమూనాలు", Explore: "అన్వేషించండి", Practice: "అభ్యాసం",
+    Home: "హోమ్", Today: "ఈరోజు", Path: "మార్గం", Ask: "అడగండి", Insights: "అంతర్దృష్టులు", Chat: "చాట్",
+    Community: "సమాజం", Messages: "సందేశాలు", Journal: "డైరీ", Calm: "ప్రశాంతత", Tones: "శబ్దాలు",
+    Meditation: "ధ్యానం", Wellness: "ఆరోగ్యం", Chart: "జాతకం", "Birth Chart": "జాతకం",
+    Help: "సహాయం", "Help and Redress": "సహాయం మరియు పరిష్కారం", Patterns: "నమూనాలు", Explore: "అన్వేషించండి", Practice: "అభ్యాసం",
     Language: "భాష", Control: "నియంత్రణ", Profile: "ప్రొఫైల్", More: "మరిన్ని", Settings: "సెట్టింగ్‌లు"
   },
   tamil: {
-    Home: "முகப்பு", Today: "இன்று", Path: "பாதை", Insights: "நுண்ணறிவு", Chat: "அரட்டை",
-    Community: "சமூகம்", Journal: "நாட்குறிப்பு", Calm: "அமைதி", Tones: "ஒலிகள்",
-    Meditation: "தியானம்", Wellness: "நலம்", "Birth Chart": "ஜாதகம்",
-    Help: "உதவி", Patterns: "வடிவங்கள்", Explore: "ஆராயுங்கள்", Practice: "பயிற்சி",
+    Home: "முகப்பு", Today: "இன்று", Path: "பாதை", Ask: "கேளுங்கள்", Insights: "நுண்ணறிவு", Chat: "அரட்டை",
+    Community: "சமூகம்", Messages: "செய்திகள்", Journal: "நாட்குறிப்பு", Calm: "அமைதி", Tones: "ஒலிகள்",
+    Meditation: "தியானம்", Wellness: "நலம்", Chart: "ஜாதகம்", "Birth Chart": "ஜாதகம்",
+    Help: "உதவி", "Help and Redress": "உதவி மற்றும் தீர்வு", Patterns: "வடிவங்கள்", Explore: "ஆராயுங்கள்", Practice: "பயிற்சி",
     Language: "மொழி", Control: "கட்டுப்பாடு", Profile: "சுயவிவரம்", More: "மேலும்", Settings: "அமைப்புகள்"
   },
   urdu: {
-    Home: "ہوم", Today: "آج", Path: "راستہ", Insights: "بصیرت", Chat: "چیٹ",
-    Community: "برادری", Journal: "ڈائری", Calm: "سکون", Tones: "آوازیں",
-    Meditation: "مراقبہ", Wellness: "تندرستی", "Birth Chart": "زائچہ",
-    Help: "مدد", Patterns: "نمونے", Explore: "دریافت کریں", Practice: "مشق",
+    Home: "ہوم", Today: "آج", Path: "راستہ", Ask: "پوچھیں", Insights: "بصیرت", Chat: "چیٹ",
+    Community: "برادری", Messages: "پیغامات", Journal: "ڈائری", Calm: "سکون", Tones: "آوازیں",
+    Meditation: "مراقبہ", Wellness: "تندرستی", Chart: "زائچہ", "Birth Chart": "زائچہ",
+    Help: "مدد", "Help and Redress": "مدد اور ازالہ", Patterns: "نمونے", Explore: "دریافت کریں", Practice: "مشق",
     Language: "زبان", Control: "کنٹرول", Profile: "پروفائل", More: "مزید", Settings: "ترتیبات"
   },
   gujarati: {
@@ -15912,8 +15897,14 @@ export default function App() {
   );
   const activeTabLabel = useMemo(
     () => activeTab === "focus"
-      ? pickLocalizedText(languageId, { english: "Calm Reset", hindi: "शांत रीसेट" })
-      : visibleTabs.find((tab) => tab.id === navActiveTab)?.label ?? pickLocalizedText(languageId, { english: "Home", hindi: "होम" }),
+      ? pickLocalizedText(languageId, {
+          english: "Calm Reset",
+          hindi: "शांत रीसेट",
+          telugu: "ప్రశాంత రీసెట్",
+          tamil: "அமைதி மீட்டமைப்பு",
+          urdu: "سکون ری سیٹ"
+        })
+      : visibleTabs.find((tab) => tab.id === navActiveTab)?.label ?? translateNavLabel(languageId, "Home"),
     [activeTab, languageId, navActiveTab, visibleTabs]
   );
   const headerNavTabs = useMemo(() => {
@@ -22475,7 +22466,13 @@ function isTrustedExternalUrl(url: string) {
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Preferred language ${selectedLanguage.label}. ${selectedLanguage.meta}. ${homeUiCopy.homeOpenLanguagePageA11y}.`}
+                accessibilityLabel={pickLocalizedText(languageId, {
+                  english: `Preferred language ${selectedLanguage.label}. ${selectedLanguage.meta}. ${homeUiCopy.homeOpenLanguagePageA11y}.`,
+                  hindi: `पसंदीदा भाषा ${selectedLanguage.label}। ${selectedLanguage.meta}। ${homeUiCopy.homeOpenLanguagePageA11y}।`,
+                  telugu: `ప్రాధాన్య భాష ${selectedLanguage.label}. ${selectedLanguage.meta}. ${homeUiCopy.homeOpenLanguagePageA11y}.`,
+                  tamil: `விருப்ப மொழி ${selectedLanguage.label}. ${selectedLanguage.meta}. ${homeUiCopy.homeOpenLanguagePageA11y}.`,
+                  urdu: `ترجیحی زبان ${selectedLanguage.label}۔ ${selectedLanguage.meta}۔ ${homeUiCopy.homeOpenLanguagePageA11y}۔`
+                })}
                 onPress={() => {
                   handleTabPress("language");
                   scrollViewRef.current?.scrollTo({ y: 0, animated: false });
@@ -22627,7 +22624,10 @@ function isTrustedExternalUrl(url: string) {
                 >
                   {pickLocalizedText(languageId, {
                     english: "Tap ← Back when done. This is a separate page.",
-                    hindi: "काम पूरा होने पर ← पीछे टैप करें। यह एक अलग पेज है।"
+                    hindi: "काम पूरा होने पर ← पीछे टैप करें। यह एक अलग पेज है।",
+                    telugu: "పూర్తయ్యాక ← వెనుకకు నొక్కండి. ఇది ప్రత్యేక పేజీ.",
+                    tamil: "முடித்ததும் ← பின்செல் என்பதைத் தட்டவும். இது தனிப் பக்கம்.",
+                    urdu: "کام مکمل ہونے پر ← واپس پر ٹیپ کریں۔ یہ ایک الگ صفحہ ہے۔"
                   })}
                 </Text>
               </View>
