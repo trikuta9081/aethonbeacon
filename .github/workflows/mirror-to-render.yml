@@ -145,7 +145,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          short_sha="$(git rev-parse --short HEAD)"
+          # The preceding mirror step checks out an orphan branch and creates a
+          # deployment-only snapshot commit, so HEAD no longer identifies the
+          # source revision that was embedded by export:web. Verify the original
+          # GitHub source SHA instead of waiting for an unrelated mirror SHA that
+          # can never appear in the generated bundle.
+          short_sha="${GITHUB_SHA:0:7}"
           live_url="https://aethon-beacon-web.onrender.com"
 
           echo "Waiting for live Render bundle to include commit ${short_sha}"
