@@ -612,6 +612,29 @@ type CalmTeaching = {
 
 type ChakraId = "root" | "sacral" | "solar" | "heart" | "throat" | "thirdEye" | "crown";
 
+type MeditationTraditionLayer =
+  | "upanishadic"
+  | "patanjala"
+  | "tantric-hatha"
+  | "modern-support";
+
+type MeditationSourceRef = {
+  id: string;
+  title: string;
+  locator: string;
+  traditionLayer: MeditationTraditionLayer;
+  scope: string;
+  url: string;
+};
+
+type SanatanaMeditationStage = {
+  id: string;
+  label: string;
+  sourceAnchor: string;
+  instruction: string;
+  completion: string;
+};
+
 type MeditationChakra = {
   id: ChakraId;
   label: string;
@@ -622,8 +645,12 @@ type MeditationChakra = {
   literature: string;
   teaching: string;
   practice: string;
+  traditionLayer: MeditationTraditionLayer;
+  provenance: string;
+  sourceIds: string[];
+  officialPracticeUrl: string;
+  safety: string;
   audioToneId: RelaxingToneMode["id"];
-  videoQuery: string;
 };
 
 type MeditationMethod = {
@@ -801,6 +828,16 @@ type SupportDimensionId =
   | "environment"
   | "documentation-evidence"
   | "direction";
+type SupportPracticePriority = "stabilize" | "act" | "escalate";
+type SupportPracticeProfile = {
+  dimensionId: SupportDimensionId;
+  meditationMethodId: MeditationMethod["id"];
+  chakraId: ChakraId;
+  priority: SupportPracticePriority;
+  calmCue: string;
+  pathHandoff: string;
+  vedicRole: string;
+};
 type RouteChoiceId = "path" | "help" | "reset" | "search" | "journal" | "sos";
 type PendingRouteDecision = {
   rawText: string;
@@ -2420,97 +2457,292 @@ const STATE_OFFICER_DIRECTORY: StateOfficerDirectory[] = [
   { code: "WB", name: "West Bengal", portal: "https://wbpolice.gov.in/", efir: "https://citizenservices.wbpolice.gov.in/", collectors: "https://wb.gov.in/districts", emergency: "112", women: "1091" },
 ];
 
+const meditationSourceLibrary: MeditationSourceRef[] = [
+  {
+    id: "gita-dhyana",
+    title: "Bhagavad Gita",
+    locator: "6.10-17",
+    traditionLayer: "upanishadic",
+    scope: "Place, posture, moderation, attention, and a steady mind for dhyana.",
+    url: "https://www.gitasupersite.iitk.ac.in/srimad?choose=1&etgb=1&etsiva=1&etssa=1&field_chapter_value=6&field_nsutra_value=10&language=dv&setgb=1"
+  },
+  {
+    id: "svetasvatara-posture",
+    title: "Svetasvatara Upanishad",
+    locator: "2.8-15",
+    traditionLayer: "upanishadic",
+    scope: "Upright posture, regulated attention, a suitable place, and contemplative steadiness.",
+    url: "https://texts.wara.in/upanishads/shvetashvatara/"
+  },
+  {
+    id: "maitri-sixfold",
+    title: "Maitri Upanishad",
+    locator: "6.18",
+    traditionLayer: "upanishadic",
+    scope: "A sixfold yoga sequence joining breath, withdrawal, meditation, concentration, inquiry, and absorption.",
+    url: "https://sanskritdocuments.org/doc_upanishhat/maitri.html"
+  },
+  {
+    id: "yoga-sutra",
+    title: "Patanjali Yoga Sutra",
+    locator: "2.29; 3.1-3",
+    traditionLayer: "patanjala",
+    scope: "The eight limbs and the distinction between concentration, meditation, and absorption.",
+    url: "https://gretil.sub.uni-goettingen.de/gretil/1_sanskr/6_sastra/3_phil/yoga/yogasutu.htm"
+  },
+  {
+    id: "satcakra",
+    title: "Sat-Cakra-Nirupana",
+    locator: "six centres and sahasrara",
+    traditionLayer: "tantric-hatha",
+    scope: "A later Tantric six-centre subtle-body map; sahasrara is described above that sequence.",
+    url: "https://ifp.inist.fr/s/manuscripts/item/381098"
+  },
+  {
+    id: "hatha-pradipika",
+    title: "Hatha Yoga Pradipika",
+    locator: "classical Hatha practice context",
+    traditionLayer: "tantric-hatha",
+    scope: "Historical practice context; advanced breath retention, locks, and kundalini methods require a qualified teacher.",
+    url: "https://www.rarebooksocietyofindia.org/book_archive/196174216674_10153340826096675.pdf"
+  },
+  {
+    id: "ayush-cyp",
+    title: "Ministry of AYUSH Common Yoga Protocol",
+    locator: "official illustrated practice guidance",
+    traditionLayer: "modern-support",
+    scope: "Public, illustrated guidance for accessible preparation, posture, breathing, meditation, and safety.",
+    url: "https://yoga.ayush.gov.in/uploads/assets/cyp/CYP_Book_English_2026.pdf"
+  }
+];
+
+const sanatanaMeditationStages: SanatanaMeditationStage[] = [
+  {
+    id: "intent",
+    label: "Sankalpa and ethics",
+    sourceAnchor: "Yoga Sutra 2.29",
+    instruction: "Begin with non-harm, truthfulness, moderation, and one sincere intention; practice must support right action, not escape from it.",
+    completion: "You can state one safe, honest purpose for this session."
+  },
+  {
+    id: "place",
+    label: "Place and posture",
+    sourceAnchor: "Bhagavad Gita 6.10-13; Svetasvatara 2.8-10",
+    instruction: "Choose a clean, quiet place; sit in a stable, comfortable position with head, neck, and trunk aligned without strain.",
+    completion: "The body feels supported and breathing remains easy."
+  },
+  {
+    id: "breath",
+    label: "Gentle breath settling",
+    sourceAnchor: "Maitri Upanishad 6.18; AYUSH CYP",
+    instruction: "Let the breath become quiet and even. Do not hold forcefully, chase sensations, or continue through dizziness or distress.",
+    completion: "The exhale is unforced and attention is less scattered."
+  },
+  {
+    id: "withdrawal",
+    label: "Pratyahara",
+    sourceAnchor: "Yoga Sutra 2.29",
+    instruction: "Soften the gaze or close the eyes if safe, notice sound and touch, then let attention return from stimulation to the chosen anchor.",
+    completion: "External input is present but no longer pulling attention in every direction."
+  },
+  {
+    id: "concentration",
+    label: "Dharana",
+    sourceAnchor: "Yoga Sutra 3.1",
+    instruction: "Place attention on one suitable anchor: natural breath, a sacred name meaningful to you, or a neutral body point.",
+    completion: "You can return to one anchor repeatedly without self-criticism."
+  },
+  {
+    id: "meditation",
+    label: "Dhyana",
+    sourceAnchor: "Yoga Sutra 3.2; Bhagavad Gita 6.14-15",
+    instruction: "Allow attention to flow continuously toward the anchor. Begin with a few minutes; steadiness matters more than duration.",
+    completion: "There are brief periods of continuous, calm attention."
+  },
+  {
+    id: "integration",
+    label: "Return to dharmic action",
+    sourceAnchor: "Bhagavad Gita 6.16-17",
+    instruction: "Open the eyes, orient to the room, note what is clearer, and take one proportionate Path, Help, Redress, Journal, or rest action.",
+    completion: "The practice ends in a concrete, safe next step rather than passive avoidance."
+  }
+];
+
+function getLocalizedSanatanaMeditationStage(
+  stage: SanatanaMeditationStage,
+  languageId: LanguageId
+) {
+  const copy: Record<
+    string,
+    {
+      label: Partial<Record<LanguageId, string>> & { english: string };
+      instruction: Partial<Record<LanguageId, string>> & { english: string };
+      completion: Partial<Record<LanguageId, string>> & { english: string };
+    }
+  > = {
+    intent: {
+      label: { english: stage.label, hindi: "संकल्प और नैतिकता", telugu: "సంకల్పం మరియు నైతికత", tamil: "சங்கல்பம் மற்றும் அறநெறி", urdu: "سنکلپ اور اخلاق" },
+      instruction: { english: stage.instruction, hindi: "अहिंसा, सत्य, संयम और एक सच्चे उद्देश्य से शुरू करें; अभ्यास सही कर्म को सहारा दे, उससे पलायन नहीं।", telugu: "అహింస, సత్యం, మితత మరియు ఒక నిజమైన ఉద్దేశంతో ప్రారంభించండి; సాధన సరి అయిన చర్యకు తోడ్పడాలి, దాని నుంచి పారిపోవడానికి కాదు.", tamil: "அகிம்சை, உண்மை, அளவறிதல் மற்றும் ஒரு நேர்மையான நோக்கத்துடன் தொடங்குங்கள்; பயிற்சி சரியான செயலை ஆதரிக்க வேண்டும், அதிலிருந்து தப்பிக்க அல்ல.", urdu: "عدم تشدد، سچ، اعتدال اور ایک سچی نیت سے آغاز کریں؛ مشق درست عمل کو سہارا دے، اس سے فرار نہ بنے۔" },
+      completion: { english: stage.completion, hindi: "आप इस सत्र का एक सुरक्षित, ईमानदार उद्देश्य बता सकते हैं।", telugu: "ఈ సత్రానికి ఒక సురక్షితమైన, నిజాయితీగల ఉద్దేశాన్ని చెప్పగలరు.", tamil: "இந்த அமர்விற்கான ஒரு பாதுகாப்பான, நேர்மையான நோக்கத்தை கூற முடிகிறது.", urdu: "آپ اس نشست کا ایک محفوظ اور دیانت دار مقصد بیان کر سکتے ہیں۔" }
+    },
+    place: {
+      label: { english: stage.label, hindi: "स्थान और आसन", telugu: "స్థలం మరియు ఆసనం", tamil: "இடம் மற்றும் ஆசனம்", urdu: "جگہ اور نشست" },
+      instruction: { english: stage.instruction, hindi: "स्वच्छ, शांत स्थान चुनें; सिर, गर्दन और धड़ को बिना खिंचाव सीधा रखते हुए स्थिर, सहज आसन लें।", telugu: "శుభ్రమైన, ప్రశాంతమైన స్థలాన్ని ఎంచుకుని, తల, మెడ, దేహాన్ని ఒత్తిడి లేకుండా సరిగా ఉంచి స్థిరమైన సౌకర్యవంతమైన ఆసనంలో కూర్చోండి.", tamil: "சுத்தமான அமைதியான இடத்தைத் தேர்ந்தெடுத்து, தலை, கழுத்து, உடலை சிரமமின்றி நேராக வைத்து நிலையான வசதியான ஆசனத்தில் அமருங்கள்.", urdu: "صاف اور پرسکون جگہ چنیں؛ سر، گردن اور دھڑ کو بغیر تناؤ سیدھا رکھتے ہوئے مستحکم اور آرام دہ بیٹھیں۔" },
+      completion: { english: stage.completion, hindi: "शरीर को सहारा मिल रहा है और साँस सहज है।", telugu: "శరీరానికి ఆధారం ఉంది మరియు శ్వాస సులభంగా ఉంది.", tamil: "உடலுக்கு ஆதரவு உள்ளது; மூச்சு இயல்பாக உள்ளது.", urdu: "جسم کو سہارا محسوس ہو اور سانس آسان رہے۔" }
+    },
+    breath: {
+      label: { english: stage.label, hindi: "सहज श्वास स्थिरता", telugu: "సహజ శ్వాస స్థిరీకరణ", tamil: "இயல்பான மூச்சு நிலை", urdu: "نرم سانس کی ترتیب" },
+      instruction: { english: stage.instruction, hindi: "साँस को शांत और समान होने दें। जोर से न रोकें, संवेदनाओं का पीछा न करें और चक्कर या घबराहट में अभ्यास रोक दें।", telugu: "శ్వాసను నిశ్శబ్దంగా సమంగా మారనివ్వండి. బలవంతంగా ఆపవద్దు, సంచలనాల వెంట పడవద్దు; తల తిరిగితే లేదా ఆందోళనైతే ఆపండి.", tamil: "மூச்சு அமைதியாக சமமாக ஆகட்டும். வலுக்கட்டாயமாக பிடிக்காதீர்கள், உணர்வுகளைத் துரத்தாதீர்கள்; மயக்கம் அல்லது பதட்டம் வந்தால் நிறுத்துங்கள்.", urdu: "سانس کو پرسکون اور ہموار ہونے دیں۔ زور سے نہ روکیں، احساسات کے پیچھے نہ بھاگیں؛ چکر یا گھبراہٹ ہو تو رک جائیں۔" },
+      completion: { english: stage.completion, hindi: "साँस छोड़ना सहज है और ध्यान कम बिखरा है।", telugu: "శ్వాస విడిచే ప్రక్రియ సహజంగా ఉంది; దృష్టి తక్కువగా చెదురుతోంది.", tamil: "மூச்சை வெளியேற்றுவது இயல்பாகவும் கவனம் குறைவாக சிதறியுமுள்ளது.", urdu: "سانس کا اخراج بے زور ہے اور توجہ کم بکھری ہوئی ہے۔" }
+    },
+    withdrawal: {
+      label: { english: stage.label, hindi: "प्रत्याहार", telugu: "ప్రత్యాహారం", tamil: "பிரத்யாஹாரம்", urdu: "پرتّیاہار" },
+      instruction: { english: stage.instruction, hindi: "दृष्टि नरम करें या सुरक्षित हो तो आँखें बंद करें, ध्वनि और स्पर्श को जानें, फिर ध्यान को चुने हुए आधार पर लौटाएँ।", telugu: "చూపును మృదువుగా చేయండి లేదా సురక్షితమైతే కళ్లను మూసి, శబ్దం మరియు స్పర్శను గమనించి, ఎంచుకున్న ఆధారానికి దృష్టిని తిరిగి తీసుకురండి.", tamil: "பார்வையை மென்மையாக்குங்கள் அல்லது பாதுகாப்பாக இருந்தால் கண்களை மூடி, ஒலி மற்றும் தொடுதலை கவனித்து, தேர்ந்த ஆதாரத்திற்குக் கவனத்தைத் திருப்புங்கள்.", urdu: "نظر نرم کریں یا محفوظ ہو تو آنکھیں بند کریں، آواز اور لمس کو محسوس کریں، پھر توجہ منتخب مرکز کی طرف واپس لائیں۔" },
+      completion: { english: stage.completion, hindi: "बाहरी संकेत मौजूद हैं पर हर दिशा में ध्यान नहीं खींच रहे।", telugu: "బాహ్య సంకేతాలు ఉన్నా అవి దృష్టిని అన్ని దిశల్లో లాగడం లేదు.", tamil: "வெளிப்புற உணர்வுகள் இருந்தாலும் அவை கவனத்தை எல்லாத் திசைகளிலும் இழுப்பதில்லை.", urdu: "بیرونی احساسات موجود ہیں مگر توجہ کو ہر سمت نہیں کھینچ رہے۔" }
+    },
+    concentration: {
+      label: { english: stage.label, hindi: "धारणा", telugu: "ధారణ", tamil: "தாரணை", urdu: "دھارنا" },
+      instruction: { english: stage.instruction, hindi: "ध्यान एक उपयुक्त आधार पर रखें: सहज श्वास, आपके लिए अर्थपूर्ण पवित्र नाम, या तटस्थ शारीरिक बिंदु।", telugu: "దృష్టిని ఒక సరైన ఆధారంపై ఉంచండి: సహజ శ్వాస, మీకు అర్థవంతమైన పవిత్ర నామం లేదా తటస్థ శరీర బిందువు.", tamil: "கவனத்தை ஒரு பொருத்தமான ஆதாரத்தில் வையுங்கள்: இயல்பான மூச்சு, உங்களுக்கு அர்த்தமுள்ள புனித நாமம் அல்லது நடுநிலை உடல் புள்ளி.", urdu: "توجہ ایک مناسب مرکز پر رکھیں: قدرتی سانس، آپ کے لیے معنی رکھنے والا مقدس نام، یا جسم کا غیر جانبدار مقام۔" },
+      completion: { english: stage.completion, hindi: "आप बिना आत्म-आलोचना एक ही आधार पर बार-बार लौट सकते हैं।", telugu: "స్వీయ విమర్శ లేకుండా అదే ఆధారానికి మళ్లీ మళ్లీ తిరిగి రావచ్చు.", tamil: "சுயவிமர்சனமின்றி அதே ஆதாரத்திற்குத் திரும்ப முடிகிறது.", urdu: "آپ خود تنقیدی کے بغیر بار بار اسی مرکز پر لوٹ سکتے ہیں۔" }
+    },
+    meditation: {
+      label: { english: stage.label, hindi: "ध्यान", telugu: "ధ్యానం", tamil: "தியானம்", urdu: "دھیان" },
+      instruction: { english: stage.instruction, hindi: "ध्यान को आधार की ओर लगातार बहने दें। कुछ मिनट से शुरू करें; अवधि से अधिक स्थिरता महत्वपूर्ण है।", telugu: "దృష్టిని ఆధారం వైపు నిరంతరంగా ప్రవహించనివ్వండి. కొన్ని నిమిషాలతో ప్రారంభించండి; వ్యవధికన్నా స్థిరత్వం ముఖ్యం.", tamil: "கவனம் ஆதாரத்தை நோக்கி தொடர்ச்சியாக ஓடட்டும். சில நிமிடங்களுடன் தொடங்குங்கள்; காலத்தைவிட நிலைத்தன்மை முக்கியம்.", urdu: "توجہ کو مرکز کی طرف مسلسل بہنے دیں۔ چند منٹ سے آغاز کریں؛ مدت سے زیادہ استحکام اہم ہے۔" },
+      completion: { english: stage.completion, hindi: "शांत, निरंतर ध्यान के छोटे काल आते हैं।", telugu: "ప్రశాంతమైన నిరంతర దృష్టి యొక్క చిన్న సమయాలు వస్తాయి.", tamil: "அமைதியான தொடர்ச்சிக் கவனத்தின் சிறு நேரங்கள் தோன்றுகின்றன.", urdu: "پرسکون مسلسل توجہ کے مختصر وقفے پیدا ہوتے ہیں۔" }
+    },
+    integration: {
+      label: { english: stage.label, hindi: "धर्मसम्मत कर्म में वापसी", telugu: "ధార్మిక చర్యకు తిరుగు", tamil: "தர்மச் செயலுக்குத் திரும்புதல்", urdu: "دھرم کے مطابق عمل کی طرف واپسی" },
+      instruction: { english: stage.instruction, hindi: "आँखें खोलें, कमरे को पहचानें, स्पष्टता नोट करें और Path, Help, Redress, Journal या विश्राम का एक उचित कदम लें।", telugu: "కళ్లను తెరిచి, గదిని గమనించి, స్పష్టతను నమోదు చేసి, Path, Help, Redress, Journal లేదా విశ్రాంతికి సంబంధించిన ఒక సముచిత అడుగు వేయండి.", tamil: "கண்களைத் திறந்து, அறையை உணர்ந்து, தெளிவைக் குறிப்பிட்டு, Path, Help, Redress, Journal அல்லது ஓய்வுக்கான ஒரு பொருத்தமான படி எடுக்கவும்.", urdu: "آنکھیں کھولیں، کمرے کو پہچانیں، وضاحت نوٹ کریں اور Path، Help، Redress، Journal یا آرام کا ایک مناسب قدم لیں۔" },
+      completion: { english: stage.completion, hindi: "अभ्यास निष्क्रिय बचाव की जगह एक ठोस, सुरक्षित अगले कदम पर समाप्त होता है।", telugu: "సాధన నిష్క్రియ తప్పించుకోవడంలో కాకుండా స్పష్టమైన సురక్షిత తదుపరి అడుగులో ముగుస్తుంది.", tamil: "பயிற்சி செயலற்ற தவிர்ப்பில் அல்லாமல் ஒரு தெளிவான பாதுகாப்பான அடுத்த படியில் முடிகிறது.", urdu: "مشق غیر فعال فرار کے بجائے ایک واضح اور محفوظ اگلے قدم پر ختم ہوتی ہے۔" }
+    }
+  };
+  const selected = copy[stage.id];
+  return {
+    label: selected ? pickLocalizedText(languageId, selected.label) : stage.label,
+    instruction: selected ? pickLocalizedText(languageId, selected.instruction) : stage.instruction,
+    completion: selected ? pickLocalizedText(languageId, selected.completion) : stage.completion
+  };
+}
+
 const meditationChakraTeachings: MeditationChakra[] = [
   {
     id: "root",
-    label: "Foundation grounding",
-    sanskrit: "Body anchor",
-    body: "Base of spine",
+    label: "Muladhara · foundation",
+    sanskrit: "Muladhara",
+    body: "Pelvic-base contemplation",
     color: "#B64926",
-    figure: "Safety, routine, and stability",
-    literature: "Neutral body-grounding frame.",
-    teaching: "Grounding begins when attention returns to the body and the next step becomes small enough to complete.",
-    practice: "Feel your feet, release the jaw, slow the exhale, and choose one task that is actually finishable.",
-    audioToneId: "bilateral-soft-1",
-    videoQuery: "grounding meditation body awareness"
+    figure: "Stability, embodiment, and a safe first step",
+    literature: "Later Tantric/Haṭha subtle-body map; not a medical diagnosis.",
+    teaching: "Use this as a contemplative symbol for steadiness and embodied attention, not as proof that a chakra is blocked or causing symptoms.",
+    practice: "Feel the contact points supporting you, keep the breath natural, orient to the room, and choose one safe, finishable action.",
+    traditionLayer: "tantric-hatha",
+    provenance: "The named centre belongs to later Tantric and Haṭha literature. The grounding application here is a clearly labelled modern supportive adaptation.",
+    sourceIds: ["satcakra", "hatha-pradipika", "ayush-cyp"],
+    officialPracticeUrl: "https://yoga.ayush.gov.in/uploads/assets/cyp/CYP_Book_English_2026.pdf",
+    safety: "Stop if you feel pain, faintness, panic, or disorientation; return to ordinary breathing and seek appropriate help.",
+    audioToneId: "bilateral-soft-1"
   },
   {
     id: "sacral",
-    label: "Emotional flow",
-    sanskrit: "Ease cue",
-    body: "Lower abdomen",
+    label: "Svadhisthana · ease",
+    sanskrit: "Svadhisthana",
+    body: "Lower-abdomen contemplation",
     color: "#B36605",
-    figure: "Feeling, flexibility, and creativity",
-    literature: "Neutral emotional-regulation frame.",
-    teaching: "Flow returns when shame loosens and the body is allowed to feel without being forced into a story.",
-    practice: "Relax the belly and hips, soften the jaw, and name one feeling without judging it.",
-    audioToneId: "bilateral-soft-2",
-    videoQuery: "emotional release meditation body scan"
+    figure: "Feeling, flexibility, and non-judgment",
+    literature: "Later Tantric/Haṭha subtle-body map; not a diagnostic system.",
+    teaching: "Use the symbol to notice feeling without shame or compulsion. It does not establish a physical or psychological cause.",
+    practice: "Let the abdomen soften without forcing the breath; name one feeling accurately and one boundary that keeps the response safe.",
+    traditionLayer: "tantric-hatha",
+    provenance: "The centre name is historical; the emotional-regulation wording is a modern supportive application and is shown as such.",
+    sourceIds: ["satcakra", "hatha-pradipika", "ayush-cyp"],
+    officialPracticeUrl: "https://yoga.ayush.gov.in/uploads/assets/cyp/CYP_Book_English_2026.pdf",
+    safety: "Do not use breath retention or intense pelvic practices without qualified in-person instruction.",
+    audioToneId: "bilateral-soft-2"
   },
   {
     id: "solar",
-    label: "Agency and boundary",
-    sanskrit: "Action cue",
-    body: "Upper abdomen",
+    label: "Manipura · agency",
+    sanskrit: "Manipura",
+    body: "Navel-region contemplation",
     color: "#AD850B",
-    figure: "Will, responsibility, and limits",
-    literature: "Neutral agency-and-boundary frame.",
-    teaching: "Strength becomes useful when it is calm, bounded, and aimed at the part of the situation you can actually influence.",
-    practice: "Say one clear boundary out loud and complete one practical task before moving on.",
-    audioToneId: "binaural-alpha-6",
-    videoQuery: "confidence boundary meditation"
+    figure: "Disciplined effort, limits, and responsibility",
+    literature: "Later Tantric/Haṭha subtle-body map; not a claim about organ function.",
+    teaching: "Treat this as a reminder that strength is most useful when calm, ethical, and directed toward what can actually be influenced.",
+    practice: "Keep the belly unforced, name what is controllable, state one clear boundary, and complete one proportionate task.",
+    traditionLayer: "tantric-hatha",
+    provenance: "The traditional centre and its modern agency-oriented application are deliberately separated.",
+    sourceIds: ["satcakra", "hatha-pradipika", "gita-dhyana", "ayush-cyp"],
+    officialPracticeUrl: "https://yoga.ayush.gov.in/uploads/assets/cyp/CYP_Book_English_2026.pdf",
+    safety: "Avoid forceful abdominal locks, pumping breaths, or long retentions unless a qualified teacher has assessed suitability.",
+    audioToneId: "binaural-alpha-6"
   },
   {
     id: "heart",
-    label: "Compassion and steadiness",
-    sanskrit: "Care cue",
-    body: "Center of chest",
+    label: "Anahata · compassion",
+    sanskrit: "Anahata",
+    body: "Heart-region contemplation",
     color: "#2E7D9A",
-    figure: "Connection, repair, and care",
-    literature: "Neutral compassion practice frame.",
-    teaching: "Compassion is not collapse. It is a steady way to remain open while still protecting dignity and truth.",
-    practice: "Name one person you can be kind to and one way you can protect your own heart.",
-    audioToneId: "binaural-alpha-7",
-    videoQuery: "compassion meditation loving kindness"
+    figure: "Compassion with truth and protection",
+    literature: "Later Tantric/Haṭha subtle-body map; not cardiac guidance.",
+    teaching: "Compassion is not collapse. Let care remain joined to dignity, truth, and protection from harm.",
+    practice: "Breathe naturally, offer one kind phrase to yourself, and name one caring action plus one necessary boundary.",
+    traditionLayer: "tantric-hatha",
+    provenance: "The centre name is traditional; the compassion-and-boundary exercise is a modern supportive application.",
+    sourceIds: ["satcakra", "gita-dhyana", "ayush-cyp"],
+    officialPracticeUrl: "https://yoga.ayush.gov.in/uploads/assets/cyp/CYP_Book_English_2026.pdf",
+    safety: "Chest pain, breathing difficulty, faintness, or acute distress requires medical or emergency assessment, not chakra practice.",
+    audioToneId: "binaural-alpha-7"
   },
   {
     id: "throat",
-    label: "Clear expression",
-    sanskrit: "Truth cue",
-    body: "Throat",
+    label: "Visuddha · clear speech",
+    sanskrit: "Visuddha",
+    body: "Throat-region contemplation",
     color: "#3C8D87",
-    figure: "Truth, tone, and request",
-    literature: "Neutral communication frame.",
-    teaching: "Truth should be clear enough to help, specific enough to act on, and calm enough to keep the door open.",
-    practice: "Write one short sentence that says the issue without blame or drama.",
-    audioToneId: "iso-6",
-    videoQuery: "mindful communication meditation"
+    figure: "Truthful, specific, and proportionate expression",
+    literature: "Later Tantric/Haṭha subtle-body map; not a diagnosis of voice or thyroid symptoms.",
+    teaching: "Let speech be truthful enough to help, specific enough to act on, and calm enough to preserve dignity.",
+    practice: "Keep the neck relaxed and write one factual sentence: what happened, what you need, and by when.",
+    traditionLayer: "tantric-hatha",
+    provenance: "The centre name is traditional; the communication exercise is a modern counselling handoff.",
+    sourceIds: ["satcakra", "yoga-sutra", "ayush-cyp"],
+    officialPracticeUrl: "https://yoga.ayush.gov.in/uploads/assets/cyp/CYP_Book_English_2026.pdf",
+    safety: "Persistent throat, swallowing, breathing, or voice symptoms need appropriate clinical assessment.",
+    audioToneId: "iso-6"
   },
   {
     id: "thirdEye",
-    label: "Pattern awareness",
-    sanskrit: "Discernment cue",
-    body: "Forehead",
+    label: "Ajna · discernment",
+    sanskrit: "Ajna",
+    body: "Brow-region contemplation",
     color: "#6A5ACD",
-    figure: "Insight, evidence, and discernment",
-    literature: "Neutral reflective-inquiry frame.",
-    teaching: "Insight is the quiet skill of seeing the pattern without becoming the panic.",
-    practice: "Compare the fear with the facts, then keep only what remains true.",
-    audioToneId: "binaural-theta-4",
-    videoQuery: "insight meditation witness awareness"
+    figure: "Attention, evidence, and discernment",
+    literature: "Later Tantric/Haṭha subtle-body map, complemented by Pātañjala dharana and dhyana.",
+    teaching: "Insight means seeing a pattern without turning imagination into evidence. Separate observation, inference, and fear.",
+    practice: "Rest the gaze without strain, notice three facts, name one uncertainty, and choose the next action supported by evidence.",
+    traditionLayer: "tantric-hatha",
+    provenance: "The subtle centre comes from later literature; the evidence check is a modern safety and counselling adaptation.",
+    sourceIds: ["satcakra", "yoga-sutra", "svetasvatara-posture", "ayush-cyp"],
+    officialPracticeUrl: "https://yoga.ayush.gov.in/uploads/assets/cyp/CYP_Book_English_2026.pdf",
+    safety: "Do not stare forcefully, induce pressure, or treat visions and unusual perceptions as verified facts.",
+    audioToneId: "binaural-theta-4"
   },
   {
     id: "crown",
-    label: "Quiet meaning",
-    sanskrit: "Silence cue",
-    body: "Top of head",
+    label: "Sahasrara · contemplative meaning",
+    sanskrit: "Sahasrara",
+    body: "Above-crown contemplation",
     color: "#7E6FD6",
-    figure: "Silence, perspective, and larger purpose",
-    literature: "Neutral silence-and-meaning frame.",
-    teaching: "Meaning appears more clearly when the mind softens and sees the larger arc without forcing an instant answer.",
-    practice: "Sit still for one minute and let the next step emerge from quiet, not pressure.",
-    audioToneId: "reset-quiet",
-    videoQuery: "silent meditation meaning purpose"
+    figure: "Silence, perspective, and values-led meaning",
+    literature: "In Sat-Cakra-Nirupana, sahasrara is above the six-centre sequence; it should not be retroactively called Vedic anatomy.",
+    teaching: "Use silence to clarify values and responsibility, not to claim certainty, supernatural status, or escape practical duties.",
+    practice: "Sit without strain for one minute, observe natural breathing, name the value that should lead, and return to one grounded action.",
+    traditionLayer: "tantric-hatha",
+    provenance: "The historical source layer and the modern meaning-oriented reflection are displayed separately to avoid false attribution.",
+    sourceIds: ["satcakra", "gita-dhyana", "yoga-sutra", "ayush-cyp"],
+    officialPracticeUrl: "https://yoga.ayush.gov.in/uploads/assets/cyp/CYP_Book_English_2026.pdf",
+    safety: "Do not attempt kundalini activation, forceful retention, or intense altered-state practices without qualified guidance.",
+    audioToneId: "reset-quiet"
   }
 ];
 
@@ -11642,9 +11874,7 @@ function getMeditationTone(chakraId: ChakraId) {
 }
 
 function buildMeditationVideoUrl(chakra: MeditationChakra) {
-  return `https://www.youtube.com/results?search_query=${encodeURIComponent(
-    `${chakra.label} guided meditation`
-  )}`;
+  return chakra.officialPracticeUrl;
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -24519,6 +24749,8 @@ function isTrustedExternalUrl(url: string) {
                 onDeleteLocalData={handleDeleteLocalData}
                 onRestartOnboarding={restartOnboarding}
                 onOpenAccessPanel={openProfileAccessPanel}
+                showOneTimeProfileNudge={!featureNudgeDismissed}
+                onDismissOneTimeProfileNudge={() => setFeatureNudgeDismissed(true)}
                 onOpenAdminLogin={() => handleTabPress("admin")}
                 onPreviewRetentionAlert={previewRetentionAlert}
                 notifStreakEnabled={notifStreakEnabled}
@@ -27099,8 +27331,28 @@ function MeditationSection({
   moonChartInsightReadings?: MoonChart48Reading[];
   isWide: boolean;
 }) {
+  const { detectedThemes } = useCrossSectionSignal();
   const compact = !isWide;
-  const [selectedChakraId, setSelectedChakraId] = useState<ChakraId>(() => getMeditationStartChakra(selectedIssueGuide.id));
+  const activeSupportDimensionId = useMemo<SupportDimensionId>(
+    () =>
+      detectedThemes[0] ??
+      Object.values(supportDimensionGuides).find(
+        (guide) => guide.issueId === selectedIssueGuide.id
+      )?.id ??
+      "direction",
+    [detectedThemes, selectedIssueGuide.id]
+  );
+  const activeSupportPracticeProfile = useMemo(
+    () => getSupportPracticeProfile(activeSupportDimensionId),
+    [activeSupportDimensionId]
+  );
+  const activeSupportPracticeCopy = useMemo(
+    () => getLocalizedSupportPracticeCopy(activeSupportPracticeProfile, languageId),
+    [activeSupportPracticeProfile, languageId]
+  );
+  const [selectedChakraId, setSelectedChakraId] = useState<ChakraId>(
+    () => activeSupportPracticeProfile.chakraId
+  );
   // Which method's "matching sound" is currently playing, so the button
   // becomes a real Play/Stop toggle. Previously the cue had no stop control at
   // all -- once tapped it played out with nothing to silence it.
@@ -27110,16 +27362,23 @@ function MeditationSection({
     return () => { stopRelaxingToneCue(); };
   }, []);
   useEffect(() => {
-    setSelectedChakraId(getMeditationStartChakra(selectedIssueGuide.id));
-  }, [selectedIssueGuide.id]);
+    setSelectedChakraId(activeSupportPracticeProfile.chakraId);
+  }, [activeSupportPracticeProfile.chakraId]);
 
   const selectedChakra =
     meditationChakraTeachings.find((chakra) => chakra.id === selectedChakraId) ?? meditationChakraTeachings[0];
-  const recommendedChakraId = getMeditationStartChakra(selectedIssueGuide.id);
+  const recommendedChakraId = activeSupportPracticeProfile.chakraId;
   const recommendedChakra =
     meditationChakraTeachings.find((chakra) => chakra.id === recommendedChakraId) ?? meditationChakraTeachings[0];
   const selectedTone = getMeditationTone(selectedChakra.id);
-  const meditationMethodOptions = getMeditationMethodsForIssue(selectedIssueGuide.id);
+  const meditationMethodOptions = useMemo(() => {
+    const issueMethods = getMeditationMethodsForIssue(selectedIssueGuide.id);
+    const mappedMethod = meditationMethods.find(
+      (method) => method.id === activeSupportPracticeProfile.meditationMethodId
+    );
+    if (!mappedMethod) return issueMethods;
+    return [mappedMethod, ...issueMethods.filter((method) => method.id !== mappedMethod.id)];
+  }, [activeSupportPracticeProfile.meditationMethodId, selectedIssueGuide.id]);
   const [showMeditationLibrary, setShowMeditationLibrary] = useState(false);
   const [showMeditationPerspectives, setShowMeditationPerspectives] = useState(false);
   const featuredMeditationMethods = meditationMethodOptions.slice(0, showMeditationLibrary ? (compact ? 4 : 6) : 1);
@@ -27135,10 +27394,11 @@ function MeditationSection({
     `Meditation guidance for ${selectedIssueGuide.label}. This is a regulation stop that helps you return to action with a steadier mind.`,
     `Recommended method: ${primaryMeditationMethod.label}. ${primaryMeditationMethod.purpose}`,
     `Steps: ${primaryMeditationMethod.steps.join(" ")}`,
-    `Current body focus: ${selectedChakra.label}.`,
+    `Current contemplative focus: ${selectedChakra.label}. ${selectedChakra.literature}`,
     selectedChakra.teaching,
     selectedChakra.practice,
-    `After this, return to Path, Help, or Journal and take one real next step.`
+    selectedChakra.safety,
+    activeSupportPracticeCopy.pathHandoff
   ].join(" ");
 
   useEffect(() => {
@@ -27150,16 +27410,53 @@ function MeditationSection({
     <View style={styles.panel}>
       <View style={styles.sectionHeader}>
         <View>
-          <Text style={styles.eyebrow}>Meditation</Text>
-          <Text style={styles.sectionTitleSmall}>Settle, decide, return</Text>
+          <Text style={styles.eyebrow}>{pickLocalizedText(languageId, { english: "Meditation", hindi: "ध्यान", telugu: "ధ్యానం", tamil: "தியானம்", urdu: "مراقبہ" })}</Text>
+          <Text style={styles.sectionTitleSmall}>{pickLocalizedText(languageId, { english: "Settle, discern, return", hindi: "स्थिर हों, विवेक करें, लौटें", telugu: "స్థిరపడండి, వివేచించండి, తిరిగి వెళ్లండి", tamil: "நிலைத்திருங்கள், தெளிவுபெறுங்கள், திரும்புங்கள்", urdu: "ٹھہریں، سمجھیں، واپس لوٹیں" })}</Text>
         </View>
-          <Text style={styles.smallMeta}>Recommended first</Text>
+          <Text style={styles.smallMeta}>{pickLocalizedText(languageId, { english: "Recommended first", hindi: "पहले यह करें", telugu: "మొదట సిఫార్సు", tamil: "முதலில் பரிந்துரை", urdu: "پہلے تجویز کردہ" })}</Text>
+      </View>
+
+      <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
+        <View style={styles.sectionHeader}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.eyebrow}>{pickLocalizedText(languageId, { english: "Sanatana Yoga foundation", hindi: "सनातन योग आधार", telugu: "సనాతన యోగ పునాది", tamil: "சனாதன யோக அடித்தளம்", urdu: "سناتن یوگ کی بنیاد" })}</Text>
+            <Text style={styles.sectionTitleSmall}>{pickLocalizedText(languageId, { english: "Source truth before technique", hindi: "तकनीक से पहले स्रोत-सत्य", telugu: "పద్ధతికి ముందు మూల సత్యం", tamil: "முறைக்கு முன் மூல உண்மை", urdu: "طریقے سے پہلے ماخذ کی حقیقت" })}</Text>
+          </View>
+          <Text style={styles.smallMeta}>{pickLocalizedText(languageId, { english: "Curated canon", hindi: "चयनित ग्रंथ", telugu: "ఎంపిక చేసిన గ్రంథాలు", tamil: "தேர்ந்தெடுத்த நூல்கள்", urdu: "منتخب متون" })}</Text>
+        </View>
+        <Text style={styles.beaconXWisdomLead}>
+          {pickLocalizedText(languageId, {
+            english: "The Upanishadic and Patanjala path teaches ethical preparation, steady posture, gentle breath, withdrawal, concentration and meditation. The named chakra map comes from later Tantric and Hatha literature; modern wellbeing uses are clearly marked as supportive adaptations, not Vedic diagnoses.",
+            hindi: "उपनिषद और पतंजलि परंपरा नैतिक तैयारी, स्थिर आसन, सहज श्वास, प्रत्याहार, धारणा और ध्यान सिखाती है। नामित चक्र-मानचित्र बाद के तांत्रिक और हठ ग्रंथों से आता है; आधुनिक कल्याण उपयोग केवल सहायक रूपांतरण हैं, वैदिक निदान नहीं।",
+            telugu: "ఉపనిషత్తు మరియు పాతంజల మార్గం నైతిక సిద్ధత, స్థిర ఆసనం, సహజ శ్వాస, ప్రత్యాహారం, ధారణ మరియు ధ్యానాన్ని బోధిస్తుంది. పేరుగల చక్ర పటం తరువాతి తాంత్రిక, హఠ గ్రంథాల నుంచి వచ్చింది; ఆధునిక శ్రేయస్సు వినియోగాలు సహాయక అన్వయాలు మాత్రమే, వేద నిర్ధారణలు కావు.",
+            tamil: "உபநிடத மற்றும் பதஞ்சலி மரபு அறத் தயாரிப்பு, நிலையான ஆசனம், இயல்பான மூச்சு, பிரத்யாஹாரம், தாரணை மற்றும் தியானத்தை கற்பிக்கிறது. பெயரிடப்பட்ட சக்கர வரைபடம் பிற்கால தாந்திரிக மற்றும் ஹட நூல்களிலிருந்து வருகிறது; நவீன நலப் பயன்பாடுகள் ஆதரவு மாற்றங்கள் மட்டுமே, வேத நோயறிதல்கள் அல்ல.",
+            urdu: "اپنشد اور پاتنجلی روایت اخلاقی تیاری، مستحکم نشست، نرم سانس، پرتّیاہار، دھارنا اور دھیان سکھاتی ہے۔ نام زد چکر نقشہ بعد کے تانترک اور ہٹھ متون سے آتا ہے؛ جدید فلاحی استعمال صرف معاون تطبیق ہیں، ویدک تشخیص نہیں۔"
+          })}
+        </Text>
+        <View style={{ backgroundColor: "#F7FBFA", borderRadius: 12, borderWidth: 1, borderColor: "#0E6F6933", padding: 10, gap: 5 }}>
+          <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.6 }}>
+            {pickLocalizedText(languageId, { english: "48-dimension synchronized focus", hindi: "48-आयाम समन्वित फोकस", telugu: "48-పరిమాణ సమన్వయ దృష్టి", tamil: "48-பரிமாண ஒருங்கிணைந்த கவனம்", urdu: "48 جہتی مربوط توجہ" })}
+          </Text>
+          <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
+            <Text style={{ fontWeight: "900" }}>{localizedSupportDimensionLabel(supportDimensionGuides[activeSupportDimensionId], languageId)} · Calm: </Text>{activeSupportPracticeCopy.calmCue}
+          </Text>
+          <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
+            <Text style={{ fontWeight: "900" }}>Path / Help / Redress · </Text>{activeSupportPracticeCopy.pathHandoff}
+          </Text>
+          <Text style={{ color: "#5A6674", fontSize: 12, lineHeight: 16 }}>{activeSupportPracticeCopy.vedicRole}</Text>
+        </View>
       </View>
 
       <View style={styles.visionGuidanceBox}>
-        <Text style={styles.visionGuidanceTitle}>Real objective</Text>
+        <Text style={styles.visionGuidanceTitle}>{pickLocalizedText(languageId, { english: "Real objective", hindi: "वास्तविक उद्देश्य", telugu: "నిజమైన లక్ష్యం", tamil: "உண்மையான நோக்கம்", urdu: "حقیقی مقصد" })}</Text>
         <Text style={styles.visionGuidanceText}>
-          Begin with one matched method for {selectedIssueGuide.label.toLowerCase()}. Settle the body, regain perspective, then continue to Path, counselling, or Help.
+          {pickLocalizedText(languageId, {
+            english: `Begin with one matched method for ${selectedIssueGuide.label.toLowerCase()}. Settle the body, regain perspective, then continue to Path, Counselling, Help, or Redress.`,
+            hindi: `${selectedIssueGuide.label.toLowerCase()} के लिए एक उपयुक्त विधि से शुरू करें। शरीर को स्थिर करें, दृष्टि साफ करें, फिर Path, Counselling, Help या Redress पर जाएँ।`,
+            telugu: `${selectedIssueGuide.label.toLowerCase()} కోసం సరిపోలిన ఒక పద్ధతితో ప్రారంభించండి. శరీరాన్ని స్థిరపరచి, దృక్పథాన్ని తిరిగి పొందిన తర్వాత Path, Counselling, Help లేదా Redress‌కు వెళ్లండి.`,
+            tamil: `${selectedIssueGuide.label.toLowerCase()}க்கு பொருந்தும் ஒரு முறையுடன் தொடங்குங்கள். உடலை நிலைப்படுத்தி, தெளிவைப் பெற்று, பின்னர் Path, Counselling, Help அல்லது Redress-க்கு செல்லுங்கள்.`,
+            urdu: `${selectedIssueGuide.label.toLowerCase()} کے لیے ایک موزوں طریقے سے شروع کریں۔ جسم کو سنبھالیں، نقطۂ نظر واضح کریں، پھر Path، Counselling، Help یا Redress کی طرف جائیں۔`
+          })}
         </Text>
       </View>
 
@@ -27289,6 +27586,78 @@ function MeditationSection({
         </View>
       </View>
 
+      {showMeditationLibrary ? (
+        <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
+          <View style={styles.sectionHeader}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.eyebrow}>{pickLocalizedText(languageId, { english: "Guided procedure", hindi: "मार्गदर्शित प्रक्रिया", telugu: "మార్గదర్శిత విధానం", tamil: "வழிகாட்டப்பட்ட நடைமுறை", urdu: "رہنمائی شدہ طریقہ" })}</Text>
+              <Text style={styles.sectionTitleSmall}>{pickLocalizedText(languageId, { english: "Seven stages from intention to action", hindi: "संकल्प से कर्म तक सात चरण", telugu: "సంకల్పం నుంచి చర్య వరకు ఏడు దశలు", tamil: "நோக்கத்திலிருந்து செயலுக்கு ஏழு படிகள்", urdu: "نیت سے عمل تک سات مراحل" })}</Text>
+            </View>
+            <Text style={styles.smallMeta}>7 / 7</Text>
+          </View>
+          <View style={{ gap: 8 }}>
+            {sanatanaMeditationStages.map((stage, index) => {
+              const localizedStage = getLocalizedSanatanaMeditationStage(stage, languageId);
+              return (
+                <View key={stage.id} style={{ backgroundColor: "#F7FBFA", borderRadius: 12, borderWidth: 1, borderColor: "#0E6F6928", padding: 10 }}>
+                  <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
+                    <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: "#0E6F69", alignItems: "center", justifyContent: "center" }}>
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>{index + 1}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ color: "#183E43", fontSize: 13, fontWeight: "700" }}>{localizedStage.label}</Text>
+                      <Text style={{ color: "#62717B", fontSize: 12, marginTop: 1 }}>{stage.sourceAnchor}</Text>
+                    </View>
+                  </View>
+                  <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginTop: 7 }}>{localizedStage.instruction}</Text>
+                  <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, marginTop: 5, fontWeight: "700" }}>
+                    {pickLocalizedText(languageId, { english: "Ready when: ", hindi: "तैयार जब: ", telugu: "సిద్ధం అయినప్పుడు: ", tamil: "தயார் எனும் போது: ", urdu: "تیار جب: " })}{localizedStage.completion}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      ) : null}
+
+      {showMeditationLibrary ? (
+        <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
+          <View style={styles.sectionHeader}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.eyebrow}>{pickLocalizedText(languageId, { english: "Source library", hindi: "स्रोत लाइब्रेरी", telugu: "మూల గ్రంథాలయం", tamil: "மூல நூலகம்", urdu: "ماخذ کتب خانہ" })}</Text>
+              <Text style={styles.sectionTitleSmall}>{pickLocalizedText(languageId, { english: "Read the text behind the teaching", hindi: "शिक्षा के पीछे का ग्रंथ पढ़ें", telugu: "బోధన వెనుక ఉన్న గ్రంథాన్ని చదవండి", tamil: "போதனையின் பின்னுள்ள நூலை வாசிக்கவும்", urdu: "تعلیم کے پیچھے موجود متن پڑھیں" })}</Text>
+            </View>
+            <Text style={styles.smallMeta}>{meditationSourceLibrary.length}</Text>
+          </View>
+          <Text style={styles.beaconXWisdomLead}>
+            {pickLocalizedText(languageId, {
+              english: "Each entry names its historical layer and scope. The app does not claim that one modern seven-colour chakra chart appears unchanged across all Vedic scripture.",
+              hindi: "हर प्रविष्टि अपना ऐतिहासिक स्तर और सीमा बताती है। ऐप यह दावा नहीं करता कि आधुनिक सात-रंग चक्र-चित्र सभी वैदिक ग्रंथों में अपरिवर्तित रूप से मिलता है।",
+              telugu: "ప్రతి నమోదు తన చారిత్రక పొర మరియు పరిధిని స్పష్టం చేస్తుంది. ఆధునిక ఏడు-రంగుల చక్ర పటం అన్ని వేద గ్రంథాలలో మార్పులేకుండా ఉందని యాప్ చెప్పదు.",
+              tamil: "ஒவ்வொரு பதிவும் அதன் வரலாற்று அடுக்கு மற்றும் வரம்பை குறிப்பிடுகிறது. நவீன ஏழு-நிற சக்கர வரைபடம் அனைத்து வேத நூல்களிலும் மாற்றமின்றி உள்ளது என்று ஆப் கூறாது.",
+              urdu: "ہر اندراج اپنی تاریخی تہہ اور دائرہ واضح کرتا ہے۔ ایپ یہ دعویٰ نہیں کرتی کہ جدید سات رنگی چکر نقشہ تمام ویدک متون میں بغیر تبدیلی موجود ہے۔"
+            })}
+          </Text>
+          <View style={{ gap: 8 }}>
+            {meditationSourceLibrary.map((source) => (
+              <Pressable
+                key={source.id}
+                accessibilityRole="link"
+                accessibilityLabel={`${pickLocalizedText(languageId, { english: "Open source", hindi: "स्रोत खोलें", telugu: "మూలాన్ని తెరవండి", tamil: "மூலத்தைத் திறக்கவும்", urdu: "ماخذ کھولیں" })}: ${source.title} ${source.locator}`}
+                onPress={() => onOpenWebsite(source.url, source.title)}
+                style={({ pressed }) => [{ backgroundColor: pressed ? "#E1EEEC" : "#F7FBFA", borderRadius: 12, borderWidth: 1, borderColor: "#0E6F6928", padding: 10 }]}
+              >
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                  <Text style={{ color: "#183E43", fontSize: 12, fontWeight: "700", flex: 1 }}>{source.title} · {source.locator}</Text>
+                  <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700", textTransform: "uppercase" }}>{source.traditionLayer}</Text>
+                </View>
+                <Text style={{ color: "#4D6470", fontSize: 12, lineHeight: 16, marginTop: 4 }}>{source.scope}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : null}
+
       {showMeditationLibrary ? <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
         <View style={styles.sectionHeader}>
           <View>
@@ -27363,6 +27732,12 @@ function MeditationSection({
             <Text style={styles.calmTeachingRef}>
               Principle: {selectedChakra.literature}
             </Text>
+            <Text style={styles.calmTeachingRef}>
+              {pickLocalizedText(languageId, { english: "Provenance: ", hindi: "स्रोत-परंपरा: ", telugu: "మూల పరంపర: ", tamil: "மூல மரபு: ", urdu: "ماخذ روایت: " })}{selectedChakra.provenance}
+            </Text>
+            <Text style={[styles.calmTeachingRef, { color: "#8A341F", fontWeight: "700" }]}>
+              {pickLocalizedText(languageId, { english: "Safety: ", hindi: "सुरक्षा: ", telugu: "భద్రత: ", tamil: "பாதுகாப்பு: ", urdu: "حفاظت: " })}{selectedChakra.safety}
+            </Text>
             <View style={styles.calmQuickActionRow}>
               <Pressable
                 accessibilityRole="button"
@@ -27390,10 +27765,10 @@ function MeditationSection({
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                onPress={() => onOpenWebsite(buildMeditationVideoUrl(selectedChakra), `${selectedChakra.label} video lesson`)}
+                onPress={() => onOpenWebsite(buildMeditationVideoUrl(selectedChakra), `${selectedChakra.label} official practice guide`)}
                 style={styles.calmQuickActionButton}
               >
-                <Text style={styles.calmQuickActionLabel}>Open lesson</Text>
+                <Text style={styles.calmQuickActionLabel}>{pickLocalizedText(languageId, { english: "Open official guide", hindi: "आधिकारिक गाइड खोलें", telugu: "అధికారిక మార్గదర్శిని తెరవండి", tamil: "அதிகாரப்பூர்வ வழிகாட்டியைத் திறக்கவும்", urdu: "سرکاری رہنما کھولیں" })}</Text>
               </Pressable>
             </View>
             <Text style={styles.smallMeta} numberOfLines={2}>
@@ -34268,6 +34643,8 @@ function SettingsSection({
   onDeleteLocalData,
   onRestartOnboarding,
   onOpenAccessPanel,
+  showOneTimeProfileNudge,
+  onDismissOneTimeProfileNudge,
   onOpenAdminLogin,
   onPreviewRetentionAlert,
   notifStreakEnabled,
@@ -34362,6 +34739,8 @@ function SettingsSection({
   onDeleteLocalData: () => void;
   onRestartOnboarding: () => void;
   onOpenAccessPanel: () => void;
+  showOneTimeProfileNudge: boolean;
+  onDismissOneTimeProfileNudge: () => void;
   onOpenAdminLogin: () => void;
   onPreviewRetentionAlert: () => Promise<void>;
   verificationDeliveryMode: "remote" | "local";
@@ -34571,6 +34950,69 @@ function SettingsSection({
           })}
         </Text>
         </View>
+      {showOneTimeProfileNudge && (
+        <View
+          accessibilityRole="summary"
+          style={[
+            styles.settingsBlock,
+            { borderColor: "rgba(6, 182, 212, 0.34)", backgroundColor: "#F3FBFC" }
+          ]}
+        >
+          <Text style={styles.settingsTitle}>
+            {pickLocalizedText(languageId, {
+              english: "Only the essentials",
+              hindi: "केवल आवश्यक जानकारी",
+              telugu: "అవసరమైనవి మాత్రమే",
+              tamil: "அத்தியாவசியமானவை மட்டும்",
+              urdu: "صرف ضروری معلومات"
+            })}
+          </Text>
+          <Text style={styles.promptText}>
+            {pickLocalizedText(languageId, {
+              english: "For more relevant guidance, keep a display name and one verified contact method. Add precise birth details only if you choose Vedic insights. Everything else is optional and stays on this device by default.",
+              hindi: "अधिक उपयुक्त मार्गदर्शन के लिए एक प्रदर्शन नाम और एक सत्यापित संपर्क माध्यम रखें। सटीक जन्म-विवरण केवल तभी जोड़ें जब आप वैदिक अंतर्दृष्टि चुनते हैं। बाकी सब वैकल्पिक है और डिफ़ॉल्ट रूप से इसी डिवाइस पर रहता है।",
+              telugu: "మరింత అనుకూలమైన మార్గదర్శకత్వం కోసం ఒక ప్రదర్శన పేరు మరియు ఒక ధృవీకరించిన సంప్రదింపు మార్గాన్ని ఉంచండి. వేద అంతర్దృష్టులను ఎంచుకుంటే మాత్రమే ఖచ్చితమైన జనన వివరాలు జోడించండి. మిగతావన్నీ ఐచ్ఛికం మరియు డిఫాల్ట్‌గా ఈ పరికరంలోనే ఉంటాయి.",
+              tamil: "மேலும் பொருத்தமான வழிகாட்டலுக்காக ஒரு காட்சிப் பெயரும் ஒரு சரிபார்க்கப்பட்ட தொடர்பு முறையும் வைத்திருக்கவும். வேதக் குறிப்புகளைத் தேர்வுசெய்தால் மட்டுமே துல்லியமான பிறப்பு விவரங்களைச் சேர்க்கவும். மற்ற அனைத்தும் விருப்பமானவை; இயல்பாக இந்தச் சாதனத்திலேயே இருக்கும்.",
+              urdu: "زیادہ موزوں رہنمائی کے لیے ایک نمایاں نام اور رابطے کا ایک تصدیق شدہ طریقہ رکھیں۔ درست پیدائش کی تفصیل صرف تب شامل کریں جب آپ ویدک بصیرت منتخب کریں۔ باقی سب اختیاری ہے اور بطورِ طے شدہ اسی ڈیوائس پر رہتا ہے۔"
+            })}
+          </Text>
+          <View style={styles.backupActions}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                onDismissOneTimeProfileNudge();
+                onOpenAccessPanel();
+              }}
+              style={styles.dangerButton}
+            >
+              <Text style={styles.dangerButtonLabel}>
+                {pickLocalizedText(languageId, {
+                  english: "Review essentials",
+                  hindi: "आवश्यक जानकारी देखें",
+                  telugu: "అవసరమైనవి చూడండి",
+                  tamil: "அத்தியாவசியங்களைப் பாருங்கள்",
+                  urdu: "ضروری معلومات دیکھیں"
+                })}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={onDismissOneTimeProfileNudge}
+              style={styles.secondaryDangerButton}
+            >
+              <Text style={styles.secondaryDangerButtonLabel}>
+                {pickLocalizedText(languageId, {
+                  english: "Got it",
+                  hindi: "समझ गया",
+                  telugu: "అర్థమైంది",
+                  tamil: "புரிந்தது",
+                  urdu: "سمجھ گیا"
+                })}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
       {/* ─── FREE ACCESS BANNER ────────────────────────────────────── */}
       <View style={{
         marginHorizontal: 16, marginBottom: 16, borderRadius: 16,
@@ -34601,21 +35043,6 @@ function SettingsSection({
           nothing in the UI lets a user change it anymore. */}
       <View style={{ paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
         <Text style={[styles.eyebrow, { color: "#06B6D4", fontSize: 12, letterSpacing: 1.4 }]}>👤  {t("PROFILE", "प्रोफ़ाइल")}</Text>
-      </View>
-      <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>{t("App vision", "ऐप का दृष्टिकोण")}</Text>
-        <Text style={styles.promptText}>
-          {t(
-            "Notice what is happening, name it without shame, choose one useful next step, and keep a direct path to support.",
-            "जो हो रहा है उसे देखें, बिना शर्म के नाम दें, एक उपयोगी अगला कदम चुनें, और सहायता तक सीधा रास्ता रखें।"
-          )}
-        </Text>
-        <Text style={styles.promptText}>
-          {t(
-            "It works across practical, emotional, psychological, reflective, and cultural layers.",
-            "यह व्यावहारिक, भावनात्मक, मनोवैज्ञानिक, चिंतनशील, और सांस्कृतिक स्तरों पर काम करता है।"
-          )}
-        </Text>
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>{t("Privacy-conscious improvement", "गोपनीयता-सचेत सुधार")}</Text>
@@ -34667,47 +35094,6 @@ function SettingsSection({
         </Text>
       </View>
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>{t("Controlled beta standard", "नियंत्रित बीटा मानक")}</Text>
-        <Text style={styles.promptText}>
-          {t(
-            "Release target",
-            "रिलीज़ लक्ष्य"
-          )}: {BETA_DEVICE_MATRIX.minimumActiveTesters}–{BETA_DEVICE_MATRIX.targetActiveTesters} active testers with no unresolved blocker.
-        </Text>
-        <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>{BETA_DEVICE_MATRIX.requiredCoverage.join(" · ")}</Text>
-      </View>
-      <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>{t("Launch status", "लॉन्च स्थिति")}</Text>
-        <Text style={styles.promptText}>
-          {t(
-            "This build is ready for beta or soft launch on iOS, Android, and web. It stays local-first while release paperwork is finished.",
-            "यह बिल्ड iOS, Android, और web पर beta या soft launch के लिए तैयार है। रिलीज़ कागज़ी काम पूरा होने तक यह local-first रहता है।"
-          )}
-        </Text>
-        <View style={styles.launchSummaryList}>
-          <Text style={styles.launchSummaryItem}>{t("Privacy-first: data stays on device unless you export it.", "गोपनीयता-पहले: डेटा डिवाइस पर ही रहता है जब तक आप उसे export न करें।")}</Text>
-          <Text style={styles.launchSummaryItem}>{t("Built-in support: SOS, trusted contacts, official helplines, and verified help.", "इन-बिल्ट सहायता: SOS, भरोसेमंद संपर्क, आधिकारिक हेल्पलाइन, और सत्यापित मदद।")}</Text>
-          <Text style={styles.launchSummaryItem}>{t("Release still needs store copy, policy text, screenshots, and package naming.", "रिलीज़ के लिए अभी भी store copy, policy text, screenshots, और package naming चाहिए।")}</Text>
-        </View>
-      </View>
-      <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>{t("Release readiness", "रिलीज़ तैयारी")}</Text>
-        <Text style={styles.promptText}>
-          {t(
-            "The app is in feature freeze and ready for beta or soft launch. Verification is provider-backed when the production service is connected, and local preview builds clearly mark fallback delivery.",
-            "ऐप feature freeze में है और beta या soft launch के लिए तैयार है। production service जुड़ी होने पर verification provider-backed होता है, और local preview builds fallback delivery को साफ़ दिखाते हैं।"
-          )}
-        </Text>
-        <View style={styles.launchSummaryList}>
-          <Text style={styles.launchSummaryItem}>
-            {t("Verification provider", "सत्यापन प्रदाता")}: {verificationDeliveryMode === "remote" ? t("connected for SMS and email OTP", "SMS और email OTP के लिए जुड़ा") : t("local fallback only for this build", "इस बिल्ड के लिए केवल स्थानीय fallback")}
-          </Text>
-          <Text style={styles.launchSummaryItem}>{t("Feature freeze active: only launch blockers, evidence-backed corrections, and premium polish should change now.", "Feature freeze सक्रिय है: अब केवल लॉन्च blockers, प्रमाण-आधारित सुधार, और premium polish ही बदलने चाहिए।")}</Text>
-          <Text style={styles.launchSummaryItem}>{t("Community chat is verified-only and blocks adult or explicit content.", "Community chat केवल सत्यापित उपयोगकर्ताओं के लिए है और adult या explicit content रोकता है।")}</Text>
-          <Text style={styles.launchSummaryItem}>{t("Store release readiness still depends on final listing assets, reviewer notes, and release evidence—not on placeholder OTP copy.", "Store release readiness अभी भी अंतिम listing assets, reviewer notes, और release evidence पर निर्भर है — placeholder OTP copy पर नहीं।")}</Text>
-        </View>
-      </View>
-      <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>{t("Legal and privacy", "कानूनी और गोपनीयता")}</Text>
         <Text style={styles.promptText}>
           {t(
@@ -34749,9 +35135,6 @@ function SettingsSection({
             <Text style={styles.profileBannerTitle}>
               {profileDisplayName.length > 0 ? profileDisplayName : t("Profile not named yet", "प्रोफ़ाइल अभी नामित नहीं है")}
             </Text>
-            <Text style={styles.profileBannerMeta}>
-              {getProfileGenderLabel(profileGender, languageId)}
-            </Text>
             <View style={styles.profileStatusRow}>
               <View style={[styles.verificationStatusChip, profilePhoneVerified && styles.verificationStatusChipActive]}>
                 <Text style={[styles.verificationStatusChipLabel, profilePhoneVerified && styles.verificationStatusChipLabelActive]}>
@@ -34764,28 +35147,23 @@ function SettingsSection({
                 </Text>
               </View>
             </View>
-          </View>
-        </View>
-        <View style={styles.profileSummaryGrid}>
-          <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>{t("Name", "नाम")}</Text>
-            <Text style={styles.profileSummaryValue}>{profileDisplayName.length > 0 ? profileDisplayName : t("Not set", "सेट नहीं")}</Text>
-          </View>
-          <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>{t("Phone", "फ़ोन")}</Text>
-            <Text style={styles.profileSummaryValue}>{profilePhone.trim().length > 0 ? profilePhone.trim() : t("Not set", "सेट नहीं")}</Text>
-          </View>
-          <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>{t("Email", "ईमेल")}</Text>
-            <Text style={styles.profileSummaryValue}>{profileEmail.trim().length > 0 ? profileEmail.trim() : t("Not set", "सेट नहीं")}</Text>
-          </View>
-          <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>{t("Location", "स्थान")}</Text>
-            <Text style={styles.profileSummaryValue}>{profileLocation.trim().length > 0 ? profileLocation.trim() : t("Not set", "सेट नहीं")}</Text>
-          </View>
-          <View style={styles.profileSummaryCard}>
-            <Text style={styles.profileSummaryLabel}>{t("Gender", "लिंग")}</Text>
-            <Text style={styles.profileSummaryValue}>{getProfileGenderLabel(profileGender, languageId)}</Text>
+            <Text style={styles.smallMeta}>
+              {verificationDeliveryMode === "remote"
+                ? pickLocalizedText(languageId, {
+                    english: "Secure provider connected for SMS and email OTP",
+                    hindi: "SMS और ईमेल OTP के लिए सुरक्षित प्रदाता जुड़ा है",
+                    telugu: "SMS మరియు ఇమెయిల్ OTP కోసం సురక్షిత ప్రొవైడర్ కనెక్ట్ అయింది",
+                    tamil: "SMS மற்றும் மின்னஞ்சல் OTP-க்கு பாதுகாப்பான வழங்குநர் இணைக்கப்பட்டுள்ளது",
+                    urdu: "SMS اور ای میل OTP کے لیے محفوظ فراہم کنندہ منسلک ہے"
+                  })
+                : pickLocalizedText(languageId, {
+                    english: "Local fallback only for this build",
+                    hindi: "इस बिल्ड में केवल स्थानीय fallback",
+                    telugu: "ఈ బిల్డ్‌లో స్థానిక fallback మాత్రమే",
+                    tamil: "இந்த build-இல் உள்ளக fallback மட்டும்",
+                    urdu: "اس build میں صرف مقامی fallback"
+                  })}
+            </Text>
           </View>
         </View>
         <View style={styles.backupActions}>
@@ -40474,6 +40852,175 @@ const supportDimensionLabelCopy: Partial<
   }
 };
 
+// Every one of the 48 support dimensions is connected to the same operating
+// sequence: regulate in Calm, reflect (optionally) in Meditation, act in Path,
+// and escalate through Help/Redress when the guide requires it. Chakra is used
+// only as a contemplative focus from the later Tantric/Haṭha map; it is never a
+// diagnosis and never overrides evidence, professional care, or urgent safety.
+const supportPracticeFocusByDimension: Record<
+  SupportDimensionId,
+  Pick<SupportPracticeProfile, "meditationMethodId" | "chakraId" | "priority">
+> = {
+  "self-image": { meditationMethodId: "self-inquiry", chakraId: "crown", priority: "stabilize" },
+  grief: { meditationMethodId: "compassion-practice", chakraId: "heart", priority: "stabilize" },
+  trauma: { meditationMethodId: "breath-regulation", chakraId: "root", priority: "escalate" },
+  addiction: { meditationMethodId: "breath-regulation", chakraId: "throat", priority: "escalate" },
+  academic: { meditationMethodId: "values-and-action", chakraId: "solar", priority: "act" },
+  financial: { meditationMethodId: "breath-regulation", chakraId: "root", priority: "act" },
+  health: { meditationMethodId: "witness-practice", chakraId: "thirdEye", priority: "escalate" },
+  parenting: { meditationMethodId: "compassion-practice", chakraId: "heart", priority: "act" },
+  relationship: { meditationMethodId: "compassion-practice", chakraId: "heart", priority: "act" },
+  unappreciated: { meditationMethodId: "compassion-practice", chakraId: "heart", priority: "act" },
+  work: { meditationMethodId: "values-and-action", chakraId: "solar", priority: "act" },
+  "home-family": { meditationMethodId: "breath-regulation", chakraId: "root", priority: "stabilize" },
+  anger: { meditationMethodId: "breath-regulation", chakraId: "solar", priority: "stabilize" },
+  anxiety: { meditationMethodId: "breath-regulation", chakraId: "root", priority: "stabilize" },
+  sadness: { meditationMethodId: "compassion-practice", chakraId: "sacral", priority: "stabilize" },
+  burnout: { meditationMethodId: "breath-regulation", chakraId: "root", priority: "stabilize" },
+  loneliness: { meditationMethodId: "compassion-practice", chakraId: "heart", priority: "stabilize" },
+  safety: { meditationMethodId: "breath-regulation", chakraId: "root", priority: "escalate" },
+  fear: { meditationMethodId: "breath-regulation", chakraId: "root", priority: "stabilize" },
+  sleep: { meditationMethodId: "breath-regulation", chakraId: "root", priority: "stabilize" },
+  appetite: { meditationMethodId: "witness-practice", chakraId: "sacral", priority: "escalate" },
+  "body-symptoms": { meditationMethodId: "witness-practice", chakraId: "root", priority: "escalate" },
+  "legal-rights": { meditationMethodId: "values-and-action", chakraId: "throat", priority: "escalate" },
+  "digital-safety": { meditationMethodId: "values-and-action", chakraId: "throat", priority: "escalate" },
+  "social-reputation": { meditationMethodId: "witness-practice", chakraId: "throat", priority: "act" },
+  "career-growth": { meditationMethodId: "values-and-action", chakraId: "solar", priority: "act" },
+  "workplace-conflict": { meditationMethodId: "values-and-action", chakraId: "throat", priority: "escalate" },
+  "education-admin": { meditationMethodId: "values-and-action", chakraId: "thirdEye", priority: "act" },
+  "exam-performance": { meditationMethodId: "breath-regulation", chakraId: "solar", priority: "act" },
+  "time-management": { meditationMethodId: "values-and-action", chakraId: "solar", priority: "act" },
+  procrastination: { meditationMethodId: "values-and-action", chakraId: "solar", priority: "act" },
+  motivation: { meditationMethodId: "values-and-action", chakraId: "solar", priority: "act" },
+  confidence: { meditationMethodId: "values-and-action", chakraId: "solar", priority: "act" },
+  boundaries: { meditationMethodId: "values-and-action", chakraId: "throat", priority: "act" },
+  communication: { meditationMethodId: "witness-practice", chakraId: "throat", priority: "act" },
+  trust: { meditationMethodId: "witness-practice", chakraId: "heart", priority: "act" },
+  intimacy: { meditationMethodId: "compassion-practice", chakraId: "sacral", priority: "act" },
+  caregiving: { meditationMethodId: "compassion-practice", chakraId: "heart", priority: "stabilize" },
+  "elder-care": { meditationMethodId: "breath-regulation", chakraId: "root", priority: "act" },
+  "pregnancy-postpartum": { meditationMethodId: "breath-regulation", chakraId: "root", priority: "escalate" },
+  "identity-values": { meditationMethodId: "self-inquiry", chakraId: "crown", priority: "act" },
+  "spirituality-faith": { meditationMethodId: "self-inquiry", chakraId: "crown", priority: "stabilize" },
+  "cultural-belonging": { meditationMethodId: "compassion-practice", chakraId: "heart", priority: "stabilize" },
+  "decision-making": { meditationMethodId: "values-and-action", chakraId: "thirdEye", priority: "act" },
+  "habit-routine": { meditationMethodId: "values-and-action", chakraId: "solar", priority: "act" },
+  environment: { meditationMethodId: "breath-regulation", chakraId: "root", priority: "act" },
+  "documentation-evidence": { meditationMethodId: "values-and-action", chakraId: "throat", priority: "act" },
+  direction: { meditationMethodId: "self-inquiry", chakraId: "crown", priority: "act" }
+};
+
+const supportCalmCueByChakra: Record<ChakraId, string> = {
+  root: "Orient to the room, feel the support beneath you, and lengthen the exhale without holding it.",
+  sacral: "Soften the jaw and abdomen, then name the feeling without judging or diagnosing it.",
+  solar: "Release abdominal effort, lower the shoulders, and separate what you control from what you do not.",
+  heart: "Use a natural breath and hold care together with truth, dignity, and a necessary boundary.",
+  throat: "Relax the neck and prepare one factual sentence: what happened, what is needed, and by when.",
+  thirdEye: "Soften the gaze and separate direct observation, reasonable inference, uncertainty, and fear.",
+  crown: "Sit without strain, name the value that should lead, and return to one grounded responsibility."
+};
+
+const supportPathHandoffByPriority: Record<SupportPracticePriority, string> = {
+  stabilize: "Use Calm briefly, then continue in Counselling or Path with one small, observable next step.",
+  act: "Move from reflection to Path now; record the action, owner, evidence, and review time.",
+  escalate: "Meditation is secondary here. Check safety first and use Help, professional support, Redress, or SOS as directed."
+};
+
+const supportPracticeProfiles = Object.fromEntries(
+  (Object.keys(supportDimensionGuides) as SupportDimensionId[]).map((dimensionId) => {
+    const focus = supportPracticeFocusByDimension[dimensionId];
+    return [
+      dimensionId,
+      {
+        dimensionId,
+        ...focus,
+        calmCue: supportCalmCueByChakra[focus.chakraId],
+        pathHandoff: supportPathHandoffByPriority[focus.priority],
+        vedicRole: "Reflective context only; never overrides evidence, professional support, urgent safety, or Redress."
+      }
+    ];
+  })
+) as Record<SupportDimensionId, SupportPracticeProfile>;
+
+function getSupportPracticeProfile(dimensionId: SupportDimensionId): SupportPracticeProfile {
+  return supportPracticeProfiles[dimensionId];
+}
+
+function getLocalizedSupportPracticeCopy(profile: SupportPracticeProfile, languageId: LanguageId) {
+  type SupportLocalizedText = Partial<Record<LanguageId, string>> & { english: string };
+  const calmByChakra: Record<ChakraId, SupportLocalizedText> = {
+    root: { english: supportCalmCueByChakra.root, hindi: "कमरे को देखें, शरीर के नीचे के सहारे को महसूस करें और बिना रोक के साँस छोड़ना थोड़ा लंबा करें।", telugu: "గదిని గమనించండి, మీ కింద ఉన్న ఆధారాన్ని అనుభవించండి, శ్వాసను ఆపకుండా నెమ్మదిగా బయటకు వదలండి.", tamil: "அறையை கவனித்து, உடலுக்குக் கீழுள்ள ஆதரவை உணர்ந்து, மூச்சை பிடிக்காமல் வெளியேற்றத்தை மெதுவாக நீட்டிக்கவும்.", urdu: "کمرے کو دیکھیں، اپنے نیچے موجود سہارے کو محسوس کریں اور سانس روکے بغیر اخراج کو آہستہ لمبا کریں۔" },
+    sacral: { english: supportCalmCueByChakra.sacral, hindi: "जबड़े और पेट को नरम छोड़ें, फिर भावना को बिना निर्णय या निदान के नाम दें।", telugu: "దవడ మరియు పొత్తికడుపును సడలించి, భావాన్ని తీర్పు లేదా నిర్ధారణ లేకుండా పేరు పెట్టండి.", tamil: "தாடை மற்றும் வயிற்றைப் தளர்த்தி, உணர்வை தீர்ப்போ நோயறிதலோ இல்லாமல் பெயரிடுங்கள்.", urdu: "جبڑے اور پیٹ کو نرم چھوڑیں، پھر احساس کو فیصلے یا تشخیص کے بغیر نام دیں۔" },
+    solar: { english: supportCalmCueByChakra.solar, hindi: "पेट का जोर छोड़ें, कंधे नीचे करें और जो आपके नियंत्रण में है उसे बाकी से अलग करें।", telugu: "పొత్తికడుపు ఒత్తిడిని వదిలి, భుజాలను దించి, మీ నియంత్రణలో ఉన్నదాన్ని మిగతాదాని నుంచి వేరు చేయండి.", tamil: "வயிற்றுச் சிரமத்தை விடுங்கள், தோள்களைத் தளர்த்தி, உங்கள் கட்டுப்பாட்டிலிருப்பதை மற்றவற்றிலிருந்து பிரிக்கவும்.", urdu: "پیٹ کا زور چھوڑیں، کندھے نیچے کریں اور جو آپ کے اختیار میں ہے اسے باقی سے الگ کریں۔" },
+    heart: { english: supportCalmCueByChakra.heart, hindi: "स्वाभाविक साँस रखें और देखभाल को सत्य, गरिमा और जरूरी सीमा के साथ जोड़ें।", telugu: "సహజ శ్వాసతో, శ్రద్ధను నిజం, గౌరవం మరియు అవసరమైన హద్దుతో కలిపి ఉంచండి.", tamil: "இயல்பான மூச்சுடன், அக்கறையை உண்மை, கண்ணியம் மற்றும் தேவையான எல்லையுடன் இணைக்கவும்.", urdu: "قدرتی سانس کے ساتھ خیال کو سچ، وقار اور ضروری حد کے ساتھ رکھیں۔" },
+    throat: { english: supportCalmCueByChakra.throat, hindi: "गर्दन ढीली करें और एक तथ्यात्मक वाक्य तैयार करें: क्या हुआ, क्या चाहिए और कब तक।", telugu: "మెడను సడలించి ఒక వాస్తవ వాక్యం సిద్ధం చేయండి: ఏమైంది, ఏమి కావాలి, ఎప్పటికి.", tamil: "கழுத்தைத் தளர்த்தி ஒரு உண்மை வாக்கியத்தைத் தயாரிக்கவும்: என்ன நடந்தது, என்ன தேவை, எப்போது வரை.", urdu: "گردن کو ڈھیلا کریں اور ایک حقیقتی جملہ تیار کریں: کیا ہوا، کیا چاہیے اور کب تک۔" },
+    thirdEye: { english: supportCalmCueByChakra.thirdEye, hindi: "नज़र नरम रखें और प्रत्यक्ष तथ्य, अनुमान, अनिश्चितता और डर को अलग करें।", telugu: "చూపును సడలించి, ప్రత్యక్ష పరిశీలన, ఊహ, అనిశ్చితి మరియు భయాన్ని వేరు చేయండి.", tamil: "பார்வையை மென்மையாக்கி, நேரடி கவனிப்பு, ஊகம், உறுதியின்மை மற்றும் பயத்தைப் பிரிக்கவும்.", urdu: "نظر نرم رکھیں اور براہِ راست مشاہدہ، اندازہ، غیر یقینی اور خوف کو الگ کریں۔" },
+    crown: { english: supportCalmCueByChakra.crown, hindi: "बिना जोर बैठें, उस मूल्य का नाम लें जो मार्गदर्शन करे, और एक जमीन से जुड़ी जिम्मेदारी पर लौटें।", telugu: "ఒత్తిడి లేకుండా కూర్చొని, ముందుకు నడిపే విలువను పేరు పెట్టి, ఒక స్థిరమైన బాధ్యతకు తిరిగి వెళ్లండి.", tamil: "சிரமமின்றி அமர்ந்து, வழிநடத்த வேண்டிய மதிப்பை பெயரிட்டு, ஒரு நிலையான பொறுப்புக்குத் திரும்புங்கள்.", urdu: "بغیر زور بیٹھیں، رہنمائی کرنے والی قدر کا نام لیں اور ایک زمینی ذمہ داری کی طرف لوٹیں۔" }
+  };
+  const handoffByPriority: Record<SupportPracticePriority, SupportLocalizedText> = {
+    stabilize: { english: supportPathHandoffByPriority.stabilize, hindi: "थोड़ी देर Calm इस्तेमाल करें, फिर एक छोटा और दिखाई देने वाला अगला कदम लेकर Counselling या Path में जाएँ।", telugu: "కొద్దిసేపు Calm ఉపయోగించి, ఒక చిన్న గమనించగల తదుపరి అడుగుతో Counselling లేదా Path‌కు వెళ్లండి.", tamil: "சிறிது நேரம் Calm பயன்படுத்தி, ஒரு சிறிய தெளிவான அடுத்த படியுடன் Counselling அல்லது Path-க்கு செல்லுங்கள்.", urdu: "کچھ دیر Calm استعمال کریں، پھر ایک چھوٹے اور واضح اگلے قدم کے ساتھ Counselling یا Path میں جائیں۔" },
+    act: { english: supportPathHandoffByPriority.act, hindi: "अब चिंतन से Path पर जाएँ; कदम, जिम्मेदार व्यक्ति, प्रमाण और समीक्षा समय दर्ज करें।", telugu: "ఇప్పుడు ప్రతిబింబం నుంచి Path‌కు వెళ్లి, చర్య, బాధ్యత వహించే వ్యక్తి, ఆధారం మరియు సమీక్ష సమయాన్ని నమోదు చేయండి.", tamil: "இப்போது சிந்தனையிலிருந்து Path-க்கு சென்று, செயல், பொறுப்பாளர், ஆதாரம் மற்றும் மீளாய்வு நேரத்தைப் பதிவு செய்யுங்கள்.", urdu: "اب غور سے Path کی طرف جائیں؛ قدم، ذمہ دار شخص، ثبوت اور جائزے کا وقت درج کریں۔" },
+    escalate: { english: supportPathHandoffByPriority.escalate, hindi: "यहाँ ध्यान द्वितीयक है। पहले सुरक्षा जाँचें और निर्देश के अनुसार Help, पेशेवर सहायता, Redress या SOS लें।", telugu: "ఇక్కడ ధ్యానం ద్వితీయమైనది. ముందుగా భద్రతను తనిఖీ చేసి, సూచన ప్రకారం Help, వృత్తిపరమైన మద్దతు, Redress లేదా SOS ఉపయోగించండి.", tamil: "இங்கு தியானம் இரண்டாம் நிலை. முதலில் பாதுகாப்பைச் சரிபார்த்து, வழிகாட்டலின்படி Help, தொழில்முறை ஆதரவு, Redress அல்லது SOS பயன்படுத்தவும்.", urdu: "یہاں مراقبہ ثانوی ہے۔ پہلے حفاظت دیکھیں اور ہدایت کے مطابق Help، پیشہ ورانہ مدد، Redress یا SOS استعمال کریں۔" }
+  };
+  return {
+    calmCue: pickLocalizedText(languageId, calmByChakra[profile.chakraId]),
+    pathHandoff: pickLocalizedText(languageId, handoffByPriority[profile.priority]),
+    vedicRole: pickLocalizedText(languageId, {
+      english: profile.vedicRole,
+      hindi: "वैदिक/ज्योतिष संदर्भ केवल चिंतन के लिए है; यह प्रमाण, पेशेवर सहायता, तत्काल सुरक्षा या Redress की जगह नहीं लेता।",
+      telugu: "వేద/జ్యోతిష సందర్భం కేవలం ఆత్మపరిశీలన కోసం; ఇది ఆధారం, వృత్తిపరమైన మద్దతు, అత్యవసర భద్రత లేదా Redress‌ను భర్తీ చేయదు.",
+      tamil: "வேத/ஜோதிடச் சூழல் சிந்தனைக்காக மட்டுமே; இது ஆதாரம், தொழில்முறை உதவி, அவசர பாதுகாப்பு அல்லது Redress-ஐ மாற்றாது.",
+      urdu: "ویدک/نجومی سیاق صرف غور کے لیے ہے؛ یہ ثبوت، پیشہ ورانہ مدد، فوری حفاظت یا Redress کی جگہ نہیں لیتا۔"
+    })
+  };
+}
+
+function buildCounsellingPracticeOrchestration(
+  themes: SupportDimensionId[],
+  languageId: LanguageId
+) {
+  const dimensionId = themes[0] ?? "direction";
+  const guide = supportDimensionGuides[dimensionId] ?? supportDimensionGuides.direction;
+  const profile = getSupportPracticeProfile(guide.id);
+  const copy = getLocalizedSupportPracticeCopy(profile, languageId);
+  const method = meditationMethods.find((item) => item.id === profile.meditationMethodId);
+  const chakra = meditationChakraTeachings.find((item) => item.id === profile.chakraId);
+  const dimensionLabel = localizedSupportDimensionLabel(guide, languageId);
+  const practiceLabel = pickLocalizedText(languageId, {
+    english: method?.label ?? "grounded reflective practice",
+    hindi: "स्थिर और स्रोत-आधारित चिंतन अभ्यास",
+    telugu: "స్థిరమైన, మూలాధారంతో కూడిన ప్రతిబింబ సాధన",
+    tamil: "நிலையான, ஆதாரமுள்ள சிந்தனைப் பயிற்சி",
+    urdu: "پُرسکون اور ماخذ پر مبنی غور کی مشق"
+  });
+  const chakraLabel = chakra
+    ? languageId === "english"
+      ? `${chakra.sanskrit} (${chakra.label})`
+      : chakra.sanskrit
+    : profile.chakraId;
+  const summary = pickLocalizedText(languageId, {
+    english: `Coordinated 48-dimension plan — primary focus: ${dimensionLabel}. Calm cue: ${copy.calmCue} Optional reflective practice: ${practiceLabel}, using ${chakraLabel} only as a non-diagnostic attention cue. Path / Help handoff: ${copy.pathHandoff} ${copy.vedicRole}`,
+    hindi: `समन्वित 48-आयाम योजना — मुख्य केंद्र: ${dimensionLabel}। Calm संकेत: ${copy.calmCue} वैकल्पिक चिंतन अभ्यास: ${practiceLabel}; ${chakraLabel} का उपयोग केवल गैर-नैदानिक ध्यान-संकेत के रूप में करें। Path / Help हस्तांतरण: ${copy.pathHandoff} ${copy.vedicRole}`,
+    telugu: `సమన్వయిత 48-మానదండాల ప్రణాళిక — ప్రధాన దృష్టి: ${dimensionLabel}. Calm సంకేతం: ${copy.calmCue} ఐచ్ఛిక ప్రతిబింబ సాధన: ${practiceLabel}; ${chakraLabel} ను నిర్ధారణ కాని దృష్టి సంకేతంగా మాత్రమే ఉపయోగించండి. Path / Help హ్యాండ్ఆఫ్: ${copy.pathHandoff} ${copy.vedicRole}`,
+    tamil: `ஒருங்கிணைந்த 48-பரிமாணத் திட்டம் — முதன்மைக் கவனம்: ${dimensionLabel}. Calm குறிப்பு: ${copy.calmCue} விருப்பமான சிந்தனைப் பயிற்சி: ${practiceLabel}; ${chakraLabel} என்பதை நோயறிதல் அல்லாத கவனக் குறியாக மட்டும் பயன்படுத்தவும். Path / Help மாற்றம்: ${copy.pathHandoff} ${copy.vedicRole}`,
+    urdu: `مربوط 48 جہتی منصوبہ — بنیادی توجہ: ${dimensionLabel}۔ Calm اشارہ: ${copy.calmCue} اختیاری غور کی مشق: ${practiceLabel}؛ ${chakraLabel} کو صرف غیر تشخیصی توجہ کے اشارے کے طور پر استعمال کریں۔ Path / Help منتقلی: ${copy.pathHandoff} ${copy.vedicRole}`
+  });
+
+  return {
+    dimensionId,
+    guide,
+    profile,
+    copy,
+    method,
+    chakra,
+    dimensionLabel,
+    practiceLabel,
+    chakraLabel,
+    summary
+  };
+}
+
 function localizedSupportDimensionLabel(guide: SupportDimensionGuide, languageId: LanguageId) {
   return pickLocalizedText(languageId, supportDimensionLabelCopy[guide.id] ?? { english: guide.label });
 }
@@ -40555,6 +41102,35 @@ function SupportDimensionLibraryPanel({
         ? buildDimensionMoonChartComplement(openDimensionId, moonChartInsightReadings ?? [])
         : null,
     [openDimensionId, moonChartInsightReadings]
+  );
+  const openDimensionPracticeProfile = useMemo(
+    () => (openDimensionId ? getSupportPracticeProfile(openDimensionId) : null),
+    [openDimensionId]
+  );
+  const openDimensionPracticeCopy = useMemo(
+    () =>
+      openDimensionPracticeProfile
+        ? getLocalizedSupportPracticeCopy(openDimensionPracticeProfile, languageId)
+        : null,
+    [openDimensionPracticeProfile, languageId]
+  );
+  const openDimensionMeditationMethod = useMemo(
+    () =>
+      openDimensionPracticeProfile
+        ? meditationMethods.find(
+            (method) => method.id === openDimensionPracticeProfile.meditationMethodId
+          ) ?? null
+        : null,
+    [openDimensionPracticeProfile]
+  );
+  const openDimensionChakra = useMemo(
+    () =>
+      openDimensionPracticeProfile
+        ? meditationChakraTeachings.find(
+            (chakra) => chakra.id === openDimensionPracticeProfile.chakraId
+          ) ?? null
+        : null,
+    [openDimensionPracticeProfile]
   );
   const routeLabel = (route: GuidedSupportRoute) =>
     route === "redress"
@@ -40641,6 +41217,58 @@ function SupportDimensionLibraryPanel({
                     <Text style={{ fontWeight: "900" }}>{pickLocalizedText(languageId, { english: "Moon Chart: ", hindi: "चंद्र-चार्ट: ", telugu: "చంద్ర చార్ట్: ", tamil: "சந்திர அட்டவணை: ", urdu: "چاندی چارٹ: " })}</Text>
                     {openDimensionMoonChart.average}/100 ({openDimensionMoonChart.verdict.toLowerCase()}) · {openDimensionMoonChart.remedyTitle}: {openDimensionMoonChart.remedy}
                   </Text>
+                ) : null}
+                {openDimensionPracticeProfile && openDimensionPracticeCopy ? (
+                  <View
+                    style={{
+                      backgroundColor:
+                        openDimensionPracticeProfile.priority === "escalate"
+                          ? "#FFF1F0"
+                          : "#F7FBFA",
+                      borderWidth: 1,
+                      borderColor:
+                        openDimensionPracticeProfile.priority === "escalate"
+                          ? "#B91C1C55"
+                          : accentColor + "35",
+                      borderRadius: 12,
+                      padding: 10,
+                      marginBottom: 10,
+                      gap: 5
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                      <Text style={{ color: accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.6, flex: 1 }}>
+                        {pickLocalizedText(languageId, {
+                          english: "Synchronized support plan",
+                          hindi: "समन्वित सहायता योजना",
+                          telugu: "సమన్వయ మద్దతు ప్రణాళిక",
+                          tamil: "ஒருங்கிணைந்த ஆதரவு திட்டம்",
+                          urdu: "مربوط مدد کا منصوبہ"
+                        })}
+                      </Text>
+                      <Text style={{ color: openDimensionPracticeProfile.priority === "escalate" ? "#B91C1C" : accentColor, fontSize: 12, fontWeight: "700", textTransform: "uppercase" }}>
+                        {openDimensionPracticeProfile.priority}
+                      </Text>
+                    </View>
+                    <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
+                      <Text style={{ fontWeight: "900" }}>Calm · </Text>{openDimensionPracticeCopy.calmCue}
+                    </Text>
+                    <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
+                      <Text style={{ fontWeight: "900" }}>
+                        {pickLocalizedText(languageId, { english: "Meditation · ", hindi: "ध्यान · ", telugu: "ధ్యానం · ", tamil: "தியானம் · ", urdu: "مراقبہ · " })}
+                      </Text>
+                      {openDimensionMeditationMethod?.label ?? openDimensionPracticeProfile.meditationMethodId}
+                      {openDimensionChakra ? ` · ${openDimensionChakra.label}` : ""}
+                    </Text>
+                    <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17 }}>
+                      <Text style={{ fontWeight: "900" }}>Path / Help / Redress · </Text>{openDimensionPracticeCopy.pathHandoff}
+                    </Text>
+                    <Text style={{ color: "#5A6674", fontSize: 12, lineHeight: 16 }}>
+                      <Text style={{ fontWeight: "900" }}>
+                        {pickLocalizedText(languageId, { english: "Vedic layer · ", hindi: "वैदिक परत · ", telugu: "వేద పొర · ", tamil: "வேத அடுக்கு · ", urdu: "ویدک تہہ · " })}
+                      </Text>{openDimensionPracticeCopy.vedicRole}
+                    </Text>
+                  </View>
                 ) : null}
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                   {onOpenTab && guide.route === "redress" ? (
@@ -41363,6 +41991,7 @@ function buildPrimaryLanguageCounsellingSynthesis(
     tamil: `முக்கிய அம்சங்கள்: ${themeLabels}`,
     urdu: `اہم موضوعات: ${themeLabels}`
   });
+  const practicePlan = buildCounsellingPracticeOrchestration(themes, languageId);
   const recurrenceLine = recurrenceCount >= 2
     ? pickLocalizedText(languageId, {
         english: `This area has appeared ${recurrenceCount} times before. That points to an ongoing pattern, not a personal failure.`,
@@ -41391,6 +42020,7 @@ function buildPrimaryLanguageCounsellingSynthesis(
       urdu: "میں نے آپ کی پوری بات توجہ سے سنی ہے۔ کوئی راستہ منتخب کرنے سے پہلے میں سب سے واضح پیٹرن آپ کے سامنے رکھنا چاہتا ہوں۔"
     }),
     themeLine,
+    practicePlan.summary,
     recurrenceLine,
     moonChartLine,
     pickLocalizedText(languageId, {
@@ -41445,7 +42075,10 @@ function buildCounselingSynthesis(
   weeklyTrend: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null = null,
   languageId: LanguageId = "english"
 ): string {
-  const themes = session.detectedThemes;
+  const themes = session.detectedThemes.length > 0
+    ? session.detectedThemes
+    : ["direction" as SupportDimensionId];
+  const practicePlan = buildCounsellingPracticeOrchestration(themes, languageId);
   const userAnswers = session.turns.filter(t => t.role === "user").map(t => t.message).join(" ");
   const combined = (session.originalIssue + " " + userAnswers).toLowerCase();
   const primaryLanguageSynthesis = buildPrimaryLanguageCounsellingSynthesis(
@@ -41514,6 +42147,7 @@ function buildCounselingSynthesis(
   }
 
   synthesis += "The working principle here is simple: observe the mind without becoming every thought, do the part that is honestly within your control, release the result pressure you cannot control today, and choose the next step that protects dignity and reduces harm.\n\n";
+  synthesis += `${practicePlan.summary}\n\n`;
 
   // ── Physical check-in ────────────────────────────────────────────────────────
   const physicalMentioned = /(sleep|sleeping|appetite|eating|chest|breath|body|tired|exhaust|pain|headache|tension)/.test(combined);
@@ -41578,33 +42212,30 @@ function buildJourneySteps(
   const jt = (english: string, hindi: string, telugu: string, tamil: string, urdu: string) =>
     pickLocalizedText(languageId, { english, hindi, telugu, tamil, urdu });
   const { streak = 0, moodTagLeaning = null, recurrenceCount = 0, moodTrend = null } = personalization;
+  const practicePlan = buildCounsellingPracticeOrchestration(
+    themes.length > 0 ? themes : ["direction"],
+    languageId
+  );
 
-  // ── 1. Immediate calm / grounding — for any emotional distress ───────────────
-  const needsCalm: SupportDimensionId[] = ["self-image", "anxiety", "anger", "burnout", "sadness", "loneliness", "grief", "trauma", "fear", "financial", "health", "academic", "relationship"];
-  if (needsCalm.some((theme) => has(theme))) {
-    steps.push({
-      tabId: "focus",
-      label: jt("Ground yourself first", "पहले खुद को स्थिर करें", "ముందు మీను స్థిరపరచుకోండి", "முதலில் உங்களை நிலைப்படுத்துங்கள்", "پہلے خود کو سنبھالیں"),
-      emoji: "🌿",
-      reason:
-        moodTrend === "declining"
-          ? jt(
-              "Your recent check-ins have been trending heavier — settle the body before anything else, so the mind isn't making decisions from a stress state.",
-              "आपकी हाल की जाँचें भारी होती जा रही हैं — कुछ भी और करने से पहले शरीर को शांत करें, ताकि मन तनाव की स्थिति से निर्णय न ले.",
-              "మీ తాజా చెక్-ఇన్లు మరింత భారంగా ఉన్నాయి — మరేదైనా చేయడానికి ముందు శరీరాన్ని శాంతపరచండి, అప్పుడు మనసు ఒత్తిడి స్థితిలో నిర్ణయాలు తీసుకోదు.",
-              "உங்கள் சமீபத்திய check-inகள் மேலும் கனமாகின்றன — மற்ற எதற்கும் முன் உடலை அமைதிப்படுத்துங்கள்; அப்போது மனம் stress நிலையில் முடிவு எடுக்காது.",
-              "آپ کی حالیہ چیک اِنز زیادہ بھاری ہوتی جا رہی ہیں — کچھ اور کرنے سے پہلے جسم کو سکون دیں، تاکہ ذہن دباؤ کی حالت میں فیصلہ نہ کرے۔"
-            )
-          : jt(
-              "The body needs to settle before the mind can make good decisions. Start here.",
-              "अच्छे निर्णय लेने से पहले शरीर को शांत होना चाहिए। यहीं से शुरू करें।",
-              "మనసు మంచి నిర్ణయాలు తీసుకునే ముందు శరీరం శాంతించాలి. ఇక్కడి నుంచే మొదలుపెట్టండి.",
-              "மனம் நல்ல முடிவுகள் எடுப்பதற்கு முன் உடல் அமைதியடைய வேண்டும். இங்கிருந்து தொடங்குங்கள்.",
-              "اچھے فیصلے کرنے سے پہلے جسم کو سکون ملنا چاہیے۔ یہیں سے شروع کریں۔"
-            ),
-      completed: false, skipped: false
-    });
-  }
+  // ── 1. Immediate Calm cue — every one of the 48 dimensions receives an
+  // exact stabilising instruction from the same profile that drives Path,
+  // Meditation and Help / Redress below.
+  steps.push({
+    tabId: "focus",
+    label: jt("Ground yourself first", "पहले खुद को स्थिर करें", "ముందు మీను స్థిరపరచుకోండి", "முதலில் உங்களை நிலைப்படுத்துங்கள்", "پہلے خود کو سنبھالیں"),
+    emoji: "🌿",
+    reason: moodTrend === "declining"
+      ? `${jt(
+          "Your recent check-ins have been trending heavier. Before deciding, use the matched Calm cue:",
+          "आपकी हाल की जाँचें भारी होती जा रही हैं। निर्णय से पहले यह उपयुक्त Calm संकेत अपनाएँ:",
+          "మీ తాజా చెక్-ఇన్లు మరింత భారంగా ఉన్నాయి. నిర్ణయం ముందు సరిపోలిన Calm సంకేతాన్ని ఉపయోగించండి:",
+          "உங்கள் சமீபத்திய check-inகள் கனமாகி வருகின்றன. முடிவுக்கு முன் பொருந்திய Calm குறிப்பைப் பயன்படுத்துங்கள்:",
+          "آپ کی حالیہ چیک اِنز بھاری ہوتی جا رہی ہیں۔ فیصلہ کرنے سے پہلے موزوں Calm اشارہ استعمال کریں:"
+        )} ${practicePlan.copy.calmCue}`
+      : practicePlan.copy.calmCue,
+    completed: false,
+    skipped: false
+  });
 
   // The coordinated action plan follows the conversation that identified the
   // concern. It keeps the issue context active while handing the person to a
@@ -41614,53 +42245,64 @@ function buildJourneySteps(
       tabId: "guide",
       label: jt("Open your action plan", "अपनी कार्य योजना खोलें", "మీ చర్య ప్రణాళికను తెరవండి", "உங்கள் செயல் திட்டத்தைத் திறக்கவும்", "اپنا عملی منصوبہ کھولیں"),
       emoji: "🧭",
-      reason: jt(
-        "Use one coordinated plan with a clear principle, three saved steps, and direct handoffs to the support that fits next.",
-        "एक स्पष्ट सिद्धांत, तीन सहेजे गए कदम, और अगले उपयुक्त सहारे तक सीधे पहुँच के साथ एक ही समन्वित योजना का उपयोग करें।",
-        "ఒక స్పష్టమైన సూత్రం, మూడు సేవ్ చేసిన దశలు, మరియు తర్వాతి సరైన మద్దతుకు నేరుగా వెళ్లే హ్యాండ్ఆఫ్స్‌తో ఒకే సమన్వయిత ప్రణాళికను ఉపయోగించండి.",
-        "ஒரு தெளிவான கொள்கை, மூன்று சேமித்த படிகள், மற்றும் அடுத்த பொருத்தமான ஆதரவுக்கான நேரடி handoffகளுடன் ஒரே ஒருங்கிணைந்த திட்டத்தைப் பயன்படுத்துங்கள்.",
-        "ایک واضح اصول، تین محفوظ قدم، اور اگلی مناسب مدد تک براہِ راست handoff کے ساتھ ایک ہی مربوط منصوبہ استعمال کریں۔"
-      ),
+      reason: practicePlan.copy.pathHandoff,
       completed: false, skipped: false
     });
   }
 
-  // ── 2. Sound / tones for nervous system regulation ───────────────────────────
-  if (has("anxiety") || has("burnout") || has("anger") || has("trauma") || has("grief") || has("fear")) {
+  // ── 2. Sound / tones — an optional, matched Calm companion for every
+  // dimension. It never replaces the stabilising cue or a safety handoff.
+  {
     steps.push({
       tabId: "tones",
       label: jt("Sound-guided reset", "ध्वनि-मार्गदर्शित रीसेट", "శబ్ద-మార్గదర్శిత రీసెట్", "ஒலி-வழிநடத்தும் மீளமைப்பு", "آواز کی رہنمائی والا ری سیٹ"),
       emoji: "🎵",
-      reason: jt(
-        "Use a low-volume sound cue to support breathing, attention, and emotional downshift before the next decision.",
-        "अगले निर्णय से पहले श्वास, ध्यान, और भावनात्मक उतार-चढ़ाव को सहारा देने के लिए कम-आवाज़ वाला ध्वनि संकेत उपयोग करें।",
-        "తదుపరి నిర్ణయానికి ముందు శ్వాస, దృష్టి, మరియు భావోద్వేగ తగ్గుదలకు తోడ్పడేందుకు తక్కువ శబ్దంతో సౌండ్ సంకేతాన్ని ఉపయోగించండి.",
-        "அடுத்த முடிவுக்கு முன் மூச்சு, கவனம், மற்றும் உணர்ச்சி தளர்வை ஆதரிக்க குறைந்த ஒலி cue-ஐப் பயன்படுத்துங்கள்.",
-        "اگلے فیصلے سے پہلے سانس، توجہ، اور جذباتی سکون کے لیے کم آواز والا ساؤنڈ cue استعمال کریں۔"
-      ),
+      reason: `${jt(
+        "If sound helps, use it quietly alongside the matched Calm cue and stop if it feels uncomfortable:",
+        "यदि ध्वनि सहायक लगे, तो इसे उपयुक्त Calm संकेत के साथ धीमी आवाज़ में उपयोग करें; असहज लगे तो रोक दें:",
+        "శబ్దం సహాయపడితే, సరిపోలిన Calm సంకేతంతో తక్కువ శబ్దంలో ఉపయోగించండి; అసౌకర్యంగా ఉంటే ఆపండి:",
+        "ஒலி உதவுமானால், பொருந்திய Calm குறிப்புடன் குறைந்த ஒலியில் பயன்படுத்துங்கள்; அசௌகரியமாக இருந்தால் நிறுத்துங்கள்:",
+        "اگر آواز مدد دے تو اسے موزوں Calm اشارے کے ساتھ دھیمی آواز میں استعمال کریں؛ بے آرامی ہو تو روک دیں:"
+      )} ${practicePlan.copy.calmCue}`,
       completed: false, skipped: false
     });
   }
 
-  // ── 3. Meditation / body practice ────────────────────────────────────────────
-  if (has("self-image") || has("loneliness") || has("sadness") || has("grief") || has("trauma") || has("health") || has("addiction") || has("burnout")) {
-    steps.push({
-      tabId: "meditation",
-      label: jt("Meditation practice", "ध्यान अभ्यास", "ధ్యాన సాధన", "தியானப் பயிற்சி", "مراقبہ مشق"),
-      emoji: "🪷",
-      reason: jt(
-        "A breath, body-scan, witness, or values practice helps turn emotion into a clear next step.",
-        "श्वास, बॉडी-स्कैन, साक्षी-भाव, या मूल्य-आधारित अभ्यास भावना को एक स्पष्ट अगले कदम में बदलने में मदद करता है।",
-        "శ్వాస, బాడీ-స్కాన్, సాక్షి-భావం, లేదా విలువల సాధన భావాన్ని స్పష్టమైన తదుపరి దశగా మార్చడానికి సహాయపడుతుంది.",
-        "மூச்சு, உடல்-ஸ்கேன், சாட்சி-உணர்வு, அல்லது மதிப்புகள் சார்ந்த பயிற்சி உணர்வை தெளிவான அடுத்த படியாக மாற்ற உதவும்.",
-        "سانس، باڈی اسکین، گواہ بننے کی مشق، یا اقدار پر مبنی مشق جذبات کو ایک واضح اگلے قدم میں بدلنے میں مدد دیتی ہے۔"
-      ),
-      completed: false, skipped: false
-    });
-  }
+  // ── 3. Matched reflective practice ───────────────────────────────────────────
+  // This remains optional and explicitly secondary when safety/professional
+  // escalation is the profile priority. Chakra is an attention cue, not a
+  // diagnosis or a claim that a symptom has a spiritual cause.
+  steps.push({
+    tabId: "meditation",
+    label: jt("Matched reflective practice", "उपयुक्त चिंतन अभ्यास", "సరిపోలిన ప్రతిబింబ సాధన", "பொருந்திய சிந்தனைப் பயிற்சி", "موزوں غور کی مشق"),
+    emoji: "🪷",
+    reason: practicePlan.profile.priority === "escalate"
+      ? `${practicePlan.copy.pathHandoff} ${jt(
+          "If and when it is safe, the optional matched practice is",
+          "सुरक्षित होने पर वैकल्पिक उपयुक्त अभ्यास है",
+          "సురక్షితంగా ఉన్నప్పుడు ఐచ్ఛిక సరిపోలిన సాధన",
+          "பாதுகாப்பாக இருக்கும் போது விருப்பமான பொருந்திய பயிற்சி",
+          "محفوظ ہونے پر اختیاری موزوں مشق ہے"
+        )}: ${practicePlan.practiceLabel}.`
+      : `${jt(
+          "For this focus, use",
+          "इस केंद्र के लिए उपयोग करें",
+          "ఈ దృష్టి కోసం ఉపయోగించండి",
+          "இந்தக் கவனத்திற்கு பயன்படுத்தவும்",
+          "اس توجہ کے لیے استعمال کریں"
+        )}: ${practicePlan.practiceLabel}. ${jt(
+          "Treat the chakra cue only as a non-diagnostic focus aid",
+          "चक्र संकेत को केवल गैर-नैदानिक ध्यान-सहायता मानें",
+          "చక్ర సంకేతాన్ని నిర్ధారణ కాని దృష్టి సహాయంగా మాత్రమే భావించండి",
+          "சக்கரக் குறிப்பை நோயறிதல் அல்லாத கவன உதவியாக மட்டும் கருதுங்கள்",
+          "چکر کے اشارے کو صرف غیر تشخیصی توجہ کی مدد سمجھیں"
+        )}: ${practicePlan.chakraLabel}.`,
+    completed: false,
+    skipped: false
+  });
 
   // ── 4. Professional and locality support when symptoms or risk need a real person
-  if (route === "professional" || has("health") || has("trauma") || has("addiction") || has("sadness")) {
+  if (route === "professional" || practicePlan.profile.priority === "escalate" || has("health") || has("trauma") || has("addiction") || has("sadness")) {
     steps.push({
       tabId: "search",
       label: jt("Find real support", "वास्तविक सहायता खोजें", "నిజమైన మద్దతు పొందండి", "உண்மையான ஆதரவைத் தேடுங்கள்", "حقیقی مدد تلاش کریں"),
@@ -41712,37 +42354,31 @@ function buildJourneySteps(
       label: jt("View multi-dimensional basis", "बहु-आयामी आधार देखें", "బహుళ-మానదండాల ఆధారాన్ని చూడండి", "பல பரிமாண அடிப்படையைப் பாருங்கள்", "کثیر جہتی بنیاد دیکھیں"),
       emoji: "🌙",
       reason: careful
-        ? jt(
+        ? `${jt(
             `Use the Moon-chart layer for timing and remedies; today it flags ${careful.label.toLowerCase()} as the main care point.`,
             `समय और उपायों के लिए Moon-chart परत का उपयोग करें; आज यह ${careful.label.toLowerCase()} को मुख्य सावधानी बिंदु के रूप में दिखाती है।`,
             `సమయం మరియు పరిహారాల కోసం Moon-chart పొరను ఉపయోగించండి; ఇవాళ ఇది ${careful.label.toLowerCase()} ను ప్రధాన జాగ్రత్త స్థలంగా చూపిస్తోంది.`,
             `நேரம் மற்றும் நிவாரணங்களுக்கு Moon-chart அடுக்கைப் பயன்படுத்துங்கள்; இன்று இது ${careful.label.toLowerCase()} என்பதை முக்கிய கவனப் புள்ளியாகக் காட்டுகிறது.`,
             `وقت اور علاج کے لیے Moon-chart پرت استعمال کریں؛ آج یہ ${careful.label.toLowerCase()} کو بنیادی احتیاطی نقطہ بتا رہی ہے۔`
-          )
-        : jt(
+          )} ${practicePlan.copy.vedicRole}`
+        : `${jt(
             "Use the Moon-chart layer for timing, remedies, and the lunar pattern behind this issue.",
             "समय, उपायों, और इस मुद्दे के पीछे के चंद्र-पैटर्न के लिए Moon-chart परत का उपयोग करें।",
             "సమయం, పరిహారాలు, మరియు ఈ సమస్య వెనుక ఉన్న చంద్ర నమూనా కోసం Moon-chart పొరను ఉపయోగించండి.",
             "நேரம், நிவாரணங்கள், மற்றும் இந்த பிரச்சினையின் பின்னால் உள்ள சந்திர வடிவத்திற்காக Moon-chart அடுக்கைப் பயன்படுத்துங்கள்.",
             "وقت، علاج، اور اس مسئلے کے پیچھے موجود قمری نمونے کے لیے Moon-chart پرت استعمال کریں۔"
-          ),
+          )} ${practicePlan.copy.vedicRole}`,
       completed: false, skipped: false
     });
   }
 
   // ── 7. Formal redress / safety steps ─────────────────────────────────────────
-  if (has("safety") || has("trauma") || route === "redress") {
+  if (has("safety") || has("trauma") || route === "redress" || practicePlan.profile.priority === "escalate") {
     steps.push({
       tabId: "redress",
       label: jt("Know your rights", "अपने अधिकार जानें", "మీ హక్కులు తెలుసుకోండి", "உங்கள் உரிமைகளை அறியுங்கள்", "اپنے حقوق جانیں"),
       emoji: "🛡️",
-      reason: jt(
-        "If something wrong has been done to you, understanding your formal options is an important step — even if you have not decided to use them yet.",
-        "अगर आपके साथ कुछ गलत हुआ है, तो अपने औपचारिक विकल्प समझना एक महत्वपूर्ण कदम है — भले ही आपने उन्हें अभी उपयोग करने का निश्चय न किया हो।",
-        "మీతో ఏదైనా తప్పు జరిగితే, మీ అధికారిక ఎంపికలను అర్థం చేసుకోవడం ఒక ముఖ్యమైన దశ — మీరు వాటిని ఇంకా ఉపయోగించాలని నిర్ణయించకపోయినా.",
-        "உங்களுடன் ஏதேனும் தவறு நடந்திருந்தால், உங்கள் அதிகாரப்பூர்வ விருப்பங்களைப் புரிந்துகொள்வது ஒரு முக்கியமான படி — அதை இன்னும் பயன்படுத்த முடிவு செய்யாவிட்டாலும்.",
-        "اگر آپ کے ساتھ کچھ غلط ہوا ہے تو اپنے رسمی اختیارات سمجھنا ایک اہم قدم ہے — چاہے آپ نے ابھی انہیں استعمال کرنے کا فیصلہ نہ کیا ہو۔"
-      ),
+      reason: practicePlan.copy.pathHandoff,
       completed: false, skipped: false
     });
   }
@@ -41756,29 +42392,32 @@ function buildJourneySteps(
       tabId: "vedic",
       label: jt("Daily cosmic guidance", "दैनिक ब्रह्मांडीय मार्गदर्शन", "రోజువారీ ఖగోళ మార్గదర్శనం", "தினசரி விண்மீன் வழிகாட்டல்", "روزمرہ کائناتی رہنمائی"),
       emoji: "🪐",
-      reason: jt(
+      reason: `${jt(
         "Your Vedic reading today may hold something relevant to exactly where you are.",
         "आज की आपकी वैदिक रीडिंग में आपके मौजूदा स्थान से जुड़ी कोई उपयोगी बात हो सकती है।",
         "ఈరోజు మీ వేద రీడింగ్, మీరు ప్రస్తుతం ఉన్న స్థితికి సంబంధించిన ఏదో సూచనను కలిగి ఉండవచ్చు.",
         "இன்றைய உங்கள் வேத வாசிப்பு, நீங்கள் இப்போது இருக்கும் நிலைக்கு பொருந்தக்கூடிய ஏதோ ஒன்றை வைத்திருக்கலாம்.",
         "آج کی آپ کی ویدک ریڈنگ میں آپ کی موجودہ حالت سے متعلق کوئی مفید بات ہو سکتی ہے۔"
-      ),
+      )} ${practicePlan.copy.vedicRole}`,
       completed: false, skipped: false
     });
   }
 
-  // ── 8. Community — for loneliness, unappreciated, addiction, grief ────────────
-  if (has("loneliness") || has("unappreciated") || has("addiction") || has("grief") || has("parenting")) {
+  // ── 8. Messages / Community — an optional real-person handoff for every
+  // journey, with stronger relevance when isolation or family themes surface.
+  {
     steps.push({
       tabId: "community",
-      label: jt("You are not alone", "आप अकेले नहीं हैं", "మీరు ఒంటరిగా లేరు", "நீங்கள் தனியாக இல்லை", "آپ اکیلے نہیں ہیں"),
+      label: jt("Message or reach out", "संदेश भेजें या संपर्क करें", "సందేశం పంపండి లేదా సంప్రదించండి", "செய்தி அனுப்புங்கள் அல்லது தொடர்புகொள்ளுங்கள்", "پیغام بھیجیں یا رابطہ کریں"),
       emoji: "🌐",
       reason: jt(
-        "Hearing from others navigating something similar can shift isolation into solidarity — and sometimes offer insights no expert can.",
-        "ऐसी ही स्थिति से गुज़र रहे लोगों को सुनना अकेलेपन को साथ में बदल सकता है — और कभी-कभी ऐसी समझ दे सकता है जो किसी विशेषज्ञ से भी न मिले।",
-        "ఇలాంటిదే ఎదుర్కొంటున్న ఇతరులను వినడం, ఒంటరితనాన్ని సంఘీభావంగా మార్చగలదు — మరియు కొన్నిసార్లు నిపుణుడి నుండి కూడా రాని సూచనలను ఇస్తుంది.",
-        "இதே போன்ற ஒன்றைச் சந்தித்து வரும் மற்றவர்களை கேட்பது, தனிமையை ஒருமைப்பாட்டாக மாற்றலாம் — சில நேரங்களில் நிபுணராலும் தர முடியாத பார்வையைக் கொடுக்கலாம்.",
-        "ایسی ہی چیز سے گزرنے والوں کی بات سننا تنہائی کو یکجہتی میں بدل سکتا ہے — اور کبھی کبھی ایسی بصیرت دے سکتا ہے جو کسی ماہر سے بھی نہ ملے۔"
+        has("loneliness") || has("unappreciated") || has("grief")
+          ? "Choose one safe person or a verified peer space so this does not stay isolated. Community support does not replace professional or urgent help."
+          : "If it would help, share one clear sentence with a safe person or verified peer space. Community support does not replace professional or urgent help.",
+        "एक सुरक्षित व्यक्ति या सत्यापित सहकर्मी स्थान चुनें ताकि बात अकेलेपन में न अटके। सामुदायिक सहायता पेशेवर या तत्काल मदद की जगह नहीं लेती।",
+        "ఇది ఒంటరిగా మిగలకుండా ఒక సురక్షిత వ్యక్తిని లేదా ధృవీకరించిన సహచర స్థలాన్ని ఎంచుకోండి. కమ్యూనిటీ మద్దతు వృత్తిపరమైన లేదా అత్యవసర సహాయాన్ని భర్తీ చేయదు.",
+        "இது தனிமையில் முடங்காமல் இருக்க ஒரு பாதுகாப்பான நபரை அல்லது சரிபார்க்கப்பட்ட சக ஆதரவு இடத்தைத் தேர்ந்தெடுக்கவும். சமூக ஆதரவு தொழில்முறை அல்லது அவசர உதவியை மாற்றாது.",
+        "بات تنہائی میں نہ رکے، اس لیے کسی محفوظ شخص یا تصدیق شدہ ہم خیال جگہ کا انتخاب کریں۔ کمیونٹی مدد پیشہ ورانہ یا فوری مدد کی جگہ نہیں لیتی۔"
       ),
       completed: false, skipped: false
     });

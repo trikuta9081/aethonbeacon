@@ -105,8 +105,13 @@ const positiveReplyBranches = (source.match(/if \(\/\([^)]*\)\/\.test\(n\)\) \{\
 assert(positiveReplyBranches >= 5, `buildPositiveCheckInReply should differentiate at least 5 distinct positive-emotion categories; found ${positiveReplyBranches}`);
 
 assert(!source.includes('Public release still waits on provider-backed SMS and email verification'), 'Release readiness copy must not say OTP providers are still missing once remote verification is supported');
-assert(source.includes('connected for SMS and email OTP'), 'Release readiness must clearly show provider-backed OTP when remote verification is active');
-assert(source.includes('local fallback only for this build'), 'Release readiness must clearly distinguish local fallback verification builds');
+assert(/connected for SMS and email OTP/i.test(source), 'Profile verification status must clearly show provider-backed OTP when remote verification is active');
+assert(/local fallback only for this build/i.test(source), 'Profile verification status must clearly distinguish local fallback verification builds');
+assert(source.includes('showOneTimeProfileNudge={!featureNudgeDismissed}'), 'Profile essentials guidance must be a persisted one-time nudge');
+assert(source.includes('Only the essentials'), 'Profile must explain which details are genuinely needed');
+for (const internalTitle of ['Controlled beta standard', 'Launch status', 'Release readiness']) {
+  assert(!source.includes(`>{t("${internalTitle}"`), `${internalTitle} must not appear as user-facing Profile clutter`);
+}
 
 // ── Apple-premium polish contract from the August 9 product pass ────────────
 // Home stays simple: emergency access remains a separate priority strip and
@@ -224,16 +229,23 @@ assert(source.includes('View supporting perspectives'), 'Meditation support pers
 ].forEach((marker) => assert(source.includes(marker), `Missing coordinated counselling/action-plan marker: ${marker}`));
 assert(!source.includes('id: "complaint",\n    label: "Help and Redress"'), 'Help and Redress must remain outside the onboarding choice grid.');
 
-// Store polish and launch readiness copy must remain visible in the web app.
+// User-facing trust and launch protections must remain visible without
+// leaking beta targets or release-engineering diagnostics into Profile.
 [
-  'Store release readiness',
-  'Release still needs store copy, policy text, screenshots, and package naming.',
-  'Store release readiness still depends on final listing assets, reviewer notes, and release evidence—not on placeholder OTP copy.',
+  'Legal and privacy',
+  'Privacy policy',
+  'Terms of use',
   'Crash/error monitoring and backend auth'
-].forEach((marker) => assert(source.includes(marker), `Missing store polish marker: ${marker}`));
+].forEach((marker) => assert(source.includes(marker), `Missing trust and launch-protection marker: ${marker}`));
 
-const hiddenNumberPhrase = ['48', ' dimension'].join('');
-assert(!source.includes(hiddenNumberPhrase), 'Public internal numeric capability wording must stay hidden.');
+assert(
+  source.includes('Coordinated 48-dimension plan'),
+  'Counselling must explain the synchronized 48-dimension plan in user-facing language.',
+);
+assert(
+  source.includes('supportPracticeFocusByDimension'),
+  'The visible 48-dimension plan must be backed by the shared support-practice mapping.',
+);
 const hiddenProviderPattern = new RegExp(`\\b(?:${['A', 'I'].join('')}|${['Gemi', 'ni'].join('')})\\b`, 'i');
 assert(!hiddenProviderPattern.test(source), 'Public provider/model terminology must stay hidden.');
 
