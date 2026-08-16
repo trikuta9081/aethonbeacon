@@ -8116,6 +8116,37 @@ function pickLocalizedText(
   return textByLanguage[languageId] ?? textByLanguage.english;
 }
 
+function getLocalizedCounsellingSafetyCopy(
+  safetyLevel: ReturnType<typeof classifyCounsellingSafety>,
+  languageId: LanguageId
+) {
+  const safetyCopy = {
+    immediate: {
+      english: COUNSELLING_SAFETY_COPY.immediate,
+      hindi: "आपकी तत्काल सुरक्षा सबसे पहले है। अभी स्थानीय आपातकालीन सेवा या पास के किसी भरोसेमंद व्यक्ति से संपर्क करें। तत्काल खतरे में स्वचालित उत्तर पर निर्भर न रहें।",
+      telugu: "మీ తక్షణ భద్రతే మొదటి ప్రాధాన్యం. ఇప్పుడే స్థానిక అత్యవసర సేవలను లేదా దగ్గరలోని నమ్మకమైన వ్యక్తిని సంప్రదించండి. తక్షణ ప్రమాదంలో ఆటోమేటెడ్ సమాధానంపై ఆధారపడవద్దు.",
+      tamil: "உங்கள் உடனடி பாதுகாப்பே முதன்மை. இப்போதே உள்ளூர் அவசர சேவையையோ அருகிலுள்ள நம்பகமான ஒருவரையோ தொடர்புகொள்ளுங்கள். உடனடி ஆபத்தில் தானியங்கி பதிலை நம்ப வேண்டாம்.",
+      urdu: "آپ کی فوری حفاظت سب سے پہلے ہے۔ ابھی مقامی ہنگامی خدمات یا قریب موجود کسی قابلِ اعتماد شخص سے رابطہ کریں۔ فوری خطرے میں خودکار جواب پر انحصار نہ کریں۔"
+    },
+    "urgent-professional": {
+      english: COUNSELLING_SAFETY_COPY["urgent-professional"],
+      hindi: "यह स्थिति किसी योग्य पेशेवर से शीघ्र सहायता की हकदार है। यहाँ की मार्गदर्शिका का उपयोग केवल अगला सुरक्षित कदम व्यवस्थित करने के लिए करें।",
+      telugu: "ఈ పరిస్థితికి అర్హత కలిగిన నిపుణుడి నుండి త్వరిత సహాయం అవసరం. ఇక్కడి మార్గదర్శకత్వాన్ని తదుపరి సురక్షిత అడుగును ఏర్పాటు చేసుకోవడానికి మాత్రమే ఉపయోగించండి.",
+      tamil: "இந்த நிலைக்கு தகுதியான நிபுணரிடமிருந்து விரைவான உதவி தேவை. அடுத்த பாதுகாப்பான படியை ஒழுங்குபடுத்த மட்டுமே இங்குள்ள வழிகாட்டலைப் பயன்படுத்துங்கள்.",
+      urdu: "یہ صورتحال کسی اہل پیشہ ور سے فوری مدد کی مستحق ہے۔ یہاں کی رہنمائی کو صرف اگلا محفوظ قدم ترتیب دینے کے لیے استعمال کریں۔"
+    },
+    "supported-self-care": {
+      english: COUNSELLING_SAFETY_COPY["supported-self-care"],
+      hindi: "यह सामान्य कल्याण सहायता है और लाइसेंस प्राप्त चिकित्सकीय, मनोवैज्ञानिक, कानूनी या आपातकालीन देखभाल का स्थान नहीं लेती।",
+      telugu: "ఇది సాధారణ శ్రేయస్సు మద్దతు మాత్రమే; లైసెన్స్ పొందిన వైద్య, మానసిక, చట్టపరమైన లేదా అత్యవసర సంరక్షణకు ప్రత్యామ్నాయం కాదు.",
+      tamil: "இது பொதுவான நல ஆதரவு மட்டுமே; உரிமம் பெற்ற மருத்துவ, உளவியல், சட்ட அல்லது அவசர சிகிச்சைக்கு மாற்றாகாது.",
+      urdu: "یہ عمومی فلاحی مدد ہے اور لائسنس یافتہ طبی، نفسیاتی، قانونی یا ہنگامی نگہداشت کا متبادل نہیں۔"
+    }
+  } as const;
+
+  return pickLocalizedText(languageId, safetyCopy[safetyLevel]);
+}
+
 type LocalizedExtraText = Partial<Record<Exclude<LanguageId, "english" | "hindi">, string>>;
 type LocalizedTextCatalog = Record<string, LocalizedExtraText>;
 
@@ -27843,7 +27874,7 @@ function GuidedSupportSection({
                     urdu: "دائرہ اور حفاظت"
                   })}</Text>
                   <Text style={[styles.aiHelpSummaryValue, compact && styles.aiHelpSummaryValueCompact]}>
-                    {COUNSELLING_SAFETY_COPY["supported-self-care"]}
+                    {getLocalizedCounsellingSafetyCopy("supported-self-care", languageId)}
                   </Text>
                 </View>
                 <View style={styles.aiHelpSummaryRow}>
@@ -40971,7 +41002,21 @@ function buildCounselingCoreProbe(allUserText: string, turnIndex: number): strin
 // paragraph. Rotates between openers by turn index so the same phrase does
 // not repeat back-to-back, and mirrors one concrete detail from the most
 // recent reply when it can find one -- if not, it just holds warmth.
-function buildBetweenTurnAcknowledgment(latestUserText: string, turnIndex: number): string {
+function buildBetweenTurnAcknowledgment(
+  latestUserText: string,
+  turnIndex: number,
+  languageId: LanguageId = "english"
+): string {
+  if (languageId !== "english") {
+    const localizedOpeners: Partial<Record<LanguageId, string[]>> = {
+      hindi: ["यह साझा करने के लिए धन्यवाद।", "आपकी बात समझ में आती है।", "मैं आपको सुन रहा हूँ।", "यह बहुत कुछ सँभालने जैसा है।", "मैं आपके साथ इस बात पर बना हुआ हूँ।"],
+      telugu: ["ఇది పంచుకున్నందుకు ధన్యవాదాలు.", "మీరు చెప్పింది అర్థమవుతోంది.", "నేను మిమ్మల్ని వింటున్నాను.", "ఇది మోయడానికి చాలా భారంగా ఉంది.", "ఈ విషయంలో నేను మీతోనే ఉన్నాను."],
+      tamil: ["இதைப் பகிர்ந்ததற்கு நன்றி.", "நீங்கள் சொல்வது புரிகிறது.", "நான் உங்களைக் கேட்கிறேன்.", "இது தாங்குவதற்கு மிகவும் அதிகம்.", "இந்தப் பேச்சில் நான் உங்களுடன் இருக்கிறேன்."],
+      urdu: ["یہ بات بتانے کا شکریہ۔", "آپ کی بات سمجھ میں آتی ہے۔", "میں آپ کو سن رہا ہوں۔", "یہ سنبھالنے کے لیے بہت کچھ ہے۔", "میں اس بات میں آپ کے ساتھ ہوں۔"]
+    };
+    const translatedOpeners = localizedOpeners[languageId];
+    if (translatedOpeners?.length) return translatedOpeners[turnIndex % translatedOpeners.length];
+  }
   const openers = [
     "Thank you for saying that.",
     "That makes sense.",
@@ -41009,12 +41054,62 @@ function buildBetweenTurnAcknowledgment(latestUserText: string, turnIndex: numbe
   return opener;
 }
 
+function buildPrimaryLanguageCounsellingQuestion(
+  languageId: LanguageId,
+  turnIndex: number
+): string | null {
+  const questionBanks: Partial<Record<LanguageId, string[]>> = {
+    hindi: [
+      "थोड़ा और बताइए—इस समय सबसे कठिन हिस्सा क्या है?",
+      "यह कब शुरू हुआ, और तब से क्या बदला है?",
+      "यह आपके शरीर, नींद, भूख या ध्यान को कैसे प्रभावित कर रहा है?",
+      "क्या कोई भरोसेमंद व्यक्ति इस बारे में जानता है, या आप इसे अकेले सँभाल रहे हैं?",
+      "आपने अब तक क्या आज़माया है, और किस बात ने उसे मददगार या कठिन बनाया?",
+      "इस बातचीत से आज आपके लिए क्या उपयोगी होगा—राहत, स्पष्टता, निर्णय, सीमा या व्यावहारिक योजना?",
+      "सबसे गहरे स्तर पर, क्या चीज़ अभी भी अनसुलझी, अन्यायपूर्ण या असुरक्षित लगती है?"
+    ],
+    telugu: [
+      "కొంచెం మరింత చెప్పండి—ఈ సమయంలో అత్యంత కష్టమైన భాగం ఏమిటి?",
+      "ఇది ఎప్పుడు ప్రారంభమైంది, అప్పటి నుంచి ఏమి మారింది?",
+      "ఇది మీ శరీరం, నిద్ర, ఆకలి లేదా ఏకాగ్రతను ఎలా ప్రభావితం చేస్తోంది?",
+      "దీని గురించి నమ్మకమైన ఎవరికైనా తెలుసా, లేక మీరు ఒంటరిగా మోస్తున్నారా?",
+      "ఇప్పటివరకు మీరు ఏమి ప్రయత్నించారు, అది సహాయపడటానికి లేదా కష్టంగా మారటానికి కారణం ఏమిటి?",
+      "ఈ సంభాషణ నుంచి ఈరోజు మీకు ఏది ఉపయోగకరంగా ఉంటుంది—ఉపశమనం, స్పష్టత, నిర్ణయం, హద్దు లేదా ఆచరణాత్మక ప్రణాళిక?",
+      "లోతుగా చూస్తే, ఇంకా పరిష్కారం కానిది, అన్యాయంగా లేదా అసురక్షితంగా అనిపిస్తున్నది ఏమిటి?"
+    ],
+    tamil: [
+      "இன்னும் கொஞ்சம் சொல்லுங்கள்—இப்போது மிகவும் கடினமாக இருப்பது எது?",
+      "இது எப்போது தொடங்கியது, அதன் பிறகு என்ன மாறியுள்ளது?",
+      "இது உங்கள் உடல், தூக்கம், பசி அல்லது கவனத்தை எவ்வாறு பாதிக்கிறது?",
+      "நம்பகமான யாருக்காவது இது தெரியுமா, அல்லது நீங்கள் இதைத் தனியாகத் தாங்குகிறீர்களா?",
+      "இதுவரை நீங்கள் என்ன முயற்சித்தீர்கள், அது உதவியதற்கோ கடினமாக இருந்ததற்கோ காரணம் என்ன?",
+      "இந்த உரையாடலிலிருந்து இன்று உங்களுக்கு எது பயனுள்ளதாக இருக்கும்—நிம்மதி, தெளிவு, முடிவு, எல்லை அல்லது நடைமுறைத் திட்டம்?",
+      "ஆழமாகப் பார்த்தால், இன்னும் தீராதது, நியாயமற்றது அல்லது பாதுகாப்பற்றது போலத் தோன்றுவது எது?"
+    ],
+    urdu: [
+      "کچھ اور بتائیے—اس وقت سب سے مشکل حصہ کیا ہے؟",
+      "یہ کب شروع ہوا، اور تب سے کیا بدلا ہے؟",
+      "یہ آپ کے جسم، نیند، بھوک یا توجہ کو کیسے متاثر کر رہا ہے؟",
+      "کیا کسی قابلِ اعتماد شخص کو اس بارے میں معلوم ہے، یا آپ اسے اکیلے سنبھال رہے ہیں؟",
+      "آپ نے اب تک کیا آزمایا ہے، اور کس چیز نے اسے مددگار یا مشکل بنایا؟",
+      "اس گفتگو سے آج آپ کے لیے کیا مفید ہوگا—سکون، وضاحت، فیصلہ، حد یا عملی منصوبہ؟",
+      "گہری سطح پر، اب بھی کون سی چیز حل طلب، غیر منصفانہ یا غیر محفوظ محسوس ہوتی ہے؟"
+    ]
+  };
+  const questions = questionBanks[languageId];
+  if (!questions?.length) return null;
+  return questions[Math.min(turnIndex, questions.length - 1)];
+}
+
 function buildCounselingQuestions(
   themes: SupportDimensionId[],
   turnIndex: number,
   allUserText?: string,
   languageId: LanguageId = "english"
 ): string {
+  const primaryLanguageQuestion = buildPrimaryLanguageCounsellingQuestion(languageId, turnIndex);
+  if (primaryLanguageQuestion) return primaryLanguageQuestion;
+
   // ── Bespoke 7-question banks for the core dimensions ───────────────────────
   // Advanced dimensions use buildSupportDimensionQuestionBank so the counseling
   // engine remains fully complementary with the multidimensional support engine.
@@ -41244,6 +41339,84 @@ function buildCounselingQuestions(
   return composeQuestion(primaryPool[Math.min(turnIndex, primaryPool.length - 1)], primaryTheme);
 }
 
+function buildPrimaryLanguageCounsellingSynthesis(
+  session: CounselingSession,
+  languageId: LanguageId,
+  recurrenceCount: number,
+  hasMoonChartContext: boolean
+): string | null {
+  if (languageId === "english") return null;
+  const themes = session.detectedThemes.length > 0
+    ? session.detectedThemes
+    : ["direction" as SupportDimensionId];
+  const themeLabels = themes
+    .slice(0, 3)
+    .map((theme) => localizedSupportDimensionLabel(
+      supportDimensionGuides[theme] ?? supportDimensionGuides.direction,
+      languageId
+    ))
+    .join(" · ");
+  const themeLine = pickLocalizedText(languageId, {
+    english: `Main themes: ${themeLabels}`,
+    hindi: `मुख्य विषय: ${themeLabels}`,
+    telugu: `ప్రధాన అంశాలు: ${themeLabels}`,
+    tamil: `முக்கிய அம்சங்கள்: ${themeLabels}`,
+    urdu: `اہم موضوعات: ${themeLabels}`
+  });
+  const recurrenceLine = recurrenceCount >= 2
+    ? pickLocalizedText(languageId, {
+        english: `This area has appeared ${recurrenceCount} times before. That points to an ongoing pattern, not a personal failure.`,
+        hindi: `यह विषय पहले भी ${recurrenceCount} बार सामने आया है। यह किसी व्यक्तिगत असफलता नहीं, बल्कि चल रहे पैटर्न की ओर संकेत करता है।`,
+        telugu: `ఈ అంశం ఇంతకుముందు ${recurrenceCount} సార్లు కనిపించింది. ఇది వ్యక్తిగత వైఫల్యం కాదు; కొనసాగుతున్న నమూనాకు సంకేతం.`,
+        tamil: `இந்த அம்சம் முன்பும் ${recurrenceCount} முறை தோன்றியுள்ளது. இது தனிப்பட்ட தோல்வி அல்ல; தொடரும் ஒரு முறையைச் சுட்டுகிறது.`,
+        urdu: `یہ موضوع پہلے بھی ${recurrenceCount} مرتبہ سامنے آیا ہے۔ یہ ذاتی ناکامی نہیں بلکہ جاری رہنے والے ایک پیٹرن کی علامت ہے۔`
+      })
+    : "";
+  const moonChartLine = hasMoonChartContext
+    ? pickLocalizedText(languageId, {
+        english: "Your Moon-chart context has been considered as an optional reflective layer. It does not replace the practical, professional, legal, or safety steps in this plan.",
+        hindi: "आपके चंद्र-चार्ट संदर्भ को एक वैकल्पिक चिंतन परत के रूप में शामिल किया गया है। यह इस योजना के व्यावहारिक, पेशेवर, कानूनी या सुरक्षा कदमों का स्थान नहीं लेता।",
+        telugu: "మీ మూన్-చార్ట్ సందర్భాన్ని ఐచ్ఛిక ఆలోచనాత్మక పొరగా పరిగణించాం. ఇది ఈ ప్రణాళికలోని ఆచరణాత్మక, వృత్తిపరమైన, చట్టపరమైన లేదా భద్రతా చర్యలకు ప్రత్యామ్నాయం కాదు.",
+        tamil: "உங்கள் சந்திர-ஜாதகச் சூழல் ஒரு விருப்பமான சிந்தனை அடுக்காகக் கருதப்பட்டுள்ளது. இது இந்தத் திட்டத்தின் நடைமுறை, தொழில்முறை, சட்ட அல்லது பாதுகாப்புப் படிகளை மாற்றாது.",
+        urdu: "آپ کے قمری زائچے کے سیاق کو ایک اختیاری غور و فکر کی تہہ کے طور پر شامل کیا گیا ہے۔ یہ اس منصوبے کے عملی، پیشہ ورانہ، قانونی یا حفاظتی اقدامات کا متبادل نہیں۔"
+      })
+    : "";
+
+  return [
+    pickLocalizedText(languageId, {
+      english: "I have listened carefully to everything you shared. Before choosing a route, I want to reflect the clearest pattern back to you.",
+      hindi: "मैंने आपकी पूरी बात ध्यान से सुनी है। कोई रास्ता चुनने से पहले मैं आपके सामने सबसे स्पष्ट पैटर्न रखना चाहता हूँ।",
+      telugu: "మీరు పంచుకున్న ప్రతి విషయాన్ని నేను జాగ్రత్తగా విన్నాను. ఒక మార్గాన్ని ఎంచుకునే ముందు, అత్యంత స్పష్టమైన నమూనాను మీకు ప్రతిబింబించాలనుకుంటున్నాను.",
+      tamil: "நீங்கள் பகிர்ந்த அனைத்தையும் கவனமாகக் கேட்டுள்ளேன். ஒரு பாதையைத் தேர்வதற்கு முன், தெளிவாகத் தெரியும் முறையை உங்களிடம் பிரதிபலிக்க விரும்புகிறேன்.",
+      urdu: "میں نے آپ کی پوری بات توجہ سے سنی ہے۔ کوئی راستہ منتخب کرنے سے پہلے میں سب سے واضح پیٹرن آپ کے سامنے رکھنا چاہتا ہوں۔"
+    }),
+    themeLine,
+    recurrenceLine,
+    moonChartLine,
+    pickLocalizedText(languageId, {
+      english: "What you described is real and deserves care. The aim is not to solve everything at once, but to protect dignity, reduce harm, and choose the smallest useful step you can actually take.",
+      hindi: "आपने जो बताया वह वास्तविक है और देखभाल का हकदार है। उद्देश्य सब कुछ एक साथ हल करना नहीं, बल्कि गरिमा की रक्षा करना, नुकसान कम करना और वह सबसे छोटा उपयोगी कदम चुनना है जिसे आप वास्तव में उठा सकें।",
+      telugu: "మీరు వివరించినది నిజమైనది మరియు శ్రద్ధకు అర్హమైనది. అన్నింటినీ ఒకేసారి పరిష్కరించడం లక్ష్యం కాదు; గౌరవాన్ని కాపాడటం, హానిని తగ్గించడం మరియు మీరు నిజంగా వేయగల చిన్న ఉపయోగకరమైన అడుగును ఎంచుకోవడం లక్ష్యం.",
+      tamil: "நீங்கள் விவரித்தது உண்மையானது; அது அக்கறைக்கு உரியது. அனைத்தையும் ஒரே நேரத்தில் தீர்ப்பது நோக்கம் அல்ல; கண்ணியத்தை காக்கவும், பாதிப்பைக் குறைக்கவும், நீங்கள் உண்மையில் எடுக்கக்கூடிய சிறிய பயனுள்ள படியைத் தேர்வதே நோக்கம்.",
+      urdu: "آپ نے جو بیان کیا وہ حقیقی ہے اور توجہ کا مستحق ہے۔ مقصد سب کچھ ایک ساتھ حل کرنا نہیں، بلکہ وقار کی حفاظت، نقصان میں کمی، اور وہ سب سے چھوٹا مفید قدم چننا ہے جس پر آپ واقعی عمل کر سکیں۔"
+    }),
+    pickLocalizedText(languageId, {
+      english: "Your recommended journey below coordinates Calm, Path, Vedic perspective, Messages, and Help / Redress only where each one fits. You remain in control and may skip any optional step.",
+      hindi: "नीचे दी गई सुझाई गई यात्रा Calm, Path, वैदिक दृष्टि, Messages और Help / Redress को केवल वहीं जोड़ती है जहाँ वे उपयुक्त हैं। नियंत्रण आपके पास है और आप किसी भी वैकल्पिक कदम को छोड़ सकते हैं।",
+      telugu: "క్రింద సూచించిన ప్రయాణం Calm, Path, వేద దృష్టి, Messages మరియు Help / Redress‌ను అవసరమైన చోట మాత్రమే సమన్వయిస్తుంది. నియంత్రణ మీ వద్దే ఉంటుంది; ఏ ఐచ్ఛిక అడుగునైనా దాటవేయవచ్చు.",
+      tamil: "கீழே பரிந்துரைக்கப்பட்ட பயணம் Calm, Path, வேதப் பார்வை, Messages மற்றும் Help / Redress ஆகியவற்றை பொருத்தமான இடங்களில் மட்டுமே ஒருங்கிணைக்கிறது. கட்டுப்பாடு உங்களிடமே உள்ளது; எந்த விருப்பப் படியையும் தவிர்க்கலாம்.",
+      urdu: "نیچے تجویز کردہ سفر Calm، Path، ویدک بصیرت، Messages اور Help / Redress کو صرف وہاں مربوط کرتا ہے جہاں ہر ایک مناسب ہو۔ اختیار آپ کے پاس ہے اور آپ کسی بھی اختیاری قدم کو چھوڑ سکتے ہیں۔"
+    }),
+    pickLocalizedText(languageId, {
+      english: "If the situation becomes urgent or unsafe at any point, move directly to Help / Redress, SOS, a qualified professional, or local emergency services.",
+      hindi: "यदि किसी भी समय स्थिति तात्कालिक या असुरक्षित हो जाए, तो सीधे Help / Redress, SOS, किसी योग्य पेशेवर या स्थानीय आपातकालीन सेवा पर जाएँ।",
+      telugu: "ఏ సమయంలోనైనా పరిస్థితి అత్యవసరంగా లేదా అసురక్షితంగా మారితే, నేరుగా Help / Redress, SOS, అర్హత కలిగిన నిపుణుడు లేదా స్థానిక అత్యవసర సేవలను సంప్రదించండి.",
+      tamil: "எந்த நேரத்திலும் நிலை அவசரமாகவோ பாதுகாப்பற்றதாகவோ மாறினால், நேரடியாக Help / Redress, SOS, தகுதியான நிபுணர் அல்லது உள்ளூர் அவசர சேவையை அணுகுங்கள்.",
+      urdu: "اگر کسی بھی وقت صورتحال فوری یا غیر محفوظ ہو جائے تو براہِ راست Help / Redress، SOS، کسی اہل پیشہ ور یا مقامی ہنگامی خدمات سے رابطہ کریں۔"
+    })
+  ].filter(Boolean).join("\n\n");
+}
+
 /**
  * Supreme-level synthesis: covers all dimension combinations, presents
  * multiple route options with reasoning, acknowledges every theme heard.
@@ -41269,11 +41442,19 @@ function buildCounselingSynthesis(
   // Real weekly-vs-monthly clarity averages (same numbers already shown on
   // Patterns) -- only used when there's enough real history and a genuine
   // decline, to name an actual measured dip instead of a vague feeling.
-  weeklyTrend: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null = null
+  weeklyTrend: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null = null,
+  languageId: LanguageId = "english"
 ): string {
   const themes = session.detectedThemes;
   const userAnswers = session.turns.filter(t => t.role === "user").map(t => t.message).join(" ");
   const combined = (session.originalIssue + " " + userAnswers).toLowerCase();
+  const primaryLanguageSynthesis = buildPrimaryLanguageCounsellingSynthesis(
+    session,
+    languageId,
+    recurrenceCount,
+    moonChartInsightReadings.length > 0
+  );
+  if (primaryLanguageSynthesis) return primaryLanguageSynthesis;
 
   // ── Opening ──────────────────────────────────────────────────────────────────
   let synthesis = "I have been listening to everything you have shared, and I want to reflect back what I am hearing before we figure out the right paths for you.\n\n";
@@ -41835,7 +42016,7 @@ function CounselingChatModal({
   useSpeechRecognitionEvent("start", () => {
     if (!visible) return;
     setIsListening(true);
-    setSpeechInputNotice("Listening...");
+    setSpeechInputNotice(l("Listening…", { hindi: "सुन रहा है…", telugu: "వింటోంది…", tamil: "கேட்கிறது…", urdu: "سن رہا ہے…" }));
   });
 
   useSpeechRecognitionEvent("end", () => {
@@ -41853,7 +42034,9 @@ function CounselingChatModal({
       if (nextText.endsWith(transcript)) return nextText;
       return `${nextText} ${transcript}`;
     });
-    setSpeechInputNotice(event.isFinal ? "Voice captured." : "Listening...");
+    setSpeechInputNotice(event.isFinal
+      ? l("Voice captured.", { hindi: "आवाज़ दर्ज हो गई।", telugu: "వాయిస్ నమోదు అయింది.", tamil: "குரல் பதிவு செய்யப்பட்டது.", urdu: "آواز درج ہو گئی۔" })
+      : l("Listening…", { hindi: "सुन रहा है…", telugu: "వింటోంది…", tamil: "கேட்கிறது…", urdu: "سن رہا ہے…" }));
     if (event.isFinal) {
       setIsListening(false);
     }
@@ -41864,12 +42047,12 @@ function CounselingChatModal({
     setIsListening(false);
     const message =
       event.error === "not-allowed"
-        ? "Microphone or speech recognition permission is not enabled."
+        ? l("Microphone or speech recognition permission is not enabled.", { hindi: "माइक्रोफ़ोन या वाणी पहचान की अनुमति चालू नहीं है।", telugu: "మైక్రోఫోన్ లేదా స్పీచ్ రికగ్నిషన్ అనుమతి ప్రారంభించబడలేదు.", tamil: "மைக்ரோஃபோன் அல்லது குரல் அறிதல் அனுமதி இயக்கப்படவில்லை.", urdu: "مائیکروفون یا آواز کی شناخت کی اجازت فعال نہیں ہے۔" })
         : event.error === "language-not-supported"
-          ? "This device does not support speech recognition for the selected language."
+          ? l("This device does not support speech recognition for the selected language.", { hindi: "यह डिवाइस चुनी गई भाषा के लिए वाणी पहचान का समर्थन नहीं करता।", telugu: "ఎంచుకున్న భాషకు ఈ పరికరం స్పీచ్ రికగ్నిషన్‌ను మద్దతు ఇవ్వదు.", tamil: "தேர்ந்தெடுத்த மொழிக்கான குரல் அறிதலை இந்தச் சாதனம் ஆதரிக்கவில்லை.", urdu: "یہ ڈیوائس منتخب زبان کے لیے آواز کی شناخت کو سپورٹ نہیں کرتی۔" })
           : event.error === "no-speech" || event.error === "speech-timeout"
-            ? "No speech was heard. Try again close to the microphone."
-            : "Voice input could not start on this device.";
+            ? l("No speech was heard. Try again close to the microphone.", { hindi: "कोई आवाज़ सुनाई नहीं दी। माइक्रोफ़ोन के पास फिर कोशिश करें।", telugu: "మాట వినిపించలేదు. మైక్రోఫోన్‌కు దగ్గరగా మళ్లీ ప్రయత్నించండి.", tamil: "குரல் கேட்கவில்லை. மைக்ரோஃபோனுக்கு அருகில் மீண்டும் முயற்சிக்கவும்.", urdu: "کوئی آواز سنائی نہیں دی۔ مائیکروفون کے قریب دوبارہ کوشش کریں۔" })
+            : l("Voice input could not start on this device.", { hindi: "इस डिवाइस पर आवाज़ इनपुट शुरू नहीं हो सका।", telugu: "ఈ పరికరంలో వాయిస్ ఇన్‌పుట్ ప్రారంభం కాలేదు.", tamil: "இந்தச் சாதனத்தில் குரல் உள்ளீட்டைத் தொடங்க முடியவில்லை.", urdu: "اس ڈیوائس پر آواز کا ان پٹ شروع نہیں ہو سکا۔" });
     setSpeechInputNotice(message);
   });
 
@@ -41886,9 +42069,33 @@ function CounselingChatModal({
     // and abrupt. Address the person by name when we have one.
     const greetName = (identityLabel ?? "").trim();
     const welcome = greetName.length > 0
-      ? `Hi ${greetName} — I'm really glad you reached out. Thank you for trusting me with this; I'm here with you, and we'll take it one step at a time.`
-      : `I'm really glad you reached out. Thank you for trusting me with this; I'm here with you, and we'll take it one step at a time.`;
-    const openingMsg = `${welcome}\n\n${opening.heard}\n\nI'd like to understand a bit more before we figure out the best path for you. ${firstQuestion}`;
+      ? l(`Hi ${greetName} — I'm really glad you reached out. We will take this one step at a time.`, {
+          hindi: `नमस्ते ${greetName} — मुझे खुशी है कि आपने बात की। हम इसे एक-एक कदम करके समझेंगे।`,
+          telugu: `నమస్తే ${greetName} — మీరు మాట్లాడటానికి ముందుకు రావడం సంతోషంగా ఉంది. మనం దీన్ని ఒక్కో అడుగుగా అర్థం చేసుకుందాం.`,
+          tamil: `வணக்கம் ${greetName} — நீங்கள் பேச முன்வந்ததில் மகிழ்ச்சி. இதை ஒவ்வொரு படியாகப் புரிந்துகொள்வோம்.`,
+          urdu: `سلام ${greetName} — مجھے خوشی ہے کہ آپ نے بات کی۔ ہم اسے ایک ایک قدم کر کے سمجھیں گے۔`
+        })
+      : l("I'm really glad you reached out. We will take this one step at a time.", {
+          hindi: "मुझे खुशी है कि आपने बात की। हम इसे एक-एक कदम करके समझेंगे।",
+          telugu: "మీరు మాట్లాడటానికి ముందుకు రావడం సంతోషంగా ఉంది. మనం దీన్ని ఒక్కో అడుగుగా అర్థం చేసుకుందాం.",
+          tamil: "நீங்கள் பேச முன்வந்ததில் மகிழ்ச்சி. இதை ஒவ்வொரு படியாகப் புரிந்துகொள்வோம்.",
+          urdu: "مجھے خوشی ہے کہ آپ نے بات کی۔ ہم اسے ایک ایک قدم کر کے سمجھیں گے۔"
+        });
+    const openingHeard = languageId === "english"
+      ? opening.heard
+      : l("I have heard what you shared. It is real, it matters, and you do not have to explain it perfectly here.", {
+          hindi: "आपने जो साझा किया है, मैंने उसे सुना है। वह वास्तविक है, महत्वपूर्ण है, और यहाँ आपको उसे बिल्कुल सही शब्दों में समझाने की ज़रूरत नहीं है।",
+          telugu: "మీరు పంచుకున్నది నేను విన్నాను. అది నిజమైనది, ముఖ్యమైనది; ఇక్కడ దాన్ని పరిపూర్ణంగా వివరించాల్సిన అవసరం లేదు.",
+          tamil: "நீங்கள் பகிர்ந்ததை நான் கேட்டுள்ளேன். அது உண்மையானது, முக்கியமானது; இங்கு அதைச் சரியான வார்த்தைகளில் சொல்ல வேண்டிய அவசியமில்லை.",
+          urdu: "آپ نے جو بتایا ہے، میں نے اسے سنا ہے۔ وہ حقیقی اور اہم ہے، اور یہاں آپ کو اسے بالکل درست الفاظ میں بیان کرنے کی ضرورت نہیں۔"
+        });
+    const openingBridge = l("I would like to understand a little more before we choose the best path for you.", {
+      hindi: "आपके लिए सही रास्ता चुनने से पहले मैं थोड़ा और समझना चाहता हूँ।",
+      telugu: "మీకు సరైన మార్గాన్ని ఎంచుకునే ముందు నేను కొంచెం మరింత అర్థం చేసుకోవాలనుకుంటున్నాను.",
+      tamil: "உங்களுக்கு பொருத்தமான பாதையைத் தேர்வதற்கு முன் இன்னும் கொஞ்சம் புரிந்துகொள்ள விரும்புகிறேன்.",
+      urdu: "آپ کے لیے مناسب راستہ چننے سے پہلے میں کچھ اور سمجھنا چاہتا ہوں۔"
+    });
+    const openingMsg = `${welcome}\n\n${openingHeard}\n\n${openingBridge} ${firstQuestion}`;
 
     setSession({
       stage: "questioning",
@@ -41968,7 +42175,7 @@ function CounselingChatModal({
     const recurrenceCount = currentIssueLabel
       ? visitReports.filter((report) => report.issueLabel === currentIssueLabel).length
       : 0;
-    const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend);
+    const synthesis = buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend, languageId);
     const steps = buildJourneySteps(themesForSynthesis, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend }, languageId);
 
     setSession(updatedSession);
@@ -42051,7 +42258,7 @@ function CounselingChatModal({
       // buildBetweenTurnAcknowledgment -- it is deliberately short and
       // echoes one concrete thing the person just said when it can. This
       // is the difference between a counselling conversation and a form.
-      const ack = buildBetweenTurnAcknowledgment(text, userResponses);
+      const ack = buildBetweenTurnAcknowledgment(text, userResponses, languageId);
       const shouldOfferCheckpoint =
         userResponses >= COUNSELING_NEXT_STEP_READY_USER_RESPONSES &&
         userResponses % COUNSELING_NEXT_STEP_READY_USER_RESPONSES === 0;
@@ -42070,8 +42277,18 @@ function CounselingChatModal({
               : "a practical next step matched to what you have shared.";
             return [
               ack,
-              `Checkpoint after ${userResponses} replies: based on the conversation so far, the most useful next step appears to be ${previewLine}`,
-              "You remain in control: tap “Prepare next step now” if you want to move forward, or continue here if more needs to be understood.",
+              l(`Checkpoint after ${userResponses} replies: based on the conversation so far, the most useful next step appears to be ${previewLine}`, {
+                hindi: `${userResponses} जवाबों के बाद पड़ाव: अब तक की बातचीत के आधार पर सबसे उपयोगी अगला कदम ${previewLine} लगता है।`,
+                telugu: `${userResponses} ప్రత్యుత్తరాల తర్వాత విరామం: ఇప్పటివరకు జరిగిన సంభాషణ ఆధారంగా అత్యంత ఉపయోగకరమైన తదుపరి అడుగు ${previewLine}.`,
+                tamil: `${userResponses} பதில்களுக்கு பின் இடைநிலை: இதுவரை நடந்த உரையாடலின் அடிப்படையில் மிகவும் பயனுள்ள அடுத்த படி ${previewLine}.`,
+                urdu: `${userResponses} جوابات کے بعد پڑاؤ: اب تک کی گفتگو کی بنیاد پر سب سے مفید اگلا قدم ${previewLine} معلوم ہوتا ہے۔`
+              }),
+              l("You remain in control: choose “Prepare next step now” to move forward, or continue here if more needs to be understood.", {
+                hindi: "नियंत्रण आपके पास है: आगे बढ़ने के लिए “अगला कदम अभी तैयार करें” चुनें, या यदि अभी और समझना बाकी है तो यहीं जारी रखें।",
+                telugu: "నియంత్రణ మీ వద్దే ఉంది: ముందుకు వెళ్లడానికి “తదుపరి అడుగును ఇప్పుడే సిద్ధం చేయండి” ఎంచుకోండి, లేదా ఇంకా అర్థం చేసుకోవాల్సి ఉంటే ఇక్కడే కొనసాగండి.",
+                tamil: "கட்டுப்பாடு உங்களிடமே உள்ளது: முன்னேற “அடுத்த படியை இப்போது தயாரிக்கவும்” என்பதைத் தேர்வுசெய்யுங்கள்; இன்னும் புரிந்துகொள்ள வேண்டுமெனில் இங்கே தொடருங்கள்.",
+                urdu: "اختیار آپ کے پاس ہے: آگے بڑھنے کے لیے “اگلا قدم ابھی تیار کریں” منتخب کریں، یا اگر مزید سمجھنا باقی ہے تو یہیں جاری رکھیں۔"
+              }),
               nextQ
             ].join("\n\n");
           })()
@@ -42103,13 +42320,13 @@ function CounselingChatModal({
     try {
       const recognitionAvailable = ExpoSpeechRecognitionModule.isRecognitionAvailable();
       if (!recognitionAvailable) {
-        setSpeechInputNotice("Speech recognition is not available on this device.");
+        setSpeechInputNotice(l("Speech recognition is not available on this device.", { hindi: "इस डिवाइस पर वाणी पहचान उपलब्ध नहीं है।", telugu: "ఈ పరికరంలో స్పీచ్ రికగ్నిషన్ అందుబాటులో లేదు.", tamil: "இந்தச் சாதனத்தில் குரல் அறிதல் கிடைக்கவில்லை.", urdu: "اس ڈیوائس پر آواز کی شناخت دستیاب نہیں ہے۔" }));
         return;
       }
 
       const permissions = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
       if (!permissions.granted) {
-        setSpeechInputNotice("Enable microphone and speech recognition permission to use voice input.");
+        setSpeechInputNotice(l("Enable microphone and speech recognition permission to use voice input.", { hindi: "आवाज़ इनपुट के लिए माइक्रोफ़ोन और वाणी पहचान की अनुमति चालू करें।", telugu: "వాయిస్ ఇన్‌పుట్ ఉపయోగించడానికి మైక్రోఫోన్ మరియు స్పీచ్ రికగ్నిషన్ అనుమతిని ప్రారంభించండి.", tamil: "குரல் உள்ளீட்டைப் பயன்படுத்த மைக்ரோஃபோன் மற்றும் குரல் அறிதல் அனுமதியை இயக்கவும்.", urdu: "آواز کے ان پٹ کے لیے مائیکروفون اور آواز کی شناخت کی اجازت فعال کریں۔" }));
         return;
       }
 
@@ -42126,11 +42343,11 @@ function CounselingChatModal({
         iosVoiceProcessingEnabled: true
       });
       setIsListening(true);
-      setSpeechInputNotice("Listening...");
+      setSpeechInputNotice(l("Listening…", { hindi: "सुन रहा है…", telugu: "వింటోంది…", tamil: "கேட்கிறது…", urdu: "سن رہا ہے…" }));
       void playMessageFeedbackCue("sent");
     } catch {
       setIsListening(false);
-      setSpeechInputNotice("Voice input could not start on this device.");
+      setSpeechInputNotice(l("Voice input could not start on this device.", { hindi: "इस डिवाइस पर आवाज़ इनपुट शुरू नहीं हो सका।", telugu: "ఈ పరికరంలో వాయిస్ ఇన్‌పుట్ ప్రారంభం కాలేదు.", tamil: "இந்தச் சாதனத்தில் குரல் உள்ளீட்டைத் தொடங்க முடியவில்லை.", urdu: "اس ڈیوائس پر آواز کا ان پٹ شروع نہیں ہو سکا۔" }));
     } finally {
       isStartingVoiceInputRef.current = false;
     }
@@ -42471,7 +42688,7 @@ function CounselingChatModal({
           </View>
           {safetyNoticeExpanded && (
             <Text style={{ color: "#25364D", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 16 : 18, marginTop: 3 }}>
-              {COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]}
+              {getLocalizedCounsellingSafetyCopy(classifyCounsellingSafety(initialIssue), languageId)}
             </Text>
           )}
         </Pressable>}

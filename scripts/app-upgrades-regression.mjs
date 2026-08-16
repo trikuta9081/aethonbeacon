@@ -204,8 +204,8 @@ assert(
   'Your recent check-ins have been trending heavier',
 ].forEach((marker) => indexOf(marker));
 assert(
-  source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend)'),
-  'Counselling synthesis call site must pass real recurrenceCount, sadeSatiNote, and weeklyTrend'
+  source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend, languageId)'),
+  'Counselling synthesis call site must pass real recurrenceCount, sadeSatiNote, weeklyTrend, and the selected language'
 );
 assert(
   source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend })'),
@@ -254,6 +254,24 @@ assert(
   'setSafetyNoticeExpanded(true)',
 ].forEach((marker) => indexOf(marker));
 assert(!source.includes('>Your guide is listening<'), 'Counselling header must not regress to the inconsistent "Your guide" label');
+
+// Primary-language counselling parity: Hindi, Telugu, Tamil, and Urdu must
+// not drop back to English for the first message, adaptive questions,
+// synthesis, safety notice, or voice-input operational states.
+[
+  'function getLocalizedCounsellingSafetyCopy',
+  'function buildPrimaryLanguageCounsellingQuestion',
+  'function buildPrimaryLanguageCounsellingSynthesis',
+  'buildBetweenTurnAcknowledgment(text, userResponses, languageId)',
+  'आवाज़ दर्ज हो गई।',
+  'వాయిస్ నమోదు అయింది.',
+  'குரல் பதிவு செய்யப்பட்டது.',
+  'آواز درج ہو گئی۔',
+].forEach((marker) => indexOf(marker));
+assert(
+  source.includes('getLocalizedCounsellingSafetyCopy(classifyCounsellingSafety(initialIssue), languageId)'),
+  'The counselling modal safety notice must follow the selected primary language'
+);
 
 // Small-phone keyboard focus mode: opening the native keyboard must prioritise
 // the actual transcript and composer instead of leaving informational chrome

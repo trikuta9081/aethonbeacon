@@ -34,7 +34,10 @@ assert(source.includes('COMMUNITY_POST_COOLDOWN_MS') && source.includes('communi
 assert(source.includes('getRedressReviewState()'), "Redress review expiry is not enforced in the UI.");
 assert(source.includes('function exportComplaintLetterPdf') && source.includes('Print.printAsync'), "Complaint-letter PDF export is missing.");
 assert(source.includes('Save PDF'), "Save-as-PDF button is not rendered on the complaint letter.");
-assert(source.includes('COUNSELLING_SAFETY_COPY[classifyCounsellingSafety(initialIssue)]'), "Counselling safety triage is not rendered.");
+assert(
+  source.includes('getLocalizedCounsellingSafetyCopy(classifyCounsellingSafety(initialIssue), languageId)'),
+  "Localized counselling safety triage is not rendered."
+);
 assert(source.includes('VEDIC_CALCULATION_STANDARD.zodiac'), "Vedic methodology is not rendered.");
 assert(source.includes('हिन्दी') && source.includes('मार्गदर्शन के लिए हिंदी'), "Hindi language option must be native-labeled.");
 assert(source.includes('label={uiCopy.languagePageVoiceAssistLabel}'), "Language page voice-assistance toggle is not localized.");
@@ -429,7 +432,7 @@ assert(
   assert(/openers = \[/.test(helper), "buildBetweenTurnAcknowledgment must rotate through opener phrases");
   assert(/echoPatterns/.test(helper), "buildBetweenTurnAcknowledgment must attempt an echo before falling back to opener alone");
   assert(
-    /const ack = buildBetweenTurnAcknowledgment\(text, userResponses\);/.test(source),
+    /const ack = buildBetweenTurnAcknowledgment\(text, userResponses, languageId\);/.test(source),
     "the counselling reply flow must call buildBetweenTurnAcknowledgment for every follow-up turn"
   );
   assert(

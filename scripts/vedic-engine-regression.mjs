@@ -35,7 +35,8 @@ assert(source.includes('COUNSELING_THEME_TO_MOON48_CATEGORIES'), 'Counselling th
 assert(source.includes('buildMoonChartCounselingOverlay'), 'Counselling synthesis Moon Chart insight overlay is missing');
 assert(source.includes('shouldAddMoonChartJourneyStep'), 'Counselling journey Moon Chart insight step guard is missing');
 assert(source.includes('moonChartInsightReadings={vedicMoonChartInsightReadings}'), 'Counselling modal is not receiving current Moon Chart insight readings');
-assert(source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend)'), 'Counselling synthesis is not using Moon Chart insight readings');
+assert(source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend, languageId)'), 'Counselling synthesis is not using Moon Chart insight readings and selected language');
+assert(source.includes('moonChartInsightReadings.length > 0'), 'Primary-language counselling synthesis must preserve optional Moon Chart context');
 assert(source.includes('buildJourneySteps(mergedThemes, issueId, route, moonChartInsightReadings, { streak, moodTagLeaning, recurrenceCount, moodTrend })'), 'Counselling journey is not using Moon Chart insight readings');
 assert(source.includes('Multi-dimensional Vedic counselling layer'), 'User-facing Multidimensional counselling layer text is missing');
 
