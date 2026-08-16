@@ -29,10 +29,21 @@ on:
     branches: [master]
   workflow_dispatch:
 
+# Only the newest source snapshot should own the Render mirror and its live
+# verification. This avoids two rapid pushes racing to force-update the mirror
+# while still ensuring the latest commit completes the full smoke check.
+concurrency:
+  group: web-render-deploy
+  cancel-in-progress: true
+
 jobs:
   build-and-mirror:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Render can take close to 20 minutes to expose a newly mirrored bundle.
+    # Leave enough headroom for install, verification, export, and the live
+    # polling window; otherwise a genuinely successful deploy is reported as
+    # cancelled seconds before its build marker appears.
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -138,7 +149,7 @@ jobs:
           live_url="https://aethon-beacon-web.onrender.com"
 
           echo "Waiting for live Render bundle to include commit ${short_sha}"
-          for attempt in $(seq 1 120); do
+          for attempt in $(seq 1 150); do
             html="$(curl -fsSL "${live_url}" || true)"
             bundle_path="$(printf '%s' "${html}" | sed -n 's/.*src="\([^"]*AppEntry-[^"]*\.js\)".*/\1/p' | head -n 1)"
 
