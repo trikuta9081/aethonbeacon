@@ -1,33 +1,44 @@
 #!/bin/zsh
-set -uxo pipefail
+set -euxo pipefail
 
-# Background: this script used to run a full unsigned "warmup" archive with
-# hardcoded `test -f` assertions on specific modulemap paths, working around
-# missing CocoaPods module maps on a clean Xcode Cloud archive. The real fix
-# for THAT was setting ios.useFrameworks=static in Podfile.properties.json
-# (see ios/Podfile.properties.json) — confirmed it made CocoaPods generate a
-# proper modulemap for every pod. That dropped the error count from 51 to 1.
-#
-# The one remaining error is a different, narrower issue: on a fully clean
-# checkout (no DerivedData at all), Xcode has been observed to start
-# compiling AppDelegate.swift ("No such module 'Expo'") before the "Expo"
-# pod's own Swift module has finished building. A single unsigned `build`
-# pass here forces every pod target to build once in dependency order and
-# populates the module cache, so the managed archive that follows reuses it
-# instead of racing. No brittle path assertions this time — if the warmup
-# itself fails for an unrelated reason, we don't want that to mask the real
-# archive's own error, so we just log and move on either way.
-echo "== AethonBeacon Xcode Cloud pre-xcodebuild: warmup build =="
-cd "$CI_PRIMARY_REPOSITORY_PATH/ios" || cd "$(dirname "$0")/.."
+# The Xcode Cloud workflow is currently managed from the iOS project. CocoaPods
+# dependencies therefore need to be archived through the workspace before the
+# managed archive starts. Crucially, both passes must use the same DerivedData
+# directory; a normal warm-up build uses a separate cache and leaves the managed
+# archive unable to import Expo on a clean worker.
+echo "== AethonBeacon Xcode Cloud pre-xcodebuild workspace warmup =="
 
+if [[ -n "${CI_PRIMARY_REPOSITORY_PATH:-}" ]]; then
+  REPO_ROOT="${CI_PRIMARY_REPOSITORY_PATH}"
+else
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+fi
+
+cd "${REPO_ROOT}/ios"
+
+if [[ -z "${CI_DERIVED_DATA_PATH:-}" ]]; then
+  if [[ -d "/Volumes/workspace" ]]; then
+    export CI_DERIVED_DATA_PATH="/Volumes/workspace/DerivedData"
+  else
+    export CI_DERIVED_DATA_PATH="/tmp/AethonBeacon-XcodeCloudWarmupDerivedData"
+  fi
+fi
+
+echo "Workflow: ${CI_WORKFLOW:-unknown}"
+echo "Project: ${CI_XCODE_PROJECT:-unknown}"
+echo "Scheme: ${CI_XCODE_SCHEME:-AethonBeacon}"
+echo "DerivedData: ${CI_DERIVED_DATA_PATH}"
+
+rm -rf /tmp/AethonBeacon-XcodeCloudWarmup.xcarchive
 xcodebuild \
+  -derivedDataPath "${CI_DERIVED_DATA_PATH}" \
   -workspace AethonBeacon.xcworkspace \
-  -scheme AethonBeacon \
+  -scheme "${CI_XCODE_SCHEME:-AethonBeacon}" \
   -configuration Release \
-  -destination "generic/platform=iOS" \
-  CODE_SIGN_STYLE=Automatic \
+  -destination 'generic/platform=iOS' \
+  -archivePath /tmp/AethonBeacon-XcodeCloudWarmup.xcarchive \
   CODE_SIGNING_ALLOWED=NO \
-  build
-WARMUP_STATUS=$?
-echo "== Warmup build exit status: $WARMUP_STATUS =="
-exit 0
+  archive
+
+echo "== Xcode Cloud workspace warmup complete =="
