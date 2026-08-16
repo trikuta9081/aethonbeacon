@@ -4329,14 +4329,14 @@ function buildDailyRoutinePlan(
         hindi: "एक छोटी भावनात्मक जाँच से शुरू करें ताकि ऐप अनुमान न लगाए।",
         punjabi: "ਇੱਕ ਛੋਟੀ ਜਿਹੀ ਭਾਵਨਾਤਮਕ ਜਾਂਚ ਨਾਲ ਸ਼ੁਰੂ ਕਰੋ ਤਾਂ ਜੋ ਐਪ ਅਟਕਲ ਨਾ ਲਗਾਏ।",
         marathi: "एक छोटी भावनिक तपासणीने सुरुवात करा, म्हणजे अ‍ॅप अंदाज लावणार नाही.",
-        telugu: "యాప్ అంచనా వేయకుండా ఉండేందుకు ఒక చిన్న భావోద్వేగ చెక్‌తో ప్రారంభించండి.",
+        telugu: "యాప్ అంచనా వేయకుండా ఉండేందుకు ఒక చిన్న భావోద్వేగ పరిశీలనతో ప్రారంభించండి.",
         tamil: "ஆப் ஊகிக்காமல் இருக்க ஒரு சிறிய உணர்ச்சி சோதனையுடன் தொடங்குங்கள்.",
         urdu: "تاکہ ایپ اندازہ نہ لگائے، ایک مختصر جذباتی جائزے سے شروع کریں۔"
       })
     : selectedTone.id === "heavy" || selectedTone.id === "flat"
       ? pickLocalizedText(languageId, {
           english: "Today feels heavy, so keep the first pass short and gentle.",
-          hindi: "आज दिन भारी लग रहा है, इसलिए पहला पास छोटा और कोमल रखें।",
+          hindi: "आज दिन भारी लग रहा है, इसलिए पहला चरण छोटा और कोमल रखें।",
           punjabi: "ਅੱਜ ਦਿਨ ਭਾਰੀ ਲੱਗ ਰਿਹਾ ਹੈ, ਇਸ ਲਈ ਪਹਿਲੀ ਵਾਰੀ ਛੋਟੀ ਅਤੇ ਨਰਮ ਰੱਖੋ।",
           marathi: "आज दिवस जड वाटतो, त्यामुळे पहिला टप्पा लहान आणि मऊ ठेवा.",
           telugu: "ఈ రోజు భారంగా అనిపిస్తే, మొదటి దశను చిన్నగా మరియు మృదువుగా ఉంచండి.",
@@ -4345,12 +4345,12 @@ function buildDailyRoutinePlan(
         })
       : pickLocalizedText(languageId, {
           english: "Today looks steadier, so a compact check-in is enough.",
-          hindi: "आज दिन थोड़ा स्थिर लग रहा है, इसलिए एक छोटा check-in काफी है।",
-          punjabi: "ਅੱਜ ਦਿਨ ਕੁਝ ਸੰਭਲਿਆ ਹੋਇਆ ਲੱਗਦਾ ਹੈ, ਇਸ ਲਈ ਇੱਕ ਛੋਟਾ check-in ਕਾਫ਼ੀ ਹੈ।",
-          marathi: "आज दिवस थोडा स्थिर वाटतो, त्यामुळे एक छोटा check-in पुरेसा आहे.",
-          telugu: "ఈ రోజు కొంచెం స్థిరంగా కనిపిస్తోంది, కాబట్టి ఒక చిన్న check-in చాలు.",
-          tamil: "இன்று கொஞ்சம் நிலையாக இருக்கிறது, ஆகவே ஒரு சிறிய check-in போதும்.",
-          urdu: "آج دن قدرے بہتر لگ رہا ہے، اس لیے ایک مختصر check-in کافی ہے۔"
+          hindi: "आज दिन थोड़ा स्थिर लग रहा है, इसलिए एक छोटी भाव-जाँच काफी है।",
+          punjabi: "ਅੱਜ ਦਿਨ ਕੁਝ ਸੰਭਲਿਆ ਹੋਇਆ ਲੱਗਦਾ ਹੈ, ਇਸ ਲਈ ਇੱਕ ਛੋਟੀ ਭਾਵ-ਜਾਂਚ ਕਾਫ਼ੀ ਹੈ।",
+          marathi: "आज दिवस थोडा स्थिर वाटतो, त्यामुळे एक छोटी भाव-तपासणी पुरेशी आहे.",
+          telugu: "ఈ రోజు కొంచెం స్థిరంగా కనిపిస్తోంది, కాబట్టి ఒక చిన్న భావ-పరిశీలన చాలు.",
+          tamil: "இன்று கொஞ்சம் நிலையாக இருக்கிறது, ஆகவே ஒரு சிறிய உணர்வு-சோதனை போதும்.",
+          urdu: "آج دن قدرے بہتر لگ رہا ہے، اس لیے ایک مختصر جذباتی جائزہ کافی ہے۔"
         });
   const streakLead = pickLocalizedText(languageId, {
     english:
@@ -4362,7 +4362,7 @@ function buildDailyRoutinePlan(
     marathi:
       streak > 0 ? `तुमची ${streak}-दिवसांची लय आधीच तयार आहे.` : "आज एक छोटी लय सुरू करा, म्हणजे अ‍ॅप दिवसाचा भाग बनेल.",
     telugu:
-      streak > 0 ? `మీకు ఇప్పటికే ${streak}-రోజుల rhythm ఉంది.` : "ఈరోజు ఒక చిన్న rhythm మొదలుపెట్టండి, అప్పుడు యాప్ రోజులో భాగం అవుతుంది.",
+      streak > 0 ? `మీకు ఇప్పటికే ${streak}-రోజుల లయ ఉంది.` : "ఈరోజు ఒక చిన్న లయ మొదలుపెట్టండి, అప్పుడు యాప్ రోజులో భాగం అవుతుంది.",
     tamil:
       streak > 0 ? `உங்களிடம் ஏற்கனவே ${streak}-நாள் தொடர்ச்சி உள்ளது.` : "இன்று ஒரு சிறிய தொடர் பழக்கத்தைத் தொடங்குங்கள், அப்போது ஆப் நாளின் பகுதி ஆகும்.",
     urdu:
@@ -4372,98 +4372,98 @@ function buildDailyRoutinePlan(
   const followUpLead = followUpWeeks > 0
     ? pickLocalizedText(languageId, {
         english: `A follow-up check-in will appear for ${followUpWeeks} weeks to help you stay on track.`,
-        hindi: `यह ऐप इस पहली routine के बाद ${followUpWeeks} हफ़्तों तक फिर से check-in करेगा।`,
-        punjabi: `ਇਹ ਐਪ ਇਸ ਪਹਿਲੀ routine ਤੋਂ ਬਾਅਦ ${followUpWeeks} ਹਫ਼ਤਿਆਂ ਤੱਕ ਮੁੜ check-in ਕਰੇਗੀ।`,
-        marathi: `हे अ‍ॅप या पहिल्या routine नंतर ${followUpWeeks} आठवड्यांपर्यंत पुन्हा check-in करेल.`,
-        telugu: `ఈ యాప్ ఈ మొదటి routine తర్వాత ${followUpWeeks} వారాల పాటు మళ్లీ check-in చేస్తుంది.`,
-        tamil: `இந்த app இந்த முதல் routine-க்கு பிறகு ${followUpWeeks} வாரங்கள் மீண்டும் check-in செய்யும்.`,
-        urdu: `یہ ایپ اس پہلی routine کے بعد ${followUpWeeks} ہفتوں تک دوبارہ check-in کرے گی۔`
+        hindi: `यह ऐप इस पहली दिनचर्या के बाद ${followUpWeeks} हफ़्तों तक फिर से भाव-जाँच करेगा।`,
+        punjabi: `ਇਹ ਐਪ ਇਸ ਪਹਿਲੀ ਦਿਨਚਰਿਆ ਤੋਂ ਬਾਅਦ ${followUpWeeks} ਹਫ਼ਤਿਆਂ ਤੱਕ ਮੁੜ ਭਾਵ-ਜਾਂਚ ਕਰੇਗੀ।`,
+        marathi: `हे अ‍ॅप या पहिल्या दिनक्रमानंतर ${followUpWeeks} आठवड्यांपर्यंत पुन्हा भाव-तपासणी करेल.`,
+        telugu: `ఈ యాప్ ఈ మొదటి దినచర్య తర్వాత ${followUpWeeks} వారాల పాటు మళ్లీ భావ-పరిశీలన చేస్తుంది.`,
+        tamil: `இந்த ஆப் இந்த முதல் தினசரி முறைக்குப் பிறகு ${followUpWeeks} வாரங்கள் மீண்டும் உணர்வு-சோதனை செய்யும்.`,
+        urdu: `یہ ایپ اس پہلی روزمرہ ترتیب کے بعد ${followUpWeeks} ہفتوں تک دوبارہ جذباتی جائزہ کرے گی۔`
       })
     : pickLocalizedText(languageId, {
         english: "Turn reminders on later if you want the app to keep checking back.",
-        hindi: "अगर आप चाहें तो reminders बाद में चालू करें, ताकि ऐप फिर से check-in करता रहे।",
-        punjabi: "ਜੇ ਤੁਸੀਂ ਚਾਹੋ ਤਾਂ reminders ਬਾਅਦ ਵਿੱਚ ਚਾਲੂ ਕਰੋ, ਤਾਂ ਕਿ ਐਪ ਮੁੜ check-in ਕਰਦੀ ਰਹੇ।",
-        marathi: "हवे असल्यास reminders नंतर सुरू करा, म्हणजे अ‍ॅप पुन्हा check-in करत राहील.",
-        telugu: "మీకు కావాలంటే reminders‌ను తర్వాత ఆన్ చేయండి, అప్పుడు యాప్ మళ్లీ check-in చేస్తుంది.",
-        tamil: "வேண்டுமானால் reminders-ஐ பிறகு ஆன் செய்யுங்கள், அப்போது app மீண்டும் check-in செய்யும்.",
-        urdu: "اگر آپ چاہیں تو reminders بعد میں آن کریں تاکہ ایپ دوبارہ check-in کرتی رہے۔"
+        hindi: "अगर आप चाहें तो याद दिलाने की सुविधा बाद में चालू करें, ताकि ऐप फिर से हाल पूछता रहे।",
+        punjabi: "ਜੇ ਤੁਸੀਂ ਚਾਹੋ ਤਾਂ ਯਾਦ ਦਿਵਾਉਣ ਦੀ ਸੁਵਿਧਾ ਬਾਅਦ ਵਿੱਚ ਚਾਲੂ ਕਰੋ, ਤਾਂ ਕਿ ਐਪ ਮੁੜ ਹਾਲ ਪੁੱਛਦੀ ਰਹੇ।",
+        marathi: "हवे असल्यास स्मरण सुविधा नंतर सुरू करा, म्हणजे अ‍ॅप पुन्हा विचारपूस करत राहील.",
+        telugu: "మీకు కావాలంటే గుర్తుచూపులను తర్వాత ఆన్ చేయండి, అప్పుడు యాప్ మళ్లీ మీ స్థితిని అడుగుతుంది.",
+        tamil: "வேண்டுமானால் நினைவூட்டல்களைப் பிறகு இயக்குங்கள்; அப்போது ஆப் மீண்டும் நலத்தை விசாரிக்கும்.",
+        urdu: "اگر آپ چاہیں تو یاد دہانیاں بعد میں آن کریں تاکہ ایپ دوبارہ خیریت پوچھتی رہے۔"
       });
   const intakeLead = privateIntakeSavedAt
     ? pickLocalizedText(languageId, {
         english: "Your private intake is already saved, so the route can stay specific.",
-        hindi: "आपका private intake पहले ही save हो चुका है, इसलिए route ज्यादा सटीक रहेगा।",
-        punjabi: "ਤੁਹਾਡਾ private intake ਪਹਿਲਾਂ ਹੀ save ਹੈ, ਇਸ ਲਈ route ਹੋਰ ਸਹੀ ਰਹੇਗਾ।",
-        marathi: "तुमचे private intake आधीच save झाले आहे, त्यामुळे route अधिक अचूक राहील.",
-        telugu: "మీ private intake ఇప్పటికే save అయింది, కాబట్టి route మరింత ఖచ్చితంగా ఉంటుంది.",
-        tamil: "உங்கள் private intake ஏற்கனவே save ஆகியுள்ளது, ஆகவே route இன்னும் துல்லியமாக இருக்கும்.",
-        urdu: "آپ کا private intake پہلے ہی save ہو چکا ہے، اس لیے route زیادہ مخصوص رہے گا۔"
+        hindi: "आपका निजी विवरण पहले ही सहेजा जा चुका है, इसलिए मार्ग ज्यादा सटीक रहेगा।",
+        punjabi: "ਤੁਹਾਡਾ ਨਿੱਜੀ ਵੇਰਵਾ ਪਹਿਲਾਂ ਹੀ ਸੰਭਾਲਿਆ ਗਿਆ ਹੈ, ਇਸ ਲਈ ਰਾਹ ਹੋਰ ਸਹੀ ਰਹੇਗਾ।",
+        marathi: "तुमचे खाजगी विवरण आधीच जतन झाले आहे, त्यामुळे मार्ग अधिक अचूक राहील.",
+        telugu: "మీ వ్యక్తిగత వివరాలు ఇప్పటికే సేవ్ అయ్యాయి, కాబట్టి మార్గం మరింత ఖచ్చితంగా ఉంటుంది.",
+        tamil: "உங்கள் தனிப்பட்ட விவரம் ஏற்கனவே சேமிக்கப்பட்டுள்ளது, ஆகவே பாதை இன்னும் துல்லியமாக இருக்கும்.",
+        urdu: "آپ کی نجی معلومات پہلے ہی محفوظ ہیں، اس لیے راستہ زیادہ درست رہے گا۔"
       })
     : pickLocalizedText(languageId, {
         english: "If anything changes, open the private intake once so the app can keep the emotional and life context clear.",
-        hindi: "अगर कुछ बदले, तो private intake एक बार खोलें ताकि ऐप emotional और life context साफ़ रख सके।",
-        punjabi: "ਜੇ ਕੁਝ ਬਦਲੇ, ਤਾਂ private intake ਇੱਕ ਵਾਰ ਖੋਲ੍ਹੋ ਤਾਂ ਜੋ ਐਪ emotional ਅਤੇ life context ਸਾਫ਼ ਰੱਖ ਸਕੇ।",
-        marathi: "काही बदलल्यास private intake एकदा उघडा, म्हणजे अ‍ॅप भावनिक आणि जीवनातील संदर्भ स्पष्ट ठेवेल.",
-        telugu: "ఏదైనా మారితే, private intake ఒకసారి తెరవండి, అప్పుడు యాప్ భావోద్వేగ మరియు జీవిత context‌ను స్పష్టంగా ఉంచుతుంది.",
-        tamil: "ஏதாவது மாறினால், private intake-ஐ ஒரு முறைத் திறக்கவும், அப்போது app உணர்ச்சி மற்றும் வாழ்க்கை context-ஐ தெளிவாக வைத்திருக்கும்.",
-        urdu: "اگر کچھ بدل جائے تو private intake ایک بار کھولیں تاکہ ایپ جذباتی اور زندگی کے context کو صاف رکھ سکے۔"
+        hindi: "अगर कुछ बदले, तो निजी विवरण एक बार खोलें ताकि ऐप भावनात्मक और जीवन-संदर्भ साफ़ रख सके।",
+        punjabi: "ਜੇ ਕੁਝ ਬਦਲੇ, ਤਾਂ ਨਿੱਜੀ ਵੇਰਵਾ ਇੱਕ ਵਾਰ ਖੋਲ੍ਹੋ ਤਾਂ ਜੋ ਐਪ ਭਾਵਨਾਤਮਕ ਅਤੇ ਜੀਵਨ-ਸੰਦਰਭ ਸਾਫ਼ ਰੱਖ ਸਕੇ।",
+        marathi: "काही बदलल्यास खाजगी विवरण एकदा उघडा, म्हणजे अ‍ॅप भावनिक आणि जीवन-संदर्भ स्पष्ट ठेवेल.",
+        telugu: "ఏదైనా మారితే, వ్యక్తిగత వివరాలను ఒకసారి తెరవండి, అప్పుడు యాప్ భావోద్వేగ మరియు జీవన సందర్భాన్ని స్పష్టంగా ఉంచుతుంది.",
+        tamil: "ஏதாவது மாறினால், தனிப்பட்ட விவரத்தை ஒரு முறைத் திறக்கவும்; அப்போது ஆப் உணர்ச்சி மற்றும் வாழ்க்கைச் சூழலை தெளிவாக வைத்திருக்கும்.",
+        urdu: "اگر کچھ بدل جائے تو نجی معلومات ایک بار کھولیں تاکہ ایپ جذباتی اور زندگی کے پس منظر کو صاف رکھ سکے۔"
       });
 
   return {
     title: pickLocalizedText(languageId, {
       english: "Daily routine",
-      hindi: "दैनिक routine",
-      punjabi: "ਰੋਜ਼ਾਨਾ routine",
-      marathi: "दैनंदिन routine",
-      telugu: "రోజువారీ routine",
-      tamil: "தினசரி routine",
-      urdu: "روزانہ routine"
+      hindi: "दैनिक दिनचर्या",
+      punjabi: "ਰੋਜ਼ਾਨਾ ਦਿਨਚਰਿਆ",
+      marathi: "दैनंदिन दिनक्रम",
+      telugu: "రోజువారీ దినచర్య",
+      tamil: "தினசரி நடைமுறை",
+      urdu: "روزمرہ ترتیب"
     }),
     summary: pickLocalizedText(languageId, {
       english: `${profileAddressLabel}, ${streakLead} ${moodLead} One line, one route, one calm step, one practice loop, one reminder.`,
-      hindi: `${profileAddressLabel}, ${streakLead} ${moodLead} एक लाइन, एक route, एक शांत कदम, एक practice loop, और एक reminder.`,
-      punjabi: `${profileAddressLabel}, ${streakLead} ${moodLead} ਇੱਕ ਲਾਈਨ, ਇੱਕ ਰਾਹ, ਇੱਕ ਸ਼ਾਂਤ ਕਦਮ, ਇੱਕ practice loop, ਅਤੇ ਇੱਕ reminder.`,
-      marathi: `${profileAddressLabel}, ${streakLead} ${moodLead} एक ओळ, एक route, एक शांत पाऊल, एक practice loop, आणि एक reminder.`,
-      telugu: `${profileAddressLabel}, ${streakLead} ${moodLead} ఒక లైన్, ఒక route, ఒక శాంతమైన అడుగు, ఒక practice loop, ఒక reminder.`,
-      tamil: `${profileAddressLabel}, ${streakLead} ${moodLead} ஒரு வரி, ஒரு route, ஒரு அமைதியான படி, ஒரு practice loop, ஒரு reminder.`,
-      urdu: `${profileAddressLabel}, ${streakLead} ${moodLead} ایک لائن، ایک route، ایک پرسکون قدم، ایک practice loop، اور ایک reminder.`
+      hindi: `${profileAddressLabel}, ${streakLead} ${moodLead} एक पंक्ति, एक मार्ग, एक शांत कदम, एक अभ्यास-चक्र और एक याद-दिलाना।`,
+      punjabi: `${profileAddressLabel}, ${streakLead} ${moodLead} ਇੱਕ ਲਾਈਨ, ਇੱਕ ਰਾਹ, ਇੱਕ ਸ਼ਾਂਤ ਕਦਮ, ਇੱਕ ਅਭਿਆਸ-ਚੱਕਰ ਅਤੇ ਇੱਕ ਯਾਦ ਦਿਵਾਉਣਾ।`,
+      marathi: `${profileAddressLabel}, ${streakLead} ${moodLead} एक ओळ, एक मार्ग, एक शांत पाऊल, एक अभ्यास-चक्र आणि एक स्मरण।`,
+      telugu: `${profileAddressLabel}, ${streakLead} ${moodLead} ఒక పంక్తి, ఒక మార్గం, ఒక ప్రశాంత అడుగు, ఒక అభ్యాస-చక్రం, ఒక గుర్తుచూపు.`,
+      tamil: `${profileAddressLabel}, ${streakLead} ${moodLead} ஒரு வரி, ஒரு பாதை, ஒரு அமைதியான படி, ஒரு பயிற்சி-சுழற்சி, ஒரு நினைவூட்டல்.`,
+      urdu: `${profileAddressLabel}, ${streakLead} ${moodLead} ایک سطر، ایک راستہ، ایک پرسکون قدم، ایک مشق کا چکر اور ایک یاد دہانی۔`
     }),
     footer: pickLocalizedText(languageId, {
       english: `${followUpLead} ${softPrompts ? "Starter lines stay available when you need them." : "Prompts will stay focused and direct."} ${intakeLead} Practice keeps the loop alive when the day needs a shorter win.`,
-      hindi: `${followUpLead} ${softPrompts ? "ज़रूरत पड़ने पर starter lines उपलब्ध रहेंगी।" : "ऐप सरल और सीधा रहेगा।"} ${intakeLead} Practice दिन में छोटी जीत मिलने पर loop को जीवित रखती है।`,
-      punjabi: `${followUpLead} ${softPrompts ? "ਲੋੜ ਹੋਵੇ ਤਾਂ starter lines ਉਪਲਬਧ ਰਹਿਣਗੀਆਂ।" : "ਐਪ ਸਿੱਧਾ ਅਤੇ ਸਧਾਰਣ ਰਹੇਗਾ।"} ${intakeLead} Practice ਦਿਨ ਵਿਚ ਛੋਟੀ ਜਿੱਤ ਆਉਣ ਤੇ loop ਨੂੰ ਜੀਵਤ ਰੱਖਦੀ ਹੈ।`,
-      marathi: `${followUpLead} ${softPrompts ? "गरज पडल्यास starter lines उपलब्ध राहतील." : "अ‍ॅप साधे आणि थेट राहील."} ${intakeLead} Practice दिवसात छोटी जिंक मिळाली की loop जिवंत ठेवते.`,
-      telugu: `${followUpLead} ${softPrompts ? "అవసరమైతే starter lines అందుబాటులో ఉంటాయి." : "యాప్ సాదాగా మరియు నేరుగా ఉంటుంది."} ${intakeLead} రోజు చిన్న win కావాలనిపించినప్పుడు Practice loop‌ను కొనసాగిస్తుంది.`,
-      tamil: `${followUpLead} ${softPrompts ? "தேவைப்பட்டால் starter lines கிடைக்கும்." : "app எளிமையாகவும் நேரடியாகவும் இருக்கும்."} ${intakeLead} நாளில் ஒரு சிறிய வெற்றி தேவைப்படும் போது Practice loop-ஐ உயிருடன் வைத்திருக்கும்.`,
-      urdu: `${followUpLead} ${softPrompts ? "ضرورت پڑنے پر starter lines دستیاب رہیں گی۔" : "ایپ سادہ اور سیدھی رہے گی۔"} ${intakeLead} Practice دن میں چھوٹی جیت آنے پر loop کو زندہ رکھتی ہے۔`
+      hindi: `${followUpLead} ${softPrompts ? "ज़रूरत पड़ने पर शुरुआती पंक्तियाँ उपलब्ध रहेंगी।" : "संकेत सरल और सीधे रहेंगे।"} ${intakeLead} दिन में छोटी जीत चाहिए हो तो अभ्यास इस चक्र को जीवित रखता है।`,
+      punjabi: `${followUpLead} ${softPrompts ? "ਲੋੜ ਪੈਣ ਤੇ ਸ਼ੁਰੂਆਤੀ ਲਾਈਨਾਂ ਉਪਲਬਧ ਰਹਿਣਗੀਆਂ।" : "ਸੰਕੇਤ ਸਧਾਰਣ ਅਤੇ ਸਿੱਧੇ ਰਹਿਣਗੇ।"} ${intakeLead} ਦਿਨ ਵਿੱਚ ਛੋਟੀ ਜਿੱਤ ਦੀ ਲੋੜ ਹੋਵੇ ਤਾਂ ਅਭਿਆਸ ਇਸ ਚੱਕਰ ਨੂੰ ਜੀਵਤ ਰੱਖਦਾ ਹੈ।`,
+      marathi: `${followUpLead} ${softPrompts ? "गरज पडल्यास सुरुवातीच्या ओळी उपलब्ध राहतील." : "सूचना साध्या आणि थेट राहतील."} ${intakeLead} दिवसात छोटी जिंक हवी असेल तेव्हा अभ्यास हा चक्र जिवंत ठेवतो.`,
+      telugu: `${followUpLead} ${softPrompts ? "అవసరమైతే ప్రారంభ పంక్తులు అందుబాటులో ఉంటాయి." : "సూచనలు సులభంగా మరియు నేరుగా ఉంటాయి."} ${intakeLead} రోజు చిన్న విజయం కావాలనిపించినప్పుడు అభ్యాసం ఈ చక్రాన్ని కొనసాగిస్తుంది.`,
+      tamil: `${followUpLead} ${softPrompts ? "தேவைப்பட்டால் தொடக்க வரிகள் கிடைக்கும்." : "வழிகாட்டுதல்கள் எளிமையாகவும் நேரடியாகவும் இருக்கும்."} ${intakeLead} நாளில் ஒரு சிறிய வெற்றி தேவைப்படும்போது பயிற்சி இந்தச் சுழற்சியை உயிருடன் வைத்திருக்கும்.`,
+      urdu: `${followUpLead} ${softPrompts ? "ضرورت پڑنے پر ابتدائی سطریں دستیاب رہیں گی۔" : "اشارے سادہ اور براہ راست رہیں گے۔"} ${intakeLead} دن میں چھوٹی کامیابی چاہیے ہو تو مشق اس چکر کو جاری رکھتی ہے۔`
     }),
     actions: [
       {
         id: "brief-session",
         label: pickLocalizedText(languageId, {
           english: "Brief session",
-          hindi: "संक्षिप्त session",
-          punjabi: "ਛੋਟਾ session",
-          marathi: "संक्षिप्त session",
-          telugu: "సంక్షిప్త session",
-          tamil: "சுருக்க session",
-          urdu: "مختصر session"
+          hindi: "संक्षिप्त सत्र",
+          punjabi: "ਛੋਟਾ ਸੈਸ਼ਨ",
+          marathi: "संक्षिप्त सत्र",
+          telugu: "సంక్షిప్త సెషన్",
+          tamil: "சுருக்கமான அமர்வு",
+          urdu: "مختصر نشست"
         }),
         detail: pickLocalizedText(languageId, {
           english: `One line is enough. Use it to tell the app how ${profileAddressLabel.toLowerCase()} is feeling, what triggered it, and what kind of help is wanted.`,
-          hindi: `एक लाइन काफी है। इसमें बताएं कि ${profileAddressLabel.toLowerCase()} कैसा महसूस कर रहा है, क्या trigger हुआ, और किस तरह की मदद चाहिए।`,
-          punjabi: `ਇੱਕ ਲਾਈਨ ਕਾਫ਼ੀ ਹੈ। ਦੱਸੋ ਕਿ ${profileAddressLabel.toLowerCase()} ਕਿਵੇਂ ਮਹਿਸੂਸ ਕਰ ਰਿਹਾ ਹੈ, ਕੀ trigger ਹੋਇਆ, ਅਤੇ ਕਿਸ ਤਰ੍ਹਾਂ ਦੀ ਮਦਦ ਚਾਹੀਦੀ ਹੈ।`,
-          marathi: `एक ओळ पुरेशी आहे. ${profileAddressLabel.toLowerCase()} कसे वाटते, काय trigger झाले, आणि कशा मदतीची गरज आहे ते लिहा.`,
-          telugu: `ఒక లైన్ చాలు. ${profileAddressLabel.toLowerCase()} ఎలా అనిపిస్తోంది, ఏమి trigger అయింది, ఎలాంటి help కావాలో చెప్పండి.`,
-          tamil: `ஒரு வரி போதும். ${profileAddressLabel.toLowerCase()} எப்படி உணர்கிறார், என்ன trigger ஆனது, என்ன உதவி வேண்டும் என்பதைக் கூறுங்கள்.`,
-          urdu: `ایک لائن کافی ہے۔ بتائیں کہ ${profileAddressLabel.toLowerCase()} کیسا محسوس کر رہا ہے، کیا trigger ہوا، اور کس طرح کی مدد درکار ہے۔`
+          hindi: `एक पंक्ति काफी है। इसमें बताएं कि ${profileAddressLabel.toLowerCase()} कैसा महसूस कर रहा है, कारण क्या था, और किस तरह की सहायता चाहिए।`,
+          punjabi: `ਇੱਕ ਲਾਈਨ ਕਾਫ਼ੀ ਹੈ। ਦੱਸੋ ਕਿ ${profileAddressLabel.toLowerCase()} ਕਿਵੇਂ ਮਹਿਸੂਸ ਕਰ ਰਿਹਾ ਹੈ, ਕਾਰਨ ਕੀ ਸੀ, ਅਤੇ ਕਿਹੜੀ ਸਹਾਇਤਾ ਚਾਹੀਦੀ ਹੈ।`,
+          marathi: `एक ओळ पुरेशी आहे. ${profileAddressLabel.toLowerCase()} कसे वाटते, कारण काय होते, आणि कोणत्या मदतीची गरज आहे ते लिहा.`,
+          telugu: `ఒక పంక్తి చాలు. ${profileAddressLabel.toLowerCase()} ఎలా అనిపిస్తోంది, కారణం ఏమిటి, ఎలాంటి సహాయం కావాలో చెప్పండి.`,
+          tamil: `ஒரு வரி போதும். ${profileAddressLabel.toLowerCase()} எப்படி உணர்கிறார், காரணம் என்ன, எந்த உதவி வேண்டும் என்பதைக் கூறுங்கள்.`,
+          urdu: `ایک سطر کافی ہے۔ بتائیں کہ ${profileAddressLabel.toLowerCase()} کیسا محسوس کر رہا ہے، وجہ کیا تھی، اور کس طرح کی مدد چاہیے۔`
         }),
         actionLabel: pickLocalizedText(languageId, {
           english: "Save now",
-          hindi: "अभी सेव करें",
-          punjabi: "ਹੁਣੇ save ਕਰੋ",
-          marathi: "आत्ताच save करा",
-          telugu: "ఇప్పుడే save చేయండి",
-          tamil: "இப்போதே save செய்யவும்",
+          hindi: "अभी सहेजें",
+          punjabi: "ਹੁਣੇ ਸੰਭਾਲੋ",
+          marathi: "आत्ताच जतन करा",
+          telugu: "ఇప్పుడే సేవ్ చేయండి",
+          tamil: "இப்போதே சேமிக்கவும்",
           urdu: "ابھی محفوظ کریں"
         }),
         kind: "save"
@@ -4487,12 +4487,12 @@ function buildDailyRoutinePlan(
         id: "practice-loop",
         label: pickLocalizedText(languageId, {
           english: "Practice loop",
-          hindi: "प्रैक्टिस लूप",
-          punjabi: "ਪ੍ਰੈਕਟਿਸ ਲੂਪ",
-          marathi: "प्रॅक्टिस loop",
-          telugu: "ప్రాక్టీస్ loop",
-          tamil: "Practice loop",
-          urdu: "پریکٹس لوپ"
+          hindi: "अभ्यास-चक्र",
+          punjabi: "ਅਭਿਆਸ-ਚੱਕਰ",
+          marathi: "अभ्यास-चक्र",
+          telugu: "అభ్యాస-చక్రం",
+          tamil: "பயிற்சி-சுழற்சி",
+          urdu: "مشق کا چکر"
         }),
         detail: selectedIssueGuide.steps[1],
         actionLabel: uiCopy.practiceButton,
@@ -4502,32 +4502,32 @@ function buildDailyRoutinePlan(
         id: "calm-step",
         label: pickLocalizedText(languageId, {
           english: "Calm reset",
-          hindi: "शांत reset",
-          punjabi: "ਸ਼ਾਂਤ reset",
-          marathi: "शांत reset",
-          telugu: "శాంతమైన reset",
-          tamil: "அமைதி reset",
-          urdu: "پرسکون reset"
+          hindi: "शांत विराम",
+          punjabi: "ਸ਼ਾਂਤ ਠਹਿਰਾਅ",
+          marathi: "शांत विराम",
+          telugu: "ప్రశాంత విరామం",
+          tamil: "அமைதி இடைவேளை",
+          urdu: "پرسکون وقفہ"
         }),
         detail:
           selectedTone.score <= 2
             ? pickLocalizedText(languageId, {
                 english: "Use Reset early today so the body can slow down before the next choice.",
-                hindi: "आज Reset जल्दी खोलें, ताकि अगले कदम से पहले शरीर धीमा हो सके।",
-                punjabi: "ਅੱਜ Reset ਜਲਦੀ ਖੋਲ੍ਹੋ, ਤਾਂ ਜੋ ਅਗਲੇ ਕਦਮ ਤੋਂ ਪਹਿਲਾਂ ਸਰੀਰ ਹੌਲੀ ਹੋ ਸਕੇ।",
-                marathi: "आज Reset लवकर उघडा, म्हणजे पुढच्या निर्णयाआधी शरीर शांत होईल.",
-                telugu: "తదుపరి ఎంపికకు ముందు శరీరం నెమ్మదించేందుకు ఈరోజు Reset ను తొందరగా తెరవండి.",
-                tamil: "அடுத்த முடிவுக்கு முன் உடல் மெதுவாக அமைவதற்காக இன்று Reset-ஐ சீக்கிரம் திறக்கவும்.",
-                urdu: "اگلے انتخاب سے پہلے جسم کو آہستہ ہونے دینے کے لیے آج Reset جلد کھولیں۔"
+                hindi: "आज शांत विराम जल्दी खोलें, ताकि अगले कदम से पहले शरीर धीमा हो सके।",
+                punjabi: "ਅੱਜ ਸ਼ਾਂਤ ਠਹਿਰਾਅ ਜਲਦੀ ਖੋਲ੍ਹੋ, ਤਾਂ ਜੋ ਅਗਲੇ ਕਦਮ ਤੋਂ ਪਹਿਲਾਂ ਸਰੀਰ ਹੌਲਾ ਹੋ ਸਕੇ।",
+                marathi: "आज शांत विराम लवकर उघडा, म्हणजे पुढच्या निर्णयाआधी शरीर शांत होईल.",
+                telugu: "తదుపరి ఎంపికకు ముందు శరీరం నెమ్మదించేందుకు ఈరోజు ప్రశాంత విరామాన్ని తొందరగా తెరవండి.",
+                tamil: "அடுத்த முடிவுக்கு முன் உடல் மெதுவாக அமைவதற்காக இன்று அமைதி இடைவேளையை சீக்கிரம் திறக்கவும்.",
+                urdu: "اگلے انتخاب سے پہلے جسم کو آہستہ ہونے دینے کے لیے آج پرسکون وقفہ جلد کھولیں۔"
               })
             : pickLocalizedText(languageId, {
                 english: "Use Reset whenever the body or mind feels crowded again.",
-                hindi: "जब भी body या mind भारी लगे, Reset खोलें।",
-                punjabi: "ਜਦੋਂ ਵੀ body ਜਾਂ mind ਭਾਰੀ ਲੱਗੇ, Reset ਖੋਲ੍ਹੋ।",
-                marathi: "जेव्हा body किंवा mind जड वाटेल, तेव्हा Reset उघडा.",
-                telugu: "శరీరం లేదా mind భారంగా అనిపించినప్పుడు Reset తెరవండి.",
-                tamil: "உடல் அல்லது மனம் நிரம்பி இருப்பது போல உணர்ந்தால் Reset-ஐத் திறக்கவும்.",
-                urdu: "جب بھی جسم یا ذہن بھاری محسوس ہو، Reset کھولیں۔"
+                hindi: "जब भी शरीर या मन भारी लगे, शांत विराम खोलें।",
+                punjabi: "ਜਦੋਂ ਵੀ ਸਰੀਰ ਜਾਂ ਮਨ ਭਾਰੀ ਲੱਗੇ, ਸ਼ਾਂਤ ਠਹਿਰਾਅ ਖੋਲ੍ਹੋ।",
+                marathi: "जेव्हा शरीर किंवा मन जड वाटेल, तेव्हा शांत विराम उघडा.",
+                telugu: "శరీరం లేదా మనసు భారంగా అనిపించినప్పుడు ప్రశాంత విరామం తెరవండి.",
+                tamil: "உடல் அல்லது மனம் நிரம்பி இருப்பது போல உணர்ந்தால் அமைதி இடைவேளையைத் திறக்கவும்.",
+                urdu: "جب بھی جسم یا ذہن بھاری محسوس ہو، پرسکون وقفہ کھولیں۔"
               }),
         actionLabel: uiCopy.startCalm,
         kind: "focus"
@@ -4536,32 +4536,32 @@ function buildDailyRoutinePlan(
         id: "close-loop",
         label: pickLocalizedText(languageId, {
           english: "Close the loop",
-          hindi: "Loop बंद करें",
-          punjabi: "Loop ਬੰਦ ਕਰੋ",
-          marathi: "Loop बंद करा",
-          telugu: "Loop ముగించండి",
-          tamil: "Loop-ஐ முடிக்கவும்",
-          urdu: "لوپ بند کریں"
+          hindi: "चक्र पूरा करें",
+          punjabi: "ਚੱਕਰ ਪੂਰਾ ਕਰੋ",
+          marathi: "चक्र पूर्ण करा",
+          telugu: "చక్రాన్ని పూర్తి చేయండి",
+          tamil: "சுழற்சியை முடிக்கவும்",
+          urdu: "چکر مکمل کریں"
         }),
         detail:
           selectedTone.score <= 2
             ? pickLocalizedText(languageId, {
                 english: "Use Reset whenever the body or mind feels crowded again.",
-                hindi: "जब body या mind फिर से भारी लगे तो Reset खोलें।",
-                punjabi: "ਜਦੋਂ body ਜਾਂ mind ਫਿਰ ਭਾਰੀ ਲੱਗੇ ਤਾਂ Reset ਖੋਲ੍ਹੋ।",
-                marathi: "body किंवा mind पुन्हा जड वाटल्यास Reset उघडा.",
-                telugu: "శరీరం లేదా mind మళ్లీ భారంగా అనిపిస్తే Reset తెరవండి.",
-                tamil: "உடல் அல்லது மனம் மீண்டும் பாரமாக உணர்ந்தால் Reset-ஐத் திறக்கவும்.",
-                urdu: "جب جسم یا ذہن دوبارہ بھاری لگے تو Reset کھولیں۔"
+                hindi: "जब शरीर या मन फिर से भारी लगे तो शांत विराम खोलें।",
+                punjabi: "ਜਦੋਂ ਸਰੀਰ ਜਾਂ ਮਨ ਫਿਰ ਭਾਰੀ ਲੱਗੇ ਤਾਂ ਸ਼ਾਂਤ ਠਹਿਰਾਅ ਖੋਲ੍ਹੋ।",
+                marathi: "शरीर किंवा मन पुन्हा जड वाटल्यास शांत विराम उघडा.",
+                telugu: "శరీరం లేదా మనసు మళ్లీ భారంగా అనిపిస్తే ప్రశాంత విరామం తెరవండి.",
+                tamil: "உடல் அல்லது மனம் மீண்டும் பாரமாக உணர்ந்தால் அமைதி இடைவேளையைத் திறக்கவும்.",
+                urdu: "جب جسم یا ذہن دوبارہ بھاری لگے تو پرسکون وقفہ کھولیں۔"
               })
             : pickLocalizedText(languageId, {
                 english: "Open Journal and keep the note short enough to reuse tomorrow.",
-                hindi: "Journal खोलें और note को इतना छोटा रखें कि इसे कल फिर इस्तेमाल किया जा सके।",
-                punjabi: "Journal ਖੋਲ੍ਹੋ ਅਤੇ note ਨੂੰ ਇੰਨਾ ਛੋਟਾ ਰੱਖੋ ਕਿ ਇਸਨੂੰ ਕੱਲ੍ਹ ਫਿਰ ਵਰਤਿਆ ਜਾ ਸਕੇ।",
-                marathi: "Journal उघडा आणि note इतका छोटा ठेवा की तो उद्या पुन्हा वापरता येईल.",
-                telugu: "Journal తెరిచి, రేపు మళ్లీ వాడుకునేంత చిన్నగా note ఉంచండి.",
-                tamil: "Journal-ஐத் திறந்து, நாளை மீண்டும் பயன்படுத்தக்கூடிய அளவுக்கு குறிப்பை சுருக்கமாக வைத்திருங்கள்.",
-                urdu: "Journal کھولیں اور نوٹ اتنا مختصر رکھیں کہ اسے کل دوبارہ استعمال کیا جا سکے۔"
+                hindi: "जर्नल खोलें और टिप्पणी इतनी छोटी रखें कि इसे कल फिर इस्तेमाल किया जा सके।",
+                punjabi: "ਜਰਨਲ ਖੋਲ੍ਹੋ ਅਤੇ ਨੋਟ ਇੰਨਾ ਛੋਟਾ ਰੱਖੋ ਕਿ ਇਸਨੂੰ ਕੱਲ੍ਹ ਫਿਰ ਵਰਤਿਆ ਜਾ ਸਕੇ।",
+                marathi: "जर्नल उघडा आणि नोंद इतकी छोटी ठेवा की ती उद्या पुन्हा वापरता येईल.",
+                telugu: "జర్నల్ తెరిచి, రేపు మళ్లీ వాడుకునేంత చిన్నగా గమనిక ఉంచండి.",
+                tamil: "நாளேட்டைத் திறந்து, நாளை மீண்டும் பயன்படுத்தக்கூடிய அளவுக்கு குறிப்பை சுருக்கமாக வைத்திருங்கள்.",
+                urdu: "روزنامچہ کھولیں اور نوٹ اتنا مختصر رکھیں کہ اسے کل دوبارہ استعمال کیا جا سکے۔"
               }),
         actionLabel: uiCopy.journalButton,
         kind: "journal"
