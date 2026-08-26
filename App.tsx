@@ -16159,12 +16159,14 @@ export default function App() {
       .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
   }, [visibleTabs]);
   const sectionSwitcherTabs = useMemo(() => {
+    const featuredIds = new Set<TabId>(["community", "vedic", "tones"]);
     const orderedIds = [
       ...SECONDARY_PAGE_SEQUENCE,
       ...CORE_SERVICE_TAB_IDS,
       ...visibleTabs.map((tab) => tab.id)
     ];
     return Array.from(new Set(orderedIds))
+      .filter((id) => !featuredIds.has(id))
       .map((id) => visibleTabs.find((tab) => tab.id === id))
       .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
   }, [visibleTabs]);
@@ -25303,33 +25305,6 @@ function TodaySection({
                 tab: "aihelp" as TabId,
                 accent: "#0B6F66"
               },
-              {
-                id: "calm",
-                icon: "flower" as keyof typeof Ionicons.glyphMap,
-                title: uiCopy.homeSupportCalmTitle,
-                body: uiCopy.homeSupportCalmBody,
-                cta: uiCopy.homeSupportCalmCta,
-                tab: "tones" as TabId,
-                accent: "#7C3AED"
-              },
-              {
-                id: "chart",
-                icon: "planet" as keyof typeof Ionicons.glyphMap,
-                title: uiCopy.homeSupportVedicTitle,
-                body: uiCopy.homeSupportVedicBody,
-                cta: uiCopy.homeSupportVedicCta,
-                tab: "vedic" as TabId,
-                accent: "#A14A08"
-              },
-              {
-                id: "community",
-                icon: "chatbubbles" as keyof typeof Ionicons.glyphMap,
-                title: uiCopy.homeSupportCommunityTitle,
-                body: uiCopy.homeSupportCommunityBody,
-                cta: uiCopy.homeSupportCommunityCta,
-                tab: "community" as TabId,
-                accent: "#2563EB"
-              }
             ].map((item) => (
               <Pressable
                 key={item.id}
@@ -43386,14 +43361,10 @@ function CounselingChatModal({
     >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        // "height" on Android resizes the whole screen when the keyboard opens,
-        // which was pushing the "Reply here..." input and the most recent
-        // message down past the visible area instead of keeping them in view --
-        // exactly the "reply is somewhere down and can be overseen" report.
-        // "padding" on both platforms instead adds bottom padding equal to the
-        // keyboard height, keeping this modal's layout (and the fixed input bar
-        // at its bottom) stable and visible while typing.
-        behavior="padding"
+        // iOS should resize the counselling sheet above the keyboard so the
+        // transcript and composer remain usable while typing. Android keeps
+        // padding because its full-screen window handles the IME differently.
+        behavior={Platform.OS === "ios" ? "height" : "padding"}
         keyboardVerticalOffset={0}
       >
       <View

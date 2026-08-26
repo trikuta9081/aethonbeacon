@@ -153,6 +153,8 @@ jobs:
           # can never appear in the generated bundle.
           short_sha="${GITHUB_SHA:0:7}"
           live_url="https://aethon-beacon-web.onrender.com"
+          bundle_file="$(mktemp)"
+          trap 'rm -f "${bundle_file}"' EXIT
 
           echo "Waiting for live Render bundle to include commit ${short_sha}"
           # Render's free/idle deployment path and its edge cache can take longer
@@ -166,7 +168,10 @@ jobs:
 
             if [ -n "${bundle_path}" ]; then
               bundle_url="${live_url}${bundle_path}?deploy=${cache_key}"
-              if curl -fsSL -H 'Cache-Control: no-cache' "${bundle_url}" | grep -Fq "${short_sha}"; then
+              # Download before grepping so grep's early exit cannot close the
+              # curl pipe and produce curl 23 under `set -o pipefail`.
+              if curl -fsSL -H 'Cache-Control: no-cache' -o "${bundle_file}" "${bundle_url}" \
+                && grep -Fq "${short_sha}" "${bundle_file}"; then
                 if printf '%s' "${html}" | grep -Fq '<title>Aethon Beacon</title>'; then
                   echo "Live Render smoke check passed for ${short_sha}"
                   exit 0
