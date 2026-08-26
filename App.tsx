@@ -25305,6 +25305,15 @@ function TodaySection({
                 tab: "aihelp" as TabId,
                 accent: "#0B6F66"
               },
+              {
+                id: "community",
+                icon: "chatbubbles" as keyof typeof Ionicons.glyphMap,
+                title: uiCopy.homeSupportCommunityTitle,
+                body: uiCopy.homeSupportCommunityBody,
+                cta: uiCopy.homeSupportCommunityCta,
+                tab: "community" as TabId,
+                accent: "#2563EB"
+              },
             ].map((item) => (
               <Pressable
                 key={item.id}
@@ -25390,19 +25399,11 @@ function TodaySection({
             </Text>
           </View>
         </View>
-{/* Daily Loop section removed */}
+        {/* Daily Loop section removed */}
         {/* Beacon Guide / Vision card removed */}
-        {/* Calm Sound, Community/Messages, and Visit Report preview cards removed
-            from the front page on purpose -- all three already have their own
-            always-visible tab in the top tab rail ("Tones", "Messages", and now
-            "Patterns" in headerNavTabs, plus the full page-switcher reachable via
-            "More"), the same reasoning that already trimmed the Help and Redress
-            preview down to a strip. The Patterns tab's own "Progress Report Card"
-            (grade, score bars, latest session reports, export) is a richer version
-            of what this card used to show, so nothing was lost -- it just moved to
-            where it already lived. This keeps the front page short and premium
-            instead of repeating full previews of pages that are one tap away
-            either way. */}
+        {/* Calm Sound and Visit Report stay in their dedicated top-level tabs.
+            Community remains intentionally present in the Home command as a
+            flagship verified-human-support action. */}
       </View>
 
       {/* ── Premium footer — gives the front a proper, intentional ending
