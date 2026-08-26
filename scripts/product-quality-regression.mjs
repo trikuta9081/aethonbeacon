@@ -457,4 +457,19 @@ assert(
   );
 }
 
+// ── Chart tab's EN/हिन्दी toggle must follow the global language ─────────────
+// The Chart tab has heavy per-string Hindi content already, but it hangs off
+// a local chartBriefLang state seeded to "en". A user who selected Hindi
+// globally used to open Chart in English -- a real "language switch does not
+// apply" symptom. A useEffect now binds chartBriefLang to languageId once
+// AsyncStorage has hydrated; a manual toggle still sticks until the global
+// language changes again.
+{
+  const src = source;
+  assert(
+    /useEffect\(\(\) => \{\s*\n\s*if \(!hasLoaded\) return;\s*\n\s*setChartBriefLang\(languageId === "hindi" \? "hi" : "en"\);/.test(src),
+    "chartBriefLang must sync from the global languageId after hydration -- otherwise Chart shows English to a Hindi user"
+  );
+}
+
 console.log("Product quality regression passed: focused navigation, calculation transparency, counselling safeguards, crisis lifelines, redress governance, local metrics, ethical access, beta coverage standards, and mood understanding (positive + negative, persisted and differentiated) are present.");

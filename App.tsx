@@ -16079,6 +16079,16 @@ export default function App() {
   const [languagePageNonce, setLanguagePageNonce] = useState(0);
   const [entries, setEntries] = useState<CheckInEntry[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
+
+  // Bind the Chart tab's own EN/हिन्दी toggle to the global language. A
+  // Hindi-selected user used to open Chart in English and have to hunt for
+  // the tab's own pill -- exactly the "language doesn't apply anywhere"
+  // problem I was called out on. Runs only after hydration so it does not
+  // stomp the pill mid-transition when AsyncStorage returns.
+  useEffect(() => {
+    if (!hasLoaded) return;
+    setChartBriefLang(languageId === "hindi" ? "hi" : "en");
+  }, [languageId, hasLoaded]);
   // Real display typeface (Playfair Display) for the splash brand mark and the
   // Home hero greeting -- the app previously never set fontFamily anywhere and
   // fell back to the system default everywhere. Gated behind the same loading
