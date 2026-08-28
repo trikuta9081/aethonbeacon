@@ -3033,14 +3033,14 @@ const DARK_COLORS = {
 // text (`textPrimary`/`textOnDark`) so every word is easy to read at a
 // glance, on every tab and section.
 const LIGHT_COLORS = {
-  bgDeep: "#F4F8F7",
-  bgDarker: "#E7EFED",
+  bgDeep: "#F6F8FA",
+  bgDarker: "#E9EEF3",
   bgDeepest: "#FFFFFF",
-  surfaceAlt: "#E1EEEC",
-  textPrimary: "#05070A",
-  textOnDark: "#05070A",
-  textMuted: "rgba(5,7,10,0.76)",
-  textFaint: "#1F2937",
+  surfaceAlt: "#F1F5F9",
+  textPrimary: "#0F172A",
+  textOnDark: "#0F172A",
+  textMuted: "rgba(15,23,42,0.72)",
+  textFaint: "#475569",
   accentCyan: "#066C84",
   accentTeal: "#0B6F66",
   accentTealDeep: "#0E6F69",
@@ -26033,16 +26033,17 @@ function TodaySection({
         <View
           style={{
             marginBottom: 14,
-            borderRadius: 24,
+            borderRadius: 28,
             borderWidth: 1,
-            borderColor: "rgba(14,148,136,0.22)",
-            backgroundColor: "#F8FBFA",
+            borderColor: "rgba(15,61,94,0.08)",
+            backgroundColor: "#FFFFFF",
             padding: compact ? (isTinyPhone ? 12 : 14) : 18,
             shadowColor: "#0F3D5E",
-            shadowOpacity: 0.1,
-            shadowRadius: 20,
-            shadowOffset: { width: 0, height: 10 },
-            elevation: 6
+            shadowOpacity: 0.08,
+            shadowRadius: 24,
+            shadowOffset: { width: 0, height: 12 },
+            elevation: 8,
+            overflow: "hidden"
           }}
         >
           <View style={[styles.sectionHeader, { marginBottom: isTinyPhone ? 10 : 12 }]}>
@@ -26069,19 +26070,19 @@ function TodaySection({
                     minHeight: item.featured
                       ? (compact ? (isTinyPhone ? 164 : 172) : 182)
                       : (compact ? (isTinyPhone ? 98 : 106) : 116),
-                    borderRadius: item.featured ? 24 : 20,
-                    borderWidth: item.featured ? 2 : 1,
-                    borderColor: item.featured ? "#0B6F66" : "rgba(15,61,94,0.12)",
-                    backgroundColor: item.featured ? "#EAF8F5" : "#FFFFFF",
+                    borderRadius: item.featured ? 26 : 22,
+                    borderWidth: item.featured ? 1.5 : 1,
+                    borderColor: item.featured ? "rgba(11,111,102,0.18)" : "rgba(15,61,94,0.08)",
+                    backgroundColor: item.featured ? "#F6FBFA" : "#FFFFFF",
                     padding: item.featured
                       ? (compact ? (isTinyPhone ? 14 : 16) : 18)
                       : (compact ? (isTinyPhone ? 10 : 12) : 14),
                     overflow: "hidden",
-                    shadowColor: item.featured ? "#0B6F66" : "transparent",
-                    shadowOpacity: item.featured ? 0.12 : 0,
-                    shadowRadius: item.featured ? 16 : 0,
+                    shadowColor: "#0F3D5E",
+                    shadowOpacity: item.featured ? 0.10 : 0.05,
+                    shadowRadius: item.featured ? 18 : 10,
                     shadowOffset: { width: 0, height: 8 },
-                    elevation: item.featured ? 4 : 0
+                    elevation: item.featured ? 5 : 2
                   },
                   pressed && styles.pressed
                 ]}
@@ -26095,13 +26096,13 @@ function TodaySection({
                 }}>
                   <View style={{ flex: 1, minWidth: 0, gap: item.featured ? (isTinyPhone ? 4 : 5) : 0 }}>
                     {item.featured && (
-                      <View style={{ alignSelf: "flex-start", borderRadius: 999, backgroundColor: "#0B6F66", paddingHorizontal: isTinyPhone ? 10 : 11, paddingVertical: isTinyPhone ? 4 : 5, marginBottom: 2 }}>
-                        <Text style={{ color: "#F8FBFA", fontSize: isTinyPhone ? 10 : 11, lineHeight: isTinyPhone ? 12 : 14, fontWeight: "800", letterSpacing: 0.6 }}>
+                      <View style={{ alignSelf: "flex-start", borderRadius: 999, backgroundColor: "rgba(11,111,102,0.12)", borderWidth: 1, borderColor: "rgba(11,111,102,0.18)", paddingHorizontal: isTinyPhone ? 10 : 11, paddingVertical: isTinyPhone ? 4 : 5, marginBottom: 2 }}>
+                        <Text style={{ color: "#0A5C58", fontSize: isTinyPhone ? 10 : 11, lineHeight: isTinyPhone ? 12 : 14, fontWeight: "800", letterSpacing: 0.6 }}>
                           {homePrimaryRouteBadge}
                         </Text>
                       </View>
                     )}
-                    <Text style={{ color: "#0D1F22", fontSize: item.featured ? (isTinyPhone ? 18 : 19) : (isTinyPhone ? 15 : 16), lineHeight: item.featured ? (isTinyPhone ? 22 : 24) : (isTinyPhone ? 18 : 20), fontWeight: "900" }} numberOfLines={1}>
+                    <Text style={{ color: "#0F172A", fontSize: item.featured ? (isTinyPhone ? 18 : 19) : (isTinyPhone ? 15 : 16), lineHeight: item.featured ? (isTinyPhone ? 22 : 24) : (isTinyPhone ? 18 : 20), fontWeight: "900" }} numberOfLines={1}>
                       {item.title}
                     </Text>
                     <Text style={{ color: item.accent, fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 14 : 16, fontWeight: "700" }}>{item.cta}</Text>
@@ -26121,39 +26122,49 @@ function TodaySection({
                 </Pressable>
               ))}
           </View>
-          <View style={{
+                <View style={{
             marginTop: isTinyPhone ? 10 : 12,
-            borderRadius: 18,
+            borderRadius: 20,
             borderWidth: 1,
-            borderColor: "rgba(14,148,136,0.16)",
-            backgroundColor: "#F2FBF8",
+            borderColor: "rgba(15,61,94,0.08)",
+            backgroundColor: "#FFFFFF",
             paddingHorizontal: isTinyPhone ? 12 : 14,
-            paddingVertical: isTinyPhone ? 10 : 12
+            paddingVertical: isTinyPhone ? 10 : 12,
+            shadowColor: "#0F3D5E",
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 2
           }}>
             <Text style={{ color: "#0E6F69", fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 14 : 16, fontWeight: "800", letterSpacing: 0.4, marginBottom: 4 }}>
               {uiCopy.homeFlowLabel}
             </Text>
-            <Text style={{ color: "#0D1F22", fontSize: compact ? (isTinyPhone ? 12 : 13) : 14, lineHeight: compact ? (isTinyPhone ? 16 : 18) : 20, fontWeight: "900" }}>
+            <Text style={{ color: "#0F172A", fontSize: compact ? (isTinyPhone ? 12 : 13) : 14, lineHeight: compact ? (isTinyPhone ? 16 : 18) : 20, fontWeight: "900" }}>
               {homeFlowSequenceTitle}
             </Text>
-            <Text style={{ color: "#44515B", fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 15 : 17, fontWeight: "700", marginTop: 4 }}>
+            <Text style={{ color: "#475569", fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 15 : 17, fontWeight: "700", marginTop: 4 }}>
               {homeFlowSequenceBody}
             </Text>
           </View>
           <View style={{
             marginTop: isTinyPhone ? 10 : 12,
-            borderRadius: 16,
+            borderRadius: 18,
             borderWidth: 1,
-            borderColor: "rgba(14,148,136,0.16)",
-            backgroundColor: "#EEF8F6",
+            borderColor: "rgba(15,61,94,0.08)",
+            backgroundColor: "#FFFFFF",
             paddingHorizontal: isTinyPhone ? 10 : 12,
             paddingVertical: isTinyPhone ? 8 : 10,
             flexDirection: "row",
             alignItems: "center",
-            gap: isTinyPhone ? 7 : 9
+            gap: isTinyPhone ? 7 : 9,
+            shadowColor: "#0F3D5E",
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 2
           }}>
             <Ionicons name="lock-closed" size={isTinyPhone ? 14 : 15} color="#0E6F69" />
-            <Text style={{ color: "#1F2937", fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 15 : 17, fontWeight: "800", flex: 1 }}>
+            <Text style={{ color: "#334155", fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 15 : 17, fontWeight: "800", flex: 1 }}>
               {uiCopy.homePrivacyNote}
             </Text>
           </View>
@@ -46998,19 +47009,19 @@ const shadow = Platform.select({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF"
+    backgroundColor: "#F2F5F8"
   },
   scrollBody: {
     paddingTop: 14,
-    paddingBottom: 132
+    paddingBottom: 140
   },
   container: {
     width: "100%",
     minWidth: 0,
-    maxWidth: 1180,
+    maxWidth: 1220,
     alignSelf: "center",
-    paddingHorizontal: 14,
-    gap: 14
+    paddingHorizontal: 16,
+    gap: 16
   },
 
 
@@ -47029,13 +47040,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 12,
     borderCurve: "continuous",
-    backgroundColor: "rgba(255,252,247,0.15)",
-    borderWidth: 1.5,
-    borderColor: "rgba(246,212,107,0.55)",
-    shadowColor: "#C4A35A",
+    backgroundColor: "rgba(255,255,255,0.88)",
+    borderWidth: 1,
+    borderColor: "rgba(15,61,94,0.10)",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
+    shadowOpacity: 0.10,
+    shadowRadius: 12,
+    elevation: 3,
   },
   brandBadgeCompact: {
     flexGrow: 0,
@@ -47052,13 +47064,13 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 12,
     borderCurve: "continuous",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.5)",
-    backgroundColor: "#DEF2F1",
-    shadowColor: "#C4A35A",
+    borderWidth: 1,
+    borderColor: "rgba(196,163,90,0.34)",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
   },
   brandMarkCompact: {
     width: 30,
@@ -47110,7 +47122,7 @@ const styles = StyleSheet.create({
   topBeaconSecondaryRow: {
     flexDirection: "row",
     alignItems: "stretch",
-    gap: 8
+    gap: 10
   },
   topBeaconSecondaryRowCompact: {
     flexDirection: "row",
@@ -47125,13 +47137,18 @@ const styles = StyleSheet.create({
     minWidth: 0
   },
   topTabRail: {
-    borderRadius: 12,
+    borderRadius: 18,
     borderCurve: "continuous",
     borderWidth: 1,
-    borderColor: "rgba(246,212,107,0.18)",
-    backgroundColor: "#DEEFF2",
-    paddingHorizontal: 8,
-    paddingVertical: 8
+    borderColor: "rgba(15,61,94,0.08)",
+    backgroundColor: "rgba(255,255,255,0.78)",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4
   },
   topTabRailWrap: {
     flexDirection: "row",
@@ -47145,41 +47162,46 @@ const styles = StyleSheet.create({
     paddingRight: 4
   },
   topTabButton: {
-    minHeight: 44,
+    minHeight: 42,
     minWidth: 0,
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 92,
-    borderRadius: 999,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.10)",
-    backgroundColor: COLORS.bgDeep,
-    paddingHorizontal: 10,
+    borderColor: "rgba(15,61,94,0.08)",
+    backgroundColor: "rgba(255,255,255,0.86)",
+    paddingHorizontal: 12,
     paddingVertical: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 4
+    gap: 5,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2
   },
   topTabButtonActive: {
-    borderColor: COLORS.accentGold,
-    backgroundColor: COLORS.surfaceAlt
+    borderColor: "rgba(196,163,90,0.50)",
+    backgroundColor: "#FFFFFF"
   },
   topTabButtonMore: {
-    borderColor: "rgba(14,204,184,0.28)"
+    borderColor: "rgba(11,111,102,0.18)"
   },
   topTabMark: {
-    color: COLORS.textMuted,
-    fontSize: 13,
+    color: "#0A5C58",
+    fontSize: 14,
     lineHeight: 16,
-    fontWeight: "700"
+    fontWeight: "800"
   },
   topTabLabel: {
     minWidth: 0,
     flexShrink: 1,
-    color: "rgba(13,31,34,0.72)",
-    fontSize: 12,
-    lineHeight: 16,
+    color: "#334155",
+    fontSize: 11,
+    lineHeight: 14,
     fontWeight: "700"
   },
 
@@ -47189,16 +47211,21 @@ const styles = StyleSheet.create({
     minWidth: 0,
     maxWidth: 220,
     minHeight: 48,
-    borderRadius: 14,
+    borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.24)",
-    backgroundColor: "#F4F8F7",
+    borderColor: "rgba(15,61,94,0.08)",
+    backgroundColor: "rgba(255,255,255,0.84)",
     paddingHorizontal: 12,
     paddingVertical: 8,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10
+    gap: 10,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2
   },
   topStatusChipCompact: {
     flexGrow: 1,
@@ -47215,7 +47242,7 @@ const styles = StyleSheet.create({
     gap: 1
   },
   topStatusChipLabel: {
-    color: "#066C84",
+    color: "#0A6F66",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -47226,13 +47253,13 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   topStatusChipValue: {
-    color: "#0D1F22",
+    color: "#0F172A",
     fontSize: 14,
     lineHeight: 18,
     fontWeight: "900"
   },
   topStatusChipMeta: {
-    color: "#111827",
+    color: "#475569",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
@@ -47243,13 +47270,18 @@ const styles = StyleSheet.create({
 
 
   topPageModeBanner: {
-    borderRadius: 10,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(246, 212, 107, 0.36)",
-    backgroundColor: "rgba(255, 252, 247, 0.08)",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 3
+    borderColor: "rgba(196,163,90,0.18)",
+    backgroundColor: "rgba(255,255,255,0.82)",
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    gap: 4,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2
   },
   topPageModeBannerCompact: {
     paddingHorizontal: 10,
@@ -47257,7 +47289,7 @@ const styles = StyleSheet.create({
     gap: 2
   },
   topPageModeLabel: {
-    color: "#A14A08",
+    color: "#8A5A00",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -47268,7 +47300,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   topPageModeText: {
-    color: "#0D1F22",
+    color: "#0F172A",
     fontSize: 13,
     lineHeight: 18,
     fontWeight: "700"
@@ -47279,13 +47311,18 @@ const styles = StyleSheet.create({
   },
   routeNotice: {
     marginTop: 10,
-    borderRadius: 10,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(14, 111, 105, 0.30)",
-    backgroundColor: "#F4F8F7",
+    borderColor: "rgba(14,111,105,0.16)",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 12,
     paddingVertical: 10,
-    gap: 2
+    gap: 2,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2
   },
   routeNoticeCompact: {
     paddingHorizontal: 10,
@@ -47317,13 +47354,13 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderCurve: "continuous",
     borderWidth: 1,
-    borderColor: "rgba(14, 204, 184, 0.2)",
-    backgroundColor: "#E1EEEC",
+    borderColor: "rgba(14,111,105,0.16)",
+    backgroundColor: "#FFFFFF",
     padding: 12,
     gap: 10,
-    shadowColor: "#0E6F69",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 3
   },
@@ -47348,7 +47385,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase"
   },
   routeFollowUpTitle: {
-    color: "#325C86",
+    color: "#0F172A",
     fontSize: 14,
     lineHeight: 18,
     fontWeight: "900"
@@ -47356,7 +47393,7 @@ const styles = StyleSheet.create({
   routeFollowUpText: {
     // Translucent near-white (a dark-theme leftover) was ~1.1:1 on this
     // card's light background -- effectively invisible body copy.
-    color: "#446573",
+    color: "#475569",
     fontSize: 12,
     lineHeight: 17,
     fontWeight: "700"
@@ -47365,8 +47402,8 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(14, 204, 184, 0.30)",
-    backgroundColor: "#E1EEEC",
+    borderColor: "rgba(14,111,105,0.18)",
+    backgroundColor: "#FFFFFF",
     // #298F7F was 3.3:1 on this pill's own background -- darkened.
     color: "#0A5C58",
     fontSize: 12,
@@ -47406,15 +47443,15 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderCurve: "continuous",
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.2)",
-    backgroundColor: "#F4F8F7",
+    borderColor: "rgba(14,111,105,0.14)",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 2,
     marginTop: 10,
-    shadowColor: "#0E6F69",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.09,
+    shadowOpacity: 0.06,
     shadowRadius: 14,
     elevation: 3
   },
@@ -47424,10 +47461,10 @@ const styles = StyleSheet.create({
     marginTop: 8
   },
   routePreviewCardSecondary: {
-    backgroundColor: "#E7EFED"
+    backgroundColor: "#F7FAFB"
   },
   routePreviewTitle: {
-    color: "#00B8A4",
+    color: "#0A6F66",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -47438,7 +47475,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   routePreviewDetail: {
-    color: "rgba(13,31,34,0.82)",
+    color: "#475569",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
@@ -47483,12 +47520,17 @@ const styles = StyleSheet.create({
     minWidth: 0,
     maxWidth: "100%",
     minHeight: 44,
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 14,
     paddingVertical: 10,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2
   },
   homeOverviewButtonLabel: {
     color: "#0D1F22",
@@ -47505,17 +47547,22 @@ const styles = StyleSheet.create({
     minWidth: 0,
     maxWidth: "100%",
     minHeight: 44,
-    borderRadius: 8,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(14,204,184,0.45)",
-    backgroundColor: "#E1EEEC",
+    borderColor: "rgba(14,111,105,0.18)",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 14,
     paddingVertical: 10,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2
   },
   homeOverviewButtonSecondaryLabel: {
-    color: "#00B8A3",
+    color: "#0A6F66",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -47601,13 +47648,18 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginTop: 0,
     marginBottom: 10,
-    borderRadius: 14,
+    borderRadius: 18,
     borderCurve: "continuous",
-    borderWidth: 2,
-    borderColor: "#C73F33",
-    backgroundColor: "#FDE9E5",
+    borderWidth: 1.5,
+    borderColor: "rgba(199,63,51,0.24)",
+    backgroundColor: "#FFF8F7",
     padding: 12,
-    gap: 8
+    gap: 8,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2
   },
   homeSafetyActions: {
     width: "100%",
@@ -49411,13 +49463,13 @@ const styles = StyleSheet.create({
 
 
   metricsBand: {
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.28)",
+    borderColor: "rgba(15,61,94,0.08)",
     flexDirection: "row",
     flexWrap: "wrap",
-    padding: 4,
+    padding: 6,
     ...shadow
   },
 
@@ -49425,13 +49477,18 @@ const styles = StyleSheet.create({
 
 
   topBeaconStrip: {
-    borderRadius: 8,
-    backgroundColor: "#E1EEEC",
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.84)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
+    borderColor: "rgba(15,61,94,0.08)",
     paddingHorizontal: 14,
     paddingVertical: 12,
     gap: 10,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2,
     ...shadow
   },
   topBeaconStripCompact: {
@@ -49456,15 +49513,20 @@ const styles = StyleSheet.create({
   topLanguageChip: {
     maxWidth: 220,
     minHeight: 48,
-    borderRadius: 14,
+    borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,
-    borderColor: "rgba(246, 212, 107, 0.30)",
-    backgroundColor: "#FFFCF7",
+    borderColor: "rgba(196,163,90,0.18)",
+    backgroundColor: "rgba(255,255,255,0.84)",
     paddingHorizontal: 12,
     paddingVertical: 8,
     justifyContent: "center",
-    gap: 1
+    gap: 1,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2
   },
   topLanguageChipCompact: {
     flexGrow: 1,
@@ -49476,7 +49538,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7
   },
   topLanguageChipLabel: {
-    color: "#A14A08",
+    color: "#8A5A00",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700",
@@ -49487,7 +49549,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   topLanguageChipValue: {
-    color: "#0D1F22",
+    color: "#0F172A",
     fontSize: 14,
     lineHeight: 18,
     fontWeight: "900"
@@ -49497,7 +49559,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   topLanguageChipMeta: {
-    color: "#536271",
+    color: "#475569",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
@@ -50518,15 +50580,20 @@ const styles = StyleSheet.create({
   },
   flowRailButton: {
     minHeight: 44,
-    borderRadius: 20,
+    borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,
-    borderColor: "rgba(14,111,105,0.3)",
-    backgroundColor: "#F4F8F7",
+    borderColor: "rgba(15,61,94,0.08)",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingVertical: 8,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2
   },
   flowRailButtonBack: {
     minHeight: 44,
@@ -50579,15 +50646,15 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start"
   },
   flowRailButtonPrimary: {
-    backgroundColor: "#E1EEEC",
-    borderColor: "#E1EEEC"
+    backgroundColor: "#0D2334",
+    borderColor: "#0D2334"
   },
   flowRailButtonSecondaryAccent: {
-    backgroundColor: "#F4FBF8",
-    borderColor: "#437468"
+    backgroundColor: "#FFF8EF",
+    borderColor: "rgba(196,163,90,0.28)"
   },
   flowRailButtonLabel: {
-    color: "#0A5C58",
+    color: "#0F172A",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
@@ -50601,7 +50668,7 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   flowRailButtonLabelPrimary: {
-    color: "#0D1F22"
+    color: "#FFFFFF"
   },
   flowRailButtonLabelHome: {
     fontSize: 12,
@@ -50613,29 +50680,29 @@ const styles = StyleSheet.create({
 
 
   sectionSwitcherPanelTitle: {
-    color: "#0D1F22",
-    fontSize: 14,
-    lineHeight: 18,
+    color: "#0F172A",
+    fontSize: 15,
+    lineHeight: 19,
     fontWeight: "900"
   },
   sectionSwitcherPanelClose: {
     minHeight: 30,
     paddingHorizontal: 10,
-    borderRadius: 8,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#716247",
-    backgroundColor: "#E7EFED",
+    borderColor: "rgba(15,61,94,0.10)",
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center"
   },
   sectionSwitcherPanelCloseLabel: {
-    color: "#111827",
+    color: "#475569",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
   },
   sectionSwitcherPanelMeta: {
-    color: "#111827",
+    color: "#475569",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "700"
@@ -50654,21 +50721,21 @@ const styles = StyleSheet.create({
     maxWidth: 760,
     width: "100%",
     alignSelf: "center",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    backgroundColor: "#E1EEEC",
+    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderColor: "rgba(14,204,184,0.22)",
-    padding: 20,
-    paddingBottom: 32,
+    borderColor: "rgba(15,61,94,0.08)",
+    padding: 22,
+    paddingBottom: 34,
     gap: 16,
-    shadowColor: "#000",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.12,
-    shadowRadius: 20,
-    elevation: 16
+    shadowRadius: 24,
+    elevation: 18
   },
   sectionSwitcherModalHeader: {
     flexDirection: "row",
@@ -50682,7 +50749,7 @@ const styles = StyleSheet.create({
     flexBasis: 116,
     minWidth: 0,
     minHeight: 52,
-    borderRadius: 12,
+    borderRadius: 16,
     borderCurve: "continuous",
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -50690,9 +50757,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 3,
-    backgroundColor: "#F4F8F7",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)"
+    borderColor: "rgba(15,61,94,0.08)",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2
   },
   tabButtonCompact: {
     flexBasis: "48%",
@@ -50700,13 +50772,13 @@ const styles = StyleSheet.create({
     gap: 2
   },
   tabButtonActive: {
-    backgroundColor: "#E1EEEC",
-    borderColor: "#0E6F69"
+    backgroundColor: "#F8FBFA",
+    borderColor: "rgba(196,163,90,0.40)"
   },
 
 
   tabLabel: {
-    color: "#111827",
+    color: "#334155",
     fontSize: 12,
     fontWeight: "800",
     flexShrink: 1,
@@ -50732,23 +50804,23 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     maxWidth: "100%",
-    borderRadius: 18,
+    borderRadius: 22,
     // iOS renders this as the continuous "squircle" curve Apple uses on every
     // system card, not the plain circular arc -- a subtle but authentically
     // native corner. Ignored on Android/web, so it's purely additive.
     borderCurve: "continuous",
-    backgroundColor: "#DFEDF1",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "rgba(15,61,94,0.10)",
-    padding: 20,
+    borderColor: "rgba(15,61,94,0.08)",
+    padding: 22,
     gap: 16,
     // Apple-style depth: a soft, neutral, low-opacity shadow instead of a
     // strong saturated-cyan one. Colored heavy shadows read as "designed"
     // and dated; Apple cards float on a barely-there neutral shadow.
     shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
+    shadowOpacity: 0.06,
+    shadowRadius: 18,
     elevation: 3
   },
 
@@ -52977,17 +53049,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    backgroundColor: "#DFE9F1",
+    backgroundColor: "rgba(255,255,255,0.92)",
     borderTopWidth: 1,
-    borderTopColor: "rgba(34,211,238,0.22)",
-    paddingTop: 8,
-    paddingBottom: 12,
+    borderTopColor: "rgba(15,61,94,0.08)",
+    paddingTop: 10,
+    paddingBottom: 14,
     paddingHorizontal: 4,
-    shadowColor: "#0891B2",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: -6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 18,
-    elevation: 28
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 16
   },
   bottomNavItem: {
     flex: 1,
@@ -52999,22 +53071,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2
   },
   bottomNavPill: {
-    width: 58,
-    height: 36,
-    borderRadius: 18,
+    width: 60,
+    height: 38,
+    borderRadius: 19,
     borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent"
   },
   bottomNavPillActive: {
-    backgroundColor: "rgba(34,211,238,0.16)",
-    shadowColor: "#0891B2",
+    backgroundColor: "rgba(196,163,90,0.10)",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.7,
-    shadowRadius: 10,
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(34,211,238,0.45)"
+    borderColor: "rgba(196,163,90,0.45)"
   },
   bottomNavIcon: {
     fontSize: 24,
@@ -53029,12 +53101,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "800",
-    color: "#111827",
+    color: "#334155",
     textAlign: "center",
     letterSpacing: 0.3
   },
   bottomNavLabelActive: {
-    color: "#066C84",
+    color: "#8A5A00",
     fontWeight: "900",
     letterSpacing: 0.4
   },
@@ -53046,87 +53118,101 @@ const styles = StyleSheet.create({
   heroRouteHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
   },
   heroRouteLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
+    width: 52,
+    height: 52,
+    borderRadius: 16,
     borderCurve: "continuous",
-    borderWidth: 2,
-    borderColor: "rgba(56,189,248,0.7)",
-    shadowColor: "#007FB8",
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 0 },
+    borderWidth: 1,
+    borderColor: "rgba(196,163,90,0.34)",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F3D5E",
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
   },
   heroRouteAppName: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#007FB8",
-    letterSpacing: 2.8,
+    fontSize: 14,
+    fontWeight: "800",
+    color: "#0F172A",
+    letterSpacing: 3.1,
   },
   heroRouteTagline: {
     fontSize: 12,
-    color: "#A14A08",
-    letterSpacing: 1.8,
+    color: "#8A5A00",
+    letterSpacing: 1.6,
     fontWeight: "800",
     textTransform: "uppercase",
     lineHeight: 16,
     opacity: 0.9,
   },
   heroRouteQuestion: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#0D1F22",
-    letterSpacing: -0.3,
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: "900",
+    color: "#0F172A",
+    letterSpacing: -0.4,
   },
   heroRouteInput: {
-    backgroundColor: "rgba(13,31,34,0.05)",
-    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
-    color: "#0D1F22",
+    color: "#0F172A",
     borderWidth: 1,
-    borderColor: "rgba(13,31,34,0.18)",
+    borderColor: "rgba(15,61,94,0.12)",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
 
   heroRoutePreview: {
-    backgroundColor: "rgba(13,31,34,0.05)",
-    borderRadius: 8,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
     padding: 10,
     gap: 4,
+    borderWidth: 1,
+    borderColor: "rgba(15,61,94,0.08)",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   heroRoutePreviewLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#8A6D1E",
+    color: "#0A6F66",
     letterSpacing: 0.3,
   },
   heroRoutePreviewDetail: {
     fontSize: 12,
-    color: "rgba(13,31,34,0.72)",
+    color: "#475569",
     lineHeight: 17,
   },
   // ── Dynamic Hero Card ──────────────────────────────────────────────────────
   dynamicHeroCard: {
-    borderRadius: 24,
+    borderRadius: 28,
     borderCurve: "continuous",
-    backgroundColor: "#E3F1F3",
-    padding: 22,
+    backgroundColor: "#FFFFFF",
+    padding: 24,
     marginBottom: 14,
     overflow: "hidden",
     // Deep layered shadow + a crisper gold frame so the hero reads as a
     // premium, lit card rather than a flat pale panel.
-    shadowColor: "#0F7A8C",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.16,
+    shadowOpacity: 0.08,
     shadowRadius: 24,
-    elevation: 10,
-    borderWidth: 1.5,
-    borderColor: "rgba(196,163,90,0.45)",
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: "rgba(15,61,94,0.08)",
   },
   dynamicHeroTopStrip: {
     flexDirection: "row",
@@ -53135,51 +53221,53 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.07)",
+    borderBottomColor: "rgba(15,61,94,0.08)",
   },
   dynamicHeroDate: {
     fontSize: 12,
-    color: "#111827",
-    fontWeight: "500",
+    color: "#475569",
+    fontWeight: "600",
     letterSpacing: 0.4,
   },
   dynamicHeroStreakBadge: {
-    backgroundColor: "rgba(255,140,0,0.18)",
+    backgroundColor: "rgba(196,163,90,0.14)",
     borderRadius: 12,
     borderCurve: "continuous",
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderWidth: 1,
-    borderColor: "rgba(255,140,0,0.35)",
+    borderColor: "rgba(196,163,90,0.30)",
   },
   dynamicHeroStreakText: {
     fontSize: 12,
-    color: "#B85C00",
+    color: "#8A5A00",
     fontWeight: "700",
   },
   dynamicHeroGreeting: {
     fontSize: 13,
-    color: "#111827",
+    color: "#475569",
     fontWeight: "500",
     marginBottom: 2,
     marginTop: 14,
     letterSpacing: 0.3,
   },
   dynamicHeroCTA: {
-    backgroundColor: "#C4A35A",
-    borderRadius: 14,
+    backgroundColor: "#0D2334",
+    borderRadius: 16,
     borderCurve: "continuous",
     paddingVertical: 16,
     alignItems: "center",
     marginTop: 4,
-    shadowColor: "#C4A35A",
+    shadowColor: "#0D2334",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 6,
+    shadowOpacity: 0.24,
+    shadowRadius: 12,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: "rgba(196,163,90,0.38)",
   },
   dynamicHeroCTALabel: {
-    color: "#0A2225",
+    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0.5,
@@ -53191,15 +53279,15 @@ const styles = StyleSheet.create({
     right: 0,
     height: 3,
     backgroundColor: "#C4A35A",
-    opacity: 0.5,
+    opacity: 0.55,
     borderBottomLeftRadius: 22,
     borderBottomRightRadius: 22,
   },
   // ── Daily prompt chip ──
   heroRouteDailyChip: {
-    backgroundColor: "rgba(196,163,90,0.15)",
+    backgroundColor: "rgba(196,163,90,0.12)",
     borderWidth: 1,
-    borderColor: "rgba(196,163,90,0.4)",
+    borderColor: "rgba(196,163,90,0.30)",
     borderRadius: 20,
     borderCurve: "continuous",
     paddingHorizontal: 14,
@@ -53208,7 +53296,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   heroRouteDailyChipLabel: {
-    color: "#8A6D1E",
+    color: "#8A5A00",
     fontSize: 12,
     fontWeight: "600",
   },
@@ -53238,17 +53326,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minWidth: 0,
     maxWidth: "100%",
-    borderRadius: 20,
+    borderRadius: 24,
     borderCurve: "continuous",
-    padding: 16,
+    padding: 18,
     marginBottom: 16,
     gap: 14,
     borderWidth: 1,
-    borderColor: "rgba(15,61,94,0.10)",
+    borderColor: "rgba(15,61,94,0.08)",
+    backgroundColor: "#FFFFFF",
     shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 18,
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
     elevation: 5,
   },
   tabBannerEmoji: {
@@ -53262,7 +53351,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 27,
     fontWeight: "800",
-    color: "#0D1F22",
+    color: "#0F172A",
     letterSpacing: -0.3,
   },
   // Secondary text in a proper grey (Apple secondary-label style) rather than
@@ -53270,13 +53359,13 @@ const styles = StyleSheet.create({
   tabBannerSub: {
     fontSize: 13,
     lineHeight: 18,
-    color: "#3A577D",
+    color: "#4B6277",
     marginTop: 3,
     letterSpacing: 0,
   },
   tabBannerDate: {
     fontSize: 12,
-    color: "#111827",
+    color: "#475569",
     textAlign: "right",
   },
   // Shared "Active focus" strip -- previously duplicated inline on ~10 tabs
@@ -53287,8 +53376,8 @@ const styles = StyleSheet.create({
   activeFocusStrip: {
     marginHorizontal: 16,
     marginBottom: 8,
-    backgroundColor: "#EAF1F0",
-    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
     borderCurve: "continuous",
     paddingHorizontal: 14,
     paddingVertical: 9,
@@ -53299,9 +53388,9 @@ const styles = StyleSheet.create({
     borderColor: "rgba(15,61,94,0.08)",
     shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 1,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   activeFocusLabel: {
     color: "#0A6F66",
@@ -53310,7 +53399,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   activeFocusValue: {
-    color: "#263244",
+    color: "#475569",
     fontWeight: "400",
   },
   // ── Community crisis notice ──
@@ -53336,24 +53425,24 @@ const styles = StyleSheet.create({
   // ── Streak Card ────────────────────────────────────────────────────────────
   // ── Profile Features Grid ──
   profileFeaturesGrid: {
-    backgroundColor: "#E1EEEC",
-    borderRadius: 18,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
     borderCurve: "continuous",
-    borderWidth: 1.5,
-    borderColor: "rgba(14,199,189,0.28)",
+    borderWidth: 1,
+    borderColor: "rgba(15,61,94,0.08)",
     padding: 16,
     marginBottom: 10,
     gap: 10,
-    shadowColor: "#00B7AE",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.06,
     shadowRadius: 12,
-    elevation: 6,
+    elevation: 3,
   },
   profileFeaturesTitle: {
     fontSize: 12,
     fontWeight: "800",
-    color: "rgba(245,200,66,0.8)",
+    color: "#8A5A00",
     letterSpacing: 1.2,
     textTransform: "uppercase",
   },
@@ -53366,13 +53455,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "rgba(14,199,189,0.12)",
+    backgroundColor: "rgba(14,111,105,0.08)",
     borderRadius: 20,
     borderCurve: "continuous",
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderWidth: 1,
-    borderColor: "rgba(14,199,189,0.3)",
+    borderColor: "rgba(14,111,105,0.16)",
   },
   profileFeatureChipIcon: {
     fontSize: 14,
@@ -53380,23 +53469,23 @@ const styles = StyleSheet.create({
   profileFeatureChipLabel: {
     fontSize: 12,
     fontWeight: "800",
-    color: "#0D1F22",
+    color: "#0F172A",
   },
   // ── Vedic Daily Prediction Card ────────────────────────────────────────────
   vedicCard: {
-    borderRadius: 20,
+    borderRadius: 24,
     borderCurve: "continuous",
-    backgroundColor: "#E1E4EF",
-    borderWidth: 1.5,
-    borderColor: "rgba(139,92,246,0.45)",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(79,70,229,0.12)",
     padding: 18,
     gap: 14,
     marginBottom: 8,
-    shadowColor: "#8B5CF6",
+    shadowColor: "#0F3D5E",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 20,
-    elevation: 10
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 4
   },
   vedicCardHeader: {
     flexDirection: "row",
@@ -53410,22 +53499,22 @@ const styles = StyleSheet.create({
   vedicCardEyebrow: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#2600B8",
+    color: "#4F46E5",
     letterSpacing: 1.8,
     textTransform: "uppercase"
   },
   vedicCardDate: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#111827"
+    color: "#475569"
   },
   vedicRashiBadge: {
     alignItems: "center",
-    backgroundColor: "rgba(139,92,246,0.18)",
+    backgroundColor: "rgba(79,70,229,0.08)",
     borderRadius: 12,
     borderCurve: "continuous",
     borderWidth: 1,
-    borderColor: "rgba(139,92,246,0.4)",
+    borderColor: "rgba(79,70,229,0.18)",
     paddingHorizontal: 10,
     paddingVertical: 6,
     gap: 2
@@ -53437,7 +53526,7 @@ const styles = StyleSheet.create({
   vedicRashiName: {
     fontSize: 12,
     fontWeight: "800",
-    color: "#2600B8",
+    color: "#4F46E5",
     letterSpacing: 0.5
   },
   vedicVaraRow: {
