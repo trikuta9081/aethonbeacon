@@ -269,6 +269,18 @@ assert(!source.includes('>Your guide is listening<'), 'Counselling header must n
   'آواز درج ہو گئی۔',
 ].forEach((marker) => indexOf(marker));
 assert(
+  source.includes('const [showAllLanguages, setShowAllLanguages] = useState(false)'),
+  'LanguageSection must keep the compact/full language-list toggle state'
+);
+assert(
+  source.includes('const visibleLanguages = showAllLanguages ? languageOptions : primaryLanguageOptions'),
+  'LanguageSection must switch between the primary-language preview and the full language list'
+);
+assert(
+  source.includes('uiCopy.languagePageToggleCompact') && source.includes('uiCopy.languagePageToggleExpanded'),
+  'LanguageSection must expose copy for the compact/full language-list toggle'
+);
+assert(
   source.includes('getLocalizedCounsellingSafetyCopy(classifyCounsellingSafety(initialIssue), languageId)'),
   'The counselling modal safety notice must follow the selected primary language'
 );

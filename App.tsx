@@ -36919,6 +36919,7 @@ function LanguageSection({
   onStopVoice: () => void;
 }) {
   const uiCopy = getUiCopy(languageId);
+  const [showAllLanguages, setShowAllLanguages] = useState(false);
   const selectedLanguage =
     languageOptions.find((option) => option.id === languageId) ?? languageOptions[0];
   const primaryLanguageOptions = languageOptions.filter((option) => PRIMARY_LANGUAGE_SET.has(option.id));
@@ -36937,6 +36938,9 @@ function LanguageSection({
     tamil: "இங்கு முழுமையாகத் தயாரான முதன்மை மொழிகளே காட்டப்படுகின்றன. மற்ற மொழிகள் முழு இடைமுகம் தயாரான பின் சேர்க்கப்படும்.",
     urdu: "یہاں صرف مکمل طور پر تیار بنیادی زبانیں دکھتی ہیں۔ باقی زبانیں مکمل انٹرفیس تیار ہونے کے بعد شامل ہوں گی۔"
   });
+  const visibleLanguages = showAllLanguages ? languageOptions : primaryLanguageOptions;
+  const visibleLanguageCount = showAllLanguages ? languageOptions.length : primaryLanguageCount;
+  const visibleLanguageCountLabel = showAllLanguages ? uiCopy.languagePageSupportedLanguagesLabel : primaryLanguageCountLabel;
   // Several of the 22 constitutional languages have no text-to-speech voice on
   // any shipping device (Bodo, Santali and Manipuri in particular). Claiming
   // "voice" for them and then playing nothing is exactly the kind of quiet
@@ -36980,8 +36984,6 @@ function LanguageSection({
     [spokenLocales]
   );
 
-  const visibleLanguages = primaryLanguageOptions;
-
   return (
     <View style={styles.panel}>
       <View style={styles.sectionHeader}>
@@ -37016,17 +37018,24 @@ function LanguageSection({
         <Text style={styles.promptText}>{uiCopy.languagePageChoicesIntro}</Text>
         <View style={styles.homeOverviewActions}>
           <View style={styles.homeOverviewButton}>
-            <Text style={styles.homeOverviewButtonLabel}>{primaryLanguageCountLabel}</Text>
+            <Text style={styles.homeOverviewButtonLabel}>
+              {visibleLanguageCount} {visibleLanguageCountLabel}
+            </Text>
           </View>
           <Pressable
             accessibilityRole="button"
-            onPress={onStopVoice}
+            accessibilityLabel={showAllLanguages ? uiCopy.languagePageToggleCompact : uiCopy.languagePageToggleExpanded}
+            onPress={() => setShowAllLanguages((value) => !value)}
             style={({ pressed }) => [styles.homeOverviewButtonSecondary, pressed && styles.pressed]}
           >
-            <Text style={styles.homeOverviewButtonSecondaryLabel}>{uiCopy.languagePageVoiceStop}</Text>
+            <Text style={styles.homeOverviewButtonSecondaryLabel}>
+              {showAllLanguages ? uiCopy.languagePageToggleCompact : uiCopy.languagePageToggleExpanded}
+            </Text>
           </Pressable>
         </View>
-        <Text style={styles.smallMeta}>{primaryOnlySummary}</Text>
+        <Text style={styles.smallMeta}>
+          {showAllLanguages ? uiCopy.languagePageCompactSummaryOpen : primaryOnlySummary}
+        </Text>
         <View style={styles.languageGrid}>
           {visibleLanguages.map((option) => {
             const isSelected = option.id === languageId;
