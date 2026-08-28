@@ -6,7 +6,7 @@ export NVM_DIR="$HOME/.nvm"
 cd ~/AethonBeacon || { echo "❌ Cannot find AethonBeacon folder"; read -n1; exit 1; }
 
 echo "================================================"
-echo "  Aethon Beacon → EAS Init + TestFlight Build"
+echo "  NAYIQ → EAS Init + TestFlight Build"
 echo "================================================"
 echo ""
 echo "✅ Node: $(node -v)"

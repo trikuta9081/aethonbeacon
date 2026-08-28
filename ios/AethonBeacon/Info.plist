@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>Aethon Beacon</string>
+    <string>NAYIQ</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -58,25 +58,25 @@
       <string>_expo._tcp</string>
     </array>
     <key>NSCameraUsageDescription</key>
-    <string>Aethon Beacon does not use your camera.</string>
+    <string>NAYIQ does not use your camera.</string>
     <key>NSContactsUsageDescription</key>
-    <string>Aethon Beacon does not access your contacts.</string>
+    <string>NAYIQ does not access your contacts.</string>
     <key>NSFaceIDUsageDescription</key>
-    <string>Use Face ID to protect your Aethon Beacon data.</string>
+    <string>Use Face ID to protect your NAYIQ data.</string>
     <key>NSLocalNetworkUsageDescription</key>
     <string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Aethon Beacon does not use your location.</string>
+    <string>NAYIQ does not use your location.</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Allow Aethon Beacon to use the microphone when you choose voice input.</string>
+    <string>Allow NAYIQ to use the microphone when you choose voice input.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Aethon Beacon does not access your photo library.</string>
+    <string>NAYIQ does not access your photo library.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
-    <string>Allow Aethon Beacon to transcribe your voice input into text.</string>
+    <string>Allow NAYIQ to transcribe your voice input into text.</string>
     <key>NSUserNotificationsUsageDescription</key>
-    <string>Aethon Beacon sends check-in reminders and mental wellness nudges.</string>
+    <string>NAYIQ sends check-in reminders and mental wellness nudges.</string>
     <key>NSUserTrackingUsageDescription</key>
-    <string>Aethon Beacon does not track you across apps or websites.</string>
+    <string>NAYIQ does not track you across apps or websites.</string>
     <key>RCTNewArchEnabled</key>
     <true/>
     <key>RCTRootViewBackgroundColor</key>

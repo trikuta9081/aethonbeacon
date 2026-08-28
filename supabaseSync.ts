@@ -1,5 +1,5 @@
 /**
- * supabaseSync.ts — Aethon Beacon cross-device sync
+ * supabaseSync.ts — NAYIQ cross-device sync
  *
  * Setup (one-time):
  * 1. Create a free project at https://supabase.com

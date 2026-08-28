@@ -1,4 +1,4 @@
-# Aethon Beacon Supabase Realtime Setup
+# NAYIQ Supabase Realtime Setup
 
 Realtime community feed/chat activates only when these public Expo env vars are present at build/runtime:
 

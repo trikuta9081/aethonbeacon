@@ -1,7 +1,7 @@
-# Aethon Beacon — User Guide
+# NAYIQ — User Guide
 
-Welcome to Aethon Beacon. This guide walks through every screen and how to use
-it. Aethon Beacon works fully offline for the core features; your journal and
+Welcome to NAYIQ. This guide walks through every screen and how to use
+it. NAYIQ works fully offline for the core features; your journal and
 check-ins stay on your device unless you choose to verify and connect.
 
 ---
@@ -120,5 +120,5 @@ are opt-in. See `PRIVACY_AND_COMPLIANCE.md` for the full policy.
 
 If you're in immediate danger, use the **SOS** button or call your local
 emergency number. The Help & Redress tab lists mental-health and crisis lines.
-Aethon Beacon is a supportive tool, not a substitute for professional or
+NAYIQ is a supportive tool, not a substitute for professional or
 emergency care.

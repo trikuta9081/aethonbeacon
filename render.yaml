@@ -17,7 +17,7 @@ services:
       - key: SENDGRID_FROM_EMAIL
         sync: false
       - key: SENDGRID_FROM_NAME
-        value: Aethon Beacon
+        value: NAYIQ
       - key: GOOGLE_TESTER_GROUP_EMAIL
         sync: false
       - key: GOOGLE_GROUP_SERVICE_ACCOUNT_JSON
@@ -49,9 +49,9 @@ services:
       - key: VERIFICATION_HOST
         value: "0.0.0.0"
       - key: VERIFICATION_CORS_ORIGIN
-        value: https://aethonbeacon.com,https://aethon-beacon-web.onrender.com
+        value: https://nayiq.co,https://aethon-beacon-web.onrender.com
       - key: VERIFICATION_BRAND_NAME
-        value: Aethon Beacon
+        value: NAYIQ
       - key: LOCAL_VERIFICATION_DEBUG
         value: "0"
       - key: VERIFICATION_SMS_WEBHOOK_URL
@@ -83,7 +83,7 @@ services:
       - key: SENDGRID_FROM_EMAIL
         sync: false
       - key: SENDGRID_FROM_NAME
-        value: Aethon Beacon
+        value: NAYIQ
       - key: GUIDANCE_SERVICE_KEY
         sync: false
       - key: GUIDANCE_MODEL

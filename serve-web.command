@@ -5,7 +5,7 @@ export NVM_DIR="$HOME/.nvm"
 cd ~/AethonBeacon || { echo "❌ AethonBeacon folder not found"; read -n1; exit 1; }
 
 echo "================================================"
-echo "  Aethon Beacon — Web Preview"
+echo "  NAYIQ — Web Preview"
 echo "================================================"
 echo ""
 

@@ -47,7 +47,7 @@ async function requestAndConfirm({ baseUrl, channel, destination, code }) {
   const payload = {
     channel,
     [destinationKey]: destination,
-    name: "Aethon Beacon QA",
+    name: "NAYIQ QA",
     profileRoleId: "student",
     profileGender: "prefer_not_to_say"
   };

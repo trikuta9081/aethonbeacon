@@ -8,7 +8,7 @@ export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:$PATH"
 cd ~/AethonBeacon || { echo "❌ AethonBeacon folder not found"; read -n1; exit 1; }
 
 echo "========================================"
-echo "  Aethon Beacon — Metro Bundler"
+echo "  NAYIQ — Metro Bundler"
 echo "========================================"
 echo ""
 echo "Starting Metro... The simulator app will"

@@ -1,4 +1,4 @@
-# Aethon Beacon — Privacy & Compliance
+# NAYIQ — Privacy & Compliance
 
 This document covers the privacy policy, the data-handling summary, and the
 store disclosure answers (Google Play Data Safety and Apple App Privacy). It is
@@ -11,10 +11,10 @@ _Effective for app version 1.0.4. Replace bracketed items before publishing._
 
 ## 1. Privacy policy
 
-**Who we are.** Aethon Beacon ("the app", "we") is a wellbeing and guidance app
+**Who we are.** NAYIQ ("the app", "we") is a wellbeing and guidance app
 published by [LEGAL ENTITY / DEVELOPER NAME]. Contact: [SUPPORT EMAIL].
 
-**Our approach.** Aethon Beacon is local-first. The core features — journaling,
+**Our approach.** NAYIQ is local-first. The core features — journaling,
 check-ins, guidance, counselling, tones, meditation, and the Vedic chart — run
 on your device and do not require an account. We do not track you across other
 apps or websites, and we do not sell your data.
@@ -50,7 +50,7 @@ local backup and delete the app to remove this data.
 **not** accessed. We do not use advertising identifiers and do not track across
 apps (`NSUserTrackingUsageDescription` states no tracking).
 
-**Children.** Aethon Beacon is intended for teen and adult users and is not
+**Children.** NAYIQ is intended for teen and adult users and is not
 directed at children under 13. Do not use community features if you are under
 the minimum age in your region.
 
@@ -58,7 +58,7 @@ the minimum age in your region.
 our backend (verification identifier, community content), contact [SUPPORT
 EMAIL] to request access or deletion.
 
-**Not medical care.** Aethon Beacon is a supportive wellbeing tool. It is not a
+**Not medical care.** NAYIQ is a supportive wellbeing tool. It is not a
 medical device, diagnosis, or a substitute for professional or emergency care.
 
 **Changes.** We will update this policy as the app evolves and note the effective

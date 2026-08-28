@@ -1,6 +1,6 @@
-# Aethon Beacon — Documentation
+# NAYIQ — Documentation
 
-Market-readiness documentation set for Aethon Beacon (v1.0.4).
+Market-readiness documentation set for NAYIQ (v1.0.4).
 
 | Document | For | Contents |
 |---|---|---|

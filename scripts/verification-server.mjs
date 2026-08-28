@@ -33,7 +33,7 @@ const corsOrigins = corsOrigin
   .map((origin) => origin.trim())
   .filter(Boolean);
 const requestContext = new AsyncLocalStorage();
-const brandName = (process.env.VERIFICATION_BRAND_NAME ?? "Aethon Beacon").trim() || "Aethon Beacon";
+const brandName = (process.env.VERIFICATION_BRAND_NAME ?? "NAYIQ").trim() || "NAYIQ";
 const debugPreview = process.env.LOCAL_VERIFICATION_DEBUG === "1";
 const smsWebhookUrl = parseWebhookUrl(process.env.VERIFICATION_SMS_WEBHOOK_URL);
 const emailWebhookUrl = parseWebhookUrl(process.env.VERIFICATION_EMAIL_WEBHOOK_URL);
@@ -1653,6 +1653,6 @@ const server = createServer((req, res) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Aethon Beacon verification server listening on http://${host}:${port}`);
+  console.log(`NAYIQ verification server listening on http://${host}:${port}`);
   console.log(`Debug preview ${debugPreview ? "enabled" : "disabled"}.`);
 });

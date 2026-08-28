@@ -256,7 +256,7 @@ assert(
 // Navigation labels, chip labels and button labels were all set in the
 // heaviest weight available. When the maximum is the default there is no
 // emphasis left to spend on the things that need it; 900 now lands only on
-// titles and values ("Aethon Beacon", "Counselling", the clarity score).
+// titles and values ("NAYIQ", "Counselling", the clarity score).
 //
 // The rule enforced below is precisely: no 900 at 13px or under. It is NOT
 // "800 and 900 are reserved for 14px and up" -- an earlier commit message of
@@ -316,7 +316,7 @@ assert(
 // known-bad hexes. 22 text nodes on the Home screen alone failed AA:
 //
 //   #9AA7B2  2.06:1   "Made with care - v1.0.4"
-//   #B88600  2.74:1   the "Aethon Beacon" brand line
+//   #B88600  2.74:1   the "NAYIQ" brand line
 //   #B87D00  2.95:1   the premium support card call to action
 //   #0891B2  3.09:1   "Send OTP", "Profile", "Pending verification"
 //   #0E9488  3.14:1   "Start counselling", "Primary support"

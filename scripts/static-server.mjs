@@ -11,11 +11,11 @@ function parsePositiveInt(value, fallback) {
 const port = parsePositiveInt(process.env.PORT, 3000);
 const host = process.env.HOST?.trim() || "0.0.0.0";
 const staticRoot = resolve(process.env.STATIC_ROOT ?? "dist");
-const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://aethonbeacon.com/join-testers-20260715.html?v=20260715-2315";
+const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://nayiq.co/join-testers-20260715.html?v=20260715-2315";
 const testerRequestNotifyEmail = process.env.TESTER_REQUEST_NOTIFY_EMAIL?.trim() || "slathiarimple567@gmail.com";
 const sendgridApiKey = process.env.SENDGRID_API_KEY?.trim() || "";
 const sendgridFromEmail = process.env.SENDGRID_FROM_EMAIL?.trim() || testerRequestNotifyEmail;
-const sendgridFromName = process.env.SENDGRID_FROM_NAME?.trim() || "Aethon Beacon";
+const sendgridFromName = process.env.SENDGRID_FROM_NAME?.trim() || "NAYIQ";
 const testerRequestsLogPath = process.env.TESTER_REQUESTS_LOG_PATH?.trim() || "/tmp/aethon-tester-requests.ndjson";
 const testerSyncedLogPath = process.env.TESTER_SYNCED_LOG_PATH?.trim() || "/tmp/aethon-tester-synced.ndjson";
 const testerSyncToken = process.env.TESTER_SYNC_TOKEN?.trim() || "";
@@ -102,7 +102,7 @@ function buildTesterRequestPayload(input, req) {
   const name = cleanField(input.name, 120);
   const device = cleanField(input.device, 180);
   const feedback = cleanField(input.feedback, 1500);
-  const source = cleanField(input.source, 240) || "https://aethonbeacon.com/testers";
+  const source = cleanField(input.source, 240) || "https://nayiq.co/testers";
   return {
     id: `atr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     createdAt: new Date().toISOString(),
@@ -119,7 +119,7 @@ function buildTesterRequestPayload(input, req) {
 
 function testerRequestEmailBody(payload) {
   return [
-    "Please process this Aethon Beacon tester request.",
+    "Please process this NAYIQ tester request.",
     "",
     `Request ID: ${payload.id}`,
     `Created: ${payload.createdAt}`,
@@ -133,7 +133,7 @@ function testerRequestEmailBody(payload) {
     `Source: ${payload.source}`,
     `User agent: ${payload.userAgent || "(not captured)"}`,
     "",
-    "Android: manually add this Gmail to a Play Console tester email list (Aethon Beacon Android Testers / Aethon Beacon Testers / Aethon Beacon Internal Testers), then reply to the tester once added.",
+    "Android: manually add this Gmail to a Play Console tester email list (NAYIQ Android Testers / NAYIQ Testers / NAYIQ Internal Testers), then reply to the tester once added.",
     "iOS: add Apple ID email to TestFlight / App Store Connect beta group."
   ].join("\n");
 }
@@ -410,7 +410,7 @@ async function sendTesterRequestEmail(payload) {
   if (!sendgridApiKey || !sendgridFromEmail || !testerRequestNotifyEmail) {
     return { sent: false, reason: "email_not_configured" };
   }
-  const subject = `Aethon Beacon ${payload.platform} access/testify request`;
+  const subject = `NAYIQ ${payload.platform} access/testify request`;
   const body = testerRequestEmailBody(payload);
   const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
@@ -465,11 +465,11 @@ async function handleTesterRequest(req, res) {
       emailSent: emailResult.sent,
       provisioning,
       message: isAndroid
-        ? "Request received. Your Gmail will be added to the Aethon Beacon Play Console tester list by hand, usually within 24 hours -- then use the opt-in link."
+        ? "Request received. Your Gmail will be added to the NAYIQ Play Console tester list by hand, usually within 24 hours -- then use the opt-in link."
         : emailResult.sent
           ? "Request received and emailed."
           : "Request received. If email does not open, use the fallback copy shown on the page.",
-      mailto: `mailto:${testerRequestNotifyEmail}?subject=${encodeURIComponent(`Aethon Beacon ${payload.platform} access/testify request`)}&body=${encodeURIComponent(testerRequestEmailBody(payload))}`
+      mailto: `mailto:${testerRequestNotifyEmail}?subject=${encodeURIComponent(`NAYIQ ${payload.platform} access/testify request`)}&body=${encodeURIComponent(testerRequestEmailBody(payload))}`
     });
   } catch (error) {
     console.error("tester request failed", error);
@@ -733,6 +733,6 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Aethon Beacon static web server listening on http://${host}:${port}`);
+  console.log(`NAYIQ static web server listening on http://${host}:${port}`);
   console.log(`Serving ${staticRoot}`);
 });

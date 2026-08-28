@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Aethon Beacon",
+    "name": "NAYIQ",
     "slug": "aethon-beacon",
     "version": "1.0.4",
     "orientation": "portrait",
@@ -19,15 +19,15 @@
       "requireFullScreen": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "Aethon Beacon does not use your camera.",
-        "NSMicrophoneUsageDescription": "Aethon Beacon uses the microphone when you choose voice input for guidance and journaling.",
-        "NSSpeechRecognitionUsageDescription": "Aethon Beacon uses speech recognition to transcribe voice input into text on supported devices.",
-        "NSPhotoLibraryUsageDescription": "Aethon Beacon does not access your photo library.",
-        "NSContactsUsageDescription": "Aethon Beacon does not access your contacts.",
-        "NSLocationWhenInUseUsageDescription": "Aethon Beacon does not use your location.",
-        "NSUserTrackingUsageDescription": "Aethon Beacon does not track you across apps or websites.",
+        "NSCameraUsageDescription": "NAYIQ does not use your camera.",
+        "NSMicrophoneUsageDescription": "NAYIQ uses the microphone when you choose voice input for guidance and journaling.",
+        "NSSpeechRecognitionUsageDescription": "NAYIQ uses speech recognition to transcribe voice input into text on supported devices.",
+        "NSPhotoLibraryUsageDescription": "NAYIQ does not access your photo library.",
+        "NSContactsUsageDescription": "NAYIQ does not access your contacts.",
+        "NSLocationWhenInUseUsageDescription": "NAYIQ does not use your location.",
+        "NSUserTrackingUsageDescription": "NAYIQ does not track you across apps or websites.",
         "UIRequiresPersistentWiFi": false,
-        "NSFaceIDUsageDescription": "Use Face ID to protect your Aethon Beacon data."
+        "NSFaceIDUsageDescription": "Use Face ID to protect your NAYIQ data."
       },
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [
@@ -65,8 +65,8 @@
       [
         "expo-speech-recognition",
         {
-          "microphonePermission": "Allow Aethon Beacon to use the microphone when you choose voice input.",
-          "speechRecognitionPermission": "Allow Aethon Beacon to transcribe your voice input into text.",
+          "microphonePermission": "Allow NAYIQ to use the microphone when you choose voice input.",
+          "speechRecognitionPermission": "Allow NAYIQ to transcribe your voice input into text.",
           "androidSpeechServicePackages": [
             "com.google.android.googlequicksearchbox"
           ]
@@ -75,7 +75,7 @@
       "expo-audio"
     ],
     "extra": {
-      "privacyPolicyUrl": "https://trikuta9081.github.io/aethonbeacon/privacy-policy.html",
+      "privacyPolicyUrl": "https://nayiq.co/privacy-policy.html",
       "supportEmail": "trikuta9081@gmail.com",
       "eas": {
         "projectId": "c9c6e5ac-336f-49e0-8dfa-f725aeaf8442"

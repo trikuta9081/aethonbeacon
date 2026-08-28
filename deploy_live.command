@@ -11,7 +11,7 @@
 # is the single source of truth going forward; the old ones are gone.
 #
 # What "everywhere" means, concretely:
-#   1. Web        — aethonbeacon.com. Render's "aethon-beacon-web" service
+#   1. Web        — nayiq.co. Render's "aethon-beacon-web" service
 #                    watches the "main" branch on the "render" remote
 #                    (github.com/trikuta9081/AETHON-beacon-, a DIFFERENT
 #                    GitHub repo from "origin"). It redeploys automatically
@@ -79,7 +79,7 @@ git push render master:main --force
 
 echo ""
 echo "Done. HEAD $(git rev-parse --short HEAD) is shipping to all three surfaces:"
-echo "  Web     -> https://aethonbeacon.com (live in ~30s — check in a fresh Incognito window)"
+echo "  Web     -> https://nayiq.co (live in ~30s — check in a fresh Incognito window)"
 echo "  Android -> Play testers (Actions building now)"
 echo "  iOS     -> TestFlight (Actions building now)"
 echo "  Progress: https://github.com/trikuta9081/aethonbeacon/actions"

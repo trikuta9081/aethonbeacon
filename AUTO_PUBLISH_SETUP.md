@@ -39,7 +39,7 @@ Steps to generate:
 1. Play Console → Setup → API access → Create service account (follows link to Google Cloud Console).
 2. Name it `aethon-beacon-ci`, click Create.
 3. Grant this role: **Service Account User**.
-4. Back in Play Console → API access → find your new service account → Grant access → give it `Release manager` role for the Aethon Beacon app.
+4. Back in Play Console → API access → find your new service account → Grant access → give it `Release manager` role for the NAYIQ app.
 5. Google Cloud Console → IAM & Admin → Service Accounts → your new one → Keys tab → Add Key → Create new key → JSON → downloads a `.json` file.
 6. Open the .json in TextEdit → Cmd+A → Cmd+C → paste the entire contents (including the outer `{` and `}`) as the secret value.
 

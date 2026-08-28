@@ -10,7 +10,7 @@ export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:$HOME/.gem/bin:
 cd ~/AethonBeacon || { echo "❌ AethonBeacon folder not found"; read -n1; exit 1; }
 
 echo "================================================"
-echo "  Aethon Beacon — iOS Simulator (Native Build)"
+echo "  NAYIQ — iOS Simulator (Native Build)"
 echo "================================================"
 echo ""
 echo "✅ Node: $(node -v)"

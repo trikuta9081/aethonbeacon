@@ -3,7 +3,7 @@
 Checked in Google Play Console on July 15, 2026 under `slathiarimple567@gmail.com`.
 
 ## App
-- App: Aethon Beacon
+- App: NAYIQ
 - Package: `com.aethonbeacon.app`
 - Track: Closed testing - Alpha
 - Track status: Active
@@ -14,9 +14,9 @@ Checked in Google Play Console on July 15, 2026 under `slathiarimple567@gmail.co
 ## Tester lists selected for Closed testing - Alpha
 All three email lists are selected for the closed testing track:
 
-- `Aethon Beacon Android Testers` — 31 users
-- `Aethon Beacon Internal Testers` — 1 user
-- `Aethon Beacon Testers` — 15 users
+- `NAYIQ Android Testers` — 31 users
+- `NAYIQ Internal Testers` — 1 user
+- `NAYIQ Testers` — 15 users
 
 This means there are enough invited/eligible testers in the lists. The blocker is that only 3 have actually opted in.
 
@@ -37,7 +37,7 @@ This change was submitted through Publishing overview and is currently **in revi
 Copy/paste this to every invited tester:
 
 ```text
-Hi, please join the Aethon Beacon closed test.
+Hi, please join the NAYIQ closed test.
 
 1. Open this opt-in link with your Gmail account:
    https://play.google.com/apps/testing/com.aethonbeacon.app

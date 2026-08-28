@@ -3,7 +3,7 @@ cd ~/AethonBeacon
 
 echo ""
 echo "==========================================="
-echo "  Aethon Beacon — iOS Archive via Xcode"
+echo "  NAYIQ — iOS Archive via Xcode"
 echo "==========================================="
 
 echo ""

@@ -1,4 +1,4 @@
--- Aethon Beacon -- Community feed/chat schema
+-- NAYIQ -- Community feed/chat schema
 --
 -- Run this once in the Supabase SQL Editor for your project
 -- (isfkxmrathirqkrwfagg): left sidebar icon that looks like a terminal

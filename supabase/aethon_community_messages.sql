@@ -1,4 +1,4 @@
--- Aethon Beacon realtime community messaging schema
+-- NAYIQ realtime community messaging schema
 -- Run this in Supabase SQL Editor.
 -- Then confirm Realtime is enabled for public.aethon_community_messages.
 

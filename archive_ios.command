@@ -3,7 +3,7 @@ cd ~/AethonBeacon
 
 echo ""
 echo "==========================================="
-echo "  Aethon Beacon — iOS Archive (Direct)"
+echo "  NAYIQ — iOS Archive (Direct)"
 echo "==========================================="
 
 # Clean old archive

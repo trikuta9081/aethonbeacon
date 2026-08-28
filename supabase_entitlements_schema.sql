@@ -1,4 +1,4 @@
--- supabase_entitlements_schema.sql — Aethon Beacon premium entitlement sync
+-- supabase_entitlements_schema.sql — NAYIQ premium entitlement sync
 --
 -- Run this once in the Supabase SQL Editor for the same project already used
 -- by supabaseSync.ts / realtimeCommunity.ts (Settings → API for the URL/keys

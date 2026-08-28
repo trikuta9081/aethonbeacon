@@ -2,7 +2,7 @@
 
 Live tester page:
 
-- https://aethonbeacon.com/testers.html
+- https://nayiq.co/testers.html
 
 Direct links:
 
@@ -28,9 +28,9 @@ Recruitment channels:
 Copy/paste invite:
 
 ```text
-Hi, can you help test my Android app Aethon Beacon?
+Hi, can you help test my Android app NAYIQ?
 
-1. Open: https://aethonbeacon.com/testers.html
+1. Open: https://nayiq.co/testers.html
 2. Tap “Join closed test”.
 3. Tap “Become a tester”.
 4. Install the app and keep it installed/opted in for 14 days.

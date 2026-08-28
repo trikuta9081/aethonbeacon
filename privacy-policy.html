@@ -1,125 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy — Aethon Beacon</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0A0F1E; color: #CBD5E1; line-height: 1.7; padding: 40px 20px; }
-    .wrap { max-width: 720px; margin: 0 auto; }
-    h1 { color: #63DED0; font-size: 28px; font-weight: 800; margin-bottom: 6px; }
-    .meta { color: #475569; font-size: 13px; margin-bottom: 40px; }
-    h2 { color: #E2E8F0; font-size: 18px; font-weight: 700; margin: 36px 0 12px; border-left: 3px solid #63DED0; padding-left: 12px; }
-    p { color: #94A3B8; font-size: 15px; margin-bottom: 14px; }
-    ul { color: #94A3B8; font-size: 15px; padding-left: 20px; margin-bottom: 14px; }
-    li { margin-bottom: 6px; }
-    a { color: #63DED0; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .highlight { background: #0F1E30; border: 1px solid #1E3A50; border-radius: 10px; padding: 16px 20px; margin: 20px 0; }
-    .highlight p { margin: 0; color: #CBD5E1; }
-    footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid #1E293B; color: #334155; font-size: 13px; }
-  </style>
-</head>
-<body>
-<div class="wrap">
-
-  <h1>Privacy Policy</h1>
-  <p class="meta">Aethon Beacon &nbsp;·&nbsp; Last updated: June 28, 2026 &nbsp;·&nbsp; Effective immediately</p>
-
-  <div class="highlight">
-    <p>🔒 <strong style="color:#63DED0">Short version:</strong> Everything you write stays on your device. We do not collect, sell, or share your personal data. Your emotional check-ins, journal entries, and health information never leave your phone unless you explicitly export them yourself.</p>
-  </div>
-
-  <h2>1. Who We Are</h2>
-  <p>Aethon Beacon ("the app", "we", "our") is a personal wellness application designed to help individuals track emotional states, access guided wellness practices, and receive personalised insights. The app is operated by its developer and is available on iOS and Android.</p>
-  <p>For questions about this policy, contact us at: <a href="mailto:trikuta9081@gmail.com">trikuta9081@gmail.com</a></p>
-
-  <h2>2. Data We Collect — and Don't</h2>
-
-  <p><strong style="color:#E2E8F0">Data stored only on your device (never transmitted to us):</strong></p>
-  <ul>
-    <li>Emotional check-in entries (mood, tone, journal text, tags)</li>
-    <li>Profile information you enter (name, identity role, date of birth)</li>
-    <li>Vedic birth chart data derived from your date of birth</li>
-    <li>Streak and habit data</li>
-    <li>Reminder and notification preferences</li>
-    <li>Trusted contact names and numbers (stored locally, never synced)</li>
-    <li>App usage preferences and settings</li>
-  </ul>
-
-  <p><strong style="color:#E2E8F0">Data we do NOT collect:</strong></p>
-  <ul>
-    <li>We do not use analytics SDKs (no Firebase Analytics, Mixpanel, Amplitude, etc.)</li>
-    <li>We do not run advertising networks</li>
-    <li>We do not track your location</li>
-    <li>We do not access your camera, microphone, or photo library</li>
-    <li>We do not create user accounts or store data on our servers</li>
-  </ul>
-
-  <h2>3. Local Storage</h2>
-  <p>All data is stored using your device's secure local storage (AsyncStorage on React Native). This data is included in your standard iOS/Android device backup if you have iCloud or Google Backup enabled. You can disable this in your device settings.</p>
-  <p>Uninstalling the app permanently deletes all stored data from your device.</p>
-
-  <h2>4. Notifications</h2>
-  <p>If you enable daily reminders, the app schedules local push notifications on your device. These notifications are generated entirely on-device — no data is sent to our servers to schedule them. You can disable notifications at any time in your device settings or within the app.</p>
-
-  <h2>5. Community Features</h2>
-  <p>Aethon Beacon includes a peer community space. If you post in the community:</p>
-  <ul>
-    <li>Posts are visible to other verified users of the community</li>
-    <li>Do not include personally identifying information in community posts</li>
-    <li>The community space is moderated for safety</li>
-  </ul>
-  <p>Community feature infrastructure details will be disclosed fully when live peer networking is activated in a future release.</p>
-
-  <h2>6. Emergency and Crisis Features</h2>
-  <p>The app includes an emergency dial button and displays crisis helpline numbers (including iCall: 9152987821). Pressing the emergency dial button initiates a phone call using your device's standard calling app. We do not monitor or record these calls.</p>
-  <p>If you are in crisis, please contact a professional. This app is not a substitute for medical or psychological care.</p>
-
-  <h2>7. Voice Features</h2>
-  <p>If you enable voice guidance, text-to-speech is performed locally using your device's built-in speech engine (expo-speech / AVSpeechSynthesizer on iOS). No audio is transmitted to us.</p>
-
-  <h2>8. Data Export</h2>
-  <p>You can export your check-in data at any time via Settings → Export Backup. The exported file is saved to your device and shared using your device's standard share sheet. We do not receive a copy.</p>
-
-  <h2>9. Children's Privacy</h2>
-  <p>Aethon Beacon is not intended for children under 17. We do not knowingly collect data from minors. If you believe a minor has entered personal data into the app, uninstalling the app will delete all data.</p>
-
-  <h2>10. Third-Party Services</h2>
-  <p>The app may link to external websites (mental health resources, helplines, government portals). These links open in your device browser or a system web view. Third-party sites have their own privacy policies which we do not control.</p>
-  <p>We use the following system-level frameworks that may have their own data practices:</p>
-  <ul>
-    <li><strong>Expo / React Native</strong> — app runtime framework. See <a href="https://expo.dev/privacy" target="_blank">expo.dev/privacy</a></li>
-    <li><strong>Apple / Google Push</strong> — local notification delivery via OS. No content is transmitted.</li>
-  </ul>
-
-  <h2>11. Your Rights</h2>
-  <p>Since all data is stored locally on your device, you have full control:</p>
-  <ul>
-    <li><strong>Access:</strong> All your data is visible within the app</li>
-    <li><strong>Export:</strong> Use Settings → Export Backup</li>
-    <li><strong>Delete:</strong> Clear entries in Settings, or uninstall the app</li>
-    <li><strong>Correction:</strong> Edit any entry or profile field at any time</li>
-  </ul>
-  <p>For GDPR (EU), CCPA (California), or PDPB (India) enquiries, contact us at <a href="mailto:trikuta9081@gmail.com">trikuta9081@gmail.com</a>. Given that no personal data is transmitted to us, most regulatory obligations are satisfied by design.</p>
-
-  <h2>12. Security</h2>
-  <p>Your data is protected by your device's built-in security (device PIN, Face ID, fingerprint). We recommend keeping your device's OS and the app updated. We have no ability to access your data remotely because it is not stored on our servers.</p>
-
-  <h2>13. Changes to This Policy</h2>
-  <p>If we make material changes to this policy, we will update the "Last updated" date above and, where required by law, notify you within the app. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
-
-  <h2>14. Contact</h2>
-  <p>For any privacy questions, data requests, or concerns:</p>
-  <p><strong style="color:#E2E8F0">Email:</strong> <a href="mailto:trikuta9081@gmail.com">trikuta9081@gmail.com</a></p>
-  <p>We aim to respond within 5 business days.</p>
-
-  <footer>
-    <p>© 2026 Aethon Beacon. All rights reserved.</p>
-    <p style="margin-top:6px">This privacy policy was last reviewed on June 28, 2026.</p>
-  </footer>
-
-</div>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NAYIQ Privacy Policy</title>
+    <style>
+      body {
+        margin: 0;
+        background: #f7f4ed;
+        color: #102a2d;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 40px 20px 56px;
+      }
+      a {
+        color: #0e6f69;
+        font-weight: 800;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(32px, 6vw, 52px);
+        line-height: 1.05;
+      }
+      h2 {
+        margin-top: 28px;
+        font-size: 22px;
+      }
+      .eyebrow {
+        color: #0e6f69;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .card {
+        margin-top: 24px;
+        border: 1px solid #dfd5c5;
+        border-radius: 8px;
+        background: #fffdf8;
+        padding: 24px;
+      }
+      li {
+        margin: 6px 0;
+      }
+      footer {
+        margin-top: 36px;
+        color: #5e675f;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">NAYIQ</p>
+      <h1>Privacy Policy</h1>
+      <p>Last updated: June 7, 2026</p>
+      <div class="card">
+        <h2>Summary</h2>
+        <p>
+          NAYIQ is designed to work local-first. In the current release, most user data stays
+          on the user's device unless the user exports it or later chooses a sync feature.
+        </p>
+        <h2>Information Stored</h2>
+        <ul>
+          <li>check-ins and journal entries</li>
+          <li>selected identity profile</li>
+          <li>reminder preferences</li>
+          <li>SOS number and trusted contacts</li>
+          <li>issue guide progress and redress preferences</li>
+          <li>community drafts, saved items, moderation state, and verification status</li>
+          <li>support locality for nearby help searches</li>
+        </ul>
+        <h2>How Data Is Used</h2>
+        <p>
+          Data is used to show the user's own history, tailor guidance, keep reminders and support
+          paths working, enable SOS and trusted-contact actions, and gate community chat until phone
+          and email verification are complete.
+        </p>
+        <h2>Sharing</h2>
+        <p>
+          The app does not need a social account to function in its current local-first form. Data
+          remains on the device unless the user exports it or a future sync feature is explicitly
+          enabled.
+        </p>
+        <h2>Safety and Children</h2>
+        <p>
+          NAYIQ includes SOS actions, trusted contacts, official helplines, and complaint
+          redress paths. Children, students, and vulnerable users should use the app with appropriate
+          supervision where required.
+        </p>
+        <h2>Retention and Changes</h2>
+        <p>
+          Local data stays on the device until the user clears it, exports it, or changes feature
+          settings. This policy may be updated as the product grows.
+        </p>
+        <p>
+          Users can request deletion of online verification, Beacon Guide, or community support records
+          through the <a href="/data-deletion.html">NAYIQ data deletion page</a>.
+        </p>
+      </div>
+      <footer>
+        <a href="/">Return to NAYIQ</a>
+      </footer>
+    </main>
+  </body>
 </html>

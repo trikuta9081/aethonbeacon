@@ -4,16 +4,16 @@ Last updated: 2026-07-30
 
 ## Current state (verified 2026-07-30)
 
-- **iOS (TestFlight): auto-add is live.** App Store Connect "All Testers" reports **38 testers** in the `Aethon Beacon External TestFlight` group (id `33754363-e559-4dce-ad22-bf6c1f043fac`). Most were added on 2026-07-23 by the server's `addIosTesterToTestFlight()` path in `scripts/static-server.mjs`. The form on `https://aethonbeacon.com/testers` submits to `/api/tester-request`, which calls the App Store Connect API and immediately adds + invites the Apple ID.
+- **iOS (TestFlight): auto-add is live.** App Store Connect "All Testers" reports **38 testers** in the `NAYIQ External TestFlight` group (id `33754363-e559-4dce-ad22-bf6c1f043fac`). Most were added on 2026-07-23 by the server's `addIosTesterToTestFlight()` path in `scripts/static-server.mjs`. The form on `https://nayiq.co/testers` submits to `/api/tester-request`, which calls the App Store Connect API and immediately adds + invites the Apple ID.
 - **Android (Play Console closed testing): auto-add is NOT possible with the current allowlist configuration.** The Play Console dashboard reports **4 testers currently opted in** — unchanged from the 2026-07-23 baseline, seven days after the outreach push to 47 Gmail addresses. Only the 4 people who already were in a list before that push have opted in; no new opt-ins have landed.
 
 ## Why Android auto-add is broken
 
 On 2026-07-23 the Alpha track's tester audience was switched from a **Google Group** to **three Play Console "Email lists"**:
 
-- `Aethon Beacon Android Testers` (31 users)
-- `Aethon Beacon Internal Testers` (1 user)
-- `Aethon Beacon Testers` (15 users)
+- `NAYIQ Android Testers` (31 users)
+- `NAYIQ Internal Testers` (1 user)
+- `NAYIQ Testers` (15 users)
 
 The server code documents this in `scripts/static-server.mjs` around line 236:
 
@@ -40,7 +40,7 @@ This is the closest thing to iOS-parity that Google's API restrictions allow. Tw
 
 **Scheduled task (`scheduled-tasks/android-tester-auto-sync.md`):**
 
-On every scheduled run, the task fetches the pending list; if any, opens the Alpha track → Testers tab in Play Console via Claude in Chrome, clicks the → arrow next to *Aethon Beacon Android Testers*, pastes the comma-separated Gmails, presses Enter, clicks Save, then POSTs the emails to `/api/mark-testers-synced` so they don't get re-added.
+On every scheduled run, the task fetches the pending list; if any, opens the Alpha track → Testers tab in Play Console via Claude in Chrome, clicks the → arrow next to *NAYIQ Android Testers*, pastes the comma-separated Gmails, presses Enter, clicks Save, then POSTs the emails to `/api/mark-testers-synced` so they don't get re-added.
 
 From the tester's point of view this is indistinguishable from iOS: submit the form, get added — the delay is just the scheduled-task cadence you set (recommend every 30 or 60 minutes). Set `TESTER_SYNC_TOKEN` on the server, paste the same value into the task file, and schedule it via `/schedule`.
 
@@ -54,7 +54,7 @@ Restores the full automation you already have in `addAndroidTesterToGoogleGroup(
 
 Steps in Play Console:
 
-1. Open Play Console → Aethon Beacon → **Testing → Closed testing → Alpha → Testers** tab.
+1. Open Play Console → NAYIQ → **Testing → Closed testing → Alpha → Testers** tab.
 2. Under "Manage testers" change **Audience** from *Email lists* to *Google Groups*.
 3. Enter the group email (e.g. `aethon-beacon-testers@googlegroups.com`) and Save.
 
@@ -80,6 +80,6 @@ Ship **Option A** today. It's the honest iOS-parity path given Google's API rest
 
 ## Verification checklist after either fix
 
-- Submit a fresh Gmail through `https://aethonbeacon.com/testers`.
+- Submit a fresh Gmail through `https://nayiq.co/testers`.
 - Confirm within a few minutes that the same Gmail appears in the target email list (A) or Google Group (B).
 - Watch the Play Console dashboard "N testers currently opted-in" line — it should tick upward within 24 hours as those Gmails click the opt-in link.

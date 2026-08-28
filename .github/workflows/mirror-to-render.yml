@@ -172,7 +172,7 @@ jobs:
               # curl pipe and produce curl 23 under `set -o pipefail`.
               if curl -fsSL -H 'Cache-Control: no-cache' -o "${bundle_file}" "${bundle_url}" \
                 && grep -Fq "${short_sha}" "${bundle_file}"; then
-                if printf '%s' "${html}" | grep -Fq '<title>Aethon Beacon</title>'; then
+                if printf '%s' "${html}" | grep -Fq '<title>NAYIQ</title>'; then
                   echo "Live Render smoke check passed for ${short_sha}"
                   exit 0
                 fi

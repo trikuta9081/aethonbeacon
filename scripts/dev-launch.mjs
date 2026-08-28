@@ -50,7 +50,7 @@ function start(label, command, args, extraEnv = {}) {
   return child;
 }
 
-console.log("Starting Aethon Beacon local launch stack...");
+console.log("Starting NAYIQ local launch stack...");
 const nodeBinary = process.execPath;
 const codexPnpmBinary = "/Users/rajeshwerslathiia/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/pnpm";
 const pnpmBinary = fs.existsSync(codexPnpmBinary) ? codexPnpmBinary : "pnpm";

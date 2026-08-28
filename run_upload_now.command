@@ -30,7 +30,7 @@ git add -f dist/
 git commit -m "deploy: updated web bundle + iOS bundleId fix" 2>&1 | tee -a "$LOG" || echo "(nothing to commit)" | tee -a "$LOG"
 git push origin master 2>&1 | tee -a "$LOG"
 git push render master 2>&1 | tee -a "$LOG"
-echo "Web live at aethonbeacon.com" | tee -a "$LOG"
+echo "Web live at nayiq.co" | tee -a "$LOG"
 
 # ── Step 4: Android local release build ──────────────────
 echo "" | tee -a "$LOG"
@@ -55,7 +55,7 @@ fi
 
 echo "" | tee -a "$LOG"
 echo "=== ALL DONE ===" | tee -a "$LOG"
-echo "  Web: live at https://aethonbeacon.com" | tee -a "$LOG"
+echo "  Web: live at https://nayiq.co" | tee -a "$LOG"
 echo "  Android APK: $HOME/AethonBeacon/AethonBeacon-release.apk" | tee -a "$LOG"
 
 rm -- "$0"

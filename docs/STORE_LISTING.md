@@ -1,4 +1,4 @@
-# Aethon Beacon — Store Listing Pack
+# NAYIQ — Store Listing Pack
 
 Copy for Google Play and the Apple App Store. Adjust wording to fit each store's
 current character limits before submitting; lengths below target the common
@@ -8,7 +8,7 @@ App Store: 30-char name, 30-char subtitle, ~4000-char description).
 ---
 
 ## App name / title
-**Aethon Beacon**
+**NAYIQ**
 
 ## Subtitle (App Store, ≤30 chars)
 Guidance, calm & real help
@@ -20,11 +20,11 @@ Private counselling, calming tools, grievance help, and a plain-language chart.
 
 ## Full description
 
-**Aethon Beacon is a calm, private companion for the hard parts of life — and a
+**NAYIQ is a calm, private companion for the hard parts of life — and a
 practical toolkit for getting real help when you need it.**
 
 Whether you're anxious, stuck, grieving, or just want to think something through,
-Aethon Beacon listens, reflects back what it hears, and gives you a personalised
+NAYIQ listens, reflects back what it hears, and gives you a personalised
 path forward — not generic advice. And when a problem is bigger than a feeling —
 a complaint, a threat, an unfair situation — it hands you the exact next step,
 the right office, and the words to use.
@@ -61,7 +61,7 @@ a supportive progress report.
 Your journal and check-ins stay on your device by default. No cross-app
 tracking. Community and verification are opt-in.
 
-Aethon Beacon is a supportive wellbeing tool, not a medical device or a
+NAYIQ is a supportive wellbeing tool, not a medical device or a
 substitute for professional or emergency care.
 
 ---

@@ -55,4 +55,4 @@ mark = square_icon(820)
 splash.paste(mark, ((1284 - 820)//2, (2778 - 820)//2))
 splash.save(ASSETS / "splash.png", optimize=True)
 
-print("Generated the vibrant Aethon Beacon identity for Expo, Android, iOS, web, and splash.")
+print("Generated the vibrant NAYIQ identity for Expo, Android, iOS, web, and splash.")

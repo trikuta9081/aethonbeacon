@@ -1,5 +1,5 @@
 /**
- * entitlements.ts — Aethon Beacon premium entitlement sync
+ * entitlements.ts — NAYIQ premium entitlement sync
  *
  * The read/subscribe half of the RevenueCat integration. See
  * supabase_entitlements_schema.sql for the table this reads, and

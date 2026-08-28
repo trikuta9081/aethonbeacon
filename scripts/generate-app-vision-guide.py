@@ -31,13 +31,13 @@ DOCX_PATH = PUBLIC / "aethon-beacon-app-vision-guide.docx"
 
 
 CONTENT = {
-    "title": "Aethon Beacon App Vision Guide",
+    "title": "NAYIQ App Vision Guide",
     "subtitle": "What the app does, how to use it, and how the daily flow stays calm, private, and guided.",
     "sections": [
         {
             "heading": "1. What this app is for",
             "paragraphs": [
-                "Aethon Beacon is a guidance and redressal app. It is built to help a user say what is happening, understand the situation, choose a useful next step, and move toward calm, clarity, support, or complaint redress without unnecessary wandering.",
+                "NAYIQ is a guidance and redressal app. It is built to help a user say what is happening, understand the situation, choose a useful next step, and move toward calm, clarity, support, or complaint redress without unnecessary wandering.",
                 "The app is designed to feel like one guided conversation, not a maze of unrelated screens."
             ],
         },
@@ -125,7 +125,7 @@ CONTENT = {
         {
             "heading": "10. Quick promise",
             "paragraphs": [
-                "Aethon Beacon should feel like: I said my problem, and the app took me somewhere useful.",
+                "NAYIQ should feel like: I said my problem, and the app took me somewhere useful.",
             ],
         },
     ],

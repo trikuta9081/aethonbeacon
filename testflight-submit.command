@@ -19,7 +19,7 @@ if ! command -v npx &>/dev/null; then
 fi
 
 echo "================================================"
-echo "  Aethon Beacon → TestFlight Submission"
+echo "  NAYIQ → TestFlight Submission"
 echo "================================================"
 echo ""
 

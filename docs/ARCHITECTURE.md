@@ -1,8 +1,8 @@
-# Aethon Beacon — Architecture & Developer Guide
+# NAYIQ — Architecture & Developer Guide
 
 _Last updated for app version 1.0.4 (iOS build 54)._
 
-Aethon Beacon is a cross-platform wellbeing app that combines a private
+NAYIQ is a cross-platform wellbeing app that combines a private
 counselling/guidance engine, a formal grievance-redress toolkit, an
 astrology (Vedic Jyotish) engine, and a set of calming tools (tones,
 meditation, journaling). One Expo/React Native codebase ships to Android,

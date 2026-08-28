@@ -24,11 +24,11 @@ accounts and store listings I can't create on your behalf.
 3. Settings → API → copy the **service_role** key (not anon) — you'll need it in step 4.
 
 ### 2. RevenueCat account
-1. Sign up at revenuecat.com, create a project called "Aethon Beacon."
+1. Sign up at revenuecat.com, create a project called "NAYIQ."
 2. You'll link this to App Store Connect and Play Console in the next two steps — RevenueCat's dashboard walks you through both once you have store-side products (steps 3–4).
 
 ### 3. App Store Connect
-1. App → Monetization → Subscriptions → create a subscription group (e.g. "Aethon Beacon Premium").
+1. App → Monetization → Subscriptions → create a subscription group (e.g. "NAYIQ Premium").
 2. Add products for whatever you actually want to sell — the 4 items already described in Settings are: extended Moon-chart reports, long-form counselling programmes, advanced audio programmes, encrypted multi-device backup. You can bundle them into one subscription or split them; that's a pricing decision, not a technical one.
 3. In RevenueCat: Project settings → Apps → connect the App Store Connect app, generate an App Store Connect API key if prompted.
 

@@ -2,7 +2,7 @@
 /**
  * tester-request-sweep.mjs
  *
- * Reads the Aethon Beacon tester-request log (NDJSON, one JSON object per line,
+ * Reads the NAYIQ tester-request log (NDJSON, one JSON object per line,
  * appended to by scripts/static-server.mjs) and emits two paste-ready artifacts
  * for the Play Console Email list flow, plus a summary to stdout.
  *
@@ -171,8 +171,8 @@ async function main() {
     );
   } else {
     process.stdout.write(
-      `\nNext step: open Play Console → Aethon Beacon → Testing → Closed testing → Alpha → ` +
-      `Testers → Aethon Beacon Android Testers → Edit list, and paste the contents of ` +
+      `\nNext step: open Play Console → NAYIQ → Testing → Closed testing → Alpha → ` +
+      `Testers → NAYIQ Android Testers → Edit list, and paste the contents of ` +
       `${txtPath} into the "Email addresses" box. Save. Then send the opt-in link to any ` +
       `new addresses.\n`
     );

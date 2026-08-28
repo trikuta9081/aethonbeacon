@@ -1,4 +1,4 @@
--- Aethon Beacon -- Community report intake table
+-- NAYIQ -- Community report intake table
 --
 -- Run this once in the Supabase SQL Editor for isfkxmrathirqkrwfagg, same
 -- way as supabase_community_schema.sql (SQL Editor -> New query -> paste ->

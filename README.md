@@ -1,6 +1,6 @@
-# Aethon Beacon
+# NAYIQ
 
-Aethon Beacon is a cross-platform wellbeing and guidance app built with Expo and
+NAYIQ is a cross-platform wellbeing and guidance app built with Expo and
 React Native. One codebase ships to **Android, iOS, and web**. It combines a
 private counselling/guidance engine, a formal grievance-redress toolkit, a real
 sidereal Vedic astrology engine (English + Hindi), and calming tools (tones,
@@ -98,5 +98,5 @@ before running `pnpm run run:android`.
 
 ## Not medical care
 
-Aethon Beacon is a supportive wellbeing tool — not a medical device, diagnosis,
+NAYIQ is a supportive wellbeing tool — not a medical device, diagnosis,
 or a substitute for professional or emergency care.

@@ -3,7 +3,7 @@
 Play Console was checked under `slathiarimple567@gmail.com` on July 15, 2026.
 
 App:
-- Name: Aethon Beacon
+- Name: NAYIQ
 - Package: `com.aethonbeacon.app`
 - Current Play status seen: Closed testing
 - Installed audience shown: 2
