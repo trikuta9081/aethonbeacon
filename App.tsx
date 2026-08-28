@@ -23260,7 +23260,7 @@ function isTrustedExternalUrl(url: string) {
       <View style={{ flex: 1, backgroundColor: theme.bgDeepest, alignItems: "center", justifyContent: "center" }}>
         <View style={{ alignItems: "center" }}>
           <Image
-            source={require("./assets/aethon-beacon-icon-vibrant.png")}
+            source={require("./assets/nayiq-logo.png")}
             style={{
               width: 96,
               height: 96,
@@ -23364,7 +23364,7 @@ function isTrustedExternalUrl(url: string) {
             >
               <View style={[styles.brandBadge, isCompact && styles.brandBadgeCompact]}>
                 <Image
-                  source={require("./assets/aethon-beacon-icon-vibrant.png")}
+                  source={require("./assets/nayiq-logo.png")}
                   style={[styles.brandMark, isCompact && styles.brandMarkCompact]}
                   resizeMode="cover"
                   accessibilityLabel={nayiqLogoA11yLabel}
@@ -26188,7 +26188,7 @@ function TodaySection({
           consumer app closes its home screen. ── */}
       <View style={{ alignItems: "center", paddingTop: 26, paddingBottom: 34, gap: 6 }}>
         <View style={{ width: 42, height: 3, borderRadius: 2, backgroundColor: "rgba(15,61,94,0.12)", marginBottom: 10 }} />
-        <Image source={require("./assets/aethon-beacon-icon-vibrant.png")} style={{ width: 36, height: 36, borderRadius: 10 }} accessibilityLabel="NAYIQ" />
+        <Image source={require("./assets/nayiq-logo.png")} style={{ width: 36, height: 36, borderRadius: 10 }} accessibilityLabel="NAYIQ" />
         <Text style={{ color: "#0E7C74", fontSize: 14, fontWeight: "800", letterSpacing: 0.2 }}>NAYIQ</Text>
         <Text style={{ color: "#57646F", fontSize: 12, textAlign: "center" }}>{uiCopy.footerReassurance}</Text>
         <Text style={{ color: "#5C646A", fontSize: 12, marginTop: 4 }}>{uiCopy.footerMadeWithCare} · v1.0.4</Text>
@@ -45169,7 +45169,7 @@ function DynamicHeroCard({
       {/* Brand row */}
       <View style={styles.heroRouteHeaderRow}>
         <Image
-          source={require("./assets/aethon-beacon-icon-vibrant.png")}
+          source={require("./assets/nayiq-logo.png")}
           style={styles.heroRouteLogo}
           resizeMode="cover"
           accessibilityLabel={nayiqLogoA11yLabel}

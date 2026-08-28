@@ -4,7 +4,7 @@
     "slug": "aethon-beacon",
     "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./assets/aethon-beacon-icon-vibrant.png",
+    "icon": "./assets/nayiq-logo.png",
     "userInterfaceStyle": "light",
     "scheme": "aethonbeacon",
     "backgroundColor": "#0A0F1E",
@@ -39,7 +39,7 @@
           }
         ]
       },
-      "icon": "./assets/aethon-beacon-icon-vibrant.png"
+      "icon": "./assets/nayiq-logo.png"
     },
     "android": {
       "adaptiveIcon": {
@@ -57,7 +57,7 @@
       "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
-      "favicon": "./assets/aethon-beacon-icon-vibrant.png",
+      "favicon": "./assets/nayiq-logo.png",
       "bundler": "metro"
     },
     "plugins": [

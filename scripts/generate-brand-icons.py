@@ -6,7 +6,7 @@ ASSETS = ROOT / "assets"
 BG = (10, 15, 30, 255)
 RESAMPLE = Image.Resampling.LANCZOS
 
-source = Image.open(ASSETS / "aethon-beacon-icon-vibrant.png").convert("RGBA")
+source = Image.open(ASSETS / "nayiq-logo.png").convert("RGBA")
 adaptive_source = Image.open(ASSETS / "adaptive-icon.png").convert("RGBA")
 
 def square_icon(size: int) -> Image.Image:
