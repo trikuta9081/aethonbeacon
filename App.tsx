@@ -15275,10 +15275,10 @@ class AppErrorBoundary extends React.Component<
 
 // ── Per-tab error boundary — isolates crashes to a single tab ─────────────
 class TabErrorBoundary extends React.Component<
-  { children: React.ReactNode; tabName: string },
+  { children: React.ReactNode; tabName: string; languageId?: LanguageId },
   { hasError: boolean }
 > {
-  constructor(props: { children: React.ReactNode; tabName: string }) {
+  constructor(props: { children: React.ReactNode; tabName: string; languageId?: LanguageId }) {
     super(props);
     this.state = { hasError: false };
   }
@@ -15290,21 +15290,29 @@ class TabErrorBoundary extends React.Component<
   }
   render() {
     if (this.state.hasError) {
+      const languageId = this.props.languageId ?? "english";
+      const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+        pickLocalizedText(languageId, { english, ...(translations ?? {}) });
       return (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 32, backgroundColor: "#FFFFFF" }}>
           <Text style={{ fontSize: 32, marginBottom: 12 }}>⚠️</Text>
           <Text style={{ color: "#0A6F66", fontSize: 16, fontWeight: "700", marginBottom: 8, textAlign: "center" }}>
-            This section had an issue
+            {l("This section had an issue", { hindi: "इस अनुभाग में समस्या आई", telugu: "ఈ విభాగంలో సమస్య వచ్చింది", tamil: "இந்தப் பகுதியில் ஒரு சிக்கல் ஏற்பட்டது", urdu: "اس حصے میں مسئلہ پیش آیا" })}
           </Text>
           <Text style={{ color: "#263244", fontSize: 13, textAlign: "center", lineHeight: 20 }}>
-            Your data is safe. Switch to another tab and come back to refresh this section.
+            {l("Your data is safe. Switch to another tab and come back to refresh this section.", {
+              hindi: "आपका डेटा सुरक्षित है। किसी अन्य टैब पर जाएँ और वापस आकर इस अनुभाग को रीफ़्रेश करें।",
+              telugu: "మీ డేటా సురక్షితం. మరో ట్యాబ్‌కి వెళ్లి తిరిగి వచ్చి ఈ విభాగాన్ని రిఫ్రెష్ చేయండి.",
+              tamil: "உங்கள் தரவு பாதுகாப்பாக உள்ளது. வேறு ஒரு tab-க்கு சென்று மீண்டும் வந்து இந்தப் பகுதியை refresh செய்யவும்.",
+              urdu: "آپ کا ڈیٹا محفوظ ہے۔ کسی دوسرے tab پر جائیں اور واپس آکر اس حصے کو refresh کریں۔"
+            })}
           </Text>
           <Pressable
             onPress={() => this.setState({ hasError: false })}
             style={{ marginTop: 20, backgroundColor: "#DEEAF2", borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 }}
             accessibilityRole="button"
           >
-            <Text style={{ color: "#0A6F66", fontSize: 13, fontWeight: "700" }}>Try again</Text>
+            <Text style={{ color: "#0A6F66", fontSize: 13, fontWeight: "700" }}>{l("Try again", { hindi: "फिर कोशिश करें", telugu: "మళ్లీ ప్రయత్నించండి", tamil: "மீண்டும் முயற்சிக்கவும்", urdu: "دوبارہ کوشش کریں" })}</Text>
           </Pressable>
         </View>
       );
@@ -23796,7 +23804,7 @@ function isTrustedExternalUrl(url: string) {
           </View>
 
           {activeTab === "today" && (
-            <TabErrorBoundary tabName="Today">
+            <TabErrorBoundary tabName="Today" languageId={languageId}>
             <View onLayout={captureSectionLayout("today")}>
 
               {/* ── Weekly reading prompt ──────────────────────────────────
@@ -24106,7 +24114,7 @@ function isTrustedExternalUrl(url: string) {
           )}
 
           {activeTab === "journal" && (
-            <TabErrorBoundary tabName="Journal">
+            <TabErrorBoundary tabName="Journal" languageId={languageId}>
             <View onLayout={captureSectionLayout("journal")}>
               {/* ── First-visit hint ── */}
               {!dismissedHintTabs.includes("journal") && (
@@ -24259,7 +24267,7 @@ function isTrustedExternalUrl(url: string) {
           </View>
 
           {(activeTab === "meditation" || activeTab === "focus") && (
-            <TabErrorBoundary tabName="Meditation">
+            <TabErrorBoundary tabName="Meditation" languageId={languageId}>
             <View onLayout={captureSectionLayout("meditation")}>
               {/* ── Wellness tab banner ── */}
               {/* Meditation is the single entry point for calm now: Reset's
@@ -24705,15 +24713,31 @@ function isTrustedExternalUrl(url: string) {
           )}
 
           {activeTab === "play" && (
-            <TabErrorBoundary tabName="Practice">
+            <TabErrorBoundary tabName="Practice" languageId={languageId}>
               <>
                 <View onLayout={captureSectionLayout("play")}>
                   {/* ── Practice tab banner ── */}
                   <View style={[styles.tabBannerCard, { backgroundColor: "#E5EEE2" }]}>
                     <Text style={styles.tabBannerEmoji}>🎯</Text>
                     <View style={styles.tabBannerText}>
-                      <Text style={styles.tabBannerTitle}>Practice</Text>
-                      <Text style={styles.tabBannerSub}>3 steps · Small · Specific · Designed to stick</Text>
+                      <Text style={styles.tabBannerTitle}>
+                        {pickLocalizedText(languageId, {
+                          english: "Practice",
+                          hindi: "अभ्यास",
+                          telugu: "అభ్యాసం",
+                          tamil: "பயிற்சி",
+                          urdu: "مشق"
+                        })}
+                      </Text>
+                      <Text style={styles.tabBannerSub}>
+                        {pickLocalizedText(languageId, {
+                          english: "3 steps · Small · Specific · Designed to stick",
+                          hindi: "3 कदम · छोटे · स्पष्ट · टिके रहने के लिए",
+                          telugu: "3 దశలు · చిన్నవి · స్పష్టమైనవి · నిలిచేలా రూపకల్పన",
+                          tamil: "3 படிகள் · சிறியது · குறிப்பிட்டது · தொடர்ந்து செய்ய வடிவமைக்கப்பட்டது",
+                          urdu: "3 مراحل · چھوٹا · مخصوص · قائم رہنے کے لیے"
+                        })}
+                      </Text>
                     </View>
                   </View>
                   {selectedIssueGuide.id !== "general" && (
@@ -24769,14 +24793,30 @@ function isTrustedExternalUrl(url: string) {
           )}
 
           {activeTab === "search" && (
-            <TabErrorBoundary tabName="Explore">
+            <TabErrorBoundary tabName="Explore" languageId={languageId}>
             <View onLayout={captureSectionLayout("search")}>
               {/* ── Wisdom tab banner ── */}
               <View style={[styles.tabBannerCard, { backgroundColor: "#E2E2EE" }]}>
                 <Text style={styles.tabBannerEmoji}>📖</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Wisdom</Text>
-                  <Text style={styles.tabBannerSub}>Gita · Quran · Bible · Granth · More</Text>
+                  <Text style={styles.tabBannerTitle}>
+                    {pickLocalizedText(languageId, {
+                      english: "Wisdom",
+                      hindi: "ज्ञान",
+                      telugu: "జ్ఞానం",
+                      tamil: "ஞானம்",
+                      urdu: "دانائی"
+                    })}
+                  </Text>
+                  <Text style={styles.tabBannerSub}>
+                    {pickLocalizedText(languageId, {
+                      english: "Gita · Quran · Bible · Granth · More",
+                      hindi: "गीता · कुरान · बाइबल · ग्रंथ · और",
+                      telugu: "గీత · ఖురాన్ · బైబిల్ · గ్రంథ · మరిన్ని",
+                      tamil: "கீதை · குர்ஆன் · பைபிள் · கிரந்த் · மேலும்",
+                      urdu: "گیتا · قرآن · بائبل · گرنتھ · مزید"
+                    })}
+                  </Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -24871,7 +24911,7 @@ function isTrustedExternalUrl(url: string) {
           )}
 
           {activeTab === "community" && (
-            <TabErrorBoundary tabName="Community">
+            <TabErrorBoundary tabName="Community" languageId={languageId}>
             <View onLayout={captureSectionLayout("community")}>
               {/* ── Community tab banner ── */}
               <View style={[styles.tabBannerCard, { backgroundColor: "#E4EDED" }]}>
@@ -25062,8 +25102,24 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#E1E6EF" }]}>
                 <Text style={styles.tabBannerEmoji}>🧭</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Your Action Plan</Text>
-                  <Text style={styles.tabBannerSub}>One concern · three practical steps · connected support</Text>
+                  <Text style={styles.tabBannerTitle}>
+                    {pickLocalizedText(languageId, {
+                      english: "Your Action Plan",
+                      hindi: "आपकी कार्य-योजना",
+                      telugu: "మీ కార్యాచరణ ప్రణాళిక",
+                      tamil: "உங்கள் செயல் திட்டம்",
+                      urdu: "آپ کا عملی منصوبہ"
+                    })}
+                  </Text>
+                  <Text style={styles.tabBannerSub}>
+                    {pickLocalizedText(languageId, {
+                      english: "One concern · three practical steps · connected support",
+                      hindi: "एक चिंता · तीन व्यावहारिक कदम · जुड़ा हुआ सहारा",
+                      telugu: "ఒక ఆందోళన · మూడు ప్రాయోగిక దశలు · అనుసంధానిత సహాయం",
+                      tamil: "ஒரு கவலை · மூன்று நடைமுறை படிகள் · இணைந்த ஆதரவு",
+                      urdu: "ایک تشویش · تین عملی قدم · مربوط مدد"
+                    })}
+                  </Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -25083,14 +25139,28 @@ function isTrustedExternalUrl(url: string) {
                 <View style={{ marginHorizontal: 16, marginBottom: 8, backgroundColor: "#FDF3D9", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: "rgba(180,83,9,0.18)" }}>
                   <Text style={{ color: "#92400E", fontSize: 12 }}>🔁</Text>
                   <Text style={{ color: "#92400E", fontSize: 12, fontWeight: "600", flex: 1 }}>
-                    This has come up {selectedIssueRecurrenceCount} times before — worth trying a different step from this path than last time.
+                    {pickLocalizedText(languageId, {
+                      english: `This has come up ${selectedIssueRecurrenceCount} times before — worth trying a different step from this path than last time.`,
+                      hindi: `यह पहले ${selectedIssueRecurrenceCount} बार सामने आ चुका है — पिछली बार से अलग इस रास्ते का कोई दूसरा कदम आज़माना उपयोगी रहेगा।`,
+                      telugu: `ఇది ఇంతకుముందు ${selectedIssueRecurrenceCount} సార్లు వచ్చింది — గతసారి కంటే ఈ మార్గంలోని వేరే దశను ప్రయత్నించడం మంచిది.`,
+                      tamil: `இது இதற்கு முன் ${selectedIssueRecurrenceCount} முறை வந்துள்ளது — கடந்த முறை பயன்படுத்தியதை விட இந்த பாதையின் வேறு ஒரு படியை முயற்சிக்கலாம்.`,
+                      urdu: `یہ پہلے ${selectedIssueRecurrenceCount} بار آ چکا ہے — پچھلی بار کے مقابلے میں اس راستے کا کوئی مختلف قدم آزمانا مفید ہو سکتا ہے۔`
+                    })}
                   </Text>
                 </View>
               )}
               {crossSectionSignal.recentMoodTrend === "declining" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ color: "#0A6F66", fontSize: 12 }}>📉</Text>
-                  <Text style={{ color: "#263244", fontSize: 12, fontWeight: "600", flex: 1 }}>Your recent check-ins have trended heavier — consider starting with a grounding step before working through the path below.</Text>
+                  <Text style={{ color: "#263244", fontSize: 12, fontWeight: "600", flex: 1 }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Your recent check-ins have trended heavier — consider starting with a grounding step before working through the path below.",
+                      hindi: "आपके हाल के चेक-इन अधिक भारी रहे हैं — नीचे दिए गए रास्ते पर आगे बढ़ने से पहले एक grounding step से शुरू करने पर विचार करें।",
+                      telugu: "మీ తాజా చెక్-ఇన్‌లు మరింత భారంగా ఉన్నాయి — క్రింది మార్గాన్ని కొనసాగించే ముందు grounding step‌తో ప్రారంభించడం మంచిది.",
+                      tamil: "உங்கள் சமீபத்திய check-in-கள் அதிகமாகத் தோன்றுகின்றன — கீழே உள்ள பாதையைத் தொடங்கும் முன் grounding step-இல் தொடங்குவது நல்லது.",
+                      urdu: "آپ کے حالیہ چیک اِن زیادہ بھاری رہے ہیں — نیچے دیے گئے راستے پر آگے بڑھنے سے پہلے grounding step سے شروع کرنے پر غور کریں۔"
+                    })}
+                  </Text>
                 </View>
               )}
               {activeJourney && activeJourney.journeySteps[journeyStepIndex]?.tabId === "guide" && (
@@ -25140,8 +25210,24 @@ function isTrustedExternalUrl(url: string) {
               <View style={[styles.tabBannerCard, { backgroundColor: "#E9E3ED" }]}>
                 <Text style={styles.tabBannerEmoji}>🛡️</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Help and Redress</Text>
-                  <Text style={styles.tabBannerSub}>Official routes · Rights · Escalation · Safe channels</Text>
+                  <Text style={styles.tabBannerTitle}>
+                    {pickLocalizedText(languageId, {
+                      english: "Help and Redress",
+                      hindi: "सहायता और निवारण",
+                      telugu: "సహాయం మరియు పరిష్కారం",
+                      tamil: "உதவி மற்றும் தீர்வு",
+                      urdu: "مدد اور ازالہ"
+                    })}
+                  </Text>
+                  <Text style={styles.tabBannerSub}>
+                    {pickLocalizedText(languageId, {
+                      english: "Official routes · Rights · Escalation · Safe channels",
+                      hindi: "आधिकारिक मार्ग · अधिकार · शिकायत बढ़ाने के चरण · सुरक्षित चैनल",
+                      telugu: "అధికారిక మార్గాలు · హక్కులు · ఉన్నతీకరణ · సురక్షిత ఛానళ్లు",
+                      tamil: "அதிகாரப்பூர்வ வழிகள் · உரிமைகள் · மேல் நிலைக்கு உயர்த்தல் · பாதுகாப்பான வழிகள்",
+                      urdu: "سرکاری راستے · حقوق · شکایت بڑھانے کے مراحل · محفوظ ذرائع"
+                    })}
+                  </Text>
                 </View>
               </View>
               {selectedIssueGuide.id !== "general" && (
@@ -25188,13 +25274,21 @@ function isTrustedExternalUrl(url: string) {
           )}
 
           {activeTab === "insights" && (
-            <TabErrorBoundary tabName="Patterns">
+            <TabErrorBoundary tabName="Patterns" languageId={languageId}>
             <View onLayout={captureSectionLayout("insights")}>
               {/* ── Patterns tab banner ── */}
               <View style={[styles.tabBannerCard, { backgroundColor: "#E4ECE4" }]}>
                 <Text style={styles.tabBannerEmoji}>📊</Text>
                 <View style={styles.tabBannerText}>
-                  <Text style={styles.tabBannerTitle}>Patterns</Text>
+                  <Text style={styles.tabBannerTitle}>
+                    {pickLocalizedText(languageId, {
+                      english: "Patterns",
+                      hindi: "पैटर्न",
+                      telugu: "నమూనాలు",
+                      tamil: "வடிவங்கள்",
+                      urdu: "نمونے"
+                    })}
+                  </Text>
                   <Text style={styles.tabBannerSub}>
                     {pickLocalizedText(languageId, {
                       english: "Weekly · Monthly · Signals · 5 lenses · Progress",
@@ -25209,7 +25303,15 @@ function isTrustedExternalUrl(url: string) {
               {/* ── Active issue hint chip ── */}
               {selectedIssueGuide.id !== "general" && (
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#E0F0E5", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(52,211,153,0.25)", flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>Tracking</Text>
+                  <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Tracking",
+                      hindi: "ट्रैकिंग",
+                      telugu: "ట్రాకింగ్",
+                      tamil: "கண்காணிப்பு",
+                      urdu: "ٹریکنگ"
+                    })}
+                  </Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>{getTabIssueHint(selectedIssueGuide.id, "insights")}</Text>
                 </View>
               )}
@@ -25219,14 +25321,30 @@ function isTrustedExternalUrl(url: string) {
                   monthEntries already computed for the trend bands below. ── */}
               {weekEntries.length < 7 ? (
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#EFEAF7", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(109,40,217,0.2)", flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>Building</Text>
+                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Building",
+                      hindi: "बन रहा है",
+                      telugu: "అభివృద్ధి",
+                      tamil: "வளர்ச்சி",
+                      urdu: "بنتا جا رہا ہے"
+                    })}
+                  </Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>
                     {7 - weekEntries.length} more check-in{7 - weekEntries.length === 1 ? "" : "s"} this week and your weekly pattern read gets a lot sharper.
                   </Text>
                 </View>
               ) : monthEntries.length < 30 ? (
                 <View style={{ marginHorizontal: 16, marginBottom: 10, backgroundColor: "#EFEAF7", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: "rgba(109,40,217,0.2)", flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>Deepening</Text>
+                  <Text style={{ color: "#6D28D9", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Deepening",
+                      hindi: "गहराई बढ़ रही है",
+                      telugu: "లోతు పెరుగుతోంది",
+                      tamil: "ஆழமாகிறது",
+                      urdu: "گہرائی بڑھ رہی ہے"
+                    })}
+                  </Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>
                     {30 - monthEntries.length} more check-ins toward a full month — that's where the monthly rhythm becomes reliable.
                   </Text>
@@ -25413,7 +25531,15 @@ function isTrustedExternalUrl(url: string) {
             <View onLayout={captureSectionLayout("settings")}>
               {/* ── Quick-access grid for secondary features ── */}
               <View style={styles.profileFeaturesGrid}>
-                <Text style={styles.profileFeaturesTitle}>Explore the app</Text>
+                <Text style={styles.profileFeaturesTitle}>
+                  {pickLocalizedText(languageId, {
+                    english: "Explore the app",
+                    hindi: "ऐप देखें",
+                    telugu: "యాప్‌ను అన్వేషించండి",
+                    tamil: "ஆப்பை ஆராயுங்கள்",
+                    urdu: "ایپ دریافت کریں"
+                  })}
+                </Text>
                 <View style={styles.profileFeaturesRow}>
                   {([
                     { id: "community", label: "Community", icon: "🤝" },
@@ -28501,16 +28627,22 @@ function MeditationSection({
             );
           })}
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ expanded: showMeditationLibrary }}
-          onPress={() => setShowMeditationLibrary((value) => !value)}
-          style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
-        >
-          <Text style={styles.helpButtonSecondaryLabel}>
-            {showMeditationLibrary ? "Show recommended practice only" : "Explore more meditation methods"}
-          </Text>
-        </Pressable>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: showMeditationLibrary }}
+        onPress={() => setShowMeditationLibrary((value) => !value)}
+        style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
+      >
+        <Text style={styles.helpButtonSecondaryLabel}>
+          {pickLocalizedText(languageId, {
+            english: showMeditationLibrary ? "Show recommended practice only" : "Explore more meditation methods",
+            hindi: showMeditationLibrary ? "केवल सुझाया गया अभ्यास दिखाएँ" : "और ध्यान विधियाँ देखें",
+            telugu: showMeditationLibrary ? "సిఫారసు చేసిన అభ్యాసాన్ని మాత్రమే చూపించు" : "మరిన్ని ధ్యాన విధానాలను అన్వేషించండి",
+            tamil: showMeditationLibrary ? "பரிந்துரைக்கப்பட்ட பயிற்சியை மட்டும் காட்டு" : "மேலும் தியான முறைகளை ஆராயுங்கள்",
+            urdu: showMeditationLibrary ? "صرف تجویز کردہ مشق دکھائیں" : "مزید مراقبہ طریقے دریافت کریں"
+          })}
+        </Text>
+      </Pressable>
       </View>
 
       <Pressable
@@ -28546,9 +28678,23 @@ function MeditationSection({
       <View style={styles.beaconXRouteBand}>
         <View style={styles.beaconXRouteHeader}>
           <View style={styles.beaconXRouteHeaderCopy}>
-            <Text style={styles.beaconXRouteTitle}>Continue your journey</Text>
+            <Text style={styles.beaconXRouteTitle}>
+              {pickLocalizedText(languageId, {
+                english: "Continue your journey",
+                hindi: "अपनी यात्रा जारी रखें",
+                telugu: "మీ ప్రయాణాన్ని కొనసాగించండి",
+                tamil: "உங்கள் பயணத்தைத் தொடருங்கள்",
+                urdu: "اپنا سفر جاری رکھیں"
+              })}
+            </Text>
             <Text style={styles.beaconXRouteMeta}>
-              After this practice, choose the next step that fits your situation.
+              {pickLocalizedText(languageId, {
+                english: "After this practice, choose the next step that fits your situation.",
+                hindi: "इस अभ्यास के बाद, अपनी स्थिति के अनुसार अगला कदम चुनें।",
+                telugu: "ఈ అభ్యాసం తర్వాత, మీ పరిస్థితికి సరిపోయే తదుపరి దశను ఎంచుకోండి.",
+                tamil: "இந்தப் பயிற்சிக்குப் பிறகு, உங்கள் நிலைக்கு பொருந்தும் அடுத்த படியைத் தேர்ந்தெடுக்கவும்.",
+                urdu: "اس مشق کے بعد، اپنی صورتحال کے مطابق اگلا قدم منتخب کریں۔"
+              })}
             </Text>
           </View>
         </View>
@@ -28649,7 +28795,15 @@ function MeditationSection({
       {showMeditationLibrary ? <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Meditation method</Text>
+            <Text style={styles.eyebrow}>
+              {pickLocalizedText(languageId, {
+                english: "Meditation method",
+                hindi: "ध्यान विधि",
+                telugu: "ధ్యాన విధానం",
+                tamil: "தியான முறை",
+                urdu: "مراقبہ طریقہ"
+              })}
+            </Text>
             <Text style={styles.sectionTitleSmall}>{selectedChakra.label}</Text>
           </View>
           <Text style={styles.smallMeta}>{selectedChakra.sanskrit}</Text>
@@ -28715,10 +28869,22 @@ function MeditationSection({
               {selectedChakra.teaching}
             </Text>
             <Text style={styles.calmTeachingPractice}>
-              Practice: {selectedChakra.practice}
+              {pickLocalizedText(languageId, {
+                english: "Practice: ",
+                hindi: "अभ्यास: ",
+                telugu: "అభ్యాసం: ",
+                tamil: "பயிற்சி: ",
+                urdu: "مشق: "
+              })}{selectedChakra.practice}
             </Text>
             <Text style={styles.calmTeachingRef}>
-              Principle: {selectedChakra.literature}
+              {pickLocalizedText(languageId, {
+                english: "Principle: ",
+                hindi: "सिद्धांत: ",
+                telugu: "సూత్రం: ",
+                tamil: "கொள்கை: ",
+                urdu: "اصول: "
+              })}{selectedChakra.literature}
             </Text>
             <Text style={styles.calmTeachingRef}>
               {pickLocalizedText(languageId, { english: "Provenance: ", hindi: "स्रोत-परंपरा: ", telugu: "మూల పరంపర: ", tamil: "மூல மரபு: ", urdu: "ماخذ روایت: " })}{selectedChakra.provenance}
@@ -28732,11 +28898,21 @@ function MeditationSection({
                 onPress={() => onReadMeditation(selectedVoiceText)}
                 style={styles.calmQuickActionButton}
               >
-                <Text style={styles.calmQuickActionLabel}>Read guidance</Text>
+                <Text style={styles.calmQuickActionLabel}>
+                  {pickLocalizedText(languageId, {
+                    english: "Read guidance",
+                    hindi: "मार्गदर्शन पढ़ें",
+                    telugu: "మార్గదర్శకతను చదవండి",
+                    tamil: "வழிகாட்டலை வாசிக்கவும்",
+                    urdu: "رہنمائی پڑھیں"
+                  })}
+                </Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={playingMethodId === "__chakra__" ? "Stop audio" : "Play audio"}
+                accessibilityLabel={playingMethodId === "__chakra__"
+                  ? pickLocalizedText(languageId, { english: "Stop audio", hindi: "ऑडियो रोकें", telugu: "ఆడియో ఆపండి", tamil: "ஒலியை நிறுத்து", urdu: "آڈیو روکیں" })
+                  : pickLocalizedText(languageId, { english: "Play audio", hindi: "ऑडियो चलाएँ", telugu: "ఆడియో चलाएं", tamil: "ஒலியை இயக்கவும்", urdu: "آڈیو چلائیں" })}
                 onPress={() => {
                   void Haptics.selectionAsync();
                   if (playingMethodId === "__chakra__") {
@@ -28749,7 +28925,23 @@ function MeditationSection({
                 }}
                 style={styles.calmQuickActionButton}
               >
-                <Text style={styles.calmQuickActionLabel}>{playingMethodId === "__chakra__" ? "⏹ Stop audio" : "▶ Play audio"}</Text>
+                <Text style={styles.calmQuickActionLabel}>
+                  {playingMethodId === "__chakra__"
+                    ? pickLocalizedText(languageId, {
+                        english: "⏹ Stop audio",
+                        hindi: "⏹ ऑडियो रोकें",
+                        telugu: "⏹ ఆడియో ఆపండి",
+                        tamil: "⏹ ஒலியை நிறுத்து",
+                        urdu: "⏹ آڈیو روکیں"
+                      })
+                    : pickLocalizedText(languageId, {
+                        english: "▶ Play audio",
+                        hindi: "▶ ऑडियो चलाएँ",
+                        telugu: "▶ ఆడియో चलाएं",
+                        tamil: "▶ ஒலியை இயக்கவும்",
+                        urdu: "▶ آڈیو چلائیں"
+                      })}
+                </Text>
               </Pressable>
               <Pressable
                 accessibilityRole="button"
@@ -28760,7 +28952,13 @@ function MeditationSection({
               </Pressable>
             </View>
             <Text style={styles.smallMeta} numberOfLines={2}>
-              Audio uses the calm cue library. External lessons are optional. The required step is to return to Path, Help, Journal, or Practice.
+              {pickLocalizedText(languageId, {
+                english: "Audio uses the calm cue library. External lessons are optional. The required step is to return to Path, Help, Journal, or Practice.",
+                hindi: "ऑडियो calm cue library का उपयोग करता है। बाहरी पाठ वैकल्पिक हैं। अनिवार्य कदम Path, Help, Journal, या Practice पर लौटना है।",
+                telugu: "ఆడియో calm cue libraryని ఉపయోగిస్తుంది. బాహ్య పాఠాలు ఐచ్ఛికం. తప్పనిసరి దశ Path, Help, Journal, లేదా Practice‌కు తిరిగి వెళ్లడం.",
+                tamil: "ஒலி calm cue library-ஐ பயன்படுத்துகிறது. வெளிப்புற பாடங்கள் விருப்பத்தேர்வு. கட்டாயமான படி Path, Help, Journal, அல்லது Practice-க்கு திரும்புவதே.",
+                urdu: "آڈیو calm cue library استعمال کرتا ہے۔ بیرونی سبق اختیاری ہیں۔ لازمی قدم Path، Help، Journal، یا Practice پر واپس جانا ہے۔"
+              })}
             </Text>
           </View>
         </View>
@@ -32174,7 +32372,15 @@ function PlaySection({
         >
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.eyebrow}>Best use now</Text>
+              <Text style={styles.eyebrow}>
+                {pickLocalizedText(languageId, {
+                  english: "Best use now",
+                  hindi: "अभी सबसे अच्छा उपयोग",
+                  telugu: "ఇప్పటికే ఉత్తమ ఉపయోగం",
+                  tamil: "இப்போது சிறந்த பயன்பாடு",
+                  urdu: "ابھی بہترین استعمال"
+                })}
+              </Text>
               <Text style={styles.sectionTitle}>{featuredPlayChallengeView.label}</Text>
             </View>
             <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
@@ -32190,7 +32396,15 @@ function PlaySection({
             <Text style={styles.eyebrow}>{uiCopy.practiceLoopEyebrow}</Text>
             <Text style={styles.sectionTitle}>{uiCopy.practiceLoopTitle}</Text>
           </View>
-          <Text style={styles.smallMeta}>Local progress only</Text>
+          <Text style={styles.smallMeta}>
+            {pickLocalizedText(languageId, {
+              english: "Local progress only",
+              hindi: "सिर्फ़ स्थानीय प्रगति",
+              telugu: "స్థానిక పురోగతి మాత్రమే",
+              tamil: "உள்ளூர் முன்னேற்றம் மட்டும்",
+              urdu: "صرف مقامی پیش رفت"
+            })}
+          </Text>
         </View>
         <View style={[styles.playGrid, isWide && styles.playGridWide]}>
           {visibleChallenges.map((challenge) => {
@@ -32249,14 +32463,30 @@ function PlaySection({
                       pressed && styles.pressed
                     ]}
                   >
-                    <Text style={styles.helpButtonLabel}>{claimed ? "Claimed" : "Claim reward"}</Text>
+                    <Text style={styles.helpButtonLabel}>
+                      {pickLocalizedText(languageId, {
+                        english: claimed ? "Claimed" : "Claim reward",
+                        hindi: claimed ? "दावा किया" : "इनाम लें",
+                        telugu: claimed ? "క్లెయిమ్ చేయబడింది" : "బహుమతి పొందండి",
+                        tamil: claimed ? "பெறப்பட்டது" : "வெகுமதி பெறுங்கள்",
+                        urdu: claimed ? "دعویٰ کیا گیا" : "انعام حاصل کریں"
+                      })}
+                    </Text>
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => resetPlayChallenge(challenge.id)}
                     style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
                   >
-                    <Text style={styles.helpButtonSecondaryLabel}>Reset</Text>
+                    <Text style={styles.helpButtonSecondaryLabel}>
+                      {pickLocalizedText(languageId, {
+                        english: "Reset",
+                        hindi: "रीसेट",
+                        telugu: "రీసెట్",
+                        tamil: "மீட்டமை",
+                        urdu: "ری سیٹ"
+                      })}
+                    </Text>
                   </Pressable>
                 </View>
               </View>
@@ -32264,9 +32494,23 @@ function PlaySection({
           })}
         </View>
         <View style={styles.issueSupportBand}>
-          <Text style={styles.issueActionTitle}>Practice loop finish</Text>
+          <Text style={styles.issueActionTitle}>
+            {pickLocalizedText(languageId, {
+              english: "Practice loop finish",
+              hindi: "अभ्यास लूप पूरा",
+              telugu: "అభ్యాస లూప్ ముగింపు",
+              tamil: "பயிற்சி சுற்று முடிவு",
+              urdu: "مشق کا چکر مکمل"
+            })}
+          </Text>
           <Text style={styles.issueActionText}>
-            Do one card, claim it, then return to Journal, Path, or Calm so the win feeds the next step.
+            {pickLocalizedText(languageId, {
+              english: "Do one card, claim it, then return to Journal, Path, or Calm so the win feeds the next step.",
+              hindi: "एक कार्ड पूरा करें, उसे दावा करें, फिर Journal, Path, या Calm पर लौटें ताकि यह जीत अगले कदम को ऊर्जा दे।",
+              telugu: "ఒక కార్డ్ చేయండి, దానిని క్లెయిమ్ చేయండి, ఆపై Journal, Path, లేదా Calm‌కు తిరిగి వెళ్లండి, అప్పుడు విజయం తదుపరి దశకు మద్దతు ఇస్తుంది.",
+              tamil: "ஒரு கார்டை முடித்து, அதை claim செய்து, பின்னர் Journal, Path, அல்லது Calm-க்கு திரும்புங்கள்; அப்போதுதான் வெற்றி அடுத்த படிக்கு ஊக்கமளிக்கும்.",
+              urdu: "ایک کارڈ مکمل کریں، اسے claim کریں، پھر Journal، Path، یا Calm پر واپس جائیں تاکہ کامیابی اگلے قدم کو سہارا دے۔"
+            })}
           </Text>
           <View style={styles.issueCalloutActions}>
             <Pressable
@@ -39005,11 +39249,15 @@ function AdminLoginGate({
 
   return (
     <View style={styles.panel}>
-      <Text style={styles.eyebrow}>Access required</Text>
-      <Text style={styles.sectionTitle}>Admin panel is locked</Text>
+      <Text style={styles.eyebrow}>{l("Access required", { hindi: "प्रवेश आवश्यक", telugu: "ప్రవేశం అవసరం", tamil: "அணுகல் தேவை", urdu: "رسائی درکار ہے" })}</Text>
+      <Text style={styles.sectionTitle}>{l("Admin panel is locked", { hindi: "एडमिन पैनल बंद है", telugu: "అడ్మిన్ ప్యానెల్ లాక్ చేయబడింది", tamil: "நிர்வாகப் பலகம் பூட்டப்பட்டுள்ளது", urdu: "ایڈمن پینل بند ہے" })}</Text>
       <Text style={styles.promptText}>
-        Sign in with the admin login ID and code to unlock the control center. Regular users stay
-        on the public experience.
+        {l("Sign in with the admin login ID and code to unlock the control center. Regular users stay on the public experience.", {
+          hindi: "कंट्रोल सेंटर खोलने के लिए एडमिन लॉगिन ID और कोड से साइन इन करें। सामान्य उपयोगकर्ता सार्वजनिक अनुभव पर ही रहते हैं।",
+          telugu: "కంట్రోల్ సెంటర్‌ను తెరవడానికి అడ్మిన్ లాగిన్ ID మరియు కోడ్‌తో సైన్ ఇన్ చేయండి. సాధారణ వినియోగదారులు పబ్లిక్ అనుభవంలోనే ఉంటారు.",
+          tamil: "கட்டுப்பாட்டு மையத்தைத் திறக்க நிர்வாக உள்நுழைவு ID மற்றும் குறியீட்டுடன் sign in செய்யுங்கள். சாதாரண பயனர்கள் பொது அனுபவத்தில் தொடர்கிறார்கள்.",
+          urdu: "کنٹرول سینٹر کھولنے کے لیے ایڈمن لاگ اِن ID اور کوڈ کے ساتھ سائن اِن کریں۔ عام صارفین عوامی تجربے پر ہی رہتے ہیں۔"
+        })}
       </Text>
       <View style={styles.adminAuthCard}>
         {/* Shield header */}
@@ -39018,8 +39266,8 @@ function AdminLoginGate({
             <Text style={styles.adminAuthShieldIcon}>🛡️</Text>
           </View>
           <View style={styles.adminAuthShieldText}>
-            <Text style={styles.adminAuthShieldTitle}>Secure Admin Access</Text>
-            <Text style={styles.adminAuthShieldSub}>Protected zone — authorised personnel only</Text>
+            <Text style={styles.adminAuthShieldTitle}>{l("Secure Admin Access", { hindi: "सुरक्षित एडमिन पहुँच", telugu: "సురక్షిత అడ్మిన్ యాక్సెస్", tamil: "பாதுகாப்பான நிர்வாக அணுகல்", urdu: "محفوظ ایڈمن رسائی" })}</Text>
+            <Text style={styles.adminAuthShieldSub}>{l("Protected zone — authorised personnel only", { hindi: "सुरक्षित क्षेत्र — केवल अधिकृत कर्मी", telugu: "రక్షిత ప్రాంతం — అధికృత సిబ్బంది మాత్రమే", tamil: "பாதுகாக்கப்பட்ட பகுதி — அங்கீகரிக்கப்பட்ட நபர்களுக்கு மட்டும்", urdu: "محفوظ علاقہ — صرف مجاز عملہ" })}</Text>
           </View>
         </View>
 
@@ -45363,7 +45611,13 @@ function DynamicHeroCard({
           style={({ pressed }) => [styles.dynamicHeroCTA, pressed && styles.pressed]}
         >
           <Text style={styles.dynamicHeroCTALabel}>
-            {isEmpty ? "Find my path  →" : "Understand and guide me  →"}
+            {pickLocalizedText(languageId, {
+              english: isEmpty ? "Find my path  →" : "Understand and guide me  →",
+              hindi: isEmpty ? "मेरा मार्ग खोजें  →" : "समझें और मार्गदर्शन करें  →",
+              telugu: isEmpty ? "నా మార్గాన్ని కనుగొనండి  →" : "అర్థం చేసి మార్గనిర్దేశం చేయండి  →",
+              tamil: isEmpty ? "என் பாதையைத் தேடுங்கள்  →" : "புரிந்து வழிகாட்டுங்கள்  →",
+              urdu: isEmpty ? "میرا راستہ تلاش کریں  →" : "سمجھیں اور رہنمائی کریں  →"
+            })}
           </Text>
         </Pressable>
       </Animated.View>
@@ -45379,10 +45633,24 @@ function DynamicHeroCard({
         })}
       >
         <Text style={{ fontSize: 18 }}>🎙️</Text>
-        <Text style={{ color: "#0A6F66", fontSize: 14, fontWeight: "700" }}>Talk it through with your guide</Text>
+        <Text style={{ color: "#0A6F66", fontSize: 14, fontWeight: "700" }}>
+          {pickLocalizedText(languageId, {
+            english: "Talk it through with your guide",
+            hindi: "अपने मार्गदर्शक के साथ बात करें",
+            telugu: "మీ మార్గదర్శితో మాట్లాడండి",
+            tamil: "உங்கள் வழிகாட்டியுடன் பேசுங்கள்",
+            urdu: "اپنے رہنما کے ساتھ بات کریں"
+          })}
+        </Text>
       </Pressable>
       <Text style={{ color: "#1F2937", fontSize: 12, textAlign: "center", marginTop: 6 }}>
-        Supports a 30-message counselling arc and offers an optional next-step checkpoint every 6 replies.
+        {pickLocalizedText(languageId, {
+          english: "Supports a 30-message counselling arc and offers an optional next-step checkpoint every 6 replies.",
+          hindi: "30 संदेशों वाले counselling arc का समर्थन करता है और हर 6 जवाबों पर एक वैकल्पिक अगले-चरण checkpoint देता है।",
+          telugu: "30-మెసేజ్ counselling arc‌కు మద్దతు ఇస్తుంది, ప్రతి 6 సమాధానాలకు ఒక ఐచ్ఛిక next-step checkpoint అందిస్తుంది.",
+          tamil: "30 செய்தி counselling arc-ஐ ஆதரிக்கிறது, ஒவ்வொரு 6 பதில்களுக்கும் ஒரு விருப்ப next-step checkpoint வழங்குகிறது.",
+          urdu: "30 پیغاموں والے counselling arc کی حمایت کرتا ہے اور ہر 6 جوابوں کے بعد ایک اختیاری اگلا-قدم checkpoint دیتا ہے۔"
+        })}
       </Text>
 
       {/* Route preview */}

@@ -199,7 +199,7 @@ assert(
   "moodTrend?: \"improving\" | \"steady\" | \"declining\" | null;",
   'visitReports?: VisitReport[];',
   'this is not the first time this has come up',
-  'Your recent check-ins have been trending heavier',
+  'Your recent check-ins have trended heavier',
 ].forEach((marker) => indexOf(marker));
 assert(
   source.includes('buildCounselingSynthesis(updatedSession, issueId, moonChartInsightReadings, recurrenceCount, sadeSatiNote, weeklyTrend, languageId)'),
@@ -220,7 +220,7 @@ assert(
 // is visible without having to start a chat conversation.
 [
   'selectedIssueRecurrenceCount',
-  'This has come up {selectedIssueRecurrenceCount} times before',
+  'This has come up ${selectedIssueRecurrenceCount} times before',
   'crossSectionSignal.recentMoodTrend === "declining"',
 ].forEach((marker) => indexOf(marker));
 
