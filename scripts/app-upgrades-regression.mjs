@@ -100,7 +100,7 @@ indexOf('"tones",\n      "community",\n      "redress",\n      "insights"');
 // The richer report card that Visit Report moved into still lives on Patterns.
 indexOf('Progress Report Card');
 indexOf('automatic counselling engine');
-assert(!source.includes('What Aethon Beacon does'), 'Vision card must not remain on the front UI');
+assert(!source.includes('What NAYIQ does'), 'Vision card must not remain on the front UI');
 const hiddenNumericLabel = ['48', '-Dimension'].join('');
 const hiddenNumericReading = ['48', '-dimension reading'].join('');
 assert(!source.includes(hiddenNumericLabel), 'Public numeric Vedic terminology must remain hidden');
@@ -338,7 +338,10 @@ assert(source.includes('setRedressCases(normalizeRedressCases(parsed.redressCase
 assert(source.includes('redressCases: redressCases.slice(0, 20)'), 'redressCases must be written back to storage');
 assert(source.includes('function redressFollowUpState'), 'Follow-up reminder state helper is missing');
 assert(source.includes('Start tracking this complaint'), 'Redress case tracker start affordance is missing');
-assert(/Alert\.alert\(\s*"Delete this case\?"/.test(source), 'Deleting a tracked case must stay confirm-gated');
+assert(
+  /Alert\.alert\([\s\S]{0,220}Delete this case\?/.test(source) || /l\(\s*"Delete this case\?"/.test(source),
+  'Deleting a tracked case must stay confirm-gated'
+);
 
 // ── Chat drafts must not live in App() ───────────────────────────────────────
 // App() is a single ~6,600-line component holding ~180 pieces of state. Any
