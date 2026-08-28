@@ -70,26 +70,24 @@ const landingHeader = indexOf('{/* ── LANDING HEADER — Premium redesign �
 // bottom-nav tab (see PRIMARY_NAV_TABS comment), so repeating it in full on
 // the front screen was redundant clutter. SOS stays a single tap either way.
 const mergedHelp = indexOf('In immediate danger, call 112.');
-// Calm Sound, Community/Messages, and Visit Report preview cards were removed
-// from the front page entirely -- all three already have their own
-// always-visible tab in the top tab rail (headerNavTabs includes "tones",
-// "community", and "insights"), so previewing them again on the front page
-// was redundant clutter, same reasoning as the Help & Redress trim above.
+// Calm / Tones and Vedic Insight preview cards were removed from the front
+// page entirely -- the top home surface now stays focused on Counselling and
+// Community, with the rest still reachable through the deeper Pages flows.
 // The Patterns/insights tab's own "Progress Report Card" is a richer version
 // of what the front-page report card used to show.
 const premiumCommandCenter = indexOf('Premium command center');
-const premiumCommandTitle = indexOf('One calm start, four connected paths.');
+const premiumCommandTitle = indexOf('One clear start, two connected paths.');
 assert(todayStart < landingHeader, 'Landing header must remain inside the Today/front UI');
 assert(mergedHelp < premiumCommandCenter, 'Help and Redress must remain the first Home action surface');
 assert(!source.includes('Curated sound programmes for relaxation, focus, sleep, and emotional regulation'), 'Calm Sound preview must not remain on the front UI');
 assert(!source.includes('Moderated community support and private conversations'), 'Community/Messages preview must not remain on the front UI');
 indexOf('Open Help and Redress');
-indexOf('Open Path');
-indexOf('Open calm');
-indexOf('Start with Counselling. Calm steadies the body. Path becomes one next step. Vedic adds perspective when needed.');
+indexOf('Start with Counselling. Community stays one tap away when you want verified human support.');
+indexOf('Counselling → Community');
+indexOf('Private first, then verified support when you need a human handoff.');
+assert(!source.includes('title: uiCopy.homeSupportCalmTitle'), 'Calm support card must not remain on the front UI');
+assert(!source.includes('title: uiCopy.homeSupportVedicTitle'), 'Vedic insight card must not remain on the front UI');
 indexOf('Private first step. The next Path stays clear.');
-indexOf('Sound and breath to steady you before Path.');
-indexOf('Moon-chart insight when perspective helps.');
 indexOf('Verified support when a human handoff fits best.');
 indexOf('Open messages');
 indexOf('Private by default. Notes stay local unless shared or exported.');

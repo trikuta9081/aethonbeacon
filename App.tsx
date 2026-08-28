@@ -7225,8 +7225,8 @@ const englishUiCopy: UiCopy = {
   help: "Help",
   read: "Read",
   openHelpAndRedress: "Open Help and Redress",
-  homeSupportTitle: "One calm start, four connected paths.",
-  homeSupportLead: "Start with Counselling. Calm steadies the body. Path becomes one next step. Vedic adds perspective when needed.",
+  homeSupportTitle: "One clear start, two connected paths.",
+  homeSupportLead: "Start with Counselling. Community stays one tap away when you want verified human support.",
   homeSupportCounsellingTitle: "Counselling",
   homeSupportCounsellingBody: "Private first step. The next Path stays clear.",
   homeSupportCounsellingCta: "Primary support",
@@ -7372,8 +7372,8 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     help: "मदद",
     read: "पढ़ें",
     openHelpAndRedress: "मदद और शिकायत खोलें",
-    homeSupportTitle: "एक शांत शुरुआत, चार जुड़े हुए रास्ते।",
-    homeSupportLead: "परामर्श से शुरू करें। Calm शरीर को स्थिर करता है। Path एक अगला कदम बनता है। ज़रूरत पड़ने पर वैदिक दृष्टि मदद करती है।",
+    homeSupportTitle: "एक साफ़ शुरुआत, दो जुड़े हुए रास्ते।",
+    homeSupportLead: "परामर्श से शुरू करें। जब सत्यापित मानवीय सहायता चाहिए, समुदाय एक टैप दूर रहता है।",
     homeSupportCounsellingTitle: "परामर्श",
     homeSupportCounsellingBody: "निजी पहला कदम। अगला Path साफ़ रहता है।",
     homeSupportCounsellingCta: "मुख्य सहायता",
@@ -7652,8 +7652,8 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     help: "సహాయం",
     read: "చదవండి",
     openHelpAndRedress: "సహాయం మరియు పరిహారం తెరవండి",
-    homeSupportTitle: "ఒక ప్రశాంత ఆరంభం, నాలుగు అనుసంధానమైన మార్గాలు.",
-    homeSupportLead: "కౌన్సెలింగ్‌తో ప్రారంభించండి. Calm శరీరాన్ని స్థిరపరుస్తుంది. Path ఒక తదుపరి దశగా మారుతుంది. అవసరమైతే వేద దర్శనం దృక్కోణం ఇస్తుంది.",
+    homeSupportTitle: "ఒక స్పష్ట ఆరంభం, రెండు అనుసంధానమైన మార్గాలు.",
+    homeSupportLead: "కౌన్సెలింగ్‌తో ప్రారంభించండి. ధృవీకరించిన మానవ మద్దతు కావాలనిపించినప్పుడు సమాజం ఒక ట్యాప్ దూరంలో ఉంటుంది.",
     homeSupportCounsellingTitle: "కౌన్సెలింగ్",
     homeSupportCounsellingBody: "ప్రైవేట్ మొదటి అడుగు. తదుపరి Path స్పష్టంగా ఉంటుంది.",
     homeSupportCounsellingCta: "ప్రధాన సహాయం",
@@ -7786,8 +7786,8 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     help: "உதவி",
     read: "படி",
     openHelpAndRedress: "உதவி மற்றும் நிவாரணம் திறக்கவும்",
-    homeSupportTitle: "ஒரு அமைதியான தொடக்கம், நான்கு இணைந்த பாதைகள்.",
-    homeSupportLead: "ஆலோசனையுடன் தொடங்குங்கள். Calm உடலை நிலைப்படுத்தும். Path ஒரு அடுத்த படியாக மாறும். தேவையான போது வேத பார்வை சேர்க்கும்.",
+    homeSupportTitle: "ஒரு தெளிவான தொடக்கம், இரண்டு இணைந்த பாதைகள்.",
+    homeSupportLead: "ஆலோசனையுடன் தொடங்குங்கள். உறுதிப்படுத்தப்பட்ட மனித ஆதரவு வேண்டும்போது சமூகம் ஒரு தட்டில் கிடைக்கும்.",
     homeSupportCounsellingTitle: "ஆலோசனை",
     homeSupportCounsellingBody: "தனிப்பட்ட முதல் அடி. அடுத்த Path தெளிவாக இருக்கும்.",
     homeSupportCounsellingCta: "முதன்மை உதவி",
@@ -7920,8 +7920,8 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     help: "مدد",
     read: "پڑھیں",
     openHelpAndRedress: "مدد اور ازالہ کھولیں",
-    homeSupportTitle: "ایک پُرسکون آغاز، چار جڑے ہوئے راستے۔",
-    homeSupportLead: "پہلے مشاورت سے شروع کریں۔ Calm جسم کو سنبھالتا ہے۔ Path ایک اگلا قدم بناتا ہے۔ ضرورت پڑنے پر ویدک بصیرت مدد دیتی ہے۔",
+    homeSupportTitle: "ایک صاف آغاز، دو جڑے ہوئے راستے۔",
+    homeSupportLead: "مشاورت سے شروع کریں۔ جب تصدیق شدہ انسانی مدد چاہیے ہو تو برادری ایک ٹیپ دور رہتی ہے۔",
     homeSupportCounsellingTitle: "مشاورت",
     homeSupportCounsellingBody: "نجی پہلا مرحلہ۔ اگلا Path صاف رہتا ہے۔",
     homeSupportCounsellingCta: "بنیادی مدد",
@@ -15961,7 +15961,7 @@ export default function App() {
   const [communityTopicFilter, setCommunityTopicFilter] = useState<CommunityTopicFilterId>("all");
   const [savedCommunityMessageIds, setSavedCommunityMessageIds] = useState<string[]>([]);
   const [savedCommunityChatIds, setSavedCommunityChatIds] = useState<string[]>([]);
-  const [launchNeedId, setLaunchNeedId] = useState<LaunchNeedId>("calm");
+  const [launchNeedId, setLaunchNeedId] = useState<LaunchNeedId>("guide");
   const [appIssueCount, setAppIssueCount] = useState(0);
   const [appLastIssueAt, setAppLastIssueAt] = useState<string | null>(null);
   const [hasSeenWelcomeCard, setHasSeenWelcomeCard] = useState(false); // first-run explainer card
@@ -16176,13 +16176,13 @@ export default function App() {
       .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
   }, [visibleTabs]);
   const sectionSwitcherFeaturedTabs = useMemo(() => {
-    const featuredIds: TabId[] = ["community", "vedic", "tones"];
+    const featuredIds: TabId[] = ["community"];
     return featuredIds
       .map((id) => visibleTabs.find((tab) => tab.id === id))
       .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
   }, [visibleTabs]);
   const sectionSwitcherTabs = useMemo(() => {
-    const featuredIds = new Set<TabId>(["community", "vedic", "tones"]);
+    const featuredIds = new Set<TabId>(["community"]);
     const orderedIds = [
       ...SECONDARY_PAGE_SEQUENCE,
       ...CORE_SERVICE_TAB_IDS,
@@ -18791,7 +18791,10 @@ export default function App() {
           parsed.savedCommunityChatIds.filter((value): value is string => typeof value === "string").slice(0, 20)
         );
       }
-      if (typeof parsed.launchNeedId === "string" && launchNeeds.some((need) => need.id === parsed.launchNeedId)) {
+      if (
+        typeof parsed.launchNeedId === "string" &&
+        (parsed.launchNeedId === "guide" || parsed.launchNeedId === "community")
+      ) {
         setLaunchNeedId(parsed.launchNeedId as LaunchNeedId);
       }
       if (typeof parsed.communityTopicFilter === "string" && isCommunityTopicFilterId(parsed.communityTopicFilter)) {
@@ -19984,7 +19987,7 @@ export default function App() {
     setShowExitReviewPrompt(false);
     setHasSeenExitReviewPrompt(true);
     setShowOnboardingPanel(true);
-    setLaunchNeedId("calm");
+    setLaunchNeedId("guide");
     handleTabPress("settings");
   }
 
@@ -25913,18 +25916,18 @@ function TodaySection({
     void playRelaxingToneCue(toneMode);
   };
   const homeFlowSequenceTitle = pickLocalizedText(languageId, {
-    english: "Counselling → Calm → Path → Vedic",
-    hindi: "परामर्श → शांति → मार्ग → वेद",
-    telugu: "కౌన్సెలింగ్ → ప్రశాంతత → మార్గం → వేద",
-    tamil: "ஆலோசனை → அமைதி → வழி → வேதம்",
-    urdu: "مشاورت → سکون → راستہ → ویدک"
+    english: "Counselling → Community",
+    hindi: "परामर्श → समुदाय",
+    telugu: "కౌన్సెలింగ్ → సమాజం",
+    tamil: "ஆலோசனை → சமூகம்",
+    urdu: "مشاورت → برادری"
   });
   const homeFlowSequenceBody = pickLocalizedText(languageId, {
-    english: "Private first, then calm, one next step, then perspective when needed.",
-    hindi: "निजी शुरुआत, फिर शांति, फिर एक अगला कदम, फिर ज़रूरत होने पर दृष्टि।",
-    telugu: "ప్రైవేట్‌గా ప్రారంభించి, తర్వాత ప్రశాంతత, ఒక తదుపరి దశ, అవసరమైనప్పుడు దృక్కోణం.",
-    tamil: "தனிப்பட்ட தொடக்கம், பின்னர் அமைதி, ஒரு அடுத்த படி, தேவையானபோது பார்வை.",
-    urdu: "نجی آغاز، پھر سکون، پھر ایک اگلا قدم، ضرورت ہو تو زاویہ۔"
+    english: "Private first, then verified support when you need a human handoff.",
+    hindi: "पहले निजी शुरुआत, फिर ज़रूरत होने पर सत्यापित सहायता और मानव हस्तांतरण।",
+    telugu: "ముందుగా ప్రైవేట్‌గా, తర్వాత మనిషి సహాయం కావాల్సినప్పుడు ధృవీకరించిన మద్దతు.",
+    tamil: "முதலில் தனிப்பட்ட தொடக்கம், பின்னர் மனித உதவி தேவைப்படும் போது உறுதிப்படுத்தப்பட்ட ஆதரவு.",
+    urdu: "پہلے نجی آغاز، پھر جب انسانی مدد درکار ہو تو تصدیق شدہ مدد۔"
   });
   const homePrimaryRouteBadge = pickLocalizedText(languageId, {
     english: "Primary route",
@@ -25974,26 +25977,6 @@ function TodaySection({
       cta: uiCopy.homeSupportCommunityCta,
       tab: "community" as TabId,
       accent: "#2563EB",
-      featured: false
-    },
-    {
-      id: "calm",
-      icon: "flower" as keyof typeof Ionicons.glyphMap,
-      title: uiCopy.homeSupportCalmTitle,
-      body: uiCopy.homeSupportCalmBody,
-      cta: uiCopy.homeSupportCalmCta,
-      tab: "tones" as TabId,
-      accent: "#7C3AED",
-      featured: false
-    },
-    {
-      id: "chart",
-      icon: "planet" as keyof typeof Ionicons.glyphMap,
-      title: uiCopy.homeSupportVedicTitle,
-      body: uiCopy.homeSupportVedicBody,
-      cta: uiCopy.homeSupportVedicCta,
-      tab: "vedic" as TabId,
-      accent: "#A14A08",
       featured: false
     }
   ];
@@ -40207,7 +40190,9 @@ function OnboardingOverlay({
   const onboardingScrollRef = React.useRef<ScrollView>(null);
   const [exitReviewSectionY, setExitReviewSectionY] = useState(0);
   const t = makeLocalizedTextPicker(languageId, profileOnboardingTextCatalog);
-  const onboardingLaunchNeeds = launchNeeds.map((need) => {
+  const onboardingLaunchNeeds = launchNeeds
+    .filter((need) => need.id === "guide" || need.id === "community")
+    .map((need) => {
     if (need.id === "guide") {
       return {
         ...need,
@@ -40369,7 +40354,7 @@ function OnboardingOverlay({
               <Text style={styles.eyebrow}>{t("Welcome to NAYIQ", "NAYIQ में आपका स्वागत है")}</Text>
               <Text style={styles.onboardingTitle}>{t("Choose what you need today.", "आज आपको जो चाहिए, उसे चुनें।")}</Text>
               <Text style={styles.onboardingText}>
-                {t("Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.", "स्वचालित परामर्श, शांति-सहायता, वैदिक दृष्टि या समुदाय से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप निर्यात या साझा न करें, नोट्स इसी डिवाइस पर रहेंगी।")}
+                {t("Start with the automatic counselling engine or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.", "स्वचालित परामर्श इंजन या समुदाय से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप निर्यात या साझा न करें, नोट्स इसी डिवाइस पर रहेंगी।")}
               </Text>
             </View>
 
