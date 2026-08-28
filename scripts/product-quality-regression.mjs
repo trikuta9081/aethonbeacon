@@ -115,19 +115,16 @@ for (const internalTitle of ['Controlled beta standard', 'Launch status', 'Relea
 
 // ── Apple-premium polish contract from the August 9 product pass ────────────
 // Home stays simple: emergency access remains a separate priority strip and
-// Start Here contains four non-duplicated destinations. Counselling is the
-// primary card; each entry carries a short benefit and clear action.
+// Start Here keeps only the two primary destinations that should be visible
+// on the front surface. Counselling is still the primary card and Community
+// remains the verified human-support path.
 [
   'Premium command center',
-  'One calm start, four connected paths.',
-  'Start with Counselling. Calm steadies the body. Path becomes one next step. Vedic adds perspective when needed.',
+  'One clear start, two connected paths.',
+  'Start with Counselling. Community stays one tap away when you want verified human support.',
   'Private first step. The next Path stays clear.',
-  'Sound and breath to steady you before Path.',
-  'Moon-chart insight when perspective helps.',
   'Verified support when a human handoff fits best.',
   'Start counselling',
-  'Open calm',
-  'View insight',
   'Open messages'
 ].forEach((marker) => assert(source.includes(marker), `Missing simplified Home marker: ${marker}`));
 assert(!source.includes('title: "Help and Redress",\n                body:'), 'Help and Redress must not be duplicated inside Start Here.');
@@ -189,7 +186,7 @@ assert(!source.includes('title: "Help and Redress",\n                body:'), 'H
   'View calculation basis'
 ].forEach((marker) => assert(source.includes(marker), `Missing Vedic presentation marker: ${marker}`));
 
-// Onboarding is a calm first minute: four primary choices, a separate
+// Onboarding is a calm first minute: two primary choices, a separate
 // always-available safety route, optional profile, and clear privacy assurance.
 [
   'Choose what you need today.',
