@@ -16139,6 +16139,18 @@ export default function App() {
   );
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
+  const nayiqLogoA11yLabel = l("NAYIQ logo", {
+    hindi: "NAYIQ लोगो",
+    telugu: "NAYIQ లోగో",
+    tamil: "NAYIQ லோகோ",
+    urdu: "NAYIQ لوگو"
+  });
+  const splashTagline = l("Your clarity. Your next step.", {
+    hindi: "आपकी स्पष्टता। आपका अगला कदम।",
+    telugu: "మీ స్పష్టత. మీ తదుపరి అడుగు.",
+    tamil: "உங்கள் தெளிவு. உங்கள் அடுத்த படி.",
+    urdu: "آپ کی وضاحت۔ آپ کا اگلا قدم۔"
+  });
   const visibleTabs = useMemo(
     () =>
       tabs
@@ -25389,6 +25401,7 @@ function isTrustedExternalUrl(url: string) {
                 adminUnlockFailures={adminUnlockFailures}
                 adminLockedUntilAt={adminLockedUntilAt}
                 onUnlockAdmin={unlockAdminAccess}
+                languageId={languageId}
               />
             </View>
           )}
@@ -38832,7 +38845,8 @@ function AdminLoginGate({
   setAdminAccessAttempt,
   adminUnlockFailures,
   adminLockedUntilAt,
-  onUnlockAdmin
+  onUnlockAdmin,
+  languageId
 }: {
   adminAccessNameAttempt: string;
   setAdminAccessNameAttempt: (value: string) => void;
@@ -38841,11 +38855,14 @@ function AdminLoginGate({
   adminUnlockFailures: number;
   adminLockedUntilAt: number | null;
   onUnlockAdmin: () => void;
+  languageId: LanguageId;
 }) {
   const adminLockedRemainingMinutes =
     adminLockedUntilAt !== null && adminLockedUntilAt > Date.now()
       ? Math.max(1, Math.ceil((adminLockedUntilAt - Date.now()) / 60000))
       : 0;
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
 
   return (
     <View style={styles.panel}>
@@ -45091,6 +45108,13 @@ function DynamicHeroCard({
     telugu: "బాగోకపోవడం కూడా సర్వసాధారణమే",
     tamil: "சரி இல்லாமல் இருப்பதும் சரியே",
     urdu: "ٹھیک نہ ہونا بھی ٹھیک ہے"
+  });
+  const nayiqLogoA11yLabel = pickLocalizedText(languageId, {
+    english: "NAYIQ logo",
+    hindi: "NAYIQ लोगो",
+    telugu: "NAYIQ లోగో",
+    tamil: "NAYIQ லோகோ",
+    urdu: "NAYIQ لوگو"
   });
   const heroQuestion = pickLocalizedText(languageId, {
     english: "What's on your mind today?",
