@@ -39276,8 +39276,23 @@ function AdminSection({
   const appHasEverOpened = appLaunchCount > 0 || appFirstOpenedAt !== null;
   const backendPresenceFresh =
     backendPresenceFetchedAt !== null && Date.now() - Date.parse(backendPresenceFetchedAt) < 90_000;
-  const verificationHealthLabel = profilePhoneVerified || profileEmailVerified ? "Verified channel ready" : "OTP still needed";
-  const appIssueLabel = appIssueCount > 0 ? `${appIssueCount} issue${appIssueCount === 1 ? "" : "s"} seen` : "No issues captured";
+  const verificationHealthLabel = profilePhoneVerified || profileEmailVerified
+    ? l("Verified channel ready", { hindi: "सत्यापित चैनल तैयार है", telugu: "ధృవీకరించిన ఛానల్ సిద్ధంగా ఉంది", tamil: "உறுதிப்படுத்தப்பட்ட சேனல் தயார்", urdu: "تصدیق شدہ چینل تیار ہے" })
+    : l("OTP still needed", { hindi: "अभी भी OTP चाहिए", telugu: "ఇంకా OTP అవసరం", tamil: "இன்னும் OTP தேவை", urdu: "ابھی بھی OTP درکار ہے" });
+  const appIssueLabel = appIssueCount > 0
+    ? l(`${appIssueCount} issue${appIssueCount === 1 ? "" : "s"} seen`, {
+        hindi: `${appIssueCount} समस्या देखी गई${appIssueCount === 1 ? "" : "ं"}`,
+        telugu: `${appIssueCount} సమస్య${appIssueCount === 1 ? "" : "లు"} కనిపించాయి`,
+        tamil: `${appIssueCount} சிக்கல்${appIssueCount === 1 ? "" : "கள்"} காணப்பட்டது`,
+        urdu: `${appIssueCount} مسئلہ${appIssueCount === 1 ? "" : "ات"} نظر آئے`
+      })
+    : l("No issues captured", { hindi: "कोई समस्या दर्ज नहीं हुई", telugu: "ఏ సమస్యలు నమోదు కాలేదు", tamil: "எந்த சிக்கலும் பதிவு செய்யப்படவில்லை", urdu: "کوئی مسئلہ درج نہیں ہوا" });
+  const backendPresenceState = backendActiveUsers !== null
+    ? `${backendActiveUsers}${backendPresenceFresh ? l(" (fresh)", { hindi: " (ताज़ा)", telugu: " (తాజా)", tamil: " (புதியது)", urdu: " (تازہ)" }) : l(" (stale)", { hindi: " (पुराना)", telugu: " (పాతది)", tamil: " (பழையது)", urdu: " (پرانا)" })}`
+    : l("Not connected", { hindi: "कनेक्ट नहीं है", telugu: "కనెక్ట్ కాలేదు", tamil: "இணைக்கப்படவில்லை", urdu: "منسلک نہیں" });
+  const verificationSourceLabel = verificationDeliveryMode === "remote"
+    ? l("connected", { hindi: "जुड़ा हुआ", telugu: "కనెక్ట్ అయింది", tamil: "இணைக்கப்பட்டது", urdu: "منسلک" })
+    : l("local fallback", { hindi: "स्थानीय विकल्प", telugu: "స్థానिक ప్రత్యామ్నాయం", tamil: "உள்ளூர் மாற்று", urdu: "مقامی متبادل" });
 
   return (
     <View style={styles.panel}>
@@ -39354,72 +39369,74 @@ function AdminSection({
         </Text>
         <View style={[styles.adminStatsGrid, isWide && styles.adminStatsGridWide]}>
           <Metric
-            label="Live now"
+            label={l("Live now", { hindi: "अभी लाइव", telugu: "ఇప్పుడే ప్రత్యక్షం", tamil: "இப்போது நேரலை", urdu: "ابھی فعال" })}
             value={appIsLiveNow ? 1 : 0}
-            caption="this device"
+            caption={l("this device", { hindi: "यह डिवाइस", telugu: "ఈ పరికరం", tamil: "இந்த சாதனம்", urdu: "یہ ڈیوائس" })}
             accent="#0E6F69"
           />
           <Metric
-            label="Launches"
+            label={l("Launches", { hindi: "शुरुआतें", telugu: "ప్రారంభాలు", tamil: "திறப்புகள்", urdu: "لانچز" })}
             value={appLaunchCount}
-            caption="device opens"
+            caption={l("device opens", { hindi: "डिवाइस खोलना", telugu: "పరికరం తెరచినవి", tamil: "சாதனத் திறப்புகள்", urdu: "ڈیوائس کھلنے" })}
             accent="#4B8DF8"
           />
           <Metric
-            label="Known active"
+            label={l("Known active", { hindi: "ज्ञात सक्रिय", telugu: "తెలిసిన సక్రియం", tamil: "தெரிந்த செயலில்", urdu: "معلوم فعال" })}
             value={appHasEverOpened ? 1 : 0}
-            caption="local profile"
+            caption={l("local profile", { hindi: "स्थानीय प्रोफ़ाइल", telugu: "స్థానిక ప్రొఫైల్", tamil: "உள்ளூர் சுயவிவரம்", urdu: "مقامی پروفائل" })}
             accent="#AD850B"
           />
           <Metric
-            label="Backend live"
+            label={l("Backend live", { hindi: "बैकएंड लाइव", telugu: "బ్యాకెండ్ ప్రత్యక్షం", tamil: "பின்னணி நேரலை", urdu: "بیک اینڈ فعال" })}
             value={backendActiveUsers ?? 0}
-            caption={backendPresenceFresh ? "presence API" : "stale or offline"}
+            caption={backendPresenceFresh ? l("presence API", { hindi: "उपस्थिति API", telugu: "ఉనికి API", tamil: "இருப்பு API", urdu: "موجودگی API" }) : l("stale or offline", { hindi: "पुराना या ऑफ़लाइन", telugu: "పాతది లేదా ఆఫ్‌లైన్", tamil: "பழையது அல்லது ஆஃப்லைன்", urdu: "پرانا یا آف لائن" })}
             accent="#F37B64"
           />
           <Metric
-            label="Verification"
+            label={l("Verification", { hindi: "सत्यापन", telugu: "ధృవీకరణ", tamil: "உறுதிப்படுத்தல்", urdu: "تصدیق" })}
             value={profilePhoneVerified || profileEmailVerified ? 1 : 0}
             caption={verificationHealthLabel}
             accent="#7E6FD6"
           />
           <Metric
-            label="App issues"
+            label={l("App issues", { hindi: "ऐप समस्याएँ", telugu: "యాప్ సమస్యలు", tamil: "செயலி சிக்கல்கள்", urdu: "ایپ مسائل" })}
             value={appIssueCount}
-            caption={appLastIssueAt ? `last ${formatDate(appLastIssueAt)}` : "no issue events"}
+            caption={appLastIssueAt ? l(`last ${formatDate(appLastIssueAt)}`, { hindi: `अंतिम ${formatDate(appLastIssueAt)}`, telugu: `చివరి ${formatDate(appLastIssueAt)}`, tamil: `கடைசி ${formatDate(appLastIssueAt)}`, urdu: `آخری ${formatDate(appLastIssueAt)}` }) : l("no issue events", { hindi: "कोई समस्या घटना नहीं", telugu: "ఏ సమస్య సంఘటనలు లేవు", tamil: "எந்த சிக்கல் நிகழ்வுகளும் இல்லை", urdu: "کوئی مسئلہ واقعہ نہیں" })}
             accent="#C85D4A"
           />
         </View>
         <View style={styles.launchSummaryList}>
           <Text style={styles.launchSummaryItem}>
-            First opened: {appFirstOpenedAt ? formatDateTime(appFirstOpenedAt) : "Not yet recorded"}
+            {l("First opened:", { hindi: "पहली बार खोला गया:", telugu: "మొదట తెరవబడింది:", tamil: "முதல் திறப்பு:", urdu: "پہلی بار کھولا گیا:" })} {appFirstOpenedAt ? formatDateTime(appFirstOpenedAt) : l("Not yet recorded", { hindi: "अभी तक दर्ज नहीं", telugu: "ఇంకా నమోదు కాలేదు", tamil: "இன்னும் பதிவு செய்யப்படவில்லை", urdu: "ابھی تک درج نہیں" })}
           </Text>
           <Text style={styles.launchSummaryItem}>
-            Last opened: {appLastOpenedAt ? formatDateTime(appLastOpenedAt) : "Not yet recorded"}
+            {l("Last opened:", { hindi: "आख़िरी बार खोला गया:", telugu: "చివరిసారి తెరవబడింది:", tamil: "கடைசியாக திறக்கப்பட்டது:", urdu: "آخری بار کھولا گیا:" })} {appLastOpenedAt ? formatDateTime(appLastOpenedAt) : l("Not yet recorded", { hindi: "अभी तक दर्ज नहीं", telugu: "ఇంకా నమోదు కాలేదు", tamil: "இன்னும் பதிவு செய்யப்படவில்லை", urdu: "ابھی تک درج نہیں" })}
           </Text>
           <Text style={styles.launchSummaryItem}>
-            Last heartbeat: {appLastHeartbeatAt ? formatDateTime(appLastHeartbeatAt) : "Not yet recorded"}
+            {l("Last heartbeat:", { hindi: "अंतिम हार्टबीट:", telugu: "చివరి హార్ట్‌బీట్:", tamil: "கடைசி ஹார்ட்பீட்:", urdu: "آخری ہارٹ بیٹ:" })} {appLastHeartbeatAt ? formatDateTime(appLastHeartbeatAt) : l("Not yet recorded", { hindi: "अभी तक दर्ज नहीं", telugu: "ఇంకా నమోదు కాలేదు", tamil: "இன்னும் பதிவு చేయப்படவில்லை", urdu: "ابھی تک درج نہیں" })}
           </Text>
           <Text style={styles.launchSummaryItem}>
-            Backend active users:{" "}
-            {backendActiveUsers !== null
-              ? `${backendActiveUsers}${backendPresenceFresh ? " (fresh)" : " (stale)"}`
-              : "Not connected"}
+            {l("Backend active users:", { hindi: "बैकएंड सक्रिय उपयोगकर्ता:", telugu: "బ్యాకెండ్ సక్రియ వినియోగదారులు:", tamil: "பின்னணி செயலில் உள்ள பயனர்கள்:", urdu: "بیک اینڈ فعال صارفین:" })} {backendPresenceState}
           </Text>
           <Text style={styles.launchSummaryItem}>
-            Backend sessions tracked: {backendPresenceSessions.length}
+            {l("Backend sessions tracked:", { hindi: "ट्रैक किए गए बैकएंड सत्र:", telugu: "ట్రాక్ చేసిన బ్యాకెండ్ సెషన్లు:", tamil: "கண்காணிக்கப்பட்ட பின்னணி அமர்வுகள்:", urdu: "ریکارڈ شدہ بیک اینڈ سیشنز:" })} {backendPresenceSessions.length}
           </Text>
           <Text style={styles.launchSummaryItem}>
-            Verification health: {verificationHealthLabel}
+            {l("Verification health:", { hindi: "सत्यापन स्थिति:", telugu: "ధృవీకరణ స్థితి:", tamil: "உறுதிப்படுத்தல் நிலை:", urdu: "تصدیق کی حالت:" })} {verificationHealthLabel}
           </Text>
           <Text style={styles.launchSummaryItem}>
-            Verification source: {verificationDeliveryMode === "remote" ? "connected" : "local fallback"}
+            {l("Verification source:", { hindi: "सत्यापन स्रोत:", telugu: "ధృవీకరణ మూలం:", tamil: "உறுதிப்படுத்தல் மூலம்:", urdu: "تصدیق کا ذریعہ:" })} {verificationSourceLabel}
           </Text>
           <Text style={styles.launchSummaryItem}>
-            Crash / error watch: {appIssueLabel}
+            {l("Crash / error watch:", { hindi: "क्रैश / त्रुटि निगरानी:", telugu: "క్రాష్ / లోప పర్యవేక్షణ:", tamil: "கிராஷ் / பிழை கண்காணிப்பு:", urdu: "کریش / خرابی نگرانی:" })} {appIssueLabel}
           </Text>
           <Text style={styles.launchSummaryItem}>
-            Global current users: this becomes the real multi-device total when presence is live.
+            {l("Global current users: this becomes the real multi-device total when presence is live.", {
+              hindi: "वैश्विक वर्तमान उपयोगकर्ता: मौजूदगी सक्रिय होने पर यही वास्तविक बहु-डिवाइस कुल होगा।",
+              telugu: "గ్లోబల్ ప్రస్తుత వినియోగదారులు: presence live అయినప్పుడు ఇదే నిజమైన multi-device మొత్తం అవుతుంది.",
+              tamil: "உலகளாவிய தற்போதைய பயனர்கள்: presence live ஆனதும் இதுவே உண்மையான multi-device மொத்தமாகும்.",
+              urdu: "عالمی موجودہ صارفین: presence live ہونے پر یہی حقیقی multi-device مجموعہ ہوگا۔"
+            })}
           </Text>
         </View>
         {backendPresenceSessions.length > 0 ? (
@@ -39430,8 +39447,7 @@ function AdminSection({
                   {session.platform} / {session.role}
                 </Text>
                 <Text style={styles.adminReportText}>
-                  First seen {formatDateTime(session.firstSeenAt)} / Last seen{" "}
-                  {formatDateTime(session.lastSeenAt)}
+                  {l("First seen", { hindi: "पहली बार देखा गया", telugu: "మొదట కనిపించింది", tamil: "முதல் காணப்பட்டது", urdu: "پہلی بار دیکھا گیا" })} {formatDateTime(session.firstSeenAt)} / {l("Last seen", { hindi: "अंतिम बार देखा गया", telugu: "చివరిసారి కనిపించింది", tamil: "கடைசியாக காணப்பட்டது", urdu: "آخری بار دیکھا گیا" })} {formatDateTime(session.lastSeenAt)}
                 </Text>
               </View>
             ))}
@@ -39440,12 +39456,12 @@ function AdminSection({
       </View>
 
       <View style={[styles.adminStatsGrid, isWide && styles.adminStatsGridWide]}>
-        <Metric label="Reports" value={communityReports.length} caption="community reports" accent="#F37B64" />
-        <Metric label="Hidden feed" value={hiddenCommunityMessageIds.length} caption="feed items" accent="#AD850B" />
-        <Metric label="Hidden chat" value={hiddenCommunityChatIds.length} caption="chat items" accent="#7E6FD6" />
-        <Metric label="Blocked" value={communitySafetyBlockedCount} caption="unsafe attempts" accent="#C85D4A" />
-        <Metric label="Check-ins" value={entries.length} caption="saved entries" accent="#0E6F69" />
-        <Metric label="Reviews" value={userReviews.length} caption={latestReviewRating > 0 ? `latest ${latestReviewRating}/5` : "user feedback"} accent="#4B8DF8" />
+        <Metric label={l("Reports", { hindi: "रिपोर्टें", telugu: "నివేదికలు", tamil: "அறிக்கைகள்", urdu: "رپورٹس" })} value={communityReports.length} caption={l("community reports", { hindi: "समुदाय रिपोर्टें", telugu: "కమ్యూనిటీ నివేదికలు", tamil: "சமூக அறிக்கைகள்", urdu: "کمیونٹی رپورٹس" })} accent="#F37B64" />
+        <Metric label={l("Hidden feed", { hindi: "छिपी फ़ीड", telugu: "దాచిన ఫీడ్", tamil: "மறைக்கப்பட்ட feed", urdu: "چھپی ہوئی فیڈ" })} value={hiddenCommunityMessageIds.length} caption={l("feed items", { hindi: "फ़ीड आइटम", telugu: "ఫీడ్ అంశాలు", tamil: "feed உருப்படிகள்", urdu: "فیڈ آئٹمز" })} accent="#AD850B" />
+        <Metric label={l("Hidden chat", { hindi: "छिपी चैट", telugu: "దాచిన చాట్", tamil: "மறைக்கப்பட்ட chat", urdu: "چھپی ہوئی چیٹ" })} value={hiddenCommunityChatIds.length} caption={l("chat items", { hindi: "चैट आइटम", telugu: "చాట్ అంశాలు", tamil: "chat உருப்படிகள்", urdu: "چیٹ آئٹمز" })} accent="#7E6FD6" />
+        <Metric label={l("Blocked", { hindi: "रोके गए", telugu: "నిరోధించబడినవి", tamil: "தடுக்கப்பட்டவை", urdu: "روک دیے گئے" })} value={communitySafetyBlockedCount} caption={l("unsafe attempts", { hindi: "असुरक्षित प्रयास", telugu: "అసురక్షిత ప్రయత్నాలు", tamil: "ஆபத்தான முயற்சிகள்", urdu: "غیر محفوظ کوششیں" })} accent="#C85D4A" />
+        <Metric label={l("Check-ins", { hindi: "चेक-इन", telugu: "చెక్-ఇన్లు", tamil: "சேக்-இன்கள்", urdu: "چیک اِنز" })} value={entries.length} caption={l("saved entries", { hindi: "सहेजी गई प्रविष्टियाँ", telugu: "సేవ్ చేసిన ఎంట్రీలు", tamil: "சேமிக்கப்பட்ட பதிவுகள்", urdu: "محفوظ شدہ اندراجات" })} accent="#0E6F69" />
+        <Metric label={l("Reviews", { hindi: "समीक्षाएँ", telugu: "సమీక్షలు", tamil: "மதிப்புரைகள்", urdu: "جائزے" })} value={userReviews.length} caption={latestReviewRating > 0 ? l(`latest ${latestReviewRating}/5`, { hindi: `नवीनतम ${latestReviewRating}/5`, telugu: `తాజా ${latestReviewRating}/5`, tamil: `சமீபத்திய ${latestReviewRating}/5`, urdu: `تازہ ترین ${latestReviewRating}/5` }) : l("user feedback", { hindi: "उपयोगकर्ता प्रतिक्रिया", telugu: "వినియోగదారు అభిప్రాయం", tamil: "பயனர் கருத்து", urdu: "صارف کی رائے" })} accent="#4B8DF8" />
       </View>
 
       <View style={styles.settingsBlock}>
@@ -39488,7 +39504,7 @@ function AdminSection({
           style={styles.settingsInput}
         />
         <Text style={styles.promptText}>
-          Failed attempts: {adminUnlockFailures}/{ADMIN_LOCKOUT_THRESHOLD}. The panel locks briefly after repeated mismatches.
+          {l("Failed attempts:", { hindi: "असफल प्रयास:", telugu: "విఫలమైన ప్రయత్నాలు:", tamil: "தோல்வியுற்ற முயற்சிகள்:", urdu: "ناکام کوششیں:" })} {adminUnlockFailures}/{ADMIN_LOCKOUT_THRESHOLD}. {l("The panel locks briefly after repeated mismatches.", { hindi: "बार-बार गलत मिलान होने पर पैनल थोड़ी देर के लिए लॉक हो जाता है।", telugu: "పునరావృత సరిపోలికలలో తేడా ఉంటే ప్యానెల్ కొద్దిసేపు లాక్ అవుతుంది.", tamil: "மீண்டும் மீண்டும் பொருந்தாமை ஏற்பட்டால் குழு சிறிது நேரம் பூட்டப்படும்.", urdu: "بار بار عدم مطابقت پر پینل کچھ دیر کے لیے لاک ہو جاتا ہے۔" })}
         </Text>
       </View>
 
@@ -39559,7 +39575,7 @@ function AdminSection({
 
       {topReviews.length > 0 ? (
         <View style={styles.settingsBlock}>
-          <Text style={styles.settingsTitle}>Recent user reviews</Text>
+          <Text style={styles.settingsTitle}>{l("Recent user reviews", { hindi: "हाल की उपयोगकर्ता समीक्षाएँ", telugu: "ఇటీవలి వినియోగదారు సమీక్షలు", tamil: "சமீபத்திய பயனர் மதிப்புரைகள்", urdu: "حالیہ صارف جائزے" })}</Text>
           <View style={styles.adminReportList}>
             {topReviews.map((review) => (
               <View key={review.id} style={styles.adminReportCard}>
@@ -39568,7 +39584,7 @@ function AdminSection({
                 </Text>
                 <Text style={styles.adminReportText}>{review.text}</Text>
                 {review.contact.trim().length > 0 ? (
-                  <Text style={styles.smallMeta}>Handle: {review.contact}</Text>
+                  <Text style={styles.smallMeta}>{l("Handle:", { hindi: "संपर्क:", telugu: "హ్యాండిల్:", tamil: "கைபிடி:", urdu: "رابطہ:" })} {review.contact}</Text>
                 ) : null}
               </View>
             ))}
@@ -39578,7 +39594,7 @@ function AdminSection({
 
       {topReports.length > 0 ? (
         <View style={styles.settingsBlock}>
-          <Text style={styles.settingsTitle}>Recent reports</Text>
+          <Text style={styles.settingsTitle}>{l("Recent reports", { hindi: "हाल की रिपोर्टें", telugu: "ఇటీవలి నివేదికలు", tamil: "சமீபத்திய அறிக்கைகள்", urdu: "حالیہ رپورٹس" })}</Text>
           <View style={styles.adminReportList}>
             {topReports.map((report) => (
               <View key={report.id} style={styles.adminReportCard}>
@@ -39594,7 +39610,7 @@ function AdminSection({
 
       <View style={styles.backupActions}>
         <Pressable accessibilityRole="button" onPress={onSignOut} style={styles.dangerButton}>
-          <Text style={styles.dangerButtonLabel}>Sign out admin</Text>
+          <Text style={styles.dangerButtonLabel}>{l("Sign out admin", { hindi: "एडमिन साइन आउट", telugu: "అడ్మిన్ సైన్ అవుట్", tamil: "நிர்வாகி வெளியேறு", urdu: "ایڈمن سائن آؤٹ" })}</Text>
         </Pressable>
       </View>
     </View>
@@ -40703,15 +40719,15 @@ function PrivateIntakeOverlay({
                 <Text style={styles.profileSummaryValue}>{privateIntakeReport.coverage}</Text>
               </View>
               <View style={styles.profileSummaryCard}>
-                <Text style={styles.profileSummaryLabel}>Emotional</Text>
+                <Text style={styles.profileSummaryLabel}>{t("Emotional", "भावनात्मक")}</Text>
                 <Text style={styles.profileSummaryValue}>{privateIntakeReport.emotionalLabel}</Text>
               </View>
               <View style={styles.profileSummaryCard}>
-                <Text style={styles.profileSummaryLabel}>Practical</Text>
+                <Text style={styles.profileSummaryLabel}>{t("Practical", "व्यावहारिक")}</Text>
                 <Text style={styles.profileSummaryValue}>{privateIntakeReport.practicalLabel}</Text>
               </View>
               <View style={styles.profileSummaryCard}>
-                <Text style={styles.profileSummaryLabel}>Safety</Text>
+                <Text style={styles.profileSummaryLabel}>{t("Safety", "सुरक्षा")}</Text>
                 <Text style={styles.profileSummaryValue}>{privateIntakeReport.safetyLabel}</Text>
               </View>
             </View>
