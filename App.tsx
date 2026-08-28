@@ -963,7 +963,7 @@ const legalTrustItems = [
     title: "Privacy policy",
     status: "Draft prepared",
     text:
-      "Aethon Beacon is local-first by default. Check-ins, journal entries, profile details, SOS settings, trusted contacts, verification status, and community safety state stay on this device unless the user exports them or a future sync model is enabled."
+      "NAYIQ is local-first by default. Check-ins, journal entries, profile details, SOS settings, trusted contacts, verification status, and community safety state stay on this device unless the user exports them or a future sync model is enabled."
   },
   {
     title: "Terms of use",
@@ -995,17 +995,17 @@ const publicLegalLinks = [
   {
     title: "Privacy",
     meta: "Local-first data use",
-    url: "https://aethonbeacon.com/privacy-policy.html"
+    url: "https://nayiq.co/privacy-policy.html"
   },
   {
     title: "Terms",
     meta: "Use and conduct",
-    url: "https://aethonbeacon.com/terms-of-use.html"
+    url: "https://nayiq.co/terms-of-use.html"
   },
   {
     title: "Disclaimer",
     meta: "Safety limits",
-    url: "https://aethonbeacon.com/disclaimer.html"
+    url: "https://nayiq.co/disclaimer.html"
   }
 ] as const;
 
@@ -4916,7 +4916,7 @@ async function exportComplaintLetterPdf(letterText: string, routeLabel: string):
     </style></head>
     <body>
       <pre>${escapeHtmlForPrint(letterText)}</pre>
-      <div class="meta">Prepared with Aethon Beacon · ${escapeHtmlForPrint(routeLabel)} · Verify all bracketed details and keep a signed copy.</div>
+      <div class="meta">Prepared with NAYIQ · ${escapeHtmlForPrint(routeLabel)} · Verify all bracketed details and keep a signed copy.</div>
     </body></html>`;
   await Print.printAsync({ html });
 }
@@ -6965,7 +6965,7 @@ function formatReferralCode(code: string): string {
 function buildReferralShareMessage(code: string, displayName: string): string {
   const who = displayName.trim().length > 0 ? displayName.trim() : "A friend";
   return [
-    `${who} thinks Aethon Beacon might help you.`,
+    `${who} thinks NAYIQ might help you.`,
     "",
     "It is a private, offline-first wellbeing app — daily check-ins, calm tones,",
     "guided counselling, and real Indian helpline routes when they are needed.",
@@ -8473,10 +8473,10 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     tamil: "படி",
     urdu: "مرحلہ"
   },
-  "Welcome to Aethon Beacon": {
-    telugu: "Aethon Beacon‌కు స్వాగతం",
-    tamil: "Aethon Beacon-க்கு வரவேற்கிறோம்",
-    urdu: "Aethon Beacon میں خوش آمدید"
+  "Welcome to NAYIQ": {
+    telugu: "NAYIQ‌కు స్వాగతం",
+    tamil: "NAYIQ-க்கு வரவேற்கிறோம்",
+    urdu: "NAYIQ میں خوش آمدید"
   },
   "Where do you want to start?": {
     telugu: "మీరు ఎక్కడ ప్రారంభించాలనుకుంటున్నారు?",
@@ -9368,7 +9368,7 @@ const issueGuides: IssueGuide[] = [
     label: "Stigma / shame",
     subtitle: "When the inner voice gets harsh",
     summary:
-      "Stigma often makes people hide, delay help, or speak to themselves too harshly. Aethon Beacon should reduce that weight.",
+      "Stigma often makes people hide, delay help, or speak to themselves too harshly. NAYIQ should reduce that weight.",
     logicalLens:
       "Separate identity from issue. Having a problem does not mean you are the problem.",
     theoreticalLens:
@@ -11201,7 +11201,7 @@ const communityMessagesSeed: CommunityMessage[] = [
   {
     id: "community-verified-1",
     createdAt: new Date("2026-06-03T08:00:00.000Z").toISOString(),
-    author: "Aethon Beacon Verified Voice",
+    author: "NAYIQ Verified Voice",
     role: "verified",
     tag: "Support",
     text:
@@ -15261,7 +15261,7 @@ class AppErrorBoundary extends React.Component<
             Something went wrong
           </Text>
           <Text style={{ color: "#263244", fontSize: 14, textAlign: "center", marginBottom: 24, lineHeight: 20 }}>
-            Aethon Beacon hit an unexpected error. Your data is safe — restart the app to continue.
+            NAYIQ hit an unexpected error. Your data is safe — restart the app to continue.
           </Text>
           <Text style={{ color: "#1F2937", fontSize: 12, textAlign: "center", fontFamily: "monospace" }}>
             {this.state.errorMessage}
@@ -15446,7 +15446,7 @@ function generateDailyVisitReport(
     : "General wellbeing maintained";
 
   const overallSummary =
-    `You spent ${durationMins} minute${durationMins !== 1 ? "s" : ""} with Aethon Beacon today. ` +
+    `You spent ${durationMins} minute${durationMins !== 1 ? "s" : ""} with NAYIQ today. ` +
     `${moodPhrase}. ${issuePhrase}. ` +
     `${activityCount} activit${activityCount !== 1 ? "ies" : "y"} completed across ${tabsVisited.length || 1} section${tabsVisited.length !== 1 ? "s" : ""}. ` +
     `${strengths[0] ?? "Well done for showing up"}.`;
@@ -15519,7 +15519,7 @@ function ExitReportModal({
               Today's Visit Report
             </Text>
             <Text style={{ color: "#0D1F22", fontSize: 18, fontWeight: "900", marginTop: 2 }}>
-              {report.userName || "Your Day with Aethon"}
+              {report.userName || "Your Day with NAYIQ"}
             </Text>
             <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>{report.generatedAt}</Text>
           </View>
@@ -15687,12 +15687,21 @@ function ExitReportModal({
 // leads with verified, government-run lifelines and a grounding message, and
 // stays up until the person dismisses it — it is never auto-closed and never
 // buried behind other content.
-function CrisisSupportModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+function CrisisSupportModal({ visible, onClose, languageId }: { visible: boolean; onClose: () => void; languageId: LanguageId }) {
   if (!visible) return null;
   const callLine = (dial: string) => {
     const clean = dial.replace(/[^0-9+]/g, "");
     void Linking.openURL(`tel:${clean}`).catch(() =>
-      Alert.alert("Could not open dialer", `Please dial ${dial} directly.`)
+      Alert.alert(
+        pickLocalizedText(languageId, { english: "Could not open dialer", hindi: "डायलर नहीं खोल सका", telugu: "డయలర్‌ను తెరవలేకపోయాం", tamil: "டயலரைத் திறக்க முடியவில்லை", urdu: "ڈائلر نہیں کھول سکا" }),
+        pickLocalizedText(languageId, {
+          english: `Please dial ${dial} directly.`,
+          hindi: `कृपया ${dial} सीधे डायल करें।`,
+          telugu: `దయచేసి ${dial} ను నేరుగా డయల్ చేయండి.`,
+          tamil: `தயவுசெய்து ${dial} நேரடியாக டயல் செய்யவும்.`,
+          urdu: `براہِ کرم ${dial} براہِ راست ڈائل کریں۔`
+        })
+      )
     );
   };
   return (
@@ -16128,6 +16137,8 @@ export default function App() {
     () => languageOptions.find((option) => option.id === languageId) ?? languageOptions[0],
     [languageId]
   );
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const visibleTabs = useMemo(
     () =>
       tabs
@@ -16470,7 +16481,10 @@ export default function App() {
   const toggleCommunityReaction = useCallback(
     async (messageId: string, emoji: RealtimeCommunityReactionEmoji) => {
       if (!communityRealtimeConfigured) {
-        Alert.alert("Reactions", "Reactions need a live connection, which isn't configured on this build.");
+        Alert.alert(
+          pickLocalizedText(languageId, { english: "Reactions", hindi: "प्रतिक्रियाएँ", telugu: "ప్రతిక్రియలు", tamil: "வினைகள்", urdu: "ردعمل" }),
+          pickLocalizedText(languageId, { english: "Reactions need a live connection, which isn't configured on this build.", hindi: "प्रतिक्रियाओं के लिए लाइव कनेक्शन चाहिए, जो इस बिल्ड में कॉन्फ़िगर नहीं है।", telugu: "ప్రతిక్రియలకు లైవ్ కనెక్షన్ అవసరం, అది ఈ బిల్డ్‌లో కాన్ఫిగర్ చేయబడలేదు.", tamil: "வினைகளுக்கு நேரடி இணைப்பு தேவை; அது இந்த build-ல் அமைக்கப்படவில்லை.", urdu: "ردعمل کے لیے لائیو کنکشن درکار ہے، جو اس build میں ترتیب نہیں دیا گیا۔" })
+        );
         return;
       }
       // Community had zero haptic feedback anywhere (confirmed) despite the
@@ -17967,7 +17981,7 @@ export default function App() {
   async function handleExportData() {
     const payload = {
       exportedAt: new Date().toISOString(),
-      app: "Aethon Beacon",
+      app: "NAYIQ",
       identity: selectedIdentity.label,
       language: selectedLanguage.label,
       emergencyNumber,
@@ -18008,11 +18022,24 @@ export default function App() {
     const text = JSON.stringify(payload, null, 2);
     try {
       await Share.share({
-        title: "Aethon Beacon notes export",
+        title: l("NAYIQ notes export", {
+          hindi: "NAYIQ नोट्स निर्यात",
+          telugu: "NAYIQ నోట్స్ ఎగుమతి",
+          tamil: "NAYIQ குறிப்புகள் ஏற்றுமதி",
+          urdu: "NAYIQ نوٹس ایکسپورٹ"
+        }),
         message: text
       });
     } catch {
-      Alert.alert("Export my notes", text);
+      Alert.alert(
+        l("Export my notes", {
+          hindi: "मेरे नोट्स निर्यात करें",
+          telugu: "నా నోట్స్‌ను ఎగుమతి చేయండి",
+          tamil: "என் குறிப்புகளை ஏற்றுமதி செய்யவும்",
+          urdu: "میرے نوٹس ایکسپورٹ کریں"
+        }),
+        text
+      );
     }
   }
 
@@ -18084,16 +18111,58 @@ export default function App() {
 
   function handleDeleteLocalData() {
     Alert.alert(
-      "Delete my local data",
-      "This clears notes, reports, profile details, verification status, saved messages, case tracking, local measurements, and community state from this device. Export first if you need a copy.",
+      pickLocalizedText(languageId, {
+        english: "Delete my local data",
+        hindi: "मेरा स्थानीय डेटा हटाएँ",
+        telugu: "నా స్థానిక డేటాను తొలగించండి",
+        tamil: "என் உள்ளக தரவை நீக்கவும்",
+        urdu: "میرا مقامی ڈیٹا حذف کریں"
+      }),
+      pickLocalizedText(languageId, {
+        english: "This clears notes, reports, profile details, verification status, saved messages, case tracking, local measurements, and community state from this device. Export first if you need a copy.",
+        hindi: "यह नोट्स, रिपोर्ट, प्रोफ़ाइल विवरण, सत्यापन स्थिति, सहेजे गए संदेश, केस ट्रैकिंग, स्थानीय मापन, और समुदाय स्थिति को इस डिवाइस से साफ़ करता है। यदि आपको प्रति चाहिए तो पहले export करें।",
+        telugu: "ఇది ఈ పరికరంలోని notes, reports, profile వివరాలు, verification status, saved messages, case tracking, local measurements, మరియు community state‌ను తొలగిస్తుంది. కాపీ కావాలంటే ముందుగా export చేయండి.",
+        tamil: "இது இந்த சாதனத்திலிருந்து குறிப்புகள், அறிக்கைகள், சுயவிவர விவரங்கள், உறுதிப்படுத்தல் நிலை, சேமித்த செய்திகள், வழக்கு கண்காணிப்பு, உள்ளூர் அளவீடுகள், மற்றும் சமூக நிலையை அழிக்கிறது. நகல் வேண்டுமானால் முதலில் export செய்யவும்.",
+        urdu: "یہ نوٹس، رپورٹس، پروفائل تفصیلات، تصدیقی حیثیت، محفوظ شدہ پیغامات، کیس ٹریکنگ، مقامی پیمائشیں، اور برادری کی حالت کو اس ڈیوائس سے صاف کرتا ہے۔ اگر آپ کو نقل چاہیے تو پہلے export کریں۔"
+      }),
       [
-        { text: "Cancel", style: "cancel" },
         {
-          text: "Delete",
+          text: pickLocalizedText(languageId, {
+            english: "Cancel",
+            hindi: "रद्द करें",
+            telugu: "రద్దు చేయండి",
+            tamil: "ரத்து",
+            urdu: "منسوخ"
+          }),
+          style: "cancel"
+        },
+        {
+          text: pickLocalizedText(languageId, {
+            english: "Delete",
+            hindi: "हटाएँ",
+            telugu: "తొలగించండి",
+            tamil: "நீக்கு",
+            urdu: "حذف کریں"
+          }),
           style: "destructive",
           onPress: () => {
             void resetLocalDataNow().then(() => {
-              Alert.alert("Local data deleted", "This device has been reset. You can start again from Home.");
+              Alert.alert(
+                pickLocalizedText(languageId, {
+                  english: "Local data deleted",
+                  hindi: "स्थानीय डेटा हटाया गया",
+                  telugu: "స్థానిక డేటా తొలగించబడింది",
+                  tamil: "உள்ளக தரவு நீக்கப்பட்டது",
+                  urdu: "مقامی ڈیٹا حذف ہو گیا"
+                }),
+                pickLocalizedText(languageId, {
+                  english: "This device has been reset. You can start again from Home.",
+                  hindi: "यह डिवाइस रीसेट हो चुका है। आप Home से फिर शुरू कर सकते हैं।",
+                  telugu: "ఈ పరికరం రీసెట్ చేయబడింది. మీరు Home నుండి మళ్లీ ప్రారంభించవచ్చు.",
+                  tamil: "இந்த சாதனம் மீட்டமைக்கப்பட்டது. Home-இல் இருந்து மீண்டும் தொடங்கலாம்.",
+                  urdu: "اس ڈیوائس کو ری سیٹ کر دیا گیا ہے۔ آپ Home سے دوبارہ شروع کر سکتے ہیں۔"
+                })
+              );
             });
           }
         }
@@ -18126,7 +18195,7 @@ export default function App() {
     const separator = "─".repeat(36);
     const text = [
       "═══════════════════════════════════",
-      "  AETHON BEACON — PROGRESS REPORT",
+      "  NAYIQ — PROGRESS REPORT",
       "═══════════════════════════════════",
       "",
       `👤  User: ${profileDisplayName}`,
@@ -18169,17 +18238,30 @@ export default function App() {
       separator,
       privacyLine,
       "",
-      "Aethon Beacon · One route, one next step",
-      "https://aethonbeacon.com"
+      "NAYIQ · One route, one next step",
+      "https://nayiq.co"
     ].join("\n");
 
     try {
       await Share.share({
-        title: "Aethon Beacon Progress Report",
+        title: l("NAYIQ Progress Report", {
+          hindi: "NAYIQ प्रगति रिपोर्ट",
+          telugu: "NAYIQ ప్రగతి నివేదిక",
+          tamil: "NAYIQ முன்னேற்ற அறிக்கை",
+          urdu: "NAYIQ پیش رفت رپورٹ"
+        }),
         message: text
       });
     } catch {
-      Alert.alert("Progress Report", text);
+      Alert.alert(
+        l("Progress Report", {
+          hindi: "प्रगति रिपोर्ट",
+          telugu: "ప్రగతి నివేదిక",
+          tamil: "முன்னேற்ற அறிக்கை",
+          urdu: "پیش رفت رپورٹ"
+        }),
+        text
+      );
     }
   }
 
@@ -18195,7 +18277,7 @@ export default function App() {
       .join("\n");
 
     const text = [
-      "Aethon Beacon safety plan",
+      "NAYIQ safety plan",
       `Issue: ${selectedIssueGuide.label}`,
       `Role: ${selectedIdentity.label}`,
       `User: ${profileDisplayName}`,
@@ -18229,18 +18311,31 @@ export default function App() {
 
     try {
       await Share.share({
-        title: "Aethon Beacon safety plan",
+        title: l("NAYIQ safety plan", {
+          hindi: "NAYIQ सुरक्षा योजना",
+          telugu: "NAYIQ భద్రతా ప్రణాళిక",
+          tamil: "NAYIQ பாதுகாப்புத் திட்டம்",
+          urdu: "NAYIQ حفاظتی منصوبہ"
+        }),
         message: text
       });
     } catch {
-      Alert.alert("Safety plan", text);
+      Alert.alert(
+        l("Safety plan", {
+          hindi: "सुरक्षा योजना",
+          telugu: "భద్రతా ప్రణాళిక",
+          tamil: "பாதுகாப்புத் திட்டம்",
+          urdu: "حفاظتی منصوبہ"
+        }),
+        text
+      );
     }
   }
 
   async function handleExportRedressPlan() {
     const phone = selectedRedressRoute.phone.trim();
     const text = [
-      "Aethon Beacon redressal plan",
+      "NAYIQ redressal plan",
       `Route: ${selectedRedressRoute.label}`,
       `Summary: ${selectedRedressRoute.summary}`,
       "",
@@ -18267,11 +18362,24 @@ export default function App() {
 
     try {
       await Share.share({
-        title: "Aethon Beacon redressal plan",
+        title: l("NAYIQ redressal plan", {
+          hindi: "NAYIQ निवारण योजना",
+          telugu: "NAYIQ పరిహార ప్రణాళిక",
+          tamil: "NAYIQ நிவாரணத் திட்டம்",
+          urdu: "NAYIQ ازالہ منصوبہ"
+        }),
         message: text
       });
     } catch {
-      Alert.alert("Redressal plan", text);
+      Alert.alert(
+        l("Redressal plan", {
+          hindi: "निवारण योजना",
+          telugu: "పరిహార ప్రణాళిక",
+          tamil: "நிவாரணத் திட்டம்",
+          urdu: "ازالہ منصوبہ"
+        }),
+        text
+      );
     }
   }
 
@@ -18323,7 +18431,20 @@ export default function App() {
         : currentPermissions;
       granted = requestedPermissions?.granted ?? false;
       if (!granted) {
-        Alert.alert("Retention alert", "Enable notifications to keep the follow-up loop alive.");
+        Alert.alert(
+          l("Retention alert", {
+            hindi: "अनुस्मारक अलर्ट",
+            telugu: "రిటెన్షన్ హెచ్చరిక",
+            tamil: "நினைவூட்டல் எச்சரிக்கை",
+            urdu: "یاد دہانی الرٹ"
+          }),
+          l("Enable notifications to keep the follow-up loop alive.", {
+            hindi: "फ़ॉलो-अप चक्र को चालू रखने के लिए notifications सक्षम करें।",
+            telugu: "ఫాలో-అప్ లూప్ కొనసాగేందుకు notifications ను ప్రారంభించండి.",
+            tamil: "பின்தொடர்பு தொடர்ச்சியை வைத்திருக்க notifications-ஐ இயக்கவும்.",
+            urdu: "فالو اَپ سلسلہ جاری رکھنے کے لیے notifications فعال کریں۔"
+          })
+        );
         return;
       }
     }
@@ -18337,7 +18458,7 @@ export default function App() {
         : `${selectedIssueGuide.label}: you shared the full intake. ${selectedIssueGuide.followUp} Open Path or Journal and continue the follow-up.`;
     const identifier = await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Aethon Beacon retention check-in",
+        title: "NAYIQ retention check-in",
         body,
         data: { tab: "today" },
         ...reminderNotificationContentOptions()
@@ -18358,7 +18479,10 @@ export default function App() {
 
   async function scheduleIssueReminder(mode: IssueReminderMode, issueOverride?: IssueId) {
     if (!notificationsAvailable) {
-      Alert.alert("Path reminder", "Path reminders are not available in this browser.");
+      Alert.alert(
+        pickLocalizedText(languageId, { english: "Path reminder", hindi: "मार्ग अनुस्मारक", telugu: "పాథ్ గుర్తు", tamil: "பாதை நினைவூட்டல்", urdu: "راستہ یاد دہانی" }),
+        pickLocalizedText(languageId, { english: "Path reminders are not available in this browser.", hindi: "इस ब्राउज़र में Path reminders उपलब्ध नहीं हैं।", telugu: "ఈ బ్రౌజర్‌లో Path reminders అందుబాటులో లేవు.", tamil: "இந்த browser-ல் Path reminders கிடைக்கவில்லை.", urdu: "اس براؤزر میں Path reminders دستیاب نہیں ہیں۔" })
+      );
       return;
     }
     const reminderIssue =
@@ -18376,8 +18500,8 @@ export default function App() {
       granted = requestedPermissions?.granted ?? false;
       if (!granted) {
         Alert.alert(
-          "Path reminder",
-          "Enable notifications to schedule issue follow-up reminders."
+          pickLocalizedText(languageId, { english: "Path reminder", hindi: "मार्ग अनुस्मारक", telugu: "పాథ్ గుర్తు", tamil: "பாதை நினைவூட்டல்", urdu: "راستہ یاد دہانی" }),
+          pickLocalizedText(languageId, { english: "Enable notifications to schedule issue follow-up reminders.", hindi: "समस्या के फ़ॉलो-अप अनुस्मारक तय करने के लिए notifications चालू करें।", telugu: "సమస్య ఫాలో-అప్ గుర్తులు షెడ్యూల్ చేయడానికి notifications ను ప్రారంభించండి.", tamil: "பிரச்சினை தொடர்ச்சி நினைவூட்டல்களை அமைக்க notifications-ஐ இயக்கவும்.", urdu: "مسئلے کے فالو اَپ یاد دہانیوں کو شیڈول کرنے کے لیے notifications فعال کریں۔" })
         );
         return;
       }
@@ -18389,7 +18513,7 @@ export default function App() {
     const triggerDate = new Date(Date.now() + delayMs);
     const identifier = await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Aethon Beacon follow-up",
+        title: "NAYIQ follow-up",
         body: `${reminderIssue.label}: open Path and continue the next step.`,
         data: { tab: "today" },
         ...reminderNotificationContentOptions()
@@ -18401,7 +18525,10 @@ export default function App() {
     }).catch(() => null);
 
     if (!identifier) {
-      Alert.alert("Path reminder", "Could not schedule the follow-up reminder.");
+      Alert.alert(
+        pickLocalizedText(languageId, { english: "Path reminder", hindi: "मार्ग अनुस्मारक", telugu: "పాథ్ గుర్తు", tamil: "பாதை நினைவூட்டல்", urdu: "راستہ یاد دہانی" }),
+        pickLocalizedText(languageId, { english: "Could not schedule the follow-up reminder.", hindi: "फ़ॉलो-अप अनुस्मारक तय नहीं हो सका।", telugu: "ఫాలో-అప్ గుర్తును షెడ్యూల్ చేయలేకపోయాము.", tamil: "தொடர்ச்சி நினைவூட்டலை திட்டமிட முடியவில்லை.", urdu: "فالو اَپ یاد دہانی شیڈول نہیں ہو سکی۔" })
+      );
       return;
     }
 
@@ -18409,10 +18536,10 @@ export default function App() {
     setIssueReminderMode(mode);
     setIssueReminderIssueId(reminderIssue.id);
     Alert.alert(
-      "Path reminder",
+      pickLocalizedText(languageId, { english: "Path reminder", hindi: "मार्ग अनुस्मारक", telugu: "పాథ్ గుర్తు", tamil: "பாதை நினைவூட்டல்", urdu: "راستہ یاد دہانی" }),
       mode === "tomorrow"
-        ? "A follow-up reminder is set for tomorrow."
-        : "A follow-up reminder is set for next week."
+        ? pickLocalizedText(languageId, { english: "A follow-up reminder is set for tomorrow.", hindi: "कल के लिए फ़ॉलो-अप अनुस्मारक तय कर दिया गया है।", telugu: "రేపటికి ఫాలో-అప్ గుర్తు సెట్ చేయబడింది.", tamil: "நாளைக்கான தொடர்ச்சி நினைவூட்டல் அமைக்கப்பட்டது.", urdu: "کل کے لیے فالو اَپ یاد دہانی سیٹ کر دی گئی ہے۔" })
+        : pickLocalizedText(languageId, { english: "A follow-up reminder is set for next week.", hindi: "अगले हफ़्ते के लिए फ़ॉलो-अप अनुस्मारक तय कर दिया गया है।", telugu: "తదుపరి వారానికి ఫాలో-అప్ గుర్తు సెట్ చేయబడింది.", tamil: "அடுத்த வாரத்திற்கான தொடர்ச்சி நினைவூட்டல் அமைக்கப்பட்டது.", urdu: "اگلے ہفتے کے لیے فالو اَپ یاد دہانی سیٹ کر دی گئی ہے۔" })
     );
   }
 
@@ -18473,7 +18600,7 @@ export default function App() {
     const now = new Date(Date.now() + 5000);
     const scheduled = await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Aethon Beacon emotional check-in",
+        title: "NAYIQ emotional check-in",
         body: getReminderBody(reminderMode, selectedIssueGuide, profileDisplayName, selectedLanguage.id),
         ...reminderNotificationContentOptions()
       },
@@ -19242,7 +19369,7 @@ export default function App() {
 
       if (Platform.OS === "android") {
         await Notifications.setNotificationChannelAsync("aethon-reminders", {
-          name: "Aethon Beacon reminders",
+          name: "NAYIQ reminders",
           importance: Notifications.AndroidImportance.HIGH,
           sound: "default",
           vibrationPattern: [0, 250, 250, 250],
@@ -19343,7 +19470,7 @@ export default function App() {
         await Notifications.scheduleNotificationAsync({
           identifier: NOTIF_IDS.checkin,
           content: {
-            title: "Aethon Beacon emotional check-in",
+            title: "NAYIQ emotional check-in",
             body: getReminderBody(reminderMode, selectedIssueGuide, profileDisplayName, selectedLanguage.id),
             data: { tab: "today" },
             ...reminderNotificationContentOptions()
@@ -19361,7 +19488,7 @@ export default function App() {
             await Notifications.scheduleNotificationAsync({
               identifier: NOTIF_IDS.followUp(weekIndex),
               content: {
-              title: "Aethon Beacon follow-up",
+              title: "NAYIQ follow-up",
                 body: getFollowUpReminderBody(weekIndex, followUpWeeks, selectedIssueGuide, profileDisplayName, selectedLanguage.id),
                 data: { tab: "today" },
                 ...reminderNotificationContentOptions()
@@ -19400,7 +19527,7 @@ export default function App() {
           identifier: NOTIF_IDS.vedic,
           content: {
             title: "🪐 Your cosmic reading is ready",
-            body: `Open Aethon Beacon to see today's ${rashiName} prediction, Tithi, and Vara guidance.`,
+            body: `Open NAYIQ to see today's ${rashiName} prediction, Tithi, and Vara guidance.`,
             data: { tab: "vedic" },
             ...reminderNotificationContentOptions()
           },
@@ -19434,7 +19561,7 @@ export default function App() {
           identifier: NOTIF_IDS.vedicWeekly,
           content: {
             title: "🪐 Your weekly reading — " + rashiName,
-            body: "A new week begins. Open Aethon Beacon to see your weekly and monthly cosmic guidance.",
+            body: "A new week begins. Open NAYIQ to see your weekly and monthly cosmic guidance.",
             data: { tab: "vedic" },
             ...reminderNotificationContentOptions()
           },
@@ -19457,7 +19584,7 @@ export default function App() {
             identifier: NOTIF_IDS.antardashaChange,
             content: {
               title: "🪐 Your Antardasha is shifting",
-              body: `Your ${vedicDashaState.currentAntardasha} Antardasha ends today, moving into ${vedicDashaState.nextAntardasha} within your ${vedicDashaState.currentMahadasha} Mahadasha. Open Aethon Beacon to see what this phase means.`,
+              body: `Your ${vedicDashaState.currentAntardasha} Antardasha ends today, moving into ${vedicDashaState.nextAntardasha} within your ${vedicDashaState.currentMahadasha} Mahadasha. Open NAYIQ to see what this phase means.`,
               data: { tab: "vedic" },
               ...reminderNotificationContentOptions()
             },
@@ -19482,7 +19609,7 @@ export default function App() {
               identifier: NOTIF_IDS.ekadashi,
               content: {
                 title: `🙏 ${nextEkadashi.paksha} Ekadashi today`,
-                body: "Today is Ekadashi — a traditional day for fasting and spiritual focus. Open Aethon Beacon for guidance.",
+                body: "Today is Ekadashi — a traditional day for fasting and spiritual focus. Open NAYIQ for guidance.",
                 data: { tab: "vedic" },
                 ...reminderNotificationContentOptions()
               },
@@ -19610,9 +19737,21 @@ export default function App() {
     const note = journal.trim();
     if (note.length > 0 && note.length < 15) {
       Alert.alert(
-        "Add a little more",
-        "Write at least one short sentence so the app can build a meaningful picture of your wellbeing.",
-        [{ text: "OK" }]
+        pickLocalizedText(languageId, {
+          english: "Add a little more",
+          hindi: "थोड़ा और जोड़ें",
+          telugu: "కొంచెం మరింత జోడించండి",
+          tamil: "சற்று மேலும் சேர்க்கவும்",
+          urdu: "تھوڑا اور شامل کریں"
+        }),
+        pickLocalizedText(languageId, {
+          english: "Write at least one short sentence so the app can build a meaningful picture of your wellbeing.",
+          hindi: "ऐसी कम-से-कम एक छोटी पंक्ति लिखें ताकि ऐप आपकी भलाई की अर्थपूर्ण तस्वीर बना सके।",
+          telugu: "మీ శ్రేయస్సు గురించి అర్థవంతమైన చిత్రం రూపొందించడానికి కనీసం ఒక చిన్న వాక్యం రాయండి.",
+          tamil: "உங்கள் நலனின் அர்த்தமுள்ள படத்தை உருவாக்க ஆப் குறைந்தது ஒரு சிறிய வாக்கியத்தை எழுதச் சொல்கிறது.",
+          urdu: "کم از کم ایک چھوٹا جملہ لکھیں تاکہ ایپ آپ کی خیریت کی بامعنی تصویر بنا سکے۔"
+        }),
+        [{ text: pickLocalizedText(languageId, { english: "OK", hindi: "ठीक है", telugu: "సరే", tamil: "சரி", urdu: "ٹھیک ہے" }) }]
       );
       return;
     }
@@ -19686,7 +19825,15 @@ export default function App() {
     }
     void scheduleRetentionReminder("check-in");
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert("Report generated", reportNotice);
+    Alert.alert(
+      l("Report generated", {
+        hindi: "रिपोर्ट तैयार हो गई",
+        telugu: "నివేదిక తయారైంది",
+        tamil: "அறிக்கை உருவாக்கப்பட்டது",
+        urdu: "رپورٹ تیار ہو گئی"
+      }),
+      reportNotice
+    );
     setJournal(defaultDraft);
     setSessionActive(false);
     // Log for exit report
@@ -19861,10 +20008,28 @@ export default function App() {
       handleTabPress("today", { recordHistory: false });
     }
     Alert.alert(
-      "Access updated",
+      pickLocalizedText(languageId, {
+        english: "Access updated",
+        hindi: "पहुँच अपडेट की गई",
+        telugu: "యాక్సెస్ నవీకరించబడింది",
+        tamil: "அணுகல் புதுப்பிக்கப்பட்டது",
+        urdu: "رسائی اپ ڈیٹ ہو گئی"
+      }),
       cleanedName.length > 0
-        ? `Welcome back, ${getRespectfulAddressLabel(cleanedName, profileGender, profileRoleId, selectedIdentity.label)}.`
-        : "Guest access is active."
+        ? pickLocalizedText(languageId, {
+            english: `Welcome back, ${getRespectfulAddressLabel(cleanedName, profileGender, profileRoleId, selectedIdentity.label)}.`,
+            hindi: `वापसी पर स्वागत है, ${getRespectfulAddressLabel(cleanedName, profileGender, profileRoleId, selectedIdentity.label)}।`,
+            telugu: `మళ్లీ స్వాగతం, ${getRespectfulAddressLabel(cleanedName, profileGender, profileRoleId, selectedIdentity.label)}.`,
+            tamil: `மீண்டும் வருக, ${getRespectfulAddressLabel(cleanedName, profileGender, profileRoleId, selectedIdentity.label)}.`,
+            urdu: `خوش آمدید واپس، ${getRespectfulAddressLabel(cleanedName, profileGender, profileRoleId, selectedIdentity.label)}۔`
+          })
+        : pickLocalizedText(languageId, {
+            english: "Guest access is active.",
+            hindi: "अतिथि पहुँच सक्रिय है।",
+            telugu: "గెస్ట్ యాక్సెస్ క్రియాశీలంగా ఉంది.",
+            tamil: "விருந்தினர் அணுகல் செயல்பாட்டில் உள்ளது.",
+            urdu: "مہمان رسائی فعال ہے۔"
+          })
     );
     return true;
   }
@@ -19873,8 +20038,20 @@ export default function App() {
     if (adminLockedUntilAt !== null && adminLockedUntilAt > Date.now()) {
       const remainingMinutes = Math.max(1, Math.ceil((adminLockedUntilAt - Date.now()) / 60000));
       Alert.alert(
-        "Admin access",
-        `Too many failed attempts. Try again in about ${remainingMinutes} minute${remainingMinutes === 1 ? "" : "s"}.`
+        pickLocalizedText(languageId, {
+          english: "Admin access",
+          hindi: "एडमिन पहुँच",
+          telugu: "అడ్మిన్ యాక్సెస్",
+          tamil: "நிர்வாகி அணுகல்",
+          urdu: "ایڈمن رسائی"
+        }),
+        pickLocalizedText(languageId, {
+          english: `Too many failed attempts. Try again in about ${remainingMinutes} minute${remainingMinutes === 1 ? "" : "s"}.`,
+          hindi: `बहुत अधिक असफल प्रयास हुए हैं। लगभग ${remainingMinutes} मिनट बाद फिर कोशिश करें।`,
+          telugu: `చాలా విఫల ప్రయత్నాలు జరిగాయి. సుమారు ${remainingMinutes} నిమిషాల తర్వాత మళ్లీ ప్రయత్నించండి.`,
+          tamil: `மிக அதிகமான தோல்வி முயற்சிகள். சுமார் ${remainingMinutes} நிமிடங்களில் மீண்டும் முயற்சிக்கவும்.`,
+          urdu: `بہت زیادہ ناکام کوششیں ہو چکی ہیں۔ تقریباً ${remainingMinutes} منٹ بعد دوبارہ کوشش کریں۔`
+        })
       );
       return false;
     }
@@ -19882,15 +20059,24 @@ export default function App() {
     const entered = adminAccessAttempt.trim();
     const enteredName = adminAccessNameAttempt.trim().toLowerCase();
     if (entered.length === 0) {
-      Alert.alert("Admin access", "Enter the admin code to unlock the control center.");
+      Alert.alert(
+        pickLocalizedText(languageId, { english: "Admin access", hindi: "एडमिन पहुँच", telugu: "అడ్మిన్ యాక్సెస్", tamil: "நிர்வாகி அணுகல்", urdu: "ایڈمن رسائی" }),
+        pickLocalizedText(languageId, { english: "Enter the admin code to unlock the control center.", hindi: "कंट्रोल सेंटर खोलने के लिए एडमिन कोड दर्ज करें।", telugu: "కంట్రోల్ సెంటర్‌ను తెరవడానికి అడ్మిన్ కోడ్‌ను నమోదు చేయండి.", tamil: "கட்டுப்பாட்டு மையத்தைத் திறக்க நிர்வாகி குறியீட்டை உள்ளிடவும்.", urdu: "کنٹرول سینٹر کھولنے کے لیے ایڈمن کوڈ درج کریں۔" })
+      );
       return false;
     }
     if (adminAccessName.trim().length > 0 && enteredName.length === 0) {
-      Alert.alert("Admin access", "Enter the admin name or email as well.");
+      Alert.alert(
+        pickLocalizedText(languageId, { english: "Admin access", hindi: "एडमिन पहुँच", telugu: "అడ్మిన్ యాక్సెస్", tamil: "நிர்வாகி அணுகல்", urdu: "ایڈمن رسائی" }),
+        pickLocalizedText(languageId, { english: "Enter the admin name or email as well.", hindi: "एडमिन नाम या ईमेल भी दर्ज करें।", telugu: "అడ్మిన్ పేరు లేదా ఇమెయిల్‌ను కూడా నమోదు చేయండి.", tamil: "நிர்வாகி பெயர் அல்லது மின்னஞ்சலையும் உள்ளிடவும்.", urdu: "ایڈمن نام یا ای میل بھی درج کریں۔" })
+      );
       return false;
     }
     if (verificationApiBaseUrl.length === 0) {
-      Alert.alert("Admin access", "Admin auth needs the backend to be reachable first.");
+      Alert.alert(
+        pickLocalizedText(languageId, { english: "Admin access", hindi: "एडमिन पहुँच", telugu: "అడ్మిన్ యాక్సెస్", tamil: "நிர்வாகி அணுகல்", urdu: "ایڈمن رسائی" }),
+        pickLocalizedText(languageId, { english: "Admin auth needs the backend to be reachable first.", hindi: "एडमिन प्रमाणीकरण के लिए पहले बैकएंड का उपलब्ध होना ज़रूरी है।", telugu: "అడ్మిన్ ధృవీకరణకు ముందు బ్యాకెండ్ అందుబాటులో ఉండాలి.", tamil: "நிர்வாகி உறுதிப்படுத்தலுக்கு முதலில் backend கிடைக்க வேண்டும்.", urdu: "ایڈمن تصدیق کے لیے پہلے بیک اینڈ کا دستیاب ہونا ضروری ہے۔" })
+      );
       return false;
     }
 
@@ -19917,10 +20103,10 @@ export default function App() {
           setAdminUnlockFailures(0);
         }
         Alert.alert(
-          "Admin access",
+          pickLocalizedText(languageId, { english: "Admin access", hindi: "एडमिन पहुँच", telugu: "అడ్మిన్ యాక్సెస్", tamil: "நிர்வாகி அணுகல்", urdu: "ایڈمن رسائی" }),
           response.status === 429
-            ? "Admin login is temporarily locked. Please wait and try again."
-            : "That admin name or code did not match."
+            ? pickLocalizedText(languageId, { english: "Admin login is temporarily locked. Please wait and try again.", hindi: "एडमिन लॉगिन अस्थायी रूप से लॉक है। कृपया प्रतीक्षा करें और फिर कोशिश करें।", telugu: "అడ్మిన్ లాగిన్ తాత్కాలికంగా లాక్ చేయబడింది. దయచేసి వేచి ఉండి మళ్లీ ప్రయత్నించండి.", tamil: "நிர்வாகி உள்நுழைவு தற்காலிகமாக பூட்டப்பட்டுள்ளது. தயவுசெய்து காத்திருந்து மீண்டும் முயற்சிக்கவும்.", urdu: "ایڈمن لاگ اِن عارضی طور پر مقفل ہے۔ براہِ کرم انتظار کریں اور دوبارہ کوشش کریں۔" })
+            : pickLocalizedText(languageId, { english: "That admin name or code did not match.", hindi: "वह एडमिन नाम या कोड मेल नहीं खाया।", telugu: "ఆ అడ్మిన్ పేరు లేదా కోడ్ సరిపోలలేదు.", tamil: "அந்த நிர்வாகி பெயர் அல்லது குறியீடு பொருந்தவில்லை.", urdu: "وہ ایڈمن نام یا کوڈ میل نہیں کھایا۔" })
         );
         return false;
       }
@@ -19934,12 +20120,15 @@ export default function App() {
       setAdminAccessNameAttempt("");
       setAdminUnlockFailures(0);
       setAdminLockedUntilAt(null);
-      Alert.alert("Admin access", "Admin control center unlocked.");
+      Alert.alert(
+        pickLocalizedText(languageId, { english: "Admin access", hindi: "एडमिन पहुँच", telugu: "అడ్మిన్ యాక్సెస్", tamil: "நிர்வாகி அணுகல்", urdu: "ایڈمن رسائی" }),
+        pickLocalizedText(languageId, { english: "Admin control center unlocked.", hindi: "एडमिन कंट्रोल सेंटर अनलॉक हो गया।", telugu: "అడ్మిన్ కంట్రోల్ సెంటర్ అన్లాక్ అయ్యింది.", tamil: "நிர்வாகி கட்டுப்பாட்டு மையம் திறக்கப்பட்டது.", urdu: "ایڈمن کنٹرول سینٹر کھل گیا۔" })
+      );
       return true;
     } catch (error) {
       Alert.alert(
-        "Admin access",
-        error instanceof Error ? error.message : "Could not reach the admin login service."
+        pickLocalizedText(languageId, { english: "Admin access", hindi: "एडमिन पहुँच", telugu: "అడ్మిన్ యాక్సెస్", tamil: "நிர்வாகி அணுகல்", urdu: "ایڈمن رسائی" }),
+        error instanceof Error ? error.message : pickLocalizedText(languageId, { english: "Could not reach the admin login service.", hindi: "एडमिन लॉगिन सेवा तक नहीं पहुँचा जा सका।", telugu: "అడ్మిన్ లాగిన్ సేవను చేరుకోలేకపోయాము.", tamil: "நிர்வாகி உள்நுழைவு சேவையை அணுக முடியவில்லை.", urdu: "ایڈمن لاگ اِن سروس تک نہیں پہنچا جا سکا۔" })
       );
       return false;
     }
@@ -19957,7 +20146,10 @@ export default function App() {
     if (activeTab === "admin") {
       handleTabPress("today", { recordHistory: false });
     }
-    Alert.alert("Signed out", "Admin and member access have been cleared.");
+    Alert.alert(
+      pickLocalizedText(languageId, { english: "Signed out", hindi: "साइन आउट किया गया", telugu: "సైన్ అవుట్ అయ్యారు", tamil: "வெளியேறப்பட்டது", urdu: "سائن آؤٹ ہو گئے" }),
+      pickLocalizedText(languageId, { english: "Admin and member access have been cleared.", hindi: "एडमिन और सदस्य पहुँच हटा दी गई है।", telugu: "అడ్మిన్ మరియు సభ్యుల యాక్సెస్ తీసివేయబడింది.", tamil: "நிர்வாகி மற்றும் உறுப்பினர் அணுகல் நீக்கப்பட்டுள்ளது.", urdu: "ایڈمن اور ممبر رسائی صاف کر دی گئی ہے۔" })
+    );
   }
 
   function generateVerificationCode() {
@@ -20033,7 +20225,7 @@ export default function App() {
     if (referralCode.length === 0) return;
     try {
       await Share.share({
-        title: "Invite a friend to Aethon Beacon",
+        title: "Invite a friend to NAYIQ",
         message: buildReferralShareMessage(referralCode, profileDisplayName)
       });
       setReferralShareCount((count) => count + 1);
@@ -20045,37 +20237,139 @@ export default function App() {
   function handleRedeemReferralCode(raw: string): boolean {
     const code = normalizeReferralCode(raw);
     if (referredByCode.length > 0) {
-      Alert.alert("Invite code", `You have already recorded ${formatReferralCode(referredByCode)}. An invite can only be used once.`);
+      Alert.alert(
+        l("Invite code", {
+          hindi: "आमंत्रण कोड",
+          telugu: "ఆహ్వాన కోడ్",
+          tamil: "அழைப்பு குறியீடு",
+          urdu: "دعوتی کوڈ"
+        }),
+        l(`You have already recorded ${formatReferralCode(referredByCode)}. An invite can only be used once.`, {
+          hindi: `आपने पहले ही ${formatReferralCode(referredByCode)} दर्ज किया है। एक invite केवल एक बार उपयोग किया जा सकता है।`,
+          telugu: `మీరు ఇప్పటికే ${formatReferralCode(referredByCode)} ను నమోదు చేశారు. ఆహ్వానం ఒక్కసారే ఉపయోగించవచ్చు.`,
+          tamil: `நீங்கள் ஏற்கனவே ${formatReferralCode(referredByCode)}-ஐ பதிவு செய்துள்ளீர்கள். ஒரு invite-ஐ ஒரே முறை மட்டுமே பயன்படுத்தலாம்.`,
+          urdu: `آپ نے پہلے ہی ${formatReferralCode(referredByCode)} درج کر دیا ہے۔ ایک دعوت صرف ایک بار استعمال ہو سکتی ہے۔`
+        })
+      );
       return false;
     }
     if (!isValidReferralCode(code)) {
-      Alert.alert("Invite code", "That code does not look right. Codes are 8 characters, like AB-4KQ7MPX2.");
+      Alert.alert(
+        l("Invite code", {
+          hindi: "आमंत्रण कोड",
+          telugu: "ఆహ్వాన కోడ్",
+          tamil: "அழைப்பு குறியீடு",
+          urdu: "دعوتی کوڈ"
+        }),
+        l("That code does not look right. Codes are 8 characters, like AB-4KQ7MPX2.", {
+          hindi: "यह कोड सही नहीं लग रहा। कोड 8 अक्षरों का होता है, जैसे AB-4KQ7MPX2।",
+          telugu: "ఆ కోడ్ సరైనట్లు లేదు. కోడ్లు 8 అక్షరాలు ఉంటాయి, ఉదా: AB-4KQ7MPX2.",
+          tamil: "அந்த குறியீடு சரியாக இல்லை. குறியீடுகள் 8 எழுத்துகள், உதாரணம் AB-4KQ7MPX2.",
+          urdu: "وہ کوڈ درست نہیں لگ رہا۔ کوڈ 8 حروف کا ہوتا ہے، مثلاً AB-4KQ7MPX2۔"
+        })
+      );
       return false;
     }
     if (code === referralCode) {
-      Alert.alert("Invite code", "That is your own code. Share it with a friend instead.");
+      Alert.alert(
+        l("Invite code", {
+          hindi: "आमंत्रण कोड",
+          telugu: "ఆహ్వాన కోడ్",
+          tamil: "அழைப்பு குறியீடு",
+          urdu: "دعوتی کوڈ"
+        }),
+        l("That is your own code. Share it with a friend instead.", {
+          hindi: "यह आपका अपना कोड है। इसे किसी दोस्त के साथ साझा करें।",
+          telugu: "అది మీ స్వంత కోడ్. దాన్ని స్నేహితుడితో పంచుకోండి.",
+          tamil: "அது உங்களுடைய குறியீடு. அதை ஒரு நண்பருடன் பகிருங்கள்.",
+          urdu: "یہ آپ کا اپنا کوڈ ہے۔ اسے کسی دوست کے ساتھ شیئر کریں۔"
+        })
+      );
       return false;
     }
     setReferredByCode(code);
     setReferralJoinedAt(new Date().toISOString());
-    Alert.alert("Invite code accepted", `Thanks — ${formatReferralCode(code)} is recorded as the friend who brought you here.`);
+    Alert.alert(
+      l("Invite code accepted", {
+        hindi: "आमंत्रण कोड स्वीकार किया गया",
+        telugu: "ఆహ్వాన కోడ్ అంగీకరించబడింది",
+        tamil: "அழைப்பு குறியீடு ஏற்கப்பட்டது",
+        urdu: "دعوتی کوڈ قبول ہو گیا"
+      }),
+      l(`Thanks — ${formatReferralCode(code)} is recorded as the friend who brought you here.`, {
+        hindi: `धन्यवाद — ${formatReferralCode(code)} को आपको यहाँ लाने वाले मित्र के रूप में दर्ज किया गया है।`,
+        telugu: `ధన్యవాదాలు — ${formatReferralCode(code)} మిమ్మల్ని ఇక్కడికి తీసుకొచ్చిన స్నేహితుడిగా నమోదు చేయబడింది.`,
+        tamil: `நன்றி — ${formatReferralCode(code)} உங்களை இங்கே கொண்டு வந்த நண்பராக பதிவு செய்யப்பட்டது.`,
+        urdu: `شکریہ — ${formatReferralCode(code)} کو آپ کو یہاں لانے والے دوست کے طور پر درج کر لیا گیا ہے۔`
+      })
+    );
     return true;
   }
 
   async function requestVerificationCode(channel: "phone" | "email") {
+    const channelTitle =
+      channel === "phone"
+        ? l("Phone verification", {
+            hindi: "फ़ोन सत्यापन",
+            telugu: "ఫోన్ ధృవీకరణ",
+            tamil: "தொலைபேசி சரிபார்ப்பு",
+            urdu: "فون تصدیق"
+          })
+        : l("Email verification", {
+            hindi: "ईमेल सत्यापन",
+            telugu: "ఈమెయిల్ ధృవీకరణ",
+            tamil: "மின்னஞ்சல் சரிபார்ப்பு",
+            urdu: "ای میل تصدیق"
+          });
     if (channel === "phone" && profilePhone.trim().length === 0) {
-      setProfileVerificationNotice("Add a phone number first.");
-      Alert.alert("Phone verification", "Add a phone number first.");
+      setProfileVerificationNotice(
+        l("Add a phone number first.", {
+          hindi: "पहले फ़ोन नंबर जोड़ें।",
+          telugu: "ముందుగా ఫోన్ నంబర్ జోడించండి.",
+          tamil: "முதலில் தொலைபேசி எண்ணைச் சேர்க்கவும்.",
+          urdu: "پہلے فون نمبر شامل کریں۔"
+        })
+      );
+      Alert.alert(channelTitle, l("Add a phone number first.", {
+        hindi: "पहले फ़ोन नंबर जोड़ें।",
+        telugu: "ముందుగా ఫోన్ నంబర్ జోడించండి.",
+        tamil: "முதலில் தொலைபேசி எண்ணைச் சேர்க்கவும்.",
+        urdu: "پہلے فون نمبر شامل کریں۔"
+      }));
       return false;
     }
     if (channel === "email" && profileEmail.trim().length === 0) {
-      setProfileVerificationNotice("Add an email address first.");
-      Alert.alert("Email verification", "Add an email address first.");
+      setProfileVerificationNotice(
+        l("Add an email address first.", {
+          hindi: "पहले ईमेल पता जोड़ें।",
+          telugu: "ముందుగా ఈమెయిల్ చిరునామా జోడించండి.",
+          tamil: "முதலில் மின்னஞ்சல் முகவரியைச் சேர்க்கவும்.",
+          urdu: "پہلے ای میل پتہ شامل کریں۔"
+        })
+      );
+      Alert.alert(channelTitle, l("Add an email address first.", {
+        hindi: "पहले ईमेल पता जोड़ें।",
+        telugu: "ముందుగా ఈమెయిల్ చిరునామా జోడించండి.",
+        tamil: "முதலில் மின்னஞ்சல் முகவரியைச் சேர்க்கவும்.",
+        urdu: "پہلے ای میل پتہ شامل کریں۔"
+      }));
       return false;
     }
     if (channel === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileEmail.trim())) {
-      setProfileVerificationNotice("Enter a valid email address.");
-      Alert.alert("Email verification", "Enter a valid email address.");
+      setProfileVerificationNotice(
+        l("Enter a valid email address.", {
+          hindi: "एक मान्य ईमेल पता दर्ज करें।",
+          telugu: "చెల్లుబాటు అయ్యే ఈమెయిల్ చిరునామా నమోదు చేయండి.",
+          tamil: "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்.",
+          urdu: "درست ای میل پتہ درج کریں۔"
+        })
+      );
+      Alert.alert(channelTitle, l("Enter a valid email address.", {
+        hindi: "एक मान्य ईमेल पता दर्ज करें।",
+        telugu: "చెల్లుబాటు అయ్యే ఈమెయిల్ చిరునామా నమోదు చేయండి.",
+        tamil: "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்.",
+        urdu: "درست ای میل پتہ درج کریں۔"
+      }));
       return false;
     }
 
@@ -20087,7 +20381,14 @@ export default function App() {
       let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
         setVerificationRequestBusy(channel);
-        setProfileVerificationNotice(`Sending ${channel} verification code...`);
+        setProfileVerificationNotice(
+          l(`Sending ${channel} verification code...`, {
+            hindi: `${channel === "phone" ? "फ़ोन" : "ईमेल"} सत्यापन कोड भेजा जा रहा है...`,
+            telugu: `${channel === "phone" ? "ఫోన్" : "ఈమెయిల్"} ధృవీకరణ కోడ్ పంపుతోంది...`,
+            tamil: `${channel === "phone" ? "தொலைபேசி" : "மின்னஞ்சல்"} சரிபார்ப்பு குறியீடு அனுப்பப்படுகிறது...`,
+            urdu: `${channel === "phone" ? "فون" : "ای میل"} تصدیقی کوڈ بھیجا جا رہا ہے...`
+          })
+        );
 
         const verificationPhone = normalizeVerificationPhoneNumber(profilePhone);
         if (channel === "phone" && verificationPhone.length === 0) {
@@ -20139,11 +20440,21 @@ export default function App() {
         const isLocalDebug = verificationApiBaseUrl.includes("127.0.0.1") || verificationApiBaseUrl.includes("localhost");
         const previewLine = payload.previewCode && isLocalDebug ? `\nPreview code: ${payload.previewCode}` : "";
         setProfileVerificationNotice(
-          `Code sent to ${target}.${previewLine ? ` Preview code: ${payload.previewCode}` : ""}`
+          l(`Code sent to ${target}.${previewLine ? ` Preview code: ${payload.previewCode}` : ""}`, {
+            hindi: `कोड ${target} पर भेजा गया है।${previewLine ? ` Preview code: ${payload.previewCode}` : ""}`,
+            telugu: `కోడ్ ${target} కు పంపబడింది.${previewLine ? ` Preview code: ${payload.previewCode}` : ""}`,
+            tamil: `குறியீடு ${target} க்கு அனுப்பப்பட்டது.${previewLine ? ` Preview code: ${payload.previewCode}` : ""}`,
+            urdu: `کوڈ ${target} پر بھیج دیا گیا ہے۔${previewLine ? ` Preview code: ${payload.previewCode}` : ""}`
+          })
         );
         Alert.alert(
-          `${channel === "phone" ? "Phone" : "Email"} verification`,
-          `A verification code was sent to ${target}.${previewLine}`
+          channelTitle,
+          l(`A verification code was sent to ${target}.${previewLine}`, {
+            hindi: `एक सत्यापन कोड ${target} पर भेजा गया था।${previewLine}`,
+            telugu: `ధృవీకరణ కోడ్ ${target} కు పంపబడింది.${previewLine}`,
+            tamil: `சரிபார்ப்பு குறியீடு ${target} க்கு அனுப்பப்பட்டது.${previewLine}`,
+            urdu: `تصدیقی کوڈ ${target} پر بھیج دیا گیا ہے۔${previewLine}`
+          })
         );
         return true;
       } catch (error) {
@@ -20153,13 +20464,23 @@ export default function App() {
           "name" in error &&
           (error as { name?: string }).name === "AbortError";
         const message = isAbortError
-          ? "Verification request timed out. Check your phone number and try again."
+          ? l("Verification request timed out. Check your phone number and try again.", {
+              hindi: "सत्यापन अनुरोध का समय समाप्त हो गया। अपना फ़ोन नंबर जाँचें और फिर से कोशिश करें।",
+              telugu: "ధృవీకరణ అభ్యర్థన సమయం ముగిసింది. మీ ఫోన్ నంబర్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.",
+              tamil: "சரிபார்ப்பு கோரிக்கை நேரம் முடிந்தது. உங்கள் தொலைபேசி எண்ணைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
+              urdu: "تصدیقی درخواست کا وقت ختم ہو گیا۔ اپنا فون نمبر چیک کریں اور دوبارہ کوشش کریں۔"
+            })
           : error instanceof Error
             ? error.message
-            : "Could not reach the verification provider.";
+            : l("Could not reach the verification provider.", {
+                hindi: "सत्यापन प्रदाता तक नहीं पहुँच सके।",
+                telugu: "ధృవీకరణ ప్రొవైడర్‌ను సంప్రదించలేకపోయాం.",
+                tamil: "சரிபார்ப்பு வழங்குநரை அணுக முடியவில்லை.",
+                urdu: "تصدیقی فراہم کنندہ تک نہیں پہنچ سکے۔"
+              });
         setProfileVerificationNotice(message);
         Alert.alert(
-          `${channel === "phone" ? "Phone" : "Email"} verification`,
+          channelTitle,
           message
         );
         return false;
@@ -20177,24 +20498,55 @@ export default function App() {
       setProfileEmailOtp(code);
       setProfileEmailOtpInput("");
     }
-    setProfileVerificationNotice(`Local code ready for ${channel}. Enter ${code} to verify.`);
+    setProfileVerificationNotice(
+      l(`Local code ready for ${channel}. Enter ${code} to verify.`, {
+        hindi: `स्थानीय कोड ${channel === "phone" ? "फ़ोन" : "ईमेल"} के लिए तैयार है। सत्यापित करने के लिए ${code} दर्ज करें।`,
+        telugu: `${channel === "phone" ? "ఫోన్" : "ఈమెయిల్"} కోసం స్థానిక కోడ్ సిద్ధంగా ఉంది. ధృవీకరించడానికి ${code} నమోదు చేయండి.`,
+        tamil: `${channel === "phone" ? "தொலைபேசி" : "மின்னஞ்சல்"} க்கான உள்ளூர் குறியீடு தயாராக உள்ளது. சரிபார்க்க ${code}-ஐ உள்ளிடவும்.`,
+        urdu: `${channel === "phone" ? "فون" : "ای میل"} کے لیے مقامی کوڈ تیار ہے۔ تصدیق کے لیے ${code} درج کریں۔`
+      })
+    );
 
     Alert.alert(
-      `${channel === "phone" ? "Phone" : "Email"} verification`,
-      `Local verification code: ${code}. Replace this with real SMS/email OTP delivery before public launch.`
+      channelTitle,
+      l(`Local verification code: ${code}. Replace this with real SMS/email OTP delivery before public launch.`, {
+        hindi: `स्थानीय सत्यापन कोड: ${code}। सार्वजनिक लॉन्च से पहले इसे वास्तविक SMS/ईमेल OTP वितरण से बदलें।`,
+        telugu: `స్థానిక ధృవీకరణ కోడ్: ${code}. పబ్లిక్ లాంచ్‌కు ముందు దీనిని నిజమైన SMS/ఈమెయిల్ OTP డెలివరీతో మార్చండి.`,
+        tamil: `உள்ளூர் சரிபார்ப்பு குறியீடு: ${code}. பொதுத் தொடக்கத்திற்கு முன் இதை உண்மையான SMS/மின்னஞ்சல் OTP வழங்கலால் மாற்றவும்.`,
+        urdu: `مقامی تصدیقی کوڈ: ${code}۔ عوامی اجرا سے پہلے اسے حقیقی SMS/ای میل OTP فراہمی سے بدلیں۔`
+      })
     );
     return true;
   }
 
   async function confirmVerificationCode(channel: "phone" | "email") {
+    const channelTitle =
+      channel === "phone"
+        ? l("Phone verification", {
+            hindi: "फ़ोन सत्यापन",
+            telugu: "ఫోన్ ధృవీకరణ",
+            tamil: "தொலைபேசி சரிபார்ப்பு",
+            urdu: "فون تصدیق"
+          })
+        : l("Email verification", {
+            hindi: "ईमेल सत्यापन",
+            telugu: "ఈమెయిల్ ధృవీకరణ",
+            tamil: "மின்னஞ்சல் சரிபார்ப்பு",
+            urdu: "ای میل تصدیق"
+          });
     if (verificationApiBaseUrl.length > 0) {
       const enteredCode =
         channel === "phone" ? profilePhoneOtpInput.trim() : profileEmailOtpInput.trim();
 
       if (enteredCode.length === 0) {
         Alert.alert(
-          `${channel === "phone" ? "Phone" : "Email"} verification`,
-          "Enter the verification code."
+          channelTitle,
+          l("Enter the verification code.", {
+            hindi: "सत्यापन कोड दर्ज करें।",
+            telugu: "ధృవీకరణ కోడ్‌ను నమోదు చేయండి.",
+            tamil: "சரிபார்ப்பு குறியீட்டை உள்ளிடவும்.",
+            urdu: "تصدیقی کوڈ درج کریں۔"
+          })
         );
         return false;
       }
@@ -20250,7 +20602,14 @@ export default function App() {
         if ((nextPhoneVerified || nextEmailVerified) && accessRole !== "admin") {
           setAccessRole("verified");
         }
-        setProfileVerificationNotice("Verification complete. Chat and messaging are now unlocked.");
+        setProfileVerificationNotice(
+          l("Verification complete. Chat and messaging are now unlocked.", {
+            hindi: "सत्यापन पूरा हो गया। चैट और संदेश अब अनलॉक हैं।",
+            telugu: "ధృవీకరణ పూర్తయింది. చాట్ మరియు సందేశాలు ఇప్పుడు అందుబాటులో ఉన్నాయి.",
+            tamil: "சரிபார்ப்பு முடிந்தது. அரட்டை மற்றும் செய்திகள் இப்போது திறக்கப்பட்டுள்ளன.",
+            urdu: "تصدیق مکمل ہو گئی۔ چیٹ اور پیغامات اب کھل گئے ہیں۔"
+          })
+        );
 
         // ── Supabase cross-device sync: push local data & pull any remote data ──
         if (supabaseConfigured) {
@@ -20264,21 +20623,33 @@ export default function App() {
         }
 
         Alert.alert(
-          `${channel === "phone" ? "Phone" : "Email"} verified`,
-          "Verification completed through the provider."
+          l(`${channel === "phone" ? "Phone" : "Email"} verified`, {
+            hindi: channel === "phone" ? "फ़ोन सत्यापित" : "ईमेल सत्यापित",
+            telugu: channel === "phone" ? "ఫోన్ ధృవీకరించబడింది" : "ఈమెయిల్ ధృవీకరించబడింది",
+            tamil: channel === "phone" ? "தொலைபேசி சரிபார்க்கப்பட்டது" : "மின்னஞ்சல் சரிபார்க்கப்பட்டது",
+            urdu: channel === "phone" ? "فون تصدیق ہو گیا" : "ای میل تصدیق ہو گئی"
+          }),
+          l("Verification completed through the provider.", {
+            hindi: "सत्यापन प्रदाता के माध्यम से पूरा हो गया।",
+            telugu: "ధృవీకరణ ప్రొవైడర్ ద్వారా పూర్తయింది.",
+            tamil: "சரிபார்ப்பு வழங்குநர் மூலம் முடிந்தது.",
+            urdu: "تصدیق فراہم کنندہ کے ذریعے مکمل ہو گئی۔"
+          })
         );
         return true;
       } catch (error) {
         const message =
           error instanceof Error
             ? error.message
-            : "Could not confirm the verification code.";
+            : l("Could not confirm the verification code.", {
+                hindi: "सत्यापन कोड की पुष्टि नहीं हो सकी।",
+                telugu: "ధృవీకరణ కోడ్‌ను నిర్ధారించలేకపోయాం.",
+                tamil: "சரிபார்ப்பு குறியீட்டை உறுதிப்படுத்த முடியவில்லை.",
+                urdu: "تصدیقی کوڈ کی تصدیق نہیں ہو سکی۔"
+              });
         setProfileVerificationNotice(message);
-          Alert.alert(
-            `${channel === "phone" ? "Phone" : "Email"} verification`,
-            message
-          );
-          return false;
+        Alert.alert(channelTitle, message);
+        return false;
       } finally {
         if (timeout) clearTimeout(timeout);
       }
@@ -20288,26 +20659,62 @@ export default function App() {
     const enteredCode = channel === "phone" ? profilePhoneOtpInput.trim() : profileEmailOtpInput.trim();
 
     if (!storedCode) {
-      setProfileVerificationNotice("Request a verification code first.");
+      setProfileVerificationNotice(
+        l("Request a verification code first.", {
+          hindi: "पहले सत्यापन कोड का अनुरोध करें।",
+          telugu: "ముందుగా ధృవీకరణ కోడ్‌ను అభ్యర్థించండి.",
+          tamil: "முதலில் சரிபார்ப்பு குறியீட்டை கோரவும்.",
+          urdu: "پہلے تصدیقی کوڈ درخواست کریں۔"
+        })
+      );
       Alert.alert(
-        `${channel === "phone" ? "Phone" : "Email"} verification`,
-        "Request a verification code first."
+        channelTitle,
+        l("Request a verification code first.", {
+          hindi: "पहले सत्यापन कोड का अनुरोध करें।",
+          telugu: "ముందుగా ధృవీకరణ కోడ్‌ను అభ్యర్థించండి.",
+          tamil: "முதலில் சரிபார்ப்பு குறியீட்டை கோரவும்.",
+          urdu: "پہلے تصدیقی کوڈ درخواست کریں۔"
+        })
       );
       return false;
     }
     if (enteredCode.length === 0) {
-      setProfileVerificationNotice("Enter the verification code.");
+      setProfileVerificationNotice(
+        l("Enter the verification code.", {
+          hindi: "सत्यापन कोड दर्ज करें।",
+          telugu: "ధృవీకరణ కోడ్‌ను నమోదు చేయండి.",
+          tamil: "சரிபார்ப்பு குறியீட்டை உள்ளிடவும்.",
+          urdu: "تصدیقی کوڈ درج کریں۔"
+        })
+      );
       Alert.alert(
-        `${channel === "phone" ? "Phone" : "Email"} verification`,
-        "Enter the verification code."
+        channelTitle,
+        l("Enter the verification code.", {
+          hindi: "सत्यापन कोड दर्ज करें।",
+          telugu: "ధృవీకరణ కోడ్‌ను నమోదు చేయండి.",
+          tamil: "சரிபார்ப்பு குறியீட்டை உள்ளிடவும்.",
+          urdu: "تصدیقی کوڈ درج کریں۔"
+        })
       );
       return false;
     }
     if (enteredCode !== storedCode) {
-      setProfileVerificationNotice("That code did not match. Please try again.");
+      setProfileVerificationNotice(
+        l("That code did not match. Please try again.", {
+          hindi: "वह कोड मेल नहीं खाया। कृपया फिर से कोशिश करें।",
+          telugu: "ఆ కోడ్ సరిపోలలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.",
+          tamil: "அந்த குறியீடு பொருந்தவில்லை. மீண்டும் முயற்சிக்கவும்.",
+          urdu: "وہ کوڈ میچ نہیں ہوا۔ براہِ کرم دوبارہ کوشش کریں۔"
+        })
+      );
       Alert.alert(
-        `${channel === "phone" ? "Phone" : "Email"} verification`,
-        "That code did not match. Please try again."
+        channelTitle,
+        l("That code did not match. Please try again.", {
+          hindi: "वह कोड मेल नहीं खाया। कृपया फिर से कोशिश करें।",
+          telugu: "ఆ కోడ్ సరిపోలలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.",
+          tamil: "அந்த குறியீடு பொருந்தவில்லை. மீண்டும் முயற்சிக்கவும்.",
+          urdu: "وہ کوڈ میچ نہیں ہوا۔ براہِ کرم دوبارہ کوشش کریں۔"
+        })
       );
       return false;
     }
@@ -20327,11 +20734,28 @@ export default function App() {
     if ((nextPhoneVerified || nextEmailVerified) && accessRole !== "admin") {
       setAccessRole("verified");
     }
-    setProfileVerificationNotice("Local verification complete. Chat and messaging are now unlocked.");
+    setProfileVerificationNotice(
+      l("Local verification complete. Chat and messaging are now unlocked.", {
+        hindi: "स्थानीय सत्यापन पूरा हो गया। चैट और संदेश अब अनलॉक हैं।",
+        telugu: "స్థానిక ధృవీకరణ పూర్తయింది. చాట్ మరియు సందేశాలు ఇప్పుడు అందుబాటులో ఉన్నాయి.",
+        tamil: "உள்ளூர் சரிபார்ப்பு முடிந்தது. அரட்டை மற்றும் செய்திகள் இப்போது திறக்கப்பட்டுள்ளன.",
+        urdu: "مقامی تصدیق مکمل ہو گئی۔ چیٹ اور پیغامات اب کھل گئے ہیں۔"
+      })
+    );
 
     Alert.alert(
-      `${channel === "phone" ? "Phone" : "Email"} verified`,
-      "Verification completed for this local build."
+      l(`${channel === "phone" ? "Phone" : "Email"} verified`, {
+        hindi: channel === "phone" ? "फ़ोन सत्यापित" : "ईमेल सत्यापित",
+        telugu: channel === "phone" ? "ఫోన్ ధృవీకరించబడింది" : "ఈమెయిల్ ధృవీకరించబడింది",
+        tamil: channel === "phone" ? "தொலைபேசி சரிபார்க்கப்பட்டது" : "மின்னஞ்சல் சரிபார்க்கப்பட்டது",
+        urdu: channel === "phone" ? "فون تصدیق ہو گیا" : "ای میل تصدیق ہو گئی"
+      }),
+      l("Verification completed for this local build.", {
+        hindi: "इस स्थानीय build के लिए सत्यापन पूरा हो गया।",
+        telugu: "ఈ స్థానిక build కోసం ధృవీకరణ పూర్తయింది.",
+        tamil: "இந்த உள்ளூர் build க்கு சரிபார்ப்பு முடிந்தது.",
+        urdu: "اس مقامی build کے لیے تصدیق مکمل ہو گئی۔"
+      })
     );
     return true;
   }
@@ -20410,14 +20834,40 @@ export default function App() {
   function claimPlayChallenge(challengeId: PlayChallengeId) {
     const steps = playProgress[challengeId] ?? [false, false, false];
     if (steps.some((done) => !done)) {
-      Alert.alert("Play challenge", "Finish all three steps before claiming the reward.");
+      Alert.alert(
+        l("Play challenge", {
+          hindi: "खेल चुनौती",
+          telugu: "ప్లే ఛాలెంజ్",
+          tamil: "விளையாட்டு சவால்",
+          urdu: "کھیل چیلنج"
+        }),
+        l("Finish all three steps before claiming the reward.", {
+          hindi: "इनाम लेने से पहले तीनों चरण पूरे करें।",
+          telugu: "బహుమతి పొందే ముందు మూడు దశలన్నీ పూర్తి చేయండి.",
+          tamil: "பரிசை கோருவதற்கு முன் மூன்று படிகளையும் முடிக்கவும்.",
+          urdu: "انعام لینے سے پہلے تینوں مراحل مکمل کریں۔"
+        })
+      );
       return;
     }
     setPlayClaimed((current) => ({
       ...current,
       [challengeId]: true
     }));
-    Alert.alert("Play challenge", "Reward claimed. Nice work keeping it small and useful.");
+    Alert.alert(
+      l("Play challenge", {
+        hindi: "खेल चुनौती",
+        telugu: "ప్లే ఛాలెంజ్",
+        tamil: "விளையாட்டு சவால்",
+        urdu: "کھیل چیلنج"
+      }),
+      l("Reward claimed. Nice work keeping it small and useful.", {
+        hindi: "इनाम दावा किया गया। इसे छोटा और उपयोगी बनाए रखने के लिए अच्छा काम।",
+        telugu: "బహుమతి పొందబడింది. చిన్నదిగా మరియు ఉపయోగకరంగా ఉంచినందుకు బాగా చేసారు.",
+        tamil: "பரிசு பெறப்பட்டது. அதை சிறியதாகவும் பயனுள்ளதாகவும் வைத்ததற்கு அருமை.",
+        urdu: "انعام حاصل کر لیا گیا۔ اسے چھوٹا اور مفید رکھنے پر شاباش۔"
+      })
+    );
   }
 
   function classifyCommunityTopic(text: string) {
@@ -20935,27 +21385,35 @@ async function fetchGuidanceHelp(
   }
 
   function safetyAlertMessage(message: string) {
-    Alert.alert("Community safety", message);
+    Alert.alert(
+      l("Community safety", {
+        hindi: "सामुदायिक सुरक्षा",
+        telugu: "కమ్యూనిటీ భద్రత",
+        tamil: "சமூக பாதுகாப்பு",
+        urdu: "کمیونٹی حفاظت"
+      }),
+      message
+    );
   }
 
   function buildVerifiedReply(text: string) {
     const normalized = text.toLowerCase();
     if (/(student|exam|school|college|class|assignment|paper|hostel)/.test(normalized)) {
-      return "Aethon guide: pick one study block, one rest block, and one person who can keep you grounded.";
+      return "NAYIQ guide: pick one study block, one rest block, and one person who can keep you grounded.";
     }
     if (/(complaint|ragging|harass|threat|abuse|police|112|redress)/.test(normalized)) {
-      return "Aethon guide: keep the written complaint, acknowledgement number, and the first office name together in one note.";
+      return "NAYIQ guide: keep the written complaint, acknowledgement number, and the first office name together in one note.";
     }
     if (/(anxiety|anger|burnout|lonely|loneliness|fear|stigma|shame)/.test(normalized)) {
-      return "Aethon guide: name the feeling, choose one small step, and use the Path tab when you want a structured follow-up.";
+      return "NAYIQ guide: name the feeling, choose one small step, and use the Path tab when you want a structured follow-up.";
     }
     if (/(work|office|job|professional|shift|duty)/.test(normalized)) {
-      return "Aethon guide: tighten the next action, not the pressure. A short reset often gives better judgment.";
+      return "NAYIQ guide: tighten the next action, not the pressure. A short reset often gives better judgment.";
     }
     if (/(parent|family|child|care|caregiver)/.test(normalized)) {
-      return "Aethon guide: your own pause counts too. A calmer caregiver usually makes a steadier day for everyone.";
+      return "NAYIQ guide: your own pause counts too. A calmer caregiver usually makes a steadier day for everyone.";
     }
-    return "Aethon guide: thank you for sharing that. Keep the next step small, plain, and doable.";
+    return "NAYIQ guide: thank you for sharing that. Keep the next step small, plain, and doable.";
   }
 
   // Returns true only when the post actually went out; every refusal below
@@ -20963,21 +21421,54 @@ async function fetchGuidanceHelp(
   async function postCommunityMessage(rawText: string): Promise<boolean> {
     const text = rawText.trim();
     if (!text) {
-      Alert.alert("Community", "Write a short message first.");
+      Alert.alert(
+        l("Community", {
+          hindi: "समुदाय",
+          telugu: "కమ్యూనిటీ",
+          tamil: "சமூகம்",
+          urdu: "کمیونٹی"
+        }),
+        l("Write a short message first.", {
+          hindi: "पहले एक छोटा संदेश लिखें।",
+          telugu: "ముందుగా చిన్న సందేశం వ్రాయండి.",
+          tamil: "முதலில் ஒரு சிறிய செய்தியை எழுதுங்கள்.",
+          urdu: "پہلے ایک مختصر پیغام لکھیں۔"
+        })
+      );
       return false;
     }
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!communityVerifiedAccess) {
       Alert.alert(
-        "Community",
-        "Chat and messaging are available after either phone or email verification."
+        l("Community", {
+          hindi: "समुदाय",
+          telugu: "కమ్యూనిటీ",
+          tamil: "சமூகம்",
+          urdu: "کمیونٹی"
+        }),
+        l("Chat and messaging are available after either phone or email verification.", {
+          hindi: "चैट और संदेश फ़ोन या ईमेल सत्यापन के बाद उपलब्ध हैं।",
+          telugu: "ఫోన్ లేదా ఈమెయిల్ ధృవీకరణ తర్వాత చాట్ మరియు సందేశాలు అందుబాటులో ఉంటాయి.",
+          tamil: "தொலைபேசி அல்லது மின்னஞ்சல் சரிபார்ப்புக்குப் பிறகு அரட்டை மற்றும் செய்திகள் கிடைக்கும்.",
+          urdu: "فون یا ای میل تصدیق کے بعد چیٹ اور پیغامات دستیاب ہوتے ہیں۔"
+        })
       );
       return false;
     }
     if (communityPostingLocked) {
       Alert.alert(
-        "Community",
-        communitySafetyLockReason ?? "Posting is currently paused for safety review."
+        l("Community", {
+          hindi: "समुदाय",
+          telugu: "కమ్యూనిటీ",
+          tamil: "சமூகம்",
+          urdu: "کمیونٹی"
+        }),
+        communitySafetyLockReason ?? l("Posting is currently paused for safety review.", {
+          hindi: "सुरक्षा समीक्षा के लिए पोस्टिंग अभी रोकी गई है।",
+          telugu: "భద్రతా సమీక్ష కోసం పోస్టింగ్ ప్రస్తుతం నిలిపివేయబడింది.",
+          tamil: "பாதுகாப்பு மதிப்பாய்வுக்காக பதிவிடுதல் தற்போது நிறுத்தப்பட்டுள்ளது.",
+          urdu: "سکیورٹی جائزے کے لیے پوسٹنگ اس وقت روکی گئی ہے۔"
+        })
       );
       return false;
     }
@@ -20988,14 +21479,40 @@ async function fetchGuidanceHelp(
       void playMessageFeedbackCue("blocked");
       safetyAlertMessage(safetyViolation.message);
       if (nextStrikeCount >= 3) {
-        Alert.alert("Community safety", "Posting has been paused after repeated unsafe attempts.");
+        Alert.alert(
+          l("Community safety", {
+            hindi: "सामुदायिक सुरक्षा",
+            telugu: "కమ్యూనిటీ భద్రత",
+            tamil: "சமூக பாதுகாப்பு",
+            urdu: "کمیونٹی حفاظت"
+          }),
+          l("Posting has been paused after repeated unsafe attempts.", {
+            hindi: "बार-बार असुरक्षित प्रयासों के बाद पोस्टिंग रोक दी गई है।",
+            telugu: "పునరావృతమైన అసురక్షిత ప్రయత్నాల తర్వాత పోస్టింగ్ నిలిపివేయబడింది.",
+            tamil: "மீண்டும் மீண்டும் பாதுகாப்பற்ற முயற்சிகளுக்குப் பிறகு பதிவிடுதல் நிறுத்தப்பட்டுள்ளது.",
+            urdu: "بار بار غیر محفوظ کوششوں کے بعد پوسٹنگ روک دی گئی ہے۔"
+          })
+        );
       }
       return false;
     }
 
     const cooldownLeft = communityPostCooldownRemainingMs();
     if (cooldownLeft > 0) {
-      Alert.alert("Slow down", `Please wait ${Math.ceil(cooldownLeft / 1000)}s before posting again.`);
+      Alert.alert(
+        l("Slow down", {
+          hindi: "धीरे करें",
+          telugu: "నెమ్మదించండి",
+          tamil: "மெதுவாக",
+          urdu: "آہستہ کریں"
+        }),
+        l(`Please wait ${Math.ceil(cooldownLeft / 1000)}s before posting again.`, {
+          hindi: `दोबारा पोस्ट करने से पहले ${Math.ceil(cooldownLeft / 1000)} सेकंड प्रतीक्षा करें।`,
+          telugu: `మళ్లీ పోస్టు చేయడానికి ముందు ${Math.ceil(cooldownLeft / 1000)} సెకన్లు వేచి ఉండండి.`,
+          tamil: `மீண்டும் பதிவிடுவதற்கு முன் ${Math.ceil(cooldownLeft / 1000)} வினாடிகள் காத்திருக்கவும்.`,
+          urdu: `دوبارہ پوسٹ کرنے سے پہلے ${Math.ceil(cooldownLeft / 1000)} سیکنڈ انتظار کریں۔`
+        })
+      );
       return false;
     }
     lastCommunityPostRef.current = Date.now();
@@ -21011,7 +21528,7 @@ async function fetchGuidanceHelp(
     const verifiedReply = createCommunityMessage(
       buildVerifiedReply(text),
       "verified",
-      "Aethon Guide",
+      "NAYIQ Guide",
       "Guidance"
     );
 
@@ -21093,21 +21610,54 @@ async function fetchGuidanceHelp(
   async function postCommunityChatMessage(rawText: string): Promise<boolean> {
     const text = rawText.trim();
     if (!text) {
-      Alert.alert("Community chat", "Write a short message first.");
+      Alert.alert(
+        l("Community chat", {
+          hindi: "समुदाय चैट",
+          telugu: "కమ్యూనిటీ చాట్",
+          tamil: "சமூக அரட்டை",
+          urdu: "کمیونٹی چیٹ"
+        }),
+        l("Write a short message first.", {
+          hindi: "पहले एक छोटा संदेश लिखें।",
+          telugu: "ముందుగా చిన్న సందేశం వ్రాయండి.",
+          tamil: "முதலில் ஒரு சிறிய செய்தியை எழுதுங்கள்.",
+          urdu: "پہلے ایک مختصر پیغام لکھیں۔"
+        })
+      );
       return false;
     }
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!communityVerifiedAccess) {
       Alert.alert(
-        "Community chat",
-        "Chat and messaging are available after either phone or email verification."
+        l("Community chat", {
+          hindi: "समुदाय चैट",
+          telugu: "కమ్యూనిటీ చాట్",
+          tamil: "சமூக அரட்டை",
+          urdu: "کمیونٹی چیٹ"
+        }),
+        l("Chat and messaging are available after either phone or email verification.", {
+          hindi: "चैट और संदेश फ़ोन या ईमेल सत्यापन के बाद उपलब्ध हैं।",
+          telugu: "ఫోన్ లేదా ఈమెయిల్ ధృవీకరణ తర్వాత చాట్ మరియు సందేశాలు అందుబాటులో ఉంటాయి.",
+          tamil: "தொலைபேசி அல்லது மின்னஞ்சல் சரிபார்ப்புக்குப் பிறகு அரட்டை மற்றும் செய்திகள் கிடைக்கும்.",
+          urdu: "فون یا ای میل تصدیق کے بعد چیٹ اور پیغامات دستیاب ہوتے ہیں۔"
+        })
       );
       return false;
     }
     if (communityPostingLocked) {
       Alert.alert(
-        "Community chat",
-        communitySafetyLockReason ?? "Posting is currently paused for safety review."
+        l("Community chat", {
+          hindi: "समुदाय चैट",
+          telugu: "కమ్యూనిటీ చాట్",
+          tamil: "சமூக அரட்டை",
+          urdu: "کمیونٹی چیٹ"
+        }),
+        communitySafetyLockReason ?? l("Posting is currently paused for safety review.", {
+          hindi: "सुरक्षा समीक्षा के लिए पोस्टिंग अभी रोकी गई है।",
+          telugu: "భద్రతా సమీక్ష కోసం పోస్టింగ్ ప్రస్తుతం నిలిపివేయబడింది.",
+          tamil: "பாதுகாப்பு மதிப்பாய்வுக்காக பதிவிடுதல் தற்போது நிறுத்தப்பட்டுள்ளது.",
+          urdu: "سکیورٹی جائزے کے لیے پوسٹنگ اس وقت روکی گئی ہے۔"
+        })
       );
       return false;
     }
@@ -21118,14 +21668,40 @@ async function fetchGuidanceHelp(
       void playMessageFeedbackCue("blocked");
       safetyAlertMessage(safetyViolation.message);
       if (nextStrikeCount >= 3) {
-        Alert.alert("Community safety", "Posting has been paused after repeated unsafe attempts.");
+        Alert.alert(
+          l("Community safety", {
+            hindi: "सामुदायिक सुरक्षा",
+            telugu: "కమ్యూనిటీ భద్రత",
+            tamil: "சமூக பாதுகாப்பு",
+            urdu: "کمیونٹی حفاظت"
+          }),
+          l("Posting has been paused after repeated unsafe attempts.", {
+            hindi: "बार-बार असुरक्षित प्रयासों के बाद पोस्टिंग रोक दी गई है।",
+            telugu: "పునరావృతమైన అసురక్షిత ప్రయత్నాల తర్వాత పోస్టింగ్ నిలిపివేయబడింది.",
+            tamil: "மீண்டும் மீண்டும் பாதுகாப்பற்ற முயற்சிகளுக்குப் பிறகு பதிவிடுதல் நிறுத்தப்பட்டுள்ளது.",
+            urdu: "بار بار غیر محفوظ کوششوں کے بعد پوسٹنگ روک دی گئی ہے۔"
+          })
+        );
       }
       return false;
     }
 
     const cooldownLeft = communityPostCooldownRemainingMs();
     if (cooldownLeft > 0) {
-      Alert.alert("Slow down", `Please wait ${Math.ceil(cooldownLeft / 1000)}s before sending again.`);
+      Alert.alert(
+        l("Slow down", {
+          hindi: "धीरे करें",
+          telugu: "నెమ్మదించండి",
+          tamil: "மெதுவாக",
+          urdu: "آہستہ کریں"
+        }),
+        l(`Please wait ${Math.ceil(cooldownLeft / 1000)}s before sending again.`, {
+          hindi: `दोबारा भेजने से पहले ${Math.ceil(cooldownLeft / 1000)} सेकंड प्रतीक्षा करें।`,
+          telugu: `మళ్లీ పంపడానికి ముందు ${Math.ceil(cooldownLeft / 1000)} సెకన్లు వేచి ఉండండి.`,
+          tamil: `மீண்டும் அனுப்புவதற்கு முன் ${Math.ceil(cooldownLeft / 1000)} வினாடிகள் காத்திருக்கவும்.`,
+          urdu: `دوبارہ بھیجنے سے پہلے ${Math.ceil(cooldownLeft / 1000)} سیکنڈ انتظار کریں۔`
+        })
+      );
       return false;
     }
     lastCommunityPostRef.current = Date.now();
@@ -21184,25 +21760,58 @@ async function fetchGuidanceHelp(
     title: string;
     members: string;
     firstMessage: string;
-  }): boolean {
+    }): boolean {
     if (!communityVerifiedAccess) {
       Alert.alert(
-        "Chat Rooms",
-        "Verify your phone or email first to create a private room."
+        l("Chat Rooms", {
+          hindi: "चैट रूम",
+          telugu: "చాట్ రూమ్స్",
+          tamil: "அரட்டை அறைகள்",
+          urdu: "چیٹ رومز"
+        }),
+        l("Verify your phone or email first to create a private room.", {
+          hindi: "निजी कमरा बनाने से पहले अपना फ़ोन या ईमेल सत्यापित करें।",
+          telugu: "ప్రైవేట్ గది సృష్టించడానికి ముందు మీ ఫోన్ లేదా ఈమెయిల్‌ను ధృవీకరించండి.",
+          tamil: "தனிப்பட்ட அறை உருவாக்குவதற்கு முன் உங்கள் தொலைபேசி அல்லது மின்னஞ்சலை சரிபார்க்கவும்.",
+          urdu: "نجی کمرہ بنانے سے پہلے اپنا فون یا ای میل تصدیق کریں۔"
+        })
       );
       return false;
     }
     if (communityPostingLocked) {
       Alert.alert(
-        "Chat Rooms",
-        communitySafetyLockReason ?? "Room creation is currently paused for safety review."
+        l("Chat Rooms", {
+          hindi: "चैट रूम",
+          telugu: "చాట్ రూమ్స్",
+          tamil: "அரட்டை அறைகள்",
+          urdu: "چیٹ رومز"
+        }),
+        communitySafetyLockReason ?? l("Room creation is currently paused for safety review.", {
+          hindi: "सुरक्षा समीक्षा के लिए कमरा बनाना अभी रोका गया है।",
+          telugu: "భద్రతా సమీక్ష కోసం గది సృష్టించడం ప్రస్తుతం నిలిపివేయబడింది.",
+          tamil: "பாதுகாப்பு மதிப்பாய்வுக்காக அறை உருவாக்குதல் தற்போது நிறுத்தப்பட்டுள்ளது.",
+          urdu: "سکیورٹی جائزے کے لیے کمرہ بنانا اس وقت روکا گیا ہے۔"
+        })
       );
       return false;
     }
 
     const title = input.title.trim();
     if (!title) {
-      Alert.alert("Chat Rooms", "Give your room a name.");
+      Alert.alert(
+        l("Chat Rooms", {
+          hindi: "चैट रूम",
+          telugu: "చాట్ రూమ్స్",
+          tamil: "அரட்டை அறைகள்",
+          urdu: "چیٹ رومز"
+        }),
+        l("Give your room a name.", {
+          hindi: "अपने कमरे को एक नाम दें।",
+          telugu: "మీ గదికి ఒక పేరు ఇవ్వండి.",
+          tamil: "உங்கள் அறைக்கு ஒரு பெயர் கொடுங்கள்.",
+          urdu: "اپنے کمرے کو ایک نام دیں۔"
+        })
+      );
       return false;
     }
 
@@ -21255,20 +21864,53 @@ async function fetchGuidanceHelp(
   function sendPrivateSpaceMessage(rawText: string): boolean {
     const text = rawText.trim();
     if (!text) {
-      Alert.alert("Chat Rooms", "Write a message first.");
+      Alert.alert(
+        l("Chat Rooms", {
+          hindi: "चैट रूम",
+          telugu: "చాట్ రూమ్స్",
+          tamil: "அரட்டை அறைகள்",
+          urdu: "چیٹ رومز"
+        }),
+        l("Write a message first.", {
+          hindi: "पहले एक संदेश लिखें।",
+          telugu: "ముందుగా ఒక సందేశం వ్రాయండి.",
+          tamil: "முதலில் ஒரு செய்தியை எழுதுங்கள்.",
+          urdu: "پہلے ایک پیغام لکھیں۔"
+        })
+      );
       return false;
     }
     if (!communityVerifiedAccess) {
       Alert.alert(
-        "Chat Rooms",
-        "Verify your phone or email first to use private rooms."
+        l("Chat Rooms", {
+          hindi: "चैट रूम",
+          telugu: "చాట్ రూమ్స్",
+          tamil: "அரட்டை அறைகள்",
+          urdu: "چیٹ رومز"
+        }),
+        l("Verify your phone or email first to use private rooms.", {
+          hindi: "निजी कमरों का उपयोग करने से पहले अपना फ़ोन या ईमेल सत्यापित करें।",
+          telugu: "ప్రైవేట్ గదులను ఉపయోగించడానికి ముందు మీ ఫోన్ లేదా ఈమెయిల్‌ను ధృవీకరించండి.",
+          tamil: "தனிப்பட்ட அறைகளைப் பயன்படுத்துவதற்கு முன் உங்கள் தொலைபேசி அல்லது மின்னஞ்சலை சரிபார்க்கவும்.",
+          urdu: "نجی کمروں کو استعمال کرنے سے پہلے اپنا فون یا ای میل تصدیق کریں۔"
+        })
       );
       return false;
     }
     if (communityPostingLocked) {
       Alert.alert(
-        "Chat Rooms",
-        communitySafetyLockReason ?? "Private rooms are currently paused for safety review."
+        l("Chat Rooms", {
+          hindi: "चैट रूम",
+          telugu: "చాట్ రూమ్స్",
+          tamil: "அரட்டை அறைகள்",
+          urdu: "چیٹ رومز"
+        }),
+        communitySafetyLockReason ?? l("Private rooms are currently paused for safety review.", {
+          hindi: "सुरक्षा समीक्षा के लिए निजी कमरे अभी रोके गए हैं।",
+          telugu: "భద్రతా సమీక్ష కోసం ప్రైవేట్ గదులు ప్రస్తుతం నిలిపివేయబడ్డాయి.",
+          tamil: "பாதுகாப்பு மதிப்பாய்வுக்காக தனிப்பட்ட அறைகள் தற்போது நிறுத்தப்பட்டுள்ளன.",
+          urdu: "سکیورٹی جائزے کے لیے نجی کمرے اس وقت روکے گئے ہیں۔"
+        })
       );
       return false;
     }
@@ -21279,7 +21921,20 @@ async function fetchGuidanceHelp(
       return false;
     }
     if (!selectedPrivateSpaceThread) {
-      Alert.alert("Chat Rooms", "Create or choose a room first.");
+      Alert.alert(
+        l("Chat Rooms", {
+          hindi: "चैट रूम",
+          telugu: "చాట్ రూమ్స్",
+          tamil: "அரட்டை அறைகள்",
+          urdu: "چیٹ رومز"
+        }),
+        l("Create or choose a room first.", {
+          hindi: "पहले एक कमरा बनाएँ या चुनें।",
+          telugu: "ముందుగా ఒక గదిని సృష్టించండి లేదా ఎంచుకోండి.",
+          tamil: "முதலில் ஒரு அறையை உருவாக்கவும் அல்லது தேர்ந்தெடுக்கவும்.",
+          urdu: "پہلے ایک کمرہ بنائیں یا منتخب کریں۔"
+        })
+      );
       return false;
     }
 
@@ -21431,7 +22086,20 @@ async function fetchGuidanceHelp(
       logBlockedCommunityContent("chat", safetyViolation.reason, text);
       safetyAlertMessage(safetyViolation.message);
       if (nextStrikeCount >= 3) {
-        Alert.alert("Community safety", "Posting has been paused after repeated unsafe attempts.");
+        Alert.alert(
+          l("Community safety", {
+            hindi: "सामुदायिक सुरक्षा",
+            telugu: "కమ్యూనిటీ భద్రత",
+            tamil: "சமூக பாதுகாப்பு",
+            urdu: "کمیونٹی حفاظت"
+          }),
+          l("Posting has been paused after repeated unsafe attempts.", {
+            hindi: "बार-बार असुरक्षित प्रयासों के बाद पोस्टिंग रोक दी गई है।",
+            telugu: "పునరావృతమైన అసురక్షిత ప్రయత్నాల తర్వాత పోస్టింగ్ నిలిపివేయబడింది.",
+            tamil: "மீண்டும் மீண்டும் பாதுகாப்பற்ற முயற்சிகளுக்குப் பிறகு பதிவிடுதல் நிறுத்தப்பட்டுள்ளது.",
+            urdu: "بار بار غیر محفوظ کوششوں کے بعد پوسٹنگ روک دی گئی ہے۔"
+          })
+        );
       }
       return;
     }
@@ -21484,8 +22152,18 @@ async function fetchGuidanceHelp(
       // reply" reported by testers. Answer it directly and stop here.
       setGuidedSupportDraft("");
       Alert.alert(
-        "Good to hear",
-        "That's genuinely good to hear — glad it's landing that way today. If anything specific is on your mind, tell me and I'll help; otherwise, enjoy the moment."
+        l("Good to hear", {
+          hindi: "यह सुनकर अच्छा लगा",
+          telugu: "అలా వినడం సంతోషంగా ఉంది",
+          tamil: "அதை கேட்டு மகிழ்ச்சி",
+          urdu: "یہ جان کر خوشی ہوئی"
+        }),
+        l("That's genuinely good to hear — glad it's landing that way today. If anything specific is on your mind, tell me and I'll help; otherwise, enjoy the moment.", {
+          hindi: "यह सुनकर सचमुच अच्छा लगा — खुशी है कि आज ऐसा महसूस हो रहा है। अगर आपके मन में कुछ खास है, तो बताइए और मैं मदद करूँगा; नहीं तो इस पल का आनंद लें।",
+          telugu: "అది నిజంగా వినడానికి బాగుంది — ఈ రోజు అలా అనిపిస్తుండటం ఆనందం. మీ మనసులో ఏదైనా ప్రత్యేకంగా ఉంటే చెప్పండి, నేను సహాయం చేస్తాను; లేకపోతే ఈ క్షణాన్ని ఆస్వాదించండి.",
+          tamil: "அதை உண்மையிலேயே கேட்டு மகிழ்ச்சி — இன்று அப்படியே இருப்பது நல்லது. மனதில் ஏதாவது குறிப்பாக இருந்தால் சொல்லுங்கள், நான் உதவுவேன்; இல்லையெனில் இந்த நிமிடத்தை அனுபவியுங்கள்.",
+          urdu: "یہ واقعی سن کر اچھا لگا — خوشی ہے کہ آج یہ ایسے لگ رہا ہے۔ اگر آپ کے ذہن میں کچھ خاص ہو تو بتائیں، میں مدد کروں گا؛ ورنہ اس لمحے سے لطف اٹھائیں۔"
+        })
       );
       return;
     }
@@ -21779,7 +22457,20 @@ async function fetchGuidanceHelp(
     };
     setUserReviews((current) => [review, ...current].slice(0, 50));
     setReviewDraft("");
-    Alert.alert("User review", "Thank you. Your review is saved for launch improvement.");
+    Alert.alert(
+      l("User review", {
+        hindi: "उपयोगकर्ता समीक्षा",
+        telugu: "వినియోగదారు సమీక్ష",
+        tamil: "பயனர் மதிப்புரை",
+        urdu: "صارف کا جائزہ"
+      }),
+      l("Thank you. Your review is saved for launch improvement.", {
+        hindi: "धन्यवाद। आपकी समीक्षा लॉन्च सुधार के लिए सहेज ली गई है।",
+        telugu: "ధన్యవాదాలు. మీ సమీక్ష విడుదల మెరుగుదల కోసం సేవ్ చేయబడింది.",
+        tamil: "நன்றி. உங்கள் மதிப்புரை தொடக்க மேம்பாட்டிற்காக சேமிக்கப்பட்டது.",
+        urdu: "شکریہ۔ آپ کا جائزہ لانچ کی بہتری کے لیے محفوظ کر لیا گیا ہے۔"
+      })
+    );
     return true;
   }
 
@@ -22464,7 +23155,7 @@ function isInstitutionSectorId(value: string): value is InstitutionSectorId {
 }
 
 const trustedExternalDomains = [
-  "aethonbeacon.com",
+  "nayiq.co",
   "localhost",
   "127.0.0.1",
   "::1",
@@ -22569,7 +23260,7 @@ function isTrustedExternalUrl(url: string) {
               shadowOffset: { width: 0, height: 8 }
             }}
             resizeMode="cover"
-            accessibilityLabel="Aethon Beacon logo"
+            accessibilityLabel={nayiqLogoA11yLabel}
           />
           <Text
             style={{
@@ -22581,9 +23272,9 @@ function isTrustedExternalUrl(url: string) {
               marginBottom: 4
             }}
           >
-            AETHON BEACON
+            NAYIQ
           </Text>
-          <Text style={{ color: theme.textFaint, fontSize: 12, letterSpacing: 1.5 }}>Your clarity. Your next step.</Text>
+          <Text style={{ color: theme.textFaint, fontSize: 12, letterSpacing: 1.5 }}>{splashTagline}</Text>
           <View style={{ marginTop: 32, flexDirection: "row", gap: 6 }}>
             {[0, 1, 2].map((i) => (
               <View key={i} style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: i === 0 ? "#007FB8" : (activeColorScheme === "light" ? "#25364D" : "#1E3A4A") }} />
@@ -22664,11 +23355,11 @@ function isTrustedExternalUrl(url: string) {
                   source={require("./assets/aethon-beacon-icon-vibrant.png")}
                   style={[styles.brandMark, isCompact && styles.brandMarkCompact]}
                   resizeMode="cover"
-                  accessibilityLabel="Aethon Beacon logo"
+                  accessibilityLabel={nayiqLogoA11yLabel}
                 />
                 <View style={styles.brandBadgeCopy}>
                   <Text style={[styles.brand, isCompact && styles.brandCompact]} numberOfLines={1}>
-                    Aethon Beacon
+                    NAYIQ
                   </Text>
                   <Text style={[styles.brandTag, isCompact && styles.brandTagCompact]} numberOfLines={1}>
                     {homeUiCopy.brandTagline}
@@ -23791,6 +24482,7 @@ function isTrustedExternalUrl(url: string) {
                 issueContext={vedicEngineIssueContext}
                 chartBriefLang={chartBriefLang}
                 setChartBriefLang={setChartBriefLang}
+                languageId={languageId}
                 // "Ask the chart" is passed in as a prop (rather than
                 // rendered as a sibling below) so BirthChartSection can
                 // place it immediately next to the visual chart map instead
@@ -24683,6 +25375,7 @@ function isTrustedExternalUrl(url: string) {
                 supportLocality={supportLocality}
                 onSignOut={signOut}
                 isWide={isWide}
+                languageId={languageId}
               />
             </View>
           )}
@@ -24991,15 +25684,15 @@ function isTrustedExternalUrl(url: string) {
                 <Text style={{ color: "#3A577D", fontSize: 17, fontWeight: "700", flex: 1 }}>Privacy Policy</Text>
               </View>
               <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
-                <Text style={{ color: "#0A6F66", fontSize: 12, letterSpacing: 1.2, fontWeight: "700", marginBottom: 4 }}>AETHON BEACON — PRIVACY POLICY</Text>
+                <Text style={{ color: "#0A6F66", fontSize: 12, letterSpacing: 1.2, fontWeight: "700", marginBottom: 4 }}>NAYIQ — PRIVACY POLICY</Text>
                 <Text style={{ color: "#1F2937", fontSize: 12, marginBottom: 20 }}>Last updated: June 2026</Text>
 
                 {[
-                  { heading: "1. Data we collect", body: "Aethon Beacon is local-first. Mood check-ins, journal entries, birth chart details, trusted contacts, SOS configuration, and notification preferences are stored on your device only. No data is transmitted to any server unless you explicitly trigger an export." },
+                  { heading: "1. Data we collect", body: "NAYIQ is local-first. Mood check-ins, journal entries, birth chart details, trusted contacts, SOS configuration, and notification preferences are stored on your device only. No data is transmitted to any server unless you explicitly trigger an export." },
                   { heading: "2. Data we do not collect", body: "We do not collect analytics, advertising identifiers, crash telemetry, IP addresses, or location data. The app does not request location permission. No third-party SDKs for advertising or tracking are included." },
-                  { heading: "3. Notifications", body: "If you grant notification permission, Aethon Beacon schedules local on-device reminders. These are processed entirely on your device. No notification content leaves your device." },
+                  { heading: "3. Notifications", body: "If you grant notification permission, NAYIQ schedules local on-device reminders. These are processed entirely on your device. No notification content leaves your device." },
                   { heading: "4. Cloud backup (future)", body: "Cloud sync and encrypted backup are planned as opt-in features in a future version. When available, you will be asked for explicit consent before any data leaves your device. Until then, all data remains local." },
-                  { heading: "5. Children", body: "Aethon Beacon is intended for users 17 and older. We do not knowingly collect data from users under 17. If you believe a minor has used the app, please contact us." },
+                  { heading: "5. Children", body: "NAYIQ is intended for users 17 and older. We do not knowingly collect data from users under 17. If you believe a minor has used the app, please contact us." },
                   { heading: "6. Your rights", body: "You can delete all app data at any time using 'Clear local entries' in Settings → Data & Privacy. Uninstalling the app removes all data from your device." },
                   { heading: "7. Contact", body: "For privacy questions or data requests, email: trikuta9081@gmail.com" },
                 ].map(({ heading, body }) => (
@@ -25011,7 +25704,7 @@ function isTrustedExternalUrl(url: string) {
 
                 <View style={{ borderTopWidth: 1, borderTopColor: "#E1EEEC", paddingTop: 20, marginTop: 4 }}>
                   <Text style={{ color: "#1F2937", fontSize: 12, textAlign: "center" }}>
-                    Aethon Beacon respects your privacy.{"\n"}Your wellness data belongs to you.
+                    NAYIQ respects your privacy.{"\n"}Your wellness data belongs to you.
                   </Text>
                 </View>
               </ScrollView>
@@ -25065,6 +25758,7 @@ function isTrustedExternalUrl(url: string) {
         <CrisisSupportModal
           visible={crisisSupportVisible}
           onClose={() => setCrisisSupportVisible(false)}
+          languageId={languageId}
         />
 
         {/* ── Exit / Visit Report Modal ── */}
@@ -25074,14 +25768,14 @@ function isTrustedExternalUrl(url: string) {
           onClose={() => setShowExitReport(false)}
           onShare={(report) => {
             const text =
-              `📋 Aethon Beacon — Today's Visit Report\n` +
+              `📋 NAYIQ — Today's Visit Report\n` +
               `${report.generatedAt}\n\n` +
               `${report.overallSummary}\n\n` +
               (report.issuesDetected.length > 0 ? `🔍 Issues Identified:\n${report.issuesDetected.map(i => `• ${i}`).join("\n")}\n\n` : "") +
               (report.guidanceTopics.length > 0 ? `🧭 Guidance Provided:\n${report.guidanceTopics.map(g => `• ${g}`).join("\n")}\n\n` : "") +
               `💪 Strengths:\n${report.strengths.map(s => `• ${s}`).join("\n")}\n\n` +
               `🌅 Tomorrow's Focus:\n${report.tomorrowRecommendations.map((r, i) => `${i + 1}. ${r}`).join("\n")}\n\n` +
-              `— Generated by Aethon Beacon`;
+              `— Generated by NAYIQ`;
             void Share.share({ message: text, title: "Today's Visit Report" });
           }}
         />
@@ -25219,6 +25913,77 @@ function TodaySection({
     tamil: "தனிப்பட்ட தொடக்கம், பின்னர் அமைதி, ஒரு அடுத்த படி, தேவையானபோது பார்வை.",
     urdu: "نجی آغاز، پھر سکون، پھر ایک اگلا قدم، ضرورت ہو تو زاویہ۔"
   });
+  const homePrimaryRouteBadge = pickLocalizedText(languageId, {
+    english: "Primary route",
+    hindi: "मुख्य मार्ग",
+    telugu: "ప్రధాన మార్గం",
+    tamil: "முதன்மை பாதை",
+    urdu: "بنیادی راستہ"
+  });
+  const homeSupportCardA11yLabel = (title: string) =>
+    pickLocalizedText(languageId, {
+      english: `Open ${title}`,
+      hindi: `खोलें ${title}`,
+      telugu: `తెరవండి ${title}`,
+      tamil: `திறக்கவும் ${title}`,
+      urdu: `کھولیں ${title}`
+    });
+  const nayiqLogoA11yLabel = pickLocalizedText(languageId, {
+    english: "NAYIQ logo",
+    hindi: "NAYIQ लोगो",
+    telugu: "NAYIQ లోగో",
+    tamil: "NAYIQ லோகோ",
+    urdu: "NAYIQ لوگو"
+  });
+  const splashTagline = pickLocalizedText(languageId, {
+    english: "Your clarity. Your next step.",
+    hindi: "आपकी स्पष्टता। आपका अगला कदम।",
+    telugu: "మీ స్పష్టత. మీ తదుపరి అడుగు.",
+    tamil: "உங்கள் தெளிவு. உங்கள் அடுத்த படி.",
+    urdu: "آپ کی وضاحت۔ آپ کا اگلا قدم۔"
+  });
+  const homeSupportCards = [
+    {
+      id: "ask",
+      icon: "sparkles" as keyof typeof Ionicons.glyphMap,
+      title: uiCopy.homeSupportCounsellingTitle,
+      body: uiCopy.homeSupportCounsellingBody,
+      cta: uiCopy.homeSupportCounsellingCta,
+      tab: "aihelp" as TabId,
+      accent: "#0B6F66",
+      featured: true
+    },
+    {
+      id: "community",
+      icon: "chatbubbles" as keyof typeof Ionicons.glyphMap,
+      title: uiCopy.homeSupportCommunityTitle,
+      body: uiCopy.homeSupportCommunityBody,
+      cta: uiCopy.homeSupportCommunityCta,
+      tab: "community" as TabId,
+      accent: "#2563EB",
+      featured: false
+    },
+    {
+      id: "calm",
+      icon: "flower" as keyof typeof Ionicons.glyphMap,
+      title: uiCopy.homeSupportCalmTitle,
+      body: uiCopy.homeSupportCalmBody,
+      cta: uiCopy.homeSupportCalmCta,
+      tab: "tones" as TabId,
+      accent: "#7C3AED",
+      featured: false
+    },
+    {
+      id: "chart",
+      icon: "planet" as keyof typeof Ionicons.glyphMap,
+      title: uiCopy.homeSupportVedicTitle,
+      body: uiCopy.homeSupportVedicBody,
+      cta: uiCopy.homeSupportVedicCta,
+      tab: "vedic" as TabId,
+      accent: "#A14A08",
+      featured: false
+    }
+  ];
   return (
     <View style={styles.grid}>
       <View style={styles.panel}>
@@ -25294,69 +26059,67 @@ function TodaySection({
           <Text style={{ color: "#334155", fontSize: compact ? (isTinyPhone ? 12 : 13) : 14, lineHeight: compact ? (isTinyPhone ? 17 : 19) : 21, fontWeight: "700", marginBottom: compact ? (isTinyPhone ? 8 : 10) : 14 }}>
             {uiCopy.homeSupportLead}
           </Text>
-          <View style={{ flexDirection: compact ? "column" : "row", flexWrap: "wrap", gap: isTinyPhone ? 8 : 10 }}>
-            {[
-              {
-                id: "ask",
-                icon: "sparkles" as keyof typeof Ionicons.glyphMap,
-                title: uiCopy.homeSupportCounsellingTitle,
-                body: uiCopy.homeSupportCounsellingBody,
-                cta: uiCopy.homeSupportCounsellingCta,
-                tab: "aihelp" as TabId,
-                accent: "#0B6F66"
-              },
-              {
-                id: "community",
-                icon: "chatbubbles" as keyof typeof Ionicons.glyphMap,
-                title: uiCopy.homeSupportCommunityTitle,
-                body: uiCopy.homeSupportCommunityBody,
-                cta: uiCopy.homeSupportCommunityCta,
-                tab: "community" as TabId,
-                accent: "#2563EB"
-              },
-            ].map((item) => (
+          <View style={{ flexDirection: "column", gap: isTinyPhone ? 8 : 10 }}>
+            {homeSupportCards.map((item) => (
               <Pressable
                 key={item.id}
                 accessibilityRole="button"
-                accessibilityLabel={`Open ${item.title}`}
+                accessibilityLabel={homeSupportCardA11yLabel(item.title)}
                 onPress={() => onOpenTab(item.tab)}
                 style={({ pressed }) => [
                   {
-                    flexBasis: compact ? undefined : "48%",
-                    flexGrow: 1,
-                    minHeight: item.id === "ask" ? (compact ? (isTinyPhone ? 118 : 124) : 132) : (compact ? (isTinyPhone ? 96 : 104) : 116),
-                    borderRadius: 20,
-                    borderWidth: item.id === "ask" ? 2 : 1,
-                    borderColor: item.id === "ask" ? "#0B6F66" : "rgba(15,61,94,0.12)",
-                    backgroundColor: item.id === "ask" ? "#EAF8F5" : "#FFFFFF",
-                    padding: item.id === "ask" ? (compact ? (isTinyPhone ? 12 : 14) : 16) : (compact ? (isTinyPhone ? 10 : 12) : 14),
+                    flexBasis: "100%",
+                    flexGrow: 0,
+                    minHeight: item.featured
+                      ? (compact ? (isTinyPhone ? 164 : 172) : 182)
+                      : (compact ? (isTinyPhone ? 98 : 106) : 116),
+                    borderRadius: item.featured ? 24 : 20,
+                    borderWidth: item.featured ? 2 : 1,
+                    borderColor: item.featured ? "#0B6F66" : "rgba(15,61,94,0.12)",
+                    backgroundColor: item.featured ? "#EAF8F5" : "#FFFFFF",
+                    padding: item.featured
+                      ? (compact ? (isTinyPhone ? 14 : 16) : 18)
+                      : (compact ? (isTinyPhone ? 10 : 12) : 14),
                     overflow: "hidden",
-                    shadowColor: item.id === "ask" ? "#0B6F66" : "transparent",
-                    shadowOpacity: item.id === "ask" ? 0.12 : 0,
-                    shadowRadius: item.id === "ask" ? 16 : 0,
+                    shadowColor: item.featured ? "#0B6F66" : "transparent",
+                    shadowOpacity: item.featured ? 0.12 : 0,
+                    shadowRadius: item.featured ? 16 : 0,
                     shadowOffset: { width: 0, height: 8 },
-                    elevation: item.id === "ask" ? 4 : 0
+                    elevation: item.featured ? 4 : 0
                   },
                   pressed && styles.pressed
                 ]}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: isTinyPhone ? 8 : 10, marginBottom: compact ? (isTinyPhone ? 6 : 8) : 10 }}>
-                  <View style={{ width: isTinyPhone ? 32 : 36, height: isTinyPhone ? 32 : 36, borderRadius: 12, backgroundColor: item.accent + "18", alignItems: "center", justifyContent: "center" }}>
-                    <Ionicons name={item.icon} size={isTinyPhone ? 18 : 19} color={item.accent} />
-                  </View>
-                  <View style={{ flex: 1, minWidth: 0 }}>
-                    <Text style={{ color: "#0D1F22", fontSize: item.id === "ask" ? (isTinyPhone ? 17 : 18) : (isTinyPhone ? 15 : 16), lineHeight: item.id === "ask" ? (isTinyPhone ? 21 : 23) : (isTinyPhone ? 18 : 20), fontWeight: "900" }} numberOfLines={1}>
+                <View style={{
+                  flexDirection: item.featured && !compact ? "row" : "row",
+                  alignItems: item.featured ? "flex-start" : "center",
+                  justifyContent: "space-between",
+                  gap: isTinyPhone ? 10 : 12,
+                  marginBottom: item.featured ? (isTinyPhone ? 10 : 12) : (compact ? (isTinyPhone ? 6 : 8) : 10)
+                }}>
+                  <View style={{ flex: 1, minWidth: 0, gap: item.featured ? (isTinyPhone ? 4 : 5) : 0 }}>
+                    {item.featured && (
+                      <View style={{ alignSelf: "flex-start", borderRadius: 999, backgroundColor: "#0B6F66", paddingHorizontal: isTinyPhone ? 10 : 11, paddingVertical: isTinyPhone ? 4 : 5, marginBottom: 2 }}>
+                        <Text style={{ color: "#F8FBFA", fontSize: isTinyPhone ? 10 : 11, lineHeight: isTinyPhone ? 12 : 14, fontWeight: "800", letterSpacing: 0.6 }}>
+                          {homePrimaryRouteBadge}
+                        </Text>
+                      </View>
+                    )}
+                    <Text style={{ color: "#0D1F22", fontSize: item.featured ? (isTinyPhone ? 18 : 19) : (isTinyPhone ? 15 : 16), lineHeight: item.featured ? (isTinyPhone ? 22 : 24) : (isTinyPhone ? 18 : 20), fontWeight: "900" }} numberOfLines={1}>
                       {item.title}
                     </Text>
-                    <Text style={{ color: item.accent, fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 14 : 16, fontWeight: "700", marginTop: 2 }}>{item.cta}</Text>
+                    <Text style={{ color: item.accent, fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 14 : 16, fontWeight: "700" }}>{item.cta}</Text>
+                  </View>
+                  <View style={{ width: item.featured ? (isTinyPhone ? 44 : 52) : (isTinyPhone ? 32 : 36), height: item.featured ? (isTinyPhone ? 44 : 52) : (isTinyPhone ? 32 : 36), borderRadius: item.featured ? 16 : 12, backgroundColor: item.accent + "18", alignItems: "center", justifyContent: "center", marginTop: item.featured ? (isTinyPhone ? 0 : 2) : 0 }}>
+                    <Ionicons name={item.icon} size={item.featured ? (isTinyPhone ? 21 : 23) : (isTinyPhone ? 18 : 19)} color={item.accent} />
                   </View>
                 </View>
-                <Text style={{ color: "#334155", fontSize: item.id === "ask" ? (isTinyPhone ? 13 : 14) : (isTinyPhone ? 12 : 13), lineHeight: item.id === "ask" ? (isTinyPhone ? 18 : 21) : (isTinyPhone ? 16 : 19), fontWeight: "700" }} numberOfLines={compact ? (item.id === "ask" ? (isTinyPhone ? 2 : 2) : 1) : (item.id === "ask" ? 3 : 2)}>
+                <Text style={{ color: "#334155", fontSize: item.featured ? (isTinyPhone ? 13 : 14) : (isTinyPhone ? 12 : 13), lineHeight: item.featured ? (isTinyPhone ? 18 : 21) : (isTinyPhone ? 16 : 19), fontWeight: "700" }} numberOfLines={item.featured ? 3 : (compact ? 1 : 2)}>
                   {item.body}
                 </Text>
-                <View style={{ marginTop: compact ? (isTinyPhone ? 8 : 10) : 12, alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: isTinyPhone ? 10 : 11, paddingVertical: isTinyPhone ? 6 : 7 }}>
+                <View style={{ marginTop: item.featured ? (isTinyPhone ? 10 : 12) : (compact ? (isTinyPhone ? 8 : 10) : 12), alignSelf: "flex-start", borderRadius: 999, backgroundColor: item.accent + "14", paddingHorizontal: isTinyPhone ? 10 : 11, paddingVertical: isTinyPhone ? 6 : 7 }}>
                     <Text style={{ color: item.accent, fontSize: isTinyPhone ? 11 : 12, lineHeight: isTinyPhone ? 14 : 16, fontWeight: "700" }}>
-                      {item.id === "ask" ? uiCopy.homeSupportCardOpenCounselling : uiCopy.homeSupportCardContinue}
+                      {item.featured ? uiCopy.homeSupportCardOpenCounselling : uiCopy.homeSupportCardContinue}
                     </Text>
                   </View>
                 </Pressable>
@@ -25412,8 +26175,8 @@ function TodaySection({
           consumer app closes its home screen. ── */}
       <View style={{ alignItems: "center", paddingTop: 26, paddingBottom: 34, gap: 6 }}>
         <View style={{ width: 42, height: 3, borderRadius: 2, backgroundColor: "rgba(15,61,94,0.12)", marginBottom: 10 }} />
-        <Image source={require("./assets/aethon-beacon-icon-vibrant.png")} style={{ width: 36, height: 36, borderRadius: 10 }} accessibilityLabel="Aethon Beacon" />
-        <Text style={{ color: "#0E7C74", fontSize: 14, fontWeight: "800", letterSpacing: 0.2 }}>Aethon Beacon</Text>
+        <Image source={require("./assets/aethon-beacon-icon-vibrant.png")} style={{ width: 36, height: 36, borderRadius: 10 }} accessibilityLabel="NAYIQ" />
+        <Text style={{ color: "#0E7C74", fontSize: 14, fontWeight: "800", letterSpacing: 0.2 }}>NAYIQ</Text>
         <Text style={{ color: "#57646F", fontSize: 12, textAlign: "center" }}>{uiCopy.footerReassurance}</Text>
         <Text style={{ color: "#5C646A", fontSize: 12, marginTop: 4 }}>{uiCopy.footerMadeWithCare} · v1.0.4</Text>
       </View>
@@ -26292,7 +27055,7 @@ function FocusSection({
                         accessibilityLabel={`${l("Share this wisdom", { hindi: "इस ज्ञान को साझा करें", telugu: "ఈ జ్ఞానాన్ని పంచుకోండి", tamil: "இந்த அறிவைப் பகிரவும்", urdu: "اس حکمت کو شیئر کریں" })}: ${item.theme}`}
                         onPress={() => {
                           void Share.share({
-                            message: `"${item.teaching}"\n\n— ${item.practice}\n\nShared from Aethon Beacon`,
+                            message: `"${item.teaching}"\n\n— ${item.practice}\n\nShared from NAYIQ`,
                             title: `Wisdom: ${item.theme}`
                           });
                         }}
@@ -28589,11 +29352,26 @@ function GuidedSupportSection({
 // an accessibilityHint ("This cannot be undone") that a sighted user would
 // never see. Also gives a light haptic on confirm so the action feels
 // deliberate, consistent with confirmDestructive's other tactile cues.
-function confirmDestructive(title: string, message: string, onConfirm: () => void) {
+function confirmDestructive(title: string, message: string, onConfirm: () => void, languageId: LanguageId = "english") {
   Alert.alert(title, message, [
-    { text: "Cancel", style: "cancel" },
     {
-      text: "Clear",
+      text: pickLocalizedText(languageId, {
+        english: "Cancel",
+        hindi: "रद्द करें",
+        telugu: "రద్దు చేయండి",
+        tamil: "ரத்து",
+        urdu: "منسوخ"
+      }),
+      style: "cancel"
+    },
+    {
+      text: pickLocalizedText(languageId, {
+        english: "Clear",
+        hindi: "साफ़ करें",
+        telugu: "క్లియర్ చేయండి",
+        tamil: "அழி",
+        urdu: "صاف کریں"
+      }),
       style: "destructive",
       onPress: () => {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -29753,7 +30531,8 @@ function CommunitySection({
               onPress={() => confirmDestructive(
                 l("Reset chat thread?", { hindi: "चैट थ्रेड रीसेट करें?", telugu: "చాట్ థ్రెడ్‌ను రీసెట్ చేయాలా?", tamil: "அரட்டை தொடரை மீட்டமைக்கலாமா?", urdu: "چیٹ دھاگہ ری سیٹ کریں؟" }),
                 l("This clears your local chat conversation. This cannot be undone.", { hindi: "आपकी स्थानीय चैट बातचीत साफ़ करता है। इसे वापस नहीं लाया जा सकता।", telugu: "మీ స్థానిక చాట్ సంభాషణను క్లియర్ చేస్తుంది. ఇది తిరిగి మార్చలేరు.", tamil: "உங்கள் உள்ளக அரட்டை உரையாடலை அழிக்கிறது. இதைத் திரும்பப் பெற முடியாது.", urdu: "آپ کی مقامی چیٹ گفتگو صاف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔" }),
-                onClearCommunityChat
+                onClearCommunityChat,
+                languageId
               )}
               disabled={interactionLocked}
               style={({ pressed }) => [
@@ -30101,7 +30880,8 @@ function CommunitySection({
                         tamil: "இது இந்த சாதனத்தில் இந்த அறையின் ஒவ்வொரு செய்தியையும் நீக்குகிறது. இதை மீட்டெடுக்க முடியாது.",
                         urdu: "یہ اس ڈیوائس سے اس کمرے کا ہر پیغام حذف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔"
                       }),
-                      () => onClearPrivateSpaceRoom(selectedPrivateRoom.id)
+                      () => onClearPrivateSpaceRoom(selectedPrivateRoom.id),
+                      languageId
                     )}
                     style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
                   >
@@ -30287,7 +31067,8 @@ function CommunitySection({
             onPress={() => confirmDestructive(
               l("Reset feed?", { hindi: "फ़ीड रीसेट करें?", telugu: "ఫీడ్‌ను రీసెట్ చేయాలా?", tamil: "feed-ஐ மீட்டமைக்கலாமா?", urdu: "فیڈ ری سیٹ کریں؟" }),
               l("This clears the community feed on this device. This cannot be undone.", { hindi: "इस डिवाइस पर समुदाय फ़ीड साफ़ करता है। इसे वापस नहीं लाया जा सकता।", telugu: "ఈ పరికరంలో కమ్యూనిటీ ఫీడ్‌ను క్లియర్ చేస్తుంది. ఇది తిరిగి మార్చలేరు.", tamil: "இந்த சாதனத்தில் சமூக feed-ஐ அழிக்கிறது. இதைத் திரும்பப் பெற முடியாது.", urdu: "اس ڈیوائس پر برادری فیڈ صاف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔" }),
-              onClearCommunityMessages
+              onClearCommunityMessages,
+              languageId
             )}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
@@ -30551,7 +31332,8 @@ function CommunitySection({
                 tamil: "இது சேமித்த ஒவ்வொரு feed post மற்றும் chat message-ஐயும் நீக்குகிறது. இதை மீட்டெடுக்க முடியாது.",
                 urdu: "یہ ہر محفوظ شدہ فیڈ پوسٹ اور چیٹ پیغام کو حذف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔"
               }),
-              onClearSavedCommunityItems
+              onClearSavedCommunityItems,
+              languageId
             )}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
@@ -33058,11 +33840,21 @@ function RedressSection({
   const deleteActiveCase = () => {
     if (!activeCase) return;
     Alert.alert(
-      "Delete this case?",
-      "This removes the saved reference number, office, follow-up date, and notes for this complaint. It cannot be undone.",
+      l("Delete this case?", {
+        hindi: "क्या यह केस हटाएँ?",
+        telugu: "ఈ కేసును తొలగించాలా?",
+        tamil: "இந்த வழக்கை நீக்க வேண்டுமா?",
+        urdu: "کیا یہ کیس حذف کریں؟"
+      }),
+      l("This removes the saved reference number, office, follow-up date, and notes for this complaint. It cannot be undone.", {
+        hindi: "यह इस शिकायत के लिए सहेजा गया संदर्भ नंबर, कार्यालय, फॉलो-अप तारीख, और नोट्स हटाता है। इसे वापस नहीं लाया जा सकता।",
+        telugu: "ఇది ఈ ఫిర్యాదుకు సంబంధించిన సేవ్ చేసిన రిఫరెన్స్ నంబర్, కార్యాలయం, ఫాలో-అప్ తేదీ, మరియు గమనికలను తొలగిస్తుంది. ఇది తిరిగి రాదు.",
+        tamil: "இது இந்த புகாருக்கான சேமித்த குறிப்பு எண், அலுவலகம், பின்தொடர்பு தேதி, மற்றும் குறிப்புகளை நீக்குகிறது. இதை மீட்டெடுக்க முடியாது.",
+        urdu: "یہ اس شکایت کے لیے محفوظ شدہ حوالہ نمبر، دفتر، فالو اپ تاریخ، اور نوٹس کو حذف کرتا ہے۔ اسے واپس نہیں لایا جا سکتا۔"
+      }),
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "Delete", style: "destructive", onPress: () => { void Haptics.selectionAsync(); setRedressCases((prev) => prev.filter((c) => c.id !== activeCase.id)); } },
+        { text: l("Cancel", { hindi: "रद्द करें", telugu: "రద్దు చేయండి", tamil: "ரத்து", urdu: "منسوخ" }), style: "cancel" },
+        { text: l("Delete", { hindi: "हटाएँ", telugu: "తొలగించండి", tamil: "நீக்கு", urdu: "حذف کریں" }), style: "destructive", onPress: () => { void Haptics.selectionAsync(); setRedressCases((prev) => prev.filter((c) => c.id !== activeCase.id)); } },
       ]
     );
   };
@@ -33923,7 +34715,20 @@ function RedressSection({
                       if (Platform.OS === "web" && typeof navigator !== "undefined" && (navigator as any).clipboard) {
                         try {
                           await (navigator as any).clipboard.writeText(draftTemplate ?? "");
-                          Alert.alert("Copied", "Complaint template copied. Paste it into email or a document.");
+                          Alert.alert(
+                            l("Copied", {
+                              hindi: "कॉपी किया गया",
+                              telugu: "కాపీ అయింది",
+                              tamil: "நகலெடுக்கப்பட்டது",
+                              urdu: "کاپی ہو گیا"
+                            }),
+                            l("Complaint template copied. Paste it into email or a document.", {
+                              hindi: "शिकायत टेम्पलेट कॉपी हो गया। इसे ईमेल या दस्तावेज़ में चिपकाएँ।",
+                              telugu: "ఫిర్యాదు టెంప్లేట్ కాపీ చేయబడింది. దాన్ని ఈమెయిల్ లేదా డాక్యుమెంట్‌లో పేస్ట్ చేయండి.",
+                              tamil: "புகார் மாதிரி நகலெடுக்கப்பட்டது. அதை மின்னஞ்சல் அல்லது ஆவணத்தில் ஒட்டவும்.",
+                              urdu: "شکایت ٹیمپلیٹ کاپی ہو گیا۔ اسے ای میل یا دستاویز میں پیسٹ کریں۔"
+                            })
+                          );
                           return;
                         } catch { /* fall through */ }
                       }
@@ -33941,7 +34746,20 @@ function RedressSection({
                       const body = encodeURIComponent(draftTemplate ?? "");
                       const mailto = `mailto:?subject=${subject}&body=${body}`;
                       void Linking.openURL(mailto).catch(() =>
-                        Alert.alert("Email", "Could not open your mail app. Use Copy instead and paste into email.")
+                        Alert.alert(
+                          l("Email", {
+                            hindi: "ईमेल",
+                            telugu: "ఈమెయిల్",
+                            tamil: "மின்னஞ்சல்",
+                            urdu: "ای میل"
+                          }),
+                          l("Could not open your mail app. Use Copy instead and paste into email.", {
+                            hindi: "आपका mail app नहीं खुल सका। इसके बजाय Copy का उपयोग करें और ईमेल में चिपकाएँ।",
+                            telugu: "మీ mail app తెరవలేకపోయింది. బదులుగా Copy ఉపయోగించి ఈమెయిల్‌లో పేస్ట్ చేయండి.",
+                            tamil: "உங்கள் mail app-ஐ திறக்க முடியவில்லை. பதிலாக Copy-ஐ பயன்படுத்தி மின்னஞ்சலில் ஒட்டவும்.",
+                            urdu: "آپ کا میل ایپ نہیں کھل سکا۔ اس کے بجائے Copy استعمال کریں اور ای میل میں پیسٹ کریں۔"
+                          })
+                        )
                       );
                     }}
                     style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(52,211,153,0.15)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(52,211,153,0.35)" }]}
@@ -33960,7 +34778,20 @@ function RedressSection({
                     accessibilityLabel="Save complaint letter as PDF"
                     onPress={() => {
                       void exportComplaintLetterPdf(draftTemplate ?? "", selectedRedressRoute.label).catch(() =>
-                        Alert.alert("Save as PDF", "Could not open the print dialog. You can use Share or Copy instead.")
+                        Alert.alert(
+                          l("Save as PDF", {
+                            hindi: "PDF के रूप में सहेजें",
+                            telugu: "PDF గా సేవ్ చేయండి",
+                            tamil: "PDF ஆக சேமிக்கவும்",
+                            urdu: "PDF کے طور پر محفوظ کریں"
+                          }),
+                          l("Could not open the print dialog. You can use Share or Copy instead.", {
+                            hindi: "प्रिंट डायलॉग नहीं खुल सका। आप इसके बजाय Share या Copy का उपयोग कर सकते हैं।",
+                            telugu: "ప్రింట్ డైలాగ్ తెరవలేకపోయింది. బదులుగా Share లేదా Copy ఉపయోగించండి.",
+                            tamil: "அச்சு உரையாடலைத் திறக்க முடியவில்லை. பதிலாக Share அல்லது Copy பயன்படுத்தலாம்.",
+                            urdu: "پرنٹ ڈائیلاگ نہیں کھل سکا۔ آپ اس کے بجائے Share یا Copy استعمال کر سکتے ہیں۔"
+                          })
+                        )
                       );
                     }}
                     style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(220,38,38,0.10)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(220,38,38,0.3)" }]}
@@ -34012,15 +34843,30 @@ function RedressSection({
           {!activeCase ? (
             <>
               <Text style={{ color: "#446573", fontSize: 13, lineHeight: 18, marginTop: 6, marginBottom: 10 }}>
-                Track this complaint in one place — your reference number, who you filed it with, and when to follow up. Saved on this device only.
+                {l("Track this complaint in one place — your reference number, who you filed it with, and when to follow up. Saved on this device only.", {
+                  hindi: "इस शिकायत को एक ही जगह पर ट्रैक करें — आपका संदर्भ नंबर, आपने इसे किसके पास दायर किया, और कब फ़ॉलो-अप करना है। केवल इस डिवाइस पर सहेजा गया।",
+                  telugu: "ఈ ఫిర్యాదును ఒకే చోట ట్రాక్ చేయండి — మీ రిఫరెన్స్ నంబర్, మీరు దాన్ని ఎవరికి దాఖలు చేసారో, మరియు ఎప్పుడు ఫాలో అప్ చేయాలో. ఈ పరికరంలో మాత్రమే సేవ్ అవుతుంది.",
+                  tamil: "இந்த புகாரை ஒரே இடத்தில் கண்காணிக்கவும் — உங்கள் குறிப்பு எண், நீங்கள் யாரிடம் தாக்கல் செய்தீர்கள், எப்போது தொடர்ச்சி பார்க்க வேண்டும் என்பவை. இந்த சாதனத்தில் மட்டும் சேமிக்கப்படும்.",
+                  urdu: "اس شکایت کو ایک ہی جگہ ٹریک کریں — آپ کا حوالہ نمبر، آپ نے اسے کس کے پاس دائر کیا، اور کب فالو اَپ کرنا ہے۔ صرف اس ڈیوائس پر محفوظ۔"
+                })}
               </Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Start tracking this complaint"
+                accessibilityLabel={l("Start tracking this complaint", {
+                  hindi: "इस शिकायत को ट्रैक करना शुरू करें",
+                  telugu: "ఈ ఫిర్యాదును ట్రాక్ చేయడం ప్రారంభించండి",
+                  tamil: "இந்த புகாரை கண்காணிக்கத் தொடங்குங்கள்",
+                  urdu: "اس شکایت کو ٹریک کرنا شروع کریں"
+                })}
                 onPress={startCase}
                 style={({ pressed }) => ({ backgroundColor: pressed ? "#0E4A46" : "#0E6F69", borderRadius: 10, paddingVertical: 12, alignItems: "center" })}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>Start tracking this complaint</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>{l("Start tracking this complaint", {
+                  hindi: "इस शिकायत को ट्रैक करना शुरू करें",
+                  telugu: "ఈ ఫిర్యాదును ట్రాక్ చేయడం ప్రారంభించండి",
+                  tamil: "இந்த புகாரை கண்காணிக்கத் தொடங்குங்கள்",
+                  urdu: "اس شکایت کو ٹریک کرنا شروع کریں"
+                })}</Text>
               </Pressable>
             </>
           ) : (
@@ -34030,27 +34876,47 @@ function RedressSection({
                 {activeCase.filedDateIso ? ` · started ${new Date(activeCase.filedDateIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })}` : ""}
               </Text>
 
-              <Text style={caseFieldLabel}>Reference / acknowledgement number</Text>
+              <Text style={caseFieldLabel}>{l("Reference / acknowledgement number", {
+                hindi: "संदर्भ / प्राप्ति संख्या",
+                telugu: "సూచన / రసీదు సంఖ్య",
+                tamil: "குறிப்பு / ஒப்புதல் எண்",
+                urdu: "حوالہ / وصولی نمبر"
+              })}</Text>
               <TextInput
                 value={activeCase.referenceNumber}
                 onChangeText={(t) => updateActiveCase({ referenceNumber: t })}
-                placeholder="e.g. CPGRAMS docket / FIR / ticket no."
+                placeholder={l("e.g. CPGRAMS docket / FIR / ticket no.", {
+                  hindi: "जैसे CPGRAMS डॉकेट / FIR / टिकट संख्या",
+                  telugu: "ఉదా. CPGRAMS డాకెట్ / FIR / టికెట్ నం.",
+                  tamil: "எ.கா. CPGRAMS docket / FIR / ticket no.",
+                  urdu: "مثال: CPGRAMS docket / FIR / ticket no."
+                })}
                 placeholderTextColor="#8AA0AE"
                 style={caseInputStyle}
                 accessibilityLabel="Reference or acknowledgement number"
               />
 
-              <Text style={caseFieldLabel}>Filed with (office / authority)</Text>
+              <Text style={caseFieldLabel}>{l("Filed with (office / authority)", {
+                hindi: "किसके पास दायर किया (कार्यालय / प्राधिकरण)",
+                telugu: "ఎవరి వద్ద దాఖలు చేశారు (కార్యాలయం / అధికారి)",
+                tamil: "எவரிடம் தாக்கல் செய்யப்பட்டது (அலுவலகம் / அதிகாரம்)",
+                urdu: "کس کے پاس دائر کیا (دفتر / اتھارٹی)"
+              })}</Text>
               <TextInput
                 value={activeCase.office}
                 onChangeText={(t) => updateActiveCase({ office: t })}
-                placeholder="e.g. SGRC, ICC, District Consumer Commission"
+                placeholder={l("e.g. SGRC, ICC, District Consumer Commission", {
+                  hindi: "जैसे SGRC, ICC, जिला उपभोक्ता आयोग",
+                  telugu: "ఉదా. SGRC, ICC, జిల్లా వినియోగదారుల కమిషన్",
+                  tamil: "எ.கா. SGRC, ICC, மாவட்ட நுகர்வோர் ஆணையம்",
+                  urdu: "مثال: SGRC، ICC، ضلعی صارفین کمیشن"
+                })}
                 placeholderTextColor="#8AA0AE"
                 style={caseInputStyle}
                 accessibilityLabel="Office or authority filed with"
               />
 
-              <Text style={caseFieldLabel}>Status</Text>
+              <Text style={caseFieldLabel}>{l("Status", { hindi: "स्थिति", telugu: "స్థితి", tamil: "நிலை", urdu: "حالت" })}</Text>
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
                 {CASE_STATUS_OPTIONS.map((opt) => {
                   const on = activeCase.status === opt.id;
@@ -34070,29 +34936,49 @@ function RedressSection({
 
               {activeCase.status !== "resolved" && (
                 <>
-                  <Text style={caseFieldLabel}>Next follow-up</Text>
+                  <Text style={caseFieldLabel}>{l("Next follow-up", { hindi: "अगला फ़ॉलो-अप", telugu: "తదుపరి ఫాలో-అప్", tamil: "அடுத்த தொடர்ச்சி", urdu: "اگلا فالو اَپ" })}</Text>
                   <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 4 }}>
                     <Text style={{ color: "#213A4A", fontSize: 13, fontWeight: "700" }}>
                       {activeCase.nextFollowUpIso ? new Date(activeCase.nextFollowUpIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" }) : "—"}
                     </Text>
-                    <Pressable accessibilityRole="button" accessibilityLabel="Move follow-up 7 days earlier" onPress={() => bumpFollowUp(-7)} hitSlop={8} style={{ borderRadius: 10, paddingHorizontal: 14, minHeight: 44, minWidth: 44, alignItems: "center", justifyContent: "center", backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
+                    <Pressable accessibilityRole="button" accessibilityLabel={l("Move follow-up 7 days earlier", {
+                      hindi: "फ़ॉलो-अप 7 दिन पहले करें",
+                      telugu: "ఫాలో-అప్‌ను 7 రోజులు ముందుకు తీసుకెళ్లండి",
+                      tamil: "தொடர்ச்சியை 7 நாட்கள் முன்னேற்றவும்",
+                      urdu: "فالو اَپ کو 7 دن پہلے کریں"
+                    })} onPress={() => bumpFollowUp(-7)} hitSlop={8} style={{ borderRadius: 10, paddingHorizontal: 14, minHeight: 44, minWidth: 44, alignItems: "center", justifyContent: "center", backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
                       <Text style={{ color: "#0B6E67", fontSize: 13, fontWeight: "800" }}>−7d</Text>
                     </Pressable>
-                    <Pressable accessibilityRole="button" accessibilityLabel="Move follow-up 7 days later" onPress={() => bumpFollowUp(7)} hitSlop={8} style={{ borderRadius: 10, paddingHorizontal: 14, minHeight: 44, minWidth: 44, alignItems: "center", justifyContent: "center", backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
+                    <Pressable accessibilityRole="button" accessibilityLabel={l("Move follow-up 7 days later", {
+                      hindi: "फ़ॉलो-अप 7 दिन बाद करें",
+                      telugu: "ఫాలో-అప్‌ను 7 రోజులు తర్వాతకు మార్చండి",
+                      tamil: "தொடர்ச்சியை 7 நாட்கள் பின்னோக்கவும்",
+                      urdu: "فالو اَپ کو 7 دن بعد کریں"
+                    })} onPress={() => bumpFollowUp(7)} hitSlop={8} style={{ borderRadius: 10, paddingHorizontal: 14, minHeight: 44, minWidth: 44, alignItems: "center", justifyContent: "center", backgroundColor: "#EAF3F1", borderWidth: 1, borderColor: "#CFE0DC" }}>
                       <Text style={{ color: "#0B6E67", fontSize: 13, fontWeight: "800" }}>+7d</Text>
                     </Pressable>
                   </View>
                   <Text style={{ color: "#506673", fontSize: 12, lineHeight: 16, marginTop: 6 }}>
-                    Open this tab near the follow-up date and you'll see how many days are left. The escalation flag above tells you when to push harder.
+                    {l("Open this tab near the follow-up date and you'll see how many days are left. The escalation flag above tells you when to push harder.", {
+                      hindi: "फ़ॉलो-अप की तारीख के पास यह टैब खोलें और आपको पता चलेगा कि कितने दिन बचे हैं। ऊपर का escalation flag बताता है कि कब और ज़ोर से आगे बढ़ना है।",
+                      telugu: "ఫాలో-అప్ తేదీ దగ్గర ఈ ట్యాబ్‌ను తెరవండి, అప్పుడు ఇంకా ఎన్ని రోజులు ఉన్నాయో తెలుస్తుంది. పై escalation flag ఎప్పుడు మరింతగా తీసుకెళ్లాలో చెబుతుంది.",
+                      tamil: "தொடர்ச்சி தேதிக்கு அருகில் இந்த tab-ஐத் திறந்தால், எத்தனை நாட்கள் மீதமுள்ளன என்பதைப் பார்க்கலாம். மேலே உள்ள escalation flag எப்போது அழுத்தமாக முன்னெடுக்க வேண்டும் என்பதைச் சொல்கிறது.",
+                      urdu: "فالو اَپ کی تاریخ کے قریب یہ ٹیب کھولیں اور آپ دیکھیں گے کہ کتنے دن باقی ہیں۔ اوپر والا escalation flag بتاتا ہے کہ کب زیادہ زور سے آگے بڑھنا ہے۔"
+                    })}
                   </Text>
                 </>
               )}
 
-              <Text style={caseFieldLabel}>Notes</Text>
+              <Text style={caseFieldLabel}>{l("Notes", { hindi: "नोट्स", telugu: "గమనికలు", tamil: "குறிப்புகள்", urdu: "نوٹس" })}</Text>
               <TextInput
                 value={activeCase.notes}
                 onChangeText={(t) => updateActiveCase({ notes: t })}
-                placeholder="Who you spoke to, what they said, next step…"
+                placeholder={l("Who you spoke to, what they said, next step…", {
+                  hindi: "आपने किससे बात की, उन्होंने क्या कहा, अगला कदम…",
+                  telugu: "మీరు ఎవరితో మాట్లాడారు, వారు ఏమన్నారు, తదుపరి దశ…",
+                  tamil: "நீங்கள் யாரிடம் பேசினீர்கள், அவர்கள் என்ன சொன்னார்கள், அடுத்த படி…",
+                  urdu: "آپ نے کس سے بات کی، انہوں نے کیا کہا، اگلا قدم…"
+                })}
                 placeholderTextColor="#8AA0AE"
                 style={{ ...caseInputStyle, minHeight: 64, textAlignVertical: "top" }}
                 multiline
@@ -34101,12 +34987,12 @@ function RedressSection({
 
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Delete this case"
+                accessibilityLabel={l("Delete this case", { hindi: "इस मामले को हटाएँ", telugu: "ఈ కేసును తొలగించండి", tamil: "இந்த வழக்கை நீக்கவும்", urdu: "اس کیس کو حذف کریں" })}
                 onPress={deleteActiveCase}
                 hitSlop={10}
                 style={({ pressed }) => ({ marginTop: 10, alignSelf: "flex-start", paddingVertical: 8, paddingHorizontal: 2, opacity: pressed ? 0.6 : 1 })}
               >
-                <Text style={{ color: "#B42318", fontSize: 12, fontWeight: "700" }}>Delete this case</Text>
+                <Text style={{ color: "#B42318", fontSize: 12, fontWeight: "700" }}>{l("Delete this case", { hindi: "इस मामले को हटाएँ", telugu: "ఈ కేసును తొలగించండి", tamil: "இந்த வழக்கை நீக்கவும்", urdu: "اس کیس کو حذف کریں" })}</Text>
               </Pressable>
             </>
           )}
@@ -35044,8 +35930,8 @@ function SettingsSection({
         title: t("Privacy policy", "गोपनीयता नीति"),
         status: t("Draft prepared", "ड्राफ्ट तैयार"),
         text: t(
-          "Aethon Beacon is local-first by default. Check-ins, journal entries, profile details, SOS settings, trusted contacts, verification status, and community safety state stay on this device unless the user exports them or a future sync model is enabled.",
-          "Aethon Beacon डिफ़ॉल्ट रूप से local-first है। चेक-इन, जर्नल प्रविष्टियाँ, प्रोफ़ाइल विवरण, SOS सेटिंग्स, भरोसेमंद संपर्क, सत्यापन स्थिति, और community safety state इसी डिवाइस पर रहते हैं जब तक उपयोगकर्ता उन्हें export न करे या future sync model सक्षम न हो।"
+          "NAYIQ is local-first by default. Check-ins, journal entries, profile details, SOS settings, trusted contacts, verification status, and community safety state stay on this device unless the user exports them or a future sync model is enabled.",
+          "NAYIQ डिफ़ॉल्ट रूप से local-first है। चेक-इन, जर्नल प्रविष्टियाँ, प्रोफ़ाइल विवरण, SOS सेटिंग्स, भरोसेमंद संपर्क, सत्यापन स्थिति, और community safety state इसी डिवाइस पर रहते हैं जब तक उपयोगकर्ता उन्हें export न करे या future sync model सक्षम न हो।"
         )
       };
     }
@@ -35232,7 +36118,7 @@ function SettingsSection({
         <Text style={{ fontSize: 28, marginRight: 14 }}>🎁</Text>
         <View style={{ flex: 1 }}>
           <Text style={{ color: "#04714F", fontSize: 13, fontWeight: "800", marginBottom: 3 }}>
-            {t("Aethon Beacon is free — no strings attached", "Aethon Beacon मुफ़्त है — कोई शर्त नहीं")}
+            {t("NAYIQ is free — no strings attached", "NAYIQ मुफ़्त है — कोई शर्त नहीं")}
           </Text>
           <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 17 }}>
             {t(
@@ -35295,8 +36181,8 @@ function SettingsSection({
         </Text>
         <Text style={styles.promptText}>
           {t(
-            "Aethon Beacon will not sell personal wellbeing data, target advertising from emotional or astrological profiles, or place emergency help behind a paywall.",
-            "Aethon Beacon निजी कल्याण डेटा नहीं बेचेगा, भावनात्मक या ज्योतिषीय प्रोफ़ाइल पर विज्ञापन लक्षित नहीं करेगा, और आपात सहायता को पेवॉल के पीछे नहीं रखेगा।"
+            "NAYIQ will not sell personal wellbeing data, target advertising from emotional or astrological profiles, or place emergency help behind a paywall.",
+            "NAYIQ निजी कल्याण डेटा नहीं बेचेगा, भावनात्मक या ज्योतिषीय प्रोफ़ाइल पर विज्ञापन लक्षित नहीं करेगा, और आपात सहायता को पेवॉल के पीछे नहीं रखेगा।"
           )}
         </Text>
         <Text style={{ color: "#405466", fontSize: 12, lineHeight: 18 }}>
@@ -35527,7 +36413,7 @@ function SettingsSection({
             <TextInput
               value={referralCodeDraft}
               onChangeText={setReferralCodeDraft}
-              placeholder="AB-XXXXXXXX"
+              placeholder={t("AB-XXXXXXXX", "AB-XXXXXXXX")}
               placeholderTextColor="#6B7280"
               autoCapitalize="characters"
               autoCorrect={false}
@@ -35660,7 +36546,7 @@ function SettingsSection({
         <TextInput
           value={emergencyNumber}
           onChangeText={setEmergencyNumber}
-          placeholder="112"
+          placeholder={t("112", "112")}
           placeholderTextColor="#9A8F82"
           keyboardType="phone-pad"
           autoComplete="tel"
@@ -35674,7 +36560,7 @@ function SettingsSection({
         <TextInput
           value={supportLocality}
           onChangeText={setSupportLocality}
-          placeholder="City, district, or pincode"
+          placeholder={t("City, district, or pincode", "शहर, ज़िला, या पिनकोड")}
           placeholderTextColor="#9A8F82"
           autoComplete="postal-code"
           style={styles.settingsInput}
@@ -35958,7 +36844,7 @@ function SettingsSection({
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>{t("Privacy", "गोपनीयता")}</Text>
-        <Text style={styles.promptText}>{t("Aethon Beacon is local-first. Your data never leaves your device unless you choose to export it.", "Aethon Beacon local-first है। आपका डेटा तब तक डिवाइस नहीं छोड़ता जब तक आप उसे export न करें।")}</Text>
+        <Text style={styles.promptText}>{t("NAYIQ is local-first. Your data never leaves your device unless you choose to export it.", "NAYIQ local-first है। आपका डेटा तब तक डिवाइस नहीं छोड़ता जब तक आप उसे export न करें।")}</Text>
         <Text style={styles.promptText}>{t("Phone and email are used only for verification. Voice and microphone access are optional and only support spoken guidance or dictated input when you turn them on.", "फ़ोन और ईमेल केवल verification के लिए उपयोग होते हैं। आवाज़ और microphone access वैकल्पिक हैं और केवल spoken guidance या dictated input के लिए काम करते हैं जब आप उन्हें चालू करते हैं।")}</Text>
         <Text style={styles.promptText}>{t("You can skip optional profile details, export your notes, or delete local data whenever you choose.", "आप चाहें तो वैकल्पिक प्रोफ़ाइल विवरण छोड़ सकते हैं, अपनी notes export कर सकते हैं, या local data हटा सकते हैं।")}</Text>
         <Pressable accessibilityRole="button" onPress={onShowPrivacyPolicy} style={[styles.dangerButton, { backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "#334155" }]}>
@@ -35967,7 +36853,7 @@ function SettingsSection({
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>{t("Storage", "संग्रहण")}</Text>
-        <Text style={styles.promptText}>{t("Aethon Beacon is currently local-first. Authentication, cloud sync, and encrypted backup are planned as opt-in features.", "Aethon Beacon अभी local-first है। Authentication, cloud sync, और encrypted backup opt-in features के रूप में नियोजित हैं।")}</Text>
+        <Text style={styles.promptText}>{t("NAYIQ is currently local-first. Authentication, cloud sync, and encrypted backup are planned as opt-in features.", "NAYIQ अभी local-first है। Authentication, cloud sync, और encrypted backup opt-in features के रूप में नियोजित हैं।")}</Text>
         <View style={styles.backupActions}>
           <Pressable accessibilityRole="button" onPress={onExportBackup} style={styles.dangerButton}>
             <Text style={styles.dangerButtonLabel}>{t("Export my notes", "मेरी notes export करें")}</Text>
@@ -36422,6 +37308,7 @@ function BirthChartSection({
   askTheChartPanel,
   chartBriefLang,
   setChartBriefLang,
+  languageId,
 }: {
   rashiInfo: ReturnType<typeof getMoonRashiFromDOB> | null;
   predictionLines: string[] | null;
@@ -36453,7 +37340,10 @@ function BirthChartSection({
   // Lifted to App() so the Ask-the-chart answer insight system shares this toggle.
   chartBriefLang: "en" | "hi";
   setChartBriefLang: (v: "en" | "hi") => void;
+  languageId: LanguageId;
 }) {
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const { width } = useWindowDimensions();
   const isWide = width >= 760;
   // Split DOB into day / month / year segments for easy keypad entry
@@ -36580,7 +37470,7 @@ function BirthChartSection({
         <Pressable
           accessibilityRole="button"
           accessibilityState={{ expanded: open }}
-          accessibilityLabel={`${title}. ${open ? "Tap to collapse" : "Tap to expand"}`}
+          accessibilityLabel={`${title}. ${open ? l("Tap to collapse", { hindi: "सिकोड़ने के लिए टैप करें", telugu: "మూయడానికి ట్యాప్ చేయండి", tamil: "சுருக்க தட்டவும்", urdu: "سکیڑنے کے لیے ٹیپ کریں" }) : l("Tap to expand", { hindi: "खोलने के लिए टैप करें", telugu: "విస్తరించడానికి ట్యాప్ చేయండి", tamil: "விரிவாக்க தட்டவும்", urdu: "پھیلانے کے لیے ٹیپ کریں" })}`}
           onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); toggleVedicPanel(id); }}
           hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
           style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0, opacity: pressed ? 0.7 : 1 }]}
@@ -36744,8 +37634,18 @@ function BirthChartSection({
   function handleSave() {
     if (!canSaveBirthDetails) {
       Alert.alert(
-        "Birth details",
-        "Enter exact birth date, 24-hour birth time, and city/state/country of birth before analysis."
+        l("Birth details", {
+          hindi: "जन्म विवरण",
+          telugu: "జనన వివరాలు",
+          tamil: "பிறப்பு விவரங்கள்",
+          urdu: "پیدائش کی تفصیلات"
+        }),
+        l("Enter exact birth date, 24-hour birth time, and city/state/country of birth before analysis.", {
+          hindi: "विश्लेषण से पहले सटीक जन्म तिथि, 24-घंटे का जन्म समय, और जन्म का शहर/राज्य/देश दर्ज करें।",
+          telugu: "విశ్లేషణకు ముందు ఖచ్చితమైన జన్మ తేదీ, 24-గంటల జన్మ సమయం, మరియు జన్మస్థలం నగరం/రాష్ట్రం/దేశం నమోదు చేయండి.",
+          tamil: "பகுப்பாய்வுக்கு முன் சரியான பிறந்த தேதி, 24-மணி நேர பிறப்பு நேரம், மற்றும் பிறந்த நகரம்/மாநிலம்/நாடு உள்ளிடவும்.",
+          urdu: "تجزیے سے پہلے درست تاریخِ پیدائش، 24 گھنٹے والا وقتِ پیدائش، اور شہر/صوبہ/ملک درج کریں۔"
+        })
       );
       return;
     }
@@ -36763,21 +37663,23 @@ function BirthChartSection({
       <View style={[styles.tabBannerCard, { backgroundColor: "#F3E8FF" }]}>
         <Text style={styles.tabBannerEmoji}>🪐</Text>
         <View style={styles.tabBannerText}>
-          <Text style={styles.tabBannerTitle}>Moon Birth Chart</Text>
-          <Text style={styles.tabBannerSub}>Predictions use Janma Rashi and lunar factors only</Text>
+          <Text style={styles.tabBannerTitle}>{l("Moon Birth Chart", { hindi: "चंद्र जन्म कुंडली", telugu: "చంద్ర జనన చార్ట్", tamil: "சந்திரப் பிறப்பு அட்டவணை", urdu: "چاندی پیدائشی چارٹ" })}</Text>
+          <Text style={styles.tabBannerSub}>{l("Predictions use Janma Rashi and lunar factors only", { hindi: "पूर्वानुमान केवल जन्म राशि और चंद्र कारकों पर आधारित हैं", telugu: "అంచనాలు జన్మ రాశి మరియు చంద్ర కారకాలపై మాత్రమే ఆధారపడతాయి", tamil: "கணிப்புகள் ஜன்ம ராசி மற்றும் சந்திர காரணிகளை மட்டும் பயன்படுத்துகின்றன", urdu: "پیشگوئیاں صرف جنم راشی اور قمری عوامل پر مبنی ہیں" })}</Text>
         </View>
       </View>
 
       {issueContext && (
         <View style={{ backgroundColor: "#E6E0F0", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(252,211,77,0.28)", gap: 5 }}>
           <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>
-            Active chart question · {issueContext.issueLabel}
+            {l("Active chart question", { hindi: "सक्रिय चार्ट प्रश्न", telugu: "క్రియాశీల చార్ట్ ప్రశ్న", tamil: "செயலில் உள்ள சார்ட் கேள்வி", urdu: "فعال چارٹ سوال" })} · {issueContext.issueLabel}
           </Text>
           <Text style={{ color: "#325C86", fontSize: 13, lineHeight: 19 }} numberOfLines={3}>{issueContext.issueText}</Text>
           <Text style={{ color: hasExactBirthDetails ? "#04714F" : "#263244", fontSize: 12, fontWeight: "700" }}>
             {hasExactBirthDetails
-              ? issueContext.autoAskedAtIso ? "Calculated response is ready below." : "Calculating from your saved birth details."
-              : "Saved safely. Add exact birth details to calculate the response."}
+              ? issueContext.autoAskedAtIso
+                ? l("Calculated response is ready below.", { hindi: "गणना किया गया उत्तर नीचे तैयार है।", telugu: "గణించబడిన ప్రతిస్పందన క్రింద సిద్ధంగా ఉంది.", tamil: "கணக்கிடப்பட்ட பதில் கீழே தயாராக உள்ளது.", urdu: "حساب شدہ جواب نیچے تیار ہے۔" })
+                : l("Calculating from your saved birth details.", { hindi: "आपके सहेजे गए जन्म विवरण से गणना की जा रही है।", telugu: "మీ సేవ్ చేసిన జనన వివరాల నుంచి గణించబడుతోంది.", tamil: "சேமித்துள்ள பிறப்பு விவரங்களிலிருந்து கணக்கிடப்படுகிறது.", urdu: "آپ کی محفوظ شدہ پیدائش کی تفصیلات سے حساب کیا جا رہا ہے۔" })
+              : l("Saved safely. Add exact birth details to calculate the response.", { hindi: "सुरक्षित रूप से सहेजा गया। उत्तर की गणना के लिए सटीक जन्म विवरण जोड़ें।", telugu: "భద్రంగా సేవ్ చేయబడింది. ప్రతిస్పందనను గణించడానికి ఖచ్చితమైన జనన వివరాలను జోడించండి.", tamil: "பாதுகாப்பாக சேமிக்கப்பட்டது. பதிலை கணக்கிட சரியான பிறப்பு விவரங்களைச் சேர்க்கவும்.", urdu: "محفوظ ہو گیا۔ جواب نکالنے کے لیے درست پیدائش کی تفصیلات شامل کریں۔" })}
           </Text>
         </View>
       )}
@@ -36788,18 +37690,18 @@ function BirthChartSection({
         borderWidth: 1, borderColor: "rgba(99,222,208,0.2)"
       }}>
         <Text style={{ color: "#0D1F22", fontSize: 17, fontWeight: "900", marginBottom: 2 }}>
-          Enter exact birth details
+          {l("Enter exact birth details", { hindi: "सटीक जन्म विवरण दर्ज करें", telugu: "ఖచ్చితమైన జనన వివరాలను నమోదు చేయండి", tamil: "சரியான பிறப்பு விவரங்களை உள்ளிடவும்", urdu: "درست پیدائش کی تفصیلات درج کریں" })}
         </Text>
 
         {/* Date of birth — segmented DD / MM / YYYY */}
         <View style={{ gap: 8 }}>
           <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            Date of birth
+            {l("Date of birth", { hindi: "जन्म तिथि", telugu: "జన్మ తేదీ", tamil: "பிறந்த தேதி", urdu: "تاریخِ پیدائش" })}
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             {/* Day */}
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>DAY</Text>
+              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>{l("DAY", { hindi: "दिन", telugu: "రోజు", tamil: "நாள்", urdu: "دن" })}</Text>
               <TextInput
                 value={dobDD}
                 onChangeText={(v) => {
@@ -36807,7 +37709,7 @@ function BirthChartSection({
                   setDobDD(digits);
                   if (digits.length === 2) refDobMM.current?.focus();
                 }}
-                placeholder="DD"
+                placeholder={l("DD", { hindi: "दिन", telugu: "రోజు", tamil: "நாள்", urdu: "دن" })}
                 placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={2}
@@ -36823,7 +37725,7 @@ function BirthChartSection({
             <Text style={{ color: "#5B6575", fontSize: 22, marginTop: 16 }}>/</Text>
             {/* Month */}
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>MONTH</Text>
+              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>{l("MONTH", { hindi: "माह", telugu: "నెల", tamil: "மாதம்", urdu: "مہینہ" })}</Text>
               <TextInput
                 ref={refDobMM}
                 value={dobMM}
@@ -36832,7 +37734,7 @@ function BirthChartSection({
                   setDobMM(digits);
                   if (digits.length === 2) refDobYYYY.current?.focus();
                 }}
-                placeholder="MM"
+                placeholder={l("MM", { hindi: "माह", telugu: "నెల", tamil: "மாதம்", urdu: "مہینہ" })}
                 placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={2}
@@ -36848,7 +37750,7 @@ function BirthChartSection({
             <Text style={{ color: "#5B6575", fontSize: 22, marginTop: 16 }}>/</Text>
             {/* Year */}
             <View style={{ flex: 2, alignItems: "center" }}>
-              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>YEAR</Text>
+              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>{l("YEAR", { hindi: "वर्ष", telugu: "సంవత్సరం", tamil: "ஆண்டு", urdu: "سال" })}</Text>
               <TextInput
                 ref={refDobYYYY}
                 value={dobYYYY}
@@ -36857,7 +37759,7 @@ function BirthChartSection({
                   setDobYYYY(digits);
                   if (digits.length === 4) refTimeMM.current?.focus();
                 }}
-                placeholder="YYYY"
+                placeholder={l("YYYY", { hindi: "वर्ष", telugu: "సంవత్సరం", tamil: "ஆண்டு", urdu: "سال" })}
                 placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={4}
@@ -36881,11 +37783,11 @@ function BirthChartSection({
         {/* Birth time — segmented HH : MM */}
         <View style={{ gap: 8 }}>
           <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            Birth time (24-hour)
+            {l("Birth time (24-hour)", { hindi: "जन्म समय (24-घंटे)", telugu: "జన్మ సమయం (24-గంటలు)", tamil: "பிறந்த நேரம் (24-மணி)", urdu: "وقتِ پیدائش (24 گھنٹے)" })}
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>HOUR (00–23)</Text>
+              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>{l("HOUR (00–23)", { hindi: "घंटा (00–23)", telugu: "గంట (00–23)", tamil: "மணி (00–23)", urdu: "گھنٹہ (00–23)" })}</Text>
               <TextInput
                 value={timeHH}
                 onChangeText={(v) => {
@@ -36893,7 +37795,7 @@ function BirthChartSection({
                   setTimeHH(digits);
                   if (digits.length === 2) refTimeMM.current?.focus();
                 }}
-                placeholder="HH"
+                placeholder={l("HH", { hindi: "घंटा", telugu: "గంట", tamil: "மணி", urdu: "گھنٹہ" })}
                 placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={2}
@@ -36908,7 +37810,7 @@ function BirthChartSection({
             </View>
             <Text style={{ color: "#1F2937", fontSize: 28, marginTop: 18, fontWeight: "900" }}>:</Text>
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>MINUTE (00–59)</Text>
+              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800", marginBottom: 4 }}>{l("MINUTE (00–59)", { hindi: "मिनट (00–59)", telugu: "నిమిషం (00–59)", tamil: "நிமிடம் (00–59)", urdu: "منٹ (00–59)" })}</Text>
               <TextInput
                 ref={refTimeMM}
                 value={timeMM}
@@ -36917,7 +37819,7 @@ function BirthChartSection({
                   setTimeMM(digits);
                   if (digits.length === 2) refPlace.current?.focus();
                 }}
-                placeholder="MM"
+                placeholder={l("MM", { hindi: "मिनट", telugu: "నిమిషం", tamil: "நிமிடம்", urdu: "منٹ" })}
                 placeholderTextColor="#8C9AA1"
                 keyboardType="number-pad"
                 maxLength={2}
@@ -36941,13 +37843,18 @@ function BirthChartSection({
         {/* Birth place */}
         <View style={{ gap: 6 }}>
           <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-            Place of birth
+            {l("Place of birth", { hindi: "जन्म स्थान", telugu: "జన్మ స్థలం", tamil: "பிறந்த இடம்", urdu: "جائے پیدائش" })}
           </Text>
           <TextInput
             ref={refPlace}
             value={placeDraft}
             onChangeText={setPlaceDraft}
-            placeholder="City, State, Country — e.g. Mumbai, Maharashtra, India"
+            placeholder={l("City, State, Country — e.g. Mumbai, Maharashtra, India", {
+              hindi: "शहर, राज्य, देश — जैसे मुंबई, महाराष्ट्र, भारत",
+              telugu: "నగరం, రాష్ట్రం, దేశం — ఉదా. ముంబయి, మహారాష్ట్ర, భారత్",
+              tamil: "நகரம், மாநிலம், நாடு — உதா. மும்பை, மகாராஷ்டிரா, இந்தியா",
+              urdu: "شہر، ریاست، ملک — مثال: ممبئی، مہاراشٹر، بھارت"
+            })}
             placeholderTextColor="#8C9AA1"
             autoCorrect={false}
             autoCapitalize="words"
@@ -36960,7 +37867,12 @@ function BirthChartSection({
             }}
           />
           {placeDraft.length > 0 && !isValidPlace && (
-            <Text style={{ color: "#F37B64", fontSize: 12 }}>Enter city, state, and country (at least 3 characters).</Text>
+            <Text style={{ color: "#F37B64", fontSize: 12 }}>{l("Enter city, state, and country (at least 3 characters).", {
+              hindi: "शहर, राज्य और देश दर्ज करें (कम से कम 3 अक्षर)।",
+              telugu: "నగరం, రాష్ట్రం, దేశం నమోదు చేయండి (కనీసం 3 అక్షరాలు).",
+              tamil: "நகரம், மாநிலம், நாடு ஆகியவற்றை உள்ளிடவும் (குறைந்தது 3 எழுத்துகள்).",
+              urdu: "شہر، ریاست اور ملک درج کریں (کم از کم 3 حروف)۔"
+            })}</Text>
           )}
         </View>
 
@@ -36975,7 +37887,11 @@ function BirthChartSection({
           })}
         >
           <Text style={{ color: saved || canSaveBirthDetails ? "#FFFFFF" : "#52656B", fontSize: 16, fontWeight: "900" }}>
-            {saved ? "✓ Saved" : canSaveBirthDetails ? "Save & Analyse" : "Complete details to analyse"}
+            {saved
+              ? l("✓ Saved", { hindi: "✓ सहेजा गया", telugu: "✓ సేవ్ చేయబడింది", tamil: "✓ சேமிக்கப்பட்டது", urdu: "✓ محفوظ ہو گیا" })
+              : canSaveBirthDetails
+                ? l("Save & Analyse", { hindi: "सहेजें और विश्लेषण करें", telugu: "సేవ్ చేసి విశ్లేషించండి", tamil: "சேமித்து பகுப்பாய்வு செய்யவும்", urdu: "محفوظ کریں اور تجزیہ کریں" })
+                : l("Complete details to analyse", { hindi: "विश्लेषण के लिए पूरी जानकारी भरें", telugu: "విశ్లేషణకు పూర్తి వివరాలను నమోదు చేయండి", tamil: "பகுப்பாய்வுக்குத் தேவையான முழு விவரங்களையும் உள்ளிடவும்", urdu: "تجزیے کے لیے مکمل تفصیلات درج کریں" })}
           </Text>
         </Pressable>
 
@@ -36988,10 +37904,10 @@ function BirthChartSection({
           <Text style={{ fontSize: 14 }}>{hasExactBirthDetails ? "✅" : canSaveBirthDetails ? "📝" : "⏳"}</Text>
           <Text style={{ color: hasExactBirthDetails ? "#0E6F69" : canSaveBirthDetails ? "#0057B8" : "#475569", fontSize: 13, fontWeight: "700", flex: 1 }}>
             {hasExactBirthDetails
-              ? "Exact birth details saved - reading generated below"
+              ? l("Exact birth details saved - reading generated below", { hindi: "सटीक जन्म विवरण सहेजा गया - पठन नीचे तैयार किया जा रहा है", telugu: "ఖచ్చితమైన జనన వివరాలు సేవ్ చేయబడ్డాయి - చదువు క్రింద రూపొందించబడుతోంది", tamil: "சரியான பிறப்பு விவரங்கள் சேமிக்கப்பட்டன - வாசிப்பு கீழே உருவாக்கப்படுகிறது", urdu: "درست پیدائش کی تفصیلات محفوظ ہیں - مطالعہ نیچے تیار ہو رہا ہے" })
               : canSaveBirthDetails
-                ? "Exact details are ready. Tap Save & Analyse."
-                : "Enter all three fields above for your full reading"}
+                ? l("Exact details are ready. Tap Save & Analyse.", { hindi: "सटीक विवरण तैयार हैं। Save & Analyse पर टैप करें।", telugu: "ఖచ్చితమైన వివరాలు సిద్ధంగా ఉన్నాయి. Save & Analyse ను నొక్కండి.", tamil: "சரியான விவரங்கள் தயாராக உள்ளன. Save & Analyse என்பதைத் தட்டவும்.", urdu: "درست تفصیلات تیار ہیں۔ Save & Analyse پر ٹیپ کریں۔" })
+                : l("Enter all three fields above for your full reading", { hindi: "अपनी पूर्ण रीडिंग के लिए ऊपर के तीनों फ़ील्ड भरें", telugu: "మీ పూర్తి రీడింగ్ కోసం పై మూడు ఫీల్డ్‌లను నమోదు చేయండి", tamil: "உங்கள் முழு வாசிப்புக்காக மேலே உள்ள மூன்று புலங்களையும் நிரப்பவும்", urdu: "اپنی مکمل ریڈنگ کے لیے اوپر کے تینوں خانے بھریں" })}
           </Text>
         </View>
       </View>
@@ -37057,7 +37973,7 @@ function BirthChartSection({
                 <Pressable
                   accessibilityRole="button"
                   accessibilityState={{ expanded: plainHousesOpen }}
-                  accessibilityLabel={`House-by-house reading, ${housePlacementResult.houses.length} houses. ${plainHousesOpen ? "Tap to collapse" : "Tap to expand"}`}
+                  accessibilityLabel={`${l("House-by-house reading", { hindi: "भाव-वार पठन", telugu: "ఇల్లు-వారీ చదువు", tamil: "வீடு-வீடாக வாசிப்பு", urdu: "گھر بہ گھر مطالعہ" })}, ${housePlacementResult.houses.length} ${l("houses", { hindi: "भाव", telugu: "ఇళ్లు", tamil: "வீடுகள்", urdu: "گھر" })}. ${plainHousesOpen ? l("Tap to collapse", { hindi: "सिकोड़ने के लिए टैप करें", telugu: "మూయడానికి ట్యాప్ చేయండి", tamil: "சுருக்க தட்டவும்", urdu: "سکیڑنے کے لیے ٹیپ کریں" }) : l("Tap to expand", { hindi: "खोलने के लिए टैप करें", telugu: "విస్తరించడానికి ట్యాప్ చేయండి", tamil: "விரிவாக்க தட்டவும்", urdu: "پھیلانے کے لیے ٹیپ کریں" })}`}
                   onPress={() => { void Haptics.selectionAsync(); animateDisclosure(); setPlainHousesOpen((v) => !v); }}
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, paddingHorizontal: 12, paddingVertical: 9, borderRadius: 10, backgroundColor: pressed ? "#F3E4D8" : "#FBEFE3", borderWidth: 1, borderColor: "rgba(154,52,18,0.2)" })}
                 >
@@ -37839,15 +38755,15 @@ function BirthChartSection({
 
       <View style={styles.birthChartGuidanceCard}>
         <View style={styles.birthChartGuidanceHeader}>
-          <Text style={styles.birthChartGuidanceTitle}>Personal Moon Chart Analysis</Text>
+          <Text style={styles.birthChartGuidanceTitle}>{l("Personal Moon Chart Analysis", { hindi: "व्यक्तिगत चंद्र चार्ट विश्लेषण", telugu: "వ్యక్తిగత చంద్ర చార్ట్ విశ్లేషణ", tamil: "தனிப்பட்ட சந்திர சார்ட் பகுப்பாய்வு", urdu: "ذاتی چاندی چارٹ تجزیہ" })}</Text>
           <Animated.Text style={[styles.birthChartGuidanceBadge, guidanceHoroscopeLoading && { opacity: horoscopePulseAnim }]}>
-            {guidanceHoroscopeLoading ? "Reading…" : hasExactBirthDetails ? "Ready" : "Waiting"}
+            {guidanceHoroscopeLoading ? l("Reading…", { hindi: "पढ़ रहा है…", telugu: "చదువుతోంది…", tamil: "படிக்கிறது…", urdu: "پڑھا جا رہا ہے…" }) : hasExactBirthDetails ? l("Ready", { hindi: "तैयार", telugu: "సిద్ధం", tamil: "தயார்", urdu: "تیار" }) : l("Waiting", { hindi: "प्रतीक्षारत", telugu: "వేచి ఉంది", tamil: "காத்திருக்கிறது", urdu: "انتظار میں" })}
           </Animated.Text>
         </View>
         <Animated.Text style={[styles.birthChartGuidanceText, guidanceHoroscopeLoading && { opacity: horoscopePulseAnim }]}>
           {guidanceHoroscopeLoading
-            ? "Analysing your Moon-chart birth details…"
-            : guidanceHoroscope ?? (hasExactBirthDetails ? "Tap 'Save & Analyse' above to generate your reading." : "Enter date, time, and place of birth above to unlock your Moon-chart analysis.")}
+            ? l("Analysing your Moon-chart birth details…", { hindi: "आपके चंद्र चार्ट जन्म विवरण का विश्लेषण हो रहा है…", telugu: "మీ చంద్ర చార్ట్ జనన వివరాలను విశ్లేషిస్తోంది…", tamil: "உங்கள் சந்திர சார்ட் பிறப்பு விவரங்கள் பகுப்பாய்வு செய்யப்படுகின்றன…", urdu: "آپ کی چاندی چارٹ پیدائش کی تفصیلات کا تجزیہ کیا جا رہا ہے…" })
+            : guidanceHoroscope ?? (hasExactBirthDetails ? l("Tap 'Save & Analyse' above to generate your reading.", { hindi: "अपना पठन बनाने के लिए ऊपर 'Save & Analyse' पर टैप करें।", telugu: "మీ చదువును సృష్టించడానికి పైన 'Save & Analyse' ను నొక్కండి.", tamil: "உங்கள் வாசிப்பை உருவாக்க மேலே 'Save & Analyse' என்பதைத் தட்டவும்.", urdu: "اپنی ریڈنگ بنانے کے لیے اوپر 'Save & Analyse' پر ٹیپ کریں۔" }) : l("Enter date, time, and place of birth above to unlock your Moon-chart analysis.", { hindi: "अपने चंद्र चार्ट विश्लेषण को खोलने के लिए ऊपर जन्म तिथि, समय और स्थान दर्ज करें।", telugu: "మీ చంద్ర చార్ట్ విశ్లేషణను తెరవడానికి పైన జన్మ తేదీ, సమయం మరియు స్థలాన్ని నమోదు చేయండి.", tamil: "உங்கள் சந்திர சார்ட் பகுப்பாய்வைத் திறக்க மேலே பிறந்த தேதி, நேரம், இடத்தை உள்ளிடவும்.", urdu: "اپنے چاندی چارٹ تجزیے کو کھولنے کے لیے اوپر تاریخ، وقت اور جائے پیدائش درج کریں۔" }))}
         </Animated.Text>
       </View>
 
@@ -37867,13 +38783,13 @@ function BirthChartSection({
           style={styles.vedicSetupPrompt}
           onPress={onOpenHome}
           accessibilityRole="button"
-          accessibilityLabel="Open profile to add birth details"
+          accessibilityLabel={l("Open profile to add birth details", { hindi: "जन्म विवरण जोड़ने के लिए प्रोफ़ाइल खोलें", telugu: "జనన వివరాలు జోడించడానికి ప్రొఫైల్‌ను తెరవండి", tamil: "பிறப்பு விவரங்களைச் சேர்க்க சுயவிவரத்தைத் திறக்கவும்", urdu: "پیدائش کی تفصیلات شامل کرنے کے لیے پروفائل کھولیں" })}
         >
           <Text style={styles.vedicSetupEmoji}>🪐</Text>
           <View style={styles.vedicSetupText}>
-            <Text style={styles.vedicSetupTitle}>Unlock your reading</Text>
+            <Text style={styles.vedicSetupTitle}>{l("Unlock your reading", { hindi: "अपना पठन खोलें", telugu: "మీ చదువును ప్రారంభించండి", tamil: "உங்கள் வாசிப்பைத் திறக்கவும்", urdu: "اپنی ریڈنگ کھولیں" })}</Text>
             <Text style={styles.vedicSetupSub}>
-              Add your date, time, and place of birth in Profile to see your Rashi, Nakshatra, Tithi, and today’s guidance.
+              {l("Add your date, time, and place of birth in Profile to see your Rashi, Nakshatra, Tithi, and today’s guidance.", { hindi: "अपने Rashi, Nakshatra, Tithi और आज की guidance देखने के लिए Profile में अपनी जन्म तिथि, समय और स्थान जोड़ें।", telugu: "మీ Rashi, Nakshatra, Tithi, మరియు నేటి మార్గదర్శకతను చూడటానికి Profile లో మీ జన్మ తేదీ, సమయం మరియు స్థలాన్ని జోడించండి.", tamil: "உங்கள் Rashi, Nakshatra, Tithi மற்றும் இன்றைய வழிகாட்டலைப் பார்க்க Profile-ல் உங்கள் பிறந்த தேதி, நேரம், இடத்தைச் சேர்க்கவும்.", urdu: "اپنے Rashi، Nakshatra، Tithi اور آج کی رہنمائی دیکھنے کے لیے Profile میں اپنی تاریخِ پیدائش، وقت اور جگہ شامل کریں۔" })}
             </Text>
           </View>
           <Text style={styles.vedicSetupArrow}>›</Text>
@@ -37964,17 +38880,32 @@ function AdminLoginGate({
           ))}
           <Text style={styles.adminAuthAttemptsLabel}>
             {adminLockedRemainingMinutes > 0
-              ? `🔒 Locked — ${adminLockedRemainingMinutes}m remaining`
+              ? l("🔒 Locked — {minutes}m remaining", {
+                  hindi: `🔒 लॉक — ${adminLockedRemainingMinutes} मिनट शेष`,
+                  telugu: `🔒 లాక్ చేయబడింది — ${adminLockedRemainingMinutes} నిమిషాలు మిగిలి ఉన్నాయి`,
+                  tamil: `🔒 பூட்டப்பட்டுள்ளது — ${adminLockedRemainingMinutes} நிமிடங்கள் மீதம்`,
+                  urdu: `🔒 مقفل — ${adminLockedRemainingMinutes} منٹ باقی`
+                }).replace("{minutes}", String(adminLockedRemainingMinutes))
               : adminUnlockFailures > 0
-              ? `${3 - adminUnlockFailures} attempt${3 - adminUnlockFailures === 1 ? "" : "s"} remaining`
-              : "3 attempts before lockout"}
+              ? l("{attempts} attempts remaining", {
+                  hindi: `${3 - adminUnlockFailures} प्रयास शेष`,
+                  telugu: `${3 - adminUnlockFailures} ప్రయత్నాలు మిగిలి ఉన్నాయి`,
+                  tamil: `${3 - adminUnlockFailures} முயற்சிகள் மீதம்`,
+                  urdu: `${3 - adminUnlockFailures} کوششیں باقی ہیں`
+                }).replace("{attempts}", String(3 - adminUnlockFailures))
+              : l("3 attempts before lockout", { hindi: "लॉक होने से पहले 3 प्रयास", telugu: "లాక్‌ఔట్‌కు ముందు 3 ప్రయత్నాలు", tamil: "பூட்டுவதற்கு முன் 3 முயற்சிகள்", urdu: "لاک ہونے سے پہلے 3 کوششیں" })}
           </Text>
         </View>
 
         {adminLockedRemainingMinutes > 0 ? (
           <View style={styles.adminLockoutBanner}>
             <Text style={styles.adminLockoutBannerText}>
-              ⚠️ Access temporarily suspended after repeated failures. Auto-unlocks in {adminLockedRemainingMinutes} minute{adminLockedRemainingMinutes === 1 ? "" : "s"}.
+              {l("⚠️ Access temporarily suspended after repeated failures. Auto-unlocks in {minutes} minute(s).", {
+                hindi: `⚠️ बार-बार असफल प्रयासों के बाद पहुँच अस्थायी रूप से निलंबित। ${adminLockedRemainingMinutes} मिनट में स्वतः अनलॉक।`,
+                telugu: `⚠️ పునరావృత వైఫల్యాల తరువాత యాక్సెస్ తాత్కాలికంగా నిలిపివేయబడింది. ${adminLockedRemainingMinutes} నిమిషాల్లో ఆటో-అన్‌లాక్ అవుతుంది.`,
+                tamil: `⚠️ மீண்டும் மீண்டும் தோல்விகள் ஏற்பட்டதால் அணுகல் தற்காலிகமாக நிறுத்தப்பட்டது. ${adminLockedRemainingMinutes} நிமிடத்தில் தானாகத் திறக்கும்.`,
+                urdu: `⚠️ بار بار ناکامیوں کے بعد رسائی عارضی طور پر معطل ہے۔ ${adminLockedRemainingMinutes} منٹ میں خود بخود کھل جائے گی۔`
+              }).replace("{minutes}", String(adminLockedRemainingMinutes))}
             </Text>
           </View>
         ) : (
@@ -37982,7 +38913,7 @@ function AdminLoginGate({
             <TextInput
               value={adminAccessNameAttempt}
               onChangeText={setAdminAccessNameAttempt}
-              placeholder="Admin name or email"
+              placeholder={l("Admin name or email", { hindi: "एडमिन नाम या ईमेल", telugu: "అడ్మిన్ పేరు లేదా ఇమెయిల్", tamil: "நிர்வாகி பெயர் அல்லது மின்னஞ்சல்", urdu: "ایڈمن نام یا ای میل" })}
               placeholderTextColor="rgba(196,163,90,0.55)"
               autoCapitalize="none"
               autoComplete="email"
@@ -37992,7 +38923,7 @@ function AdminLoginGate({
             <TextInput
               value={adminAccessAttempt}
               onChangeText={setAdminAccessAttempt}
-              placeholder="Admin code"
+              placeholder={l("Admin code", { hindi: "एडमिन कोड", telugu: "అడ్మిన్ కోడ్", tamil: "நிர்வாகி குறியீடு", urdu: "ایڈمن کوڈ" })}
               placeholderTextColor="rgba(196,163,90,0.55)"
               secureTextEntry
               keyboardType="numeric"
@@ -38019,7 +38950,7 @@ function AdminLoginGate({
                       setAdminAccessAttempt(adminAccessAttempt + k);
                     }
                   }}
-                  accessibilityLabel={k === "⌫" ? "Delete" : k}
+                  accessibilityLabel={k === "⌫" ? l("Delete", { hindi: "हटाएँ", telugu: "తొలగించు", tamil: "நீக்கு", urdu: "حذف کریں" }) : k}
                 >
                   <Text style={[styles.adminPinKeyLabel, k === "⌫" && styles.adminPinKeyDelLabel]}>{k}</Text>
                 </Pressable>
@@ -38031,13 +38962,18 @@ function AdminLoginGate({
               onPress={onUnlockAdmin}
               style={styles.adminAuthButton}
             >
-              <Text style={styles.adminAuthButtonLabel}>🔓 Authenticate & Enter</Text>
+              <Text style={styles.adminAuthButtonLabel}>{l("🔓 Authenticate & Enter", { hindi: "🔓 प्रमाणित करें और प्रवेश करें", telugu: "🔓 ధృవీకరించి ప్రవేశించండి", tamil: "🔓 உறுதிப்படுத்தி உள்ளே செல்லவும்", urdu: "🔓 تصدیق کریں اور داخل ہوں" })}</Text>
             </Pressable>
           </>
         )}
 
         <Text style={styles.adminAuthFooter}>
-          Access is logged and monitored. Unauthorised attempts trigger automatic lockout.
+          {l("Access is logged and monitored. Unauthorised attempts trigger automatic lockout.", {
+            hindi: "पहुँच दर्ज और निगरानी में रहती है। अनधिकृत प्रयास स्वचालित लॉकआउट को ट्रिगर करते हैं।",
+            telugu: "యాక్సెస్ లాగ్ చేయబడుతుంది మరియు పర్యవేక్షించబడుతుంది. అనధికార ప్రయత్నాలు ఆటోమేటిక్ లాక్‌అవుట్‌ను ప్రారంభిస్తాయి.",
+            tamil: "அணுகல் பதிவு செய்து கண்காணிக்கப்படுகிறது. அங்கீகரிக்கப்படாத முயற்சிகள் தானியங்கி பூட்டுதலைத் தொடங்கும்.",
+            urdu: "رسائی لاگ اور مانیٹر کی جاتی ہے۔ غیر مجاز کوششیں خودکار لاک آؤٹ شروع کرتی ہیں۔"
+          })}
         </Text>
       </View>
     </View>
@@ -38088,7 +39024,8 @@ function AdminSection({
   trustedContacts,
   supportLocality,
   onSignOut,
-  isWide
+  isWide,
+  languageId
 }: {
   accessRole: AccessRole;
   accessName: string;
@@ -38134,12 +39071,15 @@ function AdminSection({
   supportLocality: string;
   onSignOut: () => void;
   isWide: boolean;
+  languageId: LanguageId;
 }) {
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const launchChecklist = [
     {
       label: "Branding, package naming, and app icons",
       status: "done",
-      note: "Aethon Beacon branding is already aligned in the app shell."
+      note: "NAYIQ branding is already aligned in the app shell."
     },
     {
       label: "Privacy, terms, disclaimer, and store copy",
@@ -38187,8 +39127,8 @@ function AdminSection({
     <View style={styles.panel}>
       <View style={styles.sectionHeader}>
         <View>
-          <Text style={styles.eyebrow}>Control</Text>
-          <Text style={styles.sectionTitleSmall}>Admin center</Text>
+          <Text style={styles.eyebrow}>{l("Control", { hindi: "नियंत्रण", telugu: "నియంత్రణ", tamil: "கட்டுப்பாடு", urdu: "کنٹرول" })}</Text>
+          <Text style={styles.sectionTitleSmall}>{l("Admin center", { hindi: "प्रशासन केंद्र", telugu: "అడ్మిన్ కేంద్రం", tamil: "நிர்வாக மையம்", urdu: "ایڈمن مرکز" })}</Text>
         </View>
         <View style={styles.adminStatusPills}>
           <View
@@ -38203,43 +39143,58 @@ function AdminSection({
                 accessRole === "admin" && styles.adminStatusPillTextActive
               ]}
             >
-              {accessRole === "admin" ? "Unlocked" : "Locked"}
+              {accessRole === "admin" ? l("Unlocked", { hindi: "अनलॉक", telugu: "తాళం తెరవబడింది", tamil: "திறக்கப்பட்டது", urdu: "غیر مقفل" }) : l("Locked", { hindi: "लॉक", telugu: "లాక్ చేయబడింది", tamil: "பூட்டப்பட்டது", urdu: "مقفل" })}
             </Text>
           </View>
           <Text style={styles.smallMeta}>
-            {accessRole === "admin" ? `Owner / ${accessName.trim().length > 0 ? accessName.trim() : "Admin"}` : "Admin only"}
+            {accessRole === "admin" ? `${l("Owner", { hindi: "मालिक", telugu: "యజమాని", tamil: "உரிமையாளர்", urdu: "مالک" })} / ${accessName.trim().length > 0 ? accessName.trim() : l("Admin", { hindi: "एडमिन", telugu: "అడ్మిన్", tamil: "நிர்வாகி", urdu: "ایڈمن" })}` : l("Admin only", { hindi: "केवल एडमिन", telugu: "అడ్మిన్ మాత్రమే", tamil: "நிர்வாகி மட்டும்", urdu: "صرف ایڈمن" })}
           </Text>
         </View>
       </View>
 
       <View style={styles.adminBanner}>
-        <Text style={styles.adminBannerTitle}>Admin tools</Text>
+        <Text style={styles.adminBannerTitle}>{l("Admin tools", { hindi: "एडमिन उपकरण", telugu: "అడ్మిన్ సాధనాలు", tamil: "நிர்வாகி கருவிகள்", urdu: "ایڈمن اوزار" })}</Text>
         <Text style={styles.adminBannerText}>
-          Manage safety, review reports, pause posting, and keep launch status visible.
+          {l("Manage safety, review reports, pause posting, and keep launch status visible.", {
+            hindi: "सुरक्षा संभालें, रिपोर्टों की समीक्षा करें, पोस्टिंग रोकें, और लॉन्च स्थिति दिखाई रखें।",
+            telugu: "భద్రతను నిర్వహించండి, నివేదికలను సమీక్షించండి, పోస్టింగ్‌ను నిలిపివేయండి, మరియు ప్రారంభ స్థితిని చూపించండి.",
+            tamil: "பாதுகாப்பை நிர்வகிக்கவும், அறிக்கைகளை மதிப்பாய்வு செய்யவும், பதிவிடுவதை நிறுத்தவும், மற்றும் வெளியீட்டு நிலையை தெளிவாக வைத்திருங்கள்.",
+            urdu: "سیکیورٹی سنبھالیں، رپورٹس کا جائزہ لیں، پوسٹنگ روکیں، اور لانچ کی حالت واضح رکھیں۔"
+          })}
         </Text>
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Safety switches</Text>
+        <Text style={styles.settingsTitle}>{l("Safety switches", { hindi: "सुरक्षा स्विच", telugu: "భద్రతా స్విచ్‌లు", tamil: "பாதுகாப்பு ஸ்விட்ச்கள்", urdu: "حفاظتی سوئچز" })}</Text>
         <Text style={styles.promptText}>
-          The two switches you will use most often.
+          {l("The two switches you will use most often.", {
+            hindi: "आप सबसे ज़्यादा जिन दो स्विचों का उपयोग करेंगे।",
+            telugu: "మీరు ఎక్కువగా ఉపయోగించే రెండు స్విచ్‌లు ఇవి.",
+            tamil: "நீங்கள் அதிகம் பயன்படுத்தும் இரண்டு ஸ்விட்ச்கள் இவை.",
+            urdu: "وہ دو سوئچز جنہیں آپ سب سے زیادہ استعمال کریں گے۔"
+          })}
         </Text>
         <View style={styles.adminQuickActions}>
           <Pressable accessibilityRole="button" onPress={() => setCommunityPostingLocked(!communityPostingLocked)} style={styles.adminQuickAction}>
-            <Text style={styles.adminQuickActionLabel}>{communityPostingLocked ? "Resume community" : "Pause community"}</Text>
-            <Text style={styles.adminQuickActionMeta}>This device only — not a global mute</Text>
+            <Text style={styles.adminQuickActionLabel}>{communityPostingLocked ? l("Resume community", { hindi: "समुदाय फिर शुरू करें", telugu: "కమ్యూనిటీని తిరిగి ప్రారంభించండి", tamil: "சமூகத்தை மீண்டும் தொடங்கவும்", urdu: "کمیونٹی دوبارہ شروع کریں" }) : l("Pause community", { hindi: "समुदाय रोकें", telugu: "కమ్యూనిటీని నిలిపివేయండి", tamil: "சமூகத்தை நிறுத்தவும்", urdu: "کمیونٹی روک دیں" })}</Text>
+            <Text style={styles.adminQuickActionMeta}>{l("This device only — not a global mute", { hindi: "सिर्फ़ इस डिवाइस पर — वैश्विक म्यूट नहीं", telugu: "ఈ పరికరంలో మాత్రమే — గ్లోబల్ మ్యూట్ కాదు", tamil: "இந்த சாதனத்திற்கு மட்டும் — உலகளாவிய மியூட் இல்லை", urdu: "صرف اس ڈیوائس پر — عالمی خاموشی نہیں" })}</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={() => setSensitivePreviewsLocked(!sensitivePreviewsLocked)} style={styles.adminQuickAction}>
-            <Text style={styles.adminQuickActionLabel}>{sensitivePreviewsLocked ? "Show previews" : "Hide previews"}</Text>
-            <Text style={styles.adminQuickActionMeta}>Reduce exposure</Text>
+            <Text style={styles.adminQuickActionLabel}>{sensitivePreviewsLocked ? l("Show previews", { hindi: "पूर्वावलोकन दिखाएँ", telugu: "ప్రివ్యూలను చూపించండి", tamil: "முன்னோட்டங்களை காட்டவும்", urdu: "پیش نظارے دکھائیں" }) : l("Hide previews", { hindi: "पूर्वावलोकन छिपाएँ", telugu: "ప్రివ్యూలను దాచండి", tamil: "முன்னோட்டங்களை மறைக்கவும்", urdu: "پیش نظارے چھپائیں" })}</Text>
+            <Text style={styles.adminQuickActionMeta}>{l("Reduce exposure", { hindi: "दिखाई देना कम करें", telugu: "బహిర్గతాన్ని తగ్గించండి", tamil: "வெளிப்பாட்டைக் குறைக்கவும்", urdu: "نمائش کم کریں" })}</Text>
           </Pressable>
         </View>
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Usage snapshot</Text>
+        <Text style={styles.settingsTitle}>{l("Usage snapshot", { hindi: "उपयोग स्नैपशॉट", telugu: "వాడక స్నాప్‌షాట్", tamil: "பயன்பாட்டு படம்", urdu: "استعمال کا خلاصہ" })}</Text>
         <Text style={styles.promptText}>
-          Local presence now and backend presence when the service is available.
+          {l("Local presence now and backend presence when the service is available.", {
+            hindi: "अभी स्थानीय उपस्थिति और सेवा उपलब्ध होने पर बैकएंड उपस्थिति।",
+            telugu: "ఇప్పుడున్న స్థానిక ఉనికి మరియు సేవ అందుబాటులో ఉన్నప్పుడు బ్యాకెండ్ ఉనికి.",
+            tamil: "இப்போது உள்ளூர் இருப்பு, சேவை கிடைக்கும் போது பின்னணி இருப்பு.",
+            urdu: "ابھی مقامی موجودگی، اور سروس دستیاب ہونے پر بیک اینڈ موجودگی۔"
+          })}
         </Text>
         <View style={[styles.adminStatsGrid, isWide && styles.adminStatsGridWide]}>
           <Metric
@@ -38338,30 +39293,38 @@ function AdminSection({
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Security watch</Text>
+        <Text style={styles.settingsTitle}>{l("Security watch", { hindi: "सुरक्षा निगरानी", telugu: "భద్రతా పర్యవేక్షణ", tamil: "பாதுகாப்பு கண்காணிப்பு", urdu: "سیکیورٹی نگرانی" })}</Text>
         <View style={styles.launchSummaryList}>
           <Text style={styles.launchSummaryItem}>
-            Last safety check: {securityCheckLastRun ? formatDate(securityCheckLastRun) : "Not run yet"}
+            {l("Last safety check:", { hindi: "अंतिम सुरक्षा जाँच:", telugu: "చివరి భద్రతా తనిఖీ:", tamil: "கடைசி பாதுகாப்பு சரிபார்ப்பு:", urdu: "آخری حفاظتی جانچ:" })} {securityCheckLastRun ? formatDate(securityCheckLastRun) : l("Not run yet", { hindi: "अभी तक नहीं चला", telugu: "ఇంకా అమలుకాలేదు", tamil: "இன்னும் இயக்கப்படவில்லை", urdu: "ابھی تک نہیں چلایا گیا" })}
           </Text>
-          <Text style={styles.launchSummaryItem}>Unsafe attempts blocked: {communitySafetyBlockedCount}</Text>
-          <Text style={styles.launchSummaryItem}>Strike count: {communitySafetyStrikeCount}</Text>
+          <Text style={styles.launchSummaryItem}>{l("Unsafe attempts blocked:", { hindi: "असुरक्षित प्रयास रोके गए:", telugu: "అసురక్షిత ప్రయత్నాలు నిరోధించబడ్డాయి:", tamil: "ஆபத்தான முயற்சிகள் தடுக்கப்பட்டன:", urdu: "غیر محفوظ کوششیں روکی گئیں:" })} {communitySafetyBlockedCount}</Text>
+          <Text style={styles.launchSummaryItem}>{l("Strike count:", { hindi: "चेतावनी संख्या:", telugu: "స్ట్రైక్ సంఖ్య:", tamil: "எச்சரிக்கை எண்ணிக்கை:", urdu: "اسٹرائیک گنتی:" })} {communitySafetyStrikeCount}</Text>
           <Text style={styles.launchSummaryItem}>
-            Auto-pause status (this device): {communityPostingLocked ? (communitySafetyLockReason ?? "Posting paused") : "Open"}
+            {l("Auto-pause status (this device):", { hindi: "ऑटो-पॉज़ स्थिति (यह डिवाइस):", telugu: "ఆటో-పాజ్ స్థితి (ఈ పరికరం):", tamil: "தானியங்கி நிறுத்த நிலை (இந்த சாதனம்):", urdu: "آٹو-پاز حالت (یہ ڈیوائس):" })} {communityPostingLocked ? (communitySafetyLockReason ?? l("Posting paused", { hindi: "पोस्टिंग रोकी गई", telugu: "పోస్టింగ్ నిలిపివేయబడింది", tamil: "பதிவிடுதல் நிறுத்தப்பட்டது", urdu: "پوسٹنگ روک دی گئی" })) : l("Open", { hindi: "खुला", telugu: "తెరిచి ఉంది", tamil: "திறந்த", urdu: "کھلا" })}
           </Text>
         </View>
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Admin login</Text>
+        <Text style={styles.settingsTitle}>{l("Admin login", { hindi: "एडमिन लॉगिन", telugu: "అడ్మిన్ లాగిన్", tamil: "நிர்வாகி உள்நுழைவு", urdu: "ایڈمن لاگ اِن" })}</Text>
         <Text style={styles.promptText}>
-          Admin access is verified by the backend on every login — there is no password stored in
-          the app itself, so nothing sensitive ships inside the app bundle. The login ID and code
-          are configured as server secrets and can only be changed there.
+          {l("Admin access is verified by the backend on every login — there is no password stored in the app itself, so nothing sensitive ships inside the app bundle. The login ID and code are configured as server secrets and can only be changed there.", {
+            hindi: "हर लॉगिन पर एडमिन पहुँच की पुष्टि बैकएंड द्वारा की जाती है — ऐप के अंदर कोई पासवर्ड सहेजा नहीं जाता, इसलिए ऐप bundle में कुछ भी संवेदनशील नहीं जाता। लॉगिन ID और कोड सर्वर secrets के रूप में कॉन्फ़िगर होते हैं और केवल वहीं बदले जा सकते हैं।",
+            telugu: "ప్రతి లాగిన్‌లో అడ్మిన్ యాక్సెస్‌ను బ్యాకెండ్ నిర్ధారిస్తుంది — యాప్‌లోనే పాస్‌వర్డ్ నిల్వ చేయబడదు, కాబట్టి యాప్ bundle లో సున్నితమైనది ఏదీ ఉండదు. లాగిన్ ID మరియు కోడ్ server secrets గా కాన్ఫిగర్ చేయబడ్డాయి మరియు అక్కడే మార్చవచ్చు.",
+            tamil: "ஒவ்வொரு உள்நுழைவிலும் நிர்வாகி அணுகல் பின்னணி சேவையால் உறுதிப்படுத்தப்படுகிறது — பயன்பாட்டில் கடவுச்சொல் சேமிக்கப்படவில்லை, ஆகவே செயலி bundle-ல் எதுவும் சென்சிட்டிவாக அனுப்பப்படாது. உள்நுழைவு ID மற்றும் code server secrets ஆக அமைக்கப்பட்டுள்ளன; அவை அங்கேயே மாற்றப்படலாம்.",
+            urdu: "ہر لاگ اِن پر ایڈمن رسائی بیک اینڈ سے تصدیق ہوتی ہے — ایپ میں کوئی پاس ورڈ محفوظ نہیں کیا جاتا، اس لیے ایپ bundle کے اندر کچھ حساس شامل نہیں ہوتا۔ لاگ اِن ID اور code سرور secrets کے طور پر ترتیب دیے جاتے ہیں اور صرف وہیں بدلے جا سکتے ہیں۔"
+          })}
         </Text>
         <TextInput
           value={adminAccessName}
           onChangeText={setAdminAccessName}
-          placeholder="Remembered login name or email (optional, this device only)"
+          placeholder={l("Remembered login name or email (optional, this device only)", {
+            hindi: "याद रखा गया लॉगिन नाम या ईमेल (वैकल्पिक, केवल इस डिवाइस पर)",
+            telugu: "గుర్తు పెట్టుకున్న లాగిన్ పేరు లేదా ఇమెయిల్ (ఐచ్ఛికం, ఈ పరికరంలో మాత్రమే)",
+            tamil: "நினைவில் வைத்த உள்நுழைவு பெயர் அல்லது மின்னஞ்சல் (விருப்பம், இந்த சாதனத்தில் மட்டும்)",
+            urdu: "یاد رکھا گیا لاگ اِن نام یا ای میل (اختیاری، صرف اس ڈیوائس پر)"
+          })}
           placeholderTextColor="#9A8F82"
           autoCapitalize="none"
           autoComplete="email"
@@ -38374,30 +39337,35 @@ function AdminSection({
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Safety controls</Text>
+        <Text style={styles.settingsTitle}>{l("Safety controls", { hindi: "सुरक्षा नियंत्रण", telugu: "భద్రతా నియంత్రణలు", tamil: "பாதுகாப்பு கட்டுப்பாடுகள்", urdu: "حفاظتی کنٹرولز" })}</Text>
         <PreferenceRow
-          label="Pause community posting"
+          label={l("Pause community posting", { hindi: "समुदाय पोस्टिंग रोकें", telugu: "కమ్యూనిటీ పోస్టింగ్ నిలిపివేయి", tamil: "சமூக பதிவிடலை நிறுத்து", urdu: "کمیونٹی پوسٹنگ روکیں" })}
           meta={
             communityPostingLocked
-              ? "Paused on this device only — other members elsewhere can still post"
-              : "This device can post and chat. Scoped to this device, not a global switch"
+              ? l("Paused on this device only — other members elsewhere can still post", { hindi: "सिर्फ़ इस डिवाइस पर रोका गया — अन्य सदस्य अभी भी पोस्ट कर सकते हैं", telugu: "ఈ పరికరంలో మాత్రమే నిలిపివేయబడింది — ఇతర సభ్యులు ఇంకా పోస్టు చేయగలరు", tamil: "இந்த சாதனத்தில் மட்டும் நிறுத்தப்பட்டது — மற்ற இடங்களில் உள்ள உறுப்பினர்கள் இன்னும் பதிவு செய்யலாம்", urdu: "صرف اس ڈیوائس پر روکا گیا — دوسری جگہوں کے اراکین پھر بھی پوسٹ کر سکتے ہیں" })
+              : l("This device can post and chat. Scoped to this device, not a global switch", { hindi: "यह डिवाइस पोस्ट और चैट कर सकता है। यह सिर्फ़ इस डिवाइस के लिए है, वैश्विक स्विच नहीं।", telugu: "ఈ పరికరం పోస్టు మరియు చాట్ చేయగలదు. ఇది ఈ పరికరానికి మాత్రమే పరిమితం, గ్లోబల్ స్విచ్ కాదు.", tamil: "இந்த சாதனம் பதிவிடவும் உரையாடவும் முடியும். இது இந்த சாதனத்திற்கே கட்டுப்பட்டது; உலகளாவிய சுவிட்ச் அல்ல.", urdu: "یہ ڈیوائس پوسٹ اور چیٹ کر سکتی ہے۔ یہ صرف اسی ڈیوائس کے لیے ہے، عالمی سوئچ نہیں۔" })
           }
           value={communityPostingLocked}
           onValueChange={setCommunityPostingLocked}
         />
         <PreferenceRow
-          label="Hide sensitive previews"
-          meta={sensitivePreviewsLocked ? "Preview snippets stay hidden" : "Preview snippets are visible"}
+          label={l("Hide sensitive previews", { hindi: "संवेदनशील पूर्वावलोकन छिपाएँ", telugu: "సెన్సిటివ్ ప్రివ్యూలను దాచండి", tamil: "உணர்திறன் கொண்ட முன்னோட்டங்களை மறைக்கவும்", urdu: "حساس پیش نظارے چھپائیں" })}
+          meta={sensitivePreviewsLocked ? l("Preview snippets stay hidden", { hindi: "पूर्वावलोकन स्निपेट्स छिपे रहते हैं", telugu: "ప్రివ్యూ స్నిపెట్లు దాగి ఉంటాయి", tamil: "முன்னோட்ட துணுக்குகள் மறைந்தே இருக்கும்", urdu: "پیش نظارے کے حصے چھپے رہتے ہیں" }) : l("Preview snippets are visible", { hindi: "पूर्वावलोकन स्निपेट्स दिख रहे हैं", telugu: "ప్రివ్యూ స్నిపెట్లు కనిపిస్తున్నాయి", tamil: "முன்னோட்ட துணுக்குகள் தெரிகின்றன", urdu: "پیش نظارے کے حصے نظر آ رہے ہیں" })}
           value={sensitivePreviewsLocked}
           onValueChange={setSensitivePreviewsLocked}
         />
         <Text style={styles.promptText}>
-          Use these to reduce exposure quickly if spam, harassment, or a content spike appears.
+          {l("Use these to reduce exposure quickly if spam, harassment, or a content spike appears.", {
+            hindi: "यदि स्पैम, उत्पीड़न, या कंटेंट स्पाइक दिखे तो जोखिम कम करने के लिए इनका उपयोग करें।",
+            telugu: "స్పామ్, వేధింపులు, లేదా కంటెంట్ స్పైక్ కనిపిస్తే బహిర్గతాన్ని త్వరగా తగ్గించడానికి వీటిని ఉపయోగించండి.",
+            tamil: "ஸ்பாம், தொந்தரவு, அல்லது உள்ளடக்க வெடிப்பு ஏற்பட்டால் வெளிப்பாட்டை விரைவாகக் குறைக்க இவற்றைப் பயன்படுத்தவும்.",
+            urdu: "اگر اسپیم، ہراسانی، یا مواد میں اچانک اضافہ نظر آئے تو نمائش تیزی سے کم کرنے کے لیے ان کا استعمال کریں۔"
+          })}
         </Text>
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Launch checklist</Text>
+        <Text style={styles.settingsTitle}>{l("Launch checklist", { hindi: "लॉन्च चेकलिस्ट", telugu: "లాంచ్ చెక్లిస్ట్", tamil: "துவக்க சரிபார்ப்பு பட்டியல்", urdu: "لانچ چیک لسٹ" })}</Text>
         <View style={styles.launchChecklist}>
           {launchChecklist.map((item) => {
             const done = item.status === "done";
@@ -38422,14 +39390,14 @@ function AdminSection({
       </View>
 
       <View style={styles.settingsBlock}>
-        <Text style={styles.settingsTitle}>Moderation snapshot</Text>
+        <Text style={styles.settingsTitle}>{l("Moderation snapshot", { hindi: "मॉडरेशन स्नैपशॉट", telugu: "మోడరేషన్ స్నాప్‌షాట్", tamil: "மிதப்புக் கண்ணோட்டம்", urdu: "ماڈیریشن خلاصہ" })}</Text>
         <View style={styles.launchSummaryList}>
-          <Text style={styles.launchSummaryItem}>Reports logged: {communityReports.length}</Text>
-          <Text style={styles.launchSummaryItem}>Community posts: {communityMessages.length}</Text>
-          <Text style={styles.launchSummaryItem}>Verified chat lines: {communityChatMessages.length}</Text>
-          <Text style={styles.launchSummaryItem}>User reviews saved: {userReviews.length}</Text>
-          <Text style={styles.launchSummaryItem}>Trusted contacts on device: {trustedContacts.length}</Text>
-          <Text style={styles.launchSummaryItem}>Locality set: {supportLocality.trim().length > 0 ? supportLocality : "Not set"}</Text>
+          <Text style={styles.launchSummaryItem}>{l("Reports logged:", { hindi: "दर्ज रिपोर्टें:", telugu: "నమోదైన నివేదికలు:", tamil: "பதிவுசெய்யப்பட்ட அறிக்கைகள்:", urdu: "رپورٹس درج:" })} {communityReports.length}</Text>
+          <Text style={styles.launchSummaryItem}>{l("Community posts:", { hindi: "समुदाय पोस्ट:", telugu: "కమ్యూనిటీ పోస్టులు:", tamil: "சமூக பதிவுகள்:", urdu: "کمیونٹی پوسٹس:" })} {communityMessages.length}</Text>
+          <Text style={styles.launchSummaryItem}>{l("Verified chat lines:", { hindi: "सत्यापित चैट पंक्तियाँ:", telugu: "ధృవీకరించిన చాట్ లైన్లు:", tamil: "உறுதிப்படுத்தப்பட்ட அரட்டை வரிகள்:", urdu: "تصدیق شدہ چیٹ لائنیں:" })} {communityChatMessages.length}</Text>
+          <Text style={styles.launchSummaryItem}>{l("User reviews saved:", { hindi: "सहेजी गई उपयोगकर्ता समीक्षाएँ:", telugu: "సేవ్ చేసిన వినియోగదారు సమీక్షలు:", tamil: "சேமிக்கப்பட்ட பயனர் மதிப்புரைகள்:", urdu: "محفوظ شدہ صارف جائزے:" })} {userReviews.length}</Text>
+          <Text style={styles.launchSummaryItem}>{l("Trusted contacts on device:", { hindi: "डिवाइस पर भरोसेमंद संपर्क:", telugu: "పరికరంలో నమ్మకమైన సంపర్కాలు:", tamil: "சாதனத்தில் நம்பகமான தொடர்புகள்:", urdu: "ڈیوائس پر قابلِ اعتماد رابطے:" })} {trustedContacts.length}</Text>
+          <Text style={styles.launchSummaryItem}>{l("Locality set:", { hindi: "क्षेत्र सेट:", telugu: "ప్రాంతం సెట్:", tamil: "இடம் அமைக்கப்பட்டது:", urdu: "مقام سیٹ:" })} {supportLocality.trim().length > 0 ? supportLocality : l("Not set", { hindi: "सेट नहीं", telugu: "సెట్ చేయలేదు", tamil: "அமைக்கப்படவில்லை", urdu: "سیٹ نہیں" })}</Text>
         </View>
       </View>
 
@@ -39372,7 +40340,7 @@ function OnboardingOverlay({
         {!showExitReviewPrompt ? (
           <>
             <View style={styles.onboardingHeader}>
-              <Text style={styles.eyebrow}>{t("Welcome to Aethon Beacon", "Aethon Beacon में आपका स्वागत है")}</Text>
+              <Text style={styles.eyebrow}>{t("Welcome to NAYIQ", "NAYIQ में आपका स्वागत है")}</Text>
               <Text style={styles.onboardingTitle}>{t("Choose what you need today.", "आज आपको जो चाहिए, उसे चुनें।")}</Text>
               <Text style={styles.onboardingText}>
                 {t("Start with the automatic counselling engine, calm support, Vedic insight, or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.", "स्वचालित परामर्श, शांति-सहायता, वैदिक दृष्टि या समुदाय से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप निर्यात या साझा न करें, नोट्स इसी डिवाइस पर रहेंगी।")}
@@ -43284,7 +44252,7 @@ function CounselingChatModal({
       : "Next step is not prepared yet.";
     const latestSummary = synthText.trim() || session.turns.filter((turn) => turn.role === "friend").at(-1)?.message || "Session is still in progress.";
     return [
-      "Aethon Beacon counselling summary",
+      "NAYIQ counselling summary",
       `Focus: ${issueLabel}`,
       `Replies completed: ${replyCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES}`,
       "",
@@ -43303,11 +44271,11 @@ function CounselingChatModal({
     const summary = buildCounsellingSessionSummary();
     try {
       await Share.share({
-        title: l("Aethon Beacon counselling summary", {
-          hindi: "Aethon Beacon काउंसलिंग सारांश",
-          telugu: "Aethon Beacon కౌన్సెలింగ్ సారాంశం",
-          tamil: "Aethon Beacon ஆலோசனை சுருக்கம்",
-          urdu: "Aethon Beacon مشاورت کا خلاصہ"
+        title: l("NAYIQ counselling summary", {
+          hindi: "NAYIQ काउंसलिंग सारांश",
+          telugu: "NAYIQ కౌన్సెలింగ్ సారాంశం",
+          tamil: "NAYIQ ஆலோசனை சுருக்கம்",
+          urdu: "NAYIQ مشاورت کا خلاصہ"
         }),
         message: summary
       });
@@ -44072,6 +45040,7 @@ function DynamicHeroCard({
   homeRoutePreview,
   checkInStreak,
   onOpenTab,
+  languageId = "english",
 }: {
   homeIssueDraft: string;
   setHomeIssueDraft: (v: string) => void;
@@ -44080,6 +45049,7 @@ function DynamicHeroCard({
   homeRoutePreview: RoutePreview | null;
   checkInStreak: number;
   onOpenTab: (tab: TabId) => void;
+  languageId?: LanguageId;
 }) {
   const liveDate = useLiveClock();
   const { greeting, emoji, accent } = useMemo(getTimeGreeting, []);
@@ -44115,6 +45085,34 @@ function DynamicHeroCard({
   }, [fadeAnim, pulseAnim, slideAnim]);
 
   const isEmpty = homeIssueDraft.trim().length === 0;
+  const heroTagline = pickLocalizedText(languageId, {
+    english: "IT'S OKAY NOT TO BE OKAY",
+    hindi: "ठीक न होना भी ठीक है",
+    telugu: "బాగోకపోవడం కూడా సర్వసాధారణమే",
+    tamil: "சரி இல்லாமல் இருப்பதும் சரியே",
+    urdu: "ٹھیک نہ ہونا بھی ٹھیک ہے"
+  });
+  const heroQuestion = pickLocalizedText(languageId, {
+    english: "What's on your mind today?",
+    hindi: "आज आपके मन में क्या है?",
+    telugu: "ఈ రోజు మీ మనసులో ఏముంది?",
+    tamil: "இன்று உங்கள் மனதில் என்ன இருக்கிறது?",
+    urdu: "آج آپ کے دل میں کیا ہے؟"
+  });
+  const heroPlaceholder = pickLocalizedText(languageId, {
+    english: "Describe the issue in one sentence",
+    hindi: "समस्या को एक वाक्य में लिखें",
+    telugu: "సమస్యను ఒక వాక్యంలో వివరించండి",
+    tamil: "பிரச்சினையை ஒரு வாக்கியத்தில் கூறுங்கள்",
+    urdu: "مسئلے کو ایک جملے میں بیان کریں"
+  });
+  const heroDailyPromptCta = pickLocalizedText(languageId, {
+    english: "💡 Today’s prompt — tap to use",
+    hindi: "💡 आज का संकेत — इस्तेमाल करने के लिए टैप करें",
+    telugu: "💡 నేటి సూచన — ఉపయోగించడానికి ట్యాప్ చేయండి",
+    tamil: "💡 இன்றைய தூண்டல் — பயன்படுத்த தட்டவும்",
+    urdu: "💡 آج کا اشارہ — استعمال کے لیے ٹیپ کریں"
+  });
 
   return (
     <Animated.View style={[styles.dynamicHeroCard, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
@@ -44141,23 +45139,23 @@ function DynamicHeroCard({
           source={require("./assets/aethon-beacon-icon-vibrant.png")}
           style={styles.heroRouteLogo}
           resizeMode="cover"
-          accessibilityLabel="Aethon Beacon logo"
+          accessibilityLabel={nayiqLogoA11yLabel}
         />
         <View style={{ flex: 1 }}>
-          <Text style={styles.heroRouteAppName}>Aethon Beacon</Text>
-          <Text style={styles.heroRouteTagline}>IT'S OKAY NOT TO BE OKAY</Text>
+          <Text style={styles.heroRouteAppName}>NAYIQ</Text>
+          <Text style={styles.heroRouteTagline}>{heroTagline}</Text>
         </View>
       </View>
 
       {/* Greeting + question */}
       <Text style={[styles.dynamicHeroGreeting, { marginTop: 10 }]}>{greeting}</Text>
-      <Text style={styles.heroRouteQuestion}>What's on your mind today?</Text>
+      <Text style={styles.heroRouteQuestion}>{heroQuestion}</Text>
 
       {/* Input */}
       <TextInput
         value={homeIssueDraft}
         onChangeText={setHomeIssueDraft}
-        placeholder={homeIssueDraft.length === 0 ? SMART_HINTS[hintIdx] : "Describe the issue in one sentence"}
+        placeholder={homeIssueDraft.length === 0 ? SMART_HINTS[hintIdx] : heroPlaceholder}
         placeholderTextColor="rgba(13,31,34,0.4)"
         style={styles.heroRouteInput}
         returnKeyType="go"
@@ -44172,7 +45170,7 @@ function DynamicHeroCard({
           onPress={() => setHomeIssueDraft(dailyPrompt)}
           style={({ pressed }) => [styles.heroRouteDailyChip, pressed && styles.pressed]}
         >
-          <Text style={styles.heroRouteDailyChipLabel}>💡 Today’s prompt — tap to use</Text>
+          <Text style={styles.heroRouteDailyChipLabel}>{heroDailyPromptCta}</Text>
         </Pressable>
       )}
 
