@@ -26892,7 +26892,15 @@ function FocusSection({
       <View style={styles.panel}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.eyebrow}>Calm</Text>
+            <Text style={styles.eyebrow}>
+              {pickLocalizedText(languageId, {
+                english: "Calm",
+                hindi: "शांत",
+                telugu: "ప్రశాంతం",
+                tamil: "அமைதி",
+                urdu: "سکون"
+              })}
+            </Text>
           <Text style={styles.sectionTitle}>{selectedRoutine.name}</Text>
         </View>
         <Text style={styles.scoreText}>{selectedRoutine.duration}</Text>
@@ -33871,10 +33879,10 @@ function RedressSection({
   };
   const followUp = activeCase ? redressFollowUpState(activeCase.nextFollowUpIso) : null;
   const CASE_STATUS_OPTIONS: { id: RedressCaseStatus; label: string }[] = [
-    { id: "open", label: "Filed" },
-    { id: "awaiting", label: "Awaiting reply" },
-    { id: "escalated", label: "Escalated" },
-    { id: "resolved", label: "Resolved" },
+    { id: "open", label: l("Filed", { hindi: "दायर", telugu: "దాఖలైంది", tamil: "பதிவானது", urdu: "درج شدہ" }) },
+    { id: "awaiting", label: l("Awaiting reply", { hindi: "जवाब की प्रतीक्षा", telugu: "సమాధానం కోసం వేచి ఉంది", tamil: "பதில் காத்திருக்கிறது", urdu: "جواب کا انتظار" }) },
+    { id: "escalated", label: l("Escalated", { hindi: "ऊपर बढ़ाया गया", telugu: "ఎస్కలేట్ किया गया", tamil: "மேலேற்றப்பட்டது", urdu: "اوپر بڑھایا گیا" }) },
+    { id: "resolved", label: l("Resolved", { hindi: "सुलझ गया", telugu: "పరిష్కరించబడింది", tamil: "தீர்க்கப்பட்டது", urdu: "حل ہو گیا" }) },
   ];
   const caseInputStyle = { backgroundColor: "#F1F6F5", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 12, minHeight: 44, color: "#213A4A", fontSize: 16, borderWidth: 1, borderColor: "#C4D8D4" as const, marginTop: 4 };
   const caseFieldLabel = { color: "#0B6E67", fontSize: 12, fontWeight: "800" as const, marginTop: 10 };
@@ -35537,13 +35545,37 @@ function InsightsSection({
         </View>
         <TrendBars trend={trend} />
         <View style={styles.insightBand}>
-          <Text style={styles.insightTitle}>Monthly rhythm</Text>
-          <Text style={styles.insightText}>{monthlySignal}</Text>
-          <Text style={styles.insightText}>Monthly average: {monthlyAverage}</Text>
+            <Text style={styles.insightTitle}>
+              {pickLocalizedText(languageId, {
+                english: "Monthly rhythm",
+                hindi: "मासिक लय",
+                telugu: "నెలవారీ లయ",
+                tamil: "மாதாந்திர தாளம்",
+                urdu: "ماہانہ ردھم"
+              })}
+            </Text>
+            <Text style={styles.insightText}>{monthlySignal}</Text>
+          <Text style={styles.insightText}>
+            {pickLocalizedText(languageId, {
+              english: "Monthly average:",
+              hindi: "मासिक औसत:",
+              telugu: "నెలవారీ సగటు:",
+              tamil: "மாதாந்திர சராசரி:",
+              urdu: "ماہانہ اوسط:"
+            })} {monthlyAverage}
+          </Text>
         </View>
         <TrendBars trend={monthTrend} />
         <View style={styles.insightBand}>
-          <Text style={styles.insightTitle}>Next best move</Text>
+          <Text style={styles.insightTitle}>
+            {pickLocalizedText(languageId, {
+              english: "Next best move",
+              hindi: "अगला सबसे अच्छा कदम",
+              telugu: "తదుపరి ఉత్తమ అడుగు",
+              tamil: "அடுத்த சிறந்த படி",
+              urdu: "اگلا بہترین قدم"
+            })}
+          </Text>
           <Text style={styles.insightText}>{nextMove}</Text>
           <View style={styles.issueCalloutActions}>
             <Pressable
@@ -35558,7 +35590,15 @@ function InsightsSection({
               onPress={onOpenCalm}
               style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
             >
-              <Text style={styles.helpButtonSecondaryLabel}>Calm</Text>
+              <Text style={styles.helpButtonSecondaryLabel}>
+                {pickLocalizedText(languageId, {
+                  english: "Calm",
+                  hindi: "शांत",
+                  telugu: "ప్రశాంతం",
+                  tamil: "அமைதி",
+                  urdu: "سکون"
+                })}
+              </Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -35591,24 +35631,52 @@ function InsightsSection({
                   <Text style={{ color: gradeColor, fontSize: 28, fontWeight: "900" }}>{grade}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>Progress Report Card</Text>
+                  <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Progress report card",
+                      hindi: "प्रगति रिपोर्ट कार्ड",
+                      telugu: "పురోగతి రిపోర్ట్ కార్డు",
+                      tamil: "முன்னேற்ற அறிக்கை அட்டை",
+                      urdu: "پیش رفت رپورٹ کارڈ"
+                    })}
+                  </Text>
                   <Text style={{ color: "#0D1F22", fontSize: 16, fontWeight: "800", marginTop: 2 }}>{gradeLabel}</Text>
                   <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>
-                    {selectedIssueGuide.label} · {checkInStreak} day streak · {weekEntries.length}/7 this week
+                    {selectedIssueGuide.label} · {checkInStreak} {pickLocalizedText(languageId, {
+                      english: "day streak",
+                      hindi: "दिन की श्रृंखला",
+                      telugu: "రోజుల స్ట్రీక్",
+                      tamil: "நாள் தொடர்ச்சி",
+                      urdu: "دنوں کا تسلسل"
+                    })} · {weekEntries.length}/7 {pickLocalizedText(languageId, {
+                      english: "this week",
+                      hindi: "इस हफ्ते",
+                      telugu: "ఈ వారం",
+                      tamil: "இந்த வாரம்",
+                      urdu: "اس ہفتے"
+                    })}
                   </Text>
                 </View>
                 <View style={{ alignItems: "center" }}>
                   <Text style={{ color: gradeColor, fontSize: 22, fontWeight: "900" }}>{overallPct}%</Text>
-                  <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>Overall</Text>
+                  <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 2 }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Overall",
+                      hindi: "कुल",
+                      telugu: "మొత్తం",
+                      tamil: "ஒட்டுமொத்தம்",
+                      urdu: "مجموعی"
+                    })}
+                  </Text>
                 </View>
               </View>
               {/* Score bars */}
               <View style={{ padding: 14, gap: 10 }}>
                 {[
-                  { label: "Weekly clarity", score: activityScore, color: "#04714F" },
-                  { label: "Consistency streak", score: consistencyScore, color: "#0052B8" },
-                  { label: "Score average", score: progressScore, color: "#A14A08" },
-                  { label: "Reports filed", score: reportsScore, color: "#B80064" },
+                  { label: pickLocalizedText(languageId, { english: "Weekly clarity", hindi: "साप्ताहिक स्पष्टता", telugu: "వారపు స్పష్టత", tamil: "வாராந்த தெளிவு", urdu: "ہفتہ وار وضاحت" }), score: activityScore, color: "#04714F" },
+                  { label: pickLocalizedText(languageId, { english: "Consistency streak", hindi: "निरंतरता की श्रृंखला", telugu: "స్థిరత్వం స్ట్రీక్", tamil: "தொடர்ச்சி தொடர்", urdu: "تسلسل کی لڑی" }), score: consistencyScore, color: "#0052B8" },
+                  { label: pickLocalizedText(languageId, { english: "Score average", hindi: "औसत स्कोर", telugu: "సగటు స్కోర్", tamil: "சராசரி மதிப்பெண்", urdu: "اوسط اسکور" }), score: progressScore, color: "#A14A08" },
+                  { label: pickLocalizedText(languageId, { english: "Reports filed", hindi: "दायर रिपोर्टें", telugu: "దాఖలైన రిపోర్టులు", tamil: "சமர்ப்பிக்கப்பட்ட அறிக்கைகள்", urdu: "داخل کردہ رپورٹس" }), score: reportsScore, color: "#B80064" },
                 ].map((item) => {
                   const accent = highContrastAccent(item.color);
                   return (
@@ -35626,13 +35694,37 @@ function InsightsSection({
               {/* Insight + action */}
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, gap: 10 }}>
                 <View style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12 }}>
-                  <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>Report insight</Text>
+                  <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Report insight",
+                      hindi: "रिपोर्ट अंतर्दृष्टि",
+                      telugu: "రిపోర్ట్ అవగాహన",
+                      tamil: "அறிக்கை பார்வை",
+                      urdu: "رپورٹ بصیرت"
+                    })}
+                  </Text>
                   <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}>{patternCritique.summary}</Text>
-                  <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, marginTop: 6 }}>Next focus: {patternCritique.next}</Text>
+                  <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, marginTop: 6 }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Next focus:",
+                      hindi: "अगला फ़ोकस:",
+                      telugu: "తదుపరి దృష్టి:",
+                      tamil: "அடுத்த கவனம்:",
+                      urdu: "اگلا فوکس:"
+                    })} {patternCritique.next}
+                  </Text>
                 </View>
                 {visitReports.length > 0 && (
                   <View style={{ gap: 6 }}>
-                    <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8 }}>Latest session reports</Text>
+                    <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8 }}>
+                      {pickLocalizedText(languageId, {
+                        english: "Latest session reports",
+                        hindi: "नवीनतम सत्र रिपोर्टें",
+                        telugu: "తాజా సెషన్ రిపోర్టులు",
+                        tamil: "சமீபத்திய அமர்வு அறிக்கைகள்",
+                        urdu: "تازہ ترین سیشن رپورٹس"
+                      })}
+                    </Text>
                     {visitReports.slice(0, 2).map((report) => (
                       <View key={report.id} style={{ backgroundColor: "#E1EEEC", borderRadius: 10, padding: 12, borderLeftWidth: 3, borderLeftColor: gradeColor }}>
                         <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "800" }}>
@@ -35647,12 +35739,26 @@ function InsightsSection({
                 )}
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Share progress report"
+                  accessibilityLabel={pickLocalizedText(languageId, {
+                    english: "Share progress report",
+                    hindi: "प्रगति रिपोर्ट साझा करें",
+                    telugu: "పురోగతి రిపోర్ట్‌ను పంచుకోండి",
+                    tamil: "முன்னேற்ற அறிக்கையைப் பகிரவும்",
+                    urdu: "پیش رفت رپورٹ شیئر کریں"
+                  })}
                   onPress={() => void onShareDailyReport()}
                   style={({ pressed }) => ({ backgroundColor: pressed ? "#C5E7D9" : "#DFF2EA", borderRadius: 10, paddingVertical: 11, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 })}
                 >
                   <Text style={{ fontSize: 16 }}>📤</Text>
-                  <Text style={{ color: "#04714F", fontSize: 13, fontWeight: "800" }}>Export full progress report</Text>
+                  <Text style={{ color: "#04714F", fontSize: 13, fontWeight: "800" }}>
+                    {pickLocalizedText(languageId, {
+                      english: "Export full progress report",
+                      hindi: "पूर्ण प्रगति रिपोर्ट निर्यात करें",
+                      telugu: "పూర్తి పురోగతి రిపోర్ట్‌ను ఎగుమతి చేయండి",
+                      tamil: "முழு முன்னேற்ற அறிக்கையை ஏற்றுமதி செய்யவும்",
+                      urdu: "مکمل پیش رفت رپورٹ برآمد کریں"
+                    })}
+                  </Text>
                 </Pressable>
               </View>
             </View>
@@ -35694,21 +35800,45 @@ function InsightsSection({
             onPress={() => onOpenTab("today")}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
-            <Text style={styles.helpButtonSecondaryLabel}>Home</Text>
+            <Text style={styles.helpButtonSecondaryLabel}>
+              {pickLocalizedText(languageId, {
+                english: "Home",
+                hindi: "होम",
+                telugu: "హోమ్",
+                tamil: "முகப்பு",
+                urdu: "ہوم"
+              })}
+            </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={onOpenCalm}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
-            <Text style={styles.helpButtonSecondaryLabel}>Calm</Text>
+            <Text style={styles.helpButtonSecondaryLabel}>
+              {pickLocalizedText(languageId, {
+                english: "Calm",
+                hindi: "शांत",
+                telugu: "ప్రశాంతం",
+                tamil: "அமைதி",
+                urdu: "سکون"
+              })}
+            </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpenTab("guide")}
             style={({ pressed }) => [styles.helpButtonSecondary, pressed && styles.pressed]}
           >
-            <Text style={styles.helpButtonSecondaryLabel}>Path</Text>
+            <Text style={styles.helpButtonSecondaryLabel}>
+              {pickLocalizedText(languageId, {
+                english: "Path",
+                hindi: "मार्ग",
+                telugu: "మార్గం",
+                tamil: "பாதை",
+                urdu: "راستہ"
+              })}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -36666,7 +36796,9 @@ function SettingsSection({
       </View>
       {/* ─── SECTION: Notifications ────────────────────────────────── */}
       <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 2 }}>
-        <Text style={[styles.eyebrow, { color: "#06B6D4", fontSize: 12, letterSpacing: 1.4 }]}>🔔  NOTIFICATIONS</Text>
+        <Text style={[styles.eyebrow, { color: "#06B6D4", fontSize: 12, letterSpacing: 1.4 }]}>
+          {t("🔔 NOTIFICATIONS", "🔔 सूचनाएँ")}
+        </Text>
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>{t("Daily check-in reminder", "दैनिक चेक-इन reminder")}</Text>
@@ -36792,7 +36924,9 @@ function SettingsSection({
         />
       </View>
       <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 2 }}>
-        <Text style={[styles.eyebrow, { color: "#F59E0B", fontSize: 12, letterSpacing: 1.4 }]}>⭐  FEEDBACK</Text>
+        <Text style={[styles.eyebrow, { color: "#F59E0B", fontSize: 12, letterSpacing: 1.4 }]}>
+          {t("⭐ FEEDBACK", "⭐ प्रतिक्रिया")}
+        </Text>
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>{t("Quick review", "त्वरित समीक्षा")}</Text>
@@ -36847,7 +36981,9 @@ function SettingsSection({
         </View>
       </View>
       <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 2 }}>
-        <Text style={[styles.eyebrow, { color: "#8B5CF6", fontSize: 12, letterSpacing: 1.4 }]}>💾  DATA & PRIVACY</Text>
+        <Text style={[styles.eyebrow, { color: "#8B5CF6", fontSize: 12, letterSpacing: 1.4 }]}>
+          {t("💾 DATA & PRIVACY", "💾 डेटा और गोपनीयता")}
+        </Text>
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>{t("Privacy", "गोपनीयता")}</Text>
@@ -39097,39 +39233,39 @@ function AdminSection({
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const launchChecklist = [
     {
-      label: "Branding, package naming, and app icons",
+      label: l("Branding, package naming, and app icons", { hindi: "ब्रांडिंग, पैकेज नामकरण, और ऐप आइकन", telugu: "బ్రాండింగ్, ప్యాకేజ్ నామకరణం, మరియు యాప్ ఐకాన్లు", tamil: "பிராண்டிங், தொகுப்பு பெயரிடல், மற்றும் செயலி ஐகான்கள்", urdu: "برانڈنگ، پیکیج نامگذاری، اور ایپ آئیکنز" }),
       status: "done",
-      note: "NAYIQ branding is already aligned in the app shell."
+      note: l("NAYIQ branding is already aligned in the app shell.", { hindi: "NAYIQ ब्रांडिंग पहले से ही ऐप शेल में सुसंगत है।", telugu: "NAYIQ బ్రాండింగ్ ఇప్పటికే యాప్ షెల్‌లో సరిపోల్చబడింది.", tamil: "NAYIQ பிராண்டிங் ஏற்கனவே செயலி ஷெல்லில் ஒரே மாதிரியாக உள்ளது.", urdu: "NAYIQ برانڈنگ پہلے ہی ایپ شیل میں ہم آہنگ ہے۔" })
     },
     {
-      label: "Privacy, terms, disclaimer, and store copy",
+      label: l("Privacy, terms, disclaimer, and store copy", { hindi: "गोपनीयता, शर्तें, अस्वीकरण, और स्टोर कॉपी", telugu: "గోప్యత, నిబంధనలు, డిస్క్లైమర్, మరియు స్టోర్ కాపీ", tamil: "தனியுரிமை, விதிமுறைகள், மறுப்பு, மற்றும் store copy", urdu: "پرائیویسی، شرائط، ڈسکلیمر، اور اسٹور کاپی" }),
       status: "done",
-      note: "Drafts exist in the repo and a user-facing legal summary is visible in Settings."
+      note: l("Drafts exist in the repo and a user-facing legal summary is visible in Settings.", { hindi: "ड्राफ्ट रिपॉज़िटरी में मौजूद हैं और Settings में उपयोगकर्ता-सामने कानूनी सारांश दिखाई देता है।", telugu: "డ్రాఫ్ట్‌లు repoలో ఉన్నాయి మరియు Settingsలో వినియోగదారుల కోసం చట్టపరమైన సారాంశం కనిపిస్తుంది.", tamil: "வரைவு கோப்புகள் repo-வில் உள்ளன, மேலும் Settings-ல் பயனருக்கான சட்ட சுருக்கம் தெரிகிறது.", urdu: "ڈرافٹس ریپو میں موجود ہیں اور Settings میں صارف کے سامنے قانونی خلاصہ نظر آتا ہے۔" })
     },
     {
-      label: "SOS, trusted contacts, and official help",
+      label: l("SOS, trusted contacts, and official help", { hindi: "SOS, भरोसेमंद संपर्क, और आधिकारिक सहायता", telugu: "SOS, నమ్మదగిన పరిచయాలు, మరియు అధికారిక సహాయం", tamil: "SOS, நம்பகமான தொடர்புகள், மற்றும் அதிகாரப்பூர்வ உதவி", urdu: "SOS، قابلِ اعتماد رابطے، اور سرکاری مدد" }),
       status: "done",
-      note: "Emergency call paths and verified resources are built in."
+      note: l("Emergency call paths and verified resources are built in.", { hindi: "आपातकालीन कॉल मार्ग और सत्यापित संसाधन ऐप में शामिल हैं।", telugu: "అత్యవసర కాల్ మార్గాలు మరియు ధృవీకరించిన వనరులు యాప్‌లో ఉన్నాయి.", tamil: "அவசர அழைப்பு பாதைகள் மற்றும் உறுதிப்படுத்தப்பட்ட வளங்கள் செயலியில் உள்ளன.", urdu: "ایمرجنسی کال راستے اور تصدیق شدہ وسائل ایپ میں موجود ہیں۔" })
     },
     {
-      label: "Adult-content moderation and reporting",
+      label: l("Adult-content moderation and reporting", { hindi: "वयस्क सामग्री मॉडरेशन और रिपोर्टिंग", telugu: "వయోజన కంటెంట్ మోడరేషన్ మరియు రిపోర్టింగ్", tamil: "வயதான உள்ளடக்க மிதப்பாக்கம் மற்றும் அறிக்கையிடல்", urdu: "بالغ مواد کی نگرانی اور رپورٹنگ" }),
       status: "done",
-      note: "Community posts and chat are filtered and reportable."
+      note: l("Community posts and chat are filtered and reportable.", { hindi: "कम्युनिटी पोस्ट और चैट फ़िल्टर की जाती हैं और रिपोर्ट की जा सकती हैं।", telugu: "కమ్యూనిటీ పోస్ట్‌లు మరియు చాట్ ఫిల్టర్ చేయబడతాయి మరియు నివేదించవచ్చు.", tamil: "சமூக பதிவுகள் மற்றும் chat வடிகட்டப்பட்டும், புகாரளிக்கக்கூடியவையாகவும் உள்ளன.", urdu: "کمیونٹی پوسٹس اور چیٹ فلٹر کی جاتی ہیں اور رپورٹ کی جا سکتی ہیں۔" })
     },
     {
-      label: "Native voice assistance",
+      label: l("Native voice assistance", { hindi: "देशी आवाज़ सहायता", telugu: "స్థానిక వాయిస్ సహాయం", tamil: "இயல்பான குரல் உதவி", urdu: "مقامی صوتی مدد" }),
       status: "done",
-      note: "Web uses browser speech, and iOS/Android use Expo Speech for device voice readout."
+      note: l("Web uses browser speech, and iOS/Android use Expo Speech for device voice readout.", { hindi: "Web में browser speech का उपयोग होता है, और iOS/Android में device voice readout के लिए Expo Speech उपयोग होता है।", telugu: "Webలో browser speech ఉపయోగిస్తారు, మరియు iOS/Androidలో పరికర voice readout కోసం Expo Speech ఉపయోగిస్తారు.", tamil: "Web-ல் browser speech பயன்படுத்தப்படுகிறது, மேலும் iOS/Android-ல் device voice readout-க்கு Expo Speech பயன்படுத்தப்படுகிறது.", urdu: "ویب میں براؤزر اسپیچ استعمال ہوتی ہے، اور iOS/Android میں device voice readout کے لیے Expo Speech استعمال ہوتا ہے۔" })
     },
     {
-      label: "Crash/error monitoring and backend auth",
+      label: l("Crash/error monitoring and backend auth", { hindi: "क्रैश/त्रुटि मॉनिटरिंग और बैकएंड प्रमाणीकरण", telugu: "క్రాష్/లోప మానిటరింగ్ మరియు బ్యాకెండ్ ధృవీకరణ", tamil: "crash/error கண்காணிப்பு மற்றும் backend auth", urdu: "کریش/خرابی نگرانی اور بیک اینڈ تصدیق" }),
       status: "pending",
-      note: "Needed before open public release and multi-user launch."
+      note: l("Needed before open public release and multi-user launch.", { hindi: "खुली सार्वजनिक रिलीज़ और बहु-उपयोगकर्ता लॉन्च से पहले यह आवश्यक है।", telugu: "బహిరంగ విడుదల మరియు బహుళ-వినియోగదారు ప్రారంభానికి ముందు ఇది అవసరం.", tamil: "பொது வெளியீடு மற்றும் பல பயனர் வெளியீட்டுக்கு முன் இது தேவை.", urdu: "کھلی عوامی ریلیز اور متعدد صارف لانچ سے پہلے یہ ضروری ہے۔" })
     },
     {
-      label: "Cloud sync and account management",
+      label: l("Cloud sync and account management", { hindi: "क्लाउड सिंक और खाता प्रबंधन", telugu: "క్లౌడ్ సింక్ మరియు ఖాతా నిర్వహణ", tamil: "கிளவுட் ஒத்திசைவு மற்றும் கணக்கு மேலாண்மை", urdu: "کلاؤڈ سنک اور اکاؤنٹ مینجمنٹ" }),
       status: "pending",
-      note: "Still a future phase because the app is local-first today."
+      note: l("Still a future phase because the app is local-first today.", { hindi: "यह अभी भी भविष्य का चरण है क्योंकि ऐप आज local-first है।", telugu: "యాప్ నేడు local-first కావడంతో ఇది ఇంకా భవిష్య దశ.", tamil: "செயலி இன்று local-first என்பதால் இது இன்னும் எதிர்கால கட்டம்.", urdu: "یہ ابھی بھی مستقبل کا مرحلہ ہے کیونکہ ایپ آج local-first ہے۔" })
     }
   ] as const;
 
@@ -39400,8 +39536,8 @@ function AdminSection({
                   <Text style={styles.launchChecklistTitle}>{item.label}</Text>
                   <Text style={styles.launchChecklistNote}>{item.note}</Text>
                 </View>
-                <Text style={[styles.launchChecklistStatus, done && styles.launchChecklistStatusDone]}>
-                  {done ? "Done" : "Pending"}
+                  <Text style={[styles.launchChecklistStatus, done && styles.launchChecklistStatusDone]}>
+                  {done ? l("Done", { hindi: "पूरा", telugu: "పూర్తి", tamil: "முடிந்தது", urdu: "مکمل" }) : l("Pending", { hindi: "लंबित", telugu: "పెండింగ్", tamil: "நிலுவையில்", urdu: "زیر التواء" })}
                 </Text>
               </View>
             );
@@ -49354,12 +49490,19 @@ const styles = StyleSheet.create({
 
   helpButton: {
     minHeight: 44,
-    borderRadius: 10,
+    borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#0E6F69"
+    backgroundColor: "#0D2334",
+    borderWidth: 1,
+    borderColor: "rgba(196,163,90,0.38)",
+    shadowColor: "#0D2334",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4
   },
   helpButtonDisabled: {
     opacity: 0.48
@@ -49374,17 +49517,22 @@ const styles = StyleSheet.create({
   },
   helpButtonSecondary: {
     minHeight: 44,
-    borderRadius: 10,
+    borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1.5,
-    borderColor: "#0E6F69",
-    backgroundColor: "#F4F8F7"
+    borderWidth: 1,
+    borderColor: "rgba(15,61,94,0.10)",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2
   },
   helpButtonSecondaryLabel: {
-    color: "#066C84",
+    color: "#0A6F66",
     fontSize: 14,
     fontWeight: "800"
   },
@@ -49583,28 +49731,38 @@ const styles = StyleSheet.create({
 
 
   communityPreviewBand: {
-    borderRadius: 8,
-    backgroundColor: "#F4F8F7",
+    borderRadius: 20,
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "rgba(46,125,154,0.28)",
+    borderColor: "rgba(15,61,94,0.08)",
     padding: 18,
-    gap: 14
+    gap: 14,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3
   },
 
 
   visionGuidanceBox: {
-    borderRadius: 12,
+    borderRadius: 16,
     borderCurve: "continuous",
-    backgroundColor: "#E3EDE6",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "rgba(196,163,90,0.3)",
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    gap: 6
+    borderColor: "rgba(15,61,94,0.08)",
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    gap: 6,
+    shadowColor: "#0F3D5E",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2
   },
 
   visionGuidanceTitle: {
-    color: "#C4A35A",
+    color: "#8A5A00",
     fontSize: 12,
     fontWeight: "700",
     textTransform: "uppercase",
@@ -49612,7 +49770,7 @@ const styles = StyleSheet.create({
   },
 
   visionGuidanceText: {
-    color: "#111827",
+    color: "#475569",
     fontSize: 12,
     lineHeight: 17
   },

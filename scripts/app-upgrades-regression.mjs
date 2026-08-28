@@ -96,7 +96,7 @@ indexOf('Private by default. Notes stay local unless shared or exported.');
 // grid they styled no longer exists in JSX) -- see mergedHelp marker above.
 indexOf('"tones",\n      "community",\n      "redress",\n      "insights"');
 // The richer report card that Visit Report moved into still lives on Patterns.
-indexOf('Progress Report Card');
+indexOf('Progress report card');
 indexOf('automatic counselling engine');
 assert(!source.includes('What NAYIQ does'), 'Vision card must not remain on the front UI');
 const hiddenNumericLabel = ['48', '-Dimension'].join('');
