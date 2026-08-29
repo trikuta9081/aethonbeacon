@@ -37693,11 +37693,11 @@ function VedicDailyCard({
               <Text style={{ color: "#325C86", fontSize: 13, fontWeight: "700", flex: 1 }}>{item.label}</Text>
               <Text style={{ color: moonChartVisualColor(item), fontSize: 12, fontWeight: "700" }}>{item.verdict} · {item.score}</Text>
             </View>
-            <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{l("Key insight", { hindi: "मुख्य अंतर्दृष्टि", telugu: "ముఖ్య అవగాహన", tamil: "முக்கிய பார்வை", urdu: "اہم بصیرت" })}: </Text>{item.interpretation}</Text>
-            <Text style={{ color: "#0057B8", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>{l("Reason", { hindi: "कारण", telugu: "కారణం", tamil: "காரணம்", urdu: "وجہ" })}: </Text>{item.scoreReason}</Text>
-            <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>{l("Supporting chart factor", { hindi: "समर्थन करने वाला चार्ट कारक", telugu: "మద్దతిచ్చే చార్ట్ కారకం", tamil: "ஆதரவளிக்கும் சார்ட் காரணி", urdu: "سپورٹنگ چارٹ عنصر" })}: </Text>{item.house}H · {item.category} · {item.verdict}</Text>
-            <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{l("Practical remedy", { hindi: "व्यावहारिक उपाय", telugu: "ప్రాక్టికల్ పరిహారం", tamil: "நடைமுறை நிவாரணம்", urdu: "عملی تدبیر" })}: </Text>{item.remedySteps[0]}</Text>
-            <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>{l("Interpretation note", { hindi: "व्याख्या नोट", telugu: "వ్యాఖ్యాన గమనిక", tamil: "விளக்கம் குறிப்பு", urdu: "تشریحی نوٹ" })}: </Text>{l("Use this as reflective guidance, not a deterministic promise.", { hindi: "इसे चिंतनशील मार्गदर्शन के रूप में उपयोग करें, निश्चित वादा नहीं।", telugu: "దీనిని ప్రతిబింబాత్మక మార్గదర్శకంగా ఉపయోగించండి, ఖచ్చితమైన హామీగా కాదు.", tamil: "இதனை சிந்தனையூட்டும் வழிகாட்டுதலாகப் பயன்படுத்துங்கள்; இது உறுதியான வாக்குறுதி அல்ல.", urdu: "اسے غور و فکر والی رہنمائی سمجھیں، حتمی وعدہ نہیں۔" })}</Text>
+            <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{l("Key insight:", { hindi: "मुख्य अंतर्दृष्टि", telugu: "ముఖ్య అవగాహన", tamil: "முக்கிய பார்வை", urdu: "اہم بصیرت" })} </Text>{item.interpretation}</Text>
+            <Text style={{ color: "#0057B8", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>{l("Reason:", { hindi: "कारण", telugu: "కారణం", tamil: "காரணம்", urdu: "وجہ" })} </Text>{item.scoreReason}</Text>
+            <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>{l("Supporting chart factor:", { hindi: "समर्थन करने वाला चार्ट कारक", telugu: "మద్దతిచ్చే చార్ట్ కారకం", tamil: "ஆதரவளிக்கும் சார்ட் காரணி", urdu: "سپورٹنگ چارٹ عنصر" })} </Text>{item.house}H · {item.category} · {item.verdict}</Text>
+            <Text style={{ color: "#0CAC62", fontSize: 12, lineHeight: 18 }}><Text style={{ fontWeight: "900" }}>{l("Practical remedy:", { hindi: "व्यावहारिक उपाय", telugu: "ప్రాక్టికల్ పరిహారం", tamil: "நடைமுறை நிவாரணம்", urdu: "عملی تدبیر" })} </Text>{item.remedySteps[0]}</Text>
+            <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>{l("Interpretation note:", { hindi: "व्याख्या नोट", telugu: "వ్యాఖ్యాన గమనిక", tamil: "விளக்கம் குறிப்பு", urdu: "تشریحی نوٹ" })} </Text>{l("Use this as reflective guidance, not a deterministic promise.", { hindi: "इसे चिंतनशील मार्गदर्शन के रूप में उपयोग करें, निश्चित वादा नहीं।", telugu: "దీనిని ప్రతిబింబాత్మక మార్గదర్శకంగా ఉపయోగించండి, ఖచ్చితమైన హామీగా కాదు.", tamil: "இதனை சிந்தனையூட்டும் வழிகாட்டுதலாகப் பயன்படுத்துங்கள்; இது உறுதியான வாக்குறுதி அல்ல.", urdu: "اسے غور و فکر والی رہنمائی سمجھیں، حتمی وعدہ نہیں۔" })}</Text>
           </View>
         ))}
       </View>
@@ -45026,7 +45026,7 @@ function CounselingChatModal({
                     accessibilityLabel={tool.label}
                     onPress={() => onOpenTool(tool.tabId)}
                     style={({ pressed }) => ({
-                      minHeight: 42,
+                      minHeight: 44,
                       minWidth: isCompactPhone ? "47%" : 150,
                       flexGrow: 1,
                       borderRadius: 13,
@@ -47628,7 +47628,7 @@ const styles = StyleSheet.create({
     paddingRight: 4
   },
   topTabButton: {
-    minHeight: 42,
+    minHeight: 44,
     minWidth: 0,
     flexGrow: 1,
     flexShrink: 1,
@@ -47666,8 +47666,8 @@ const styles = StyleSheet.create({
     minWidth: 0,
     flexShrink: 1,
     color: "#334155",
-    fontSize: 11,
-    lineHeight: 14,
+    fontSize: 12,
+    lineHeight: 16,
     fontWeight: "700"
   },
 
