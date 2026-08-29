@@ -53343,7 +53343,7 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   settingsInput: {
-    minHeight: 42,
+    minHeight: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
@@ -53354,8 +53354,8 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   settingsInputCompact: {
-    minHeight: 38,
-    paddingVertical: 7,
+    minHeight: 40,
+    paddingVertical: 8,
     fontSize: 13
   },
   segmentRow: {
