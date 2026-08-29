@@ -37,9 +37,11 @@ const appSchemes = Array.isArray(appConfig.scheme) ? appConfig.scheme : [appConf
 // Counselling chat motion. Bubbles used to appear between frames, which is the
 // clearest tell between this and a first-party messaging app. Reduced Motion
 // must collapse the entrance entirely rather than merely slowing it.
-assert(source.includes('function ChatTurnAppear('), 'Counselling turns must animate into place');
+assert(source.includes('function MessageAppear('), 'Messages must animate into place');
+assert(/MessageAppear\s+key=\{message\.id\}\s+reduceMotion=\{communityReduceMotion\}/.test(source), 'Community chat must share the same entrance as counselling');
+assert(source.includes('void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => undefined);'), 'A failed community send must be felt, not only shown as a status line');
 assert(source.includes('useNativeDriver: true'), 'Chat entrance motion must run on the native driver');
-assert(/ChatTurnAppear\s+key=\{i\}\s+reduceMotion=\{chatReduceMotion\}/.test(source), 'Chat entrance must honour the Reduced Motion setting');
+assert(/MessageAppear\s+key=\{i\}\s+reduceMotion=\{chatReduceMotion\}/.test(source), 'Chat entrance must honour the Reduced Motion setting');
 assert(source.includes('void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);'), 'A guide reply landing must be marked with a light haptic');
 
 // Cross-device sync must read the blob the app actually writes. The previous

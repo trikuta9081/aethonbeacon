@@ -23,6 +23,8 @@ import {
   Vibration,
   StatusBar,
   StyleSheet,
+  type StyleProp,
+  type ViewStyle,
   Switch,
   Text as RNText,
   type TextProps,
@@ -21769,6 +21771,9 @@ async function fetchGuidanceHelp(
         communityLocallySentMessageIdsRef.current.delete(userMessage.id);
         if (__DEV__) console.warn(`[community realtime] send failed: ${result.error ?? "unknown error"}`);
         setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device, it'll retry.");
+        // A failed send was silent apart from a status line the user may never
+        // look at. Failure is the one delivery state worth feeling.
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => undefined);
         setCommunityMessages((current) =>
           current.map((message) => message.id === userMessage.id ? { ...message, deliveryStatus: "failed" } : message)
         );
@@ -21963,6 +21968,9 @@ async function fetchGuidanceHelp(
         communityLocallySentMessageIdsRef.current.delete(userMessage.id);
         if (__DEV__) console.warn(`[community realtime] send failed: ${result.error ?? "unknown error"}`);
         setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device, it'll retry.");
+        // A failed send was silent apart from a status line the user may never
+        // look at. Failure is the one delivery state worth feeling.
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => undefined);
       } else {
         setCommunityRealtimeStatus("Live — connected");
       }
@@ -29347,6 +29355,7 @@ function GuidedSupportSection({
   birthChartHasDetails?: boolean;
 }) {
   const compact = !isWide;
+  const guidedSupportReduceMotion = useReducedMotion();
   const [useBirthChart, setUseBirthChart] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const hasSubmittedCounsellingPrompt = aiHelpMessages.some((message) => message.role === "user");
@@ -29744,8 +29753,9 @@ function GuidedSupportSection({
                 {aiHelpMessages.map((message) => {
                   const isUser = message.role === "user";
                   return (
-                    <View
+                    <MessageAppear
                       key={message.id}
+                      reduceMotion={guidedSupportReduceMotion}
                       style={[
                         styles.communityChatRow,
                         isUser ? styles.communityChatRowRight : styles.communityChatRowLeft
@@ -29782,7 +29792,7 @@ function GuidedSupportSection({
                           {message.text}
                         </Text>
                       </View>
-                    </View>
+                    </MessageAppear>
                   );
                 })}
               </View>
@@ -29954,6 +29964,7 @@ function CommunitySection({
     privateSpaceThreads.find((thread) => thread.id === privateSpaceSelectedThreadId) ??
     privateSpaceThreads[0] ??
     null;
+  const communityReduceMotion = useReducedMotion();
   const [showFullCommunity, setShowFullCommunity] = useState(false);
   // Chat draft moved down out of App(). App() is a ~6,600-line component with
   // ~180 pieces of state; holding the draft there meant every keystroke in
@@ -30781,8 +30792,9 @@ function CommunitySection({
             const isUser = message.author === "You" || message.clientId === communityClientId;
             const isVerified = message.role === "verified" || message.role === "moderator";
             return (
-              <View
+              <MessageAppear
                 key={message.id}
+                reduceMotion={communityReduceMotion}
                 style={[
                   styles.communityChatRow,
                   isUser ? styles.communityChatRowRight : styles.communityChatRowLeft
@@ -30886,7 +30898,7 @@ function CommunitySection({
                     </Pressable>
                   </View>
                 </View>
-              </View>
+              </MessageAppear>
             );
           })}
         </View>
@@ -44235,18 +44247,21 @@ const COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES = 30;
 const COUNSELING_NEXT_STEP_READY_USER_RESPONSES = 6;
 
 /**
- * A counselling turn fades and rises into place instead of appearing between
- * frames. Turns are append-only and keyed by index, so only a genuinely new
- * turn mounts -- existing bubbles never re-animate when the sheet re-renders.
+ * A message fades and rises into place instead of appearing between frames.
+ * Shared by the counselling sheet and the community chat: both are append-only
+ * lists with stable keys, so only a genuinely new message mounts and existing
+ * bubbles never re-animate when the surrounding screen re-renders.
  * Reduced Motion collapses this to a plain appearance, not a slower one.
  */
-function ChatTurnAppear({
+function MessageAppear({
   reduceMotion,
   align,
+  style,
   children
 }: {
   reduceMotion: boolean;
-  align: "flex-start" | "flex-end";
+  align?: "flex-start" | "flex-end";
+  style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
 }) {
   const appear = React.useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
@@ -44265,11 +44280,14 @@ function ChatTurnAppear({
 
   return (
     <Animated.View
-      style={{
-        alignItems: align,
-        opacity: appear,
-        transform: [{ translateY: appear.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }]
-      }}
+      style={[
+        align ? { alignItems: align } : null,
+        style,
+        {
+          opacity: appear,
+          transform: [{ translateY: appear.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }]
+        }
+      ]}
     >
       {children}
     </Animated.View>
@@ -45259,7 +45277,7 @@ function CounselingChatModal({
               ? new Date(turn.ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
               : null;
             return (
-            <ChatTurnAppear
+            <MessageAppear
               key={i}
               reduceMotion={chatReduceMotion}
               align={turn.role === "friend" ? "flex-start" : "flex-end"}
@@ -45285,7 +45303,7 @@ function CounselingChatModal({
                   {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginRight: 4 }}>{turnTime}</Text>}
                 </View>
               )}
-            </ChatTurnAppear>
+            </MessageAppear>
             );
           })}
 
