@@ -44234,6 +44234,48 @@ function buildJourneySteps(
 const COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES = 30;
 const COUNSELING_NEXT_STEP_READY_USER_RESPONSES = 6;
 
+/**
+ * A counselling turn fades and rises into place instead of appearing between
+ * frames. Turns are append-only and keyed by index, so only a genuinely new
+ * turn mounts -- existing bubbles never re-animate when the sheet re-renders.
+ * Reduced Motion collapses this to a plain appearance, not a slower one.
+ */
+function ChatTurnAppear({
+  reduceMotion,
+  align,
+  children
+}: {
+  reduceMotion: boolean;
+  align: "flex-start" | "flex-end";
+  children: React.ReactNode;
+}) {
+  const appear = React.useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
+
+  React.useEffect(() => {
+    if (reduceMotion) {
+      appear.setValue(1);
+      return;
+    }
+    Animated.timing(appear, {
+      toValue: 1,
+      duration: 260,
+      useNativeDriver: true
+    }).start();
+  }, [appear, reduceMotion]);
+
+  return (
+    <Animated.View
+      style={{
+        alignItems: align,
+        opacity: appear,
+        transform: [{ translateY: appear.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }]
+      }}
+    >
+      {children}
+    </Animated.View>
+  );
+}
+
 function CounselingChatModal({
   visible,
   onClose,
@@ -44614,6 +44656,10 @@ function CounselingChatModal({
     typingTimeoutRef.current = setTimeout(() => {
       typingTimeoutRef.current = null;
       setIsGuideTyping(false);
+      // The synthesis is the moment the whole conversation was building to, so
+      // it gets a distinct success notification rather than the light tap an
+      // ordinary reply carries.
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
       const finalTurns: CounselingTurn[] = [...turnsForSynthesis, { role: "friend", message: synthesis, ts: new Date().toISOString() }];
       const finalSession: CounselingSession = {
         ...updatedSession, turns: finalTurns, stage: "synthesizing", journeySteps: steps
@@ -44727,6 +44773,9 @@ function CounselingChatModal({
       typingTimeoutRef.current = setTimeout(() => {
         typingTimeoutRef.current = null;
         setIsGuideTyping(false);
+        // The reply arriving is a real event, not a render: a light tap marks it
+        // the way a received message does elsewhere on the phone.
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
         const friendTurn: CounselingTurn = { role: "friend", message: checkpointQuestion, ts: new Date().toISOString() };
         setSession((prev) => ({
           ...prev,
@@ -45210,7 +45259,11 @@ function CounselingChatModal({
               ? new Date(turn.ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
               : null;
             return (
-            <View key={i} style={{ alignItems: turn.role === "friend" ? "flex-start" : "flex-end" }}>
+            <ChatTurnAppear
+              key={i}
+              reduceMotion={chatReduceMotion}
+              align={turn.role === "friend" ? "flex-start" : "flex-end"}
+            >
               {turn.role === "friend" && (
                 <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, maxWidth: "88%" }}>
                   <View style={{ width: isVeryCompactPhone ? 30 : 32, height: isVeryCompactPhone ? 30 : 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -45232,7 +45285,7 @@ function CounselingChatModal({
                   {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginRight: 4 }}>{turnTime}</Text>}
                 </View>
               )}
-            </View>
+            </ChatTurnAppear>
             );
           })}
 
