@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { extname, resolve, sep } from "node:path";
 import { mkdir, readFile, stat, appendFile } from "node:fs/promises";
 import { createSign } from "node:crypto";
+import { brotliCompressSync, constants as zlibConstants, gzipSync } from "node:zlib";
 
 function parsePositiveInt(value, fallback) {
   const parsed = Number.parseInt(String(value ?? ""), 10);
@@ -45,6 +46,47 @@ const mimeTypes = new Map([
 
 function contentTypeFor(filePath) {
   return mimeTypes.get(extname(filePath).toLowerCase()) ?? "application/octet-stream";
+}
+
+// Everything here is served straight from a pre-built dist/, so a response
+// body never changes for a given path. Compress once, keep the result, and let
+// the immutable cache headers do the rest. Without this the web bundle went out
+// as ~3.7MB of uncompressed JavaScript on every cold load.
+const COMPRESSIBLE = /^(?:text\/|application\/(?:javascript|json|manifest\+json|xml)|image\/svg\+xml)/;
+const MIN_COMPRESS_BYTES = 1024;
+const compressedCache = new Map();
+
+function negotiateEncoding(req) {
+  const accepted = String(req.headers["accept-encoding"] ?? "").toLowerCase();
+  if (/\bbr\b/.test(accepted)) return "br";
+  if (/\bgzip\b/.test(accepted)) return "gzip";
+  return null;
+}
+
+function compressedBody(filePath, contentType, body, encoding) {
+  if (!encoding || body.length < MIN_COMPRESS_BYTES || !COMPRESSIBLE.test(contentType)) {
+    return null;
+  }
+  const key = `${filePath}:${encoding}`;
+  const cached = compressedCache.get(key);
+  if (cached) return cached;
+  let out;
+  try {
+    out = encoding === "br"
+      ? brotliCompressSync(body, {
+          params: {
+            [zlibConstants.BROTLI_PARAM_QUALITY]: 5,
+            [zlibConstants.BROTLI_PARAM_SIZE_HINT]: body.length
+          }
+        })
+      : gzipSync(body, { level: 6 });
+  } catch {
+    return null;
+  }
+  // A compressor that made the payload bigger is not worth the round trip.
+  if (out.length >= body.length) return null;
+  compressedCache.set(key, out);
+  return out;
 }
 
 function cacheHeadersFor(filePath) {
@@ -721,15 +763,25 @@ const server = createServer(async (req, res) => {
     return;
   }
 
+  const contentType = contentTypeFor(asset.filePath);
+  const encoding = negotiateEncoding(req);
+  const compressed = compressedBody(asset.filePath, contentType, asset.body, encoding);
+  const payload = compressed ?? asset.body;
+
   res.writeHead(200, {
-    "Content-Type": contentTypeFor(asset.filePath),
+    "Content-Type": contentType,
+    // Always vary: an intermediary must not hand a compressed body to a client
+    // that did not ask for one.
+    Vary: "Accept-Encoding",
+    ...(compressed ? { "Content-Encoding": encoding } : {}),
+    "Content-Length": String(payload.length),
     ...cacheHeadersFor(asset.filePath)
   });
   if (req.method === "HEAD") {
     res.end();
     return;
   }
-  res.end(asset.body);
+  res.end(payload);
 });
 
 server.listen(port, host, () => {

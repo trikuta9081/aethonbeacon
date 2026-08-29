@@ -50,7 +50,7 @@ import * as Speech from "expo-speech";
 // true obliquity of the ecliptic (used for the real Ascendant formula).
 import * as Astronomy from "astronomy-engine";
 import Notifications, { notificationsAvailable } from "./notifications";
-import { supabaseConfigured, pushToSupabase, pullFromSupabase, makeUserId } from "./supabaseSync";
+import { supabaseConfigured, syncNow, SYNC_STORAGE_KEY, makeUserId } from "./supabaseSync";
 import { fetchEntitlement, subscribeEntitlement, hasPremiumAccess, type Entitlement } from "./entitlements";
 import { configurePurchasesAndLogIn } from "./purchases";
 import * as Haptics from "expo-haptics";
@@ -949,7 +949,9 @@ type SearchMatch = {
   nearbyQuery?: string;
 };
 
-const STORAGE_KEY = "aethon-beacon:v2";
+// Imported rather than duplicated: sync reads this exact blob, and a silent
+// drift between the two is what made cross-device sync a no-op before.
+const STORAGE_KEY = SYNC_STORAGE_KEY;
 const LEGACY_STORAGE_KEY =
   [97, 101, 116, 104, 111, 110].map((code) => String.fromCharCode(code)).join("") +
   "-" +
@@ -11358,7 +11360,7 @@ const aiHelpSeed: GuidedSupportMessage[] = [
   {
     id: "guide-help-welcome",
     createdAt: new Date("2026-06-03T09:02:00.000Z").toISOString(),
-    author: "Beacon Guide",
+    author: "NAYIQ Guide",
     role: "assistant",
     text: buildGuidedSupportSeedReply(),
     route: "general"
@@ -18733,6 +18735,11 @@ export default function App() {
     );
   }
 
+  // Cross-device sync needs to apply a merged payload to live state, not just
+  // write it to disk -- the debounced save effect would otherwise overwrite a
+  // freshly pulled payload with whatever is still in memory.
+  const applyPersistedStateRef = React.useRef<((parsed: Partial<PersistedAppState>) => void) | null>(null);
+
   useEffect(() => {
     let mounted = true;
 
@@ -18749,6 +18756,17 @@ export default function App() {
       }
 
       const parsed = JSON.parse(raw) as Partial<PersistedAppState>;
+      applyPersistedState(parsed);
+
+      if (migratedFromLegacy) {
+        AsyncStorage.setItem(STORAGE_KEY, raw).catch(() => undefined);
+        AsyncStorage.removeItem(LEGACY_STORAGE_KEY).catch(() => undefined);
+      }
+    };
+
+    // Reading a payload and applying it are separated so that a payload merged
+    // from another device can be applied through exactly the same validation.
+    const applyPersistedState = (parsed: Partial<PersistedAppState>) => {
       const loadedSensitiveHistoryEnabled =
         Boolean(parsed.profilePhoneVerified || parsed.profileEmailVerified || parsed.accessRole === "admin");
 
@@ -19090,12 +19108,8 @@ export default function App() {
           .filter((contact): contact is TrustedContact => contact !== null);
         setTrustedContacts(nextContacts.slice(0, 3));
       }
-
-      if (migratedFromLegacy) {
-        AsyncStorage.setItem(STORAGE_KEY, raw).catch(() => undefined);
-        AsyncStorage.removeItem(LEGACY_STORAGE_KEY).catch(() => undefined);
-      }
     };
+    applyPersistedStateRef.current = applyPersistedState;
 
     loadPersistedState()
       .catch(() => undefined)
@@ -19107,6 +19121,46 @@ export default function App() {
       mounted = false;
     };
   }, []);
+
+  // ── Cross-device sync ──────────────────────────────────────────────────
+  // Sync used to fire exactly once, in the verification handler, so nothing
+  // written afterwards ever left the device. It now runs after load, whenever
+  // the app comes back to the foreground, and on a slow timer while open.
+  const syncIdentifier = profilePhoneVerified
+    ? profilePhone.trim()
+    : profileEmailVerified
+      ? profileEmail.trim()
+      : "";
+
+  const runSync = React.useCallback(async () => {
+    if (!supabaseConfigured || syncIdentifier.length === 0) return;
+    try {
+      const outcome = await syncNow(syncIdentifier);
+      // Only a merge that actually changed something locally is applied, so a
+      // sync never disturbs what the user is currently looking at for nothing.
+      if (outcome.merged) applyPersistedStateRef.current?.(outcome.merged);
+    } catch {
+      // Best-effort: sync must never surface as an app error.
+    }
+  }, [syncIdentifier]);
+
+  useEffect(() => {
+    if (!hasLoaded || !supabaseConfigured || syncIdentifier.length === 0) return;
+    let cancelled = false;
+    const tick = () => {
+      if (!cancelled) void runSync();
+    };
+    tick();
+    const interval = setInterval(tick, 5 * 60 * 1000);
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") tick();
+    });
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      subscription.remove();
+    };
+  }, [hasLoaded, runSync, syncIdentifier]);
 
   useEffect(() => {
     if (!hasLoaded || hasSeenWelcomeCard) return;
@@ -20782,9 +20836,11 @@ export default function App() {
         if (supabaseConfigured) {
           const syncIdentifier = channel === "phone" ? profilePhone.trim() : profileEmail.trim();
           if (syncIdentifier.length > 0) {
-            // Pull first (restore data from another device), then push (save current data)
-            pullFromSupabase(syncIdentifier)
-              .then(() => pushToSupabase(syncIdentifier))
+            // One pass: pull, merge field by field, push the result back.
+            syncNow(syncIdentifier)
+              .then((outcome) => {
+                if (outcome.merged) applyPersistedStateRef.current?.(outcome.merged);
+              })
               .catch(() => undefined); // silent — sync is best-effort
           }
         }
@@ -21436,7 +21492,7 @@ export default function App() {
     const primaryDimension = dimensionPlan[0] ?? supportDimensionGuides.direction;
     const dimensionLabels = formatSupportDimensionLabels(dimensionPlan, selectedLanguage.id);
     return [
-      "You are Beacon Guide, a calm human-style guide.",
+      "You are NAYIQ Guide, a calm human-style guide.",
       "Your job is operational triage: classify, route, give one concrete action, and tell the user what to do next inside the app.",
       "Do not mention providers, models, prompts, or system details.",
       "Do not add greetings, filler, therapy-style reflection, or a long essay.",
@@ -22946,7 +23002,7 @@ async function fetchGuidanceHelp(
           status === "resolved"
             ? "Close the loop and keep the report trail."
             : status === "more-guidance"
-              ? "Open Beacon Guide with the original issue context."
+              ? "Open NAYIQ Guide with the original issue context."
               : status === "reminder-set"
                 ? "Return tomorrow and check what changed."
                 : "Ask whether the route worked, needs escalation, or needs a reminder.",
@@ -26451,7 +26507,7 @@ function TodaySection({
           </View>
         </View>
         {/* Daily Loop section removed */}
-        {/* Beacon Guide / Vision card removed */}
+        {/* NAYIQ Guide / Vision card removed */}
         {/* Calm Sound and Visit Report stay in their dedicated top-level tabs.
             Community remains intentionally present in the Home command as a
             flagship verified-human-support action. */}
@@ -44933,22 +44989,22 @@ function CounselingChatModal({
           </Pressable>
           <View style={{ flex: 1, minWidth: 0, marginLeft: isVeryCompactPhone ? 2 : isCompactPhone ? 4 : 6 }}>
             {/* Consistent branding -- the enrichment card below and the
-                system prompt both already say "Beacon Guide"; the header
+                system prompt both already say "NAYIQ Guide"; the header
                 previously said the generic "Your guide", reading as two
                 different guides in the same conversation. */}
             <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 12 : isCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 18 : 20, fontWeight: "800" }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {isVeryCompactPhone
-                ? l("Beacon Guide", {
-                    hindi: "Beacon Guide",
-                    telugu: "Beacon Guide",
-                    tamil: "Beacon Guide",
-                    urdu: "Beacon Guide"
+                ? l("NAYIQ Guide", {
+                    hindi: "NAYIQ Guide",
+                    telugu: "NAYIQ Guide",
+                    tamil: "NAYIQ Guide",
+                    urdu: "NAYIQ Guide"
                   })
-                : l("Beacon Guide is listening", {
-                hindi: "Beacon Guide सुन रहा है",
-                telugu: "Beacon Guide వినుతోంది",
-                tamil: "Beacon Guide கேட்கிறது",
-                urdu: "Beacon Guide سن رہا ہے"
+                : l("NAYIQ Guide is listening", {
+                hindi: "NAYIQ Guide सुन रहा है",
+                telugu: "NAYIQ Guide వినుతోంది",
+                tamil: "NAYIQ Guide கேட்கிறது",
+                urdu: "NAYIQ Guide سن رہا ہے"
               })}
             </Text>
             {!isKeyboardVisible && <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 15 : 16 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
@@ -45267,7 +45323,7 @@ function CounselingChatModal({
               {guidanceEnrichmentLoading && (
                 <Animated.View style={{ opacity: enrichmentPulseAnim, paddingVertical: 2, paddingHorizontal: 2 }}>
                   <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "700" }}>
-                    {l("Beacon Guide is looking a little deeper…", { hindi: "Beacon Guide थोड़ा और गहराई से देख रहा है…", telugu: "Beacon Guide మరింత లోతుగా చూస్తోంది…", tamil: "Beacon Guide சிறிது மேலும் ஆழமாகப் பார்க்கிறது…", urdu: "Beacon Guide تھوڑی مزید گہرائی سے دیکھ رہا ہے…" })}
+                    {l("NAYIQ Guide is looking a little deeper…", { hindi: "NAYIQ Guide थोड़ा और गहराई से देख रहा है…", telugu: "NAYIQ Guide మరింత లోతుగా చూస్తోంది…", tamil: "NAYIQ Guide சிறிது மேலும் ஆழமாகப் பார்க்கிறது…", urdu: "NAYIQ Guide تھوڑی مزید گہرائی سے دیکھ رہا ہے…" })}
                   </Text>
                 </Animated.View>
               )}
@@ -45421,11 +45477,11 @@ function CounselingChatModal({
                   tamil: "ஆலோசனை பதில்",
                   urdu: "مشاورتی جواب"
                 })}
-                accessibilityHint={l("Type your private reply to Beacon Guide", {
-                  hindi: "Beacon Guide को अपना निजी जवाब लिखें",
-                  telugu: "Beacon Guide కు మీ వ్యక్తిగత ప్రత్యుత్తరాన్ని టైప్ చేయండి",
-                  tamil: "Beacon Guide-க்கு உங்கள் தனிப்பட்ட பதிலை தட்டச்சு செய்யவும்",
-                  urdu: "Beacon Guide کو اپنا نجی جواب لکھیں"
+                accessibilityHint={l("Type your private reply to NAYIQ Guide", {
+                  hindi: "NAYIQ Guide को अपना निजी जवाब लिखें",
+                  telugu: "NAYIQ Guide కు మీ వ్యక్తిగత ప్రత్యుత్తరాన్ని టైప్ చేయండి",
+                  tamil: "NAYIQ Guide-க்கு உங்கள் தனிப்பட்ட பதிலை தட்டச்சு செய்யவும்",
+                  urdu: "NAYIQ Guide کو اپنا نجی جواب لکھیں"
                 })}
                 style={{
                   backgroundColor: "#F1F6F5",
@@ -47465,13 +47521,15 @@ function normalizeGuidedSupportMessage(value: unknown): GuidedSupportMessage | n
     typeof message.author === "string" && message.author.trim().length > 0
       ? message.author
           .trim()
-          .replace(/^Connected Help$/i, "Beacon Guide")
-          .replace(/^Connected Router$/i, "Beacon Guide")
-          .replace(/^Aethon Help$/i, "Beacon Guide")
-          .replace(/^Aethon Router$/i, "Beacon Guide")
+          // Messages stored under earlier names still render as the guide.
+          .replace(/^Beacon Guide$/i, "NAYIQ Guide")
+          .replace(/^Connected Help$/i, "NAYIQ Guide")
+          .replace(/^Connected Router$/i, "NAYIQ Guide")
+          .replace(/^Aethon Help$/i, "NAYIQ Guide")
+          .replace(/^Aethon Router$/i, "NAYIQ Guide")
       : role === "user"
         ? "You"
-        : "Beacon Guide";
+        : "NAYIQ Guide";
 
   return {
     id:
@@ -53900,7 +53958,7 @@ const styles = StyleSheet.create({
 
   // ── Tab banner cards (Journal / Wellness / Wisdom / Community) ───────────
   // Shared header banner used at the top of every single tab (Journal,
-  // Meditation, Beacon Guide, Practice, Search, Community, Patterns, Settings,
+  // Meditation, NAYIQ Guide, Practice, Search, Community, Patterns, Settings,
   // Language, Admin, Vedic -- one style, ~10 call sites). Upgraded to match
   // the glassy elevated-card language introduced on the Home hero card:
   // softer rounded corners, a lighter tinted shadow instead of flat black,

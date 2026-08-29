@@ -79,6 +79,7 @@ jobs:
           pnpm run test:product-quality
           pnpm run test:upgrades
           pnpm run test:meditation
+          pnpm run test:sync
 
       - name: Build web bundle
         run: pnpm run export:web

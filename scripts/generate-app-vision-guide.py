@@ -26,8 +26,10 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
 PUBLIC.mkdir(parents=True, exist_ok=True)
 
-PDF_PATH = PUBLIC / "aethon-beacon-app-vision-guide.pdf"
-DOCX_PATH = PUBLIC / "aethon-beacon-app-vision-guide.docx"
+# The guide's contents are already NAYIQ-branded; only these filenames still
+# carried the old brand into the public web root.
+PDF_PATH = PUBLIC / "nayiq-app-vision-guide.pdf"
+DOCX_PATH = PUBLIC / "nayiq-app-vision-guide.docx"
 
 
 CONTENT = {

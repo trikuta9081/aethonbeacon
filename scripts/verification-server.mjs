@@ -491,7 +491,7 @@ function buildGuidancePrompt(body) {
   }
 
   return [
-    "You are Beacon Guide.",
+    "You are NAYIQ Guide.",
     "Reply with operational triage, not generic counselling.",
     "Classify the issue, choose the route, give one concrete next action, and say when to escalate.",
     "Keep the answer short and easy to scan. Do not be verbose or generic.",
@@ -695,7 +695,7 @@ function buildBriefPrompt(body) {
   const timeOfDay = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening";
 
   return [
-    "You are Beacon Guide writing a short, warm, personal daily brief for a wellness app.",
+    "You are NAYIQ Guide writing a short, warm, personal daily brief for a wellness app.",
     "Write in second person. Be direct. Sound human, not robotic. No bullet points.",
     "Two sentences maximum. First: acknowledge their current state using the data. Second: one clear action for today.",
     "Do not mention the service provider or that this is generated.",
@@ -758,7 +758,7 @@ function buildBirthChartPrompt(body) {
     : "";
 
   return [
-    "You are Beacon Guide writing a compact Vedic Moon-chart horoscope for a wellness app birth chart page.",
+    "You are NAYIQ Guide writing a compact Vedic Moon-chart horoscope for a wellness app birth chart page.",
     "Use Vedic-style language, but stay calm, practical, and respectful.",
     "Base every prediction only on the Moon chart: Janma Rashi, lunar Nakshatra, Tithi, and Moon-derived Vimshottari periods.",
     "Do not calculate, mention, infer, or use a Sun sign, Surya Rashi, solar chart, or Sun-chart prediction.",
@@ -824,7 +824,7 @@ function buildJournalPrompt(body) {
   const score = typeof body?.score === "number" ? body.score : null;
 
   return [
-    "You are Beacon Guide analysing a private journal entry in a wellness app.",
+    "You are NAYIQ Guide analysing a private journal entry in a wellness app.",
     "Your role: name the emotion, validate it briefly, then give one concrete next action.",
     "Be warm, non-clinical, and direct. Write in second person.",
     "Maximum 3 sentences. No bullet points. No diagnosis. No greetings.",
@@ -877,7 +877,7 @@ function buildInsightsPrompt(body) {
   const recentNotes = Array.isArray(body?.recentNotes) ? body.recentNotes.slice(0, 5).join(" | ") : "";
 
   return [
-    "You are Beacon Guide writing a weekly pattern insight for a wellness app user.",
+    "You are NAYIQ Guide writing a weekly pattern insight for a wellness app user.",
     "Analyse the data below and write 3 short paragraphs.",
     "Paragraph 1: What the numbers reveal about their emotional pattern this week.",
     "Paragraph 2: One specific strength you see in their data (streak, improvement, consistency).",

@@ -25,7 +25,8 @@
     "test:vedic": "node scripts/vedic-engine-regression.mjs",
     "test:tone": "node scripts/tone-engine-regression.mjs",
     "test:product-quality": "node scripts/product-quality-regression.mjs",
-    "test:meditation": "node scripts/meditation-dharma-regression.mjs"
+    "test:meditation": "node scripts/meditation-dharma-regression.mjs",
+  "test:sync": "node --experimental-strip-types scripts/sync-merge-regression.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/playfair-display": "^0.4.2",

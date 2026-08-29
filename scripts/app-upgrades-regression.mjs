@@ -33,6 +33,16 @@ assert(appConfig.web.favicon === './assets/nayiq-logo.png', 'Web must use the NA
 assert(appConfig.ios.bundleIdentifier === 'com.aethonbeacon.app', 'Do not create a second App Store app by changing the established bundle identifier');
 assert(appConfig.android.package === 'com.aethonbeacon.app', 'Do not create a second Play Store app by changing the established package name');
 const appSchemes = Array.isArray(appConfig.scheme) ? appConfig.scheme : [appConfig.scheme];
+
+// Cross-device sync must read the blob the app actually writes. The previous
+// implementation synced "@aethon_*" keys that were never written anywhere, so
+// every push sent zero rows and still reported success.
+const syncSource = fs.readFileSync(new URL('../supabaseSync.ts', import.meta.url), 'utf8');
+assert(!/@aethon_/.test(syncSource), 'Sync must not reference storage keys the app never writes');
+assert(syncSource.includes('export const SYNC_STORAGE_KEY = "aethon-beacon:v2"'), 'Sync must target the real persisted blob');
+assert(source.includes('const STORAGE_KEY = SYNC_STORAGE_KEY'), 'App and sync must share one storage key so they cannot drift apart');
+assert(source.includes('applyPersistedStateRef.current?.(outcome.merged)'), 'A merged payload must be applied to live state, not just written to disk');
+assert(/AppState\.addEventListener\("change", \(state\) => \{\s*if \(state === "active"\) tick\(\);/.test(source), 'Sync must run when the app returns to the foreground, not only at verification');
 assert(appSchemes.includes('aethonbeacon'), 'Keep the original URL scheme so links in already-installed builds keep resolving');
 assert(appSchemes.includes('nayiq'), 'Ship a NAYIQ URL scheme alongside the original one');
 const androidManifest = fs.readFileSync(new URL('../android/app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');
@@ -282,13 +292,13 @@ assert(
   'CounselingChatModal must receive the real weekly/monthly clarity averages, not a placeholder'
 );
 
-// Counselling chat UI polish: consistent "Beacon Guide" branding (header
+// Counselling chat UI polish: consistent "NAYIQ Guide" branding (header
 // previously said the generic "Your guide", clashing with the enrichment
-// card's "Beacon Guide" label), and a dismissible Scope-and-safety notice
+// card's "NAYIQ Guide" label), and a dismissible Scope-and-safety notice
 // (previously permanently consumed header space with no way to collapse it
 // once read, and reset back open on every new session).
 [
-  'Beacon Guide is listening',
+  'NAYIQ Guide is listening',
   'safetyNoticeExpanded',
   'setSafetyNoticeExpanded(true)',
 ].forEach((marker) => indexOf(marker));
