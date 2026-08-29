@@ -155,7 +155,7 @@ assert(!source.includes('title: "Help and Redress",\n                body:'), 'H
   'Escalation path',
   'Start tracking this complaint',
   'Share script ↗',
-  'One route, one next step'
+  'From concern to clarity'
 ].forEach((marker) => assert(source.includes(marker), `Missing Help and Redress marker: ${marker}`));
 
 // Calm / Tones must feel curated, not like a flat sound list.

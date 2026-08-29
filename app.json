@@ -6,7 +6,10 @@
     "orientation": "portrait",
     "icon": "./assets/nayiq-logo.png",
     "userInterfaceStyle": "light",
-    "scheme": "aethonbeacon",
+    "scheme": [
+      "aethonbeacon",
+      "nayiq"
+    ],
     "backgroundColor": "#0A0F1E",
     "primaryColor": "#63DED0",
     "assetBundlePatterns": [
@@ -43,7 +46,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/nayiq-logo.png",
         "backgroundColor": "#07182A"
       },
       "package": "com.aethonbeacon.app",

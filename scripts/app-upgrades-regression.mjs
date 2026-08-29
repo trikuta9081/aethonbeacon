@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 
 const source = fs.readFileSync(new URL('../App.tsx', import.meta.url), 'utf8');
+const appConfig = JSON.parse(fs.readFileSync(new URL('../app.json', import.meta.url), 'utf8')).expo;
+const iosInfo = fs.readFileSync(new URL('../ios/AethonBeacon/Info.plist', import.meta.url), 'utf8');
+const androidStrings = fs.readFileSync(new URL('../android/app/src/main/res/values/strings.xml', import.meta.url), 'utf8');
 
 function assert(condition, message) {
   if (!condition) {
@@ -19,6 +22,44 @@ function assertBefore(leftMarker, rightMarker, message) {
   const right = indexOf(rightMarker);
   assert(left < right, message ?? `${leftMarker} must appear before ${rightMarker}`);
 }
+
+// One public NAYIQ identity, while retaining the existing store records and
+// installed-app continuity represented by the original bundle identifiers.
+assert(appConfig.name === 'NAYIQ', 'The installed app display name must remain NAYIQ');
+assert(appConfig.icon === './assets/nayiq-logo.png', 'Expo must use the NAYIQ master icon');
+assert(appConfig.ios.icon === './assets/nayiq-logo.png', 'iOS must use the NAYIQ master icon');
+assert(appConfig.android.adaptiveIcon.foregroundImage === './assets/nayiq-logo.png', 'Android must use the NAYIQ master icon');
+assert(appConfig.web.favicon === './assets/nayiq-logo.png', 'Web must use the NAYIQ master icon');
+assert(appConfig.ios.bundleIdentifier === 'com.aethonbeacon.app', 'Do not create a second App Store app by changing the established bundle identifier');
+assert(appConfig.android.package === 'com.aethonbeacon.app', 'Do not create a second Play Store app by changing the established package name');
+const appSchemes = Array.isArray(appConfig.scheme) ? appConfig.scheme : [appConfig.scheme];
+assert(appSchemes.includes('aethonbeacon'), 'Keep the original URL scheme so links in already-installed builds keep resolving');
+assert(appSchemes.includes('nayiq'), 'Ship a NAYIQ URL scheme alongside the original one');
+const androidManifest = fs.readFileSync(new URL('../android/app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');
+appSchemes.forEach((scheme) => {
+  assert(iosInfo.includes(`<string>${scheme}</string>`), `iOS must register the ${scheme} URL scheme`);
+  assert(androidManifest.includes(`android:scheme="${scheme}"`), `Android must register the ${scheme} URL scheme`);
+});
+assert(
+  fs.readFileSync(new URL('../android/app/src/main/res/values/styles.xml', import.meta.url), 'utf8')
+    .includes('<item name="android:windowBackground">@drawable/splashscreen</item>'),
+  'The launch theme must use the centred splash layer-list, not a stretched bitmap'
+);
+assert(iosInfo.includes('<string>NAYIQ</string>'), 'Native iOS display name must be NAYIQ');
+assert(androidStrings.includes('<string name="app_name">NAYIQ</string>'), 'Native Android display name must be NAYIQ');
+assert(source.includes('brandTagline: "From concern to clarity"'), 'The selected NAYIQ brand promise must appear in the app header');
+assert(source.includes('NAYIQ · From concern to clarity'), 'Shared reports must use the selected NAYIQ brand promise');
+assert(source.includes('Delete this check-in?'), 'Deleting a saved check-in must require confirmation');
+assert(source.includes('Clear saved check-ins?'), 'Clearing saved check-ins must require confirmation');
+assert(source.includes('journalText("Clear draft"'), 'The draft-only action must not be mislabeled as clearing history');
+assert(source.includes('accessibilityLabel={journalText("Delete this saved check-in"'), 'Journal delete controls need a spoken label');
+assert(source.includes('Ionicons name="trash-outline"'), 'Journal delete controls must use a recognizable trash icon');
+assert(
+  fs.readFileSync(new URL('../assets/icon.png', import.meta.url)).equals(
+    fs.readFileSync(new URL('../ios/AethonBeacon/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png', import.meta.url))
+  ),
+  'The checked-in TestFlight icon must match the generated NAYIQ master output'
+);
 
 // Main section order: Help & Redress must remain in the intentional page block,
 // before the lower-priority "other/general" surfaces such as Patterns, Explore,

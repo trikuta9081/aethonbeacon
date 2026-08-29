@@ -114,6 +114,36 @@ mustNotInclude(
   'allowFontScaling: false',
   'Dynamic Type must remain enabled for text and input controls'
 );
+mustNotInclude(
+  'user-scalable=no',
+  'The web app must preserve browser zoom for low-vision users'
+);
+
+// ── Counselling composer must clear the on-screen keyboard ───────────────────
+// KeyboardAvoidingView measures the window, not the iOS pageSheet the
+// counselling chat is presented in, so with behavior="height" the reply box and
+// send button ended up hidden behind the keyboard. The sheet is flush with the
+// bottom of the screen, so the measured keyboard height is the exact overlap.
+mustNotInclude(
+  'behavior={Platform.OS === "ios" ? "height" : "padding"}',
+  'KeyboardAvoidingView cannot measure the counselling pageSheet -- do not let it resize the sheet on iOS'
+);
+mustInclude(
+  'enabled={Platform.OS !== "ios"}',
+  'KeyboardAvoidingView must stay disabled on iOS for the counselling sheet'
+);
+mustInclude(
+  'setKeyboardHeight(event?.endCoordinates?.height ?? 0)',
+  'The counselling sheet must measure the keyboard height it needs to clear'
+);
+mustInclude(
+  'keyboardHeight + (isVeryCompactPhone ? 6 : 10)',
+  'The counselling composer must pad itself above the measured keyboard'
+);
+mustInclude(
+  'Keyboard.addListener("keyboardWillChangeFrame"',
+  'Switching to the emoji or dictation keyboard must not re-hide the composer'
+);
 
 // ── Tones player header visibility fix ───────────────────────────────────────
 // The now-playing/idle player header used to be near-black

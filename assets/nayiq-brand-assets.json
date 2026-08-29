@@ -1,0 +1,19 @@
+{
+  "brand": "NAYIQ",
+  "promise": "From concern to clarity.",
+  "master": "assets/nayiq-logo.png",
+  "reference": "User-selected NAYIQ identity board 0E210119-6819-46CD-8BE6-51D0D1FC6AFE.PNG",
+  "provenance": "Identity-preserving production refinement generated with the built-in image tool on 2026-08-29.",
+  "generator": "scripts/generate-brand-icons.py",
+  "derivedTargets": [
+    "assets/icon.png",
+    "assets/splash.png",
+    "ios/AethonBeacon/Images.xcassets/AppIcon.appiconset",
+    "ios/AethonBeacon/Images.xcassets/SplashScreen.imageset",
+    "android/app/src/main/res/mipmap-*",
+    "android/app/src/main/res/drawable-*/splashscreen_logo.png",
+    "public/icon-192.png",
+    "public/icon-512.png",
+    "public/favicon.ico"
+  ]
+}

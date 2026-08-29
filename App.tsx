@@ -8,6 +8,7 @@ import {
   Animated,
   AppState,
   AppStateStatus,
+  Dimensions,
   InteractionManager,
   Image,
   ImageBackground,
@@ -7240,7 +7241,7 @@ const englishUiCopy: UiCopy = {
   homeSupportCommunityBody: "Verified support when a human handoff fits best.",
   homeSupportCommunityCta: "Open messages",
   homePrivacyNote: "Private by default. Notes stay local unless shared or exported.",
-  brandTagline: "One route, one next step",
+  brandTagline: "From concern to clarity",
   homeFlowLabel: "Guided flow",
   flowBack: "Back",
   flowNext: "Next",
@@ -7387,7 +7388,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homeSupportCommunityBody: "जब मानव हस्तांतरण सबसे उपयुक्त हो, तब सत्यापित सहायता।",
     homeSupportCommunityCta: "संदेश खोलें",
     homePrivacyNote: "डिफ़ॉल्ट रूप से निजी। नोट्स साझा या निर्यात करने तक स्थानीय रहती हैं।",
-    brandTagline: "एक मार्ग, एक अगला कदम",
+    brandTagline: "चिंता से स्पष्टता तक",
     homeFlowLabel: "मार्गदर्शित प्रवाह",
     flowBack: "पिछला",
     flowNext: "अगला",
@@ -7667,7 +7668,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homeSupportCommunityBody: "మానవ handoff సరిపోయినప్పుడు ధృవీకరించిన మద్దతు.",
     homeSupportCommunityCta: "సందేశాలు తెరవండి",
     homePrivacyNote: "అప్రమేయంగా ప్రైవేట్. పంచుకోకపోతే లేదా ఎగుమతి చేయకపోతే notes పరికరంలోనే ఉంటాయి.",
-    brandTagline: "ఒక మార్గం, ఒక తదుపరి అడుగు",
+    brandTagline: "ఆందోళన నుండి స్పష్టతకు",
     homeFlowLabel: "మార్గదర్శిత ప్రవాహం",
     flowBack: "వెనుకకు",
     flowNext: "తదుపరి",
@@ -7801,7 +7802,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homeSupportCommunityBody: "மனித handoff பொருத்தமானபோது உறுதிப்படுத்தப்பட்ட ஆதரவு.",
     homeSupportCommunityCta: "செய்திகளைத் திறக்கவும்",
     homePrivacyNote: "இயல்பாக தனிப்பட்டது. பகிரவோ export செய்யவோ செய்யாத வரை குறிப்புகள் சாதனத்திலேயே இருக்கும்.",
-    brandTagline: "ஒரு பாதை, ஒரு அடுத்த படி",
+    brandTagline: "கவலையிலிருந்து தெளிவுக்கு",
     homeFlowLabel: "வழிகாட்டப்பட்ட ஓட்டம்",
     flowBack: "முந்தைய",
     flowNext: "அடுத்து",
@@ -7935,7 +7936,7 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homeSupportCommunityBody: "جب انسانی handoff بہتر ہو تو تصدیق شدہ مدد۔",
     homeSupportCommunityCta: "پیغامات کھولیں",
     homePrivacyNote: "بطورِ ڈیفالٹ نجی۔ شیئر یا برآمد نہ کرنے تک نوٹس اسی آلہ میں رہتی ہیں۔",
-    brandTagline: "ایک راستہ، ایک اگلا قدم",
+    brandTagline: "فکر سے وضاحت تک",
     homeFlowLabel: "رہنمائی والا بہاؤ",
     flowBack: "پیچھے",
     flowNext: "اگلا",
@@ -13688,7 +13689,7 @@ async function geocodeBirthPlace(place: string): Promise<{ lat: number; lon: num
     const response = await fetch(url, {
       headers: {
         // Nominatim's usage policy requires an identifying User-Agent.
-        "User-Agent": "AethonBeacon/1.0 (birth-place geocoding for Vedic Ascendant calculation)",
+        "User-Agent": "NAYIQ/1.0 (birth-place geocoding for Vedic Ascendant calculation)",
         Accept: "application/json",
       },
     });
@@ -15250,7 +15251,7 @@ class AppErrorBoundary extends React.Component<
     return { hasError: true, errorMessage: error?.message ?? "Unknown error" };
   }
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error("[AethonBeacon] Render error:", error, info);
+    console.error("[NAYIQ] Render error:", error, info);
   }
   render() {
     if (this.state.hasError) {
@@ -15286,7 +15287,7 @@ class TabErrorBoundary extends React.Component<
     return { hasError: true };
   }
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error(`[AethonBeacon] Tab "${this.props.tabName}" crashed:`, error, info);
+    console.error(`[NAYIQ] Tab "${this.props.tabName}" crashed:`, error, info);
   }
   render() {
     if (this.state.hasError) {
@@ -16162,11 +16163,11 @@ export default function App() {
     tamil: "NAYIQ லோகோ",
     urdu: "NAYIQ لوگو"
   });
-  const splashTagline = l("Your clarity. Your next step.", {
-    hindi: "आपकी स्पष्टता। आपका अगला कदम।",
-    telugu: "మీ స్పష్టత. మీ తదుపరి అడుగు.",
-    tamil: "உங்கள் தெளிவு. உங்கள் அடுத்த படி.",
-    urdu: "آپ کی وضاحت۔ آپ کا اگلا قدم۔"
+  const splashTagline = l("From concern to clarity.", {
+    hindi: "चिंता से स्पष्टता तक।",
+    telugu: "ఆందోళన నుండి స్పష్టతకు.",
+    tamil: "கவலையிலிருந்து தெளிவுக்கு.",
+    urdu: "فکر سے وضاحت تک۔"
   });
   const visibleTabs = useMemo(
     () =>
@@ -18352,7 +18353,7 @@ export default function App() {
       separator,
       privacyLine,
       "",
-      "NAYIQ · One route, one next step",
+      "NAYIQ · From concern to clarity",
       "https://nayiq.co"
     ].join("\n");
 
@@ -20028,11 +20029,60 @@ export default function App() {
   }
 
   function deleteEntry(id: string) {
-    setEntries((current) => current.filter((entry) => entry.id !== id));
+    Alert.alert(
+      l("Delete this check-in?", {
+        hindi: "क्या यह चेक-इन हटाएँ?",
+        telugu: "ఈ చెక్-ఇన్‌ను తొలగించాలా?",
+        tamil: "இந்த செக்-இனை நீக்கவா?",
+        urdu: "کیا یہ چیک اِن حذف کریں؟"
+      }),
+      l("This removes the saved check-in from this device. This cannot be undone.", {
+        hindi: "यह सहेजे गए चेक-इन को इस डिवाइस से हटा देगा। इसे वापस नहीं किया जा सकता।",
+        telugu: "ఇది సేవ్ చేసిన చెక్-ఇన్‌ను ఈ పరికరం నుండి తొలగిస్తుంది. దీన్ని తిరిగి పొందలేరు.",
+        tamil: "இது சேமித்த செக்-இனை இந்தச் சாதனத்திலிருந்து நீக்கும். இதை மீட்டெடுக்க முடியாது.",
+        urdu: "یہ محفوظ چیک اِن کو اس ڈیوائس سے حذف کر دے گا۔ اسے واپس نہیں لایا جا سکتا۔"
+      }),
+      [
+        { text: l("Cancel", { hindi: "रद्द करें", telugu: "రద్దు", tamil: "ரத்து", urdu: "منسوخ" }), style: "cancel" },
+        {
+          text: l("Delete", { hindi: "हटाएँ", telugu: "తొలగించండి", tamil: "நீக்கு", urdu: "حذف کریں" }),
+          style: "destructive",
+          onPress: () => {
+            void Haptics.selectionAsync();
+            setEntries((current) => current.filter((entry) => entry.id !== id));
+          }
+        }
+      ]
+    );
   }
 
   function clearEntries() {
-    setEntries([]);
+    if (entries.length === 0) return;
+    Alert.alert(
+      l("Clear saved check-ins?", {
+        hindi: "सहेजे गए चेक-इन साफ़ करें?",
+        telugu: "సేవ్ చేసిన చెక్-ఇన్‌లను తొలగించాలా?",
+        tamil: "சேமித்த செக்-இன்களை அழிக்கவா?",
+        urdu: "محفوظ چیک اِن صاف کریں؟"
+      }),
+      l("This removes every saved check-in from this device. This cannot be undone.", {
+        hindi: "यह इस डिवाइस से सभी सहेजे गए चेक-इन हटा देगा। इसे वापस नहीं किया जा सकता।",
+        telugu: "ఇది ఈ పరికరం నుండి సేవ్ చేసిన అన్ని చెక్-ఇన్‌లను తొలగిస్తుంది. దీన్ని తిరిగి పొందలేరు.",
+        tamil: "இது இந்தச் சாதனத்திலிருந்து சேமித்த எல்லா செக்-இன்களையும் நீக்கும். இதை மீட்டெடுக்க முடியாது.",
+        urdu: "یہ اس ڈیوائس سے تمام محفوظ چیک اِن حذف کر دے گا۔ اسے واپس نہیں لایا جا سکتا۔"
+      }),
+      [
+        { text: l("Cancel", { hindi: "रद्द करें", telugu: "రద్దు", tamil: "ரத்து", urdu: "منسوخ" }), style: "cancel" },
+        {
+          text: l("Clear all", { hindi: "सब साफ़ करें", telugu: "అన్నీ తొలగించండి", tamil: "அனைத்தையும் அழி", urdu: "سب صاف کریں" }),
+          style: "destructive",
+          onPress: () => {
+            void Haptics.selectionAsync();
+            setEntries([]);
+          }
+        }
+      ]
+    );
   }
 
   function beginCalmStep() {
@@ -26183,11 +26233,11 @@ function TodaySection({
     urdu: "NAYIQ لوگو"
   });
   const splashTagline = pickLocalizedText(languageId, {
-    english: "Your clarity. Your next step.",
-    hindi: "आपकी स्पष्टता। आपका अगला कदम।",
-    telugu: "మీ స్పష్టత. మీ తదుపరి అడుగు.",
-    tamil: "உங்கள் தெளிவு. உங்கள் அடுத்த படி.",
-    urdu: "آپ کی وضاحت۔ آپ کا اگلا قدم۔"
+    english: "From concern to clarity.",
+    hindi: "चिंता से स्पष्टता तक।",
+    telugu: "ఆందోళన నుండి స్పష్టతకు.",
+    tamil: "கவலையிலிருந்து தெளிவுக்கு.",
+    urdu: "فکر سے وضاحت تک۔"
   });
   const homeSupportCards = [
     {
@@ -26850,10 +26900,23 @@ function JournalSection({
           />
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={journalText("Clear current draft", {
+              hindi: "मौजूदा ड्राफ्ट साफ़ करें",
+              telugu: "ప్రస్తుత డ్రాఫ్ట్‌ను తొలగించండి",
+              tamil: "தற்போதைய வரைவை அழிக்கவும்",
+              urdu: "موجودہ مسودہ صاف کریں"
+            })}
             onPress={() => setJournal("")}
             style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
           >
-            <Text style={styles.textButtonLabel}>{uiCopy.clearHistory}</Text>
+            <Text style={styles.textButtonLabel}>
+              {journalText("Clear draft", {
+                hindi: "ड्राफ्ट साफ़ करें",
+                telugu: "డ్రాఫ్ట్‌ను తొలగించండి",
+                tamil: "வரைவை அழிக்கவும்",
+                urdu: "مسودہ صاف کریں"
+              })}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -26943,10 +27006,22 @@ function JournalSection({
                 </View>
                 <Pressable
                   accessibilityRole="button"
+                  accessibilityLabel={journalText("Delete this saved check-in", {
+                    hindi: "यह सहेजा गया चेक-इन हटाएँ",
+                    telugu: "ఈ సేవ్ చేసిన చెక్-ఇన్‌ను తొలగించండి",
+                    tamil: "இந்த சேமித்த செக்-இனை நீக்கவும்",
+                    urdu: "یہ محفوظ چیک اِن حذف کریں"
+                  })}
+                  accessibilityHint={journalText("Asks for confirmation before deleting", {
+                    hindi: "हटाने से पहले पुष्टि माँगता है",
+                    telugu: "తొలగించే ముందు నిర్ధారణ అడుగుతుంది",
+                    tamil: "நீக்குவதற்கு முன் உறுதிப்படுத்தல் கேட்கும்",
+                    urdu: "حذف کرنے سے پہلے تصدیق مانگتا ہے"
+                  })}
                   onPress={() => deleteEntry(entry.id)}
-                  style={styles.deleteButton}
+                  style={({ pressed }) => [styles.deleteButton, pressed && styles.pressed]}
                 >
-                  <Text style={styles.deleteButtonLabel}>x</Text>
+                  <Ionicons name="trash-outline" size={18} color="#B42318" />
                 </Pressable>
               </View>
             ))
@@ -44250,6 +44325,12 @@ function CounselingChatModal({
   // hidden for a person who hasn't seen it yet.
   const [safetyNoticeExpanded, setSafetyNoticeExpanded] = React.useState(() => !isCompactPhone);
   const [isKeyboardVisible, setIsKeyboardVisible] = React.useState(false);
+  // Measured iOS keyboard height. KeyboardAvoidingView measures against the
+  // window, not the pageSheet it is rendered inside, so on iOS it left the
+  // composer sitting behind the keyboard. We pad the composer ourselves
+  // instead: a pageSheet is flush with the bottom of the screen, so the
+  // reported keyboard height is exactly the overlap that must be cleared.
+  const [keyboardHeight, setKeyboardHeight] = React.useState(0);
   const typingTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const typingDotsAnim = React.useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
@@ -44280,15 +44361,30 @@ function CounselingChatModal({
   React.useEffect(() => {
     const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
     const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-    const showSubscription = Keyboard.addListener(showEvent, () => {
+    const showSubscription = Keyboard.addListener(showEvent, (event) => {
       setIsKeyboardVisible(true);
+      setKeyboardHeight(event?.endCoordinates?.height ?? 0);
       setSafetyNoticeExpanded(false);
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 60);
     });
-    const hideSubscription = Keyboard.addListener(hideEvent, () => setIsKeyboardVisible(false));
+    const hideSubscription = Keyboard.addListener(hideEvent, () => {
+      setIsKeyboardVisible(false);
+      setKeyboardHeight(0);
+    });
+    // Switching to the emoji or dictation keyboard changes its height without a
+    // fresh show event, so track frame changes too and keep the composer clear.
+    const frameSubscription = Platform.OS === "ios"
+      ? Keyboard.addListener("keyboardWillChangeFrame", (event) => {
+          const height = event?.endCoordinates?.height ?? 0;
+          const screenHeight = Dimensions.get("window").height;
+          const isDismissing = (event?.endCoordinates?.screenY ?? 0) >= screenHeight;
+          setKeyboardHeight(isDismissing ? 0 : height);
+        })
+      : null;
     return () => {
       showSubscription.remove();
       hideSubscription.remove();
+      frameSubscription?.remove();
     };
   }, []);
 
@@ -44790,10 +44886,12 @@ function CounselingChatModal({
     >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        // iOS should resize the counselling sheet above the keyboard so the
-        // transcript and composer remain usable while typing. Android keeps
-        // padding because its full-screen window handles the IME differently.
-        behavior={Platform.OS === "ios" ? "height" : "padding"}
+        // iOS handles the keyboard through the measured composer padding below,
+        // because KeyboardAvoidingView cannot measure a pageSheet correctly.
+        // Android keeps padding because its full-screen window handles the IME
+        // differently.
+        behavior={Platform.OS === "ios" ? undefined : "padding"}
+        enabled={Platform.OS !== "ios"}
         keyboardVerticalOffset={0}
       >
       <View
@@ -45289,7 +45387,9 @@ function CounselingChatModal({
               borderTopColor: "#DCE9E6",
               paddingHorizontal: isKeyboardVisible || isVeryCompactPhone ? 8 : 16,
               paddingTop: isKeyboardVisible || isVeryCompactPhone ? 6 : 12,
-              paddingBottom: Math.max(insets.bottom, isKeyboardVisible || isVeryCompactPhone ? 6 : 12),
+              paddingBottom: Platform.OS === "ios" && keyboardHeight > 0
+                ? keyboardHeight + (isVeryCompactPhone ? 6 : 10)
+                : Math.max(insets.bottom, isKeyboardVisible || isVeryCompactPhone ? 6 : 12),
               flexDirection: "row",
               alignItems: "flex-end",
               gap: isKeyboardVisible || isVeryCompactPhone ? 6 : 10,
@@ -51174,7 +51274,7 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   sectionSwitcherPanelClose: {
-    minHeight: 30,
+    minHeight: 44,
     paddingHorizontal: 10,
     borderRadius: 10,
     borderWidth: 1,
@@ -52600,8 +52700,8 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   deleteButton: {
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.28)",
@@ -53354,7 +53454,7 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   settingsInputCompact: {
-    minHeight: 40,
+    minHeight: 44,
     paddingVertical: 8,
     fontSize: 13
   },

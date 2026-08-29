@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launch window paints the brand navy and centres the mark at its natural
+     size. Pointing windowBackground straight at splashscreen_logo.png stretched
+     the square mark across the whole screen. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:drawable="@color/splashscreen_background" />
+  <item>
+    <bitmap
+      android:src="@drawable/splashscreen_logo"
+      android:gravity="center" />
+  </item>
+</layer-list>

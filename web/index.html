@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <!-- Mobile-first viewport — no user scaling (app-like feel) -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <!-- Mobile-first viewport with browser zoom preserved for accessibility. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>%WEB_TITLE%</title>
 
     <!-- PWA / Home-screen -->
@@ -21,7 +21,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
 
     <!-- SEO / social -->
-    <meta name="description" content="NAYIQ — one route, one next step. Your personal clarity companion." />
+    <meta name="description" content="NAYIQ — from concern to clarity. Navigate problems, find insight, and move toward resolution." />
     <meta name="application-name" content="NAYIQ" />
 
     <!-- React Native Web style reset -->
@@ -79,6 +79,12 @@
         z-index: 9999;
         transition: opacity 0.4s ease;
       }
+      #splash img {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      }
       #splash.hide {
         opacity: 0;
         pointer-events: none;
@@ -89,11 +95,7 @@
   <body>
     <!-- Splash screen removed once JS loads -->
     <div id="splash">
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="32" cy="32" r="30" stroke="#38BDF8" stroke-width="2" opacity="0.3"/>
-        <circle cx="32" cy="32" r="20" stroke="#38BDF8" stroke-width="1.5" opacity="0.5"/>
-        <circle cx="32" cy="32" r="8" fill="#38BDF8" opacity="0.9"/>
-      </svg>
+      <img src="/icon-192.png" alt="" aria-hidden="true" />
     </div>
 
     <noscript>

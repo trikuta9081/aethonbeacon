@@ -1,7 +1,7 @@
 {
-  "name": "Aethon Beacon",
-  "short_name": "Aethon",
-  "description": "One route, one next step. Your personal clarity companion.",
+  "name": "NAYIQ",
+  "short_name": "NAYIQ",
+  "description": "Navigate problems, find insight, and move toward resolution.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

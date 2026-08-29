@@ -28,6 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>aethonbeacon</string>
+          <string>nayiq</string>
           <string>com.aethonbeacon.app</string>
         </array>
       </dict>
