@@ -131,6 +131,8 @@ function getSupabaseAdminClient() {
 
 /** @type {Map<string, { code: string; expiresAt: number; deliveryId: string; destination: string; channel: "phone" | "email"; attempts: number }>} */
 const pendingVerifications = new Map();
+/** @type {Map<string, number>} */
+const usedVerificationChallenges = new Map();
 /** @type {Map<string, number[]>} */
 const requestHistory = new Map();
 /** @type {Map<string, { sessionId: string; platform: string; role: string; firstSeenAt: number; lastSeenAt: number }>} */
@@ -225,12 +227,27 @@ function makeDeliveryId() {
   return `del_${randomUUID()}`;
 }
 
-function keyFor(channel, phone, email) {
-  return channel === "phone" ? `phone:${phone}` : `email:${email}`;
+function normalizePhoneDestination(value) {
+  const compact = String(value ?? "").trim().replace(/[()\s-]/g, "");
+  if (!/^\+?\d+$/.test(compact)) return "";
+
+  const digits = compact.replace(/^\+/, "");
+  if (compact.startsWith("+")) {
+    return digits.length >= 8 && digits.length <= 15 && !digits.startsWith("0") ? `+${digits}` : "";
+  }
+  if (digits.length === 10) return `+91${digits}`;
+  if (digits.length === 11 && digits.startsWith("0")) return `+91${digits.slice(1)}`;
+  if (digits.length === 12 && digits.startsWith("91")) return `+${digits}`;
+  if (digits.length >= 8 && digits.length <= 15 && !digits.startsWith("0")) return `+${digits}`;
+  return "";
 }
 
 function verificationDestination(channel, phone, email) {
-  return channel === "phone" ? phone : email.trim().toLowerCase();
+  return channel === "phone" ? normalizePhoneDestination(phone) : String(email ?? "").trim().toLowerCase();
+}
+
+function keyFor(channel, phone, email) {
+  return `${channel}:${verificationDestination(channel, phone, email)}`;
 }
 
 function base64UrlJson(value) {
@@ -276,6 +293,24 @@ function challengeCodeMatches(challenge, code) {
     `${challenge.channel}|${challenge.destination}|${code}|${challenge.expiresAt}|${challenge.nonce}`
   );
   return timingSafeEqualStrings(challenge.proof, expected);
+}
+
+function pruneUsedVerificationChallenges() {
+  const now = Date.now();
+  for (const [nonce, expiresAt] of usedVerificationChallenges.entries()) {
+    if (expiresAt <= now) usedVerificationChallenges.delete(nonce);
+  }
+}
+
+function claimVerificationChallenge(challenge) {
+  pruneUsedVerificationChallenges();
+  if (usedVerificationChallenges.has(challenge.nonce)) return false;
+  usedVerificationChallenges.set(challenge.nonce, challenge.expiresAt);
+  if (usedVerificationChallenges.size > 10_000) {
+    const oldestNonce = usedVerificationChallenges.keys().next().value;
+    if (oldestNonce) usedVerificationChallenges.delete(oldestNonce);
+  }
+  return true;
 }
 
 function withinWindow(timestamps, windowMs) {
@@ -1601,12 +1636,13 @@ async function handleRequest(req, res) {
         json(res, 400, { message: "channel must be phone or email." });
         return;
       }
-      if (channel === "phone" && phone.length === 0) {
-        json(res, 400, { message: "phone is required for phone verification." });
+      const destination = verificationDestination(channel, phone, email);
+      if (channel === "phone" && destination.length === 0) {
+        json(res, 400, { message: "Enter a valid phone number with country code or a 10-digit local number." });
         return;
       }
-      if (channel === "email" && email.length === 0) {
-        json(res, 400, { message: "email is required for email verification." });
+      if (channel === "email" && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(destination) || destination.length > 254)) {
+        json(res, 400, { message: "Enter a valid email address for email verification." });
         return;
       }
 
@@ -1624,7 +1660,6 @@ async function handleRequest(req, res) {
 
       const code = makeCode();
       const deliveryId = makeDeliveryId();
-      const destination = channel === "phone" ? phone : email;
       const expiresAt = Date.now() + codeTtlMs;
 
       await deliverCode({ channel, code, destination, deliveryId, body });
@@ -1640,7 +1675,7 @@ async function handleRequest(req, res) {
 
       const challenge = createVerificationChallenge({
         channel,
-        destination: verificationDestination(channel, phone, email),
+        destination,
         deliveryId,
         code,
         expiresAt
@@ -1678,6 +1713,14 @@ async function handleRequest(req, res) {
       }
 
       const destination = verificationDestination(channel, phone, email);
+      if (channel === "phone" && destination.length === 0) {
+        json(res, 400, { verified: false, message: "Enter a valid phone number before verifying." });
+        return;
+      }
+      if (channel === "email" && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(destination) || destination.length > 254)) {
+        json(res, 400, { verified: false, message: "Enter a valid email address before verifying." });
+        return;
+      }
       const challenge = challengeToken ? readVerificationChallenge(challengeToken) : null;
       if (challengeToken) {
         if (!challenge || challenge.channel !== channel || challenge.destination !== destination) {
@@ -1688,18 +1731,25 @@ async function handleRequest(req, res) {
           json(res, 410, { verified: false, message: "Verification code expired. Send a new code." });
           return;
         }
+        const pending = pendingVerifications.get(keyFor(channel, phone, email));
+        if (pending && pending.deliveryId !== challenge.deliveryId) {
+          json(res, 401, { verified: false, message: "A newer verification code was requested. Send a new code." });
+          return;
+        }
         if (!challengeCodeMatches(challenge, code)) {
-          const pendingKey = keyFor(channel, phone, email);
-          const pending = pendingVerifications.get(pendingKey);
           if (pending) {
             pending.attempts += 1;
             if (pending.attempts >= maxConfirmAttempts) {
-              pendingVerifications.delete(pendingKey);
+              pendingVerifications.delete(keyFor(channel, phone, email));
               json(res, 429, { verified: false, message: "Too many incorrect attempts. Send a new code." });
               return;
             }
           }
           json(res, 401, { verified: false, message: "Verification code did not match." });
+          return;
+        }
+        if (!claimVerificationChallenge(challenge)) {
+          json(res, 409, { verified: false, message: "This verification code was already used. Send a new code." });
           return;
         }
         pendingVerifications.delete(keyFor(channel, phone, email));

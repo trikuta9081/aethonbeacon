@@ -79,6 +79,9 @@ assert(source.includes('if (session.turns.length <= 1 && session.turns.every((tu
 assert(verification.includes('randomInt(100000, 1000000)'), "OTP codes must use cryptographic randomness.");
 assert(verification.includes('function allowGuidanceRequest') && verification.includes('GUIDANCE_MAX_REQUESTS_PER_WINDOW'), "Guidance endpoints must have server-side request throttling.");
 assert(verification.includes('function validateGuidanceBody'), "Guidance endpoints must reject oversized user-controlled prompt fields.");
+assert(verification.includes('function normalizePhoneDestination') && verification.includes('function claimVerificationChallenge'), "Verification destinations must be canonicalized and signed challenges must be single-use.");
+assert(verification.includes('A newer verification code was requested'), "A newly requested OTP must invalidate an older pending challenge.");
+assert(verification.includes('valid email address for email verification'), "Verification endpoints must reject malformed email destinations.");
 assert(communitySchema.includes("and role = 'user'"), "Anonymous community inserts must be limited to ordinary user roles.");
 assert(communityMigration.includes("and role = 'user'"), "Community migration inserts must be limited to ordinary user roles.");
 assert(entitlementSchema.includes('REVOKE SELECT ON TABLE aethon_entitlements FROM anon, authenticated'), "Entitlement rows must fail closed until trusted auth exists.");
