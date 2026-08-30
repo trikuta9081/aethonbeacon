@@ -100,6 +100,8 @@ jobs:
       # archive/upload runs.
       - name: Verify (typecheck + regression tests)
         run: |
+          pnpm run release:check
+          pnpm run verification:env-check
           pnpm run typecheck
           pnpm run test:tone
           pnpm run test:vedic
@@ -107,6 +109,7 @@ jobs:
           pnpm run test:product-quality
           pnpm run test:upgrades
           pnpm run test:meditation
+          pnpm run test:sync
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1

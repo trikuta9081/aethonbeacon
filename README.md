@@ -86,15 +86,21 @@ before running `pnpm run run:android`.
 - **Verification backend (OTP):** deployed on Render via `render.yaml`
   (`scripts/verification-server.mjs`). Set
   `EXPO_PUBLIC_VERIFICATION_API_BASE_URL` in the app build.
+- **Release preflight:** `pnpm run release:check` validates version/runtime
+  alignment, the configured privacy URL, and the bundled privacy artifacts.
+  `pnpm run verification:env-check` must also pass in the production
+  environment before public OTP-enabled release.
 
 ## Launch status
 
 - Feature-complete for beta / soft launch.
 - **Free for the first year:** feature gating / paywall is intentionally deferred
   (purchase plumbing exists in `purchases.ts`, no paywall UI wired).
-- Before public launch: host the privacy policy at a public URL, wire at least
-  one live OTP delivery lane (SMS or email) for community verification, and fill
-  the placeholders in the store + privacy docs.
+- Before public launch: deploy and verify
+  `https://aethon-beacon-web.onrender.com/privacy-policy.html` serves the
+  bundled policy (the `nayiq.co` DNS currently does not resolve), configure at
+  least one live OTP delivery lane (SMS or email) in the verification service,
+  and confirm the publisher/support details in the store and privacy docs.
 
 ## Not medical care
 

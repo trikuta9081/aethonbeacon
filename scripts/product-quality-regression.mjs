@@ -21,7 +21,7 @@ function assert(condition, message) {
   "evaluateBetaRelease"
 ].forEach((marker) => assert(quality.includes(marker), `Missing product-quality control: ${marker}`));
 
-assert(source.includes('"today",\n      "aihelp",\n      "vedic",\n      "tones",\n      "community",\n      "redress"'), "Primary navigation is not simplified.");
+assert(source.includes('const CORE_SERVICE_TAB_IDS: TabId[] = [\n      "today",\n      "aihelp",\n      "tones",\n      "community",\n      "redress"'), "Core service navigation is not simplified.");
 assert(!source.includes('"today",\n      "aihelp",\n      "guide",\n      "redress",\n      "search"'), "Legacy crowded primary navigation remains.");
 assert(source.includes('productAnalyticsEnabled={productAnalyticsEnabled}'), "Local analytics consent is not wired into Settings.");
 assert(source.includes('Delete my local data'), "Settings must include a clear local-data deletion control.");
@@ -58,6 +58,17 @@ assert(source.includes('accessibilityLabel={homeUiCopy.flowExitA11y}'), "Home Ex
 assert(source.includes('{homeUiCopy.flowExit}'), "Home Exit button label must be localized.");
 assert(source.includes('accessibilityLabel={homeUiCopy.closeSectionSwitcherA11y}'), "Section chooser close label must be localized.");
 assert(source.includes('languageId={languageId}') && source.includes('<SupportDimensionLibraryPanel'), "Shared support panels should receive language context on localized screens.");
+assert(source.includes('const compact = width < 820;'), "Redress inner tabs need a compact-width layout mode.");
+assert(source.includes('flexWrap: compact ? "wrap" : "nowrap"'), "Redress inner tabs must wrap on narrow screens instead of compressing into one row.");
+assert(source.includes('width: compact ? "48%" : undefined'), "Redress inner tabs need a readable two-column compact layout.");
+assert(source.includes('numberOfLines={compact ? 2 : 1}'), "Redress inner-tab labels must be allowed to wrap on narrow screens.");
+assert(source.includes('accessibilityState={{ selected: isActive }}'), "Redress inner tabs must expose the active tab state.");
+assert(source.includes('const PRIMARY_HEADER_TAB_IDS: TabId[] = ["today", "guide", "aihelp", "vedic", "redress", "insights"]'), "Vedic must remain a first-class top-rail tab.");
+assert(source.includes('const featuredIds = new Set<TabId>(["community", "vedic"])'), "Vedic must not be duplicated in the secondary section switcher.");
+assert(!source.includes('label: l("Vedic insight"'), "Vedic must not be duplicated in counselling support shortcuts.");
+assert(!source.includes('styles.topTabRail, isCompact && { display: "none" }'), "The compact top rail must remain available for the Vedic tab.");
+assert(source.includes('PRIVATE SUPPORT ROOM') && source.includes('backgroundColor: "#123A4A"'), "Counselling room needs a distinct vibrant entry surface.");
+assert(source.includes('backgroundColor: "#FDE8C8"') && source.includes('borderColor: "#F1C98D"'), "Counselling user messages need a warm visual distinction.");
 
 // ── Crisis lifeline safeguard ───────────────────────────────────────────────
 // A self-directed safety signal (self-harm / suicidal ideation) must lead with
@@ -132,7 +143,7 @@ assert(!source.includes('title: "Help and Redress",\n                body:'), 'H
 // Counselling is the core guided room: 30-message depth, optional six-reply
 // checkpoints, and user-owned next-step actions.
 [
-  'Guided support room',
+  'PRIVATE SUPPORT ROOM',
   'What brings you here?',
   'Understanding your situation gently first',
   'COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES = 30',
@@ -168,12 +179,14 @@ assert(!source.includes('title: "Help and Redress",\n                body:'), 'H
   'Emotional grounding',
   'Deep calm',
   'Breath timing',
-  'Purpose:',
-  'Duration:',
   'Headphones needed',
-  'Headphones optional',
-  'Intensity:'
+  'Headphones optional'
 ].forEach((marker) => assert(source.includes(marker), `Missing Calm/Tones marker: ${marker}`));
+[
+  'l("Purpose", {',
+  'l("Duration", {',
+  'l("Intensity", {'
+].forEach((marker) => assert(source.includes(marker), `Missing localized Calm/Tones marker: ${marker}`));
 
 // Vedic presentation hides internal machinery while preserving explainability.
 [

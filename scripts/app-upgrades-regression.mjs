@@ -4,6 +4,9 @@ const source = fs.readFileSync(new URL('../App.tsx', import.meta.url), 'utf8');
 const appConfig = JSON.parse(fs.readFileSync(new URL('../app.json', import.meta.url), 'utf8')).expo;
 const iosInfo = fs.readFileSync(new URL('../ios/AethonBeacon/Info.plist', import.meta.url), 'utf8');
 const androidStrings = fs.readFileSync(new URL('../android/app/src/main/res/values/strings.xml', import.meta.url), 'utf8');
+const communitySchema = fs.readFileSync(new URL('../supabase/aethon_community_messages.sql', import.meta.url), 'utf8');
+const androidWorkflow = fs.readFileSync(new URL('../.github/workflows/build-android.yml', import.meta.url), 'utf8');
+const iosWorkflow = fs.readFileSync(new URL('../.github/workflows/build-ios.yml', import.meta.url), 'utf8');
 
 function assert(condition, message) {
   if (!condition) {
@@ -53,6 +56,11 @@ assert(syncSource.includes('export const SYNC_STORAGE_KEY = "aethon-beacon:v2"')
 assert(source.includes('const STORAGE_KEY = SYNC_STORAGE_KEY'), 'App and sync must share one storage key so they cannot drift apart');
 assert(source.includes('applyPersistedStateRef.current?.(outcome.merged)'), 'A merged payload must be applied to live state, not just written to disk');
 assert(/AppState\.addEventListener\("change", \(state\) => \{\s*if \(state === "active"\) tick\(\);/.test(source), 'Sync must run when the app returns to the foreground, not only at verification');
+assert(androidWorkflow.includes('pnpm run test:sync'), 'Android releases must run the cross-device merge regression');
+assert(iosWorkflow.includes('pnpm run test:sync'), 'TestFlight releases must run the cross-device merge regression');
+assert(communitySchema.includes('grant select, insert on table public.aethon_community_messages to anon, authenticated;'), 'Community API roles need only the RLS-governed read/post grants');
+assert(communitySchema.includes("'NAYIQ Guide', 'verified'"), 'Community seed content must use the NAYIQ Guide name');
+assert(!communitySchema.includes("'Aethon Guide', 'verified'"), 'Community seed content must not reintroduce the obsolete guide name');
 assert(appSchemes.includes('aethonbeacon'), 'Keep the original URL scheme so links in already-installed builds keep resolving');
 assert(appSchemes.includes('nayiq'), 'Ship a NAYIQ URL scheme alongside the original one');
 const androidManifest = fs.readFileSync(new URL('../android/app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');
@@ -245,6 +253,14 @@ assert(
 assert(
   /<View style=\{activeTab === "tones" \? undefined : \{ display: "none" \}\}>\s*<ToneLibrarySection/.test(source),
   'ToneLibrarySection must stay mounted (hidden via display:none) instead of being conditionally rendered, or background tone playback breaks again'
+);
+assert(
+  /<ToneLibrarySection[\s\S]{0,500}?languageId=\{languageId\}/.test(source),
+  'Tones must receive the selected app language instead of rendering an English-only control surface'
+);
+assert(
+  source.includes('if (loopEnabled) sessionProgramRef.current = activeProgram?.name ?? null;'),
+  'Tone session accounting must retain the program name while playback stops'
 );
 
 // Counselling personalization pass: two real, already-computed signals that

@@ -119,5 +119,13 @@ assert(
   source.includes('does not replace professional or urgent help'),
   'The synchronized Message handoff must preserve professional/urgent-help boundaries'
 );
+assert(
+  source.includes('const selectedVoiceText = languageId === "english"'),
+  'Meditation voice guidance must branch on the selected app language instead of always reading English'
+);
+assert(
+  source.includes('Keep the breath natural. Stop if you feel pain, dizziness, panic, or disorientation.'),
+  'Localized meditation voice guidance must retain a spoken stop rule'
+);
 
 console.log("Meditation/Dharma regression passed: seven-stage source-led practice, explicit historical layers, safety controls, seven chakra entries, official guidance links, all 48 support mappings, and Counselling handoffs across Calm, Path, Meditation, Tone, Message, Vedic, and Help/Redress are present.");

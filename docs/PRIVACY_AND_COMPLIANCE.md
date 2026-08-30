@@ -5,14 +5,15 @@ store disclosure answers (Google Play Data Safety and Apple App Privacy). It is
 written to match what the app actually does, per `app.json` and the code. A
 plain-HTML version for hosting lives in `privacy-policy.html`.
 
-_Effective for app version 1.0.4. Replace bracketed items before publishing._
+_Effective for app version 1.0.4. The publisher label and support address below
+must match the final store-account details before publishing._
 
 ---
 
 ## 1. Privacy policy
 
 **Who we are.** NAYIQ ("the app", "we") is a wellbeing and guidance app
-published by [LEGAL ENTITY / DEVELOPER NAME]. Contact: [SUPPORT EMAIL].
+published by Trikuta. Contact: [trikuta9081@gmail.com](mailto:trikuta9081@gmail.com).
 
 **Our approach.** NAYIQ is local-first. The core features — journaling,
 check-ins, guidance, counselling, tones, meditation, and the Vedic chart — run
@@ -55,8 +56,8 @@ directed at children under 13. Do not use community features if you are under
 the minimum age in your region.
 
 **Your rights.** You can delete local data by removing the app. For data held on
-our backend (verification identifier, community content), contact [SUPPORT
-EMAIL] to request access or deletion.
+our backend (verification identifier, community content), contact
+[trikuta9081@gmail.com](mailto:trikuta9081@gmail.com) to request access or deletion.
 
 **Not medical care.** NAYIQ is a supportive wellbeing tool. It is not a
 medical device, diagnosis, or a substitute for professional or emergency care.
@@ -114,9 +115,12 @@ photo access.
 
 ## 5. Pre-submission compliance checklist
 
-- [ ] Host the privacy policy at a public URL; put it in both store listings.
-- [ ] Fill [LEGAL ENTITY], [SUPPORT EMAIL] placeholders here and in
-      `privacy-policy.html`.
+- [ ] Verify that `https://aethon-beacon-web.onrender.com/privacy-policy.html` serves the current
+      `public/privacy-policy.html` file; put that URL in both store listings.
+- [ ] Confirm that `Trikuta` is the correct legal/developer name and that
+      `trikuta9081@gmail.com` is monitored for privacy and deletion requests.
+- [ ] Run `pnpm run verification:env-check` in the production environment and
+      confirm at least one non-debug OTP delivery lane is configured.
 - [ ] Confirm Data Safety / App Privacy answers match this doc.
 - [ ] Content rating questionnaires completed (Teen/12+; moderated UGC).
 - [ ] Encryption: `ITSAppUsesNonExemptEncryption` is set to `false` in

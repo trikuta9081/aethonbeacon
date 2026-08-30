@@ -91,6 +91,13 @@ create policy "insert community messages"
     and char_length(trim(text)) between 1 and 1200
   );
 
+-- Tables created through SQL Editor do not always inherit API grants. RLS
+-- decides which rows are allowed; these grants decide which operations the
+-- public app roles may attempt at all. Updates/deletes stay backend-only.
+grant usage on schema public to anon, authenticated;
+grant select, insert on table public.aethon_community_messages to anon, authenticated;
+revoke update, delete on table public.aethon_community_messages from anon, authenticated;
+
 -- Enable Realtime publication when permissions allow it.
 do $$
 begin
@@ -107,6 +114,12 @@ end $$;
 -- Optional seed messages, safe to rerun.
 insert into public.aethon_community_messages (id, kind, author, role, tag, text, topic, persona)
 values
-  ('seed-feed-aethon-guide-1', 'feed', 'Aethon Guide', 'verified', 'Guidance', 'Welcome to the realtime community feed. Keep posts specific, kind, and safe.', 'general', null),
+  ('seed-feed-aethon-guide-1', 'feed', 'NAYIQ Guide', 'verified', 'Guidance', 'Welcome to the realtime community feed. Keep posts specific, kind, and safe.', 'general', null),
   ('seed-chat-aethon-guide-1', 'chat', 'Verified Mentor', 'verified', null, 'Realtime chat is ready. Share one clear next step or one question.', null, 'mentor')
-on conflict (id) do nothing;
+on conflict (id) do update set
+  author = excluded.author,
+  role = excluded.role,
+  tag = excluded.tag,
+  text = excluded.text,
+  topic = excluded.topic,
+  persona = excluded.persona;

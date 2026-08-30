@@ -37,3 +37,7 @@ alter table public.aethon_community_reports enable row level security;
 drop policy if exists "anyone can submit a report" on public.aethon_community_reports;
 
 create policy "anyone can submit a report" on public.aethon_community_reports for insert with check (char_length(reason) between 1 and 40 and char_length(snippet) between 1 and 200 and target in ('feed', 'chat'));
+
+grant usage on schema public to anon, authenticated;
+grant insert on table public.aethon_community_reports to anon, authenticated;
+revoke select, update, delete on table public.aethon_community_reports from anon, authenticated;

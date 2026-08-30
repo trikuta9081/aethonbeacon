@@ -72,6 +72,8 @@ jobs:
       # reach the live site.
       - name: Verify (typecheck + regression tests)
         run: |
+          pnpm run release:check
+          pnpm run verification:env-check
           pnpm run typecheck
           pnpm run test:tone
           pnpm run test:vedic

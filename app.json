@@ -78,7 +78,7 @@
       "expo-audio"
     ],
     "extra": {
-      "privacyPolicyUrl": "https://nayiq.co/privacy-policy.html",
+      "privacyPolicyUrl": "https://aethon-beacon-web.onrender.com/privacy-policy.html",
       "supportEmail": "trikuta9081@gmail.com",
       "eas": {
         "projectId": "c9c6e5ac-336f-49e0-8dfa-f725aeaf8442"
@@ -89,6 +89,6 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/c9c6e5ac-336f-49e0-8dfa-f725aeaf8442"
     },
-    "runtimeVersion": "1.0.3"
+    "runtimeVersion": "1.0.4"
   }
 }

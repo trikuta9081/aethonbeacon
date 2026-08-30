@@ -1000,7 +1000,7 @@ const publicLegalLinks = [
   {
     title: "Privacy",
     meta: "Local-first data use",
-    url: "https://nayiq.co/privacy-policy.html"
+    url: "https://aethon-beacon-web.onrender.com/privacy-policy.html"
   },
   {
     title: "Terms",
@@ -3099,11 +3099,10 @@ const tabs: Array<{ id: TabId; label: string; mark: string; icon: keyof typeof I
   { id: "settings", label: "Settings", mark: "⚙️", icon: "settings" },
   { id: "admin", label: "Control", mark: "⚙️", icon: "settings" }
 ];
-const PRIMARY_HEADER_TAB_IDS: TabId[] = ["today", "guide", "aihelp", "redress", "insights"];
+const PRIMARY_HEADER_TAB_IDS: TabId[] = ["today", "guide", "aihelp", "vedic", "redress", "insights"];
 const CORE_SERVICE_TAB_IDS: TabId[] = [
       "today",
       "aihelp",
-      "vedic",
       "tones",
       "community",
       "redress"
@@ -16204,7 +16203,10 @@ export default function App() {
       .filter((tab): tab is (typeof visibleTabs)[number] => Boolean(tab));
   }, [visibleTabs]);
   const sectionSwitcherTabs = useMemo(() => {
-    const featuredIds = new Set<TabId>(["community"]);
+    // Birth Chart is a first-class top-rail destination, not a secondary page.
+    // Keep it out of the overflow sheet so the same tab never appears in two
+    // navigation systems with different priority.
+    const featuredIds = new Set<TabId>(["community", "vedic"]);
     const orderedIds = [
       ...SECONDARY_PAGE_SEQUENCE,
       ...CORE_SERVICE_TAB_IDS,
@@ -23674,7 +23676,7 @@ function isTrustedExternalUrl(url: string) {
             </>
           )}
           {/* End home-only chrome. Tab rail below stays visible on every page. */}
-            <View style={[styles.topTabRail, isCompact && { display: "none" }, { backgroundColor: theme.bgDarker }]}>
+            <View style={[styles.topTabRail, { backgroundColor: theme.bgDarker }]}>
               {isCompact ? (
                 <ScrollView
                   horizontal
@@ -24459,6 +24461,7 @@ function isTrustedExternalUrl(url: string) {
             <ToneLibrarySection
               selectedIssueGuide={selectedIssueGuide}
               selectedIdentityLabel={profileDisplayName}
+              languageId={languageId}
               onOpenTab={handleTabPress}
               onOpenCalm={() => openCalmRoute(selectedIssueGuide.id)}
               onEmergencyCall={handleEmergencyCall}
@@ -27982,6 +27985,7 @@ type ToneLibraryControls = { pause: () => void; resume: () => void; stop: () => 
 function ToneLibrarySection({
   selectedIssueGuide,
   selectedIdentityLabel,
+  languageId,
   onOpenTab,
   onOpenCalm,
   onEmergencyCall,
@@ -27997,6 +28001,7 @@ function ToneLibrarySection({
 }: {
   selectedIssueGuide: IssueGuide;
   selectedIdentityLabel: string;
+  languageId: LanguageId;
   onOpenTab: (tabId: TabId) => void;
   onOpenCalm: () => void;
   onEmergencyCall?: () => Promise<void>;
@@ -28022,6 +28027,16 @@ function ToneLibrarySection({
   calmStreakDays?: number;
 }) {
   const compact = !isWide;
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
+  const localizedToneCategoryLabel = (categoryId: string, fallback: string) => ({
+    sleep: l("🌙 Sleep", { hindi: "🌙 नींद", telugu: "🌙 నిద్ర", tamil: "🌙 தூக்கம்", urdu: "🌙 نیند" }),
+    anxiety: l("🫁 Anxiety reset", { hindi: "🫁 चिंता रीसेट", telugu: "🫁 ఆందోళన రీసెట్", tamil: "🫁 பதற்ற மீட்டமைப்பு", urdu: "🫁 بے چینی ری سیٹ" }),
+    focus: l("🎯 Focus", { hindi: "🎯 एकाग्रता", telugu: "🎯 ఏకాగ్రత", tamil: "🎯 கவனம்", urdu: "🎯 توجہ" }),
+    grounding: l("🤲 Emotional grounding", { hindi: "🤲 भावनात्मक स्थिरता", telugu: "🤲 భావోద్వేగ స్థిరత్వం", tamil: "🤲 உணர்ச்சி நிலைநிறுத்தம்", urdu: "🤲 جذباتی استحکام" }),
+    deep: l("🪷 Deep calm", { hindi: "🪷 गहरी शांति", telugu: "🪷 లోతైన ప్రశాంతత", tamil: "🪷 ஆழ்ந்த அமைதி", urdu: "🪷 گہرا سکون" }),
+    breath: l("⏱ Breath timing", { hindi: "⏱ श्वास लय", telugu: "⏱ శ్వాస లయ", tamil: "⏱ மூச்சுத் தாளம்", urdu: "⏱ سانس کی لے" })
+  } as Record<string, string>)[categoryId] ?? fallback;
   const recommendedTone = useMemo(
     () => getMeditationTone(getMeditationStartChakra(selectedIssueGuide.id)),
     [selectedIssueGuide.id]
@@ -28131,7 +28146,13 @@ function ToneLibrarySection({
   const sessionToneRef = useRef({ id: selectedTone.id, label: selectedTone.label });
   useEffect(() => { sessionToneRef.current = { id: selectedTone.id, label: selectedTone.label }; }, [selectedTone.id, selectedTone.label]);
   const sessionProgramRef = useRef<string | null>(activeProgram?.name ?? null);
-  useEffect(() => { sessionProgramRef.current = activeProgram?.name ?? null; }, [activeProgram]);
+  // Keep the identity of the session that actually ran. Stop handlers clear
+  // activeProgram in the same render that turns playback off; updating this
+  // ref after that clear used to erase the program name before the accounting
+  // effect could persist it.
+  useEffect(() => {
+    if (loopEnabled) sessionProgramRef.current = activeProgram?.name ?? null;
+  }, [activeProgram, loopEnabled]);
   const sessionCompletedNaturallyRef = useRef(false);
   const onSessionCompleteRef = useRef(onSessionComplete);
   useEffect(() => { onSessionCompleteRef.current = onSessionComplete; }, [onSessionComplete]);
@@ -28195,13 +28216,28 @@ function ToneLibrarySection({
     <View style={{ paddingBottom: 20 }}>
       <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 20, borderWidth: 1, borderColor: "rgba(14,148,136,0.24)", backgroundColor: "#F4FAF8", padding: 16, gap: 6 }}>
         <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>
-          Calm for {selectedIssueGuide.label}
+          {l(`Calm for ${selectedIssueGuide.label}`, {
+            hindi: `${selectedIssueGuide.label} के लिए शांति`,
+            telugu: `${selectedIssueGuide.label} కోసం ప్రశాంతత`,
+            tamil: `${selectedIssueGuide.label}க்கான அமைதி`,
+            urdu: `${selectedIssueGuide.label} کے لیے سکون`
+          })}
         </Text>
         <Text style={{ color: "#0D1F22", fontSize: 20, lineHeight: 24, fontWeight: "900" }}>
-          Begin with one recommended session.
+          {l("Begin with one recommended session.", {
+            hindi: "एक सुझाए गए सत्र से शुरू करें।",
+            telugu: "సిఫార్సు చేసిన ఒక సెషన్‌తో ప్రారంభించండి.",
+            tamil: "பரிந்துரைக்கப்பட்ட ஒரு அமர்வுடன் தொடங்குங்கள்.",
+            urdu: "ایک تجویز کردہ سیشن سے آغاز کریں۔"
+          })}
         </Text>
         <Text style={{ color: "#334155", fontSize: 14, lineHeight: 21, fontWeight: "700" }}>
-          Choose a guided sound or breathing rhythm for the way you feel now. Nothing starts until you press Play.
+          {l("Choose a guided sound or breathing rhythm for the way you feel now. Nothing starts until you press Play.", {
+            hindi: "अभी आप जैसा महसूस कर रहे हैं, उसके लिए निर्देशित ध्वनि या श्वास-लय चुनें। Play दबाने तक कुछ शुरू नहीं होगा।",
+            telugu: "మీరు ఇప్పుడు ఎలా అనుభవిస్తున్నారో దానికి తగిన మార్గదర్శక ధ్వని లేదా శ్వాస లయను ఎంచుకోండి. Play నొక్కే వరకు ఏదీ ప్రారంభం కాదు.",
+            tamil: "இப்போது நீங்கள் உணரும் நிலைக்கு ஏற்ற வழிகாட்டும் ஒலி அல்லது மூச்சுத் தாளத்தைத் தேர்ந்தெடுக்கவும். Play அழுத்தும் வரை எதுவும் தொடங்காது.",
+            urdu: "اس وقت اپنے احساس کے مطابق رہنمائی والی آواز یا سانس کی لے منتخب کریں۔ Play دبانے تک کچھ شروع نہیں ہوگا۔"
+          })}
         </Text>
         <Text style={{ color: "#475569", fontSize: 12, lineHeight: 18, fontWeight: "700" }}>
           Connected plan: this session keeps {selectedIssueGuide.label} active in Path, counselling, and your follow-up plan.
@@ -28236,7 +28272,11 @@ function ToneLibrarySection({
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 }}>
                 <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
-                  {loopEnabled ? (tonePaused ? "⏸ PAUSED" : "▶ PLAYING") : "SELECTED"}
+                  {loopEnabled
+                    ? tonePaused
+                      ? l("⏸ PAUSED", { hindi: "⏸ रुका हुआ", telugu: "⏸ పాజ్ అయింది", tamil: "⏸ இடைநிறுத்தம்", urdu: "⏸ رکا ہوا" })
+                      : l("▶ PLAYING", { hindi: "▶ चल रहा है", telugu: "▶ ప్లే అవుతోంది", tamil: "▶ இயக்கப்படுகிறது", urdu: "▶ چل رہا ہے" })
+                    : l("SELECTED", { hindi: "चुना गया", telugu: "ఎంచుకున్నారు", tamil: "தேர்ந்தெடுக்கப்பட்டது", urdu: "منتخب" })}
                 </Text>
                 {activeProgram && (
                   <View style={{ backgroundColor: activeProgram.dimColor + "25", borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: activeProgram.dimColor + "50" }}>
@@ -28271,14 +28311,24 @@ function ToneLibrarySection({
             {calmStreakDays > 0 && (
               <View style={{ backgroundColor: "rgba(8,145,178,0.12)", borderWidth: 1, borderColor: "rgba(8,145,178,0.35)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
                 <Text style={{ color: "#0E5C6B", fontSize: 12, fontWeight: "700" }}>
-                  🔥 {calmStreakDays}-day calm streak
+                  {l(`🔥 ${calmStreakDays}-day calm streak`, {
+                    hindi: `🔥 ${calmStreakDays}-दिन की शांत निरंतरता`,
+                    telugu: `🔥 ${calmStreakDays}-రోజుల ప్రశాంతత పరంపర`,
+                    tamil: `🔥 ${calmStreakDays}-நாள் அமைதி தொடர்`,
+                    urdu: `🔥 ${calmStreakDays} دن کا سکون سلسلہ`
+                  })}
                 </Text>
               </View>
             )}
             {calmMinutesToday > 0 && (
               <View style={{ backgroundColor: "rgba(15,23,42,0.05)", borderWidth: 1, borderColor: "rgba(15,23,42,0.12)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
                 <Text style={{ color: "#263244", fontSize: 12, fontWeight: "800" }}>
-                  🧘 {calmMinutesToday} min today
+                  {l(`🧘 ${calmMinutesToday} min today`, {
+                    hindi: `🧘 आज ${calmMinutesToday} मिनट`,
+                    telugu: `🧘 ఈ రోజు ${calmMinutesToday} నిమిషాలు`,
+                    tamil: `🧘 இன்று ${calmMinutesToday} நிமிடங்கள்`,
+                    urdu: `🧘 آج ${calmMinutesToday} منٹ`
+                  })}
                 </Text>
               </View>
             )}
@@ -28287,7 +28337,7 @@ function ToneLibrarySection({
         {loopEnabled && activeProgram && breathSteps.length > 0 && (
           <View style={{ backgroundColor: "#DEE7F2", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(8,145,178,0.15)" }}>
             <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
-              🫁 Breathing guide — {activeProgram.breathPattern}
+              {l("🫁 Breathing guide", { hindi: "🫁 श्वास मार्गदर्शिका", telugu: "🫁 శ్వాస మార్గదర్శకం", tamil: "🫁 மூச்சு வழிகாட்டி", urdu: "🫁 سانس رہنما" })} — {activeProgram.breathPattern}
             </Text>
             <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
               {breathSteps.map((step, i) => (
@@ -28312,24 +28362,32 @@ function ToneLibrarySection({
           <Pressable
             accessibilityRole="button"
             onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setLoopEnabled(false); setTonePaused(false); void playRelaxingToneCue(selectedTone); }}
-            accessibilityLabel="Play once"
+            accessibilityLabel={l("Play once", { hindi: "एक बार चलाएँ", telugu: "ఒకసారి ప్లే చేయండి", tamil: "ஒருமுறை இயக்கவும்", urdu: "ایک بار چلائیں" })}
             style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: pressed ? "#C4E9E5" : "#DEF2F0", alignItems: "center", justifyContent: "center" })}
           >
-            <Text style={{ color: "#04714F", fontSize: 14, fontWeight: "900" }}>▶ Play once</Text>
+            <Text style={{ color: "#04714F", fontSize: 14, fontWeight: "900" }}>▶ {l("Play once", { hindi: "एक बार चलाएँ", telugu: "ఒకసారి ప్లే చేయండి", tamil: "ஒருமுறை இயக்கவும்", urdu: "ایک بار چلائیں" })}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             onPress={() => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTonePaused(false); setLoopEnabled((v) => !v); if (loopEnabled) setActiveProgram(null); }}
-            accessibilityLabel={loopEnabled ? "Stop looping tone" : "Loop tone continuously"}
+            accessibilityLabel={loopEnabled
+              ? l("Stop looping tone", { hindi: "दोहराती ध्वनि रोकें", telugu: "లూప్ ధ్వనిని ఆపండి", tamil: "சுழற்சி ஒலியை நிறுத்தவும்", urdu: "لوپ آواز روکیں" })
+              : l("Loop tone continuously", { hindi: "ध्वनि लगातार दोहराएँ", telugu: "ధ్వనిని నిరంతరం లూప్ చేయండి", tamil: "ஒலியை தொடர்ந்து சுழற்றவும்", urdu: "آواز مسلسل دہرائیں" })}
             style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 12, backgroundColor: loopEnabled ? (pressed ? "#7F1D1D" : "#991B1B") : (pressed ? "#C4D5E9" : "#DEE7F2"), alignItems: "center", justifyContent: "center" })}
           >
-            <Text style={{ color: loopEnabled ? "#FEE2E2" : "#0052B8", fontSize: 14, fontWeight: "900" }}>{loopEnabled ? "⏹ Stop" : "🔁 Loop"}</Text>
+            <Text style={{ color: loopEnabled ? "#FEE2E2" : "#0052B8", fontSize: 14, fontWeight: "900" }}>
+              {loopEnabled
+                ? l("⏹ Stop", { hindi: "⏹ रोकें", telugu: "⏹ ఆపండి", tamil: "⏹ நிறுத்து", urdu: "⏹ روکیں" })
+                : l("🔁 Loop", { hindi: "🔁 दोहराएँ", telugu: "🔁 లూప్", tamil: "🔁 சுழற்று", urdu: "🔁 دہرائیں" })}
+            </Text>
           </Pressable>
           {loopEnabled && (
             <Pressable
               accessibilityRole="button"
               onPress={() => { void Haptics.selectionAsync(); setTonePaused((v) => !v); }}
-              accessibilityLabel={tonePaused ? "Resume tone" : "Pause tone"}
+              accessibilityLabel={tonePaused
+                ? l("Resume tone", { hindi: "ध्वनि फिर चलाएँ", telugu: "ధ్వనిని తిరిగి ప్లే చేయండి", tamil: "ஒலியை மீண்டும் இயக்கவும்", urdu: "آواز دوبارہ چلائیں" })
+                : l("Pause tone", { hindi: "ध्वनि रोकें", telugu: "ధ్వనిని పాజ్ చేయండి", tamil: "ஒலியை இடைநிறுத்தவும்", urdu: "آواز روکیں" })}
               style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 12, backgroundColor: pressed ? "#E6E3C6" : "#F1EFDF", borderWidth: 1, borderColor: "#B45309", alignItems: "center", justifyContent: "center" })}
             >
               <Text style={{ color: "#A14A08", fontSize: 16 }}>{tonePaused ? "▶" : "⏸"}</Text>
@@ -28347,7 +28405,9 @@ function ToneLibrarySection({
             </View>
             <View style={{ backgroundColor: selectedToneHeadphones ? "rgba(251,191,36,0.13)" : "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: selectedToneHeadphones ? "rgba(251,191,36,0.4)" : "rgba(52,211,153,0.35)" }}>
               <Text style={{ color: selectedToneHeadphones ? "#A14A08" : "#04714F", fontSize: 12, fontWeight: "700" }}>
-                {selectedToneHeadphones ? "🎧 Headphones" : "🔊 Speaker OK"}
+                {selectedToneHeadphones
+                  ? l("🎧 Headphones", { hindi: "🎧 हेडफ़ोन", telugu: "🎧 హెడ్‌ఫోన్లు", tamil: "🎧 ஹெட்ஃபோன்", urdu: "🎧 ہیڈ فون" })
+                  : l("🔊 Speaker OK", { hindi: "🔊 स्पीकर ठीक है", telugu: "🔊 స్పీకర్ సరిపోతుంది", tamil: "🔊 ஸ்பீக்கர் போதும்", urdu: "🔊 اسپیکر ٹھیک ہے" })}
               </Text>
             </View>
           </View>
@@ -28361,11 +28421,11 @@ function ToneLibrarySection({
           </View>
 
           <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, marginBottom: 10 }}>
-            Safety: {selectedToneContraindication}
+            {l("Safety", { hindi: "सुरक्षा", telugu: "భద్రత", tamil: "பாதுகாப்பு", urdu: "حفاظت" })}: {selectedToneContraindication}
           </Text>
 
           <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-            Session preset
+            {l("Session preset", { hindi: "सत्र पूर्वनिर्धारण", telugu: "సెషన్ ప్రీసెట్", tamil: "அமர்வு முன்தேர்வு", urdu: "سیشن پری سیٹ" })}
           </Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
             {PRISTINE_TONE_SESSION_PRESETS.map((preset) => {
@@ -28399,7 +28459,9 @@ function ToneLibrarySection({
           </View>
 
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "800", width: 72 }}>Safe gain</Text>
+            <Text style={{ color: "#263244", fontSize: 12, fontWeight: "800", width: 72 }}>
+              {l("Safe gain", { hindi: "सुरक्षित ध्वनि", telugu: "సురక్షిత శబ్దం", tamil: "பாதுகாப்பான ஒலி", urdu: "محفوظ آواز" })}
+            </Text>
             <Pressable
               onPress={() => { void Haptics.selectionAsync(); setToneVolume((v) => clampToneVolume(v - 0.02)); }}
               accessibilityRole="button"
@@ -28432,7 +28494,9 @@ function ToneLibrarySection({
 
         {/* Timer presets */}
         <View style={{ flexDirection: "row", gap: 6, paddingHorizontal: 14, paddingBottom: 14, alignItems: "center" }}>
-          <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>Timer:</Text>
+          <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
+            {l("Timer", { hindi: "टाइमर", telugu: "టైమర్", tamil: "நேரக்காட்டி", urdu: "ٹائمر" })}:
+          </Text>
           {([0, 5, 10, 15, 20, 30] as const).map((min) => (
             <Pressable key={min} onPress={() => { setPresetMinutes(min); setActiveProgram(null); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#F8FBFA", borderWidth: 1, borderColor: presetMinutes === min ? "#066C84" : "rgba(15,23,42,0.12)" }}>
               <Text style={{ color: presetMinutes === min ? "#FFFFFF" : "#1F2937", fontSize: 12, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
@@ -28444,7 +28508,7 @@ function ToneLibrarySection({
       {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
       <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
         <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
-          Recommended for you today — {selectedIssueGuide.label}
+          {l("Recommended for you today", { hindi: "आज आपके लिए सुझाव", telugu: "ఈ రోజు మీ కోసం సిఫార్సు", tamil: "இன்று உங்களுக்கான பரிந்துரை", urdu: "آج آپ کے لیے تجویز" })} — {selectedIssueGuide.label}
         </Text>
         <View style={{ gap: 8 }}>
           {programs.map((prog) => {
@@ -28518,7 +28582,7 @@ function ToneLibrarySection({
           })}
         >
           <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 18, fontWeight: "700", textAlign: "center" }}>
-            Continue with the practical Path →
+            {l("Continue with the practical Path", { hindi: "व्यावहारिक मार्ग पर आगे बढ़ें", telugu: "ఆచరణాత్మక మార్గంలో కొనసాగండి", tamil: "நடைமுறை பாதையில் தொடரவும்", urdu: "عملی راستے پر جاری رکھیں" })} →
           </Text>
         </Pressable>
       </View>
@@ -28526,7 +28590,7 @@ function ToneLibrarySection({
       {/* ── TONE LIBRARY — by category ── */}
       <View style={{ marginHorizontal: 16 }}>
         <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
-          Curated tone library
+          {l("Curated tone library", { hindi: "चुनी हुई ध्वनि लाइब्रेरी", telugu: "ఎంపిక చేసిన ధ్వని లైబ్రరీ", tamil: "தேர்ந்தெடுத்த ஒலி நூலகம்", urdu: "منتخب آواز لائبریری" })}
         </Text>
         <View style={{ gap: 6 }}>
           {TONE_CATEGORIES.map((cat) => {
@@ -28544,7 +28608,7 @@ function ToneLibrarySection({
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: hasActive ? cat.color + "12" : pressed ? "#E4EEEC" : "#EFF6F5", paddingHorizontal: 14, paddingVertical: 12 })}
                 >
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: cat.color, fontSize: 13, fontWeight: "700" }}>{cat.label}</Text>
+                    <Text style={{ color: cat.color, fontSize: 13, fontWeight: "700" }}>{localizedToneCategoryLabel(cat.id, cat.label)}</Text>
                     <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 16, marginTop: 2, fontWeight: "700" }}>{cat.desc}</Text>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -28557,7 +28621,9 @@ function ToneLibrarySection({
                     {catTones.map((toneMode) => {
                       const isActive = toneMode.id === selectedTone.id;
                       const toneDuration = getToneDefaultDuration(toneMode);
-                      const headphoneLabel = toneRequiresHeadphones(toneMode) ? "Headphones needed" : "Headphones optional";
+                      const headphoneLabel = toneRequiresHeadphones(toneMode)
+                        ? l("Headphones needed", { hindi: "हेडफ़ोन आवश्यक", telugu: "హెడ్‌ఫోన్లు అవసరం", tamil: "ஹெட்ஃபோன் தேவை", urdu: "ہیڈ فون ضروری" })
+                        : l("Headphones optional", { hindi: "हेडफ़ोन वैकल्पिक", telugu: "హెడ్‌ఫోన్లు ఐచ్ఛికం", tamil: "ஹெட்ஃபோன் விருப்பம்", urdu: "ہیڈ فون اختیاری" });
                       const intensityLabel = getToneIntensityLabel(toneMode);
                       return (
                         <Pressable
@@ -28577,7 +28643,7 @@ function ToneLibrarySection({
                             <Text style={{ color: isActive ? cat.color : "#3A577D", fontSize: 13, fontWeight: isActive ? "900" : "700" }}>{toneMode.label}</Text>
                             <Text style={{ color: "#1F2937", fontSize: 12, marginTop: 1 }}>{toneMode.use}</Text>
                             <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16, marginTop: 4, fontWeight: "800" }}>
-                              Purpose: {getToneBrainState(toneMode)} · Duration: {toneDuration}m · {headphoneLabel} · Intensity: {intensityLabel}
+                              {l("Purpose", { hindi: "उद्देश्य", telugu: "ఉద్దేశ్యం", tamil: "நோக்கம்", urdu: "مقصد" })}: {getToneBrainState(toneMode)} · {l("Duration", { hindi: "अवधि", telugu: "వ్యవధి", tamil: "காலம்", urdu: "مدت" })}: {toneDuration}m · {headphoneLabel} · {l("Intensity", { hindi: "तीव्रता", telugu: "తీవ్రత", tamil: "தீவிரம்", urdu: "شدت" })}: {intensityLabel}
                             </Text>
                           </View>
                           <View style={{ flexDirection: "row", gap: 6 }}>
@@ -28592,7 +28658,7 @@ function ToneLibrarySection({
                                   );
                                 }}
                                 accessibilityRole="button"
-                                accessibilityLabel={toneMode.externalLabel ?? "Open external link"}
+                                accessibilityLabel={toneMode.externalLabel ?? l("Open external link", { hindi: "बाहरी लिंक खोलें", telugu: "బాహ్య లింక్ తెరవండి", tamil: "வெளி இணைப்பைத் திறக்கவும்", urdu: "بیرونی لنک کھولیں" })}
                                 hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                                 style={{ backgroundColor: "#E6DEF2", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
                               >
@@ -28634,7 +28700,11 @@ function ToneLibrarySection({
 
       {/* ── Quick links ── */}
       <View style={{ flexDirection: "row", gap: 8, marginHorizontal: 16, marginTop: 16 }}>
-        {[{ label: "Meditation", tab: "meditation" as TabId, mark: "🧘" }, { label: "Path", tab: "guide" as TabId, mark: "🧭" }, { label: "Journal", tab: "journal" as TabId, mark: "✍️" }].map((item) => (
+        {[
+          { label: l("Meditation", { hindi: "ध्यान", telugu: "ధ్యానం", tamil: "தியானம்", urdu: "مراقبہ" }), tab: "meditation" as TabId, mark: "🧘" },
+          { label: l("Path", { hindi: "मार्ग", telugu: "మార్గం", tamil: "பாதை", urdu: "راستہ" }), tab: "guide" as TabId, mark: "🧭" },
+          { label: l("Journal", { hindi: "जर्नल", telugu: "జర్నల్", tamil: "ஜர்னல்", urdu: "جرنل" }), tab: "journal" as TabId, mark: "✍️" }
+        ].map((item) => (
           <Pressable
             key={item.tab}
             onPress={() => { void Haptics.selectionAsync(); onOpenTab(item.tab); }}
@@ -28682,6 +28752,8 @@ function MeditationSection({
 }) {
   const { detectedThemes } = useCrossSectionSignal();
   const compact = !isWide;
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const activeSupportDimensionId = useMemo<SupportDimensionId>(
     () =>
       detectedThemes[0] ??
@@ -28739,16 +28811,33 @@ function MeditationSection({
     routeCards.find((card) => card.destination === "journal"),
     routeCards.find((card) => card.destination === "sos")
   ].filter((card): card is SituationRouteCard => Boolean(card));
-  const selectedVoiceText = [
-    `Meditation guidance for ${selectedIssueGuide.label}. This is a regulation stop that helps you return to action with a steadier mind.`,
-    `Recommended method: ${primaryMeditationMethod.label}. ${primaryMeditationMethod.purpose}`,
-    `Steps: ${primaryMeditationMethod.steps.join(" ")}`,
-    `Current contemplative focus: ${selectedChakra.label}. ${selectedChakra.literature}`,
-    selectedChakra.teaching,
-    selectedChakra.practice,
-    selectedChakra.safety,
-    activeSupportPracticeCopy.pathHandoff
-  ].join(" ");
+  const selectedVoiceText = languageId === "english"
+    ? [
+        `Meditation guidance for ${selectedIssueGuide.label}. This is a regulation stop that helps you return to action with a steadier mind.`,
+        `Recommended method: ${primaryMeditationMethod.label}. ${primaryMeditationMethod.purpose}`,
+        `Steps: ${primaryMeditationMethod.steps.join(" ")}`,
+        `Current contemplative focus: ${selectedChakra.label}. ${selectedChakra.literature}`,
+        selectedChakra.teaching,
+        selectedChakra.practice,
+        selectedChakra.safety,
+        activeSupportPracticeCopy.pathHandoff
+      ].join(" ")
+    : [
+        l("Meditation guidance. This brief pause helps you return to action with a steadier mind.", {
+          hindi: "ध्यान मार्गदर्शन। यह छोटा विराम आपको अधिक स्थिर मन से कार्य पर लौटने में मदद करता है।",
+          telugu: "ధ్యాన మార్గదర్శకం. ఈ చిన్న విరామం మరింత స్థిరమైన మనసుతో చర్యకు తిరిగి రావడానికి సహాయపడుతుంది.",
+          tamil: "தியான வழிகாட்டல். இந்தச் சிறிய இடைவேளை அமைதியான மனதுடன் செயலுக்குத் திரும்ப உதவுகிறது.",
+          urdu: "مراقبے کی رہنمائی۔ یہ مختصر وقفہ آپ کو زیادہ مستحکم ذہن کے ساتھ عمل کی طرف لوٹنے میں مدد دیتا ہے۔"
+        }),
+        activeSupportPracticeCopy.calmCue,
+        l("Keep the breath natural. Stop if you feel pain, dizziness, panic, or disorientation.", {
+          hindi: "साँस सहज रखें। दर्द, चक्कर, घबराहट या दिशा-भ्रम हो तो रुक जाएँ।",
+          telugu: "శ్వాసను సహజంగా ఉంచండి. నొప్పి, తల తిరగడం, భయం లేదా దిశాభ్రమ కలిగితే ఆపండి.",
+          tamil: "மூச்சை இயல்பாக வைத்திருங்கள். வலி, மயக்கம், பதற்றம் அல்லது திசைமாறல் ஏற்பட்டால் நிறுத்துங்கள்.",
+          urdu: "سانس کو قدرتی رکھیں۔ درد، چکر، گھبراہٹ یا سمت کا احساس کھونے پر رک جائیں۔"
+        }),
+        activeSupportPracticeCopy.pathHandoff
+      ].join(" ");
 
   useEffect(() => {
     setShowMeditationLibrary(false);
@@ -28828,7 +28917,12 @@ function MeditationSection({
         </View>
         <Text style={styles.beaconXWisdomLead}>
           {showMeditationLibrary
-            ? "Choose another method only when it better matches what your body needs now."
+            ? l("Choose another method only when it better matches what your body needs now.", {
+                hindi: "दूसरी विधि तभी चुनें जब वह अभी आपके शरीर की आवश्यकता से बेहतर मेल खाती हो।",
+                telugu: "ఇప్పుడు మీ శరీర అవసరానికి మరింత సరిపోతే మాత్రమే మరో పద్ధతిని ఎంచుకోండి.",
+                tamil: "இப்போது உங்கள் உடல் தேவைக்கு இன்னொரு முறை சிறப்பாகப் பொருந்தினால் மட்டுமே அதைத் தேர்ந்தெடுக்கவும்.",
+                urdu: "دوسرا طریقہ صرف اسی وقت چنیں جب وہ اس وقت آپ کے جسم کی ضرورت سے بہتر میل کھاتا ہو۔"
+              })
             : `${primaryMeditationMethod.duration} · ${primaryMeditationMethod.purpose}`}
         </Text>
         <View style={styles.calmTeachingGrid}>
@@ -33841,6 +33935,8 @@ function RedressDirectoriesHub({
   openWebsite: (url: string, title: string) => Promise<void>;
   defaultLocality?: string;
 }) {
+  const { width } = useWindowDimensions();
+  const compact = width < 820;
   const [tab, setTab] = useState<"legal" | "govt" | "state" | "health">("legal");
   const tabs: Array<{ id: "legal" | "govt" | "state" | "health"; label: string; icon: string; color: string; sub: string }> = [
     { id: "legal", label: "Legal aid + helplines", icon: "⚖️", color: "#04714F", sub: "NALSA · Women · Child" },
@@ -33850,9 +33946,9 @@ function RedressDirectoriesHub({
   ];
   return (
     <View style={{ marginBottom: 14 }}>
-      {/* Segmented header — one row of three tabs */}
+      {/* Keep directory context readable on phones and narrow tablets. */}
       <View style={{
-        flexDirection: "row", gap: 6, marginBottom: 10,
+        flexDirection: "row", flexWrap: compact ? "wrap" : "nowrap", gap: 6, marginBottom: 10,
         backgroundColor: "#E1EEEC", borderRadius: 12, padding: 4,
         borderWidth: 1, borderColor: "rgba(148,163,184,0.2)"
       }}>
@@ -33861,20 +33957,25 @@ function RedressDirectoriesHub({
           return (
             <Pressable
               key={t.id}
-              accessibilityRole="button"
+              accessibilityRole="tab"
+              accessibilityLabel={`${t.label}. ${t.sub}`}
+              accessibilityState={{ selected: isActive }}
               onPress={() => setTab(t.id)}
               style={({ pressed }) => ({
-                flex: 1, borderRadius: 9, paddingVertical: 8, paddingHorizontal: 6,
+                flex: compact ? 0 : 1,
+                width: compact ? "48%" : undefined,
+                minHeight: compact ? 64 : undefined,
+                borderRadius: 9, paddingVertical: compact ? 9 : 8, paddingHorizontal: 6,
                 backgroundColor: isActive ? t.color + "20" : pressed ? "rgba(255,255,255,0.03)" : "transparent",
                 borderWidth: 1, borderColor: isActive ? t.color + "70" : "transparent",
                 alignItems: "center"
               })}
             >
               <Text style={{ fontSize: 14 }}>{t.icon}</Text>
-              <Text style={{ color: isActive ? t.color : "#263244", fontSize: 12, fontWeight: "700", marginTop: 2, textAlign: "center" }} numberOfLines={1}>
+              <Text style={{ color: isActive ? t.color : "#263244", fontSize: 12, fontWeight: "700", marginTop: 2, textAlign: "center" }} numberOfLines={compact ? 2 : 1}>
                 {t.label}
               </Text>
-              <Text style={{ color: isActive ? t.color : "#1F2937", fontSize: 12, marginTop: 1, opacity: 0.75, textAlign: "center" }} numberOfLines={1}>
+              <Text style={{ color: isActive ? t.color : "#1F2937", fontSize: 12, marginTop: 1, opacity: 0.75, textAlign: "center" }} numberOfLines={compact ? 2 : 1}>
                 {t.sub}
               </Text>
             </Pressable>
@@ -41229,7 +41330,8 @@ function PrivateIntakeOverlay({
 // Help and Redress is intentionally surfaced here (not buried in Pages) because
 // safety, SOS, complaint route, and immediate support must be one tap away and visibly
 // above the lower-priority "other/general" surfaces. Patterns, Community,
-// Explore, Birth Chart, Practice, and Tones remain accessible via Pages.
+// Explore, Practice, and Tones remain accessible via Pages; Birth Chart is
+// intentionally pinned in the top rail instead.
 const PRIMARY_NAV_TABS: Array<{ id: TabId | "more"; label: string; icon: string }> = [
   { id: "today",      label: "Today",      icon: "🏠" },
   { id: "journal",    label: "Journal",    icon: "✍️" },
@@ -44464,12 +44566,11 @@ function CounselingChatModal({
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const connectedSupportTools: Array<{
-    tabId: Extract<TabId, "community" | "vedic" | "tones" | "redress">;
+    tabId: Extract<TabId, "community" | "tones" | "redress">;
     icon: keyof typeof Ionicons.glyphMap;
     label: string;
   }> = [
     { tabId: "community", icon: "chatbubbles-outline", label: l("Message support", { hindi: "संदेश सहायता", telugu: "సందేశ సహాయం", tamil: "செய்தி உதவி", urdu: "پیغام کی مدد" }) },
-    { tabId: "vedic", icon: "planet-outline", label: l("Vedic insight", { hindi: "वैदिक दृष्टि", telugu: "వేద దృష్టి", tamil: "வேத பார்வை", urdu: "ویدک بصیرت" }) },
     { tabId: "tones", icon: "musical-notes-outline", label: l("Calm tones", { hindi: "शांत स्वर", telugu: "ప్రశాంత స్వరాలు", tamil: "அமைதி ஒலிகள்", urdu: "پرسکون آوازیں" }) },
     { tabId: "redress", icon: "shield-checkmark-outline", label: l("Help / Redress", { hindi: "सहायता / निवारण", telugu: "సహాయం / పరిహారం", tamil: "உதவி / நிவாரணம்", urdu: "مدد / ازالہ" }) }
   ];
@@ -45038,9 +45139,13 @@ function CounselingChatModal({
           paddingBottom: isKeyboardVisible ? 6 : isVeryCompactPhone ? 8 : isCompactPhone ? 10 : 12,
           paddingHorizontal: isVeryCompactPhone ? 14 : isCompactPhone ? 16 : 20,
           borderBottomWidth: 1,
-          borderBottomColor: "#DCE9E6",
-          backgroundColor: "#FFFFFF"
+          borderBottomColor: "rgba(99,222,208,0.24)",
+          backgroundColor: "#0D2334",
+          position: "relative",
+          overflow: "hidden"
         }}>
+          <View pointerEvents="none" style={{ position: "absolute", top: -74, left: -34, width: 176, height: 176, borderRadius: 88, backgroundColor: "rgba(99,222,208,0.14)" }} />
+          <View pointerEvents="none" style={{ position: "absolute", bottom: -112, right: -28, width: 210, height: 210, borderRadius: 105, backgroundColor: "rgba(246,212,107,0.10)" }} />
           <Pressable
             onPress={onClose}
             accessibilityRole="button"
@@ -45052,14 +45157,14 @@ function CounselingChatModal({
             })}
             style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center", marginLeft: -8 }}
           >
-            <Ionicons name="arrow-back" size={isCompactPhone ? 21 : 23} color="#0A6F66" />
+          <Ionicons name="arrow-back" size={isCompactPhone ? 21 : 23} color="#F6D46B" />
           </Pressable>
           <View style={{ flex: 1, minWidth: 0, marginLeft: isVeryCompactPhone ? 2 : isCompactPhone ? 4 : 6 }}>
             {/* Consistent branding -- the enrichment card below and the
                 system prompt both already say "NAYIQ Guide"; the header
                 previously said the generic "Your guide", reading as two
                 different guides in the same conversation. */}
-            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 12 : isCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 18 : 20, fontWeight: "800" }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
+            <Text style={{ color: "#FFFFFF", fontSize: isVeryCompactPhone ? 12 : isCompactPhone ? 14 : 16, lineHeight: isVeryCompactPhone ? 14 : isCompactPhone ? 18 : 20, fontWeight: "800", letterSpacing: 0.1 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {isVeryCompactPhone
                 ? l("NAYIQ Guide", {
                     hindi: "NAYIQ Guide",
@@ -45074,7 +45179,7 @@ function CounselingChatModal({
                 urdu: "NAYIQ Guide سن رہا ہے"
               })}
             </Text>
-            {!isKeyboardVisible && <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 15 : 16 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
+            {!isKeyboardVisible && <Text style={{ color: "#C6E4DF", fontSize: isVeryCompactPhone ? 9 : isCompactPhone ? 11 : 12, lineHeight: isVeryCompactPhone ? 12 : isCompactPhone ? 15 : 16 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {voiceAssistEnabled
                 ? l("Private · Read-aloud available on request", {
                     hindi: "निजी · अनुरोध पर read-aloud उपलब्ध",
@@ -45102,12 +45207,12 @@ function CounselingChatModal({
             accessibilityState={{ selected: !voiceAssistEnabled }}
             style={{ minWidth: 44, minHeight: 44, marginRight: isVeryCompactPhone ? 2 : isCompactPhone ? 4 : 8, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: isCompactPhone ? 0 : 4 }}
           >
-            <Ionicons name={voiceAssistEnabled ? "volume-high-outline" : "volume-mute-outline"} size={isCompactPhone ? 20 : 21} color="#1F2937" />
+            <Ionicons name={voiceAssistEnabled ? "volume-high-outline" : "volume-mute-outline"} size={isCompactPhone ? 20 : 21} color="#F6D46B" />
             {/* Icon-only was ambiguous (mute vs. unmute isn't obvious from the
                 glyph alone) -- a short label next to it makes the tap target
                 self-explanatory without the person needing to guess. */}
             {!isCompactPhone && (
-              <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
+              <Text style={{ color: "#D7ECE8", fontSize: 12, fontWeight: "700" }}>
                 {voiceAssistEnabled
                   ? l("Disable speaker", { hindi: "स्पीकर बंद करें", telugu: "స్పీకర్‌ను నిలిపివేయండి", tamil: "ஸ்பீக்கரை அணைக்கவும்", urdu: "اسپیکر بند کریں" })
                   : l("Enable speaker", { hindi: "स्पीकर चालू करें", telugu: "స్పీకర్‌ను ప్రారంభించండి", tamil: "ஸ்பீக்கரை இயக்கவும்", urdu: "اسپیکر شروع کریں" })}
@@ -45125,7 +45230,7 @@ function CounselingChatModal({
             })}
             style={{ minHeight: 44, paddingHorizontal: isCompactPhone ? 4 : 8, flexDirection: "row", alignItems: "center", gap: 3 }}
           >
-            <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 13, fontWeight: "700" }}>
+            <Text style={{ color: "#D7ECE8", fontSize: isVeryCompactPhone ? 11 : isCompactPhone ? 12 : 13, fontWeight: "700" }}>
               {l("Skip", { hindi: "छोड़ें", telugu: "దాటవేయి", tamil: "தவிர்", urdu: "چھوڑیں" })}
             </Text>
             <Ionicons name="arrow-forward" size={14} color="#1F2937" />
@@ -45142,7 +45247,7 @@ function CounselingChatModal({
               })}
               style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
             >
-              <Ionicons name="chevron-down-circle-outline" size={24} color="#0A6F66" />
+              <Ionicons name="chevron-down-circle-outline" size={24} color="#F6D46B" />
             </Pressable>
           )}
         </View>
@@ -45201,9 +45306,19 @@ function CounselingChatModal({
             if (isKeyboardVisible) scrollRef.current?.scrollToEnd({ animated: false });
           }}
         >
-          {!isKeyboardVisible && <View style={{ backgroundColor: "#FFFFFF", borderRadius: isCompactPhone ? 16 : 18, borderCurve: "continuous", padding: isVeryCompactPhone ? 8 : isCompactPhone ? 12 : 16, borderWidth: 1, borderColor: "#D9E9E6", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 14, elevation: 3 }}>
-            <Text style={{ color: "#0A6F66", fontSize: isVeryCompactPhone ? 10 : 12, lineHeight: isVeryCompactPhone ? 12 : 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Guided support room", { hindi: "मार्गदर्शित सहायता कक्ष", telugu: "మార్గదర్శిత మద్దతు గది", tamil: "வழிகாட்டப்பட்ட ஆதரவு அறை", urdu: "رہنمائی والا مدد کمرہ" })}</Text>
-            <Text style={{ color: "#0D1F22", fontSize: isVeryCompactPhone ? 14 : isCompactPhone ? 17 : 20, lineHeight: isVeryCompactPhone ? 17 : isCompactPhone ? 21 : 25, fontWeight: "900", marginTop: 2 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
+          {!isKeyboardVisible && <View style={{ position: "relative", overflow: "hidden", backgroundColor: "#123A4A", borderRadius: isCompactPhone ? 16 : 20, borderCurve: "continuous", padding: isVeryCompactPhone ? 10 : isCompactPhone ? 14 : 18, borderWidth: 1, borderColor: "#1D8E82", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.18, shadowRadius: 16, elevation: 5 }}>
+            <View pointerEvents="none" style={{ position: "absolute", top: -60, right: -28, width: 148, height: 148, borderRadius: 74, backgroundColor: "rgba(99,222,208,0.16)" }} />
+            <View pointerEvents="none" style={{ position: "absolute", bottom: -74, left: -36, width: 160, height: 160, borderRadius: 80, backgroundColor: "rgba(246,212,107,0.10)" }} />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: isVeryCompactPhone ? 8 : 12 }}>
+              <View style={{ width: isVeryCompactPhone ? 30 : 36, height: isVeryCompactPhone ? 30 : 36, borderRadius: 18, backgroundColor: "rgba(99,222,208,0.18)", borderWidth: 1, borderColor: "rgba(99,222,208,0.36)", alignItems: "center", justifyContent: "center" }}>
+                <Text style={{ color: "#F6D46B", fontSize: isVeryCompactPhone ? 16 : 19 }}>✦</Text>
+              </View>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text style={{ color: "#F6D46B", fontSize: isVeryCompactPhone ? 9 : 10, lineHeight: isVeryCompactPhone ? 11 : 13, fontWeight: "900", letterSpacing: 1.2 }}>{l("PRIVATE SUPPORT ROOM", { hindi: "निजी सहायता कक्ष", telugu: "ప్రైవేట్ సపోర్ట్ రూమ్", tamil: "தனிப்பட்ட ஆதரவு அறை", urdu: "نجی مدد کا کمرہ" })}</Text>
+                <Text style={{ color: "#C6E4DF", fontSize: isVeryCompactPhone ? 10 : 12, lineHeight: isVeryCompactPhone ? 13 : 16, fontWeight: "700" }}>{l("Your words, at your pace", { hindi: "आपके शब्द, आपकी गति से", telugu: "మీ మాటలు, మీ వేగంతో", tamil: "உங்கள் வார்த்தைகள், உங்கள் வேகத்தில்", urdu: "آپ کے الفاظ، آپ کی رفتار سے" })}</Text>
+              </View>
+            </View>
+            <Text style={{ color: "#FFFFFF", fontSize: isVeryCompactPhone ? 14 : isCompactPhone ? 18 : 21, lineHeight: isVeryCompactPhone ? 18 : isCompactPhone ? 23 : 27, fontWeight: "900", marginTop: 2 }} numberOfLines={isVeryCompactPhone ? 1 : 2}>
               {l("What brings you here?", {
                 hindi: "आप यहाँ किस लिए आए हैं?",
                 telugu: "మీరు ఇక్కడికి ఎందుకు వచ్చారు?",
@@ -45211,7 +45326,7 @@ function CounselingChatModal({
                 urdu: "آپ یہاں کس لیے آئے ہیں؟"
               })}
             </Text>
-            <Text style={{ color: "#334155", fontSize: isVeryCompactPhone ? 8.5 : isCompactPhone ? 11 : 14, lineHeight: isVeryCompactPhone ? 11 : isCompactPhone ? 15 : 21, fontWeight: "700", marginTop: 2 }}>
+            <Text style={{ color: "#D7ECE8", fontSize: isVeryCompactPhone ? 8.5 : isCompactPhone ? 11 : 14, lineHeight: isVeryCompactPhone ? 11 : isCompactPhone ? 15 : 21, fontWeight: "700", marginTop: 4 }}>
               {isVeryCompactPhone
                 ? l("We’ll listen first, then shape one next step together.", {
                     hindi: "पहले हम सुनेंगे, फिर एक अगला कदम साथ मिलकर बनाएँगे।",
@@ -45284,11 +45399,11 @@ function CounselingChatModal({
             >
               {turn.role === "friend" && (
                 <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, maxWidth: "88%" }}>
-                  <View style={{ width: isVeryCompactPhone ? 30 : 32, height: isVeryCompactPhone ? 30 : 32, borderRadius: 16, backgroundColor: "#DEECF2", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <View style={{ width: isVeryCompactPhone ? 30 : 32, height: isVeryCompactPhone ? 30 : 32, borderRadius: 16, backgroundColor: "#D7F2ED", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Text style={{ fontSize: isVeryCompactPhone ? 15 : 16 }}>🌟</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, borderBottomLeftRadius: 4, padding: isVeryCompactPhone ? 12 : 14, borderWidth: 1, borderColor: "#E0EBE8", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 }}>
+                    <View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, borderBottomLeftRadius: 4, padding: isVeryCompactPhone ? 12 : 14, borderWidth: 1, borderColor: "#A9D8CF", shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 2 }}>
                       <Text style={{ color: "#213A4A", fontSize: isVeryCompactPhone ? 13 : 14, lineHeight: isVeryCompactPhone ? 20 : 22 }}>{turn.message}</Text>
                     </View>
                     {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginLeft: 4 }}>{turnTime}</Text>}
@@ -45297,8 +45412,8 @@ function CounselingChatModal({
               )}
               {turn.role === "user" && (
                 <View style={{ maxWidth: "80%", alignItems: "flex-end" }}>
-                  <View style={{ backgroundColor: "#CDEBE5", borderRadius: 16, borderBottomRightRadius: 4, padding: isVeryCompactPhone ? 12 : 14, shadowColor: "#0E9488", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 1 }}>
-                    <Text style={{ color: "#123A38", fontSize: isVeryCompactPhone ? 13 : 14, lineHeight: isVeryCompactPhone ? 20 : 22 }}>{turn.message}</Text>
+                  <View style={{ backgroundColor: "#FDE8C8", borderRadius: 16, borderBottomRightRadius: 4, padding: isVeryCompactPhone ? 12 : 14, borderWidth: 1, borderColor: "#F1C98D", shadowColor: "#C98228", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.10, shadowRadius: 6, elevation: 1 }}>
+                    <Text style={{ color: "#5B3416", fontSize: isVeryCompactPhone ? 13 : 14, lineHeight: isVeryCompactPhone ? 20 : 22 }}>{turn.message}</Text>
                   </View>
                   {turnTime && <Text style={{ color: "#8AA0AE", fontSize: 12, marginTop: 3, marginRight: 4 }}>{turnTime}</Text>}
                 </View>

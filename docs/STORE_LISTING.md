@@ -97,9 +97,11 @@ substitute for professional or emergency care.
 
 ## Required links
 
-- **Privacy policy URL:** host `privacy-policy.html` (or the Markdown in
-  `docs/PRIVACY_AND_COMPLIANCE.md`) at a public URL and link it here.
-- **Support URL / email:** add a monitored support address.
+- **Privacy policy URL:** `https://aethon-beacon-web.onrender.com/privacy-policy.html`
+  (verify that it serves the current `public/privacy-policy.html` file before
+  submission; restore the branded `nayiq.co` URL after its DNS is fixed).
+- **Support URL / email:** `trikuta9081@gmail.com` (confirm the mailbox is
+  monitored before submission).
 
 ## Assets checklist (produce before submission)
 

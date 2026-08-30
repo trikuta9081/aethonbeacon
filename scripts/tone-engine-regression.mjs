@@ -42,7 +42,10 @@ for (const issueId of supportedIssueIds) {
   assert(new RegExp(`^\\s*${issueId}: \\[`, "m").test(issueProgramBlock[0]), `Calm programmes must explicitly cover ${issueId} instead of silently falling back to general`);
 }
 assert(app.includes("calmMoonComplement"), "Calm must consume the same Moon-chart context used by Path and counselling");
-assert(app.includes("Continue with the practical Path →"), "Calm must provide a clear hand-off into the practical Path");
+assert(
+  app.includes('l("Continue with the practical Path", {'),
+  "Calm must provide a localized, clear hand-off into the practical Path"
+);
 assert(app.includes('const calmProgram = (ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS.general)[0]'), "Calm Reset and Path must resolve the same issue-specific programme");
 assert(app.includes('Recommended now · {calmProgram.name}'), "Calm Reset must surface the synchronized programme before deeper guidance");
 assert(app.includes('activeTab === "focus" ? <FocusSection'), "Calm Reset must not be buried beneath the Meditation library");

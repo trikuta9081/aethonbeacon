@@ -62,6 +62,10 @@ create policy "anyone can remove a reaction"
   for delete
   using (true);
 
+grant usage on schema public to anon, authenticated;
+grant select, insert, delete on table public.aethon_community_reactions to anon, authenticated;
+revoke update on table public.aethon_community_reactions from anon, authenticated;
+
 -- DELETE realtime payloads only include the primary key column by default
 -- (Postgres only replicates what changed unless told otherwise), but the
 -- app needs message_id/emoji/reactor_client_id on delete too, to know which

@@ -68,6 +68,10 @@ create policy "anyone can post a message"
     and char_length(author) between 1 and 80
   );
 
+grant usage on schema public to anon, authenticated;
+grant select, insert on table public.aethon_community_messages to anon, authenticated;
+revoke update, delete on table public.aethon_community_messages from anon, authenticated;
+
 -- Enable realtime (INSERT) events so subscribeRealtimeCommunityMessages()
 -- in realtimeCommunity.ts actually receives live updates instead of only
 -- working via polling/refresh.

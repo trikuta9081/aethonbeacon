@@ -16,6 +16,7 @@
     "health:expo": "RUBYOPT=-rlogger expo-doctor",
     "verification:server": "node scripts/verification-server.mjs",
     "verification:env-check": "node scripts/verification-env-check.mjs",
+    "release:check": "node scripts/release-readiness-check.mjs",
     "verification:qa": "node scripts/verification-qa.mjs",
     "dev:launch": "node scripts/dev-launch.mjs",
     "run:android": "node scripts/with-build-id.mjs expo run:android",
