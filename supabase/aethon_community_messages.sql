@@ -78,7 +78,9 @@ create policy "read visible community messages"
   for select
   using (is_hidden = false);
 
--- Public/anon insert for app-submitted messages. Client-side safety checks run before insert.
+-- Public/anon insert for app-submitted messages. Client-side safety checks run
+-- before insert, but the database still forces every anon-authored row to the
+-- ordinary user role; verified/moderator rows must come from a trusted backend.
 -- For stricter production moderation, replace this with an Edge Function or authenticated policy.
 drop policy if exists "insert community messages" on public.aethon_community_messages;
 create policy "insert community messages"
@@ -86,7 +88,7 @@ create policy "insert community messages"
   for insert
   with check (
     is_hidden = false
-    and role in ('user', 'verified', 'moderator')
+    and role = 'user'
     and kind in ('feed', 'chat')
     and char_length(trim(text)) between 1 and 1200
   );

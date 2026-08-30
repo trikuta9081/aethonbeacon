@@ -21534,6 +21534,9 @@ async function fetchGuidanceHelp(
     profileAddressLabel: string,
     issueGuide: IssueGuide
   ) {
+    if (localOnly) {
+      return null;
+    }
     if (verificationApiBaseUrl.length === 0) {
       return null;
     }
@@ -21548,16 +21551,15 @@ async function fetchGuidanceHelp(
           "Content-Type": "application/json"
         },
         signal: controller.signal,
-        body: JSON.stringify({
-          text,
-          route,
-          identityLabel: selectedIdentity.label,
-          profileAddressLabel,
-          issueGuideId: issueGuide.id,
-          issueGuideLabel: localizedIssueGuideLabel(issueGuide.id, selectedLanguage.id),
-          emergencyNumber: emergencyNumber.trim() || "112",
-          prompt: buildGuidanceHelpPrompt(text, route, profileAddressLabel, issueGuide)
-        })
+          body: JSON.stringify({
+            text,
+            route,
+            identityLabel: selectedIdentity.label,
+            profileAddressLabel,
+            issueGuideId: issueGuide.id,
+            issueGuideLabel: localizedIssueGuideLabel(issueGuide.id, selectedLanguage.id),
+            emergencyNumber: emergencyNumber.trim() || "112"
+          })
       });
 
       if (!response.ok) {
@@ -26038,7 +26040,7 @@ function isTrustedExternalUrl(url: string) {
               </View>
               <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
                 <Text style={{ color: "#0A6F66", fontSize: 12, letterSpacing: 1.2, fontWeight: "700", marginBottom: 4 }}>{pickLocalizedText(languageId, { english: "NAYIQ — PRIVACY POLICY", hindi: "NAYIQ — गोपनीयता नीति", telugu: "NAYIQ — గోప్యతా విధానం", tamil: "NAYIQ — தனியுரிமைக் கொள்கை", urdu: "NAYIQ — رازداری کی پالیسی" })}</Text>
-                <Text style={{ color: "#1F2937", fontSize: 12, marginBottom: 20 }}>{pickLocalizedText(languageId, { english: "Last updated: June 2026", hindi: "अंतिम अद्यतन: जून 2026", telugu: "చివరి నవీకరణ: జూన్ 2026", tamil: "கடைசியாக புதுப்பிக்கப்பட்டது: ஜூன் 2026", urdu: "آخری بار اپ ڈیٹ: جون 2026" })}</Text>
+                <Text style={{ color: "#1F2937", fontSize: 12, marginBottom: 20 }}>{pickLocalizedText(languageId, { english: "Last updated: August 30, 2026", hindi: "अंतिम अद्यतन: 30 अगस्त 2026", telugu: "చివరి నవీకరణ: ఆగస్టు 30, 2026", tamil: "கடைசியாக புதுப்பிக்கப்பட்டது: ஆகஸ்ட் 30, 2026", urdu: "آخری بار اپ ڈیٹ: 30 اگست 2026" })}</Text>
 
                 {[
                   { heading: pickLocalizedText(languageId, { english: "1. Data we collect", hindi: "1. हम कौन-सा डेटा एकत्र करते हैं", telugu: "1. మేము ఏ డేటాను సేకరిస్తాము", tamil: "1. நாங்கள் சேகரிக்கும் தரவு", urdu: "1. ہم کون سا ڈیٹا جمع کرتے ہیں" }), body: pickLocalizedText(languageId, { english: "NAYIQ is local-first. Mood check-ins, journal entries, birth chart details, trusted contacts, SOS configuration, and notification preferences are stored on your device only. No data is transmitted to any server unless you explicitly trigger an export.", hindi: "NAYIQ स्थानीय-प्रथम है। मूड चेक-इन, जर्नल प्रविष्टियाँ, जन्म-कुंडली विवरण, विश्वसनीय संपर्क, SOS सेटिंग और सूचना प्राथमिकताएँ केवल आपके डिवाइस पर सहेजी जाती हैं। जब तक आप निर्यात स्पष्ट रूप से शुरू नहीं करते, कोई डेटा किसी सर्वर पर नहीं भेजा जाता।", telugu: "NAYIQ స్థానిక-ముఖ్యమైనది. మూడ్ చెక్-ఇన్‌లు, జర్నల్ ఎంట్రీలు, జనన చార్ట్ వివరాలు, విశ్వసనీయ సంప్రదింపులు, SOS అమరిక, మరియు నోటిఫికేషన్ అభిరుచులు మీ పరికరంలోనే నిల్వ ఉంటాయి. మీరు ఎగుమతిని ప్రత్యేకంగా ప్రారంభించకపోతే ఏ డేటా కూడా ఏ సర్వర్‌కి పంపబడదు.", tamil: "NAYIQ உள்ளூரை முதன்மையாகக் கொண்டது. மனநிலைச் சரிபார்ப்புகள், ஜர்னல் பதிவுகள், பிறப்பு சார்ட் விவரங்கள், நம்பகமான தொடர்புகள், SOS அமைப்பு, மற்றும் அறிவிப்பு விருப்பங்கள் உங்கள் சாதனத்திலேயே சேமிக்கப்படுகின்றன. நீங்கள் வெளிப்படையாக ஏற்றுமதி தொடங்காவிட்டால் எந்தத் தரவும் எந்த சேவையகத்திற்கும் அனுப்பப்படாது.", urdu: "NAYIQ مقامی-اول ہے۔ موڈ چیک اِن، جرنل اندراجات، پیدائش چارٹ کی تفصیلات، قابلِ اعتماد رابطے، SOS ترتیب، اور نوٹیفکیشن ترجیحات صرف آپ کے ڈیوائس پر محفوظ رہتی ہیں۔ جب تک آپ واضح طور پر برآمد شروع نہ کریں، کوئی ڈیٹا کسی سرور کو نہیں بھیجا جاتا۔" }) },
@@ -26048,12 +26050,25 @@ function isTrustedExternalUrl(url: string) {
                   { heading: pickLocalizedText(languageId, { english: "5. Children", hindi: "5. बच्चे", telugu: "5. పిల్లలు", tamil: "5. குழந்தைகள்", urdu: "5. بچے" }), body: pickLocalizedText(languageId, { english: "NAYIQ is intended for users 17 and older. We do not knowingly collect data from users under 17. If you believe a minor has used the app, please contact us.", hindi: "NAYIQ 17 वर्ष और उससे अधिक आयु के उपयोगकर्ताओं के लिए है। हम जानबूझकर 17 वर्ष से कम आयु के उपयोगकर्ताओं का डेटा एकत्र नहीं करते। यदि आपको लगता है कि किसी नाबालिग ने ऐप का उपयोग किया है, तो कृपया हमसे संपर्क करें।", telugu: "NAYIQ 17 సంవత్సరాలు మరియు అంతకంటే ఎక్కువ వయస్సున్న వినియోగదారుల కోసం ఉద్దేశించబడింది. 17 కంటే తక్కువ వయస్సున్న వినియోగదారుల నుండి మేము ఉద్దేశపూర్వకంగా డేటాను సేకరించము. ఒక చిన్నారి యాప్‌ను ఉపయోగించిందని మీకు అనిపిస్తే, దయచేసి మమ్మల్ని సంప్రదించండి.", tamil: "NAYIQ 17 வயதுக்கும் மேற்பட்ட பயனர்களுக்காக உருவாக்கப்பட்டுள்ளது. 17 வயதிற்குக் குறைவான பயனர்களிடமிருந்து நாங்கள் அறிந்தே தரவு சேகரிப்பதில்லை. ஒரு சிறுவர்/சிறுமி பயன்பாட்டைப் பயன்படுத்தியிருக்கலாம் என்று நினைத்தால், தயவுசெய்து எங்களை தொடர்புகொள்ளுங்கள்.", urdu: "NAYIQ 17 سال اور اس سے زیادہ عمر کے صارفین کے لیے ہے۔ ہم جان بوجھ کر 17 سال سے کم عمر صارفین کا ڈیٹا جمع نہیں کرتے۔ اگر آپ کو لگے کہ کسی نابالغ نے ایپ استعمال کی ہے تو براہِ کرم ہم سے رابطہ کریں۔" }) },
                   { heading: pickLocalizedText(languageId, { english: "6. Your rights", hindi: "6. आपके अधिकार", telugu: "6. మీ హక్కులు", tamil: "6. உங்கள் உரிமைகள்", urdu: "6. آپ کے حقوق" }), body: pickLocalizedText(languageId, { english: "You can delete all app data at any time using 'Clear local entries' in Settings → Data & Privacy. Uninstalling the app removes all data from your device.", hindi: "आप Settings → Data & Privacy में 'Clear local entries' का उपयोग करके कभी भी सभी ऐप डेटा मिटा सकते हैं। ऐप अनइंस्टॉल करने पर आपके डिवाइस से सभी डेटा हट जाता है।", telugu: "మీరు Settings → Data & Privacy లోని 'Clear local entries' ఉపయోగించి ఎప్పుడైనా మొత్తం యాప్ డేటాను తొలగించవచ్చు. యాప్‌ను అన్‌ఇన్‌స్టాల్ చేస్తే మీ పరికరం నుండి అన్ని డేటా తొలగిపోతుంది.", tamil: "Settings → Data & Privacy இல் உள்ள 'Clear local entries' மூலம் எப்போது வேண்டுமானாலும் அனைத்து பயன்பாட்டு தரவையும் நீக்கலாம். பயன்பாட்டை அகற்றினால் உங்கள் சாதனத்திலிருந்து எல்லாத் தரவும் நீங்கும்.", urdu: "آپ Settings → Data & Privacy میں 'Clear local entries' استعمال کرکے کسی بھی وقت تمام ایپ ڈیٹا حذف کر سکتے ہیں۔ ایپ اَن انسٹال کرنے سے آپ کے ڈیوائس سے سارا ڈیٹا ہٹ جاتا ہے۔" }) },
                   { heading: pickLocalizedText(languageId, { english: "7. Contact", hindi: "7. संपर्क", telugu: "7. సంప్రదింపు", tamil: "7. தொடர்பு", urdu: "7. رابطہ" }), body: pickLocalizedText(languageId, { english: "For privacy questions or data requests, email: trikuta9081@gmail.com", hindi: "गोपनीयता प्रश्नों या डेटा अनुरोधों के लिए ईमेल करें: trikuta9081@gmail.com", telugu: "గోప్యతా ప్రశ్నలు లేదా డేటా అభ్యర్థనల కోసం ఈమెయిల్ చేయండి: trikuta9081@gmail.com", tamil: "தனியுரிமை கேள்விகள் அல்லது தரவு கோரிக்கைகளுக்கு மின்னஞ்சல்: trikuta9081@gmail.com", urdu: "رازداری کے سوالات یا ڈیٹا درخواستوں کے لیے ای میل کریں: trikuta9081@gmail.com" }) },
-                ].map(({ heading, body }) => (
+                ].map(({ heading, body }) => {
+                  const displayedBody = heading.startsWith("1.")
+                    ? pickLocalizedText(languageId, {
+                        english: "NAYIQ is local-first. Mood check-ins, journal entries, birth chart details, trusted contacts, SOS configuration, and notification preferences stay on your device by default. Verification, Community, and optional connected guidance send only the information needed when you explicitly use those features. Local-only mode prevents optional guidance sharing.",
+                        hindi: "NAYIQ स्थानीय-प्रथम है। मूड चेक-इन, जर्नल प्रविष्टियाँ, जन्म-कुंडली विवरण, विश्वसनीय संपर्क, SOS सेटिंग और सूचना प्राथमिकताएँ डिफ़ॉल्ट रूप से आपके डिवाइस पर रहती हैं। Verification, Community और वैकल्पिक connected guidance का उपयोग करने पर ही ज़रूरी जानकारी भेजी जाती है। Local-only mode वैकल्पिक guidance sharing को रोकता है।",
+                        telugu: "NAYIQ స్థానిక-ముఖ్యమైనది. మూడ్ చెక్-ఇన్‌లు, జర్నల్ ఎంట్రీలు, జనన చార్ట్ వివరాలు, విశ్వసనీయ సంప్రదింపులు, SOS అమరిక, మరియు నోటిఫికేషన్ అభిరుచులు డిఫాల్ట్‌గా మీ పరికరంలోనే ఉంటాయి. Verification, Community మరియు ఐచ్ఛిక connected guidance ఫీచర్లను మీరు స్పష్టంగా ఉపయోగించినప్పుడు మాత్రమే అవసరమైన సమాచారం పంపబడుతుంది. Local-only mode ఐచ్ఛిక guidance sharing‌ను ఆపుతుంది.",
+                        tamil: "NAYIQ உள்ளூரை முதன்மையாகக் கொண்டது. மனநிலைச் சரிபார்ப்புகள், ஜர்னல் பதிவுகள், பிறப்பு சார்ட் விவரங்கள், நம்பகமான தொடர்புகள், SOS அமைப்பு, மற்றும் அறிவிப்பு விருப்பங்கள் இயல்பாக உங்கள் சாதனத்திலேயே இருக்கும். Verification, Community மற்றும் விருப்பமான connected guidance அம்சங்களை நீங்கள் தெளிவாகப் பயன்படுத்தும்போது மட்டுமே தேவையான தகவல் அனுப்பப்படும். Local-only mode விருப்பமான guidance sharing-ஐத் தடுக்கிறது.",
+                        urdu: "NAYIQ مقامی-اول ہے۔ موڈ چیک اِن، جرنل اندراجات، پیدائش چارٹ کی تفصیلات، قابلِ اعتماد رابطے، SOS ترتیب، اور نوٹیفکیشن ترجیحات پہلے سے آپ کے ڈیوائس پر رہتی ہیں۔ Verification، Community اور اختیاری connected guidance صرف تب ضروری معلومات بھیجتے ہیں جب آپ ان خصوصیات کو واضح طور پر استعمال کریں۔ Local-only mode اختیاری guidance sharing کو روکتا ہے۔"
+                      })
+                    : heading.startsWith("4.")
+                      ? "Cloud sync and encrypted backup are planned as opt-in features in a future version. When available, you will be asked for explicit consent before backup data leaves your device. This is separate from the optional Verification, Community, and connected guidance features described above."
+                      : body;
+                  return (
                   <View key={heading} style={{ marginBottom: 20 }}>
                     <Text style={{ color: "#3A577D", fontSize: 14, fontWeight: "700", marginBottom: 6 }}>{heading}</Text>
-                    <Text style={{ color: "#263244", fontSize: 13, lineHeight: 20 }}>{body}</Text>
+                    <Text style={{ color: "#263244", fontSize: 13, lineHeight: 20 }}>{displayedBody}</Text>
                   </View>
-                ))}
+                  );
+                })}
 
                 <View style={{ borderTopWidth: 1, borderTopColor: "#E1EEEC", paddingTop: 20, marginTop: 4 }}>
                   <Text style={{ color: "#1F2937", fontSize: 12, textAlign: "center" }}>
@@ -26093,7 +26108,9 @@ function isTrustedExternalUrl(url: string) {
           moonChartInsightReadings={vedicMoonChartInsightReadings}
           voiceAssistEnabled={voiceAssistEnabled}
           onToggleVoiceAssist={() => setVoiceAssistEnabled((prev) => !prev)}
-          onFetchGuideEnrichment={fetchGuidanceHelp}
+          // Local-only is a hard privacy boundary: counselling enrichment must
+          // not receive any text while the setting is enabled.
+          onFetchGuideEnrichment={localOnly ? undefined : fetchGuidanceHelp}
           streak={checkInStreak}
           moodTagLeaning={crossSectionSignal.recentMoodTagLeaning}
           visitReports={visitReports}
@@ -37508,7 +37525,7 @@ function SettingsSection({
       </View>
       <View style={styles.settingsBlock}>
         <Text style={styles.settingsTitle}>{t("Privacy", "गोपनीयता")}</Text>
-        <Text style={styles.promptText}>{t("NAYIQ is local-first. Your data never leaves your device unless you choose to export it.", "NAYIQ local-first है। आपका डेटा तब तक डिवाइस नहीं छोड़ता जब तक आप उसे export न करें।")}</Text>
+        <Text style={styles.promptText}>{t("NAYIQ is local-first. Your data stays on this device by default. Verification, Community, or connected guidance only send the specific information needed when you choose those features.", "NAYIQ local-first है। आपका डेटा डिफ़ॉल्ट रूप से इसी डिवाइस पर रहता है। Verification, Community या connected guidance का उपयोग चुनने पर ही ज़रूरी जानकारी भेजी जाती है।")}</Text>
         <Text style={styles.promptText}>{t("Phone and email are used only for verification. Voice and microphone access are optional and only support spoken guidance or dictated input when you turn them on.", "फ़ोन और ईमेल केवल verification के लिए उपयोग होते हैं। आवाज़ और microphone access वैकल्पिक हैं और केवल spoken guidance या dictated input के लिए काम करते हैं जब आप उन्हें चालू करते हैं।")}</Text>
         <Text style={styles.promptText}>{t("You can skip optional profile details, export your notes, or delete local data whenever you choose.", "आप चाहें तो वैकल्पिक प्रोफ़ाइल विवरण छोड़ सकते हैं, अपनी notes export कर सकते हैं, या local data हटा सकते हैं।")}</Text>
         <Pressable accessibilityRole="button" onPress={onShowPrivacyPolicy} style={[styles.dangerButton, { backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "#334155" }]}>
@@ -44743,6 +44760,10 @@ function CounselingChatModal({
   // Auto-scroll to bottom -- also fires when the typing indicator appears so
   // it's visible immediately rather than off-screen until the real reply lands.
   React.useEffect(() => {
+    // Keep the opening room context visible. Scrolling the first welcome
+    // message to the bottom on compact screens hides the support tools under
+    // the fixed safety notice before the user has interacted with the chat.
+    if (session.turns.length <= 1 && session.turns.every((turn) => turn.role === "friend")) return;
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
   }, [session.turns, isGuideTyping]);
 

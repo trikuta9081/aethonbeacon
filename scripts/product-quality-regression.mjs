@@ -2,6 +2,10 @@ import fs from "node:fs";
 
 const source = fs.readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
 const quality = fs.readFileSync(new URL("../product-quality.ts", import.meta.url), "utf8");
+const verification = fs.readFileSync(new URL("./verification-server.mjs", import.meta.url), "utf8");
+const communitySchema = fs.readFileSync(new URL("../supabase_community_schema.sql", import.meta.url), "utf8");
+const communityMigration = fs.readFileSync(new URL("../supabase/aethon_community_messages.sql", import.meta.url), "utf8");
+const entitlementSchema = fs.readFileSync(new URL("../supabase_entitlements_schema.sql", import.meta.url), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -69,6 +73,15 @@ assert(!source.includes('label: l("Vedic insight"'), "Vedic must not be duplicat
 assert(!source.includes('styles.topTabRail, isCompact && { display: "none" }'), "The compact top rail must remain available for the Vedic tab.");
 assert(source.includes('PRIVATE SUPPORT ROOM') && source.includes('backgroundColor: "#123A4A"'), "Counselling room needs a distinct vibrant entry surface.");
 assert(source.includes('backgroundColor: "#FDE8C8"') && source.includes('borderColor: "#F1C98D"'), "Counselling user messages need a warm visual distinction.");
+assert(source.includes('onFetchGuideEnrichment={localOnly ? undefined : fetchGuidanceHelp}'), "Local-only mode must disable counselling enrichment before any text can be sent.");
+assert(source.includes('if (localOnly) {\n      return null;\n    }\n    if (verificationApiBaseUrl.length === 0)'), "The guidance fetch helper must also fail closed in local-only mode.");
+assert(source.includes('if (session.turns.length <= 1 && session.turns.every((turn) => turn.role === "friend")) return;'), "Counselling must not auto-scroll its opening context under the safety notice.");
+assert(verification.includes('randomInt(100000, 1000000)'), "OTP codes must use cryptographic randomness.");
+assert(verification.includes('function allowGuidanceRequest') && verification.includes('GUIDANCE_MAX_REQUESTS_PER_WINDOW'), "Guidance endpoints must have server-side request throttling.");
+assert(verification.includes('function validateGuidanceBody'), "Guidance endpoints must reject oversized user-controlled prompt fields.");
+assert(communitySchema.includes("and role = 'user'"), "Anonymous community inserts must be limited to ordinary user roles.");
+assert(communityMigration.includes("and role = 'user'"), "Community migration inserts must be limited to ordinary user roles.");
+assert(entitlementSchema.includes('REVOKE SELECT ON TABLE aethon_entitlements FROM anon, authenticated'), "Entitlement rows must fail closed until trusted auth exists.");
 
 // ── Crisis lifeline safeguard ───────────────────────────────────────────────
 // A self-directed safety signal (self-harm / suicidal ideation) must lead with

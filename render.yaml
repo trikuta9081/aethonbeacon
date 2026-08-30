@@ -62,6 +62,8 @@ services:
         value: "600000"
       - key: VERIFICATION_MAX_REQUESTS_PER_WINDOW
         value: "5"
+      - key: VERIFICATION_MAX_REQUESTS_PER_IP_WINDOW
+        value: "20"
       - key: VERIFICATION_REQUEST_WINDOW_MS
         value: "900000"
       - key: VERIFICATION_MAX_CONFIRM_ATTEMPTS
@@ -86,6 +88,10 @@ services:
         value: NAYIQ
       - key: GUIDANCE_SERVICE_KEY
         sync: false
+      - key: GUIDANCE_MAX_REQUESTS_PER_WINDOW
+        value: "20"
+      - key: GUIDANCE_REQUEST_WINDOW_MS
+        value: "600000"
       - key: GUIDANCE_MODEL
         sync: false
       - key: ADMIN_LOGIN_ID

@@ -63,6 +63,7 @@ create policy "anyone can post a message"
   for insert
   with check (
     is_hidden = false
+    and role = 'user'
     and kind in ('feed', 'chat')
     and char_length(text) between 1 and 2000
     and char_length(author) between 1 and 80

@@ -51,24 +51,16 @@ CREATE TABLE IF NOT EXISTS aethon_entitlements (
 
 ALTER TABLE aethon_entitlements ENABLE ROW LEVEL SECURITY;
 
--- The app's anon key may only ever READ, and only its own row. Every WRITE
--- comes from the backend's service-role key (used only inside the RevenueCat
--- webhook handler in scripts/verification-server.mjs), never from the anon
--- key -- so no client can ever grant itself premium by writing this table
--- directly. This mirrors the trust model already used for
--- aethon_community_reactions (see realtimeCommunity.ts's comment on that
--- table) but is stricter: reactions allow anon writes because nothing
--- sensitive is at stake; entitlements gate paid features, so writes are
--- backend-only.
-CREATE POLICY "anyone can read their own entitlement row"
-  ON aethon_entitlements FOR SELECT
-  USING (true);
-  -- Not scoped tighter than this because, same as beacon_sync, there is no
-  -- real Supabase auth session in this app (see supabaseSync.ts's comment:
-  -- "No Supabase auth required"), so there is no JWT claim to filter on. The
-  -- app only ever queries .eq("user_id", theirOwnNormalizedIdentifier), so in
-  -- practice a client only ever asks for its own row -- same trust boundary
-  -- already accepted for every other table in this schema.
+-- Every WRITE comes from the backend's service-role key (used only inside the
+-- RevenueCat webhook handler in scripts/verification-server.mjs), never from
+-- the anon key. Client reads remain disabled until the app has a trusted auth
+-- identity that can be mapped to user_id, so no client can grant or enumerate
+-- premium status through this table.
+-- Fail closed until the app has a real Supabase Auth identity. A client-side
+-- .eq("user_id", ...) filter is not an access-control boundary, so anonymous
+-- reads stay revoked rather than exposing every customer's entitlement row.
+DROP POLICY IF EXISTS "anyone can read their own entitlement row" ON aethon_entitlements;
+REVOKE SELECT ON TABLE aethon_entitlements FROM anon, authenticated;
 
 -- Enables DELETE payload.old to carry full row data on Realtime, matching
 -- the same setting already required for aethon_community_reactions.

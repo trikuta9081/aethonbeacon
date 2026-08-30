@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { AsyncLocalStorage } from "node:async_hooks";
-import { randomUUID, createHmac, timingSafeEqual } from "node:crypto";
+import { randomUUID, randomInt, createHmac, timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 function parsePositiveInt(value, fallback) {
@@ -75,6 +75,9 @@ const legacyEndpointPrefix = `/${"a"}${"i"}`;
 const codeTtlMs = parsePositiveInt(process.env.VERIFICATION_CODE_TTL_MS, 10 * 60 * 1000);
 const requestWindowMs = parsePositiveInt(process.env.VERIFICATION_REQUEST_WINDOW_MS, 15 * 60 * 1000);
 const maxRequestsPerWindow = parsePositiveInt(process.env.VERIFICATION_MAX_REQUESTS_PER_WINDOW, 5);
+const guidanceRequestWindowMs = parsePositiveInt(process.env.GUIDANCE_REQUEST_WINDOW_MS, 10 * 60 * 1000);
+const maxGuidanceRequestsPerWindow = parsePositiveInt(process.env.GUIDANCE_MAX_REQUESTS_PER_WINDOW, 20);
+const maxVerificationRequestsPerIpWindow = parsePositiveInt(process.env.VERIFICATION_MAX_REQUESTS_PER_IP_WINDOW, 20);
 const maxConfirmAttempts = parsePositiveInt(process.env.VERIFICATION_MAX_CONFIRM_ATTEMPTS, 5);
 const providerTimeoutMs = parsePositiveInt(process.env.VERIFICATION_PROVIDER_TIMEOUT_MS, 12_000);
 const legacyProviderTimeoutName = `${legacyProviderPrefix.toUpperCase()}_REQUEST_TIMEOUT_MS`;
@@ -136,6 +139,10 @@ const presenceSessions = new Map();
 const adminSessions = new Map();
 /** @type {Map<string, { attempts: number; lockedUntilAt: number }>} */
 const adminLoginAttempts = new Map();
+/** @type {Map<string, number[]>} */
+const guidanceRequestHistory = new Map();
+/** @type {Map<string, number[]>} */
+const verificationIpHistory = new Map();
 
 function resolveCorsOrigin(req) {
   if (corsOrigins.length === 0 || corsOrigins.includes("*")) return "*";
@@ -211,11 +218,11 @@ function readBody(req) {
 }
 
 function makeCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return randomInt(100000, 1000000).toString();
 }
 
 function makeDeliveryId() {
-  return `del_${Math.floor(100000 + Math.random() * 900000)}`;
+  return `del_${randomUUID()}`;
 }
 
 function keyFor(channel, phone, email) {
@@ -274,6 +281,65 @@ function challengeCodeMatches(challenge, code) {
 function withinWindow(timestamps, windowMs) {
   const threshold = Date.now() - windowMs;
   return timestamps.filter((timestamp) => timestamp >= threshold);
+}
+
+function requestClientKey(req) {
+  const forwardedFor = String(req.headers["x-forwarded-for"] ?? "").split(",")[0].trim();
+  return forwardedFor || String(req.socket?.remoteAddress ?? "unknown");
+}
+
+function allowGuidanceRequest(req) {
+  const key = requestClientKey(req);
+  const timestamps = withinWindow(guidanceRequestHistory.get(key) ?? [], guidanceRequestWindowMs);
+  if (timestamps.length >= maxGuidanceRequestsPerWindow) {
+    guidanceRequestHistory.set(key, timestamps);
+    return false;
+  }
+  timestamps.push(Date.now());
+  guidanceRequestHistory.set(key, timestamps);
+  // Keep this process-local limiter bounded even if a proxy supplies many IPs.
+  if (guidanceRequestHistory.size > 10_000) {
+    const oldestKey = guidanceRequestHistory.keys().next().value;
+    if (oldestKey) guidanceRequestHistory.delete(oldestKey);
+  }
+  return true;
+}
+
+function allowVerificationRequest(req) {
+  const key = requestClientKey(req);
+  const timestamps = withinWindow(verificationIpHistory.get(key) ?? [], requestWindowMs);
+  if (timestamps.length >= maxVerificationRequestsPerIpWindow) {
+    verificationIpHistory.set(key, timestamps);
+    return false;
+  }
+  timestamps.push(Date.now());
+  verificationIpHistory.set(key, timestamps);
+  if (verificationIpHistory.size > 10_000) {
+    const oldestKey = verificationIpHistory.keys().next().value;
+    if (oldestKey) verificationIpHistory.delete(oldestKey);
+  }
+  return true;
+}
+
+function validateGuidanceBody(body) {
+  const stringLimits = [
+    ["text", 2_000],
+    ["prompt", 4_000],
+    ["note", 600],
+    ["name", 120],
+    ["birthPlace", 180],
+    ["issueLabel", 160],
+    ["issueGuideLabel", 160]
+  ];
+  for (const [field, maxLength] of stringLimits) {
+    if (typeof body?.[field] === "string" && body[field].length > maxLength) {
+      return `${field} is too long.`;
+    }
+  }
+  if (Array.isArray(body?.recentNotes) && (body.recentNotes.length > 5 || body.recentNotes.some((note) => String(note).length > 160))) {
+    return "recentNotes contains too much text.";
+  }
+  return null;
 }
 
 function prunePresenceSessions() {
@@ -478,17 +544,7 @@ function buildGuidancePrompt(body) {
   const identityLabel = typeof body?.identityLabel === "string" ? body.identityLabel : "User";
   const issueGuideLabel = typeof body?.issueGuideLabel === "string" ? body.issueGuideLabel : "Current issue";
   const emergencyNumber = typeof body?.emergencyNumber === "string" ? body.emergencyNumber : "112";
-  const text = typeof body?.text === "string" ? body.text.trim() : "";
-  const appPrompt = typeof body?.prompt === "string" ? body.prompt.trim() : "";
-
-  if (appPrompt.length > 0) {
-    return [
-      appPrompt,
-      "",
-      "Hard requirement: return exactly 4 labelled lines and no extra paragraph.",
-      "Hard requirement: the second line must contain one concrete next action, not general reassurance."
-    ].join("\n");
-  }
+  const text = typeof body?.text === "string" ? body.text.trim().slice(0, 2_000) : "";
 
   return [
     "You are NAYIQ Guide.",
@@ -1226,6 +1282,8 @@ async function handleRequest(req, res) {
         codeTtlMs,
         requestWindowMs,
         maxRequestsPerWindow,
+        guidanceRequestWindowMs,
+        maxGuidanceRequestsPerWindow,
         maxConfirmAttempts,
         providerTimeoutMs,
         guidanceTimeoutMs
@@ -1378,8 +1436,17 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && matchesGuidanceEndpoint(url, "help")) {
+    if (!allowGuidanceRequest(req)) {
+      json(res, 429, { message: "Too many guidance requests. Please try again later." });
+      return;
+    }
     try {
       const body = await readBody(req);
+      const validationError = validateGuidanceBody(body);
+      if (validationError) {
+        json(res, 413, { message: validationError });
+        return;
+      }
       const text = typeof body?.text === "string" ? body.text.trim() : "";
       if (text.length === 0) {
         json(res, 400, { message: "text is required." });
@@ -1404,8 +1471,17 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && matchesGuidanceEndpoint(url, "brief")) {
+    if (!allowGuidanceRequest(req)) {
+      json(res, 429, { message: "Too many guidance requests. Please try again later." });
+      return;
+    }
     try {
       const body = await readBody(req);
+      const validationError = validateGuidanceBody(body);
+      if (validationError) {
+        json(res, 413, { message: validationError });
+        return;
+      }
       const result = await generateGuidanceBrief(body);
       json(res, 200, { source: result.source, model: result.model ?? "fallback", text: result.text });
     } catch (error) {
@@ -1420,8 +1496,17 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && matchesGuidanceEndpoint(url, "birth-chart")) {
+    if (!allowGuidanceRequest(req)) {
+      json(res, 429, { message: "Too many guidance requests. Please try again later." });
+      return;
+    }
     try {
       const body = await readBody(req);
+      const validationError = validateGuidanceBody(body);
+      if (validationError) {
+        json(res, 413, { message: validationError });
+        return;
+      }
       const dob = typeof body?.dob === "string" ? body.dob.trim() : "";
       const birthTime = typeof body?.birthTime === "string" ? body.birthTime.trim() : "";
       const birthPlace = typeof body?.birthPlace === "string" ? body.birthPlace.trim() : "";
@@ -1447,8 +1532,17 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && matchesGuidanceEndpoint(url, "journal")) {
+    if (!allowGuidanceRequest(req)) {
+      json(res, 429, { message: "Too many guidance requests. Please try again later." });
+      return;
+    }
     try {
       const body = await readBody(req);
+      const validationError = validateGuidanceBody(body);
+      if (validationError) {
+        json(res, 413, { message: validationError });
+        return;
+      }
       const note = typeof body?.note === "string" ? body.note.trim() : "";
       if (note.length < 10) {
         json(res, 400, { message: "note is required (min 10 chars)." });
@@ -1468,8 +1562,17 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && matchesGuidanceEndpoint(url, "insights")) {
+    if (!allowGuidanceRequest(req)) {
+      json(res, 429, { message: "Too many guidance requests. Please try again later." });
+      return;
+    }
     try {
       const body = await readBody(req);
+      const validationError = validateGuidanceBody(body);
+      if (validationError) {
+        json(res, 413, { message: validationError });
+        return;
+      }
       const result = await generateGuidanceInsights(body);
       json(res, 200, { source: result.source, model: result.model ?? "fallback", text: result.text });
     } catch (error) {
@@ -1484,6 +1587,10 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === "POST" && url.pathname === "/verification/request") {
+    if (!allowVerificationRequest(req)) {
+      json(res, 429, { message: "Too many verification requests from this network. Please wait before trying again." });
+      return;
+    }
     try {
       const body = await readBody(req);
       const channel = body?.channel === "email" ? "email" : body?.channel === "phone" ? "phone" : null;

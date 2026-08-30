@@ -37,8 +37,10 @@ local backup and delete the app to remove this data.
   status is processed via the app store and our entitlement service. (Purchases
   are disabled in the current free-launch release.)
 - **Optional connected guidance enrichment:** if configured, an optional connected guidance service may generate
-  additional guidance text from the words you share in counselling. The offline
-  guidance always works without it.
+  additional guidance text from the words you share in counselling, journal
+  insights, weekly pattern notes, or exact birth details for a chart enrichment.
+  This is disabled while Local-only mode is on. The offline guidance always works
+  without it.
 
 **Permissions we request (and why).**
 - **Microphone** — only when you choose voice input for guidance or journaling.
@@ -76,6 +78,7 @@ version at the top.
 | Emergency number | Device (local) | No | SOS calling |
 | Phone/email (verification) | Backend, if you verify | Yes (opt-in) | OTP verification |
 | Community posts / messages | Backend, if you post | Yes (opt-in) | Moderated community |
+| Connected guidance text / birth details | Guidance provider, if you explicitly use connected enrichment and Local-only is off | Yes (opt-in) | Optional written guidance |
 | Voice input | Processed on device / OS speech | OS-dependent | Transcription |
 | Purchase status | App store / entitlement svc | Only if IAP enabled | Entitlements (disabled now) |
 
