@@ -457,6 +457,9 @@ assert(source.includes('setRedressCases(normalizeRedressCases(parsed.redressCase
 assert(source.includes('redressCases: redressCases.slice(0, 20)'), 'redressCases must be written back to storage');
 assert(source.includes('function redressFollowUpState'), 'Follow-up reminder state helper is missing');
 assert(source.includes('Start tracking this complaint'), 'Redress case tracker start affordance is missing');
+assert(source.includes('filedDateIso: null'), 'Starting a local case tracker must not falsely mark a complaint as filed');
+assert(source.includes('If something is unavailable, note why'), 'Evidence guidance must not block users from filing when an item is unavailable');
+assert(source.includes('tracking started'), 'Case tracker should distinguish local tracking from complaint filing');
 assert(
   /Alert\.alert\([\s\S]{0,220}Delete this case\?/.test(source) || /l\(\s*"Delete this case\?"/.test(source),
   'Deleting a tracked case must stay confirm-gated'

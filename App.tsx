@@ -34575,7 +34575,9 @@ function RedressSection({
       routeLabel: selectedRedressRoute.label,
       referenceNumber: "",
       office: "",
-      filedDateIso: now.toISOString(),
+      // Starting the local tracker is not the same as filing a complaint.
+      // Keep the filing date empty until the user has actually submitted it.
+      filedDateIso: null,
       nextFollowUpIso: new Date(now.getTime() + 15 * 86400000).toISOString(), // default 15-day follow-up
       status: "open",
       notes: "",
@@ -34611,7 +34613,7 @@ function RedressSection({
   };
   const followUp = activeCase ? redressFollowUpState(activeCase.nextFollowUpIso) : null;
   const CASE_STATUS_OPTIONS: { id: RedressCaseStatus; label: string }[] = [
-    { id: "open", label: l("Filed", { hindi: "दायर", telugu: "దాఖలైంది", tamil: "பதிவானது", urdu: "درج شدہ" }) },
+    { id: "open", label: l("Open", { hindi: "खुला", telugu: "తెరిచి ఉంది", tamil: "திறந்தது", urdu: "کھلا" }) },
     { id: "awaiting", label: l("Awaiting reply", { hindi: "जवाब की प्रतीक्षा", telugu: "సమాధానం కోసం వేచి ఉంది", tamil: "பதில் காத்திருக்கிறது", urdu: "جواب کا انتظار" }) },
     { id: "escalated", label: l("Escalated", { hindi: "ऊपर बढ़ाया गया", telugu: "ఎస్కలేట్ किया गया", tamil: "மேலேற்றப்பட்டது", urdu: "اوپر بڑھایا گیا" }) },
     { id: "resolved", label: l("Resolved", { hindi: "सुलझ गया", telugu: "పరిష్కరించబడింది", tamil: "தீர்க்கப்பட்டது", urdu: "حل ہو گیا" }) },
@@ -35414,7 +35416,7 @@ function RedressSection({
             <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Evidence checklist", { hindi: "साक्ष्य सूची", telugu: "సాక్ష్యాల చెక్‌లిస్ట్", tamil: "ஆதார பட்டியல்", urdu: "ثبوت کی فہرست" })}</Text>
             <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700" }}>{checkedCount}/{evidenceItems.length} {l("ready", { hindi: "तैयार", telugu: "సిద్ధం", tamil: "தயார்", urdu: "تیار" })}</Text>
           </View>
-          <Text style={{ color: "#506673", fontSize: 12, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>{l("Tap each item to mark it as collected. Do not file without these.", { hindi: "प्रत्येक आइटम को collected के रूप में चिन्हित करने के लिए टैप करें। इनके बिना file न करें।", telugu: "ప్రతి అంశాన్ని collected గా గుర్తించడానికి ట్యాప్ చేయండి. ఇవి లేకుండా దాఖలు చేయవద్దు.", tamil: "ஒவ்வொரு உருப்படியையும் சேகரிக்கப்பட்டதாக குறிக்கத் தட்டவும். இவற்றில்லாமல் தாக்கல் செய்ய வேண்டாம்.", urdu: "ہر آئٹم کو collected نشان زد کرنے کے لیے ٹیپ کریں۔ ان کے بغیر file نہ کریں۔" })}</Text>
+          <Text style={{ color: "#506673", fontSize: 12, paddingHorizontal: 14, paddingBottom: 8, lineHeight: 16 }}>{l("Tap each item to mark it as collected. If something is unavailable, note why and ask the receiving office what they can accept.", { hindi: "हर आइटम को collected के रूप में चिन्हित करने के लिए टैप करें। अगर कुछ उपलब्ध नहीं है, तो कारण नोट करें और प्राप्त करने वाले कार्यालय से पूछें कि वह क्या स्वीकार कर सकता है।", telugu: "ప్రతి అంశాన్ని సేకరించినదిగా గుర్తించడానికి ట్యాప్ చేయండి. ఏదైనా అందుబాటులో లేకపోతే కారణాన్ని నోట్ చేసి, స్వీకరించే కార్యాలయం ఏది అంగీకరిస్తుందో అడగండి.", tamil: "ஒவ்வொரு உருப்படியையும் சேகரித்ததாக குறிக்கத் தட்டவும். ஏதேனும் கிடைக்கவில்லை என்றால் காரணத்தை குறிப்பிட்டு, பெறும் அலுவலகம் எதை ஏற்கும் என்று கேளுங்கள்.", urdu: "ہر آئٹم کو جمع شدہ نشان زد کرنے کے لیے ٹیپ کریں۔ اگر کچھ دستیاب نہ ہو تو وجہ نوٹ کریں اور متعلقہ دفتر سے پوچھیں کہ وہ کیا قبول کر سکتے ہیں۔" })}</Text>
           {evidenceItems.map((item, i) => {
             const checked = !!checkedEvidence[String(i)];
             return (
@@ -35445,7 +35447,7 @@ function RedressSection({
           })}
           {checkedCount === evidenceItems.length && evidenceItems.length > 0 && (
             <View style={{ margin: 14, backgroundColor: "rgba(52,211,153,0.1)", borderRadius: 10, padding: 10 }}>
-              <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700", textAlign: "center" }}>{l("✅ All evidence collected — ready to file", { hindi: "✅ सभी साक्ष्य एकत्र — file करने के लिए तैयार", telugu: "✅ అన్ని సాక్ష్యాలు సేకరించబడ్డాయి — దాఖలు చేయడానికి సిద్ధం", tamil: "✅ அனைத்து ஆதாரங்களும் சேகரிக்கப்பட்டன — தாக்கல் செய்யத் தயார்", urdu: "✅ تمام ثبوت جمع — file کرنے کے لیے تیار" })}</Text>
+              <Text style={{ color: "#04714F", fontSize: 12, fontWeight: "700", textAlign: "center" }}>{l("✅ Checklist complete — your evidence packet is organised", { hindi: "✅ चेकलिस्ट पूरी — आपके साक्ष्य व्यवस्थित हैं", telugu: "✅ చెక్‌లిస్ట్ పూర్తైంది — మీ ఆధారాల ప్యాకెట్ క్రమబద్ధంగా ఉంది", tamil: "✅ பட்டியல் முடிந்தது — உங்கள் ஆதாரத் தொகுப்பு ஒழுங்குபடுத்தப்பட்டுள்ளது", urdu: "✅ چیک لسٹ مکمل — آپ کے ثبوت منظم ہیں" })}</Text>
             </View>
           )}
         </View>
@@ -35669,7 +35671,7 @@ function RedressSection({
             <>
               <Text style={{ color: "#506673", fontSize: 12, marginTop: 4 }}>
                 {activeCase.routeLabel}
-                {activeCase.filedDateIso ? ` · started ${new Date(activeCase.filedDateIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })}` : ""}
+                {activeCase.createdIso ? ` · ${l("tracking started", { hindi: "ट्रैकिंग शुरू", telugu: "ట్రాకింగ్ ప్రారంభం", tamil: "கண்காணிப்பு தொடங்கியது", urdu: "ٹریکنگ شروع" })} ${new Date(activeCase.createdIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })}` : ""}
               </Text>
 
               <Text style={caseFieldLabel}>{l("Reference / acknowledgement number", {
@@ -35689,7 +35691,7 @@ function RedressSection({
                 })}
                 placeholderTextColor="#8AA0AE"
                 style={caseInputStyle}
-                accessibilityLabel="Reference or acknowledgement number"
+                accessibilityLabel={l("Reference or acknowledgement number", { hindi: "संदर्भ या प्राप्ति संख्या", telugu: "సూచన లేదా రసీదు సంఖ్య", tamil: "குறிப்பு அல்லது ஒப்புதல் எண்", urdu: "حوالہ یا وصولی نمبر" })}
               />
 
               <Text style={caseFieldLabel}>{l("Filed with (office / authority)", {
@@ -35709,7 +35711,7 @@ function RedressSection({
                 })}
                 placeholderTextColor="#8AA0AE"
                 style={caseInputStyle}
-                accessibilityLabel="Office or authority filed with"
+                accessibilityLabel={l("Office or authority filed with", { hindi: "जिस कार्यालय या प्राधिकरण के पास दायर किया", telugu: "దాఖలు చేసిన కార్యాలయం లేదా అధికారి", tamil: "தாக்கல் செய்த அலுவலகம் அல்லது அதிகாரம்", urdu: "جس دفتر یا اتھارٹی کے پاس دائر کیا" })}
               />
 
               <Text style={caseFieldLabel}>{l("Status", { hindi: "स्थिति", telugu: "స్థితి", tamil: "நிலை", urdu: "حالت" })}</Text>
@@ -35778,7 +35780,7 @@ function RedressSection({
                 placeholderTextColor="#8AA0AE"
                 style={{ ...caseInputStyle, minHeight: 64, textAlignVertical: "top" }}
                 multiline
-                accessibilityLabel="Case notes"
+                accessibilityLabel={l("Case notes", { hindi: "केस नोट्स", telugu: "కేసు గమనికలు", tamil: "வழக்கு குறிப்புகள்", urdu: "کیس نوٹس" })}
               />
 
               <Pressable
