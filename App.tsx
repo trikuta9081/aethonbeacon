@@ -34475,15 +34475,30 @@ function normalizeRedressCases(raw: unknown): RedressCase[] {
 }
 // Days until (or since) a follow-up date, rendered as a friendly status so the
 // tracker doubles as a lightweight reminder every time the tab is opened.
-function redressFollowUpState(iso: string | null): { label: string; tone: "due" | "soon" | "ok" } | null {
+type RedressFollowUpCopy = {
+  overdue: (days: number) => string;
+  today: string;
+  soon: (days: number) => string;
+  later: (days: number) => string;
+};
+
+function redressFollowUpState(
+  iso: string | null,
+  copy: RedressFollowUpCopy = {
+    overdue: (days) => `Follow-up overdue by ${days} day${days === 1 ? "" : "s"}`,
+    today: "Follow up today",
+    soon: (days) => `Follow up in ${days} day${days === 1 ? "" : "s"}`,
+    later: (days) => `Follow up in ${days} days`
+  }
+): { label: string; tone: "due" | "soon" | "ok" } | null {
   if (!iso) return null;
   const then = new Date(iso).getTime();
   if (!Number.isFinite(then)) return null;
   const days = Math.round((then - Date.now()) / 86400000);
-  if (days < 0) return { label: `Follow-up overdue by ${Math.abs(days)} day${Math.abs(days) === 1 ? "" : "s"}`, tone: "due" };
-  if (days === 0) return { label: "Follow up today", tone: "due" };
-  if (days <= 3) return { label: `Follow up in ${days} day${days === 1 ? "" : "s"}`, tone: "soon" };
-  return { label: `Follow up in ${days} days`, tone: "ok" };
+  if (days < 0) return { label: copy.overdue(Math.abs(days)), tone: "due" };
+  if (days === 0) return { label: copy.today, tone: "due" };
+  if (days <= 3) return { label: copy.soon(days), tone: "soon" };
+  return { label: copy.later(days), tone: "ok" };
 }
 
 function RedressSection({
@@ -34611,7 +34626,13 @@ function RedressSection({
     const base = activeCase?.nextFollowUpIso ? new Date(activeCase.nextFollowUpIso) : new Date();
     updateActiveCase({ nextFollowUpIso: new Date(base.getTime() + days * 86400000).toISOString() });
   };
-  const followUp = activeCase ? redressFollowUpState(activeCase.nextFollowUpIso) : null;
+  const followUpCopy: RedressFollowUpCopy = {
+    overdue: (days) => `${l("Follow-up overdue by", { hindi: "फॉलो-अप की तारीख़ निकल गई", telugu: "ఫాలో-అప్ ఆలస్యమైంది", tamil: "பின்தொடர்பு தாமதமானது", urdu: "فالو اَپ کی تاریخ گزر گئی" })} ${days} ${l(days === 1 ? "day" : "days", { hindi: days === 1 ? "दिन" : "दिन", telugu: "రోజు", tamil: "நாள்", urdu: "دن" })}`,
+    today: l("Follow up today", { hindi: "आज फॉलो-अप करें", telugu: "ఈరోజు ఫాలో-అప్ చేయండి", tamil: "இன்று பின்தொடருங்கள்", urdu: "آج فالو اَپ کریں" }),
+    soon: (days) => `${l("Follow up in", { hindi: "फॉलो-अप करें", telugu: "ఫాలో-అప్ చేయండి", tamil: "பின்தொடருங்கள்", urdu: "فالو اَپ کریں" })} ${days} ${l(days === 1 ? "day" : "days", { hindi: days === 1 ? "दिन" : "दिन", telugu: "రోజు", tamil: "நாள்", urdu: "دن" })}`,
+    later: (days) => `${l("Follow up in", { hindi: "फॉलो-अप करें", telugu: "ఫాలో-అప్ చేయండి", tamil: "பின்தொடருங்கள்", urdu: "فالو اَپ کریں" })} ${days} ${l("days", { hindi: "दिन", telugu: "రోజులు", tamil: "நாட்கள்", urdu: "دن" })}`
+  };
+  const followUp = activeCase ? redressFollowUpState(activeCase.nextFollowUpIso, followUpCopy) : null;
   const CASE_STATUS_OPTIONS: { id: RedressCaseStatus; label: string }[] = [
     { id: "open", label: l("Open", { hindi: "खुला", telugu: "తెరిచి ఉంది", tamil: "திறந்தது", urdu: "کھلا" }) },
     { id: "awaiting", label: l("Awaiting reply", { hindi: "जवाब की प्रतीक्षा", telugu: "సమాధానం కోసం వేచి ఉంది", tamil: "பதில் காத்திருக்கிறது", urdu: "جواب کا انتظار" }) },
