@@ -352,12 +352,30 @@ assert(
   'LanguageSection must switch between the primary-language preview and the full language list'
 );
 assert(
+  source.includes('const FULL_INTERFACE_LANGUAGE_IDS: LanguageId[] = [') &&
+    source.includes('"hindi"') &&
+    source.includes('"telugu"') &&
+    source.includes('"tamil"') &&
+    source.includes('"urdu"'),
+  'The compact language picker must include every reviewed full-interface language'
+);
+assert(
+  source.includes('const hasFullInterface = FULL_INTERFACE_LANGUAGE_SET.has(option.id);'),
+  'Language support badges must use the reviewed language capability set'
+);
+assert(
   source.includes('uiCopy.languagePageToggleCompact') && source.includes('uiCopy.languagePageToggleExpanded'),
   'LanguageSection must expose copy for the compact/full language-list toggle'
 );
 assert(
   source.includes('getLocalizedCounsellingSafetyCopy(classifyCounsellingSafety(initialIssue), languageId)'),
   'The counselling modal safety notice must follow the selected primary language'
+);
+assert(
+  source.includes('const crisisCopy = {') &&
+    source.includes('crisisCopy.footer') &&
+    source.includes('crisisCopy.closeA11y'),
+  'Crisis support must follow the selected language instead of remaining English-only'
 );
 
 // Small-phone keyboard focus mode: opening the native keyboard must prioritise

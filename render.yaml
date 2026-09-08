@@ -8,6 +8,10 @@ services:
     envVars:
       - key: PORT
         value: "3000"
+      - key: PUBLIC_WEB_URL
+        value: https://nayiq.co
+      - key: APP_VERSION
+        value: "1.0.4"
       - key: EXPO_PUBLIC_VERIFICATION_API_BASE_URL
         value: https://aethon-beacon-verification.onrender.com
       - key: TESTER_REQUEST_NOTIFY_EMAIL

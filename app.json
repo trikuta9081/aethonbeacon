@@ -78,7 +78,9 @@
       "expo-audio"
     ],
     "extra": {
-      "privacyPolicyUrl": "https://aethon-beacon-web.onrender.com/privacy-policy.html",
+      "brandName": "NAYIQ",
+      "publicWebUrl": "https://nayiq.co",
+      "privacyPolicyUrl": "https://nayiq.co/privacy-policy.html",
       "supportEmail": "trikuta9081@gmail.com",
       "eas": {
         "projectId": "c9c6e5ac-336f-49e0-8dfa-f725aeaf8442"

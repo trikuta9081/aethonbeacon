@@ -12,6 +12,8 @@ function parsePositiveInt(value, fallback) {
 const port = parsePositiveInt(process.env.PORT, 3000);
 const host = process.env.HOST?.trim() || "0.0.0.0";
 const staticRoot = resolve(process.env.STATIC_ROOT ?? "dist");
+const publicWebUrl = process.env.PUBLIC_WEB_URL?.trim() || "https://nayiq.co";
+const appVersion = process.env.APP_VERSION?.trim() || "1.0.4";
 const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://nayiq.co/join-testers-20260715.html?v=20260715-2315";
 const testerRequestNotifyEmail = process.env.TESTER_REQUEST_NOTIFY_EMAIL?.trim() || "slathiarimple567@gmail.com";
 const sendgridApiKey = process.env.SENDGRID_API_KEY?.trim() || "";
@@ -687,6 +689,15 @@ const server = createServer(async (req, res) => {
   }
 
   const url = new URL(req.url, `http://${req.headers.host ?? "localhost"}`);
+
+  if (url.pathname === "/health" || url.pathname === "/api/health") {
+    res.writeHead(200, {
+      "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",
+      "Content-Type": "application/json; charset=utf-8"
+    });
+    res.end(JSON.stringify({ ok: true, brand: "NAYIQ", version: appVersion, canonicalUrl: publicWebUrl }));
+    return;
+  }
 
   if (url.pathname === "/api/tester-request") {
     if (req.method !== "POST") {

@@ -1000,7 +1000,7 @@ const publicLegalLinks = [
   {
     title: "Privacy",
     meta: "Local-first data use",
-    url: "https://aethon-beacon-web.onrender.com/privacy-policy.html"
+    url: "https://nayiq.co/privacy-policy.html"
   },
   {
     title: "Terms",
@@ -6761,8 +6761,19 @@ const languageOptions: Array<{
   { id: "dogri", label: "Dogri", meta: "डोगरी support for guidance", speechLang: "doi-IN" }
 ];
 
-const PRIMARY_LANGUAGE_IDS: LanguageId[] = ["english", "hindi", "telugu", "tamil", "urdu"];
-const PRIMARY_LANGUAGE_SET = new Set<LanguageId>(PRIMARY_LANGUAGE_IDS);
+// Keep the compact picker aligned with the languages whose complete shared UI
+// copy has actually been reviewed. The expanded list still exposes languages
+// with partial menu/voice support without overstating translation coverage.
+const FULL_INTERFACE_LANGUAGE_IDS: LanguageId[] = [
+  "english",
+  "hindi",
+  "telugu",
+  "tamil",
+  "urdu"
+];
+const FULL_INTERFACE_LANGUAGE_SET = new Set<LanguageId>(FULL_INTERFACE_LANGUAGE_IDS);
+const PRIMARY_LANGUAGE_IDS: LanguageId[] = FULL_INTERFACE_LANGUAGE_IDS;
+const PRIMARY_LANGUAGE_SET = FULL_INTERFACE_LANGUAGE_SET;
 
 // Navigation-label translations for the languages that already have full UI copy
 // support (see localizedUiCopyByLanguage below). Other languages fall back to the
@@ -15710,6 +15721,57 @@ function ExitReportModal({
 // buried behind other content.
 function CrisisSupportModal({ visible, onClose, languageId }: { visible: boolean; onClose: () => void; languageId: LanguageId }) {
   if (!visible) return null;
+  const crisisCopy = {
+    eyebrow: pickLocalizedText(languageId, {
+      english: "You are not alone",
+      hindi: "आप अकेले नहीं हैं",
+      telugu: "మీరు ఒంటరిగా లేరు.",
+      tamil: "நீங்கள் தனியாக இல்லை",
+      urdu: "آپ اکیلے نہیں ہیں"
+    }),
+    title: pickLocalizedText(languageId, {
+      english: "Please reach a real person right now",
+      hindi: "अभी किसी भरोसेमंद व्यक्ति से संपर्क करें",
+      telugu: "ఇప్పుడే నిజమైన వ్యక్తిని సంప్రదించండి",
+      tamil: "இப்போதே ஒரு உண்மையான நபரை அணுகுங்கள்",
+      urdu: "ابھی کسی حقیقی شخص سے رابطہ کریں"
+    }),
+    intro: pickLocalizedText(languageId, {
+      english: "What you are feeling matters, and you deserve support from someone trained to help. These lines are free, confidential, and answered 24 hours a day. Tap one to call now.",
+      hindi: "आप जो महसूस कर रहे हैं वह महत्वपूर्ण है। आपको प्रशिक्षित सहायता पाने का अधिकार है। ये नंबर निःशुल्क, गोपनीय और चौबीसों घंटे उपलब्ध हैं। अभी कॉल करने के लिए किसी एक को चुनें।",
+      telugu: "మీరు అనుభవిస్తున్నది ముఖ్యమైనది. సహాయం చేయడానికి శిక్షణ పొందిన వ్యక్తి నుంచి మద్దతు పొందే హక్కు మీకు ఉంది. ఈ నంబర్లు ఉచితం, గోప్యమైనవి, రోజంతా అందుబాటులో ఉంటాయి. ఇప్పుడే కాల్ చేయడానికి ఒకదాన్ని ఎంచుకోండి.",
+      tamil: "நீங்கள் உணருவது முக்கியம். உதவிப் பயிற்சி பெற்ற ஒருவரிடமிருந்து ஆதரவைப் பெற நீங்கள் தகுதியானவர். இந்த எண்கள் இலவசம், ரகசியமானது, 24 மணி நேரமும் கிடைக்கும். இப்போது அழைக்க ஒன்றைத் தேர்ந்தெடுக்கவும்.",
+      urdu: "آپ جو محسوس کر رہے ہیں وہ اہم ہے۔ آپ ایسے تربیت یافتہ شخص کی مدد کے مستحق ہیں جو مدد کر سکے۔ یہ نمبر مفت، خفیہ اور چوبیس گھنٹے دستیاب ہیں۔ ابھی کال کرنے کے لیے ایک نمبر منتخب کریں۔"
+    }),
+    footer: pickLocalizedText(languageId, {
+      english: "If you are in immediate danger, call 112. If you can, stay with someone you trust until you have spoken to a counsellor.",
+      hindi: "अगर तत्काल खतरा हो तो 112 पर कॉल करें। संभव हो तो किसी भरोसेमंद व्यक्ति के साथ रहें, जब तक आप काउंसलर से बात न कर लें।",
+      telugu: "తక్షణ ప్రమాదంలో ఉంటే 112కు కాల్ చేయండి. వీలైతే కౌన్సిలర్‌తో మాట్లాడే వరకు మీరు నమ్మే వ్యక్తితో ఉండండి.",
+      tamil: "உடனடி ஆபத்தில் இருந்தால் 112-ஐ அழைக்கவும். முடிந்தால் ஆலோசகரிடம் பேசும் வரை நீங்கள் நம்பும் ஒருவருடன் இருங்கள்.",
+      urdu: "اگر فوری خطرہ ہو تو 112 پر کال کریں۔ اگر ممکن ہو تو کسی قابلِ اعتماد شخص کے ساتھ رہیں، جب تک آپ کسی مشیر سے بات نہ کر لیں۔"
+    }),
+    close: pickLocalizedText(languageId, {
+      english: "I have this handled for now",
+      hindi: "अभी मैं इसे संभाल रहा/रही हूँ",
+      telugu: "ప్రస్తుతం నేను దీన్ని చూసుకుంటాను",
+      tamil: "இப்போது இதை நான் கவனித்துக் கொள்கிறேன்",
+      urdu: "فی الحال میں اسے سنبھال رہا/رہی ہوں"
+    }),
+    closeA11y: pickLocalizedText(languageId, {
+      english: "Close crisis support",
+      hindi: "संकट सहायता बंद करें",
+      telugu: "సంక్షోభ సహాయాన్ని మూసివేయండి",
+      tamil: "நெருக்கடி உதவியை மூடவும்",
+      urdu: "بحرانی مدد بند کریں"
+    }),
+    callA11y: (name: string, dial: string) => pickLocalizedText(languageId, {
+      english: `Call ${name} at ${dial}`,
+      hindi: `${name} को ${dial} पर कॉल करें`,
+      telugu: `${name}కు ${dial}లో కాల్ చేయండి`,
+      tamil: `${name}க்கு ${dial} அழைக்கவும்`,
+      urdu: `${name} کو ${dial} پر کال کریں`
+    })
+  };
   const callLine = (dial: string) => {
     const clean = dial.replace(/[^0-9+]/g, "");
     void Linking.openURL(`tel:${clean}`).catch(() =>
@@ -15740,13 +15802,13 @@ function CrisisSupportModal({ visible, onClose, languageId }: { visible: boolean
           }}
         >
           <Text style={{ color: "#0A5C58", fontSize: 12, fontWeight: "700", letterSpacing: 1.4, textTransform: "uppercase" }}>
-            You are not alone
+            {crisisCopy.eyebrow}
           </Text>
           <Text style={{ color: "#0D1F22", fontSize: 22, fontWeight: "900", lineHeight: 29 }}>
-            Please reach a real person right now
+            {crisisCopy.title}
           </Text>
           <Text style={{ color: "#25364D", fontSize: 15, lineHeight: 22 }}>
-            What you are feeling matters, and you deserve support from someone trained to help. These lines are free, confidential, and answered 24 hours a day. Tap one to call now.
+            {crisisCopy.intro}
           </Text>
 
           <View style={{ gap: 10 }}>
@@ -15754,7 +15816,7 @@ function CrisisSupportModal({ visible, onClose, languageId }: { visible: boolean
               <Pressable
                 key={line.name}
                 accessibilityRole="button"
-                accessibilityLabel={`Call ${line.name} at ${line.dial}`}
+                accessibilityLabel={crisisCopy.callA11y(line.name, line.dial)}
                 onPress={() => callLine(line.dial)}
                 style={({ pressed }) => [
                   {
@@ -15777,19 +15839,19 @@ function CrisisSupportModal({ visible, onClose, languageId }: { visible: boolean
           </View>
 
           <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19 }}>
-            If you are in immediate danger, call 112. If you can, stay with someone you trust until you have spoken to a counsellor.
+            {crisisCopy.footer}
           </Text>
 
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Close crisis support"
+            accessibilityLabel={crisisCopy.closeA11y}
             onPress={onClose}
             style={({ pressed }) => [
               { alignSelf: "center", paddingVertical: 12, paddingHorizontal: 24, borderRadius: 14, borderWidth: 1, borderColor: "#B9CDD2" },
               pressed && { opacity: 0.7 }
             ]}
           >
-            <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>I have this handled for now</Text>
+            <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>{crisisCopy.close}</Text>
           </Pressable>
         </ScrollView>
       </View>
@@ -37710,9 +37772,7 @@ function LanguageSection({
             // Honest, per-language localisation depth so the user can see
             // exactly what changes when they pick a language -- rather than
             // 22 identical-looking options where most silently do nothing.
-            const fullCopyFieldCount = Object.keys(englishUiCopy).length;
-            const localizedFieldCount = Object.keys(localizedUiCopyByLanguage[option.id] ?? {}).length;
-            const hasFullInterface = option.id === "english" || localizedFieldCount === fullCopyFieldCount;
+            const hasFullInterface = FULL_INTERFACE_LANGUAGE_SET.has(option.id);
             const hasMenus = navLabelTranslations[option.id] != null;
             const hasVoice = option.id === "english" || hasDeviceVoice(option.speechLang);
             const supportTag =

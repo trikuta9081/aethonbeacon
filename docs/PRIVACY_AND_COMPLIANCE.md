@@ -118,7 +118,7 @@ photo access.
 
 ## 5. Pre-submission compliance checklist
 
-- [ ] Verify that `https://aethon-beacon-web.onrender.com/privacy-policy.html` serves the current
+- [ ] Verify that `https://nayiq.co/privacy-policy.html` serves the current
       `public/privacy-policy.html` file; put that URL in both store listings.
 - [ ] Confirm that `Trikuta` is the correct legal/developer name and that
       `trikuta9081@gmail.com` is monitored for privacy and deletion requests.
