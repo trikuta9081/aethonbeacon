@@ -8,6 +8,8 @@ const communitySchema = fs.readFileSync(new URL('../supabase/aethon_community_me
 const androidWorkflow = fs.readFileSync(new URL('../.github/workflows/build-android.yml', import.meta.url), 'utf8');
 const iosWorkflow = fs.readFileSync(new URL('../.github/workflows/build-ios.yml', import.meta.url), 'utf8');
 const pagesWorkflow = fs.readFileSync(new URL('../.github/workflows/deploy-pages.yml', import.meta.url), 'utf8');
+const privacyPage = fs.readFileSync(new URL('../public/privacy-policy.html', import.meta.url), 'utf8');
+const deletionPage = fs.readFileSync(new URL('../public/data-deletion.html', import.meta.url), 'utf8');
 
 function assert(condition, message) {
   if (!condition) {
@@ -63,6 +65,8 @@ assert(source.includes('verificationDeliveryMode === "unavailable"'), 'Unavailab
 assert(androidWorkflow.includes('EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"'), 'Android builds must use the explicit unavailable verification mode while the backend is suspended');
 assert(iosWorkflow.includes('EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"'), 'iOS builds must use the explicit unavailable verification mode while the backend is suspended');
 assert(pagesWorkflow.includes('EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"'), 'Pages builds must use the explicit unavailable verification mode while the backend is suspended');
+assert(!privacyPage.includes('Beacon Guide'), 'Public privacy copy must use the current NAYIQ Guide name');
+assert(!deletionPage.includes('Beacon Guide'), 'Public deletion copy must use the current NAYIQ Guide name');
 assert(communitySchema.includes('grant select, insert on table public.aethon_community_messages to anon, authenticated;'), 'Community API roles need only the RLS-governed read/post grants');
 assert(communitySchema.includes("'NAYIQ Guide', 'verified'"), 'Community seed content must use the NAYIQ Guide name');
 assert(!communitySchema.includes("'Aethon Guide', 'verified'"), 'Community seed content must not reintroduce the obsolete guide name');
@@ -133,6 +137,8 @@ assert(immediateSafety < directoryDisclosure, 'Immediate safety actions must app
 assert(directoryDisclosure < importantNumbers, 'Optional emergency directories must remain behind their disclosure control');
 assert(importantNumbers < directoriesHub, 'Important numbers must appear before directories hub');
 assert(directoriesHub < routeChips, 'Directories hub must appear before route chips/general route selection');
+assert(!source.includes('{focusedRouteId === null ? (<>'), 'Route guidance must expand inline instead of replacing the Help and Redress page');
+assert(source.includes('Keep the selector mounted and expand the route guidance'), 'Route selection must preserve the surrounding controls while expanding below');
 
 
 // Front UI order: Help and Redress above the premium support cards.
@@ -195,6 +201,7 @@ assert(!source.includes(hiddenNumericReading), 'Public numeric Vedic reading ter
   'ROUTE_TIMELINES',
   'Evidence checklist',
   'Recommended path now',
+  'Expanded below',
   'First offices to select',
   'Suggested wording',
   'RBI CMS',

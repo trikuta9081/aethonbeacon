@@ -34540,9 +34540,9 @@ function RedressSection({
   // single line showing the choice, with an obvious way back.
   const [showRouteChooser, setShowRouteChooser] = useState(false);
   const [checkedEvidence, setCheckedEvidence] = useState<Record<string, boolean>>({});
-  // A selected route is a focused destination, not another block appended to
-  // the bottom of the chooser. This prevents the mobile experience from
-  // appearing unresponsive and removes the long, disorienting scroll jump.
+  // A selected route expands below the chooser in the same scroll. Keeping
+  // the controls mounted makes the flow feel like a calm inline disclosure,
+  // matching the institution picker instead of looking like a new page.
   const [focusedRouteId, setFocusedRouteId] = useState<RedressRouteId | null>(null);
 
   useEffect(() => {
@@ -34716,8 +34716,6 @@ function RedressSection({
 
   return (
     <View style={[styles.grid, isWide && styles.gridWide]}>
-
-      {focusedRouteId === null ? (<>
 
       {/* ── PANEL 1: ROUTE SELECTOR ── */}
       {/* flex:0 in single-column mode: styles.panel's flex:1 is meant for the
@@ -35153,8 +35151,8 @@ function RedressSection({
                   void Haptics.selectionAsync();
                   animateDisclosure();
                   setRedressRouteId(route.id);
-                  // Collapse straight to this route's guidance instead of
-                  // leaving the person at the top of the list they just used.
+                  // Keep the selector mounted and expand the route guidance
+                  // below it in the same scroll rather than replacing the page.
                   setShowRouteChooser(false);
                   setFocusedRouteId(route.id);
                 }}
@@ -35270,13 +35268,22 @@ function RedressSection({
         </View>
       </View>
 
-      </>) : null}
-
       {/* ── PANEL 3: ACTIVE ROUTE DETAIL ── */}
       {focusedRouteId !== null ? (
       <View
         style={[styles.panel, !isWide && { flexGrow: 0, flexBasis: "auto" }]}
       >
+        <View style={{ marginBottom: 12, borderRadius: 12, backgroundColor: "#E8F3F1", borderWidth: 1, borderColor: "#A8D3CB", paddingHorizontal: 14, paddingVertical: 11 }}>
+          <Text style={styles.eyebrow}>{l("Expanded below", { hindi: "नीचे विस्तृत", telugu: "క్రింద విస్తరించింది", tamil: "கீழே விரிவாக்கப்பட்டது", urdu: "نیچے کھولا گیا" })}</Text>
+          <Text style={{ color: "#0D3D3A", fontSize: 13, lineHeight: 18, fontWeight: "700", marginTop: 2 }}>
+            {l("Your route guidance stays on this page. Scroll down when you are ready; use Back to situations to collapse it.", {
+              hindi: "आपका मार्गदर्शन इसी पेज पर रहता है। तैयार होने पर नीचे स्क्रॉल करें; इसे समेटने के लिए स्थितियों पर वापस जाएँ।",
+              telugu: "మీ మార్గదర్శకం ఇదే పేజీలో ఉంటుంది. సిద్ధమైనప్పుడు క్రిందికి స్క్రోల్ చేయండి; దాన్ని కుదించడానికి పరిస్థితులకు తిరిగి వెళ్లండి.",
+              tamil: "உங்கள் வழிகாட்டுதல் இதே பக்கத்தில் இருக்கும். தயாரானதும் கீழே ஸ்க்ரோல் செய்யுங்கள்; அதைச் சுருக்க நிலைகளுக்கு திரும்பவும்.",
+              urdu: "آپ کی رہنمائی اسی صفحے پر رہتی ہے۔ تیار ہوں تو نیچے اسکرول کریں؛ اسے سمیٹنے کے لیے صورتحال پر واپس جائیں۔"
+            })}
+          </Text>
+        </View>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={l("Back to choose your situation", { hindi: "अपनी स्थिति चुनने पर वापस जाएँ", telugu: "మీ పరిస్థితి ఎంపికకు తిరిగి వెళ్లండి", tamil: "உங்கள் நிலைத் தேர்வுக்கு திரும்பவும்", urdu: "اپنی صورتحال منتخب کرنے پر واپس جائیں" })}

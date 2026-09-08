@@ -42,7 +42,7 @@ supabaseSync.ts             # Supabase client + sync
 realtimeCommunity.ts        # Community realtime subscription
 scripts/                    # Regression suites, build helpers, verification server, deploy
   *-regression.mjs          # 5 literal-assertion test suites (see §6)
-  manual-render-deploy.sh   # Local web deploy (bypasses GitHub Actions)
+  manual-render-deploy.sh   # Legacy Render mirror helper, not the primary web host
   verification-server.mjs   # Local OTP/verification bridge for beta
 assets/                     # Icons, splash, tone WAV, fonts
 docs/                       # This documentation set
@@ -176,16 +176,17 @@ single-file app lacks.
 - **Mobile:** EAS (`npx eas build --platform android|ios`) using `eas.json`
   profiles. iOS bundle `com.aethonbeacon.app`; Android publishes to the Play
   closed-testing (Alpha) track via CI.
-- **Web:** `pnpm run export:web` produces a static bundle in `dist/`. Because
-  GitHub Actions minutes are capped, `scripts/manual-render-deploy.sh` builds
-  locally and force-pushes to a Render-watched mirror branch. Run it from your
-  own terminal (the sandbox has no push access):
-  ```bash
-  cd ~/AethonBeacon && git push origin master && ./scripts/manual-render-deploy.sh
-  ```
-- **Verification backend:** `scripts/verification-server.mjs` (OTP bridge) is
-  deployed on Render (`render.yaml`). Set
-  `EXPO_PUBLIC_VERIFICATION_API_BASE_URL` in the app build.
+- **Web:** `pnpm run export:web` produces a static bundle in `dist/`, and the
+  `deploy-pages.yml` workflow publishes it to
+  `https://trikuta9081.github.io/aethonbeacon/`. The checked-in `CNAME` keeps
+  `nayiq.co` ready as the custom domain once its DNS points to GitHub Pages.
+  `scripts/manual-render-deploy.sh` is retained only as a legacy fallback for
+  an active Render service.
+- **Verification backend:** `scripts/verification-server.mjs` is an optional
+  OTP bridge defined in `render.yaml`. Release workflows use
+  `EXPO_PUBLIC_VERIFICATION_MODE=unavailable` while that service is suspended;
+  this disables OTP attempts and local preview codes rather than shipping a
+  dead endpoint. Switch to `remote` only after the backend is healthy.
 
 ---
 

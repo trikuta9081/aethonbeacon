@@ -78,14 +78,17 @@ before running `pnpm run run:android`.
 
 - **Mobile:** `npx eas build --platform android|ios` using `eas.json`. Android
   publishes to the Play closed-testing (Alpha) track via CI.
-- **Web:** `pnpm run export:web` builds a static bundle to `dist/`. Because
-  GitHub Actions minutes are capped, deploy with the local mirror script:
-  ```bash
-  git push origin master && ./scripts/manual-render-deploy.sh
-  ```
-- **Verification backend (OTP):** deployed on Render via `render.yaml`
-  (`scripts/verification-server.mjs`). Set
-  `EXPO_PUBLIC_VERIFICATION_API_BASE_URL` in the app build.
+- **Web:** `pnpm run export:web` builds the static bundle in `dist/`. The
+  supported deployment is GitHub Pages at
+  `https://trikuta9081.github.io/aethonbeacon/`; the `deploy-pages.yml`
+  workflow publishes it on pushes to `master`. `nayiq.co` can point to that
+  Pages site through the checked-in `CNAME` file once DNS is configured.
+- **Verification backend (OTP):** the optional bridge is defined in
+  `render.yaml` (`scripts/verification-server.mjs`). While that backend is
+  unavailable, release workflows set
+  `EXPO_PUBLIC_VERIFICATION_MODE=unavailable` so the app fails closed and does
+  not generate preview OTPs or call a dead endpoint. Use `remote` only after a
+  healthy delivery service has been verified.
 - **Release preflight:** `pnpm run release:check` validates version/runtime
   alignment, the configured privacy URL, and the bundled privacy artifacts.
   `pnpm run verification:env-check` must also pass in the production
