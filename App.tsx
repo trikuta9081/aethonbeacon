@@ -15770,7 +15770,40 @@ function CrisisSupportModal({ visible, onClose, languageId }: { visible: boolean
       telugu: `${name}కు ${dial}లో కాల్ చేయండి`,
       tamil: `${name}க்கு ${dial} அழைக்கவும்`,
       urdu: `${name} کو ${dial} پر کال کریں`
-    })
+    }),
+    detail: (dial: string) => pickLocalizedText(languageId,
+      dial === "14416"
+        ? {
+            english: "National mental-health helpline (Government of India, MoHFW). Free, 24x7, 20 languages.",
+            hindi: "राष्ट्रीय मानसिक स्वास्थ्य हेल्पलाइन (भारत सरकार, MoHFW)। निःशुल्क, चौबीसों घंटे, 20 भाषाओं में।",
+            telugu: "జాతీయ మానసిక ఆరోగ్య హెల్ప్‌లైన్ (భారత ప్రభుత్వం, MoHFW). ఉచితం, 24x7, 20 భాషల్లో.",
+            tamil: "தேசிய மனநல உதவி எண் (இந்திய அரசு, MoHFW). இலவசம், 24x7, 20 மொழிகளில்.",
+            urdu: "قومی ذہنی صحت ہیلپ لائن (حکومتِ ہند، MoHFW)۔ مفت، چوبیس گھنٹے، 20 زبانوں میں۔"
+          }
+        : dial === "1800-891-4416"
+          ? {
+              english: "Toll-free alternate Tele-MANAS line if 14416 does not connect.",
+              hindi: "अगर 14416 न जुड़े तो टेली-मानस का टोल-फ्री वैकल्पिक नंबर।",
+              telugu: "14416 కలవకపోతే టోల్-ఫ్రీ ప్రత్యామ్నాయ Tele-MANAS లైన్.",
+              tamil: "14416 இணைக்கவில்லை என்றால் கட்டணமில்லா மாற்று Tele-MANAS எண்.",
+              urdu: "اگر 14416 نہ ملے تو ٹیلی-مانس کا مفت متبادل نمبر۔"
+            }
+          : dial === "1800-599-0019"
+            ? {
+                english: "Mental-health rehabilitation helpline (Government of India). Free, 24x7, 13 languages.",
+                hindi: "मानसिक स्वास्थ्य पुनर्वास हेल्पलाइन (भारत सरकार)। निःशुल्क, चौबीसों घंटे, 13 भाषाओं में।",
+                telugu: "మానసిక ఆరోగ్య పునరావాస హెల్ప్‌లైన్ (భారత ప్రభుత్వం). ఉచితం, 24x7, 13 భాషల్లో.",
+                tamil: "மனநல மறுவாழ்வு உதவி எண் (இந்திய அரசு). இலவசம், 24x7, 13 மொழிகளில்.",
+                urdu: "ذہنی صحت بحالی ہیلپ لائن (حکومتِ ہند)۔ مفت، چوبیس گھنٹے، 13 زبانوں میں۔"
+              }
+            : {
+                english: "Pan-India emergency for police, ambulance, or fire. Use if life is in immediate danger.",
+                hindi: "पूरे भारत की पुलिस, एम्बुलेंस और अग्निशमन आपात सेवा। जीवन पर तत्काल खतरे में उपयोग करें।",
+                telugu: "దేశవ్యాప్తంగా పోలీసు, అంబులెన్స్ లేదా అగ్నిమాపక అత్యవసర సేవ. ప్రాణానికి తక్షణ ప్రమాదంలో ఉపయోగించండి.",
+                tamil: "இந்தியா முழுவதும் காவல், ஆம்புலன்ஸ் அல்லது தீயணைப்பு அவசர சேவை. உயிருக்கு உடனடி ஆபத்தில் பயன்படுத்தவும்.",
+                urdu: "پورے بھارت کی پولیس، ایمبولینس یا فائر ایمرجنسی سروس۔ جان کو فوری خطرہ ہو تو استعمال کریں۔"
+              }
+    )
   };
   const callLine = (dial: string) => {
     const clean = dial.replace(/[^0-9+]/g, "");
@@ -15832,7 +15865,7 @@ function CrisisSupportModal({ visible, onClose, languageId }: { visible: boolean
                   {line.name} · {line.dial}
                 </Text>
                 <Text style={{ color: "rgba(255,255,255,0.92)", fontSize: 12, lineHeight: 17 }}>
-                  {line.detail}
+                  {crisisCopy.detail(line.dial)}
                 </Text>
               </Pressable>
             ))}

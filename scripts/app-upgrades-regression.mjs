@@ -374,8 +374,9 @@ assert(
 assert(
   source.includes('const crisisCopy = {') &&
     source.includes('crisisCopy.footer') &&
-    source.includes('crisisCopy.closeA11y'),
-  'Crisis support must follow the selected language instead of remaining English-only'
+    source.includes('crisisCopy.closeA11y') &&
+    source.includes('crisisCopy.detail(line.dial)'),
+  'Crisis support copy and helpline details must follow the selected language instead of remaining English-only'
 );
 
 // Small-phone keyboard focus mode: opening the native keyboard must prioritise
