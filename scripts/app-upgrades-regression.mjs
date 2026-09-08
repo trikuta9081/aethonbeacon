@@ -142,6 +142,11 @@ assert(source.includes('Keep the selector mounted and expand the route guidance'
 assert(source.includes('{showRouteChooser && (\n          <View style={styles.issueChipGrid}>'), 'The situation chooser must collapse instead of leaving duplicate route buttons on screen');
 assert(source.includes('const followUpCopy: RedressFollowUpCopy'), 'Redress follow-up reminders need localized copy instead of English-only status text');
 assert(source.includes('redressFollowUpState(activeCase.nextFollowUpIso, followUpCopy)'), 'Redress follow-up reminders must use the localized copy map');
+assert(source.includes('accessibilityLabel={l("Call emergency number 112 now"'), 'Emergency call accessibility copy must follow the selected language');
+assert(source.includes('accessibilityLabel={l("Have this route read aloud"'), 'Route read-aloud accessibility copy must follow the selected language');
+assert(source.includes('accessibilityLabel={l("Copy complaint template to clipboard"'), 'Complaint-template accessibility copy must follow the selected language');
+assert(source.includes('accessibilityLabel={l("Open email app with complaint pre-filled"'), 'Complaint email accessibility copy must follow the selected language');
+assert(source.includes('accessibilityLabel={l("Save complaint letter as PDF"'), 'Complaint PDF accessibility copy must follow the selected language');
 
 
 // Front UI order: Help and Redress above the premium support cards.

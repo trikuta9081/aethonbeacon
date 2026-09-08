@@ -34834,7 +34834,12 @@ function RedressSection({
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Call emergency number 112 now"
+              accessibilityLabel={l("Call emergency number 112 now", {
+                hindi: "अभी आपातकालीन नंबर 112 पर कॉल करें",
+                telugu: "ఇప్పుడే అత్యవసర నంబర్ 112కు కాల్ చేయండి",
+                tamil: "இப்போது அவசர எண் 112-க்கு அழைக்கவும்",
+                urdu: "ابھی ہنگامی نمبر 112 پر کال کریں"
+              })}
               onPress={() => void onEmergencyCall()}
               style={({ pressed }) => [{ flexGrow: 1, flexShrink: 1, flexBasis: 180, minWidth: 0, backgroundColor: pressed ? "#D62E00" : "#B53333", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 10, alignItems: "center" }]}
             >
@@ -34843,7 +34848,12 @@ function RedressSection({
             {onReadRouteAloud && (
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Have this route read aloud"
+                accessibilityLabel={l("Have this route read aloud", {
+                  hindi: "इस मार्ग को ज़ोर से पढ़कर सुनाएँ",
+                  telugu: "ఈ మార్గాన్ని గట్టిగా చదివి వినిపించండి",
+                  tamil: "இந்த வழியைச் சத்தமாக வாசிக்கவும்",
+                  urdu: "اس راستے کو بلند آواز میں پڑھیں"
+                })}
                 onPress={() =>
                   onReadRouteAloud(
                     `${selectedRedressRoute.label}. ${selectedRedressRoute.summary} First office: ${selectedRedressRoute.firstOffice} First action: ${selectedRedressRoute.firstAction} Escalation: ${selectedRedressRoute.escalation}`
@@ -35523,7 +35533,12 @@ function RedressSection({
                 <View style={{ marginTop: 10, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Copy complaint template to clipboard"
+                    accessibilityLabel={l("Copy complaint template to clipboard", {
+                      hindi: "शिकायत टेम्पलेट को क्लिपबोर्ड पर कॉपी करें",
+                      telugu: "ఫిర్యాదు టెంప్లేట్‌ను క్లిప్‌బోర్డ్‌కు కాపీ చేయండి",
+                      tamil: "புகார் மாதிரியை கிளிப்போர்டுக்கு நகலெடுக்கவும்",
+                      urdu: "شکایت ٹیمپلیٹ کو کلپ بورڈ پر کاپی کریں"
+                    })}
                     onPress={async () => {
                       // Web: use the browser clipboard API. Native: fall back to Share.
                       if (Platform.OS === "web" && typeof navigator !== "undefined" && (navigator as any).clipboard) {
@@ -35554,7 +35569,12 @@ function RedressSection({
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Open email app with complaint pre-filled"
+                    accessibilityLabel={l("Open email app with complaint pre-filled", {
+                      hindi: "शिकायत पहले से भरकर ईमेल ऐप खोलें",
+                      telugu: "ఫిర్యాదు వివరాలతో ముందే నింపిన ఈమెయిల్ యాప్‌ను తెరవండి",
+                      tamil: "புகார் விவரங்கள் நிரப்பப்பட்ட மின்னஞ்சல் செயலியைத் திறக்கவும்",
+                      urdu: "شکایت پہلے سے بھری ہوئی ای میل ایپ کھولیں"
+                    })}
                     onPress={() => {
                       const subject = encodeURIComponent(`Formal complaint — ${selectedRedressRoute.label}`);
                       const body = encodeURIComponent(draftTemplate ?? "");
@@ -35589,7 +35609,12 @@ function RedressSection({
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Save complaint letter as PDF"
+                    accessibilityLabel={l("Save complaint letter as PDF", {
+                      hindi: "शिकायत पत्र को PDF के रूप में सेव करें",
+                      telugu: "ఫిర్యాదు లేఖను PDFగా సేవ్ చేయండి",
+                      tamil: "புகார் கடிதத்தை PDF ஆக சேமிக்கவும்",
+                      urdu: "شکایت خط کو PDF کے طور پر محفوظ کریں"
+                    })}
                     onPress={() => {
                       void exportComplaintLetterPdf(draftTemplate ?? "", selectedRedressRoute.label).catch(() =>
                         Alert.alert(
