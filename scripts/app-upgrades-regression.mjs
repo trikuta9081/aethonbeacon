@@ -139,6 +139,7 @@ assert(importantNumbers < directoriesHub, 'Important numbers must appear before 
 assert(directoriesHub < routeChips, 'Directories hub must appear before route chips/general route selection');
 assert(!source.includes('{focusedRouteId === null ? (<>'), 'Route guidance must expand inline instead of replacing the Help and Redress page');
 assert(source.includes('Keep the selector mounted and expand the route guidance'), 'Route selection must preserve the surrounding controls while expanding below');
+assert(source.includes('{showRouteChooser && (\n          <View style={styles.issueChipGrid}>'), 'The situation chooser must collapse instead of leaving duplicate route buttons on screen');
 
 
 // Front UI order: Help and Redress above the premium support cards.

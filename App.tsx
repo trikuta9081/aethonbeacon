@@ -35138,36 +35138,39 @@ function RedressSection({
         <View style={{ marginBottom: 8, display: showRouteChooser ? "flex" : "none" }}>
           <Text style={styles.eyebrow}>{l("Choose your situation", { hindi: "अपनी स्थिति चुनें", telugu: "మీ పరిస్థితిని ఎంచుకోండి", tamil: "உங்கள் நிலையைத் தேர்ந்தெடுக்கவும்", urdu: "اپنی صورتحال منتخب کریں" })}</Text>
         </View>
-        <View style={styles.issueChipGrid}>
-          {redressRoutes.map((route) => {
-            const isSelected = route.id === focusedRouteId;
-            const ROUTE_ICONS: Partial<Record<string, string>> = { academic: "🎓", harassment: "⚠️", ragging: "🏫", public: "🏛️", private: "🏢", crime: "🚨", financial: "💰", domestic: "🏠", workplace: "👔", cybercrime: "💻", consumer: "🛒" };
-            return (
-              <Pressable
-                key={route.id}
-                accessibilityRole="button"
-                accessibilityState={{ selected: isSelected }}
-                onPress={() => {
-                  void Haptics.selectionAsync();
-                  animateDisclosure();
-                  setRedressRouteId(route.id);
-                  // Keep the selector mounted and expand the route guidance
-                  // below it in the same scroll rather than replacing the page.
-                  setShowRouteChooser(false);
-                  setFocusedRouteId(route.id);
-                }}
-                style={[styles.issueChip, isSelected && styles.issueChipActive]}
-              >
-                <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>
-                  {(ROUTE_ICONS[route.id] ?? "📋") + " " + route.label}
-                </Text>
-                <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>
-                  {route.subtitle}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        {showRouteChooser && (
+          <View style={styles.issueChipGrid}>
+            {redressRoutes.map((route) => {
+              const isSelected = route.id === selectedRedressRoute.id;
+              const ROUTE_ICONS: Partial<Record<string, string>> = { academic: "🎓", harassment: "⚠️", ragging: "🏫", public: "🏛️", private: "🏢", crime: "🚨", financial: "💰", domestic: "🏠", workplace: "👔", cybercrime: "💻", consumer: "🛒" };
+              return (
+                <Pressable
+                  key={route.id}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isSelected }}
+                  accessibilityLabel={`${route.label}. ${route.subtitle}. ${isSelected ? l("Selected", { hindi: "चयनित", telugu: "ఎంచుకోబడింది", tamil: "தேர்ந்தெடுக்கப்பட்டது", urdu: "منتخب" }) : l("Tap to select", { hindi: "चुनने के लिए टैप करें", telugu: "ఎంచుకోవడానికి ట్యాప్ చేయండి", tamil: "தேர்ந்தெடுக்கத் தட்டவும்", urdu: "منتخب کرنے کے لیے ٹیپ کریں" })}.`}
+                  onPress={() => {
+                    void Haptics.selectionAsync();
+                    animateDisclosure();
+                    setRedressRouteId(route.id);
+                    // Keep the selector mounted and expand the route guidance
+                    // below it in the same scroll rather than replacing the page.
+                    setShowRouteChooser(false);
+                    setFocusedRouteId(route.id);
+                  }}
+                  style={[styles.issueChip, isSelected && styles.issueChipActive]}
+                >
+                  <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>
+                    {(ROUTE_ICONS[route.id] ?? "📋") + " " + route.label}
+                  </Text>
+                  <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>
+                    {route.subtitle}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
       </View>
 
       {/* ── PANEL 2: INSTITUTION TYPE ── */}
@@ -35195,7 +35198,7 @@ function RedressSection({
                 key={sector.id}
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
-                accessibilityLabel={`${sector.label}. ${sector.subtitle}. ${isSelected ? "Selected" : "Tap to select"}.`}
+                accessibilityLabel={`${sector.label}. ${sector.subtitle}. ${isSelected ? l("Selected", { hindi: "चयनित", telugu: "ఎంచుకోబడింది", tamil: "தேர்ந்தெடுக்கப்பட்டது", urdu: "منتخب" }) : l("Tap to select", { hindi: "चुनने के लिए टैप करें", telugu: "ఎంచుకోవడానికి ట్యాప్ చేయండి", tamil: "தேர்ந்தெடுக்கத் தட்டவும்", urdu: "منتخب کرنے کے لیے ٹیپ کریں" })}.`}
                 onPress={() => setInstitutionSectorId(sector.id)}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
