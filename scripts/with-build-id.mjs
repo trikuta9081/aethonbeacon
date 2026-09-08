@@ -28,12 +28,16 @@ if (!command) {
 }
 
 const nodeBinDir = path.dirname(process.execPath);
+const verificationMode = process.env.EXPO_PUBLIC_VERIFICATION_MODE ?? "remote";
 const env = {
   ...process.env,
   PATH: `${nodeBinDir}:${process.env.PATH ?? ""}`,
   EXPO_PUBLIC_BUILD_ID: resolveBuildId(),
   EXPO_PUBLIC_VERIFICATION_API_BASE_URL:
-    process.env.EXPO_PUBLIC_VERIFICATION_API_BASE_URL ?? "https://aethon-beacon-verification.onrender.com",
+    verificationMode === "unavailable"
+      ? "https://verification-disabled.invalid"
+      : process.env.EXPO_PUBLIC_VERIFICATION_API_BASE_URL ?? "https://aethon-beacon-verification.onrender.com",
+  EXPO_PUBLIC_VERIFICATION_MODE: verificationMode,
   LOCAL_VERIFICATION_DEBUG: process.env.LOCAL_VERIFICATION_DEBUG ?? "0"
 };
 

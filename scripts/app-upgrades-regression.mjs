@@ -7,6 +7,7 @@ const androidStrings = fs.readFileSync(new URL('../android/app/src/main/res/valu
 const communitySchema = fs.readFileSync(new URL('../supabase/aethon_community_messages.sql', import.meta.url), 'utf8');
 const androidWorkflow = fs.readFileSync(new URL('../.github/workflows/build-android.yml', import.meta.url), 'utf8');
 const iosWorkflow = fs.readFileSync(new URL('../.github/workflows/build-ios.yml', import.meta.url), 'utf8');
+const pagesWorkflow = fs.readFileSync(new URL('../.github/workflows/deploy-pages.yml', import.meta.url), 'utf8');
 
 function assert(condition, message) {
   if (!condition) {
@@ -58,6 +59,10 @@ assert(source.includes('applyPersistedStateRef.current?.(outcome.merged)'), 'A m
 assert(/AppState\.addEventListener\("change", \(state\) => \{\s*if \(state === "active"\) tick\(\);/.test(source), 'Sync must run when the app returns to the foreground, not only at verification');
 assert(androidWorkflow.includes('pnpm run test:sync'), 'Android releases must run the cross-device merge regression');
 assert(iosWorkflow.includes('pnpm run test:sync'), 'TestFlight releases must run the cross-device merge regression');
+assert(source.includes('verificationDeliveryMode === "unavailable"'), 'Unavailable verification builds must fail closed instead of generating local OTPs');
+assert(androidWorkflow.includes('EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"'), 'Android builds must use the explicit unavailable verification mode while the backend is suspended');
+assert(iosWorkflow.includes('EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"'), 'iOS builds must use the explicit unavailable verification mode while the backend is suspended');
+assert(pagesWorkflow.includes('EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"'), 'Pages builds must use the explicit unavailable verification mode while the backend is suspended');
 assert(communitySchema.includes('grant select, insert on table public.aethon_community_messages to anon, authenticated;'), 'Community API roles need only the RLS-governed read/post grants');
 assert(communitySchema.includes("'NAYIQ Guide', 'verified'"), 'Community seed content must use the NAYIQ Guide name');
 assert(!communitySchema.includes("'Aethon Guide', 'verified'"), 'Community seed content must not reintroduce the obsolete guide name');

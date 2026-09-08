@@ -27,7 +27,10 @@ jobs:
       # falls back to a fake local OTP code and disables every connected-guidance
       # card on every Android build this workflow produces -- which is exactly
       # what testers have been running.
-      EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://aethon-beacon-verification.onrender.com"
+      # The current Render workspace is suspended. Build the branded app in a
+      # fail-closed state rather than embedding a dead endpoint or local OTP.
+      EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://verification-disabled.invalid"
+      EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"
       # Community feed/chat realtime sync. The anon/publishable key is meant
       # to be public (Supabase's own design -- access is controlled by RLS
       # policies on the aethon_community_messages table, not by hiding this

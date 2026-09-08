@@ -20,6 +20,8 @@ function hasValidWebhookUrl(name) {
 }
 
 const debugPreview = readEnv("LOCAL_VERIFICATION_DEBUG") === "1";
+const verificationMode = readEnv("EXPO_PUBLIC_VERIFICATION_MODE");
+const verificationUnavailable = verificationMode === "unavailable";
 const smsWebhookConfigured = hasValidWebhookUrl("VERIFICATION_SMS_WEBHOOK_URL");
 const emailWebhookConfigured = hasValidWebhookUrl("VERIFICATION_EMAIL_WEBHOOK_URL");
 const twilioConfigured =
@@ -32,7 +34,9 @@ const legacyProviderKeyName = `${legacyProviderPrefix.toUpperCase()}_API_KEY`;
 const guidanceConfigured = hasValue("GUIDANCE_SERVICE_KEY") || hasValue(legacyProviderKeyName);
 const phoneDeliveryConfigured = smsWebhookConfigured || twilioConfigured;
 const emailDeliveryConfigured = emailWebhookConfigured || sendgridConfigured;
-const verificationApiBaseUrl = readEnv("EXPO_PUBLIC_VERIFICATION_API_BASE_URL") || "https://aethon-beacon-verification.onrender.com";
+const verificationApiBaseUrl = verificationUnavailable
+  ? ""
+  : readEnv("EXPO_PUBLIC_VERIFICATION_API_BASE_URL") || "https://aethon-beacon-verification.onrender.com";
 
 const errors = [];
 const warnings = [];
@@ -45,7 +49,7 @@ if (!verificationServerSource.includes('checked-by-guidance-endpoint-source')) {
 }
 
 let remoteHealth = null;
-if (!debugPreview && (!phoneDeliveryConfigured || !emailDeliveryConfigured || !guidanceConfigured)) {
+if (!debugPreview && !verificationUnavailable && (!phoneDeliveryConfigured || !emailDeliveryConfigured || !guidanceConfigured)) {
   try {
     const healthUrl = new URL("/health", verificationApiBaseUrl);
     const response = await fetch(healthUrl, { signal: AbortSignal.timeout(5000) });
@@ -74,6 +78,14 @@ if (debugPreview) {
   warnings.push("LOCAL_VERIFICATION_DEBUG=1 exposes preview OTPs and must not be used for public launch.");
 }
 
+if (verificationMode.length > 0 && verificationMode !== "remote" && !verificationUnavailable) {
+  errors.push('EXPO_PUBLIC_VERIFICATION_MODE must be "remote" or "unavailable".');
+}
+
+if (verificationUnavailable) {
+  warnings.push("Secure verification is intentionally disabled for this build until a healthy OTP backend is configured; no local OTP will be generated.");
+}
+
 if (hasValue("VERIFICATION_SMS_WEBHOOK_URL") && !smsWebhookConfigured) {
   warnings.push("VERIFICATION_SMS_WEBHOOK_URL is set but is not a valid http/https URL, so it will be ignored.");
 }
@@ -82,19 +94,19 @@ if (hasValue("VERIFICATION_EMAIL_WEBHOOK_URL") && !emailWebhookConfigured) {
   warnings.push("VERIFICATION_EMAIL_WEBHOOK_URL is set but is not a valid http/https URL, so it will be ignored.");
 }
 
-if (!debugPreview && !phoneDeliveryReady && !emailDeliveryReady) {
+if (!debugPreview && !verificationUnavailable && !phoneDeliveryReady && !emailDeliveryReady) {
   errors.push(
     "At least one OTP delivery channel is not configured locally or on the deployed verification service. Add Twilio settings or VERIFICATION_SMS_WEBHOOK_URL for phone, or SendGrid settings or VERIFICATION_EMAIL_WEBHOOK_URL for email."
   );
 }
 
-if (!debugPreview && !phoneDeliveryReady) {
+if (!debugPreview && !verificationUnavailable && !phoneDeliveryReady) {
   warnings.push(
     "Phone OTP delivery is not configured, so phone verification will stay unavailable until Twilio settings or VERIFICATION_SMS_WEBHOOK_URL are added."
   );
 }
 
-if (!debugPreview && !emailDeliveryReady) {
+if (!debugPreview && !verificationUnavailable && !emailDeliveryReady) {
   warnings.push(
     "Email OTP delivery is not configured, so email verification will stay unavailable until SendGrid settings or VERIFICATION_EMAIL_WEBHOOK_URL are added."
   );
@@ -114,7 +126,7 @@ if (localServerSettingsPresent && readEnv("VERIFICATION_CORS_ORIGIN") === "*") {
   warnings.push("For public web launch, set VERIFICATION_CORS_ORIGIN to the production web origin.");
 }
 
-if (!hasValue("EXPO_PUBLIC_VERIFICATION_API_BASE_URL") && remoteHealth === null) {
+if (!verificationUnavailable && !hasValue("EXPO_PUBLIC_VERIFICATION_API_BASE_URL") && remoteHealth === null) {
   warnings.push("Set EXPO_PUBLIC_VERIFICATION_API_BASE_URL before building public app binaries, or ensure the default deployed endpoint is reachable.");
 }
 
@@ -125,6 +137,7 @@ if (!guidanceReady) {
 const result = {
   ok: errors.length === 0,
   debugPreview,
+  verificationMode: verificationUnavailable ? "unavailable" : verificationMode || "remote",
   delivery: {
     phone: smsWebhookConfigured ? "webhook" : twilioConfigured ? "twilio" : remotePhoneDeliveryConfigured ? "remote-provider" : "missing",
     email: emailWebhookConfigured ? "webhook" : sendgridConfigured ? "sendgrid" : remoteEmailDeliveryConfigured ? "remote-provider" : "missing",

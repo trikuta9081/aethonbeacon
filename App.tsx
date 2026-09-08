@@ -16857,6 +16857,8 @@ export default function App() {
     let cancelled = false;
     async function fetchBrief() {
       const apiBase = (() => {
+        const mode = typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_VERIFICATION_MODE : "";
+        if (mode === "unavailable") return "";
         const v = typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_VERIFICATION_API_BASE_URL : "";
         return typeof v === "string" ? v.trim().replace(/\/$/, "") : "";
       })();
@@ -16891,19 +16893,29 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasLoaded, entries.length, checkInStreak, localOnly]);
 
-  const verificationApiBaseUrl = (() => {
-    const value = typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_VERIFICATION_API_BASE_URL : "";
-    const trimmedValue = typeof value === "string" ? value.trim().replace(/\/$/, "") : "";
-    if (trimmedValue.length > 0) return trimmedValue;
-    return "";
+  const verificationModeOverride = (() => {
+    const value = typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_VERIFICATION_MODE : "";
+    return value === "unavailable" ? "unavailable" : "";
   })();
+  const verificationApiBaseUrl = verificationModeOverride === "unavailable"
+    ? ""
+    : (() => {
+        const value = typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_VERIFICATION_API_BASE_URL : "";
+        const trimmedValue = typeof value === "string" ? value.trim().replace(/\/$/, "") : "";
+        if (trimmedValue.length > 0) return trimmedValue;
+        return "";
+      })();
   const buildVersion = useMemo(() => {
     const envValue = typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_BUILD_ID?.trim() : "";
     if (envValue && envValue.length > 0) return envValue;
     const appVersion = Constants.expoConfig?.version?.trim();
     return appVersion && appVersion.length > 0 ? appVersion : "0.1.0";
   }, []);
-  const verificationDeliveryMode = verificationApiBaseUrl.length > 0 ? "remote" : "local";
+  const verificationDeliveryMode = verificationModeOverride === "unavailable"
+    ? "unavailable"
+    : verificationApiBaseUrl.length > 0
+      ? "remote"
+      : "local";
 
   useEffect(() => {
     if (activeTab !== initialTabRef.current) {
@@ -20693,7 +20705,19 @@ export default function App() {
       return false;
     }
 
-    if (verificationApiBaseUrl.length > 0) {
+    if (verificationDeliveryMode === "unavailable") {
+      const message = l("Verification is temporarily unavailable while the secure service is restored. You can continue using the private, local parts of NAYIQ.", {
+        hindi: "सुरक्षित सेवा बहाल होने तक सत्यापन अस्थायी रूप से उपलब्ध नहीं है। आप NAYIQ के निजी, स्थानीय हिस्सों का उपयोग जारी रख सकते हैं।",
+        telugu: "సురక్షిత సేవ పునరుద్ధరించబడే వరకు ధృవీకరణ తాత్కాలికంగా అందుబాటులో లేదు. NAYIQలోని ప్రైవేట్, స్థానిక భాగాలను కొనసాగించవచ్చు.",
+        tamil: "பாதுகாப்பான சேவை மீட்டமைக்கப்படும் வரை சரிபார்ப்பு தற்காலிகமாக கிடைக்காது. NAYIQ-ன் தனிப்பட்ட, உள்ளூர் பகுதிகளை தொடர்ந்து பயன்படுத்தலாம்.",
+        urdu: "محفوظ سروس بحال ہونے تک تصدیق عارضی طور پر دستیاب نہیں ہے۔ آپ NAYIQ کے نجی، مقامی حصے استعمال کرتے رہ سکتے ہیں۔"
+      });
+      setProfileVerificationNotice(message);
+      Alert.alert(channelTitle, message);
+      return false;
+    }
+
+    if (verificationDeliveryMode === "remote") {
       if (verificationRequestBusy !== null) {
         return false;
       }
@@ -20854,7 +20878,19 @@ export default function App() {
             tamil: "மின்னஞ்சல் சரிபார்ப்பு",
             urdu: "ای میل تصدیق"
           });
-    if (verificationApiBaseUrl.length > 0) {
+    if (verificationDeliveryMode === "unavailable") {
+      const message = l("Verification is temporarily unavailable while the secure service is restored. No local OTP is being generated.", {
+        hindi: "सुरक्षित सेवा बहाल होने तक सत्यापन अस्थायी रूप से उपलब्ध नहीं है। कोई स्थानीय OTP नहीं बनाया जा रहा है।",
+        telugu: "సురక్షిత సేవ పునరుద్ధరించబడే వరకు ధృవీకరణ తాత్కాలికంగా అందుబాటులో లేదు. స్థానిక OTP సృష్టించబడదు.",
+        tamil: "பாதுகாப்பான சேவை மீட்டமைக்கப்படும் வரை சரிபார்ப்பு தற்காலிகமாக கிடைக்காது. உள்ளூர் OTP உருவாக்கப்படவில்லை.",
+        urdu: "محفوظ سروس بحال ہونے تک تصدیق عارضی طور پر دستیاب نہیں ہے۔ کوئی مقامی OTP نہیں بنایا جا رہا۔"
+      });
+      setProfileVerificationNotice(message);
+      Alert.alert(channelTitle, message);
+      return false;
+    }
+
+    if (verificationDeliveryMode === "remote") {
       const enteredCode =
         channel === "phone" ? profilePhoneOtpInput.trim() : profileEmailOtpInput.trim();
 
@@ -36609,7 +36645,7 @@ function SettingsSection({
   onDismissOneTimeProfileNudge: () => void;
   onOpenAdminLogin: () => void;
   onPreviewRetentionAlert: () => Promise<void>;
-  verificationDeliveryMode: "remote" | "local";
+  verificationDeliveryMode: "remote" | "local" | "unavailable";
   accessName: string;
   profilePhone: string;
   profilePhoneVerified: boolean;
@@ -37022,7 +37058,15 @@ function SettingsSection({
                     tamil: "SMS மற்றும் மின்னஞ்சல் OTP-க்கு பாதுகாப்பான வழங்குநர் இணைக்கப்பட்டுள்ளது",
                     urdu: "SMS اور ای میل OTP کے لیے محفوظ فراہم کنندہ منسلک ہے"
                   })
-                : pickLocalizedText(languageId, {
+                : verificationDeliveryMode === "unavailable"
+                  ? pickLocalizedText(languageId, {
+                    english: "Secure verification is temporarily unavailable",
+                    hindi: "सुरक्षित सत्यापन अस्थायी रूप से उपलब्ध नहीं है",
+                    telugu: "సురక్షిత ధృవీకరణ తాత్కాలికంగా అందుబాటులో లేదు",
+                    tamil: "பாதுகாப்பான சரிபார்ப்பு தற்காலிகமாக கிடைக்கவில்லை",
+                    urdu: "محفوظ تصدیق عارضی طور پر دستیاب نہیں ہے"
+                  })
+                  : pickLocalizedText(languageId, {
                     english: "Local fallback only for this build",
                     hindi: "इस बिल्ड में केवल स्थानीय fallback",
                     telugu: "ఈ బిల్డ్‌లో స్థానిక fallback మాత్రమే",
@@ -39859,7 +39903,7 @@ function AdminSection({
   backendActiveUsers: number | null;
   backendPresenceSessions: PresenceSessionSummary[];
   backendPresenceFetchedAt: string | null;
-  verificationDeliveryMode: "remote" | "local";
+  verificationDeliveryMode: "remote" | "local" | "unavailable";
   profilePhoneVerified: boolean;
   profileEmailVerified: boolean;
   entries: CheckInEntry[];
@@ -39932,7 +39976,9 @@ function AdminSection({
     : l("Not connected", { hindi: "कनेक्ट नहीं है", telugu: "కనెక్ట్ కాలేదు", tamil: "இணைக்கப்படவில்லை", urdu: "منسلک نہیں" });
   const verificationSourceLabel = verificationDeliveryMode === "remote"
     ? l("connected", { hindi: "जुड़ा हुआ", telugu: "కనెక్ట్ అయింది", tamil: "இணைக்கப்பட்டது", urdu: "منسلک" })
-    : l("local fallback", { hindi: "स्थानीय विकल्प", telugu: "స్థానिक ప్రత్యామ్నాయం", tamil: "உள்ளூர் மாற்று", urdu: "مقامی متبادل" });
+    : verificationDeliveryMode === "unavailable"
+      ? l("temporarily unavailable", { hindi: "अस्थायी रूप से उपलब्ध नहीं", telugu: "తాత్కాలికంగా అందుబాటులో లేదు", tamil: "தற்காலிகமாக கிடைக்கவில்லை", urdu: "عارضی طور پر دستیاب نہیں" })
+      : l("local fallback", { hindi: "स्थानीय विकल्प", telugu: "స్థానిక ప్రత్యామ్నాయం", tamil: "உள்ளூர் மாற்று", urdu: "مقامی متبادل" });
 
   return (
     <View style={styles.panel}>
@@ -40320,7 +40366,7 @@ function AccessOverlay({
   setProfileGender: (value: ProfileGenderId) => void;
   profileRoleId: IdentityId;
   setProfileRoleId: (value: IdentityId) => void;
-  verificationDeliveryMode: "remote" | "local";
+  verificationDeliveryMode: "remote" | "local" | "unavailable";
   profileVerificationNotice: string | null;
   verificationRequestBusy: "phone" | "email" | null;
   showVerificationSection: boolean;
@@ -40346,7 +40392,9 @@ function AccessOverlay({
   const verificationModeNote =
     verificationDeliveryMode === "remote"
       ? t("Connected provider sends the verification codes.", "जुड़ा हुआ provider verification codes भेजता है।")
-      : t("Local fallback generates the code inside the app for beta testing.", "स्थानीय fallback beta testing के लिए code ऐप के अंदर बनाता है।");
+      : verificationDeliveryMode === "unavailable"
+        ? t("Secure verification is temporarily unavailable; no local OTP is generated.", "सुरक्षित verification अस्थायी रूप से उपलब्ध नहीं है; कोई local OTP नहीं बनाया जाता।")
+        : t("Local fallback generates the code inside the app for beta testing.", "स्थानीय fallback beta testing के लिए code ऐप के अंदर बनाता है।");
   const profileDisplayName = getRespectfulAddressLabel(name, profileGender, profileRoleId, t("Your profile", "आपकी प्रोफ़ाइल"), languageId);
   const exitButtonLabel = canDismiss
     ? t("Exit", "बंद करें")

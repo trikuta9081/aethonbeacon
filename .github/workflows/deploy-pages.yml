@@ -45,7 +45,10 @@ jobs:
       - name: Build static web bundle
         run: pnpm run export:web
         env:
-          EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://aethon-beacon-verification.onrender.com"
+          # Pages is static and cannot host the OTP server. Fail closed until
+          # a healthy backend is configured instead of shipping a dead Render URL.
+          EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://verification-disabled.invalid"
+          EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"
           EXPO_PUBLIC_SUPABASE_URL: "https://isfkxmrathirqkrwfagg.supabase.co"
           EXPO_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_x2hdByZdsmU26qPDuy5pZA_1PztSSwv"
 
