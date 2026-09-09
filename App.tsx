@@ -1,6 +1,8 @@
 // build: 2026-07-04-v2
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
+import { localizeInstitution } from "./institutionHindi";
+import { localizeRedressRoute } from "./redressHindi";
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   AccessibilityInfo,
@@ -4587,7 +4589,10 @@ function buildRoutePreview(
   const routedIssueLabel = localizedIssueGuideLabel(issueId, languageId);
   if (route === "redress" || route === "urgent") {
     const routeId = findGuidedSupportRedressRouteFromText(routeText);
-    const routeLabel = redressRoutes.find((item) => item.id === routeId)?.label ?? "Help";
+    const routeLabel = localizeRedressRoute(
+      redressRoutes.find((item) => item.id === routeId) ?? redressRoutes[0],
+      languageId
+    ).label;
     return {
       title: pickLocalizedText(languageId, { english: "Help route", hindi: "सहायता मार्ग", telugu: "సహాయం మార్గం", tamil: "உதவி பாதை", urdu: "مدد کا راستہ" }),
       detail: pickLocalizedText(languageId, {
@@ -17647,14 +17652,14 @@ export default function App() {
   ]);
 
   const selectedRedressRoute = useMemo(
-    () => redressRoutes.find((route) => route.id === redressRouteId) ?? redressRoutes[0],
-    [redressRouteId]
+    () => localizeRedressRoute(redressRoutes.find((route) => route.id === redressRouteId) ?? redressRoutes[0], languageId),
+    [redressRouteId, languageId]
   );
 
   const selectedInstitutionSector = useMemo(
     () =>
-      institutionSectors.find((sector) => sector.id === institutionSectorId) ?? institutionSectors[0],
-    [institutionSectorId]
+      localizeInstitution(institutionSectors.find((sector) => sector.id === institutionSectorId) ?? institutionSectors[0], languageId),
+    [institutionSectorId, languageId]
   );
 
   const featuredPlayChallenge = useMemo(() => {
@@ -18563,29 +18568,29 @@ export default function App() {
   async function handleExportRedressPlan() {
     const phone = selectedRedressRoute.phone.trim();
     const text = [
-      "NAYIQ redressal plan",
-      `Route: ${selectedRedressRoute.label}`,
-      `Summary: ${selectedRedressRoute.summary}`,
+      l("NAYIQ redressal plan", { hindi: "NAYIQ शिकायत निवारण योजना", telugu: "NAYIQ పరిహార ప్రణాళిక", tamil: "NAYIQ குறைதீர்ப்புத் திட்டம்", urdu: "NAYIQ شکایت کے ازالے کا منصوبہ" }),
+      `${l("Route", { hindi: "मार्ग", telugu: "మార్గం", tamil: "பாதை", urdu: "راستہ" })}: ${selectedRedressRoute.label}`,
+      `${l("Summary", { hindi: "सारांश", telugu: "సారాంశం", tamil: "சுருக்கம்", urdu: "خلاصہ" })}: ${selectedRedressRoute.summary}`,
       "",
-      "First office:",
+      `${l("First office", { hindi: "पहला कार्यालय", telugu: "మొదటి కార్యాలయం", tamil: "முதல் அலுவலகம்", urdu: "پہلا دفتر" })}:`,
       selectedRedressRoute.firstOffice,
       "",
-      "First action:",
+      `${l("First action", { hindi: "पहला कदम", telugu: "మొదటి చర్య", tamil: "முதல் செயல்", urdu: "پہلا قدم" })}:`,
       selectedRedressRoute.firstAction,
       "",
-      "Escalation path:",
+      `${l("Escalation path", { hindi: "आगे की शिकायत का मार्ग", telugu: "ఎస్కలేషన్ మార్గం", tamil: "மேல்முறையீட்டுப் பாதை", urdu: "شکایت آگے بڑھانے کا راستہ" })}:`,
       selectedRedressRoute.escalation,
       "",
-      "What to keep ready:",
+      `${l("What to keep ready", { hindi: "क्या तैयार रखें", telugu: "ఏమి సిద్ధంగా ఉంచాలి", tamil: "எதைத் தயாராக வைத்திருக்க வேண்டும்", urdu: "کیا تیار رکھیں" })}:`,
       selectedRedressRoute.keepReady,
       "",
-      `Official site: ${selectedRedressRoute.website}`,
-      `Track status: ${selectedRedressRoute.trackWebsite || selectedRedressRoute.website}`,
-      `Phone: ${phone || "not listed"}`,
-      `Identity: ${selectedIdentity.label}`,
-      `User: ${profileDisplayName}`,
-      `Locality: ${supportLocality.trim() || "not set"}`,
-      `Exported: ${new Date().toLocaleString()}`
+      `${l("Official site", { hindi: "आधिकारिक वेबसाइट", telugu: "అధికారిక సైట్", tamil: "அதிகாரப்பூர்வ தளம்", urdu: "سرکاری ویب سائٹ" })}: ${selectedRedressRoute.website}`,
+      `${l("Track status", { hindi: "स्थिति देखें", telugu: "స్థితిని ట్రాక్ చేయండి", tamil: "நிலையைக் கண்காணிக்கவும்", urdu: "حالت دیکھیں" })}: ${selectedRedressRoute.trackWebsite || selectedRedressRoute.website}`,
+      `${l("Phone", { hindi: "फोन", telugu: "ఫోన్", tamil: "தொலைபேசி", urdu: "فون" })}: ${phone || l("not listed", { hindi: "उपलब्ध नहीं", telugu: "జాబితాలో లేదు", tamil: "பட்டியலிடப்படவில்லை", urdu: "درج نہیں" })}`,
+      `${l("Identity", { hindi: "पहचान", telugu: "గుర్తింపు", tamil: "அடையாளம்", urdu: "شناخت" })}: ${selectedIdentity.label}`,
+      `${l("User", { hindi: "उपयोगकर्ता", telugu: "వినియోగదారు", tamil: "பயனர்", urdu: "صارف" })}: ${profileDisplayName}`,
+      `${l("Locality", { hindi: "क्षेत्र", telugu: "ప్రాంతం", tamil: "பகுதி", urdu: "علاقہ" })}: ${supportLocality.trim() || l("not set", { hindi: "निर्धारित नहीं", telugu: "సెట్ చేయలేదు", tamil: "அமைக்கப்படவில்லை", urdu: "مقرر نہیں" })}`,
+      `${l("Exported", { hindi: "निर्यात समय", telugu: "ఎగుమతి చేసిన సమయం", tamil: "ஏற்றுமதி நேரம்", urdu: "برآمد کا وقت" })}: ${new Date().toLocaleString()}`
     ].join("\n");
 
     try {
@@ -23073,8 +23078,26 @@ async function fetchGuidanceHelp(
     setPendingTabFocusAnchor({ tab: "redress", key: `redress:${routeId}` });
     handleTabPress("redress");
     scrollTabSurfaceToTop();
-    const route = redressRoutes.find((item) => item.id === routeId) ?? selectedRedressRoute;
-    showRouteNotice("Help opened", `${route.label}: the redress path is ready.`);
+    const route = localizeRedressRoute(
+      redressRoutes.find((item) => item.id === routeId) ?? selectedRedressRoute,
+      selectedLanguage.id
+    );
+    showRouteNotice(
+      pickLocalizedText(selectedLanguage.id, {
+        english: "Help opened",
+        hindi: "सहायता मार्ग खुला",
+        telugu: "సహాయ మార్గం తెరవబడింది",
+        tamil: "உதவிப் பாதை திறக்கப்பட்டது",
+        urdu: "مدد کا راستہ کھل گیا"
+      }),
+      pickLocalizedText(selectedLanguage.id, {
+        english: `${route.label}: the redress path is ready.`,
+        hindi: `${route.label}: शिकायत का अगला मार्ग तैयार है।`,
+        telugu: `${route.label}: పరిహారానికి తదుపరి మార్గం సిద్ధంగా ఉంది.`,
+        tamil: `${route.label}: குறைதீர்ப்புக்கான அடுத்த பாதை தயாராக உள்ளது.`,
+        urdu: `${route.label}: شکایت کے ازالے کا اگلا راستہ تیار ہے۔`
+      })
+    );
   }
 
   function openRouteDecision(
@@ -34554,6 +34577,7 @@ function RedressSection({
   // answer they came for below the fold -- so the picker folds down to a
   // single line showing the choice, with an obvious way back.
   const [showRouteChooser, setShowRouteChooser] = useState(false);
+  const [institutionPageOpen, setInstitutionPageOpen] = useState(false);
   const [checkedEvidence, setCheckedEvidence] = useState<Record<string, boolean>>({});
   // A selected route expands below the chooser in the same scroll. Keeping
   // the controls mounted makes the flow feel like a calm inline disclosure,
@@ -35173,7 +35197,8 @@ function RedressSection({
         </View>
         {showRouteChooser && (
           <View style={styles.issueChipGrid}>
-            {redressRoutes.map((route) => {
+            {redressRoutes.map((sourceRoute) => {
+              const route = localizeRedressRoute(sourceRoute, languageId);
               const isSelected = route.id === selectedRedressRoute.id;
               const ROUTE_ICONS: Partial<Record<string, string>> = { academic: "🎓", harassment: "⚠️", ragging: "🏫", public: "🏛️", private: "🏢", crime: "🚨", financial: "💰", domestic: "🏠", workplace: "👔", cybercrime: "💻", consumer: "🛒" };
               return (
@@ -35217,14 +35242,15 @@ function RedressSection({
         </View>
         <Text style={styles.promptText}>
           {l("Select your institution type for a tuned escalation path and the exact portal to use.", {
-            hindi: "समायोजित escalation path और उपयोग करने के लिए सही portal पाने के लिए अपने संस्थान का प्रकार चुनें।",
+            hindi: "अपने संस्थान का प्रकार चुनें। उसका शिकायत मार्ग और आधिकारिक संपर्क अलग पृष्ठ पर खुलेंगे।",
             telugu: "సూక్ష్మీకరించిన escalation path మరియు ఉపయోగించాల్సిన ఖచ్చితమైన portal కోసం మీ సంస్థ రకాన్ని ఎంచుకోండి.",
             tamil: "சரியான உயர்த்தல் பாதையும் பயன்படுத்த வேண்டிய சரியான போர்டலும் கிடைக்க உங்கள் நிறுவன வகையைத் தேர்ந்தெடுக்கவும்.",
             urdu: "منظم escalation path اور استعمال کے لیے درست portal حاصل کرنے کے لیے اپنے ادارے کی قسم منتخب کریں۔"
           })}
         </Text>
         <View style={styles.issueChipGrid}>
-          {institutionSectors.map((sector) => {
+          {institutionSectors.map((sourceSector) => {
+            const sector = localizeInstitution(sourceSector, languageId);
             const isSelected = sector.id === selectedInstitutionSector.id;
             return (
               <Pressable
@@ -35232,7 +35258,10 @@ function RedressSection({
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
                 accessibilityLabel={`${sector.label}. ${sector.subtitle}. ${isSelected ? l("Selected", { hindi: "चयनित", telugu: "ఎంచుకోబడింది", tamil: "தேர்ந்தெடுக்கப்பட்டது", urdu: "منتخب" }) : l("Tap to select", { hindi: "चुनने के लिए टैप करें", telugu: "ఎంచుకోవడానికి ట్యాప్ చేయండి", tamil: "தேர்ந்தெடுக்கத் தட்டவும்", urdu: "منتخب کرنے کے لیے ٹیپ کریں" })}.`}
-                onPress={() => setInstitutionSectorId(sector.id)}
+                onPress={() => {
+                  setInstitutionSectorId(sector.id);
+                  setInstitutionPageOpen(true);
+                }}
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
                 <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>{sector.label}</Text>
@@ -35242,6 +35271,14 @@ function RedressSection({
           })}
         </View>
 
+        <Modal visible={institutionPageOpen} animationType={_aethonReduceMotion ? "none" : "slide"} presentationStyle="fullScreen" onRequestClose={() => setInstitutionPageOpen(false)}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: "#F3F7F8" }}>
+            <View style={{ paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "#B9CDD2", backgroundColor: "#FFFFFF" }}>
+              <Pressable accessibilityRole="button" onPress={() => setInstitutionPageOpen(false)} style={{ minHeight: 48, justifyContent: "center" }}>
+                <Text style={{ color: "#0E6F69", fontSize: 16, fontWeight: "700" }}>{l("Back to institutions", { hindi: "संस्थानों की सूची पर वापस जाएँ", telugu: "సంస్థల జాబితాకు తిరిగి వెళ్లండి", tamil: "நிறுவனப் பட்டியலுக்குத் திரும்பவும்", urdu: "اداروں کی فہرست پر واپس جائیں" })}</Text>
+              </Pressable>
+            </View>
+            <ScrollView key={selectedInstitutionSector.id} contentContainerStyle={{ padding: 20, width: "100%", maxWidth: 900, alignSelf: "center" }}>
             <View style={styles.institutionDetailCard}>
               <View style={styles.institutionDetailHeader}>
                 <View style={{ flex: 1, minWidth: 0 }}>
@@ -35275,7 +35312,7 @@ function RedressSection({
           </View>
 
           <View style={styles.institutionTimelineBox}>
-            <Text style={styles.institutionMiniTitle}>{l("Timeline and escalation", { hindi: "समयसीमा और escalation", telugu: "సమయరేఖ మరియు escalation", tamil: "காலக்கெடு மற்றும் உயர்த்தல்", urdu: "ٹائم لائن اور escalation" })}</Text>
+            <Text style={styles.institutionMiniTitle}>{l("Timeline and escalation", { hindi: "समयसीमा और आगे की शिकायत प्रक्रिया", telugu: "సమయరేఖ మరియు escalation", tamil: "காலக்கெடு மற்றும் உயர்த்தல்", urdu: "ٹائم لائن اور escalation" })}</Text>
             <Text style={styles.institutionDetailBody}>{selectedInstitutionSector.timeline}</Text>
             <Text style={styles.institutionCautionText}>⚠ {selectedInstitutionSector.caution}</Text>
           </View>
@@ -35302,6 +35339,9 @@ function RedressSection({
             <Text style={styles.institutionComplaintText}>{selectedInstitutionSector.complaintLine}</Text>
           </View>
         </View>
+            </ScrollView>
+          </SafeAreaView>
+        </Modal>
       </View>
 
       {/* ── PANEL 3: ACTIVE ROUTE DETAIL ── */}
@@ -35716,7 +35756,7 @@ function RedressSection({
           ) : (
             <>
               <Text style={{ color: "#506673", fontSize: 12, marginTop: 4 }}>
-                {activeCase.routeLabel}
+                {selectedRedressRoute.label}
                 {activeCase.createdIso ? ` · ${l("tracking started", { hindi: "ट्रैकिंग शुरू", telugu: "ట్రాకింగ్ ప్రారంభం", tamil: "கண்காணிப்பு தொடங்கியது", urdu: "ٹریکنگ شروع" })} ${new Date(activeCase.createdIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })}` : ""}
               </Text>
 
