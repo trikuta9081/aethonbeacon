@@ -10,6 +10,8 @@ const iosWorkflow = fs.readFileSync(new URL('../.github/workflows/build-ios.yml'
 const pagesWorkflow = fs.readFileSync(new URL('../.github/workflows/deploy-pages.yml', import.meta.url), 'utf8');
 const privacyPage = fs.readFileSync(new URL('../public/privacy-policy.html', import.meta.url), 'utf8');
 const deletionPage = fs.readFileSync(new URL('../public/data-deletion.html', import.meta.url), 'utf8');
+const institutionHindiSource = fs.readFileSync(new URL('../institutionHindi.ts', import.meta.url), 'utf8');
+const redressHindiSource = fs.readFileSync(new URL('../redressHindi.ts', import.meta.url), 'utf8');
 
 function assert(condition, message) {
   if (!condition) {
@@ -147,6 +149,21 @@ assert(source.includes('accessibilityLabel={l("Have this route read aloud"'), 'R
 assert(source.includes('accessibilityLabel={l("Copy complaint template to clipboard"'), 'Complaint-template accessibility copy must follow the selected language');
 assert(source.includes('accessibilityLabel={l("Open email app with complaint pre-filled"'), 'Complaint email accessibility copy must follow the selected language');
 assert(source.includes('accessibilityLabel={l("Save complaint letter as PDF"'), 'Complaint PDF accessibility copy must follow the selected language');
+assert(source.includes('localizeRedressRoute(redressRoutes.find('), 'The selected Help and Redress path must use the active language');
+assert(source.includes('const route = localizeRedressRoute(sourceRoute, languageId);'), 'Help and Redress chooser cards must use localized route copy');
+assert(source.includes('const sector = localizeInstitution(sourceSector, languageId);'), 'Institution chooser cards must use localized institution copy');
+assert(source.includes('setInstitutionPageOpen(true);'), 'Selecting an institution must open its dedicated page');
+assert(source.includes('<Modal visible={institutionPageOpen}'), 'Institution guidance must render on a separate full-screen surface');
+assert(source.includes('presentationStyle="fullScreen"'), 'Institution guidance must use a dedicated full-screen presentation');
+assert(source.includes('const routeLabel = localizeRedressRoute('), 'Help route previews must use localized route names');
+assert(source.includes('{selectedRedressRoute.label}'), 'Saved case cards must follow the currently selected language');
+assert(source.includes('hindi: "NAYIQ शिकायत निवारण योजना"'), 'Exported redress plans must localize their document headings');
+['university', 'iit', 'medical', 'law', 'school', 'banking', 'government', 'private', 'factory'].forEach((id) => {
+  assert(institutionHindiSource.includes(`  ${id}: {`), `Hindi institution guidance is missing ${id}`);
+});
+['academic', 'harassment', 'ragging', 'public', 'private', 'crime', 'financial', 'domestic', 'workplace', 'cybercrime', 'consumer'].forEach((id) => {
+  assert(redressHindiSource.includes(`  ${id}: {`), `Hindi redress path is missing ${id}`);
+});
 
 
 // Front UI order: Help and Redress above the premium support cards.
