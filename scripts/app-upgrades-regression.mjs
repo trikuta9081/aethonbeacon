@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const source = fs.readFileSync(new URL('../App.tsx', import.meta.url), 'utf8');
+const source = fs.readFileSync(new URL('../App.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const appConfig = JSON.parse(fs.readFileSync(new URL('../app.json', import.meta.url), 'utf8')).expo;
 const iosInfo = fs.readFileSync(new URL('../ios/AethonBeacon/Info.plist', import.meta.url), 'utf8');
 const androidStrings = fs.readFileSync(new URL('../android/app/src/main/res/values/strings.xml', import.meta.url), 'utf8');

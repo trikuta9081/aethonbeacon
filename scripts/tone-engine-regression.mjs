@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, statSync } from "node:fs";
 
-const app = readFileSync("App.tsx", "utf8");
+const app = readFileSync("App.tsx", "utf8").replace(/\r\n/g, "\n");
 const pkg = JSON.parse(readFileSync("package.json", "utf8"));
 const asset = statSync("assets/aethon-pristine-tone.wav");
 const studioToneIds = ["studio-crystal", "studio-shimmer", "studio-slow-pulse", "studio-body-scan", "studio-still-point"];

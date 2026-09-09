@@ -1,6 +1,6 @@
 import fs from "node:fs";
 
-const source = fs.readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const source = fs.readFileSync(new URL("../App.tsx", import.meta.url), "utf8").replace(/\r\n/g, "\n");
 const quality = fs.readFileSync(new URL("../product-quality.ts", import.meta.url), "utf8");
 const verification = fs.readFileSync(new URL("./verification-server.mjs", import.meta.url), "utf8");
 const communitySchema = fs.readFileSync(new URL("../supabase_community_schema.sql", import.meta.url), "utf8");
