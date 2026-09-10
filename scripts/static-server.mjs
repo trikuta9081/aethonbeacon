@@ -12,9 +12,9 @@ function parsePositiveInt(value, fallback) {
 const port = parsePositiveInt(process.env.PORT, 3000);
 const host = process.env.HOST?.trim() || "0.0.0.0";
 const staticRoot = resolve(process.env.STATIC_ROOT ?? "dist");
-const publicWebUrl = process.env.PUBLIC_WEB_URL?.trim() || "https://nayiq.in";
+const publicWebUrl = process.env.PUBLIC_WEB_URL?.trim() || "https://nayiq.co";
 const appVersion = process.env.APP_VERSION?.trim() || "1.0.4";
-const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://nayiq.in/join-testers-20260715.html?v=20260715-2315";
+const testerPromotionUrl = process.env.TESTER_PROMOTION_URL?.trim() || "https://nayiq.co/join-testers-20260715.html?v=20260715-2315";
 const testerRequestNotifyEmail = process.env.TESTER_REQUEST_NOTIFY_EMAIL?.trim() || "slathiarimple567@gmail.com";
 const sendgridApiKey = process.env.SENDGRID_API_KEY?.trim() || "";
 const sendgridFromEmail = process.env.SENDGRID_FROM_EMAIL?.trim() || testerRequestNotifyEmail;
@@ -146,7 +146,7 @@ function buildTesterRequestPayload(input, req) {
   const name = cleanField(input.name, 120);
   const device = cleanField(input.device, 180);
   const feedback = cleanField(input.feedback, 1500);
-  const source = cleanField(input.source, 240) || "https://nayiq.in/testers";
+  const source = cleanField(input.source, 240) || "https://nayiq.co/testers";
   return {
     id: `atr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     createdAt: new Date().toISOString(),

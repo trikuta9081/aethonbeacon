@@ -9,7 +9,7 @@ services:
       - key: PORT
         value: "3000"
       - key: PUBLIC_WEB_URL
-        value: https://nayiq.in
+        value: https://nayiq.co
       - key: APP_VERSION
         value: "1.0.4"
       - key: EXPO_PUBLIC_VERIFICATION_API_BASE_URL
@@ -53,7 +53,7 @@ services:
       - key: VERIFICATION_HOST
         value: "0.0.0.0"
       - key: VERIFICATION_CORS_ORIGIN
-        value: https://nayiq.in,https://aethon-beacon-web.onrender.com
+        value: https://nayiq.co,https://aethon-beacon-web.onrender.com
       - key: VERIFICATION_BRAND_NAME
         value: NAYIQ
       - key: LOCAL_VERIFICATION_DEBUG

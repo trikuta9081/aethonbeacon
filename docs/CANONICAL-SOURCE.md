@@ -20,6 +20,6 @@ is not the editable source and is not evidence of the version served by Pages.
 Do not remove it until the legacy deployment configuration is retired or changed.
 Do not open `dist/index.html` via file URLs to verify a release.
 
-The intended brand domain is `nayiq.in`. Domain registration alone does not
+The intended brand domain is `nayiq.co`. Domain registration alone does not
 connect it to GitHub Pages: DNS and the Pages custom-domain setting must agree.
 Verify a rendered page after deployment, not only a successful workflow badge.

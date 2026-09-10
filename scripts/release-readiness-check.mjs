@@ -30,7 +30,7 @@ try {
 } catch {
   throw new Error("app.json extra.publicWebUrl must be an absolute URL.");
 }
-assert(parsedPublicWebUrl.href === "https://nayiq.in/", "The canonical public web URL must be https://nayiq.in.");
+assert(parsedPublicWebUrl.href === "https://nayiq.co/", "The canonical public web URL must be https://nayiq.co.");
 
 let parsedPrivacyUrl;
 try {
