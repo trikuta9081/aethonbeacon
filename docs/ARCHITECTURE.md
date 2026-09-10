@@ -179,7 +179,7 @@ single-file app lacks.
 - **Web:** `pnpm run export:web` produces a static bundle in `dist/`, and the
   `deploy-pages.yml` workflow publishes it to
   `https://trikuta9081.github.io/aethonbeacon/`. The checked-in `CNAME` keeps
-  `nayiq.co` ready as the custom domain once its DNS points to GitHub Pages.
+  `nayiq.in` ready as the custom domain once its DNS points to GitHub Pages.
   `scripts/manual-render-deploy.sh` is retained only as a legacy fallback for
   an active Render service.
 - **Verification backend:** `scripts/verification-server.mjs` is an optional

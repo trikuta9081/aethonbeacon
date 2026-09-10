@@ -97,7 +97,7 @@ substitute for professional or emergency care.
 
 ## Required links
 
-- **Privacy policy URL:** `https://nayiq.co/privacy-policy.html`
+- **Privacy policy URL:** `https://nayiq.in/privacy-policy.html`
   (verify that it serves the current `public/privacy-policy.html` file before
   submission).
 - **Support URL / email:** `trikuta9081@gmail.com` (confirm the mailbox is

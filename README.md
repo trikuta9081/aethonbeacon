@@ -81,7 +81,7 @@ before running `pnpm run run:android`.
 - **Web:** `pnpm run export:web` builds the static bundle in `dist/`. The
   supported deployment is GitHub Pages at
   `https://trikuta9081.github.io/aethonbeacon/`; the `deploy-pages.yml`
-  workflow publishes it on pushes to `master`. `nayiq.co` can point to that
+  workflow publishes it on pushes to `master`. `nayiq.in` can point to that
   Pages site through the checked-in `CNAME` file once DNS is configured.
 - **Verification backend (OTP):** the optional bridge is defined in
   `render.yaml` (`scripts/verification-server.mjs`). While that backend is
@@ -100,7 +100,7 @@ before running `pnpm run run:android`.
 - **Free for the first year:** feature gating / paywall is intentionally deferred
   (purchase plumbing exists in `purchases.ts`, no paywall UI wired).
 - Before public launch: configure DNS and verify that
-  `https://nayiq.co/privacy-policy.html` serves the bundled policy, configure at
+  `https://nayiq.in/privacy-policy.html` serves the bundled policy, configure at
   least one live OTP delivery lane (SMS or email) in the verification service,
   and confirm the publisher/support details in the store and privacy docs.
 

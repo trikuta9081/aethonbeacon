@@ -1002,17 +1002,17 @@ const publicLegalLinks = [
   {
     title: "Privacy",
     meta: "Local-first data use",
-    url: "https://nayiq.co/privacy-policy.html"
+    url: "https://nayiq.in/privacy-policy.html"
   },
   {
     title: "Terms",
     meta: "Use and conduct",
-    url: "https://nayiq.co/terms-of-use.html"
+    url: "https://nayiq.in/terms-of-use.html"
   },
   {
     title: "Disclaimer",
     meta: "Safety limits",
-    url: "https://nayiq.co/disclaimer.html"
+    url: "https://nayiq.in/disclaimer.html"
   }
 ] as const;
 
@@ -18472,7 +18472,7 @@ export default function App() {
       privacyLine,
       "",
       "NAYIQ · From concern to clarity",
-      "https://nayiq.co"
+      "https://nayiq.in"
     ].join("\n");
 
     try {
@@ -23544,7 +23544,7 @@ function isInstitutionSectorId(value: string): value is InstitutionSectorId {
 }
 
 const trustedExternalDomains = [
-  "nayiq.co",
+  "nayiq.in",
   "localhost",
   "127.0.0.1",
   "::1",
