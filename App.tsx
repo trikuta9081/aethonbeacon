@@ -34733,6 +34733,10 @@ function RedressSection({
   const isEmergencyRoute = selectedRedressRoute.id === "crime" || selectedRedressRoute.id === "domestic";
   const isCrimeRoute = selectedRedressRoute.id === "crime";
   const isDomesticRoute = selectedRedressRoute.id === "domestic";
+  // Keep the detail surface localized independently of the parent selection.
+  // This prevents a localized chooser from opening an English-only modal when
+  // a language change and a selection happen in the same render cycle.
+  const institutionDetail = localizeInstitution(selectedInstitutionSector, languageId);
 
   async function handleRouteCall() {
     if (!routePhone) return;
@@ -34831,6 +34835,33 @@ function RedressSection({
             })}{" "}
             {REDRESS_CONTENT_STANDARD.sourceRule} {REDRESS_CONTENT_STANDARD.outcomeNotice}
           </Text>
+        </View>
+
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#102B3F", borderWidth: 1, borderColor: "#2B6170", padding: 14 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 }}>
+            <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: "#D4A63A", alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ color: "#102B3F", fontSize: 14, fontWeight: "900" }}>✦</Text>
+            </View>
+            <Text style={{ color: "#F7E7B4", fontSize: 12, fontWeight: "800", letterSpacing: 1.1, textTransform: "uppercase" }}>
+              {l("NAYIQ AI case companion", { hindi: "NAYIQ AI केस सहायक", telugu: "NAYIQ AI కేస్ సహాయకుడు", tamil: "NAYIQ AI வழக்கு துணை", urdu: "NAYIQ AI کیس معاون" })}
+            </Text>
+          </View>
+          <Text style={{ color: "#F2F7F8", fontSize: 15, lineHeight: 21, fontWeight: "800" }}>
+            {l("Turn a difficult situation into a clear, neutral next step.", { hindi: "मुश्किल स्थिति को स्पष्ट और निष्पक्ष अगले कदम में बदलें।", telugu: "కష్టమైన పరిస్థితిని స్పష్టమైన, నిష్పాక్షిక తదుపరి అడుగుగా మార్చండి.", tamil: "கடினமான சூழ்நிலையை தெளிவான, நடுநிலையான அடுத்த படியாக மாற்றுங்கள்.", urdu: "مشکل صورتحال کو واضح، غیر جانب دار اگلے قدم میں بدلیں۔" })}
+          </Text>
+          <Text style={{ color: "#C9DCE1", fontSize: 12, lineHeight: 18, marginTop: 5 }}>
+            {l("NAYIQ AI can help you organise facts, identify missing evidence, prepare respectful wording, and rehearse what to ask. It does not file a complaint, make a legal decision, or replace emergency or professional help.", { hindi: "NAYIQ AI तथ्यों को व्यवस्थित करने, छूटे हुए साक्ष्य पहचानने, सम्मानजनक शब्द तैयार करने और पूछे जाने वाले सवालों का अभ्यास करने में मदद कर सकता है। यह शिकायत दर्ज नहीं करता, कानूनी निर्णय नहीं देता और आपातकालीन या पेशेवर सहायता का विकल्प नहीं है।", telugu: "NAYIQ AI వాస్తవాలను క్రమబద్ధీకరించడానికి, మిస్సైన ఆధారాలను గుర్తించడానికి, గౌరవప్రదమైన పదజాలాన్ని సిద్ధం చేయడానికి, మరియు అడగాల్సిన ప్రశ్నలను సాధన చేయడానికి సహాయపడుతుంది. ఇది ఫిర్యాదు నమోదు చేయదు, చట్టపరమైన నిర్ణయం ఇవ్వదు, లేదా అత్యవసర/వృత్తిపరమైన సహాయానికి ప్రత్యామ్నాయం కాదు.", tamil: "NAYIQ AI உண்மைகளை ஒழுங்குபடுத்தவும், விடுபட்ட ஆதாரங்களை கண்டறியவும், மரியாதையான சொற்களைத் தயாரிக்கவும், கேட்க வேண்டியதைப் பயிற்சி செய்யவும் உதவும். இது புகார் பதிவு செய்யாது, சட்ட முடிவு எடுக்காது, அவசர அல்லது தொழில்முறை உதவிக்கு மாற்றாகாது.", urdu: "NAYIQ AI حقائق منظم کرنے، رہ جانے والے ثبوت پہچاننے، باوقار الفاظ تیار کرنے، اور پوچھنے والی باتوں کی مشق میں مدد کر سکتا ہے۔ یہ شکایت درج نہیں کرتا، قانونی فیصلہ نہیں دیتا، اور ایمرجنسی یا پیشہ ورانہ مدد کا متبادل نہیں ہے۔" })}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={l("Open NAYIQ AI case preparation", { hindi: "NAYIQ AI केस तैयारी खोलें", telugu: "NAYIQ AI కేస్ తయారీని తెరవండి", tamil: "NAYIQ AI வழக்கு தயாரிப்பைத் திறக்கவும்", urdu: "NAYIQ AI کیس تیاری کھولیں" })}
+            onPress={() => { void Haptics.selectionAsync(); onOpenGuide(); }}
+            style={({ pressed }) => [{ marginTop: 12, minHeight: 48, borderRadius: 10, backgroundColor: pressed ? "#F0D98B" : "#D4A63A", paddingHorizontal: 14, alignItems: "center", justifyContent: "center" }]}
+          >
+            <Text style={{ color: "#102B3F", fontSize: 13, fontWeight: "700" }}>
+              {l("Prepare with NAYIQ AI", { hindi: "NAYIQ AI के साथ तैयारी करें", telugu: "NAYIQ AIతో సిద్ధం చేయండి", tamil: "NAYIQ AI உடன் தயாராகுங்கள்", urdu: "NAYIQ AI کے ساتھ تیاری کریں" })}
+            </Text>
+          </Pressable>
         </View>
 
         {/* ── IMMEDIATE SAFETY ACTIONS ── */}
@@ -35278,33 +35309,33 @@ function RedressSection({
                 <Text style={{ color: "#0E6F69", fontSize: 16, fontWeight: "700" }}>{l("Back to institutions", { hindi: "संस्थानों की सूची पर वापस जाएँ", telugu: "సంస్థల జాబితాకు తిరిగి వెళ్లండి", tamil: "நிறுவனப் பட்டியலுக்குத் திரும்பவும்", urdu: "اداروں کی فہرست پر واپس جائیں" })}</Text>
               </Pressable>
             </View>
-            <ScrollView key={selectedInstitutionSector.id} contentContainerStyle={{ padding: 20, width: "100%", maxWidth: 900, alignSelf: "center" }}>
+            <ScrollView key={institutionDetail.id} contentContainerStyle={{ padding: 20, width: "100%", maxWidth: 900, alignSelf: "center" }}>
             <View style={styles.institutionDetailCard}>
               <View style={styles.institutionDetailHeader}>
                 <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={styles.institutionDetailEyebrow}>{l("Recommended path now", { hindi: "अभी सुझाया गया मार्ग", telugu: "ప్రస్తుతం సూచించిన మార్గం", tamil: "தற்போதைய பரிந்துரைக்கப்பட்ட பாதை", urdu: "ابھی تجویز کردہ راستہ" })}</Text>
-                  <Text style={styles.institutionDetailTitle}>{selectedInstitutionSector.label}</Text>
+                  <Text style={styles.institutionDetailTitle}>{institutionDetail.label}</Text>
                 </View>
             <View style={styles.institutionKeywordPill}>
-              <Text style={styles.institutionKeywordPillText}>{selectedInstitutionSector.keywords[0]}</Text>
+              <Text style={styles.institutionKeywordPillText}>{institutionDetail.keywords[0]}</Text>
             </View>
           </View>
 
-          <Text style={styles.institutionDetailBody}>{selectedInstitutionSector.immediateAction}</Text>
+          <Text style={styles.institutionDetailBody}>{institutionDetail.immediateAction}</Text>
 
           <View style={styles.institutionMiniGrid}>
             <View style={styles.institutionMiniPanel}>
               <Text style={styles.institutionMiniTitle}>{l("First offices to select", { hindi: "पहले चुनने वाले कार्यालय", telugu: "మొదట ఎంచుకోవాల్సిన కార్యాలయాలు", tamil: "முதலில் தேர்வு செய்ய வேண்டிய அலுவலகங்கள்", urdu: "پہلے منتخب کرنے والے دفاتر" })}</Text>
-              {selectedInstitutionSector.offices.slice(0, 5).map((office, index) => (
-                <Text key={`${selectedInstitutionSector.id}-office-${index}`} style={styles.institutionMiniText}>
+              {institutionDetail.offices.slice(0, 5).map((office, index) => (
+                <Text key={`${institutionDetail.id}-office-${index}`} style={styles.institutionMiniText}>
                   {index + 1}. {office}
                 </Text>
               ))}
             </View>
             <View style={styles.institutionMiniPanel}>
               <Text style={styles.institutionMiniTitle}>{l("Keep ready", { hindi: "तैयार रखें", telugu: "సిద్ధంగా रखें", tamil: "தயாராக வைத்திருக்கவும்", urdu: "تیار رکھیں" })}</Text>
-              {selectedInstitutionSector.documents.slice(0, 5).map((doc, index) => (
-                <Text key={`${selectedInstitutionSector.id}-doc-${index}`} style={styles.institutionMiniText}>
+              {institutionDetail.documents.slice(0, 5).map((doc, index) => (
+                <Text key={`${institutionDetail.id}-doc-${index}`} style={styles.institutionMiniText}>
                   • {doc}
                 </Text>
               ))}
@@ -35313,14 +35344,14 @@ function RedressSection({
 
           <View style={styles.institutionTimelineBox}>
             <Text style={styles.institutionMiniTitle}>{l("Timeline and escalation", { hindi: "समयसीमा और आगे की शिकायत प्रक्रिया", telugu: "సమయరేఖ మరియు escalation", tamil: "காலக்கெடு மற்றும் உயர்த்தல்", urdu: "ٹائم لائن اور escalation" })}</Text>
-            <Text style={styles.institutionDetailBody}>{selectedInstitutionSector.timeline}</Text>
-            <Text style={styles.institutionCautionText}>⚠ {selectedInstitutionSector.caution}</Text>
+            <Text style={styles.institutionDetailBody}>{institutionDetail.timeline}</Text>
+            <Text style={styles.institutionCautionText}>⚠ {institutionDetail.caution}</Text>
           </View>
 
           <View style={styles.institutionPortalList}>
-            {selectedInstitutionSector.portals.map((portal) => (
+            {institutionDetail.portals.map((portal) => (
               <Pressable
-                key={`${selectedInstitutionSector.id}-${portal.label}`}
+                key={`${institutionDetail.id}-${portal.label}`}
                 accessibilityRole="button"
                 onPress={() => openWebsite(portal.url, portal.label)}
                 style={({ pressed }) => [styles.institutionPortalCard, pressed && styles.pressed]}
@@ -35336,7 +35367,7 @@ function RedressSection({
 
           <View style={styles.institutionComplaintBox}>
             <Text style={styles.institutionMiniTitle}>{l("Suggested wording", { hindi: "सुझाया गया शब्दांकन", telugu: "సూచించిన పదజాలం", tamil: "பரிந்துரைக்கப்பட்ட உரை", urdu: "تجویز کردہ الفاظ" })}</Text>
-            <Text style={styles.institutionComplaintText}>{selectedInstitutionSector.complaintLine}</Text>
+            <Text style={styles.institutionComplaintText}>{institutionDetail.complaintLine}</Text>
           </View>
         </View>
             </ScrollView>
