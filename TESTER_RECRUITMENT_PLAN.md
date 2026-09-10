@@ -2,7 +2,7 @@
 
 Live tester page:
 
-- https://nayiq.co/testers.html
+- https://nayiq.in/testers.html
 
 Direct links:
 
@@ -30,7 +30,7 @@ Copy/paste invite:
 ```text
 Hi, can you help test my Android app NAYIQ?
 
-1. Open: https://nayiq.co/testers.html
+1. Open: https://nayiq.in/testers.html
 2. Tap “Join closed test”.
 3. Tap “Become a tester”.
 4. Install the app and keep it installed/opted in for 14 days.

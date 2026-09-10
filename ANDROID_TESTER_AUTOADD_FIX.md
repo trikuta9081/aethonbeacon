@@ -4,7 +4,7 @@ Last updated: 2026-07-30
 
 ## Current state (verified 2026-07-30)
 
-- **iOS (TestFlight): auto-add is live.** App Store Connect "All Testers" reports **38 testers** in the `NAYIQ External TestFlight` group (id `33754363-e559-4dce-ad22-bf6c1f043fac`). Most were added on 2026-07-23 by the server's `addIosTesterToTestFlight()` path in `scripts/static-server.mjs`. The form on `https://nayiq.co/testers` submits to `/api/tester-request`, which calls the App Store Connect API and immediately adds + invites the Apple ID.
+- **iOS (TestFlight): auto-add is live.** App Store Connect "All Testers" reports **38 testers** in the `NAYIQ External TestFlight` group (id `33754363-e559-4dce-ad22-bf6c1f043fac`). Most were added on 2026-07-23 by the server's `addIosTesterToTestFlight()` path in `scripts/static-server.mjs`. The form on `https://nayiq.in/testers` submits to `/api/tester-request`, which calls the App Store Connect API and immediately adds + invites the Apple ID.
 - **Android (Play Console closed testing): auto-add is NOT possible with the current allowlist configuration.** The Play Console dashboard reports **4 testers currently opted in** — unchanged from the 2026-07-23 baseline, seven days after the outreach push to 47 Gmail addresses. Only the 4 people who already were in a list before that push have opted in; no new opt-ins have landed.
 
 ## Why Android auto-add is broken
@@ -80,6 +80,6 @@ Ship **Option A** today. It's the honest iOS-parity path given Google's API rest
 
 ## Verification checklist after either fix
 
-- Submit a fresh Gmail through `https://nayiq.co/testers`.
+- Submit a fresh Gmail through `https://nayiq.in/testers`.
 - Confirm within a few minutes that the same Gmail appears in the target email list (A) or Google Group (B).
 - Watch the Play Console dashboard "N testers currently opted-in" line — it should tick upward within 24 hours as those Gmails click the opt-in link.

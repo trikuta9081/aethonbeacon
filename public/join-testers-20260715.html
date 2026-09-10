@@ -50,7 +50,7 @@
       <a class="btn android" href="#iosAccess" onclick="document.getElementById('testerPlatform').value='Android closed test';document.getElementById('testerEmail').focus();">Android: Request access (Gmail)</a>
       <a class="btn android" href="https://play.google.com/apps/testing/com.aethonbeacon.app">Android: Join or reload closed test</a>
       <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.aethonbeacon.app">Android: Open Play Store update</a>
-      <a class="btn ios" href="https://nayiq.co/?v=ios-web-20260715">iPhone: Open web app now</a>
+      <a class="btn ios" href="https://nayiq.in/?v=ios-web-20260715">iPhone: Open web app now</a>
       <a class="btn ios" href="https://apps.apple.com/app/testflight/id899247664">iPhone: Open TestFlight and update</a>
       <a class="btn secondary" href="#iosAccess" onclick="document.getElementById('testerPlatform').value='iOS TestFlight';document.getElementById('testerEmail').focus();">iPhone: Submit Apple ID email</a>
     </div>
@@ -77,7 +77,7 @@
           <li>If you lost the invitation or TestFlight asks for a redeem code, submit the same Apple ID email again. The server will request a fresh Apple invitation when App Store Connect automation is available.</li>
           <li>If a public TestFlight link is not yet enabled, the Apple ID email must be invited from App Store Connect.</li>
           <li>After the invite arrives, open it on the iPhone, accept the beta, and install NAYIQ.</li>
-          <li>Optional web fallback: in Safari, open <code>nayiq.co</code> and use Share → Add to Home Screen.</li>
+          <li>Optional web fallback: in Safari, open <code>nayiq.in</code> and use Share → Add to Home Screen.</li>
           <li>Send feedback/screenshots from TestFlight or from this page.</li>
         </ol>
         <div class="actions">
@@ -140,7 +140,7 @@
       <p><strong>Required coverage:</strong> small and large Android phones, older and current supported iPhones, tablet, slow network, large accessibility text, light and dark themes, and at least one supported non-English language.</p>
       <p><strong>Release target:</strong> 30–50 active testers, no open blocker, and verified correction of every major issue before promotion.</p>
     </div>
-    <div class="notice"><strong>Current integrated tester link:</strong> <code>https://nayiq.co/testers?v=20260729-1315</code></div>
+    <div class="notice"><strong>Current integrated tester link:</strong> <code>https://nayiq.in/testers?v=20260729-1315</code></div>
   </section>
   <footer>NAYIQ · Android + iPhone tester page</footer>
 </main>
@@ -162,7 +162,7 @@
       '',
       `Feedback / testimony / issue: ${feedback || '(not entered)'}`,
       '',
-      'Tester link: https://nayiq.co/testers'
+      'Tester link: https://nayiq.in/testers'
     ].join('\n');
     const mailto = `mailto:slathiarimple567@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     const copyBox = document.getElementById('requestCopy');
@@ -176,7 +176,7 @@
       const response = await fetch('/api/tester-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ platform, email, name, device, feedback, source: 'https://nayiq.co/testers' })
+        body: JSON.stringify({ platform, email, name, device, feedback, source: 'https://nayiq.in/testers' })
       });
       const result = await response.json().catch(() => ({}));
       if (response.ok && result.ok) {
