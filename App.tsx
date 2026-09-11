@@ -34572,6 +34572,7 @@ function RedressSection({
   const [showEmergencyDirectory, setShowEmergencyDirectory] = useState(false);
   const [showDraftTemplate, setShowDraftTemplate] = useState(false);
   const [showScript, setShowScript] = useState(false);
+  const [showCompanionPlan, setShowCompanionPlan] = useState(false);
   // The situation picker is a grid of eleven chips. Once someone has told us
   // which situation they are in, keeping all eleven on screen pushes the
   // answer they came for below the fold -- so the picker folds down to a
@@ -34589,6 +34590,7 @@ function RedressSection({
     setShowEmergencyDirectory(false);
     setShowDraftTemplate(false);
     setShowScript(false);
+    setShowCompanionPlan(false);
     setCheckedEvidence({});
   }, [selectedRedressRoute.id, selectedInstitutionSector.id, selectedIdentity.id, languageId]);
 
@@ -34737,6 +34739,28 @@ function RedressSection({
   // This prevents a localized chooser from opening an English-only modal when
   // a language change and a selection happen in the same render cycle.
   const institutionDetail = localizeInstitution(selectedInstitutionSector, languageId);
+  const companionPlan = [
+    {
+      label: l("Safety first", { hindi: "पहले सुरक्षा", telugu: "ముందుగా భద్రత", tamil: "முதலில் பாதுகாப்பு", urdu: "پہلے حفاظت" }),
+      detail: isEmergencyRoute
+        ? l("If you are unsafe, move to a safer place and use 112 before collecting evidence.", { hindi: "यदि आप असुरक्षित हैं, तो पहले सुरक्षित स्थान पर जाएँ और साक्ष्य जुटाने से पहले 112 का उपयोग करें।", telugu: "మీరు అసురక్షితంగా ఉంటే ముందుగా సురక్షిత ప్రదేశానికి వెళ్లి, ఆధారాలు సేకరించే ముందు 112ను ఉపయోగించండి.", tamil: "நீங்கள் பாதுகாப்பாக இல்லையெனில், முதலில் பாதுகாப்பான இடத்திற்குச் சென்று ஆதாரம் சேகரிப்பதற்கு முன் 112-ஐப் பயன்படுத்துங்கள்.", urdu: "اگر آپ غیر محفوظ ہیں تو پہلے محفوظ جگہ جائیں اور ثبوت جمع کرنے سے پہلے 112 استعمال کریں۔" })
+        : l("Start with the smallest safe step: write what happened, when, and what outcome you want.", { hindi: "सबसे छोटे सुरक्षित कदम से शुरू करें: क्या हुआ, कब हुआ और आप क्या समाधान चाहते हैं, लिखें।", telugu: "చిన్నదైన సురక్షిత అడుగుతో ప్రారంభించండి: ఏమి జరిగింది, ఎప్పుడు జరిగింది, మీకు ఏ పరిష్కారం కావాలో రాయండి.", tamil: "சிறிய பாதுகாப்பான படியுடன் தொடங்குங்கள்: என்ன நடந்தது, எப்போது, நீங்கள் விரும்பும் தீர்வு என்ன என்பதை எழுதுங்கள்.", urdu: "سب سے چھوٹے محفوظ قدم سے شروع کریں: کیا ہوا، کب ہوا، اور آپ کیا حل چاہتے ہیں لکھیں۔" })
+    },
+    {
+      label: l("Evidence to keep", { hindi: "साक्ष्य संभालें", telugu: "ఆధారాలను ఉంచండి", tamil: "ஆதாரங்களை வைத்திருங்கள்", urdu: "ثبوت سنبھالیں" }),
+      detail: l(`${checkedCount} of ${evidenceItems.length} suggested items checked. Keep originals and redact private details before sharing.`, { hindi: `${checkedCount} में से ${evidenceItems.length} सुझाए गए साक्ष्य तैयार हैं। मूल प्रति रखें और साझा करने से पहले निजी विवरण छिपाएँ।`, telugu: `${evidenceItems.length} సూచించిన అంశాల్లో ${checkedCount} తనిఖీ చేశారు. అసలైన వాటిని ఉంచి, పంచుకునే ముందు వ్యక్తిగత వివరాలను దాచండి.`, tamil: `${evidenceItems.length} பரிந்துரைக்கப்பட்ட ஆதாரங்களில் ${checkedCount} சரிபார்க்கப்பட்டுள்ளன. அசல்களை வைத்திருந்து பகிர்வதற்கு முன் தனிப்பட்ட தகவல்களை மறைக்கவும்.`, urdu: `${evidenceItems.length} تجویز کردہ چیزوں میں سے ${checkedCount} تیار ہیں۔ اصل محفوظ رکھیں اور شیئر کرنے سے پہلے نجی تفصیل چھپا دیں۔` })
+    },
+    {
+      label: l("First office", { hindi: "पहला कार्यालय", telugu: "మొదటి కార్యాలయం", tamil: "முதல் அலுவலகம்", urdu: "پہلا دفتر" }),
+      detail: institutionDetail.firstOffice
+    },
+    {
+      label: l("Follow-up", { hindi: "फॉलो-अप", telugu: "ఫాలో-అప్", tamil: "பின்தொடர்பு", urdu: "فالو اَپ" }),
+      detail: activeCase
+        ? l("Your local case tracker is active. Keep the reference number and next response date together.", { hindi: "आपका स्थानीय केस ट्रैकर सक्रिय है। संदर्भ संख्या और अगली जवाबी तारीख़ साथ रखें।", telugu: "మీ స్థానిక కేసు ట్రాకర్ క్రియాశీలంగా ఉంది. రిఫరెన్స్ నంబర్ మరియు తదుపరి స్పందన తేదీని కలిసి ఉంచండి.", tamil: "உங்கள் உள்ளூர் வழக்கு கண்காணிப்பு செயலில் உள்ளது. குறிப்பு எண்ணையும் அடுத்த பதில் தேதியையும் ஒன்றாக வைத்திருங்கள்.", urdu: "آپ کا مقامی کیس ٹریکر فعال ہے۔ حوالہ نمبر اور اگلی جواب کی تاریخ ساتھ رکھیں۔" })
+        : l("Create a local case tracker only after you have a reference number or want to record your next follow-up.", { hindi: "स्थानीय केस ट्रैकर तभी बनाएँ जब आपके पास संदर्भ संख्या हो या आप अगला फॉलो-अप दर्ज करना चाहते हों।", telugu: "మీ వద్ద రిఫరెన్స్ నంబర్ ఉన్నప్పుడు లేదా తదుపరి ఫాలో-అప్ నమోదు చేయాలనుకున్నప్పుడు మాత్రమే స్థానిక కేసు ట్రాకర్‌ను సృష్టించండి.", tamil: "குறிப்பு எண் கிடைத்த பிறகு அல்லது அடுத்த பின்தொடர்பைப் பதிவு செய்ய விரும்பினால் மட்டுமே உள்ளூர் வழக்கு கண்காணிப்பை உருவாக்குங்கள்.", urdu: "مقامی کیس ٹریکر تب بنائیں جب حوالہ نمبر مل جائے یا آپ اگلا فالو اَپ درج کرنا چاہیں۔" })
+    }
+  ];
 
   async function handleRouteCall() {
     if (!routePhone) return;
@@ -34854,14 +34878,50 @@ function RedressSection({
           </Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={l("Open NAYIQ case preparation", { hindi: "NAYIQ केस तैयारी खोलें", telugu: "NAYIQ కేస్ తయారీని తెరవండి", tamil: "NAYIQ வழக்கு தயாரிப்பைத் திறக்கவும்", urdu: "NAYIQ کیس تیاری کھولیں" })}
-            onPress={() => { void Haptics.selectionAsync(); onOpenGuide(); }}
+            accessibilityState={{ expanded: showCompanionPlan }}
+            accessibilityLabel={l(showCompanionPlan ? "Hide NAYIQ case preparation plan" : "Build NAYIQ case preparation plan", { hindi: showCompanionPlan ? "NAYIQ केस तैयारी योजना छिपाएँ" : "NAYIQ केस तैयारी योजना बनाएँ", telugu: showCompanionPlan ? "NAYIQ కేస్ తయారీ ప్రణాళికను దాచండి" : "NAYIQ కేస్ తయారీ ప్రణాళికను రూపొందించండి", tamil: showCompanionPlan ? "NAYIQ வழக்கு தயாரிப்பு திட்டத்தை மறைக்கவும்" : "NAYIQ வழக்கு தயாரிப்பு திட்டத்தை உருவாக்கவும்", urdu: showCompanionPlan ? "NAYIQ کیس تیاری منصوبہ چھپائیں" : "NAYIQ کیس تیاری منصوبہ بنائیں" })}
+            onPress={() => { void Haptics.selectionAsync(); setShowCompanionPlan((value) => !value); }}
             style={({ pressed }) => [{ marginTop: 12, minHeight: 48, borderRadius: 10, backgroundColor: pressed ? "#F0D98B" : "#D4A63A", paddingHorizontal: 14, alignItems: "center", justifyContent: "center" }]}
           >
             <Text style={{ color: "#102B3F", fontSize: 13, fontWeight: "700" }}>
-              {l("Prepare with NAYIQ", { hindi: "NAYIQ के साथ तैयारी करें", telugu: "NAYIQతో సిద్ధం చేయండి", tamil: "NAYIQ உடன் தயாராகுங்கள்", urdu: "NAYIQ کے ساتھ تیاری کریں" })}
+              {showCompanionPlan
+                ? l("Hide preparation plan", { hindi: "तैयारी योजना छिपाएँ", telugu: "తయారీ ప్రణాళికను దాచండి", tamil: "தயாரிப்பு திட்டத்தை மறைக்கவும்", urdu: "تیاری منصوبہ چھپائیں" })
+                : l("Build my preparation plan", { hindi: "मेरी तैयारी योजना बनाएँ", telugu: "నా తయారీ ప్రణాళికను రూపొందించండి", tamil: "என் தயாரிப்பு திட்டத்தை உருவாக்குங்கள்", urdu: "میرا تیاری منصوبہ بنائیں" })}
             </Text>
           </Pressable>
+          {showCompanionPlan && (
+            <View style={{ marginTop: 10, borderRadius: 10, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#5B8790", overflow: "hidden" }}>
+              <View style={{ paddingHorizontal: 12, paddingTop: 11, paddingBottom: 7 }}>
+                <Text style={{ color: "#0D3D3A", fontSize: 12, fontWeight: "700", letterSpacing: 0.8, textTransform: "uppercase" }}>
+                  {l("Your private preparation plan", { hindi: "आपकी निजी तैयारी योजना", telugu: "మీ ప్రైవేట్ తయారీ ప్రణాళిక", tamil: "உங்கள் தனிப்பட்ட தயாரிப்பு திட்டம்", urdu: "آپ کا نجی تیاری منصوبہ" })}
+                </Text>
+                <Text style={{ color: "#506673", fontSize: 12, lineHeight: 17, marginTop: 3 }}>
+                  {l("Built from the route you selected. Nothing is sent anywhere by this checklist.", { hindi: "आपके चुने हुए मार्ग से तैयार किया गया। यह चेकलिस्ट कुछ भी कहीं नहीं भेजती।", telugu: "మీరు ఎంచుకున్న మార్గం ఆధారంగా రూపొందించబడింది. ఈ చెక్‌లిస్ట్ ఏదీ ఎక్కడికీ పంపదు.", tamil: "நீங்கள் தேர்ந்தெடுத்த வழியை அடிப்படையாகக் கொண்டது. இந்த சரிபார்ப்பு பட்டியல் எதையும் எங்கும் அனுப்பாது.", urdu: "آپ کے منتخب کردہ راستے سے تیار کیا گیا ہے۔ یہ چیک لسٹ کچھ بھی کہیں نہیں بھیجتی۔" })}
+                </Text>
+              </View>
+              {companionPlan.map((item, index) => (
+                <View key={item.label} style={{ flexDirection: "row", gap: 9, paddingHorizontal: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "#D9E6E4" }}>
+                  <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: "#D4A63A", alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ color: "#102B3F", fontSize: 12, fontWeight: "700" }}>{index + 1}</Text>
+                  </View>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={{ color: "#0D3D3A", fontSize: 13, fontWeight: "700" }}>{item.label}</Text>
+                    <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, marginTop: 2 }}>{item.detail}</Text>
+                  </View>
+                </View>
+              ))}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={l("Talk through this preparation plan privately", { hindi: "इस तैयारी योजना पर निजी बातचीत करें", telugu: "ఈ తయారీ ప్రణాళిక గురించి ప్రైవేట్‌గా మాట్లాడండి", tamil: "இந்த தயாரிப்பு திட்டத்தைப் பற்றி தனிப்பட்ட முறையில் பேசுங்கள்", urdu: "اس تیاری منصوبے پر نجی گفتگو کریں" })}
+                onPress={() => { void Haptics.selectionAsync(); onOpenGuide(); }}
+                style={({ pressed }) => ({ margin: 12, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#DCEBE9" : "#E1EEEC", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center" })}
+              >
+                <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "800" }}>
+                  {l("Talk through this plan", { hindi: "इस योजना पर बात करें", telugu: "ఈ ప్రణాళిక గురించి మాట్లాడండి", tamil: "இந்த திட்டத்தைப் பற்றி பேசுங்கள்", urdu: "اس منصوبے پر بات کریں" })}
+                </Text>
+              </Pressable>
+            </View>
+          )}
         </View>
 
         {/* ── IMMEDIATE SAFETY ACTIONS ── */}
@@ -36014,7 +36074,7 @@ function RedressSection({
                   onPress={onOpenGuide}
                   style={({ pressed }) => [styles.recommendCard, { opacity: pressed ? 0.8 : 1 }]}
                 >
-                  <Text style={styles.recommendLabel}>{l("Return to Path", { hindi: "Path पर लौटें", telugu: "Path‌కు తిరిగి వెళ్లండి", tamil: "Path-க்கு திரும்பவும்", urdu: "Path پر واپس جائیں" })}</Text>
+                  <Text style={styles.recommendLabel}>{l("Return to Path", { hindi: "मार्ग पर लौटें", telugu: "మార్గానికి తిరిగి వెళ్లండి", tamil: "பாதைக்கு திரும்பவும்", urdu: "راستے پر واپس جائیں" })}</Text>
                   <Text style={styles.recommendDetail}>{l("Map facts, tone, and support lens before or after filing.", { hindi: "दायर करने से पहले या बाद में तथ्य, लहजा, और सहायता दृष्टि को समझें।", telugu: "దాఖలు చేసే ముందు లేదా తర్వాత వాస్తవాలు, స్వరం, మరియు సహాయ దృష్టిని మ్యాప్ చేయండి.", tamil: "சமர்ப்பிப்பதற்கு முன் அல்லது பின் உண்மைகள், tone, மற்றும் ஆதரவு கோணத்தை வரைபடம் போடுங்கள்.", urdu: "درخواست دینے سے پہلے یا بعد میں حقائق، لہجہ، اور مدد کے زاویے کو نقشہ بند کریں۔" })}</Text>
                 </Pressable>
                 <Pressable
