@@ -2877,17 +2877,35 @@ function getTimeGreeting(): { greeting: string; emoji: string; accent: string } 
   if (h < 21) return { greeting: "Good evening",   emoji: "🌆", accent: "#2B1A2E" };
   return       { greeting: "Still here with you",  emoji: "🌙", accent: "#1A1A3A" };
 }
-function getLiveDateLabel(): string {
-  return new Date().toLocaleDateString("en-IN", {
+function getLanguageDateLocale(languageId: LanguageId): string {
+  return languageId === "hindi"
+    ? "hi-IN"
+    : languageId === "telugu"
+      ? "te-IN"
+      : languageId === "tamil"
+        ? "ta-IN"
+        : languageId === "urdu"
+          ? "ur-IN"
+          : "en-IN";
+}
+
+function getLiveDateLabel(languageId: LanguageId = "english"): string {
+  return new Date().toLocaleDateString(getLanguageDateLocale(languageId), {
     weekday: "long", day: "numeric", month: "long"
   });
 }
-function useLiveClock(): string {
-  const [label, setLabel] = useState(getLiveDateLabel);
+function getLiveShortDateLabel(languageId: LanguageId = "english"): string {
+  return new Date().toLocaleDateString(getLanguageDateLocale(languageId), {
+    weekday: "short", day: "numeric", month: "short"
+  });
+}
+function useLiveClock(languageId: LanguageId = "english"): string {
+  const [label, setLabel] = useState(() => getLiveDateLabel(languageId));
   useEffect(() => {
-    const t = setInterval(() => setLabel(getLiveDateLabel()), 60_000);
+    setLabel(getLiveDateLabel(languageId));
+    const t = setInterval(() => setLabel(getLiveDateLabel(languageId)), 60_000);
     return () => clearInterval(t);
-  }, []);
+  }, [languageId]);
   return label;
 }
 
@@ -7407,16 +7425,16 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homeSupportTitle: "एक साफ़ शुरुआत, दो जुड़े हुए रास्ते।",
     homeSupportLead: "परामर्श से शुरू करें। जब सत्यापित मानवीय सहायता चाहिए, समुदाय एक टैप दूर रहता है।",
     homeSupportCounsellingTitle: "परामर्श",
-    homeSupportCounsellingBody: "निजी पहला कदम। अगला Path साफ़ रहता है।",
+    homeSupportCounsellingBody: "निजी पहला कदम। अगला मार्ग साफ़ रहता है।",
     homeSupportCounsellingCta: "मुख्य सहायता",
     homeSupportCalmTitle: "शांत / स्वर",
-    homeSupportCalmBody: "ध्वनि और श्वास, जो Path से पहले आपको स्थिर करें।",
+    homeSupportCalmBody: "ध्वनि और श्वास, जो मार्ग से पहले आपको स्थिर करें।",
     homeSupportCalmCta: "शांत खोलें",
     homeSupportVedicTitle: "वैदिक दृष्टि",
     homeSupportVedicBody: "चंद्र-चार्ट दृष्टि, जब परिप्रेक्ष्य मदद करे।",
     homeSupportVedicCta: "दृष्टि देखें",
     homeSupportCommunityTitle: "समुदाय",
-    homeSupportCommunityBody: "जब मानव हस्तांतरण सबसे उपयुक्त हो, तब सत्यापित सहायता।",
+    homeSupportCommunityBody: "जब मानवीय सहायता की ओर बढ़ना सबसे उपयुक्त हो, तब सत्यापित सहायता।",
     homeSupportCommunityCta: "संदेश खोलें",
     homePrivacyNote: "डिफ़ॉल्ट रूप से निजी। नोट्स साझा या निर्यात करने तक स्थानीय रहती हैं।",
     brandTagline: "चिंता से स्पष्टता तक",
@@ -7687,16 +7705,16 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homeSupportTitle: "ఒక స్పష్ట ఆరంభం, రెండు అనుసంధానమైన మార్గాలు.",
     homeSupportLead: "కౌన్సెలింగ్‌తో ప్రారంభించండి. ధృవీకరించిన మానవ మద్దతు కావాలనిపించినప్పుడు సమాజం ఒక ట్యాప్ దూరంలో ఉంటుంది.",
     homeSupportCounsellingTitle: "కౌన్సెలింగ్",
-    homeSupportCounsellingBody: "ప్రైవేట్ మొదటి అడుగు. తదుపరి Path స్పష్టంగా ఉంటుంది.",
+    homeSupportCounsellingBody: "ప్రైవేట్ మొదటి అడుగు. తదుపరి మార్గం స్పష్టంగా ఉంటుంది.",
     homeSupportCounsellingCta: "ప్రధాన సహాయం",
     homeSupportCalmTitle: "ప్రశాంతత / స్వరాలు",
-    homeSupportCalmBody: "Path‌కు ముందు మిమ్మల్ని స్థిరపరచే ధ్వని మరియు శ్వాస.",
+    homeSupportCalmBody: "మార్గానికి ముందు మిమ్మల్ని స్థిరపరచే ధ్వని మరియు శ్వాస.",
     homeSupportCalmCta: "ప్రశాంతత తెరవండి",
     homeSupportVedicTitle: "వేద దర్శనం",
     homeSupportVedicBody: "దృక్కోణం అవసరమైనప్పుడు చంద్ర చార్ట్ దృష్టి.",
     homeSupportVedicCta: "దర్శనం చూడండి",
     homeSupportCommunityTitle: "సమాజం",
-    homeSupportCommunityBody: "మానవ handoff సరిపోయినప్పుడు ధృవీకరించిన మద్దతు.",
+    homeSupportCommunityBody: "మానవ సహాయానికి మార్పు సరిపోయినప్పుడు ధృవీకరించిన మద్దతు.",
     homeSupportCommunityCta: "సందేశాలు తెరవండి",
     homePrivacyNote: "అప్రమేయంగా ప్రైవేట్. పంచుకోకపోతే లేదా ఎగుమతి చేయకపోతే notes పరికరంలోనే ఉంటాయి.",
     brandTagline: "ఆందోళన నుండి స్పష్టతకు",
@@ -7821,18 +7839,18 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homeSupportTitle: "ஒரு தெளிவான தொடக்கம், இரண்டு இணைந்த பாதைகள்.",
     homeSupportLead: "ஆலோசனையுடன் தொடங்குங்கள். உறுதிப்படுத்தப்பட்ட மனித ஆதரவு வேண்டும்போது சமூகம் ஒரு தட்டில் கிடைக்கும்.",
     homeSupportCounsellingTitle: "ஆலோசனை",
-    homeSupportCounsellingBody: "தனிப்பட்ட முதல் அடி. அடுத்த Path தெளிவாக இருக்கும்.",
+    homeSupportCounsellingBody: "தனிப்பட்ட முதல் அடி. அடுத்த பாதை தெளிவாக இருக்கும்.",
     homeSupportCounsellingCta: "முதன்மை உதவி",
     homeSupportCalmTitle: "அமைதி / ஒலிகள்",
-    homeSupportCalmBody: "Path-க்கு முன் உடல் மற்றும் கவனத்தை அமைக்கும் ஒலி, மூச்சு.",
+    homeSupportCalmBody: "பாதைக்கு முன் உடலையும் கவனத்தையும் நிலைநிறுத்தும் ஒலி, மூச்சு.",
     homeSupportCalmCta: "அமைதியைத் திறக்கவும்",
     homeSupportVedicTitle: "வேத பார்வை",
     homeSupportVedicBody: "பார்வை தேவைப்படும் போது சந்திர அட்டவணை பார்வை.",
     homeSupportVedicCta: "பார்வையைப் பார்க்கவும்",
     homeSupportCommunityTitle: "சமூகம்",
-    homeSupportCommunityBody: "மனித handoff பொருத்தமானபோது உறுதிப்படுத்தப்பட்ட ஆதரவு.",
+    homeSupportCommunityBody: "மனித உதவிக்கு மாற்றம் பொருத்தமானபோது உறுதிப்படுத்தப்பட்ட ஆதரவு.",
     homeSupportCommunityCta: "செய்திகளைத் திறக்கவும்",
-    homePrivacyNote: "இயல்பாக தனிப்பட்டது. பகிரவோ export செய்யவோ செய்யாத வரை குறிப்புகள் சாதனத்திலேயே இருக்கும்.",
+    homePrivacyNote: "இயல்பாக தனிப்பட்டது. பகிரவோ ஏற்றுமதி செய்யவோ செய்யாத வரை குறிப்புகள் சாதனத்திலேயே இருக்கும்.",
     brandTagline: "கவலையிலிருந்து தெளிவுக்கு",
     homeFlowLabel: "வழிகாட்டப்பட்ட ஓட்டம்",
     flowBack: "முந்தைய",
@@ -7955,16 +7973,16 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
     homeSupportTitle: "ایک صاف آغاز، دو جڑے ہوئے راستے۔",
     homeSupportLead: "مشاورت سے شروع کریں۔ جب تصدیق شدہ انسانی مدد چاہیے ہو تو برادری ایک ٹیپ دور رہتی ہے۔",
     homeSupportCounsellingTitle: "مشاورت",
-    homeSupportCounsellingBody: "نجی پہلا مرحلہ۔ اگلا Path صاف رہتا ہے۔",
+    homeSupportCounsellingBody: "نجی پہلا مرحلہ۔ اگلا راستہ صاف رہتا ہے۔",
     homeSupportCounsellingCta: "بنیادی مدد",
     homeSupportCalmTitle: "سکون / آوازیں",
-    homeSupportCalmBody: "آواز اور سانس جو Path سے پہلے آپ کو سنبھالیں۔",
+    homeSupportCalmBody: "آواز اور سانس جو راستے سے پہلے آپ کو سنبھالیں۔",
     homeSupportCalmCta: "سکون کھولیں",
     homeSupportVedicTitle: "ویدک بصیرت",
     homeSupportVedicBody: "قمری چارٹ کی بصیرت، جب زاویہ درکار ہو۔",
     homeSupportVedicCta: "بصیرت دیکھیں",
     homeSupportCommunityTitle: "برادری",
-    homeSupportCommunityBody: "جب انسانی handoff بہتر ہو تو تصدیق شدہ مدد۔",
+    homeSupportCommunityBody: "جب انسانی مدد کی طرف منتقلی بہتر ہو تو تصدیق شدہ مدد۔",
     homeSupportCommunityCta: "پیغامات کھولیں",
     homePrivacyNote: "بطورِ ڈیفالٹ نجی۔ شیئر یا برآمد نہ کرنے تک نوٹس اسی آلہ میں رہتی ہیں۔",
     brandTagline: "فکر سے وضاحت تک",
@@ -17434,7 +17452,13 @@ export default function App() {
     accessName,
     profileGender,
     profileRoleId,
-    languageId === "hindi" ? "आपकी प्रोफ़ाइल" : "Your profile",
+    pickLocalizedText(languageId, {
+      english: "Your profile",
+      hindi: "आपकी प्रोफ़ाइल",
+      telugu: "మీ ప్రొఫైల్",
+      tamil: "உங்கள் சுயவிவரம்",
+      urdu: "آپ کا پروفائل"
+    }),
     languageId
   );
   // Keep refs in sync for the AppState exit-report handler
@@ -17460,6 +17484,10 @@ export default function App() {
   const selectedIssueGuide = useMemo(
     () => issueGuides.find((guide) => guide.id === issueGuideId) ?? issueGuides[0],
     [issueGuideId]
+  );
+  const selectedIssueLabel = useMemo(
+    () => localizedIssueGuideLabel(selectedIssueGuide.id, languageId),
+    [languageId, selectedIssueGuide.id]
   );
 
   // How many prior visit reports already carry this same issue label -- the
@@ -24392,7 +24420,7 @@ function isTrustedExternalUrl(url: string) {
                         <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", letterSpacing: 1.4, textTransform: "uppercase" }}>{greeting}</Text>
                         <View style={{ flex: 1 }} />
                         <Text style={{ color: "#1E3A5A", fontSize: 12, fontWeight: "700" }}>
-                          {new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
+                          {getLiveShortDateLabel(languageId)}
                         </Text>
                       </View>
                       {/* Row 2: name + clarity orb */}
@@ -24438,7 +24466,7 @@ function isTrustedExternalUrl(url: string) {
                         {issueActive ? (
                           <View style={{ backgroundColor: "rgba(99,222,208,0.1)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(99,222,208,0.3)", flexDirection: "row", alignItems: "center", gap: 5 }}>
                             <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#0E9488" }} />
-                            <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700" }}>{selectedIssueGuide.label}</Text>
+                            <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700" }}>{selectedIssueLabel}</Text>
                           </View>
                         ) : (
                           <View style={{ backgroundColor: "rgba(71,85,105,0.2)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(71,85,105,0.3)" }}>
@@ -24615,7 +24643,7 @@ function isTrustedExternalUrl(url: string) {
                     {pickLocalizedText(languageId, { english: "Private. Honest. Yours alone.", hindi: "निजी। ईमानदार। सिर्फ़ आपकी।" })}
                   </Text>
                 </View>
-                <Text style={styles.tabBannerDate}>{getLiveDateLabel()}</Text>
+                <Text style={styles.tabBannerDate}>{getLiveDateLabel(languageId)}</Text>
               </View>
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
@@ -24825,7 +24853,13 @@ function isTrustedExternalUrl(url: string) {
                       <Text style={{ fontSize: 28 }}>{rec.emoji}</Text>
                       <View style={{ flex: 1 }}>
                         <Text style={{ color: rec.color, fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                          Practice for {selectedIssueGuide.label}
+                          {pickLocalizedText(languageId, {
+                            english: "Practice for",
+                            hindi: "अभ्यास",
+                            telugu: "అభ్యాసం",
+                            tamil: "பயிற்சி",
+                            urdu: "مشق"
+                          })} {selectedIssueLabel}
                         </Text>
                         <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>{rec.title}</Text>
                         <Text style={{ color: "#263244", fontSize: 12, lineHeight: 17, marginTop: 4, fontWeight: "700" }}>{rec.body}</Text>
@@ -25373,7 +25407,7 @@ function isTrustedExternalUrl(url: string) {
                 onOpenPrivateIntake={() => setShowPrivateIntakePanel(true)}
                 onEmergencyCall={handleEmergencyCall}
                 selectedIdentityLabel={profileDisplayName}
-                selectedIssueGuideLabel={selectedIssueGuide.label}
+                selectedIssueGuideLabel={selectedIssueLabel}
                 isWide={isWide}
                 isPrivateIntakeOpen={isPrivateIntakeOpen}
                 birthChartRashiInfo={vedicRashiInfo}
@@ -25418,7 +25452,7 @@ function isTrustedExternalUrl(url: string) {
                       tamil: "செயலில் உள்ள கவனம்:",
                       urdu: "فعال توجہ:"
                     })}{" "}
-                    <Text style={styles.activeFocusValue}>{selectedIssueGuide.label} — {getTabIssueHint(selectedIssueGuide.id,"community")}</Text>
+                    <Text style={styles.activeFocusValue}>{selectedIssueLabel} — {getTabIssueHint(selectedIssueGuide.id,"community")}</Text>
                   </Text>
                 </View>
               )}
@@ -25865,7 +25899,7 @@ function isTrustedExternalUrl(url: string) {
                 apiBase={verificationApiBaseUrl}
                 languageId={languageId}
                 name={profileDisplayName || accessName || ""}
-                issueLabel={selectedIssueGuide.label}
+                issueLabel={selectedIssueLabel}
                 weekAvg={weeklyAverage}
                 monthAvg={monthlyAverage}
                 streakDays={checkInStreak}
@@ -25903,7 +25937,7 @@ function isTrustedExternalUrl(url: string) {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                       name: profileDisplayName || accessName || "there",
-                      issueLabel: selectedIssueGuide.label,
+                      issueLabel: selectedIssueLabel,
                       weekAvg: weeklyAverage,
                       monthAvg: monthlyAverage,
                       streakDays: checkInStreak,
@@ -39828,7 +39862,12 @@ function BirthChartSection({
           {cosmicIssueGuidance && (
             <View style={{ backgroundColor: "#E6DEF2", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(126,111,214,0.3)" }}>
               <Text style={{ color: "#5B21B6", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 6 }}>
-                🪐 Cosmic guidance for {selectedIssueGuide.label}
+                🪐 {l("Cosmic guidance for", {
+                  hindi: "के लिए ज्योतिषीय मार्गदर्शन",
+                  telugu: "కోసం జ్యోతిష్య మార్గదర్శకత్వం",
+                  tamil: "க்கான ஜோதிட வழிகாட்டல்",
+                  urdu: "کے لیے نجومی رہنمائی"
+                })} {localizedIssueGuideLabel(selectedIssueGuide.id, languageId)}
               </Text>
               <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 20 }}>{cosmicIssueGuidance}</Text>
             </View>
@@ -46775,7 +46814,7 @@ function DynamicHeroCard({
   onOpenTab: (tab: TabId) => void;
   languageId?: LanguageId;
 }) {
-  const liveDate = useLiveClock();
+  const liveDate = useLiveClock(languageId);
   const { greeting, emoji, accent } = useMemo(getTimeGreeting, []);
   const dailyPrompt = useMemo(getDailyPrompt, []);
 
