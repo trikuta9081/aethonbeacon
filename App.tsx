@@ -33605,7 +33605,7 @@ function IssueGuideSection({
       benefit: l("Add neutral Moon-chart context and a practical remedy.", {
         hindi: "तटस्थ चंद्र-चार्ट संदर्भ और व्यावहारिक उपाय जोड़ें.",
         telugu: "నిరపేక్ష Moon-chart సందర్భం మరియు ఉపయోగకరమైన పరిష్కారాన్ని జోడించండి.",
-        tamil: "நடுநிலை Moon-chart சூழலும் நடைமுறை remedy-யும் சேர்க்கவும்.",
+        tamil: "நடுநிலை சந்திர ஜாதகச் சூழலும் நடைமுறைத் தீர்வும் சேர்க்கவும்.",
         urdu: "غیر جانب دار Moon-chart سیاق اور عملی remedy شامل کریں۔"
       }),
       action: l("View insight", { hindi: "दृष्टि देखें", telugu: "దృష్టిని చూడండి", tamil: "பார்வையைப் பார்க்கவும்", urdu: "بصیرت دیکھیں" }),
@@ -33681,7 +33681,12 @@ function IssueGuideSection({
             <Text style={styles.eyebrow}>{l("Focus", { hindi: "फोकस", telugu: "ఫోకస్", tamil: "கவனம்", urdu: "فوکس" })}</Text>
             <Text style={styles.sectionTitleSmall}>{l("Is this the right concern?", { hindi: "क्या यह सही चिंता है?", telugu: "ఇదే సరైన అంశమా?", tamil: "இது சரியான கவலையா?", urdu: "کیا یہی درست مسئلہ ہے؟" })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{l(selectedIdentity.label, { hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label })}</Text>
+          <Text style={styles.smallMeta}>{l(selectedIdentity.label, {
+            hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label,
+            tamil: selectedIdentity.id === "other" ? "மற்றவை / பொது" : selectedIdentity.label,
+            telugu: selectedIdentity.id === "other" ? "ఇతర / సాధారణ" : selectedIdentity.label,
+            urdu: selectedIdentity.id === "other" ? "دیگر / عام" : selectedIdentity.label
+          })}</Text>
         </View>
         <Text style={styles.promptText}>
           {l("Keep this focus or choose another. Counselling can refine an unclear concern without forcing a label.", {
@@ -34026,7 +34031,7 @@ function IssueGuideSection({
               {l("Open this only when you want the full reasoning, Moon-chart context, nearby support, urgent guidance, export, or reminder controls.", {
                 hindi: "इसे तभी खोलें जब आपको पूरा तर्क, चंद्र-चार्ट संदर्भ, नज़दीकी सहारा, urgent guidance, export, या reminder controls चाहिए.",
                 telugu: "మీకు పూర్తి కారణం, Moon-chart context, సమీప మద్దతు, urgent guidance, export, లేదా reminder controls కావాలనుకున్నప్పుడు మాత్రమే దీన్ని తెరవండి.",
-                tamil: "முழு காரணம், Moon-chart context, அருகிலுள்ள ஆதரவு, urgent guidance, export, அல்லது reminder controls வேண்டும் என்றால் மட்டுமே இதைத் திறக்கவும்.",
+            tamil: "முழு காரணம், சந்திர ஜாதகச் சூழல், அருகிலுள்ள ஆதரவு, அவசர வழிகாட்டல், ஏற்றுமதி அல்லது நினைவூட்டல் கட்டுப்பாடுகள் வேண்டும் என்றால் மட்டுமே இதைத் திறக்கவும்.",
                 urdu: "اسے صرف اس وقت کھولیں جب آپ کو مکمل منطق، Moon-chart سیاق، قریبی مدد، urgent guidance، export، یا reminder controls چاہئیں۔"
               })}
             </Text>
