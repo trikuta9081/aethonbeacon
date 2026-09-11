@@ -8243,9 +8243,39 @@ const localizedUiCopyByLanguage: Partial<Record<LanguageId, Partial<UiCopy>>> = 
 };
 
 function getUiCopy(languageId: LanguageId): UiCopy {
+  const accessibilityCopy: Partial<UiCopy> = ({
+    telugu: {
+      flowBackA11y: "మునుపటి ట్యాబ్‌కు వెళ్లండి",
+      flowNextA11y: "తదుపరి ట్యాబ్‌కు వెళ్లండి",
+      flowHomeA11y: "హోమ్ పేజీకి వెళ్లండి",
+      flowPagesA11y: "పేజీల ఎంపికను తెరవండి",
+      flowExitA11y: "ప్రారంభ స్క్రీన్‌కు వెళ్లండి",
+      openSectionSwitcherA11y: "విభాగాల ఎంపికను తెరవండి",
+      closeSectionSwitcherA11y: "విభాగాల ఎంపికను మూసివేయండి"
+    },
+    tamil: {
+      flowBackA11y: "முந்தைய தாவலுக்குச் செல்லவும்",
+      flowNextA11y: "அடுத்த தாவலுக்குச் செல்லவும்",
+      flowHomeA11y: "முகப்புப் பக்கத்திற்குச் செல்லவும்",
+      flowPagesA11y: "பக்கத் தேர்வைத் திறக்கவும்",
+      flowExitA11y: "தொடக்கத் திரைக்குச் செல்லவும்",
+      openSectionSwitcherA11y: "பிரிவுத் தேர்வைத் திறக்கவும்",
+      closeSectionSwitcherA11y: "பிரிவுத் தேர்வை மூடவும்"
+    },
+    urdu: {
+      flowBackA11y: "پچھلے ٹیب پر جائیں",
+      flowNextA11y: "اگلے ٹیب پر جائیں",
+      flowHomeA11y: "ہوم صفحے پر جائیں",
+      flowPagesA11y: "صفحات کا انتخاب کھولیں",
+      flowExitA11y: "ابتدائی اسکرین پر جائیں",
+      openSectionSwitcherA11y: "سیکشن کا انتخاب کھولیں",
+      closeSectionSwitcherA11y: "سیکشن کا انتخاب بند کریں"
+    }
+  } as Record<string, Partial<UiCopy>>)[languageId] ?? {};
   return {
     ...englishUiCopy,
-    ...(localizedUiCopyByLanguage[languageId] ?? {})
+    ...(localizedUiCopyByLanguage[languageId] ?? {}),
+    ...accessibilityCopy
   };
 }
 
