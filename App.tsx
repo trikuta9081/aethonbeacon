@@ -16124,6 +16124,7 @@ export default function App() {
   const [profileBirthLat, setProfileBirthLat] = useState<number | null>(null);
   const [profileBirthLon, setProfileBirthLon] = useState<number | null>(null);
   const [birthPlaceGeocodeStatus, setBirthPlaceGeocodeStatus] = useState<"idle" | "loading" | "resolved" | "failed">("idle");
+  const birthPlaceGeocodedForRef = React.useRef("");
   // Theme: "system" follows the device's light/dark setting (via useColorScheme
   // below); "light"/"dark" force it regardless of device setting. Reinstates
   // the dark-mode toggle that existed early on but didn't survive a later
@@ -17544,10 +17545,22 @@ export default function App() {
     if (!hasLoaded) return;
     const place = profileBirthPlace.trim();
     if (place.length < 3) {
+      birthPlaceGeocodedForRef.current = "";
+      setProfileBirthLat(null);
+      setProfileBirthLon(null);
       setBirthPlaceGeocodeStatus("idle");
       return;
     }
-    if (birthPlaceGeocodeStatus === "resolved" && profileBirthLat !== null && profileBirthLon !== null) {
+    if (birthPlaceGeocodedForRef.current !== place) {
+      // Coordinates belong to a specific place string. Invalidate the old
+      // pair before the new lookup so house-dependent calculations cannot
+      // briefly use the previous birthplace.
+      birthPlaceGeocodedForRef.current = "";
+      setProfileBirthLat(null);
+      setProfileBirthLon(null);
+      setBirthPlaceGeocodeStatus("idle");
+    }
+    if (birthPlaceGeocodedForRef.current === place && profileBirthLat !== null && profileBirthLon !== null) {
       return;
     }
     let cancelled = false;
@@ -17558,6 +17571,7 @@ export default function App() {
       if (coords) {
         setProfileBirthLat(coords.lat);
         setProfileBirthLon(coords.lon);
+        birthPlaceGeocodedForRef.current = place;
         setBirthPlaceGeocodeStatus("resolved");
       } else {
         setProfileBirthLat(null);
@@ -17569,8 +17583,8 @@ export default function App() {
       cancelled = true;
       clearTimeout(debounceTimer);
     };
-    // profileBirthLat/Lon and birthPlaceGeocodeStatus intentionally excluded —
-    // they're written BY this effect; including them would create a loop.
+    // profileBirthLat/Lon, birthPlaceGeocodeStatus, and the place cache ref
+    // are written BY this effect; including them would create a loop.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileBirthPlace, hasLoaded]);
 

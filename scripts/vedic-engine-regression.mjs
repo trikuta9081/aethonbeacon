@@ -133,6 +133,9 @@ assert(source.includes('Unsaved changes ready. Tap Save & Analyse to refresh the
 assert(source.includes('The chart below still uses your last saved details.'), 'Birth-chart form must disclose when the visible chart is based on older saved details');
 assert(source.includes('Calculation basis'), 'Vedic chart must expose a compact calculation-basis summary');
 assert(source.includes('transits refreshed today'), 'Vedic chart must disclose transit freshness');
+assert(source.includes('const birthPlaceGeocodedForRef = React.useRef("")'), 'Birthplace geocoding must cache coordinates against the exact place string');
+assert(source.includes('Coordinates belong to a specific place string'), 'Birthplace changes must invalidate stale coordinates before recalculation');
+assert(source.includes('birthPlaceGeocodedForRef.current = place'), 'Successful birthplace geocoding must record which place produced the coordinates');
 assert(source.includes('const dateLocale = languageId === "hindi" ? "hi-IN"'), 'Daily Vedic card must format dates using the active language locale');
 assert(source.includes('const varaName = languageId === "english" ? vara.en : languageId === "hindi" ? vara.hi : vara.name'), 'Daily Vedic card must localize its weekday display');
 assert(/sadeSatiPhase/.test(source), 'Sade Sati detection is missing from the gochar layer');
