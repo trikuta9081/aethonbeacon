@@ -18570,7 +18570,7 @@ export default function App() {
     const text = [
       "NAYIQ safety plan",
       `Issue: ${selectedIssueGuide.label}`,
-      `Role: ${selectedIdentity.label}`,
+      `Role: ${localizedIdentityLabel(selectedIdentity, languageId)}`,
       `User: ${profileDisplayName}`,
       `Summary: ${selectedIssueGuide.summary}`,
       "",
@@ -21703,7 +21703,7 @@ export default function App() {
       "If the user mainly needs planning or clarity, choose Path.",
       "If the user is emotionally flooded but not unsafe, choose Reset first, then Path.",
       "If symptoms are intense, persistent, medical, sleep-related, panic-related, or self-harm adjacent, mention professional support.",
-      `User role: ${selectedIdentity.label}.`,
+      `User role: ${localizedIdentityLabel(selectedIdentity, languageId)}.`,
       `User address: ${profileDisplayName}.`,
       `Detected route: ${route}.`,
       `Current issue guide: ${localizedIssueGuideLabel(issueGuide.id, selectedLanguage.id)}.`,
@@ -22137,7 +22137,7 @@ async function fetchGuidanceHelp(
     const userMessage = {
       id: `${Date.now()}-${Math.floor(Math.random() * 100000)}`,
       createdAt: new Date().toISOString(),
-      author: communityRealtimeConfigured ? `${selectedIdentity.label} member` : "You",
+      author: communityRealtimeConfigured ? `${localizedIdentityLabel(selectedIdentity, languageId)} member` : "You",
       role: "user" as const,
       text,
       persona: communityChatPersona,
@@ -32581,7 +32581,7 @@ function SearchSection({
                 onPress={() =>
                   onOpenWebsite(
                     `https://www.google.com/maps/search/${encodeURIComponent(
-                      `${item.nearbyQuery} near ${selectedIdentity.label}`
+                      `${item.nearbyQuery} near ${localizedIdentityLabel(selectedIdentity, languageId)}`
                     )}`,
                     `Nearby ${item.title}`
                   )
