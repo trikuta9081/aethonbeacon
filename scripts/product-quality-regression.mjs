@@ -41,6 +41,9 @@ assert(source.includes('const localizedPersonaCopy = (persona: CommunityChatPers
 assert((source.match(/\{ id: "identity", label:/g) ?? []).length === 1, "Community topic filters must contain one Identity option.");
 assert(source.includes('l("NAYIQ guide: thank you for sharing that.'), "Community feed guidance must use localized copy.");
 assert(source.includes('l("Support voice: thank you for sharing that.'), "Community chat guidance must use localized copy.");
+assert(source.includes('saved on this device; retry when connected.'), "Community delivery failure must give honest retry guidance.");
+assert((source.match(/recordProductMetric\("community_delivery_failed"\);\s*return false;/g) ?? []).length === 2, "Failed feed and chat sends must preserve the draft for retry.");
+assert(source.includes('deliveryStatus: "failed"') && source.includes('deliveryStatus: "delivered"'), "Community feed and chat delivery states must be updated after live send results.");
 assert(!source.includes('accessibilityHint="Creates a new private room'), "Private-room creation hint must not fall back to English.");
 assert(!source.includes('accessibilityHint="Erases the message you were about to send'), "Private-room draft hint must not fall back to English.");
 assert(!source.includes('accessibilityLabel={`React with ${emoji}'), "Community reaction labels must use localized copy.");

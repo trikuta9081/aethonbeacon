@@ -21925,7 +21925,7 @@ async function fetchGuidanceHelp(
       if (!result.ok) {
         communityLocallySentMessageIdsRef.current.delete(userMessage.id);
         if (__DEV__) console.warn(`[community realtime] send failed: ${result.error ?? "unknown error"}`);
-        setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device, it'll retry.");
+        setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device; retry when connected.");
         // A failed send was silent apart from a status line the user may never
         // look at. Failure is the one delivery state worth feeling.
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => undefined);
@@ -21933,6 +21933,7 @@ async function fetchGuidanceHelp(
           current.map((message) => message.id === userMessage.id ? { ...message, deliveryStatus: "failed" } : message)
         );
         recordProductMetric("community_delivery_failed");
+        return false;
       } else {
         setCommunityRealtimeStatus("Live — connected");
         setCommunityMessages((current) =>
@@ -22122,12 +22123,20 @@ async function fetchGuidanceHelp(
       if (!result.ok) {
         communityLocallySentMessageIdsRef.current.delete(userMessage.id);
         if (__DEV__) console.warn(`[community realtime] send failed: ${result.error ?? "unknown error"}`);
-        setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device, it'll retry.");
+        setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device; retry when connected.");
         // A failed send was silent apart from a status line the user may never
         // look at. Failure is the one delivery state worth feeling.
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => undefined);
+        setCommunityChatMessages((current) =>
+          current.map((message) => message.id === userMessage.id ? { ...message, deliveryStatus: "failed" } : message)
+        );
+        recordProductMetric("community_delivery_failed");
+        return false;
       } else {
         setCommunityRealtimeStatus("Live — connected");
+        setCommunityChatMessages((current) =>
+          current.map((message) => message.id === userMessage.id ? { ...message, deliveryStatus: "delivered" } : message)
+        );
       }
       return true;
     }
@@ -31075,7 +31084,7 @@ function CommunitySection({
               urdu: "تصدیق شدہ چیٹ"
             })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
+          <Text style={styles.smallMeta}>{l(selectedIdentity.label, { hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label })}</Text>
         </View>
         <View style={styles.communityPreviewBand}>
           <Text style={styles.visionGuidanceTitle}>{l("Private chats", {
@@ -34939,14 +34948,14 @@ function RedressSection({
               urdu: "مدد اور ازالہ"
             })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
+          <Text style={styles.smallMeta}>{l(selectedIdentity.label, { hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label })}</Text>
         </View>
         <Text style={styles.promptText}>
           {l("Your situation sets the route. Everything below — first office, recommended initial action, and formal escalation path — changes to match it, and only that route is shown. Tap “Change” on the situation card to pick a different one.", {
-            hindi: "आपकी स्थिति ही मार्ग तय करती है। नीचे की हर चीज़ — पहला कार्यालय, सुझाया गया शुरुआती कदम, और औपचारिक escalation path — उसी के अनुसार बदलती है, और केवल वही route दिखता है। अलग route चुनने के लिए स्थिति कार्ड पर “Change” टैप करें।",
-            telugu: "మీ పరిస్థితి route‌ను నిర్ణయిస్తుంది. దిగువ ఉన్న ప్రతిదీ — మొదటి office, సూచించిన మొదటి చర్య, మరియు formal escalation path — దానికి అనుగుణంగా మారుతుంది, మరియు ఆ route మాత్రమే చూపబడుతుంది. వేరే route ఎంచుకోవడానికి situation card పై “Change” ను ట్యాప్ చేయండి.",
-            tamil: "உங்கள் நிலைதான் வழியை நிர்ணயிக்கிறது. கீழே உள்ள அனைத்தும் — முதல் அலுவலகம், பரிந்துரைக்கப்பட்ட முதல் செயல், மற்றும் அதிகாரப்பூர்வ escalaton path — அதற்கு ஏற்ப மாறும், மற்றும் அந்த route மட்டுமே காட்டப்படும். வேறு route-ஐ தேர்ந்தெடுக்க situation card-இல் “Change” என்பதைத் தட்டவும்.",
-            urdu: "آپ کی صورتحال ہی راستہ طے کرتی ہے۔ نیچے کی ہر چیز — پہلا دفتر، تجویز کردہ ابتدائی قدم، اور رسمی escalation path — اسی کے مطابق بدلتی ہے، اور صرف وہی راستہ دکھایا جاتا ہے۔ مختلف راستہ منتخب کرنے کے لیے صورتحال کارڈ پر “Change” ٹیپ کریں۔"
+            hindi: "आपकी स्थिति ही मार्ग तय करती है। नीचे की हर चीज़ — पहला कार्यालय, सुझाया गया शुरुआती कदम और औपचारिक बढ़ने का रास्ता — उसी के अनुसार बदलती है, और केवल वही मार्ग दिखता है। अलग मार्ग चुनने के लिए स्थिति कार्ड पर “बदलें” टैप करें।",
+            telugu: "మీ పరిస్థితి మార్గాన్ని నిర్ణయిస్తుంది. దిగువ ఉన్న ప్రతిదీ — మొదటి కార్యాలయం, సూచించిన మొదటి చర్య మరియు అధికారిక తదుపరి మార్గం — దానికి అనుగుణంగా మారుతుంది, మరియు ఆ మార్గం మాత్రమే చూపబడుతుంది. వేరే మార్గం ఎంచుకోవడానికి పరిస్థితి కార్డులో “మార్చు”ను ట్యాప్ చేయండి.",
+            tamil: "உங்கள் நிலைதான் வழியை நிர்ணயிக்கிறது. கீழே உள்ள அனைத்தும் — முதல் அலுவலகம், பரிந்துரைக்கப்பட்ட முதல் செயல் மற்றும் அதிகாரப்பூர்வ அடுத்த பாதை — அதற்கு ஏற்ப மாறும்; அந்தப் பாதை மட்டுமே காட்டப்படும். வேறு பாதையைத் தேர்ந்தெடுக்க நிலை அட்டையில் “மாற்று” என்பதைத் தட்டவும்.",
+            urdu: "آپ کی صورتحال ہی راستہ طے کرتی ہے۔ نیچے کی ہر چیز — پہلا دفتر، تجویز کردہ ابتدائی قدم اور رسمی اگلا راستہ — اسی کے مطابق بدلتی ہے، اور صرف وہی راستہ دکھایا جاتا ہے۔ مختلف راستہ منتخب کرنے کے لیے صورتحال کارڈ پر “تبدیل کریں” ٹیپ کریں۔"
           })}
         </Text>
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FFF4F0", borderWidth: 1, borderColor: "#E9A99A", padding: 12 }}>
@@ -34999,7 +35008,17 @@ function RedressSection({
               tamil: "அடைவுக் கோப்பு மதிப்பாய்வு தாமதமாக உள்ளது — நம்புவதற்கு முன் ஒவ்வொரு destination-ஐயும் அதன் அதிகாரப்பூர்வ வலைத்தளத்தில் உறுதிப்படுத்தவும்.",
               urdu: "ڈائریکٹری کا جائزہ تاخیر کا شکار ہے — اعتماد کرنے سے پہلے ہر destination کو اس کی official website پر ضرور تصدیق کریں۔"
             })}{" "}
-            {REDRESS_CONTENT_STANDARD.sourceRule} {REDRESS_CONTENT_STANDARD.outcomeNotice}
+            {l(REDRESS_CONTENT_STANDARD.sourceRule, {
+              hindi: "सरकारी, नियामक, वैधानिक या संस्थान के आधिकारिक स्रोत का उपयोग करें।",
+              telugu: "ప్రభుత్వ, నియంత్రణ, చట్టబద్ధ లేదా సంస్థ అధికారిక మూలాన్ని ఉపయోగించండి.",
+              tamil: "அரசு, ஒழுங்குமுறை, சட்டப்பூர்வ அல்லது நிறுவனத்தின் அதிகாரப்பூர்வ ஆதாரத்தைப் பயன்படுத்தவும்.",
+              urdu: "سرکاری، نگران، قانونی یا ادارے کے سرکاری ماخذ کا استعمال کریں۔"
+            })} {l(REDRESS_CONTENT_STANDARD.outcomeNotice, {
+              hindi: "मार्गदर्शन केवल तैयारी और सही मार्ग चुनने में सहायता करता है; शिकायत स्वीकार होने, जवाब मिलने के समय या परिणाम की गारंटी नहीं देता।",
+              telugu: "ఈ మార్గదర్శకం సిద్ధం కావడానికి మరియు సరైన మార్గాన్ని ఎంచుకోవడానికి సహాయపడుతుంది; స్వీకరణ, స్పందన సమయం లేదా ఫలితానికి హామీ ఇవ్వదు.",
+              tamil: "இந்த வழிகாட்டல் தயாரிப்புக்கும் சரியான பாதையைத் தேர்வுசெய்வதற்கும் உதவும்; ஏற்றுக்கொள்ளல், பதில் நேரம் அல்லது முடிவுக்கு உத்தரவாதம் இல்லை.",
+              urdu: "یہ رہنمائی تیاری اور درست راستہ منتخب کرنے میں مدد دیتی ہے؛ قبولیت، جواب کے وقت یا نتیجے کی ضمانت نہیں دیتی۔"
+            })}
           </Text>
         </View>
 
@@ -35128,7 +35147,7 @@ function RedressSection({
                 }
                 style={({ pressed }) => [{ flexGrow: 1, flexShrink: 1, flexBasis: 180, minWidth: 0, backgroundColor: pressed ? "#8A5147" : "#F2DEDE", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 10, alignItems: "center" }]}
               >
-                <Text style={{ color: "#B82200", fontWeight: "800", fontSize: 13 }}>🔊 Read this route aloud</Text>
+                <Text style={{ color: "#B82200", fontWeight: "800", fontSize: 13 }}>🔊 {l("Read this route aloud", { hindi: "यह मार्ग सुनाएँ", telugu: "ఈ మార్గాన్ని వినిపించండి", tamil: "இந்த வழியை வாசித்துக் கேட்கவும்", urdu: "یہ راستہ سنائیں" })}</Text>
               </Pressable>
             )}
           </View>
@@ -35500,7 +35519,7 @@ function RedressSection({
                 key={sector.id}
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
-                accessibilityLabel={`${sector.label}. ${sector.subtitle}. ${isSelected ? l("Selected", { hindi: "चयनित", telugu: "ఎంచుకోబడింది", tamil: "தேர்ந்தெடுக்கப்பட்டது", urdu: "منتخب" }) : l("Tap to select", { hindi: "चुनने के लिए टैप करें", telugu: "ఎంచుకోవడానికి ట్యాప్ చేయండి", tamil: "தேர்ந்தெடுக்கத் தட்டவும்", urdu: "منتخب کرنے کے لیے ٹیپ کریں" })}.`}
+                accessibilityLabel={`${sector.label}. ${sector.subtitle.replace(/[.。।]+$/, "")}. ${isSelected ? l("Selected", { hindi: "चयनित", telugu: "ఎంచుకోబడింది", tamil: "தேர்ந்தெடுக்கப்பட்டது", urdu: "منتخب" }) : l("Tap to select", { hindi: "चुनने के लिए टैप करें", telugu: "ఎంచుకోవడానికి ట్యాప్ చేయండి", tamil: "தேர்ந்தெடுக்கத் தட்டவும்", urdu: "منتخب کرنے کے لیے ٹیپ کریں" })}.`}
                 onPress={() => {
                   setInstitutionSectorId(sector.id);
                   setInstitutionPageOpen(true);

@@ -232,7 +232,7 @@ assert(!source.includes(hiddenNumericReading), 'Public numeric Vedic reading ter
 // Concrete Help & Redress upgrade markers from the July 26 batch.
 [
   '🚨 SOS — 112',
-  '🔊 Read this route aloud',
+  'l("Read this route aloud", { hindi:',
   '🚨 IMPORTANT NUMBERS',
   'Tele-MANAS (mental health)',
   'Anti-Ragging',
