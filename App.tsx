@@ -16011,16 +16011,17 @@ export default function App() {
   // instead of two disagreeing ones.
   const isWide = width >= 620;
   const isCompact = width < 620;
+  const isNarrow = width < 380;
   const isTablet = width >= 620 && width < 1120;
   const isDesktop = width >= 1120;
   const shellMetrics = useMemo(
     () => ({
-      scrollPaddingVertical: isCompact ? 12 : isTablet ? 16 : 22,
+      scrollPaddingVertical: isNarrow ? 10 : isCompact ? 12 : isTablet ? 16 : 22,
       containerMaxWidth: isDesktop ? 1360 : isTablet ? 1120 : 980,
-      containerPaddingHorizontal: isCompact ? 12 : isTablet ? 16 : 24,
-      containerGap: isCompact ? 14 : 18
+      containerPaddingHorizontal: isNarrow ? 10 : isCompact ? 12 : isTablet ? 16 : 24,
+      containerGap: isNarrow ? 10 : isCompact ? 14 : 18
     }),
-    [isCompact, isTablet, isDesktop]
+    [isNarrow, isCompact, isTablet, isDesktop]
   );
   const [activeTab, setActiveTab] = useState<TabId>("today");
   // Mini-player state for background tone playback -- see the
@@ -23860,7 +23861,7 @@ function isTrustedExternalUrl(url: string) {
               }
             ]}
           >
-          <View style={[styles.topBeaconStrip, isCompact && styles.topBeaconStripCompact]}>
+          <View style={[styles.topBeaconStrip, isCompact && styles.topBeaconStripCompact, isNarrow && styles.topBeaconStripNarrow]}>
           {/* Home-only chrome: the big brand strip + logo tagline show only on
               the Home tab. Every other tab opens as its OWN page — no home
               hero above it. Tab rail below stays visible so users can navigate. */}
@@ -23903,6 +23904,7 @@ function isTrustedExternalUrl(url: string) {
                   styles.topStatusChip,
                   styles.topBeaconSecondaryItem,
                   isCompact && styles.topStatusChipCompact,
+                  isNarrow && styles.topStatusChipNarrow,
                   pressed && styles.pressed
                 ]}
               >
@@ -23937,10 +23939,11 @@ function isTrustedExternalUrl(url: string) {
                     window.scrollTo(0, 0);
                   }
                 }}
-                style={({ pressed }) => [
+                  style={({ pressed }) => [
                   styles.topLanguageChip,
                   styles.topBeaconSecondaryItem,
                   isCompact && styles.topLanguageChipCompact,
+                  isNarrow && styles.topLanguageChipNarrow,
                   pressed && styles.pressed
                 ]}
               >
@@ -23997,7 +24000,7 @@ function isTrustedExternalUrl(url: string) {
                           style={{ marginBottom: 1 }}
                         />
                         <Text
-                          style={[styles.topTabLabel, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
+                          style={[styles.topTabLabel, isNarrow && styles.topTabLabelNarrow, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
                           numberOfLines={1}
                         >
                           {getHeaderNavShortLabel(languageId, tab)}
@@ -24017,7 +24020,7 @@ function isTrustedExternalUrl(url: string) {
                     ]}
                   >
                     <Text style={[styles.topTabMark, { color: theme.textMuted }]}>+</Text>
-                  <Text style={[styles.topTabLabel, { color: theme.textMuted }]} numberOfLines={1}>{homeUiCopy.flowMore}</Text>
+                  <Text style={[styles.topTabLabel, isNarrow && styles.topTabLabelNarrow, { color: theme.textMuted }]} numberOfLines={1}>{homeUiCopy.flowMore}</Text>
                   </Pressable>
                 </ScrollView>
               ) : (
@@ -24045,7 +24048,7 @@ function isTrustedExternalUrl(url: string) {
                           style={{ marginBottom: 1 }}
                         />
                         <Text
-                          style={[styles.topTabLabel, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
+                          style={[styles.topTabLabel, isNarrow && styles.topTabLabelNarrow, { color: theme.textMuted }, isActive && { color: theme.accentGold }]}
                           numberOfLines={1}
                         >
                           {getHeaderNavShortLabel(languageId, tab)}
@@ -24065,7 +24068,7 @@ function isTrustedExternalUrl(url: string) {
                     ]}
                   >
                     <Text style={[styles.topTabMark, { color: theme.textMuted }]}>+</Text>
-                  <Text style={[styles.topTabLabel, { color: theme.textMuted }]} numberOfLines={1}>{homeUiCopy.flowMore}</Text>
+                  <Text style={[styles.topTabLabel, isNarrow && styles.topTabLabelNarrow, { color: theme.textMuted }]} numberOfLines={1}>{homeUiCopy.flowMore}</Text>
                   </Pressable>
                 </View>
               )}
@@ -34446,9 +34449,13 @@ function GovtGrievanceCellsCard({
 function RedressDirectoriesHub({
   openWebsite,
   defaultLocality,
+  languageId,
+  onOpenGuide,
 }: {
   openWebsite: (url: string, title: string) => Promise<void>;
   defaultLocality?: string;
+  languageId: LanguageId;
+  onOpenGuide: () => void;
 }) {
   const { width } = useWindowDimensions();
   const compact = width < 820;
@@ -34501,7 +34508,7 @@ function RedressDirectoriesHub({
           own affordances; we don't wrap or duplicate). */}
       {tab === "legal" && <FreeLegalAidCard openWebsite={openWebsite} />}
       {tab === "govt" && <GovtGrievanceCellsCard openWebsite={openWebsite} />}
-      {tab === "state" && <StateOfficerDirectoryCard openWebsite={openWebsite} defaultLocality={defaultLocality} />}
+      {tab === "state" && <StateOfficerDirectoryCard openWebsite={openWebsite} defaultLocality={defaultLocality} languageId={languageId} onOpenGuide={onOpenGuide} />}
       {tab === "health" && <HealthDirectoryCard openWebsite={openWebsite} />}
     </View>
   );
@@ -34689,10 +34696,16 @@ function dialEmergencyNumber(number: string, label: string) {
 function StateOfficerDirectoryCard({
   openWebsite,
   defaultLocality,
+  languageId,
+  onOpenGuide,
 }: {
   openWebsite: (url: string, title: string) => Promise<void>;
   defaultLocality?: string;
+  languageId: LanguageId;
+  onOpenGuide: () => void;
 }) {
+  const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   // Best-guess pre-selection from user's saved locality (matches state name).
   const initialGuess = React.useMemo<StateOfficerDirectory | null>(() => {
     if (!defaultLocality || defaultLocality.trim().length === 0) return null;
@@ -34723,6 +34736,76 @@ function StateOfficerDirectoryCard({
         </View>
         <Text style={{ color: "#1E40AF", fontSize: 12, fontWeight: "700", marginLeft: 8 }}>{showPicker ? "▲ Hide" : "▼ Pick state"}</Text>
       </Pressable>
+
+      <View style={{ paddingHorizontal: 12, paddingBottom: 12 }}>
+        <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800", marginBottom: 7 }}>
+          {l("Police complaint + FIR guide", { hindi: "पुलिस शिकायत + FIR मार्गदर्शिका", tamil: "காவல் புகார் + FIR வழிகாட்டி" })}
+        </Text>
+        <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18, fontWeight: "600" }}>
+          {l("A clear path from immediate safety to FIR, senior-officer escalation, and legal aid. Use official live directories for the correct station and current officer contact.", { hindi: "तत्काल सुरक्षा से FIR, वरिष्ठ अधिकारी तक शिकायत और कानूनी सहायता का स्पष्ट मार्ग। सही थाने और वर्तमान अधिकारी संपर्क के लिए आधिकारिक लाइव निर्देशिकाएँ इस्तेमाल करें।" })}
+        </Text>
+        <View style={{ gap: 6, marginTop: 9 }}>
+          {[
+            l("1. Immediate danger: call 112. Do not wait for an online form.", { hindi: "1. तत्काल खतरा: 112 पर कॉल करें। ऑनलाइन फॉर्म का इंतज़ार न करें।" }),
+            l("2. Cognizable offence: report orally, in writing, or electronically to the officer in charge; jurisdiction alone should not block a Zero-FIR request.", { hindi: "2. संज्ञेय अपराध: प्रभारी अधिकारी को मौखिक, लिखित या इलेक्ट्रॉनिक रूप से सूचना दें; केवल क्षेत्राधिकार Zero-FIR अनुरोध को नहीं रोकना चाहिए।" }),
+            l("3. Ask for the FIR/diary number, receiving officer’s name, acknowledgement, and a free copy of the FIR.", { hindi: "3. FIR/डायरी नंबर, सूचना लेने वाले अधिकारी का नाम, प्राप्ति और FIR की निःशुल्क प्रति माँगें।" }),
+            l("4. If refused or delayed: escalate with proof to the SP/DCP/SSP through the official state route, then seek DLSA/legal-aid or Magistrate help where appropriate.", { hindi: "4. मना या देरी होने पर: प्रमाण सहित आधिकारिक राज्य मार्ग से SP/DCP/SSP तक जाएँ; जरूरत पर DLSA/कानूनी सहायता या मजिस्ट्रेट की मदद लें।" }),
+          ].map((step) => (
+            <View key={step} style={{ flexDirection: "row", gap: 7, backgroundColor: "#FFFFFF", borderRadius: 8, padding: 8 }}>
+              <Text style={{ color: "#0052B8", fontSize: 13, fontWeight: "800" }}>•</Text>
+              <Text style={{ flex: 1, color: "#111827", fontSize: 12, lineHeight: 17, fontWeight: "600" }}>{step}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7, marginTop: 9 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={l("Prepare FIR application")}
+            onPress={onOpenGuide}
+            style={({ pressed }) => ({ backgroundColor: pressed ? "#003B85" : "#0052B8", borderRadius: 8, paddingHorizontal: 11, paddingVertical: 9 })}
+          >
+            <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>{l("Prepare FIR application", { hindi: "FIR आवेदन तैयार करें" })}</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={l("Open official BNSS FIR procedure")}
+            onPress={() => void openWebsite("https://www.indiacode.nic.in/handle/123456789/21615?locale=en", l("Official BNSS text — FIR procedure"))}
+            style={({ pressed }) => ({ backgroundColor: pressed ? "#D9E7F5" : "#FFFFFF", borderRadius: 8, paddingHorizontal: 11, paddingVertical: 9, borderWidth: 1, borderColor: "#6B8FB8" })}
+          >
+            <Text style={{ color: "#0D3B76", fontSize: 12, fontWeight: "800" }}>{l("Official FIR law guide", { hindi: "आधिकारिक FIR कानून मार्गदर्शिका" })}</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={{ padding: 12, borderTopWidth: 1, borderTopColor: "rgba(96,165,250,0.15)", gap: 7 }}>
+        <Text style={{ color: "#0D1F22", fontSize: 14, fontWeight: "800" }}>
+          {l("National police access", { hindi: "राष्ट्रीय पुलिस सहायता" })}
+        </Text>
+        {[
+          { label: l("Digital Police — locate a police station", { hindi: "Digital Police — पुलिस थाना खोजें" }), note: l("Official MHA/NCRB hub for station lookup, state citizen portals, complaint services and FIR access.", { hindi: "थाना खोज, राज्य नागरिक पोर्टल, शिकायत सेवाओं और FIR पहुँच के लिए आधिकारिक MHA/NCRB केंद्र।" }), url: "https://digitalpolice.gov.in/", color: "#0052B8" },
+          { label: l("Digital Police citizen station locator", { hindi: "Digital Police नागरिक थाना खोज" }), note: l("Open the official nationwide service for the nearest police station and available station details.", { hindi: "निकटतम पुलिस थाना और उपलब्ध थाना जानकारी के लिए आधिकारिक राष्ट्रीय सेवा खोलें।" }), url: "https://digitalpolicecitizenservices.gov.in/", color: "#0052B8" },
+          { label: l("112 India emergency", { hindi: "112 India आपातकाल" }), note: l("For immediate danger or urgent police assistance.", { hindi: "तत्काल खतरे या जरूरी पुलिस सहायता के लिए।" }), url: "https://112.gov.in/", color: "#B80000" },
+          { label: l("National Cyber Crime Reporting Portal", { hindi: "राष्ट्रीय साइबर अपराध रिपोर्टिंग पोर्टल" }), note: l("Report cybercrime online; call 1930 promptly for financial cyber fraud.", { hindi: "साइबर अपराध ऑनलाइन दर्ज करें; वित्तीय साइबर धोखाधड़ी में तुरंत 1930 पर कॉल करें।" }), url: "https://www.cybercrime.gov.in/", color: "#3730A3" },
+          { label: l("State/UT cyber nodal and grievance contacts", { hindi: "राज्य/केंद्रशासित प्रदेश साइबर संपर्क" }), note: l("Official escalation contacts when a cyber complaint needs follow-up.", { hindi: "साइबर शिकायत पर आगे कार्रवाई के लिए आधिकारिक संपर्क।" }), url: "https://www.cybercrime.gov.in/Webform/Crime_NodalGrivanceList.aspx", color: "#3730A3" },
+        ].map((item) => (
+          <Pressable
+            key={item.url}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.label}. ${item.note}`}
+            onPress={() => void openWebsite(item.url, item.label)}
+            style={({ pressed }) => ({ flexDirection: "row", alignItems: "flex-start", gap: 9, padding: 9, borderRadius: 9, backgroundColor: pressed ? item.color + "18" : "#FFFFFF", borderWidth: 1, borderColor: item.color + "45" })}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: item.color, fontSize: 12, lineHeight: 17, fontWeight: "800" }}>{item.label}</Text>
+              <Text style={{ color: "#111827", fontSize: 11, lineHeight: 16, marginTop: 2, fontWeight: "600" }}>{item.note}</Text>
+            </View>
+            <Text style={{ color: item.color, fontSize: 15, fontWeight: "900" }}>↗</Text>
+          </Pressable>
+        ))}
+        <Text style={{ color: "#374151", fontSize: 11, lineHeight: 16, fontStyle: "italic" }}>
+          {l("Station, SSP/DCP/DC and SHO details change. This app intentionally links to official live sources instead of storing numbers that can become unsafe or wrong.", { hindi: "थाना, SSP/DCP/DC और SHO की जानकारी बदलती रहती है। गलत या असुरक्षित नंबर रखने के बजाय यह ऐप आधिकारिक लाइव स्रोतों से जोड़ता है।" })}
+        </Text>
+      </View>
 
       {showPicker && (
         <View style={{ backgroundColor: "#E1EEEC", padding: 10, borderTopWidth: 1, borderTopColor: "rgba(96,165,250,0.15)" }}>
@@ -35635,7 +35718,7 @@ function RedressSection({
             Consolidated because these three cover overlapping ground —
             "where to seek help." Health directory moved to the Wellness tab
             where mental-health resources belong. */}
-        <RedressDirectoriesHub openWebsite={openWebsite} defaultLocality={supportLocality} />
+        <RedressDirectoriesHub openWebsite={openWebsite} defaultLocality={supportLocality} languageId={languageId} onOpenGuide={onOpenGuide} />
           </>
         ) : null}
 
@@ -48976,6 +49059,11 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: "700"
   },
+  topTabLabelNarrow: {
+    fontSize: 11,
+    lineHeight: 14,
+    letterSpacing: -0.1
+  },
 
   topStatusChip: {
     flexGrow: 0,
@@ -49007,6 +49095,13 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 9,
     paddingVertical: 7
+  },
+  topStatusChipNarrow: {
+    minHeight: 42,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 14,
+    gap: 6
   },
   topStatusChipCopy: {
     flex: 1,
@@ -51284,6 +51379,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     gap: 6
   },
+  topBeaconStripNarrow: {
+    paddingHorizontal: 8,
+    paddingVertical: 7,
+    gap: 5
+  },
 
 
 
@@ -51324,6 +51424,12 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 9,
     paddingVertical: 7
+  },
+  topLanguageChipNarrow: {
+    minHeight: 42,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 14
   },
   topLanguageChipLabel: {
     color: "#8A5A00",

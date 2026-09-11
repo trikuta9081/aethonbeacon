@@ -152,6 +152,12 @@ assert(source.includes('accessibilityLabel={l("Save complaint letter as PDF"'), 
 assert(source.includes('const [editableDraft, setEditableDraft] = useState("")'), 'Complaint and FIR drafts must be editable in place');
 assert(source.includes('const currentDraft = draftEdited ? editableDraft : draftTemplate ?? ""'), 'Draft exports must use the user-edited complaint text');
 assert(source.includes('FIR lodging path'), 'The crime route must explain the FIR lodging path explicitly');
+assert(source.includes('Police complaint + FIR guide'), 'Help and Redress must expose a dedicated police complaint and FIR guide');
+assert(source.includes('digitalpolice.gov.in/'), 'Help and Redress must link to the official national Digital Police hub');
+assert(source.includes('digitalpolicecitizenservices.gov.in'), 'Help and Redress must link to the nationwide police-station locator');
+assert(source.includes('indiacode.nic.in/handle/123456789/21615'), 'FIR guidance must link to the official BNSS source');
+assert(source.includes('Crime_NodalGrivanceList.aspx'), 'Cyber complaint escalation must link to official state/UT contacts');
+assert(source.includes('onOpenGuide={onOpenGuide}'), 'Police FIR guidance must hand off to the existing complaint draft assistant');
 assert(source.includes('NAYIQ prepares text and tracking only.'), 'Lodging guidance must clearly state that NAYIQ does not file complaints');
 assert(source.includes('Start my private case record'), 'Users must be able to hand a prepared draft into the local case tracker');
 assert(source.includes('Mark complaint as submitted today'), 'The case tracker must record real-world submission separately from drafting');
