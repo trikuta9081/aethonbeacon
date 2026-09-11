@@ -35,6 +35,12 @@ assert(source.includes('Voice and microphone access are optional') || source.inc
 assert(source.includes('deliveryStatus: "failed"'), "Community failure delivery state is not implemented.");
 assert(source.includes('deliveryStatus: "delivered"'), "Community delivered state is not implemented.");
 assert(source.includes('COMMUNITY_POST_COOLDOWN_MS') && source.includes('communityPostCooldownRemainingMs'), "Community post anti-flood cooldown is missing.");
+assert(source.includes('function buildVerifiedReply(text: string)'), "Community feed guidance reply engine is missing.");
+assert(source.includes('function buildCommunityChatReply(text: string, persona: CommunityChatPersonaId)'), "Community chat reply engine is missing.");
+assert(source.includes('const localizedPersonaCopy = (persona: CommunityChatPersonaId)'), "Community persona copy is not localized through the shared language picker.");
+assert((source.match(/\{ id: "identity", label:/g) ?? []).length === 1, "Community topic filters must contain one Identity option.");
+assert(source.includes('l("NAYIQ guide: thank you for sharing that.'), "Community feed guidance must use localized copy.");
+assert(source.includes('l("Support voice: thank you for sharing that.'), "Community chat guidance must use localized copy.");
 assert(source.includes('getRedressReviewState()'), "Redress review expiry is not enforced in the UI.");
 assert(source.includes('function exportComplaintLetterPdf') && source.includes('Print.printAsync'), "Complaint-letter PDF export is missing.");
 assert(source.includes('Save PDF'), "Save-as-PDF button is not rendered on the complaint letter.");

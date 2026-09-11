@@ -21779,21 +21779,21 @@ async function fetchGuidanceHelp(
   function buildVerifiedReply(text: string) {
     const normalized = text.toLowerCase();
     if (/(student|exam|school|college|class|assignment|paper|hostel)/.test(normalized)) {
-      return "NAYIQ guide: pick one study block, one rest block, and one person who can keep you grounded.";
+      return l("NAYIQ guide: pick one study block, one rest block, and one person who can keep you grounded.", { hindi: "NAYIQ मार्गदर्शक: पढ़ाई का एक ब्लॉक, आराम का एक ब्लॉक और एक भरोसेमंद व्यक्ति चुनें।", telugu: "NAYIQ గైడ్: ఒక చదువు సమయం, ఒక విశ్రాంతి సమయం మరియు మిమ్మల్ని స్థిరంగా ఉంచే ఒక వ్యక్తిని ఎంచుకోండి.", tamil: "NAYIQ வழிகாட்டி: ஒரு படிப்பு நேரம், ஒரு ஓய்வு நேரம், உங்களை நிலைநிறுத்தும் ஒருவரைத் தேர்ந்தெடுக்கவும்.", urdu: "NAYIQ رہنما: پڑھائی کا ایک وقت، آرام کا ایک وقت اور آپ کو سنبھالنے والے ایک شخص کو چنیں." });
     }
     if (/(complaint|ragging|harass|threat|abuse|police|112|redress)/.test(normalized)) {
-      return "NAYIQ guide: keep the written complaint, acknowledgement number, and the first office name together in one note.";
+      return l("NAYIQ guide: keep the written complaint, acknowledgement number, and the first office name together in one note.", { hindi: "NAYIQ मार्गदर्शक: लिखित शिकायत, प्राप्ति संख्या और पहले कार्यालय का नाम एक ही नोट में रखें।", telugu: "NAYIQ గైడ్: వ్రాతపూర్వక ఫిర్యాదు, స్వీకరణ నంబర్ మరియు మొదటి కార్యాలయ పేరును ఒకే నోట్‌లో ఉంచండి.", tamil: "NAYIQ வழிகாட்டி: எழுத்துப் புகார், ஒப்புதல் எண், முதல் அலுவலகப் பெயரை ஒரே குறிப்பில் வைத்துக்கொள்ளுங்கள்.", urdu: "NAYIQ رہنما: تحریری شکایت، وصولی نمبر اور پہلے دفتر کا نام ایک نوٹ میں رکھیں." });
     }
     if (/(anxiety|anger|burnout|lonely|loneliness|fear|stigma|shame)/.test(normalized)) {
-      return "NAYIQ guide: name the feeling, choose one small step, and use the Path tab when you want a structured follow-up.";
+      return l("NAYIQ guide: name the feeling, choose one small step, and use the Path tab when you want a structured follow-up.", { hindi: "NAYIQ मार्गदर्शक: भावना का नाम लें, एक छोटा कदम चुनें और व्यवस्थित अगली मदद के लिए मार्ग टैब खोलें।", telugu: "NAYIQ గైడ్: భావనకు పేరు పెట్టి, ఒక చిన్న అడుగు ఎంచుకుని, క్రమబద్ధమైన తదుపరి సహాయం కోసం మార్గం ట్యాబ్‌ను ఉపయోగించండి.", tamil: "NAYIQ வழிகாட்டி: உணர்வுக்கு பெயரிட்டு, ஒரு சிறிய படியைத் தேர்ந்தெடுத்து, திட்டமிட்ட தொடர்ச்சிக்காக பாதைத் தாவலைப் பயன்படுத்துங்கள்.", urdu: "NAYIQ رہنما: احساس کو نام دیں، ایک چھوٹا قدم چنیں اور منظم اگلی مدد کے لیے راستہ ٹیب کھولیں." });
     }
     if (/(work|office|job|professional|shift|duty)/.test(normalized)) {
-      return "NAYIQ guide: tighten the next action, not the pressure. A short reset often gives better judgment.";
+      return l("NAYIQ guide: tighten the next action, not the pressure. A short reset often gives better judgment.", { hindi: "NAYIQ मार्गदर्शक: दबाव नहीं, अगले कदम को स्पष्ट करें। छोटा रीसेट बेहतर निर्णय में मदद कर सकता है।", telugu: "NAYIQ గైడ్: ఒత్తిడిని కాదు, తదుపరి చర్యను స్పష్టంగా చేయండి. చిన్న రీసెట్ మెరుగైన నిర్ణయానికి సహాయపడుతుంది.", tamil: "NAYIQ வழிகாட்டி: அழுத்தத்தை அல்ல, அடுத்த நடவடிக்கையை தெளிவுபடுத்துங்கள். ஒரு சிறிய இடைவேளை சிறந்த முடிவைத் தரலாம்.", urdu: "NAYIQ رہنما: دباؤ نہیں، اگلے عمل کو واضح کریں۔ مختصر وقفہ بہتر فیصلہ دے سکتا ہے." });
     }
     if (/(parent|family|child|care|caregiver)/.test(normalized)) {
-      return "NAYIQ guide: your own pause counts too. A calmer caregiver usually makes a steadier day for everyone.";
+      return l("NAYIQ guide: your own pause counts too. A calmer caregiver usually makes a steadier day for everyone.", { hindi: "NAYIQ मार्गदर्शक: आपका अपना विराम भी ज़रूरी है। शांत देखभालकर्ता सबके दिन को अधिक स्थिर बना सकता है।", telugu: "NAYIQ గైడ్: మీ స్వంత విరామం కూడా ముఖ్యం. ప్రశాంతమైన సంరక్షకుడు అందరికీ స్థిరమైన రోజును అందించగలడు.", tamil: "NAYIQ வழிகாட்டி: உங்களுக்கான இடைவேளையும் முக்கியம். அமைதியான பராமரிப்பாளர் அனைவருக்கும் நிலையான நாளை உருவாக்குவார்.", urdu: "NAYIQ رہنما: آپ کا اپنا وقفہ بھی اہم ہے۔ پرسکون نگہداشت کرنے والا سب کے دن کو بہتر بنا سکتا ہے." });
     }
-    return "NAYIQ guide: thank you for sharing that. Keep the next step small, plain, and doable.";
+    return l("NAYIQ guide: thank you for sharing that. Keep the next step small, plain, and doable.", { hindi: "NAYIQ मार्गदर्शक: साझा करने के लिए धन्यवाद। अगला कदम छोटा, सरल और करने योग्य रखें।", telugu: "NAYIQ గైడ్: దీన్ని పంచుకున్నందుకు ధన్యవాదాలు. తదుపరి అడుగును చిన్నదిగా, సులభంగా, చేయగలిగేదిగా ఉంచండి.", tamil: "NAYIQ வழிகாட்டி: பகிர்ந்ததற்கு நன்றி. அடுத்த படியை சிறியதாகவும் எளிமையாகவும் செய்யக்கூடியதாகவும் வைத்துக்கொள்ளுங்கள்.", urdu: "NAYIQ رہنما: یہ بتانے کا شکریہ۔ اگلا قدم چھوٹا، سادہ اور قابلِ عمل رکھیں." });
   }
 
   // Returns true only when the post actually went out; every refusal below
@@ -21964,25 +21964,25 @@ async function fetchGuidanceHelp(
   function buildCommunityChatReply(text: string, persona: CommunityChatPersonaId) {
     const normalized = text.toLowerCase();
     if (persona === "moderator") {
-      if (adultContentPattern.test(text)) return "Moderator: adult content is blocked here, so let's keep it safe and useful.";
-      return "Moderator: keep it respectful, on-topic, and specific enough that another person can actually help.";
+      if (adultContentPattern.test(text)) return l("Moderator: adult content is blocked here, so let's keep it safe and useful.", { hindi: "मॉडरेटर: वयस्क सामग्री यहाँ अवरुद्ध है। बातचीत को सुरक्षित और उपयोगी रखें।", telugu: "మోడరేటర్: వయోజన కంటెంట్ ఇక్కడ బ్లాక్ చేయబడింది. చాట్‌ను సురక్షితంగా మరియు ఉపయోగకరంగా ఉంచండి.", tamil: "மோடரேட்டர்: பெரியவர் உள்ளடக்கம் இங்கே தடுக்கப்பட்டுள்ளது. உரையாடலை பாதுகாப்பாகவும் பயனுள்ளதாகவும் வைத்திருங்கள்.", urdu: "مَنصِر: بالغ مواد یہاں بلاک ہے، گفتگو کو محفوظ اور مفید رکھیں." });
+      return l("Moderator: keep it respectful, on-topic, and specific enough that another person can actually help.", { hindi: "मॉडरेटर: सम्मानजनक, विषय पर और इतना स्पष्ट लिखें कि कोई सचमुच मदद कर सके।", telugu: "మోడరేటర్: గౌరవంగా, విషయానికి అనుగుణంగా, మరొకరు నిజంగా సహాయం చేయగలిగేంత స్పష్టంగా రాయండి.", tamil: "மோடரேட்டர்: மரியாதையாகவும், தலைப்புக்கேற்பவும், மற்றொருவர் உண்மையில் உதவக்கூடிய அளவு குறிப்பாகவும் எழுதுங்கள்.", urdu: "مَنصِر: احترام، موضوع اور اتنی وضاحت رکھیں کہ دوسرا شخص واقعی مدد کر سکے." });
     }
     if (persona === "support") {
-      if (/(anxiety|fear|panic|worry)/.test(normalized)) return "Support voice: slow the body first, then choose one tiny next step.";
-      if (/(anger|irritat|frustrat)/.test(normalized)) return "Support voice: step back, lower the heat, and return when the body is calmer.";
-      if (/(lonely|loneliness|alone)/.test(normalized)) return "Support voice: reach one person now, even if it is only one short message.";
-      return "Support voice: thank you for sharing that. Keep the next step small and kind.";
+      if (/(anxiety|fear|panic|worry)/.test(normalized)) return l("Support voice: slow the body first, then choose one tiny next step.", { hindi: "सहायता स्वर: पहले शरीर को धीमा करें, फिर एक छोटा अगला कदम चुनें।", telugu: "సపోర్ట్ వాయిస్: ముందుగా శరీరాన్ని నెమ్మదింపజేసి, తర్వాత ఒక చిన్న తదుపరి అడుగు ఎంచుకోండి.", tamil: "ஆதரவு குரல்: முதலில் உடலை அமைதிப்படுத்தி, பின்னர் ஒரு சிறிய அடுத்த படியைத் தேர்வுசெய்யவும்.", urdu: "مدد کی آواز: پہلے جسم کو آہستہ کریں، پھر ایک چھوٹا اگلا قدم چنیں." });
+      if (/(anger|irritat|frustrat)/.test(normalized)) return l("Support voice: step back, lower the heat, and return when the body is calmer.", { hindi: "सहायता स्वर: थोड़ा पीछे हटें, तनाव कम करें और शरीर शांत होने पर लौटें।", telugu: "సపోర్ట్ వాయిస్: కొంచెం వెనక్కి తగ్గి, ఉద్రిక్తత తగ్గించి, శరీరం ప్రశాంతమైనప్పుడు తిరిగి రండి.", tamil: "ஆதரவு குரல்: சற்று விலகி, பதற்றத்தை குறைத்து, உடல் அமைதியானபோது திரும்பவும்.", urdu: "مدد کی آواز: ایک قدم پیچھے ہٹیں، گرمی کم کریں، جسم پرسکون ہونے پر واپس آئیں." });
+      if (/(lonely|loneliness|alone)/.test(normalized)) return l("Support voice: reach one person now, even if it is only one short message.", { hindi: "सहायता स्वर: अभी किसी एक व्यक्ति तक पहुँचें, भले ही सिर्फ़ एक छोटा संदेश भेजें।", telugu: "సపోర్ట్ వాయిస్: ఇప్పుడే ఒక వ్యక్తిని సంప్రదించండి, అది ఒక చిన్న సందేశం అయినా సరే.", tamil: "ஆதரவு குரல்: இப்போது ஒருவரைத் தொடர்புகொள்ளுங்கள்; ஒரு சிறிய செய்தியாக இருந்தாலும் பரவாயில்லை.", urdu: "مدد کی آواز: ابھی کسی ایک شخص سے رابطہ کریں، چاہے صرف ایک مختصر پیغام ہو." });
+      return l("Support voice: thank you for sharing that. Keep the next step small and kind.", { hindi: "सहायता स्वर: यह साझा करने के लिए धन्यवाद। अगला कदम छोटा और दयालु रखें।", telugu: "సపోర్ట్ వాయిస్: దీన్ని పంచుకున్నందుకు ధన్యవాదాలు. తదుపరి అడుగును చిన్నదిగా మరియు దయతో ఉంచండి.", tamil: "ஆதரவு குரல்: இதைப் பகிர்ந்ததற்கு நன்றி. அடுத்த படியை சிறியதாகவும் கனிவாகவும் வைத்துக்கொள்ளுங்கள்.", urdu: "مدد کی آواز: یہ بتانے کا شکریہ۔ اگلا قدم چھوٹا اور مہربان رکھیں." });
     }
     if (/(student|exam|school|college|class|assignment|paper|hostel)/.test(normalized)) {
-      return "Verified mentor: keep the study load small enough that you can actually finish it today.";
+      return l("Verified mentor: keep the study load small enough that you can actually finish it today.", { hindi: "सत्यापित मेंटर: पढ़ाई का भार इतना छोटा रखें कि आज सचमुच पूरा कर सकें।", telugu: "వెరిఫైడ్ మెంటర్: ఈరోజు నిజంగా పూర్తి చేయగలిగేంత చిన్నగా చదువు భారాన్ని ఉంచండి.", tamil: "உறுதிப்படுத்தப்பட்ட வழிகாட்டி: இன்று உண்மையில் முடிக்கக்கூடிய அளவு படிப்பு சுமையைச் சிறியதாக வைத்துக்கொள்ளுங்கள்.", urdu: "تصدیق شدہ رہنما: پڑھائی کا بوجھ اتنا کم رکھیں کہ آج واقعی مکمل کر سکیں." });
     }
     if (/(complaint|ragging|harass|threat|abuse|police|112|redress)/.test(normalized)) {
-      return "Verified mentor: preserve the complaint number, timestamps, and first-office details together.";
+      return l("Verified mentor: preserve the complaint number, timestamps, and first-office details together.", { hindi: "सत्यापित मेंटर: शिकायत संख्या, समय और पहले संपर्क किए गए कार्यालय का विवरण साथ सुरक्षित रखें।", telugu: "వెరిఫైడ్ మెంటర్: ఫిర్యాదు నంబర్, సమయాలు మరియు మొదట సంప్రదించిన కార్యాలయ వివరాలను కలిసి భద్రపరచండి.", tamil: "உறுதிப்படுத்தப்பட்ட வழிகாட்டி: புகார் எண், நேரங்கள், முதலில் அணுகிய அலுவலக விவரங்களை ஒன்றாக பாதுகாத்து வையுங்கள்.", urdu: "تصدیق شدہ رہنما: شکایت نمبر، اوقات اور پہلے دفتر کی تفصیلات ایک ساتھ محفوظ رکھیں." });
     }
     if (/(work|office|job|professional|shift|duty)/.test(normalized)) {
-      return "Verified mentor: one shorter plan is usually better than one perfect plan.";
+      return l("Verified mentor: one shorter plan is usually better than one perfect plan.", { hindi: "सत्यापित मेंटर: एक छोटी योजना अक्सर एक परिपूर्ण योजना से बेहतर होती है।", telugu: "వెరిఫైడ్ మెంటర్: ఒక పరిపూర్ణ ప్రణాళిక కంటే చిన్న ప్రణాళిక సాధారణంగా మెరుగ్గా ఉంటుంది.", tamil: "உறுதிப்படுத்தப்பட்ட வழிகாட்டி: ஒரு சரியான திட்டத்தைவிட ஒரு சுருக்கமான திட்டம் பொதுவாக சிறந்தது.", urdu: "تصدیق شدہ رہنما: ایک مختصر منصوبہ اکثر ایک کامل منصوبے سے بہتر ہوتا ہے." });
     }
-    return "Verified mentor: tell me the one part that matters most, and we can keep the next step plain.";
+    return l("Verified mentor: tell me the one part that matters most, and we can keep the next step plain.", { hindi: "सत्यापित मेंटर: सबसे महत्वपूर्ण हिस्सा बताएं, फिर अगला कदम सरल रखेंगे।", telugu: "వెరిఫైడ్ మెంటర్: మీకు అత్యంత ముఖ్యమైన భాగాన్ని చెప్పండి, తదుపరి అడుగును సులభంగా ఉంచుదాం.", tamil: "உறுதிப்படுத்தப்பட்ட வழிகாட்டி: முக்கியமான பகுதியைச் சொல்லுங்கள்; அடுத்த படியை எளிமையாக வைத்துக்கொள்வோம்.", urdu: "تصدیق شدہ رہنما: جو حصہ سب سے اہم ہے بتائیں، اگلا قدم سادہ رکھیں گے." });
   }
 
   // Returns true only when the message actually went out, so the composer
@@ -30318,6 +30318,24 @@ function CommunitySection({
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
 
+  const localizedPersonaCopy = (persona: CommunityChatPersonaId) => {
+    const copy: Record<CommunityChatPersonaId, { label: string; meta: string }> = {
+      moderator: {
+        label: l("Moderator", { hindi: "मॉडरेटर", telugu: "మోడరేటర్", tamil: "மோடரேட்டர்", urdu: "منتظم" }),
+        meta: l("Keeps the chat safe and on-topic.", { hindi: "चैट को सुरक्षित और विषय पर रखता है।", telugu: "చాట్‌ను సురక్షితంగా మరియు విషయానికి అనుగుణంగా ఉంచుతుంది.", tamil: "அரட்டையை பாதுகாப்பாகவும் தலைப்புக்கேற்பவும் வைத்திருக்கும்.", urdu: "چیٹ کو محفوظ اور موضوع پر رکھتا ہے." })
+      },
+      mentor: {
+        label: l("Verified mentor", { hindi: "सत्यापित मेंटर", telugu: "వెరిఫైడ్ మెంటర్", tamil: "உறுதிப்படுத்தப்பட்ட வழிகாட்டி", urdu: "تصدیق شدہ رہنما" }),
+        meta: l("Practical guidance and experience sharing.", { hindi: "व्यावहारिक मार्गदर्शन और अनुभव साझा करना।", telugu: "ఆచరణాత్మక మార్గదర్శనం మరియు అనుభవ పంచుకోవడం.", tamil: "நடைமுறை வழிகாட்டலும் அனுபவப் பகிர்வும்.", urdu: "عملی رہنمائی اور تجربات کا اشتراک." })
+      },
+      support: {
+        label: l("Support voice", { hindi: "सहायता स्वर", telugu: "సపోర్ట్ వాయిస్", tamil: "ஆதரவு குரல்", urdu: "مدد کی آواز" }),
+        meta: l("Calm replies for tough moments.", { hindi: "कठिन पलों के लिए शांत जवाब।", telugu: "కష్టమైన క్షణాలకు ప్రశాంతమైన సమాధానాలు.", tamil: "கடினமான தருணங்களுக்கு அமைதியான பதில்கள்.", urdu: "مشکل لمحوں کے لیے پرسکون جوابات." })
+      }
+    };
+    return copy[persona];
+  };
+
   useEffect(() => {
     setShowFullCommunity(false);
   }, [selectedIdentity.id, canUseCommunityFeatures, isPrivateIntakeOpen]);
@@ -30992,7 +31010,6 @@ function CommunitySection({
             { id: "relationships", label: l("Relationships", { hindi: "रिश्ते", telugu: "సంబంధాలు", tamil: "உறவுகள்", urdu: "رشتے" }) },
             { id: "financial", label: l("Financial", { hindi: "वित्तीय", telugu: "ఆర్థిక", tamil: "நிதி", urdu: "مالی" }) },
             { id: "parenting", label: l("Parenting", { hindi: "पालन-पोषण", telugu: "తల్లిదండ్రత్వం", tamil: "பெற்றோர் பராமரிப்பு", urdu: "پرورش" }) },
-            { id: "identity", label: "Identity" },
             { id: "identity", label: l("Identity", { hindi: "पहचान", telugu: "గుర్తింపు", tamil: "அடையாளம்", urdu: "شناخت" }) },
             { id: "student", label: l("Student", { hindi: "छात्र", telugu: "విద్యార్థి", tamil: "மாணவர்", urdu: "طالب علم" }) },
             { id: "care", label: l("Care", { hindi: "देखभाल", telugu: "సంరక్షణ", tamil: "பராமரிப்பு", urdu: "دیکھ بھال" }) },
@@ -31073,21 +31090,22 @@ function CommunitySection({
         <View style={styles.segmentRow}>
           {chatPersonaOptions.map((option) => {
             const isSelected = communityChatPersona === option.id;
+            const personaCopy = localizedPersonaCopy(option.id);
             return (
               <Pressable
                 key={option.id}
                 accessibilityRole="button"
-                accessibilityLabel={`Chat as ${option.label}`}
-                accessibilityHint={option.meta}
+                accessibilityLabel={l(`Chat as ${personaCopy.label}`, { hindi: `${personaCopy.label} के रूप में चैट करें`, telugu: `${personaCopy.label}గా చాట్ చేయండి`, tamil: `${personaCopy.label} ஆக அரட்டையடிக்கவும்`, urdu: `${personaCopy.label} کے طور پر چیٹ کریں` })}
+                accessibilityHint={personaCopy.meta}
                 accessibilityState={{ selected: isSelected }}
                 onPress={() => setCommunityChatPersona(option.id)}
                 style={[styles.segmentButton, isSelected && styles.segmentButtonActive]}
               >
                 <Text style={[styles.segmentLabel, isSelected && styles.segmentLabelActive]}>
-                  {option.label}
+                  {personaCopy.label}
                 </Text>
                 <Text style={[styles.segmentMeta, isSelected && styles.segmentLabelActive]}>
-                  {option.meta}
+                  {personaCopy.meta}
                 </Text>
               </Pressable>
             );
