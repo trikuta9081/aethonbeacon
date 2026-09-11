@@ -149,6 +149,12 @@ assert(source.includes('accessibilityLabel={l("Have this route read aloud"'), 'R
 assert(source.includes('accessibilityLabel={l("Copy complaint template to clipboard"'), 'Complaint-template accessibility copy must follow the selected language');
 assert(source.includes('accessibilityLabel={l("Open email app with complaint pre-filled"'), 'Complaint email accessibility copy must follow the selected language');
 assert(source.includes('accessibilityLabel={l("Save complaint letter as PDF"'), 'Complaint PDF accessibility copy must follow the selected language');
+assert(source.includes('const [editableDraft, setEditableDraft] = useState("")'), 'Complaint and FIR drafts must be editable in place');
+assert(source.includes('const currentDraft = draftEdited ? editableDraft : draftTemplate ?? ""'), 'Draft exports must use the user-edited complaint text');
+assert(source.includes('FIR lodging path'), 'The crime route must explain the FIR lodging path explicitly');
+assert(source.includes('NAYIQ prepares text and tracking only.'), 'Lodging guidance must clearly state that NAYIQ does not file complaints');
+assert(source.includes('Start my private case record'), 'Users must be able to hand a prepared draft into the local case tracker');
+assert(source.includes('Mark complaint as submitted today'), 'The case tracker must record real-world submission separately from drafting');
 assert(source.includes('localizeRedressRoute(redressRoutes.find('), 'The selected Help and Redress path must use the active language');
 assert(source.includes('const route = localizeRedressRoute(sourceRoute, languageId);'), 'Help and Redress chooser cards must use localized route copy');
 assert(source.includes('const sector = localizeInstitution(sourceSector, languageId);'), 'Institution chooser cards must use localized institution copy');
