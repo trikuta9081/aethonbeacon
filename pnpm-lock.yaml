@@ -59,6 +59,9 @@ importers:
       expo-print:
         specifier: ^56.0.4
         version: 56.0.4(expo@56.0.19)(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))
+      expo-secure-store:
+        specifier: ~14.2.4
+        version: 14.2.4(expo@56.0.19)
       expo-speech:
         specifier: ~56.0.3
         version: 56.0.3(expo@56.0.19)
@@ -1283,6 +1286,11 @@ packages:
     peerDependencies:
       expo: '*'
       react-native: '*'
+
+  expo-secure-store@14.2.4:
+    resolution: {integrity: sha512-ePaz4fnTitJJZjAiybaVYGfLWWyaEtepZC+vs9ZBMhQMfG5HUotIcVsDaSo3FnwpHmgwsLVPY2qFeryI6AtULw==}
+    peerDependencies:
+      expo: '*'
 
   expo-server@56.0.5:
     resolution: {integrity: sha512-SmM2p2g3Jrktpiazcst+OxhjSzOHXKAY4BPURHYHXvApzzoybMmrNF4IEZ8DKZ145BhSe4ydAmlEFCRTsdtgUQ==}
@@ -3919,6 +3927,10 @@ snapshots:
     dependencies:
       expo: 56.0.19(@babel/core@7.29.7(supports-color@8.1.1))(@expo/dom-webview@56.0.6)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1)(typescript@6.0.3)
       react-native: 0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1)
+
+  expo-secure-store@14.2.4(expo@56.0.19):
+    dependencies:
+      expo: 56.0.19(@babel/core@7.29.7(supports-color@8.1.1))(@expo/dom-webview@56.0.6)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1)(typescript@6.0.3)
 
   expo-server@56.0.5: {}
 

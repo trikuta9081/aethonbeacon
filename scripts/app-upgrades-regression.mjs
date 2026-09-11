@@ -479,6 +479,9 @@ assert(counsellingModalSource.includes('const leaveCounsellingSession = () =>'),
 assert(counsellingModalSource.includes('This private conversation will close now and is not resumed automatically.'), 'Counselling exit must not promise unavailable resume behavior');
 assert(counsellingModalSource.includes('style: "destructive", onPress: onClose'), 'Counselling exit must require an explicit destructive confirmation');
 assert(source.includes('COUNSELLING_DRAFT_STORAGE_KEY = "nayiq:counselling:unfinished:v1"'), 'Counselling must have a dedicated local unfinished-session key');
+assert(source.includes('import * as SecureStore from "expo-secure-store"'), 'Counselling drafts must use native secure storage when available');
+assert(source.includes('SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY'), 'Counselling secure storage must be unavailable while the device is locked');
+assert(source.includes('if (Platform.OS === "web") return AsyncStorage.getItem(COUNSELLING_DRAFT_STORAGE_KEY)'), 'Counselling drafts must keep an explicit web storage path');
 assert(counsellingModalSource.includes('Resume private counselling?'), 'Counselling must offer a matching unfinished-session resume prompt');
 assert(counsellingModalSource.includes('An unfinished conversation is saved only on this device.'), 'Counselling resume must state its local-only privacy boundary');
 assert(counsellingModalSource.includes('saved.issueId !== issueId') && counsellingModalSource.includes('saved.languageId !== languageId'), 'Counselling drafts must not cross issue or language contexts');

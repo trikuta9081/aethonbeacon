@@ -1,6 +1,7 @@
 // build: 2026-07-04-v2
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
+import * as SecureStore from "expo-secure-store";
 import { localizeInstitution } from "./institutionHindi";
 import { localizeRedressRoute } from "./redressHindi";
 import React, { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -41842,6 +41843,32 @@ interface CounselingSession {
 
 const COUNSELLING_DRAFT_STORAGE_KEY = "nayiq:counselling:unfinished:v1";
 
+async function getCounsellingDraft(): Promise<string | null> {
+  if (Platform.OS === "web") return AsyncStorage.getItem(COUNSELLING_DRAFT_STORAGE_KEY);
+  try {
+    return await SecureStore.getItemAsync(COUNSELLING_DRAFT_STORAGE_KEY);
+  } catch {
+    return AsyncStorage.getItem(COUNSELLING_DRAFT_STORAGE_KEY);
+  }
+}
+
+async function setCounsellingDraft(value: string): Promise<void> {
+  if (Platform.OS === "web") {
+    await AsyncStorage.setItem(COUNSELLING_DRAFT_STORAGE_KEY, value);
+    return;
+  }
+  try {
+    await SecureStore.setItemAsync(COUNSELLING_DRAFT_STORAGE_KEY, value, { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
+  } catch {
+    await AsyncStorage.setItem(COUNSELLING_DRAFT_STORAGE_KEY, value);
+  }
+}
+
+async function clearCounsellingDraftStorage(): Promise<void> {
+  await AsyncStorage.removeItem(COUNSELLING_DRAFT_STORAGE_KEY).catch(() => undefined);
+  if (Platform.OS !== "web") await SecureStore.deleteItemAsync(COUNSELLING_DRAFT_STORAGE_KEY).catch(() => undefined);
+}
+
 function detectThemes(text: string): SupportDimensionId[] {
   const t = text.toLowerCase();
   const themes: SupportDimensionId[] = [];
@@ -45199,7 +45226,7 @@ function CounselingChatModal({
   const counsellingUserTurnCount = session.turns.filter((turn) => turn.role === "user").length;
   React.useEffect(() => {
     if (!visible || counsellingUserTurnCount === 0 || session.stage === "done") return;
-    AsyncStorage.setItem(COUNSELLING_DRAFT_STORAGE_KEY, JSON.stringify({
+    void setCounsellingDraft(JSON.stringify({
       issueId,
       languageId,
       originalIssue: session.originalIssue,
@@ -45211,7 +45238,7 @@ function CounselingChatModal({
   React.useEffect(() => {
     if (!visible) return;
     let cancelled = false;
-    AsyncStorage.getItem(COUNSELLING_DRAFT_STORAGE_KEY).then((raw) => {
+    getCounsellingDraft().then((raw) => {
       if (cancelled || !raw) return;
       try {
         const saved = JSON.parse(raw) as {
@@ -45234,7 +45261,7 @@ function CounselingChatModal({
           l("Resume private counselling?", { hindi: "निजी काउंसलिंग फिर शुरू करें?", telugu: "ప్రైవేట్ కౌన్సెలింగ్‌ను తిరిగి ప్రారంభించాలా?", tamil: "தனிப்பட்ட ஆலோசனையைத் தொடரவா?", urdu: "نجی مشاورت دوبارہ شروع کریں؟" }),
           l("An unfinished conversation is saved only on this device. You can resume it or start with a clean room.", { hindi: "एक अधूरी बातचीत केवल इसी डिवाइस पर सहेजी गई है। आप इसे फिर शुरू कर सकते हैं या नया कक्ष शुरू कर सकते हैं।", telugu: "పూర్తికాని సంభాషణ ఈ పరికరంలో మాత్రమే సేవ్ చేయబడింది. మీరు దాన్ని కొనసాగించవచ్చు లేదా కొత్త గదిని ప్రారంభించవచ్చు.", tamil: "முடிக்கப்படாத உரையாடல் இந்த சாதனத்தில் மட்டும் சேமிக்கப்பட்டுள்ளது. அதைத் தொடரலாம் அல்லது புதிய அறையைத் தொடங்கலாம்.", urdu: "ایک نامکمل گفتگو صرف اسی ڈیوائس پر محفوظ ہے۔ آپ اسے دوبارہ جاری کر سکتے ہیں یا نیا کمرہ شروع کر سکتے ہیں۔" }),
           [
-            { text: l("Start fresh", { hindi: "नए सिरे से शुरू करें", telugu: "కొత్తగా ప్రారంభించండి", tamil: "புதிதாகத் தொடங்கவும்", urdu: "نئے سرے سے شروع کریں" }), style: "cancel", onPress: () => { void AsyncStorage.removeItem(COUNSELLING_DRAFT_STORAGE_KEY); } },
+            { text: l("Start fresh", { hindi: "नए सिरे से शुरू करें", telugu: "కొత్తగా ప్రారంభించండి", tamil: "புதிதாகத் தொடங்கவும்", urdu: "نئے سرے سے شروع کریں" }), style: "cancel", onPress: () => { void clearCounsellingDraftStorage(); } },
             {
               text: l("Resume", { hindi: "फिर शुरू करें", telugu: "కొనసాగించండి", tamil: "தொடரவும்", urdu: "دوبارہ شروع کریں" }),
               onPress: () => {
@@ -45248,7 +45275,7 @@ function CounselingChatModal({
           ]
         );
       } catch {
-        void AsyncStorage.removeItem(COUNSELLING_DRAFT_STORAGE_KEY);
+        void clearCounsellingDraftStorage();
       }
     }).catch(() => undefined);
     return () => { cancelled = true; };
@@ -45500,7 +45527,7 @@ function CounselingChatModal({
   }
 
   function clearCounsellingDraft() {
-    void AsyncStorage.removeItem(COUNSELLING_DRAFT_STORAGE_KEY);
+    void clearCounsellingDraftStorage();
   }
 
   function handleStartJourney() {
