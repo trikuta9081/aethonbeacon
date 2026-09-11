@@ -132,8 +132,24 @@ const redressHindi: Record<string, RedressHindiCopy> = {
   }
 };
 
+const redressRouteLabels: Record<string, Partial<Record<string, string>>> = {
+  academic: { telugu: "విద్యా ఫిర్యాదు", tamil: "கல்விப் புகார்", urdu: "تعلیمی شکایت" },
+  harassment: { telugu: "వేధింపు / బెదిరింపు", tamil: "தொல்லை / மிரட்டல்", urdu: "ہراسانی / دھمکی" },
+  ragging: { telugu: "రాగింగ్ / సీనియర్ల దుర్వినియోగం", tamil: "ராகிங் / மூத்தோர் துன்புறுத்தல்", urdu: "ریگنگ / سینئرز کی بدسلوکی" },
+  public: { telugu: "ప్రభుత్వ కార్యాలయ ఫిర్యాదు", tamil: "அரசு அலுவலகப் புகார்", urdu: "سرکاری دفتر کی شکایت" },
+  private: { telugu: "ప్రైవేట్ సంస్థ ఫిర్యాదు", tamil: "தனியார் நிறுவனப் புகார்", urdu: "نجی ادارے کی شکایت" },
+  crime: { telugu: "నేరం / దాడి / బెదిరింపు", tamil: "குற்றம் / தாக்குதல் / மிரட்டல்", urdu: "جرم / حملہ / دھمکی" },
+  financial: { telugu: "ఆర్థిక ఫిర్యాదు / మోసం", tamil: "நிதிப் புகார் / மோசடி", urdu: "مالی شکایت / فراڈ" },
+  domestic: { telugu: "గృహ హింస / కుటుంబ దుర్వినియోగం", tamil: "குடும்ப வன்முறை / துன்புறுத்தல்", urdu: "گھریلو تشدد / خاندانی بدسلوکی" },
+  workplace: { telugu: "కార్యస్థల హక్కులు / కార్మిక ఫిర్యాదు", tamil: "பணியிட உரிமைகள் / தொழிலாளர் புகார்", urdu: "کام کی جگہ کے حقوق / مزدوری شکایت" },
+  cybercrime: { telugu: "సైబర్ నేరం / ఆన్‌లైన్ వేధింపు", tamil: "சைபர் குற்றம் / இணையத் தொல்லை", urdu: "سائبر جرم / آن لائن ہراسانی" },
+  consumer: { telugu: "వినియోగదారుల హక్కులు / ఉత్పత్తి அல்லது సేవ ఫిర్యాదు", tamil: "நுகர்வோர் உரிமைகள் / தயாரிப்பு அல்லது சேவைப் புகார்", urdu: "صارف کے حقوق / مصنوعات یا سروس کی شکایت" },
+  university: { telugu: "విశ్వవిద్యాలయాలు / ప్రముఖ కళాశాలలు", tamil: "பல்கலைக்கழகங்கள் / முன்னணி கல்லூரிகள்", urdu: "جامعات / ممتاز کالج" }
+};
+
 export function localizeRedressRoute<T extends LocalizableRedressRoute>(route: T, language: string): T {
-  if (language !== "hindi") return route;
   const copy = redressHindi[route.id];
-  return copy ? ({ ...route, ...copy } as T) : route;
+  const localizedLabel = redressRouteLabels[route.id]?.[language];
+  if (language === "hindi") return copy ? ({ ...route, ...copy } as T) : route;
+  return localizedLabel ? ({ ...route, label: localizedLabel } as T) : route;
 }

@@ -25031,15 +25031,18 @@ function isTrustedExternalUrl(url: string) {
                   <Text style={{ fontSize: 22 }}>🔮</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>
-                      {chartBriefLang === "hi" ? "चार्ट से पूछें" : "Ask the chart"}
+                      {l("Ask the chart", { hindi: "चार्ट से पूछें", telugu: "చార్ట్‌ను అడగండి", tamil: "சார்ட்டைக் கேளுங்கள்", urdu: "چارٹ سے پوچھیں" })}
                     </Text>
                     <Text style={{ color: "#0D1F22", fontSize: 15, fontWeight: "800", marginTop: 2 }}>
-                      {chartBriefLang === "hi" ? "दो-तरफ़ा ज्योतिष मार्गदर्शन" : "Two-way astro guidance"}
+                      {l("Two-way astro guidance", { hindi: "दो-तरफ़ा ज्योतिष मार्गदर्शन", telugu: "రెండు వైపుల జ్యోతిష్య మార్గదర్శకత్వం", tamil: "இருவழி ஜோதிட வழிகாட்டல்", urdu: "دو طرفہ نجومی رہنمائی" })}
                     </Text>
                     <Text style={{ color: "#111827", fontSize: 12, marginTop: 2, lineHeight: 16 }}>
-                      {chartBriefLang === "hi"
-                        ? "कुछ भी पूछें — करियर, रिश्ते, स्वास्थ्य, धन, समय। यह आपकी चंद्र राशि, वर्तमान महादशा, वर्तमान अंतर्दशा और आज के पंचांग के माध्यम से पढ़ता है, फिर बताता है कि क्या हो रहा है, क्यों हो रहा है, कब तक रह सकता है, और आगे क्या करें।"
-                        : "Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha, current Antardasha, and today's Panchang, then explains what is happening, why it is happening, how long it may last, and what to do next."}
+                      {l("Ask anything — career, relationship, health, money, timing. Reads through your Moon Rashi, current Mahadasha, current Antardasha, and today's Panchang, then explains what is happening, why it is happening, how long it may last, and what to do next.", {
+                        hindi: "कुछ भी पूछें — करियर, रिश्ते, स्वास्थ्य, धन, समय। यह आपकी चंद्र राशि, वर्तमान महादशा, वर्तमान अंतर्दशा और आज के पंचांग के माध्यम से पढ़ता है, फिर बताता है कि क्या हो रहा है, क्यों हो रहा है, कब तक रह सकता है, और आगे क्या करें।",
+                        telugu: "ఏదైనా అడగండి — కెరీర్, సంబంధాలు, ఆరోగ్యం, ధనం, సమయం. ఇది మీ చంద్ర రాశి, ప్రస్తుత మహాదశ, అంతర్దశ, ఈరోజు పంచాంగాన్ని పరిశీలించి ఏమి జరుగుతోంది, ఎందుకు జరుగుతోంది, ఎంతకాలం ఉండవచ్చు, తర్వాత ఏమి చేయాలో వివరిస్తుంది.",
+                        tamil: "எதையும் கேளுங்கள் — வேலை, உறவு, உடல்நலம், பணம், காலநிலை. உங்கள் சந்திர ராசி, நடப்பு மகாதசை, அந்தர்தசை மற்றும் இன்றைய பஞ்சாங்கத்தைப் பார்த்து என்ன நடக்கிறது, ஏன் நடக்கிறது, எவ்வளவு காலம் நீடிக்கலாம், அடுத்து என்ன செய்யலாம் என்பதை விளக்கும்.",
+                        urdu: "کچھ بھی پوچھیں — کیریئر، رشتے، صحت، پیسہ یا وقت۔ یہ آپ کی چاند رashi، موجودہ مہادشا، انتر دشا اور آج کے پنچانگ کو دیکھ کر بتاتا ہے کہ کیا ہو رہا ہے، کیوں ہو رہا ہے، کب تک رہ سکتا ہے اور آگے کیا کرنا ہے۔"
+                      })}
                     </Text>
                   </View>
                   {/* Reply-language toggle -- shares the same chartBriefLang
@@ -25052,12 +25055,12 @@ function isTrustedExternalUrl(url: string) {
                         key={lng}
                         onPress={() => { void Haptics.selectionAsync(); setChartBriefLang(lng); }}
                         accessibilityRole="button"
-                        accessibilityLabel={lng === "en" ? "Reply in English" : "उत्तर हिंदी में"}
+                        accessibilityLabel={lng === "en" ? l("Reply in English", { hindi: "अंग्रेज़ी में उत्तर दें", telugu: "ఆంగ్లంలో సమాధానం ఇవ్వండి", tamil: "ஆங்கிலத்தில் பதிலளிக்கவும்", urdu: "انگریزی میں جواب دیں" }) : l("Reply in Hindi", { hindi: "हिंदी में उत्तर दें", telugu: "హిందీలో సమాధానం ఇవ్వండి", tamil: "இந்தியில் பதிலளிக்கவும்", urdu: "ہندی میں جواب دیں" })}
                         accessibilityState={{ selected: chartBriefLang === lng }}
                         hitSlop={{ top: 12, bottom: 12, left: 6, right: 6 }}
                         style={{ paddingHorizontal: 12, paddingVertical: 5, borderRadius: 999, backgroundColor: chartBriefLang === lng ? "#D97706" : "transparent" }}
                       >
-                        <Text style={{ color: chartBriefLang === lng ? "#FFFFFF" : "#A14A08", fontSize: 12, fontWeight: "800" }}>{lng === "en" ? "English" : "हिन्दी"}</Text>
+                        <Text style={{ color: chartBriefLang === lng ? "#FFFFFF" : "#A14A08", fontSize: 12, fontWeight: "800" }}>{lng === "en" ? l("English", { hindi: "अंग्रेज़ी", telugu: "ఆంగ్లం", tamil: "ஆங்கிலம்", urdu: "انگریزی" }) : l("Hindi", { hindi: "हिन्दी", telugu: "హిందీ", tamil: "இந்தி", urdu: "ہندی" })}</Text>
                       </Pressable>
                     ))}
                   </View>
@@ -25069,12 +25072,12 @@ function isTrustedExternalUrl(url: string) {
                   editable={hasExactBirthDetails}
                   busy={astroChatLoading}
                   onSubmit={submitAstroQuestion}
-                  accessibilityLabel={chartBriefLang === "hi" ? "चार्ट से प्रश्न पूछें" : "Ask your chart a question"}
+                  accessibilityLabel={l("Ask your chart a question", { hindi: "चार्ट से प्रश्न पूछें", telugu: "మీ చార్ట్‌ను ఒక ప్రశ్న అడగండి", tamil: "உங்கள் சார்ட்டிடம் ஒரு கேள்வி கேளுங்கள்", urdu: "اپنے چارٹ سے سوال پوچھیں" })}
                   placeholder={hasExactBirthDetails
-                    ? (chartBriefLang === "hi" ? "जैसे: क्या मुझे यह नौकरी मिलेगी? क्या अभी शादी करूँ? मैं हमेशा थका क्यों रहता हूँ?" : "e.g. Will I get this job? Should I marry now? Why am I always tired?")
-                    : (chartBriefLang === "hi" ? "चार्ट प्रश्न खोलने के लिए ऊपर सटीक जन्म-विवरण भरें" : "Enter exact birth details above to unlock chart questions")}
-                  submitLabel={chartBriefLang === "hi" ? "चार्ट से पूछें →" : "Ask the chart →"}
-                  busyLabel={chartBriefLang === "hi" ? "चार्ट से परामर्श…" : "Consulting the chart…"}
+                    ? l("e.g. Will I get this job? Should I marry now? Why am I always tired?", { hindi: "जैसे: क्या मुझे यह नौकरी मिलेगी? क्या अभी शादी करूँ? मैं हमेशा थका क्यों रहता हूँ?", telugu: "ఉదా: నాకు ఈ ఉద్యోగం వస్తుందా? ఇప్పుడు పెళ్లి చేసుకోవాలా? నేను ఎప్పుడూ ఎందుకు అలసిపోతున్నాను?", tamil: "எ.கா.: இந்த வேலை கிடைக்குமா? இப்போது திருமணம் செய்யலாமா? நான் ஏன் எப்போதும் சோர்வாக இருக்கிறேன்?", urdu: "مثلاً: کیا مجھے یہ نوکری ملے گی؟ کیا ابھی شادی کروں؟ میں ہمیشہ تھکا ہوا کیوں رہتا ہوں؟" })
+                    : l("Enter exact birth details above to unlock chart questions", { hindi: "चार्ट प्रश्न खोलने के लिए ऊपर सटीक जन्म-विवरण भरें", telugu: "చార్ట్ ప్రశ్నలను తెరవడానికి పై భాగంలో ఖచ్చితమైన జనన వివరాలను నమోదు చేయండి", tamil: "சார்ட் கேள்விகளைத் திறக்க மேலே சரியான பிறப்பு விவரங்களை உள்ளிடவும்", urdu: "چارٹ کے سوالات کھولنے کے لیے اوپر درست پیدائش کی تفصیلات درج کریں" })}
+                  submitLabel={l("Ask the chart →", { hindi: "चार्ट से पूछें →", telugu: "చార్ట్‌ను అడగండి →", tamil: "சார்ட்டைக் கேளுங்கள் →", urdu: "چارٹ سے پوچھیں →" })}
+                  busyLabel={l("Consulting the chart…", { hindi: "चार्ट से परामर्श…", telugu: "చార్ట్‌ను పరిశీలిస్తోంది…", tamil: "சார்ட்டைப் பார்க்கிறது…", urdu: "چارٹ سے مشورہ لیا جا رہا ہے…" })}
                 />
 
                 {/* Pending reply -- real per-query load, not an instant
@@ -25088,12 +25091,10 @@ function isTrustedExternalUrl(url: string) {
                     borderWidth: 1, borderColor: "rgba(252,211,77,0.25)"
                   }}>
                     <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase", marginBottom: 4 }}>
-                      {chartBriefLang === "hi" ? "आपका चार्ट पढ़ा जा रहा है…" : "Reading your chart…"}
+                      {l("Reading your chart…", { hindi: "आपका चार्ट पढ़ा जा रहा है…", telugu: "మీ చార్ట్ చదవబడుతోంది…", tamil: "உங்கள் சார்ட் படிக்கப்படுகிறது…", urdu: "آپ کا چارٹ پڑھப்படுகிறது…" })}
                     </Text>
                     <Text style={{ color: "#0D1F22", fontSize: 13, lineHeight: 19 }}>
-                      {chartBriefLang === "hi"
-                        ? "इस प्रश्न के लिए आपकी चंद्र राशि, वर्तमान महादशा/अंतर्दशा और आज का पंचांग जाँचा जा रहा है।"
-                        : "Checking your Moon Rashi, current Mahadasha/Antardasha, and today's Panchang for this question."}
+                      {l("Checking your Moon Rashi, current Mahadasha/Antardasha, and today's Panchang for this question.", { hindi: "इस प्रश्न के लिए आपकी चंद्र राशि, वर्तमान महादशा/अंतर्दशा और आज का पंचांग जाँचा जा रहा है।", telugu: "ఈ ప్రశ్న కోసం మీ చంద్ర రాశి, ప్రస్తుత మహాదశ/అంతర్దశ మరియు ఈరోజు పంచాంగాన్ని పరిశీలిస్తున్నాము.", tamil: "இந்தக் கேள்விக்காக உங்கள் சந்திர ராசி, நடப்பு மகாதசை/அந்தர்தசை மற்றும் இன்றைய பஞ்சாங்கம் சரிபார்க்கப்படுகிறது.", urdu: "اس سوال کے لیے آپ کی چاند rashi، موجودہ مہادشا/انتر دشا اور آج کا پنچانگ چیک کیا جا رہا ہے۔" })}
                     </Text>
                   </Animated.View>
                 )}
@@ -25104,7 +25105,7 @@ function isTrustedExternalUrl(url: string) {
                     onPress={() => handleTabPress("vedic")}
                     style={{ backgroundColor: "rgba(251,191,36,0.08)", borderRadius: 10, borderWidth: 1, borderColor: "rgba(251,191,36,0.22)", padding: 11 }}
                   >
-                    <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "800" }}>{chartBriefLang === "hi" ? "इंजन सक्रिय करने के लिए ऊपर तिथि, समय और जन्म-स्थान भरें।" : "Complete date, time, and birth place above to activate the reading."}</Text>
+                    <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "800" }}>{l("Complete date, time, and birth place above to activate the reading.", { hindi: "इंजन सक्रिय करने के लिए ऊपर तिथि, समय और जन्म-स्थान भरें।", telugu: "రీడింగ్‌ను ప్రారంభించడానికి పై భాగంలో తేదీ, సమయం మరియు జన్మస్థలాన్ని పూర్తి చేయండి.", tamil: "வாசிப்பைத் தொடங்க மேலே தேதி, நேரம் மற்றும் பிறந்த இடத்தை நிரப்பவும்.", urdu: "ریڈنگ فعال کرنے کے لیے اوپر تاریخ، وقت اور جائے پیدائش مکمل کریں۔" })}</Text>
                   </Pressable>
                 )}
 
