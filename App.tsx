@@ -31138,12 +31138,7 @@ function CommunitySection({
               urdu: "تصدیق شدہ چیٹ"
             })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{l(selectedIdentity.label, {
-            hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label,
-            tamil: selectedIdentity.id === "other" ? "மற்றவை / பொது" : selectedIdentity.label,
-            telugu: selectedIdentity.id === "other" ? "ఇతర / సాధారణ" : selectedIdentity.label,
-            urdu: selectedIdentity.id === "other" ? "دیگر / عام" : selectedIdentity.label
-          })}</Text>
+          <Text style={styles.smallMeta}>{localizedIdentityLabel(selectedIdentity, languageId)}</Text>
         </View>
         <View style={styles.communityPreviewBand}>
           <Text style={styles.visionGuidanceTitle}>{l("Private chats", {
@@ -33692,12 +33687,7 @@ function IssueGuideSection({
             <Text style={styles.eyebrow}>{l("Focus", { hindi: "फोकस", telugu: "ఫోకస్", tamil: "கவனம்", urdu: "فوکس" })}</Text>
             <Text style={styles.sectionTitleSmall}>{l("Is this the right concern?", { hindi: "क्या यह सही चिंता है?", telugu: "ఇదే సరైన అంశమా?", tamil: "இது சரியான கவலையா?", urdu: "کیا یہی درست مسئلہ ہے؟" })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{l(selectedIdentity.label, {
-            hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label,
-            tamil: selectedIdentity.id === "other" ? "மற்றவை / பொது" : selectedIdentity.label,
-            telugu: selectedIdentity.id === "other" ? "ఇతర / సాధారణ" : selectedIdentity.label,
-            urdu: selectedIdentity.id === "other" ? "دیگر / عام" : selectedIdentity.label
-          })}</Text>
+          <Text style={styles.smallMeta}>{localizedIdentityLabel(selectedIdentity, languageId)}</Text>
         </View>
         <Text style={styles.promptText}>
           {l("Keep this focus or choose another. Counselling can refine an unclear concern without forcing a label.", {
