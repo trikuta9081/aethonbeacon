@@ -172,6 +172,18 @@ assert(source.includes('hindi: "NAYIQ शिकायत निवारण य�
 ['academic', 'harassment', 'ragging', 'public', 'private', 'crime', 'financial', 'domestic', 'workplace', 'cybercrime', 'consumer'].forEach((id) => {
   assert(redressHindiSource.includes(`  ${id}: {`), `Hindi redress path is missing ${id}`);
 });
+const institutionCatalogStart = source.indexOf('const institutionSectors: InstitutionSector[] = [');
+assert(institutionCatalogStart >= 0, 'Institution catalog is missing');
+['university', 'iit', 'medical', 'law', 'school', 'banking', 'government', 'private', 'factory'].forEach((id) => {
+  const entryStart = source.indexOf(`id: "${id}"`, institutionCatalogStart);
+  assert(entryStart >= 0, `Institution catalog entry is missing ${id}`);
+  const entryEnd = source.indexOf('\n  },', entryStart);
+  const entry = source.slice(entryStart, entryEnd >= 0 ? entryEnd : entryStart + 2400);
+  assert(entry.includes('firstOffice:'), `${id} must retain its concerned first office`);
+  assert(entry.includes('escalation:'), `${id} must retain its escalation route`);
+  assert(entry.includes('offices:'), `${id} must retain its office catalog`);
+  assert(entry.includes('portal:'), `${id} must retain its official portal`);
+});
 
 
 // Front UI order: Help and Redress above the premium support cards.
