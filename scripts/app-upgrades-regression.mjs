@@ -469,6 +469,16 @@ assert(/interface CounselingTurn \{[\s\S]*?ts\?: string;/.test(source), 'Counsel
 assert((source.match(/message: (?:openingMsg|text|synthesis|checkpointQuestion), ts: new Date\(\)\.toISOString\(\)/g) ?? []).length >= 4, 'All CounselingTurn construction sites must set ts');
 assert(source.includes('toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })'), 'Counselling chat bubbles must render a local clock time per message');
 
+// Session-exit language must match the actual behavior. The summary action
+// opens the native share sheet rather than silently persisting a private file,
+// and leaving must be explicit because an unfinished session is not resumed
+// automatically after the modal closes.
+assert(counsellingModalSource.includes('const shareCounsellingSummary = async () =>'), 'Counselling summary action must be named for its share behavior');
+assert(counsellingModalSource.includes('onPress={shareCounsellingSummary}'), 'Counselling summary button must invoke the share action');
+assert(counsellingModalSource.includes('const leaveCounsellingSession = () =>'), 'Counselling exit must use an explicit leave-session action');
+assert(counsellingModalSource.includes('This private conversation will close now and is not resumed automatically.'), 'Counselling exit must not promise unavailable resume behavior');
+assert(counsellingModalSource.includes('style: "destructive", onPress: onClose'), 'Counselling exit must require an explicit destructive confirmation');
+
 // Counselling depth: the guide must not force-close after six replies. It
 // should offer a user-controlled next-step checkpoint every six replies, while
 // allowing a full 30-reply counselling arc before automatic synthesis.

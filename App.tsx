@@ -45517,7 +45517,7 @@ function CounselingChatModal({
     ].join("\n");
   };
 
-  const saveCounsellingSummary = async () => {
+  const shareCounsellingSummary = async () => {
     void Haptics.selectionAsync();
     const summary = buildCounsellingSessionSummary();
     try {
@@ -45531,17 +45531,20 @@ function CounselingChatModal({
         message: summary
       });
     } catch {
-      Alert.alert(l("Save summary", { hindi: "सारांश सहेजें", telugu: "సారాంశాన్ని సేవ్ చేయండి", tamil: "சுருக்கத்தை சேமிக்கவும்", urdu: "خلاصہ محفوظ کریں" }), summary);
+      Alert.alert(l("Share summary", { hindi: "सारांश साझा करें", telugu: "సారాంశాన్ని పంచుకోండి", tamil: "சுருக்கத்தைப் பகிரவும்", urdu: "خلاصہ شیئر کریں" }), summary);
     }
   };
 
-  const continueCounsellingLater = () => {
+  const leaveCounsellingSession = () => {
     void Haptics.selectionAsync();
     Alert.alert(
-      l("Continue later", { hindi: "बाद में जारी रखें", telugu: "తర్వాత కొనసాగించండి", tamil: "பின்னர் தொடரவும்", urdu: "بعد میں جاری رکھیں" }),
-      l("Your counselling progress remains in this private room until you close or start a new session. You can return when you are ready.", { hindi: "आपकी काउंसलिंग प्रगति इस निजी कक्ष में बनी रहेगी, जब तक आप इसे बंद नहीं करते या नया सत्र शुरू नहीं करते। आप तैयार होने पर वापस आ सकते हैं।", telugu: "మీ కౌన్సెలింగ్ పురోగతి ఈ ప్రైవేట్ గదిలో మీరు మూసివేసే వరకు లేదా కొత్త సెషన్ ప్రారంభించే వరకు అలాగే ఉంటుంది. మీరు సిద్ధమైనప్పుడు తిరిగి రావచ్చు.", tamil: "உங்கள் ஆலோசனை முன்னேற்றம் இந்த தனிப்பட்ட அறையில் நீங்கள் மூடும்வரை அல்லது புதிய அமர்வைத் தொடங்கும்வரை இருக்கும். நீங்கள் தயாரானதும் திரும்பலாம்.", urdu: "آپ کی مشاورتی پیش رفت اس نجی کمرے میں اس وقت تک موجود رہے گی جب تک آپ اسے بند نہیں کرتے یا نیا سیشن شروع نہیں کرتے۔ آپ تیار ہوں تو واپس آ سکتے ہیں۔" })
+      l("Leave counselling?", { hindi: "काउंसलिंग छोड़ें?", telugu: "కౌన్సెలింగ్ నుండి బయటకు వెళ్లాలా?", tamil: "ஆலோசனையிலிருந்து வெளியேறவா?", urdu: "مشاورت سے باہر نکلیں؟" }),
+      l("This private conversation will close now and is not resumed automatically. If you want a copy, use Share summary first. Nothing is sent automatically.", { hindi: "यह निजी बातचीत अभी बंद हो जाएगी और अपने-आप फिर शुरू नहीं होगी। अगर आप एक प्रति रखना चाहते हैं, तो पहले सारांश साझा करें। कुछ भी अपने-आप नहीं भेजा जाएगा।", telugu: "ఈ ప్రైవేట్ సంభాషణ ఇప్పుడు మూసివేయబడుతుంది మరియు స్వయంచాలకంగా తిరిగి ప్రారంభం కాదు. కాపీ కావాలంటే ముందుగా సారాంశాన్ని పంచుకోండి. ఏదీ స్వయంచాలకంగా పంపబడదు.", tamil: "இந்தத் தனிப்பட்ட உரையாடல் இப்போது மூடப்படும்; தானாக மீண்டும் தொடராது. ஒரு பிரதியை வைத்திருக்க விரும்பினால் முதலில் சுருக்கத்தைப் பகிரவும். எதுவும் தானாக அனுப்பப்படாது.", urdu: "یہ نجی گفتگو ابھی بند ہو جائے گی اور خود بخود دوبارہ شروع نہیں ہوگی۔ اگر آپ نقل رکھنا چاہتے ہیں تو پہلے خلاصہ شیئر کریں۔ کچھ بھی خودکار طور پر نہیں بھیجا جائے گا۔" }),
+      [
+        { text: l("Stay", { hindi: "यहीं रहें", telugu: "ఇక్కడే ఉండండి", tamil: "இங்கே இருங்கள்", urdu: "یہیں رہیں" }), style: "cancel" },
+        { text: l("Leave session", { hindi: "सत्र छोड़ें", telugu: "సెషన్ నుండి బయటకు వెళ్లండి", tamil: "அமர்விலிருந்து வெளியேறவும்", urdu: "سیشن چھوڑیں" }), style: "destructive", onPress: onClose }
+      ]
     );
-    onClose();
   };
   const counsellingDepthCopy = isVeryCompactPhone
     ? pickLocalizedText(languageId, {
@@ -46030,20 +46033,20 @@ function CounselingChatModal({
               )}
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                 <Pressable
-                  onPress={saveCounsellingSummary}
+                  onPress={shareCounsellingSummary}
                   accessibilityRole="button"
-                  accessibilityLabel={l("Save counselling summary", { hindi: "काउंसलिंग सारांश सहेजें", telugu: "కౌన్సెలింగ్ సారాంశాన్ని సేవ్ చేయండి", tamil: "ஆலோசனை சுருக்கத்தை சேமிக்கவும்", urdu: "مشاورت کا خلاصہ محفوظ کریں" })}
+                  accessibilityLabel={l("Share counselling summary", { hindi: "काउंसलिंग सारांश साझा करें", telugu: "కౌన్సెలింగ్ సారాంశాన్ని పంచుకోండి", tamil: "ஆலோசனை சுருக்கத்தைப் பகிரவும்", urdu: "مشاورت کا خلاصہ شیئر کریں" })}
                   style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, borderWidth: 1, borderColor: "#0E9488", backgroundColor: pressed ? "#E1F3F0" : "#FFFFFF", paddingVertical: isVeryCompactPhone ? 10 : 12, paddingHorizontal: 12, alignItems: "center" })}
                 >
-                  <Text style={{ color: "#0E6F69", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 17, fontWeight: "700" }}>{l("Save summary", { hindi: "सारांश सहेजें", telugu: "సారాంశాన్ని సేవ్ చేయండి", tamil: "சுருக்கத்தை சேமிக்கவும்", urdu: "خلاصہ محفوظ کریں" })}</Text>
+                  <Text style={{ color: "#0E6F69", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 17, fontWeight: "700" }}>{l("Share summary", { hindi: "सारांश साझा करें", telugu: "సారాంశాన్ని పంచుకోండి", tamil: "சுருக்கத்தைப் பகிரவும்", urdu: "خلاصہ شیئر کریں" })}</Text>
                 </Pressable>
                 <Pressable
-                  onPress={continueCounsellingLater}
+                  onPress={leaveCounsellingSession}
                   accessibilityRole="button"
-                  accessibilityLabel={l("Continue counselling later", { hindi: "बाद में काउंसलिंग जारी रखें", telugu: "తర్వాత కౌన్సెలింగ్ కొనసాగించండి", tamil: "பின்னர் ஆலோசனையைத் தொடரவும்", urdu: "بعد میں مشاورت جاری رکھیں" })}
+                  accessibilityLabel={l("Leave counselling for now", { hindi: "अभी काउंसलिंग छोड़ें", telugu: "ప్రస్తుతం కౌన్సెలింగ్ నుండి బయటకు వెళ్లండి", tamil: "இப்போது ஆலோசனையிலிருந்து வெளியேறவும்", urdu: "ابھی مشاورت سے باہر نکلیں" })}
                   style={({ pressed }) => ({ flexGrow: 1, minWidth: "46%", borderRadius: 13, backgroundColor: pressed ? "#DDEAE7" : "#EEF6F4", paddingVertical: isVeryCompactPhone ? 10 : 12, paddingHorizontal: 12, alignItems: "center" })}
                 >
-                  <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 17, fontWeight: "700" }}>{l("Continue later", { hindi: "बाद में जारी रखें", telugu: "తర్వాత కొనసాగించండి", tamil: "பின்னர் தொடரவும்", urdu: "بعد میں جاری رکھیں" })}</Text>
+                  <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 17, fontWeight: "700" }}>{l("Leave for now", { hindi: "अभी छोड़ें", telugu: "ప్రస్తుతం బయటకు వెళ్లండి", tamil: "இப்போது வெளியேறவும்", urdu: "ابھی باہر نکلیں" })}</Text>
                 </Pressable>
               </View>
               <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 12, marginBottom: 2 }}>

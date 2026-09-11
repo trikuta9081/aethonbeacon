@@ -165,8 +165,8 @@ assert(!source.includes('title: "Help and Redress",\n                body:'), 'H
   'COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES = 30',
   'COUNSELING_NEXT_STEP_READY_USER_RESPONSES = 6',
   'Prepare next step now',
-  'Save summary',
-  'Continue later'
+  'Share summary',
+  'Leave for now'
 ].forEach((marker) => assert(source.includes(marker), `Missing counselling polish marker: ${marker}`));
 
 // Help and Redress remains a professional action hub: emergency first, then
