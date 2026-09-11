@@ -8433,11 +8433,11 @@ function getLocalizedCounsellingSafetyCopy(
       urdu: "یہ صورتحال کسی اہل پیشہ ور سے فوری مدد کی مستحق ہے۔ یہاں کی رہنمائی کو صرف اگلا محفوظ قدم ترتیب دینے کے لیے استعمال کریں۔"
     },
     "supported-self-care": {
-      english: COUNSELLING_SAFETY_COPY["supported-self-care"],
-      hindi: "यह सामान्य कल्याण सहायता है और लाइसेंस प्राप्त चिकित्सकीय, मनोवैज्ञानिक, कानूनी या आपातकालीन देखभाल का स्थान नहीं लेती।",
-      telugu: "ఇది సాధారణ శ్రేయస్సు మద్దతు మాత్రమే; లైసెన్స్ పొందిన వైద్య, మానసిక, చట్టపరమైన లేదా అత్యవసర సంరక్షణకు ప్రత్యామ్నాయం కాదు.",
-      tamil: "இது பொதுவான நல ஆதரவு மட்டுமே; உரிமம் பெற்ற மருத்துவ, உளவியல், சட்ட அல்லது அவசர சிகிச்சைக்கு மாற்றாகாது.",
-      urdu: "یہ عمومی فلاحی مدد ہے اور لائسنس یافتہ طبی، نفسیاتی، قانونی یا ہنگامی نگہداشت کا متبادل نہیں۔"
+      english: "This is general wellbeing and practical support. It can help you organize facts, prepare questions, and find an official route, but it does not diagnose, predict an outcome, or replace licensed medical, psychological, legal, or emergency care.",
+      hindi: "यह सामान्य कल्याण और व्यावहारिक सहायता है। यह तथ्य व्यवस्थित करने, प्रश्न तैयार करने और आधिकारिक मार्ग खोजने में मदद कर सकती है, लेकिन निदान या परिणाम की भविष्यवाणी नहीं करती और लाइसेंस प्राप्त चिकित्सा, मनोवैज्ञानिक, कानूनी या आपातकालीन देखभाल का स्थान नहीं लेती।",
+      telugu: "ఇది సాధారణ శ్రేయస్సు మరియు ప్రాక్టికల్ సహాయం. వాస్తవాలను క్రమబద్ధీకరించడానికి, ప్రశ్నలను సిద్ధం చేయడానికి, అధికారిక మార్గాన్ని కనుగొనడానికి ఇది సహాయపడుతుంది; కానీ రోగ నిర్ధారణ చేయదు, ఫలితాన్ని అంచనా వేయదు, లైసెన్స్ పొందిన వైద్య, మానసిక, చట్టపరమైన లేదా అత్యవసర సంరక్షణకు ప్రత్యామ్నాయం కాదు.",
+      tamil: "இது பொதுவான நலன் மற்றும் நடைமுறை ஆதரவு. உண்மைகளை ஒழுங்குபடுத்தவும், கேள்விகளைத் தயாரிக்கவும், அதிகாரப்பூர்வ வழியைக் கண்டறியவும் உதவும்; ஆனால் நோயறிதல் செய்யாது, முடிவை கணிக்காது, உரிமம் பெற்ற மருத்துவ, உளவியல், சட்ட அல்லது அவசர சிகிச்சைக்கு மாற்றாகாது.",
+      urdu: "یہ عمومی فلاح اور عملی مدد ہے۔ یہ حقائق منظم کرنے، سوالات تیار کرنے اور سرکاری راستہ تلاش کرنے میں مدد دے سکتی ہے، لیکن تشخیص یا نتیجے کی پیش گوئی نہیں کرتی اور لائسنس یافتہ طبی، نفسیاتی، قانونی یا ہنگامی نگہداشت کا متبادل نہیں۔"
     }
   } as const;
 
@@ -26457,6 +26457,7 @@ function isTrustedExternalUrl(url: string) {
             setShowCounselingChat(false);
             handleTabPress(tabId);
           }}
+          onScheduleFollowUp={(mode) => scheduleIssueReminder(mode, selectedIssueGuide.id)}
         />
 
         {/* ── Crisis support overlay (self-harm / suicidal ideation) ── */}
@@ -27230,6 +27231,26 @@ function JournalSection({
             </Text>
         </View>
         </View>
+        <View style={{ marginBottom: 10, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.08)", borderWidth: 1, borderColor: "rgba(255,255,255,0.16)", padding: 11 }}>
+          <Text style={{ color: "#F7E7B4", fontSize: 12, fontWeight: "800", letterSpacing: 0.8, textTransform: "uppercase" }}>
+            {journalText("A useful note has three parts", { hindi: "एक उपयोगी नोट के तीन भाग होते हैं", telugu: "ఉపయోగకరమైన నోట్‌లో మూడు భాగాలు ఉంటాయి", tamil: "பயனுள்ள குறிப்பில் மூன்று பகுதிகள் உள்ளன", urdu: "ایک مفید نوٹ کے تین حصے ہوتے ہیں" })}
+          </Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7, marginTop: 8 }}>
+            {[
+              ["1", journalText("What happened", { hindi: "क्या हुआ", telugu: "ఏమైంది", tamil: "என்ன நடந்தது", urdu: "کیا ہوا" })],
+              ["2", journalText("Impact on me", { hindi: "मुझ पर असर", telugu: "నాపై ప్రభావం", tamil: "என்னில் தாக்கம்", urdu: "مجھ پر اثر" })],
+              ["3", journalText("What I want next", { hindi: "अब मुझे क्या चाहिए", telugu: "ఇప్పుడు నాకు ఏమి కావాలి", tamil: "அடுத்து எனக்கு என்ன வேண்டும்", urdu: "اب مجھے کیا چاہیے" })]
+            ].map(([number, label]) => (
+              <View key={number} style={{ flexGrow: 1, minWidth: 92, flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 7 }}>
+                <Text style={{ color: "#102B3F", backgroundColor: "#D4A63A", width: 20, height: 20, borderRadius: 10, textAlign: "center", lineHeight: 20, fontSize: 12, fontWeight: "700" }}>{number}</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700", flex: 1 }}>{label}</Text>
+              </View>
+            ))}
+          </View>
+          <Text style={{ color: "#C9DCE1", fontSize: 12, lineHeight: 17, marginTop: 8 }}>
+            {journalText("Keep it factual and short. You can leave any part blank; the note is for your clarity, not a test.", { hindi: "इसे तथ्यात्मक और छोटा रखें। कोई भाग खाली छोड़ सकते हैं; यह आपकी स्पष्टता के लिए है, परीक्षा नहीं।", telugu: "వాస్తవంగా మరియు చిన్నగా ఉంచండి. ఏ భాగాన్నైనా ఖాళీగా వదిలేయవచ్చు; ఇది మీ స్పష్టత కోసం, పరీక్ష కాదు.", tamil: "உண்மையாகவும் சுருக்கமாகவும் எழுதுங்கள். எந்தப் பகுதியையும் காலியாக விடலாம்; இது உங்கள் தெளிவுக்காக, தேர்வு அல்ல.", urdu: "اسے حقیقت پر مبنی اور مختصر رکھیں۔ کوئی حصہ خالی چھوڑ سکتے ہیں؛ یہ آپ کی وضاحت کے لیے ہے، امتحان نہیں۔" })}
+          </Text>
+        </View>
         {/* Mood tag chips */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.journalMoodRow} contentContainerStyle={{ gap: 6, paddingRight: 4 }}>
           {MOOD_TAGS.map((mood) => {
@@ -27633,6 +27654,42 @@ function FocusSection({
       <Text style={styles.promptText}>
         {selectedRoutine.meta}
       </Text>
+      <View style={{ marginTop: 10, gap: 7 }}>
+        <Text style={{ color: "#0A6F66", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 0.8, textTransform: "uppercase" }}>
+          {l("Choose your starting mode", { hindi: "अपनी शुरुआत का तरीका चुनें", telugu: "మీ ప్రారంభ విధానాన్ని ఎంచుకోండి", tamil: "உங்கள் தொடக்க முறையைத் தேர்ந்தெடுக்கவும்", urdu: "اپنا ابتدائی طریقہ منتخب کریں" })}
+        </Text>
+        <View style={{ flexDirection: "row", gap: 7 }}>
+          {[
+            { id: "calm", icon: "🌿", label: l("Calmness", { hindi: "शांति", telugu: "ప్రశాంతత", tamil: "அமைதி", urdu: "سکون" }), detail: l("Settle first", { hindi: "पहले स्थिर हों", telugu: "ముందు స్థిరపడండి", tamil: "முதலில் நிலைத்திடுங்கள்", urdu: "پہلے سنبھلیں" }) },
+            { id: "reset", icon: "🫁", label: l("Body focus", { hindi: "शरीर पर ध्यान", telugu: "శరీరంపై దృష్టి", tamil: "உடல் கவனம்", urdu: "جسم پر توجہ" }), detail: l("Ground now", { hindi: "अभी धरातल पाएँ", telugu: "ఇప్పుడే స్థిరపడండి", tamil: "இப்போது நிலைநிறுத்துங்கள்", urdu: "ابھی زمین سے جڑیں" }) },
+            { id: "meditation", icon: "🪷", label: l("Meditation", { hindi: "ध्यान", telugu: "ధ్యానం", tamil: "தியானம்", urdu: "مراقبہ" }), detail: l("Go deeper", { hindi: "और गहराई में जाएँ", telugu: "లోతుగా వెళ్లండి", tamil: "ஆழமாகச் செல்லுங்கள்", urdu: "مزید گہرائی میں جائیں" }) }
+          ].map((mode) => {
+            const active = mode.id !== "meditation" && selectedRoutine.id === mode.id;
+            return (
+              <Pressable
+                key={mode.id}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+                accessibilityLabel={`${mode.label}: ${mode.detail}`}
+                onPress={() => {
+                  void Haptics.selectionAsync();
+                  if (mode.id === "meditation") {
+                    onOpenTab("meditation");
+                    return;
+                  }
+                  setRoutineId(mode.id);
+                  setSessionActive(true);
+                }}
+                style={({ pressed }) => ({ flex: 1, minHeight: 66, borderRadius: 13, padding: 8, alignItems: "center", justifyContent: "center", gap: 3, borderWidth: 1, borderColor: active ? "#0E6F69" : "#B9D8D2", backgroundColor: active ? "#E1F3F0" : pressed ? "#F0F8F6" : "#FFFFFF", opacity: pressed ? 0.76 : 1 })}
+              >
+                <Text style={{ fontSize: 18 }}>{mode.icon}</Text>
+                <Text style={{ color: active ? "#0E6F69" : "#213A4A", fontSize: 12, lineHeight: 16, fontWeight: "700", textAlign: "center" }} numberOfLines={1}>{mode.label}</Text>
+                <Text style={{ color: "#5A6674", fontSize: 12, lineHeight: 16, textAlign: "center" }} numberOfLines={1}>{mode.detail}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
       {isCalmMode ? (
         <View style={styles.visionGuidanceBox}>
           <Text style={styles.visionGuidanceTitle}>
@@ -29184,6 +29241,7 @@ function MeditationSection({
   // becomes a real Play/Stop toggle. Previously the cue had no stop control at
   // all -- once tapped it played out with nothing to silence it.
   const [playingMethodId, setPlayingMethodId] = useState<string | null>(null);
+  const [meditationPracticeCompleted, setMeditationPracticeCompleted] = useState(false);
   useEffect(() => {
     // Leaving the tab / unmounting must silence any playing cue.
     return () => { stopRelaxingToneCue(); };
@@ -29248,6 +29306,7 @@ function MeditationSection({
   useEffect(() => {
     setShowMeditationLibrary(false);
     setShowMeditationPerspectives(false);
+    setMeditationPracticeCompleted(false);
   }, [selectedIssueGuide.id]);
 
   return (
@@ -29307,6 +29366,40 @@ function MeditationSection({
             urdu: `${selectedIssueGuide.label.toLowerCase()} کے لیے ایک موزوں طریقے سے شروع کریں۔ جسم کو سنبھالیں، نقطۂ نظر واضح کریں، پھر راستہ، مشاورت، مدد یا ازالہ کی طرف جائیں۔`
           })}
         </Text>
+      </View>
+
+      <View style={{ marginTop: 10, padding: 13, borderRadius: 14, backgroundColor: meditationPracticeCompleted ? "#E5F5EE" : "#FFF9EC", borderWidth: 1, borderColor: meditationPracticeCompleted ? "#A8D8C1" : "#E8D49A", gap: 7 }}>
+        <Text style={{ color: meditationPracticeCompleted ? "#17633E" : "#6D4B00", fontSize: 13, lineHeight: 18, fontWeight: "800" }}>
+          {meditationPracticeCompleted
+            ? l("Practice complete · choose your next useful step", { hindi: "अभ्यास पूरा हुआ · अपना अगला उपयोगी कदम चुनें", telugu: "అభ్యాసం పూర్తయింది · మీ తదుపరి ఉపయోగకరమైన అడుగును ఎంచుకోండి", tamil: "பயிற்சி முடிந்தது · உங்கள் அடுத்த பயனுள்ள படியைத் தேர்ந்தெடுக்கவும்", urdu: "مشق مکمل · اپنا اگلا مفید قدم منتخب کریں" })
+            : l("Make this a short practice, not another task", { hindi: "इसे छोटा अभ्यास रखें, एक और काम नहीं", telugu: "దీన్ని మరో పని కాకుండా చిన్న అభ్యాసంగా ఉంచండి", tamil: "இதை இன்னொரு பணியாக அல்ல, குறுகிய பயிற்சியாக வைத்திருங்கள்", urdu: "اسے ایک اور کام نہیں، مختصر مشق رکھیں" })}
+        </Text>
+        <Text style={{ color: "#695B3B", fontSize: 12, lineHeight: 17 }}>
+          {meditationPracticeCompleted
+            ? l("You can stop here. A small grounded action is enough; the practice does not need to be perfect.", { hindi: "आप यहीं रुक सकते हैं। एक छोटा व्यावहारिक कदम पर्याप्त है; अभ्यास का परिपूर्ण होना ज़रूरी नहीं।", telugu: "మీరు ఇక్కడే ఆపవచ్చు. ఒక చిన్న స్థిరమైన చర్య చాలు; అభ్యాసం పరిపూర్ణంగా ఉండాల్సిన అవసరం లేదు.", tamil: "இங்கேயே நிறுத்தலாம். ஒரு சிறிய நிலையான செயல் போதும்; பயிற்சி முழுமையாக இருக்க வேண்டியதில்லை.", urdu: "آپ یہیں رک سکتے ہیں۔ ایک چھوٹا عملی قدم کافی ہے؛ مشق کا کامل ہونا ضروری نہیں۔" })
+            : l("Choose a comfortable method, stop if you feel pain, dizziness, panic, or disorientation, then mark it complete when you are ready.", { hindi: "आरामदायक विधि चुनें, दर्द, चक्कर, घबराहट या दिशा-भ्रम हो तो रुकें, और तैयार होने पर इसे पूरा चिह्नित करें।", telugu: "సౌకర్యమైన పద్ధతిని ఎంచుకోండి; నొప్పి, తల తిరగడం, భయం లేదా దిశాభ్రమ కలిగితే ఆపండి, సిద్ధమైనప్పుడు పూర్తయిందిగా గుర్తించండి.", tamil: "வசதியான முறையைத் தேர்வு செய்யுங்கள்; வலி, மயக்கம், பதற்றம் அல்லது திசைமாறல் ஏற்பட்டால் நிறுத்தி, தயாரானதும் முடிந்ததாகக் குறிக்கவும்.", urdu: "آرام دہ طریقہ چنیں، درد، چکر، گھبراہٹ یا سمت کا احساس کھونے پر رک جائیں، اور تیار ہونے پر اسے مکمل نشان زد کریں۔" })}
+        </Text>
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: meditationPracticeCompleted }}
+            onPress={() => { void Haptics.selectionAsync(); setMeditationPracticeCompleted(true); }}
+            style={({ pressed }) => ({ flex: 1, minHeight: 44, alignItems: "center", justifyContent: "center", borderRadius: 11, backgroundColor: pressed ? "#D7EBDD" : meditationPracticeCompleted ? "#2D8A5B" : "#A7660A", opacity: pressed ? 0.76 : 1 })}
+          >
+            <Text style={{ color: "#FFFFFF", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>
+              {meditationPracticeCompleted ? l("Completed", { hindi: "पूरा हुआ", telugu: "పూర్తయింది", tamil: "முடிந்தது", urdu: "مکمل" }) : l("I did this", { hindi: "मैंने यह किया", telugu: "నేను ఇది చేశాను", tamil: "நான் இதைச் செய்தேன்", urdu: "میں نے یہ کیا" })}
+            </Text>
+          </Pressable>
+          {meditationPracticeCompleted && (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => onOpenTab("guide")}
+              style={({ pressed }) => ({ flex: 1, minHeight: 44, alignItems: "center", justifyContent: "center", borderRadius: 11, borderWidth: 1, borderColor: "#0E6F69", backgroundColor: pressed ? "#DDF1ED" : "#FFFFFF", opacity: pressed ? 0.76 : 1 })}
+            >
+              <Text style={{ color: "#0E6F69", fontSize: 13, lineHeight: 17, fontWeight: "700" }}>{l("Return to Path", { hindi: "मार्ग पर लौटें", telugu: "Path‌కు తిరిగి వెళ్లండి", tamil: "Path-க்கு திரும்பவும்", urdu: "Path پر واپس جائیں" })}</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
 
       <View style={[styles.beaconXWisdomPanel, compact && styles.routePreviewCardCompact]}>
@@ -29858,6 +29951,7 @@ function GuidedSupportSection({
   const guidedSupportReduceMotion = useReducedMotion();
   const [useBirthChart, setUseBirthChart] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [supportIntent, setSupportIntent] = useState<"heard" | "plan" | "action" | null>(null);
   const hasSubmittedCounsellingPrompt = aiHelpMessages.some((message) => message.role === "user");
   const latestGuidedSupportMessage =
     aiHelpMessages.find((message) => message.role === "assistant") ?? aiHelpSeed[0];
@@ -29974,6 +30068,45 @@ function GuidedSupportSection({
           })}
         </Text>
 
+        <View style={styles.aiHelpIntentBlock}>
+          <Text style={styles.aiHelpIntentHeading}>{l("What would help most right now?", {
+            hindi: "अभी आपको सबसे अधिक किस चीज़ की मदद चाहिए?",
+            telugu: "ఇప్పుడు మీకు ఏ సహాయం ఎక్కువగా ఉపయోగపడుతుంది?",
+            tamil: "இப்போது உங்களுக்கு எது அதிகம் உதவும்?",
+            urdu: "اس وقت آپ کو کس چیز سے سب سے زیادہ مدد ملے گی؟"
+          })}</Text>
+          <View style={[styles.aiHelpIntentRow, compact && styles.aiHelpIntentRowCompact]}>
+            {[
+              { id: "heard" as const, label: l("Help me feel heard", { hindi: "मेरी बात सुनी जाए", telugu: "నా మాట వినండి", tamil: "என் பேச்சைக் கேளுங்கள்", urdu: "میری بات سنیں" }), prompt: l("I want to be heard first. Please help me name what I am carrying without rushing me.", { hindi: "पहले मेरी बात सुनी जाए। बिना जल्दी किए जो मैं झेल रहा हूँ उसे समझने में मेरी मदद करें।" }), color: "#0E6F69" },
+              { id: "plan" as const, label: l("Find my next step", { hindi: "मेरा अगला कदम खोजें", telugu: "నా తదుపరి అడుగు కనుగొనండి", tamil: "என் அடுத்த படியைக் கண்டுபிடிக்கவும்", urdu: "میرا اگلا قدم تلاش کریں" }), prompt: l("Help me turn this into one small, realistic next step.", { hindi: "इसे एक छोटे, वास्तविक अगले कदम में बदलने में मेरी मदद करें।" }), color: "#B05A00" },
+              { id: "action" as const, label: l("Make an action plan", { hindi: "कार्रवाई की योजना बनाएं", telugu: "చర్య ప్రణాళిక రూపొందించండి", tamil: "செயல் திட்டத்தை உருவாக்கவும்", urdu: "عملی منصوبہ بنائیں" }), prompt: l("I need a practical plan, including who to approach and what to say.", { hindi: "मुझे एक व्यावहारिक योजना चाहिए, जिसमें किससे संपर्क करना है और क्या कहना है शामिल हो।" }), color: "#0052B8" }
+            ].map((choice) => {
+              const accent = highContrastAccent(choice.color);
+              const active = supportIntent === choice.id;
+              return (
+                <Pressable
+                  key={choice.id}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                  onPress={() => {
+                    setSupportIntent(choice.id);
+                    setGuidedSupportDraft(choice.prompt);
+                  }}
+                  style={({ pressed }) => [
+                    styles.aiHelpIntentCard,
+                    compact && styles.aiHelpIntentCardCompact,
+                    { borderColor: active ? accent : accent + "45", backgroundColor: active ? accent + "16" : "#FFFFFF" },
+                    pressed && styles.pressed
+                  ]}
+                >
+                  <Text style={[styles.aiHelpIntentLabel, { color: accent }]}>{choice.label}</Text>
+                  <Text style={styles.aiHelpIntentHint}>{active ? l("Added to your draft", { hindi: "आपके ड्राफ्ट में जोड़ा गया" }) : l("Tap to begin", { hindi: "शुरू करने के लिए टैप करें" })}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
         <TextInput
           multiline
           value={aiHelpDraft}
@@ -30060,6 +30193,19 @@ function GuidedSupportSection({
             urdu: "ہر 6 جوابات کے بعد ایک اختیاری اگلا قدم"
           })}</Text>
         </View>
+      </View>
+
+      <View style={styles.aiHelpProgressRow}>
+        <View style={styles.aiHelpProgressTrack}>
+          <View style={[styles.aiHelpProgressFill, { width: hasSubmittedCounsellingPrompt ? "45%" : supportIntent ? "20%" : "8%" }]} />
+        </View>
+        <Text style={styles.aiHelpProgressText}>
+          {hasSubmittedCounsellingPrompt
+            ? l("Conversation in progress · take your time", { hindi: "बातचीत जारी है · आराम से आगे बढ़ें" })
+            : supportIntent
+              ? l("Your starting point is ready", { hindi: "आपका शुरुआती बिंदु तैयार है" })
+              : l("Start gently · no perfect words needed", { hindi: "धीरे शुरू करें · सही शब्द जरूरी नहीं" })}
+        </Text>
       </View>
 
       <View style={styles.aiHelpStarterBlock}>
@@ -33842,6 +33988,35 @@ function IssueGuideSection({
       </View>
 
       <View style={styles.issuePlanSection}>
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#102B3F", borderWidth: 1, borderColor: "#2B6170", padding: 14 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={{ color: "#F7E7B4", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase" }}>
+                {l("Start here today", { hindi: "आज यहाँ से शुरू करें", telugu: "ఈ రోజు ఇక్కడి నుంచి ప్రారంభించండి", tamil: "இன்று இங்கிருந்து தொடங்குங்கள்", urdu: "آج یہاں سے شروع کریں" })}
+              </Text>
+              <Text style={{ color: "#FFFFFF", fontSize: 16, lineHeight: 21, fontWeight: "800", marginTop: 4 }}>
+                {l(`For ${issueDisplayLabel}, take one small first move.`, { hindi: `${issueDisplayLabel} के लिए एक छोटा पहला कदम लें।`, telugu: `${issueDisplayLabel} కోసం ఒక చిన్న మొదటి అడుగు వేయండి.`, tamil: `${issueDisplayLabel}-க்கு ஒரு சிறிய முதல் படியை எடுக்கவும்.`, urdu: `${issueDisplayLabel} کے لیے ایک چھوٹا پہلا قدم لیں۔` })}
+              </Text>
+            </View>
+            <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: "#D4A63A", alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ color: "#102B3F", fontSize: 18, fontWeight: "900" }}>1</Text>
+            </View>
+          </View>
+          <Text style={{ color: "#C9DCE1", fontSize: 12, lineHeight: 18, marginTop: 7 }}>
+            {l("Settle first, write one clear line, then choose whether you need reflection or formal help. You do not need to complete every section today.", { hindi: "पहले खुद को स्थिर करें, एक साफ़ पंक्ति लिखें, फिर तय करें कि आपको मनन चाहिए या औपचारिक मदद। आज हर सेक्शन पूरा करना ज़रूरी नहीं है।", telugu: "ముందుగా స్థిరపడండి, ఒక స్పష్టమైన వాక్యం రాయండి, తర్వాత ఆలోచన లేదా అధికారిక సహాయం అవసరమా ఎంచుకోండి. ఈ రోజు ప్రతి విభాగాన్ని పూర్తి చేయాల్సిన అవసరం లేదు.", tamil: "முதலில் நிலைநிறுத்திக் கொள்ளுங்கள், ஒரு தெளிவான வரியை எழுதுங்கள், பின்னர் சிந்தனை வேண்டுமா அல்லது முறையான உதவி வேண்டுமா என்பதைத் தேர்ந்தெடுக்கவும். இன்று ஒவ்வொரு பகுதியையும் முடிக்க வேண்டியதில்லை.", urdu: "پہلے خود کو سنبھالیں، ایک واضح سطر لکھیں، پھر طے کریں کہ آپ کو غور و فکر چاہیے یا رسمی مدد۔ آج ہر سیکشن مکمل کرنا ضروری نہیں۔" })}
+          </Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+            <Pressable accessibilityRole="button" onPress={onOpenCalm} style={({ pressed }) => ({ flexGrow: 1, minWidth: 135, minHeight: 44, borderRadius: 10, backgroundColor: pressed ? "#F0D98B" : "#D4A63A", alignItems: "center", justifyContent: "center", paddingHorizontal: 10 })}>
+              <Text style={{ color: "#102B3F", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{l("Settle first", { hindi: "पहले स्थिर हों", telugu: "ముందుగా స్థిరపడండి", tamil: "முதலில் நிலைநிறுத்துங்கள்", urdu: "پہلے خود کو سنبھالیں" })}</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" onPress={() => onOpenTab("journal")} style={({ pressed }) => ({ flexGrow: 1, minWidth: 135, minHeight: 44, borderRadius: 10, backgroundColor: pressed ? "#DCEBE9" : "#E1EEEC", alignItems: "center", justifyContent: "center", paddingHorizontal: 10 })}>
+              <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{l("Write one clear line", { hindi: "एक साफ़ पंक्ति लिखें", telugu: "ఒక స్పష్టమైన వాక్యం రాయండి", tamil: "ஒரு தெளிவான வரியை எழுதுங்கள்", urdu: "ایک واضح سطر لکھیں" })}</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" onPress={onOpenRedress} style={({ pressed }) => ({ flexGrow: 1, minWidth: 135, minHeight: 44, borderRadius: 10, backgroundColor: pressed ? "#E8EEF9" : "#FFFFFF", borderWidth: 1, borderColor: "#A5B4FC", alignItems: "center", justifyContent: "center", paddingHorizontal: 10 })}>
+              <Text style={{ color: "#3730A3", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{l("Need formal help", { hindi: "औपचारिक मदद चाहिए", telugu: "అధికారిక సహాయం కావాలి", tamil: "முறையான உதவி தேவை", urdu: "رسمی مدد چاہیے" })}</Text>
+            </Pressable>
+          </View>
+        </View>
         <View style={styles.sectionHeader}>
           <View style={styles.issuePlanHeaderCopy}>
             <Text style={styles.eyebrow}>{l("Start with what helps most", { hindi: "जो सबसे ज़्यादा मदद करे, उससे शुरू करें", telugu: "ఎక్కువగా సహాయపడేదానితో ప్రారంభించండి", tamil: "மிகவும் உதவும் ஒன்றிலிருந்து தொடங்குங்கள்", urdu: "جو سب سے زیادہ مدد دے، اس سے شروع کریں" })}</Text>
@@ -35245,6 +35420,28 @@ function RedressSection({
 
   return (
     <View style={[styles.grid, isWide && styles.gridWide]}>
+
+      <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#E1EEEC", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
+        <Text style={{ color: "#0D3D3A", fontSize: 12, fontWeight: "800", letterSpacing: 0.9, textTransform: "uppercase" }}>
+          {l("Your route in four moves", { hindi: "चार कदमों में आपका मार्ग", telugu: "నాలుగు అడుగుల్లో మీ మార్గం", tamil: "நான்கு படிகளில் உங்கள் பாதை", urdu: "چار قدموں میں آپ کا راستہ" })}
+        </Text>
+        <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, marginTop: 4 }}>
+          {l("Use this order to avoid being overwhelmed: safety, facts, correct office, follow-up.", { hindi: "घबराहट से बचने के लिए यह क्रम अपनाएँ: सुरक्षा, तथ्य, सही कार्यालय, फिर फॉलो-अप।", telugu: "గందరగోళాన్ని నివారించడానికి ఈ క్రమాన్ని ఉపయోగించండి: భద్రత, వాస్తవాలు, సరైన కార్యాలయం, ఫాలో-అప్.", tamil: "குழப்பத்தைத் தவிர்க்க இந்த வரிசையைப் பயன்படுத்துங்கள்: பாதுகாப்பு, உண்மைகள், சரியான அலுவலகம், பின்தொடர்வு.", urdu: "پریشانی سے بچنے کے لیے یہ ترتیب اپنائیں: حفاظت، حقائق، درست دفتر، پھر فالو اَپ۔" })}
+        </Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7, marginTop: 9 }}>
+          {[
+            ["1", l("Stay safe", { hindi: "सुरक्षित रहें", telugu: "సురక్షితంగా ఉండండి", tamil: "பாதுகாப்பாக இருங்கள்", urdu: "محفوظ رہیں" })],
+            ["2", l("Prepare facts", { hindi: "तथ्य तैयार करें", telugu: "వాస్తవాలను సిద్ధం చేయండి", tamil: "உண்மைகளைத் தயாரிக்கவும்", urdu: "حقائق تیار کریں" })],
+            ["3", l("Lodge correctly", { hindi: "सही जगह जमा करें", telugu: "సరిగ్గా సమర్పించండి", tamil: "சரியாகப் பதிவு செய்யவும்", urdu: "درست جگہ جمع کریں" })],
+            ["4", l("Keep proof", { hindi: "प्रमाण रखें", telugu: "ఆధారం ఉంచండి", tamil: "சான்றை வைத்திருங்கள்", urdu: "ثبوت رکھیں" })]
+          ].map(([number, label]) => (
+            <View key={number} style={{ flexGrow: 1, minWidth: 110, flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#F7FAFC", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 7 }}>
+              <Text style={{ color: "#FFFFFF", backgroundColor: "#0E6F69", width: 20, height: 20, borderRadius: 10, textAlign: "center", lineHeight: 20, fontSize: 12, fontWeight: "700" }}>{number}</Text>
+              <Text style={{ color: "#0D3D3A", fontSize: 12, fontWeight: "700", flex: 1 }}>{label}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
 
       {/* ── PANEL 1: ROUTE SELECTOR ── */}
       {/* flex:0 in single-column mode: styles.panel's flex:1 is meant for the
@@ -45391,6 +45588,7 @@ function CounselingChatModal({
   sadeSatiNote = null,
   weeklyTrend = null,
   onOpenTool,
+  onScheduleFollowUp,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -45453,6 +45651,7 @@ function CounselingChatModal({
   // feeling.
   weeklyTrend?: { weeklyAverage: number; monthlyAverage: number; sampleSize: number } | null;
   onOpenTool: (tabId: Extract<TabId, "community" | "vedic" | "tones" | "redress">) => void;
+  onScheduleFollowUp?: (mode: IssueReminderMode) => Promise<void>;
 }) {
   // Real device top inset for the full-screen header, instead of a hardcoded
   // status-bar guess (see comment on the ExitReportModal header).
@@ -46146,6 +46345,39 @@ function CounselingChatModal({
           urdu: `مشاورت کی گہرائی: ${counselingUserResponseCount}/${COUNSELING_AUTO_SYNTHESIS_USER_RESPONSES} جوابات · context تیار ہونے کے بعد اگلا قدم دستیاب ہوگا۔`
         });
 
+  const counsellingPhaseIndex = session.stage === "synthesizing"
+    ? 2
+    : counselingUserResponseCount > 0
+      ? 1
+      : 0;
+  const counsellingPhaseCopy = pickLocalizedText(languageId, {
+    english: counsellingPhaseIndex === 0
+      ? "Start with what feels hardest. There is no perfect way to say it."
+      : counsellingPhaseIndex === 1
+        ? "I am connecting the details. You can correct me at any time."
+        : "Your next step is ready to review. You choose what happens next.",
+    hindi: counsellingPhaseIndex === 0
+      ? "जो सबसे कठिन लग रहा है, वहीं से शुरू करें। इसे कहने का कोई सही तरीका नहीं है।"
+      : counsellingPhaseIndex === 1
+        ? "मैं आपकी बात के विवरण जोड़ रहा हूँ। आप मुझे कभी भी सुधार सकते हैं।"
+        : "आपका अगला कदम तैयार है। आगे क्या करना है, यह आप चुनते हैं।",
+    telugu: counsellingPhaseIndex === 0
+      ? "కష్టంగా అనిపిస్తున్న దానితో ప్రారంభించండి. చెప్పడానికి సరైన విధానం అవసరం లేదు."
+      : counsellingPhaseIndex === 1
+        ? "నేను వివరాలను కలుపుతున్నాను. మీరు ఎప్పుడైనా నన్ను సరిచేయవచ్చు."
+        : "మీ తదుపరి అడుగు సిద్ధంగా ఉంది. తరువాత ఏమి చేయాలో మీరు ఎంచుకుంటారు.",
+    tamil: counsellingPhaseIndex === 0
+      ? "கடினமாகத் தோன்றுவது எதுவோ அதிலிருந்து தொடங்குங்கள். சொல்ல சரியான முறை எதுவும் இல்லை."
+      : counsellingPhaseIndex === 1
+        ? "விவரங்களை இணைத்துப் பார்க்கிறேன். நீங்கள் எப்போது வேண்டுமானாலும் திருத்தலாம்."
+        : "உங்கள் அடுத்த படி தயாராக உள்ளது. அடுத்து என்ன என்பது உங்கள் தேர்வு.",
+    urdu: counsellingPhaseIndex === 0
+      ? "جو سب سے مشکل لگ رہا ہے، وہیں سے شروع کریں۔ اسے کہنے کا کوئی درست طریقہ نہیں۔"
+      : counsellingPhaseIndex === 1
+        ? "میں تفصیلات کو جوڑ رہا ہوں۔ آپ کسی بھی وقت میری اصلاح کر سکتے ہیں۔"
+        : "آپ کا اگلا قدم تیار ہے۔ آگے کیا کرنا ہے، یہ آپ منتخب کرتے ہیں۔"
+  });
+
   return (
     <Modal
       visible={visible}
@@ -46343,6 +46575,35 @@ function CounselingChatModal({
             </Text>
           )}
         </Pressable>}
+
+        {!isKeyboardVisible && (
+          <View
+            accessibilityRole="summary"
+            accessibilityLabel={l("Conversation compass", { hindi: "बातचीत दिशा-सूचक", telugu: "సంభాషణ దిక్సూచి", tamil: "உரையாடல் திசைகாட்டி", urdu: "گفتگو کا سمت نما" })}
+            style={{ marginHorizontal: isVeryCompactPhone ? 12 : isCompactPhone ? 16 : 20, marginTop: isVeryCompactPhone ? 6 : 8, padding: isVeryCompactPhone ? 9 : 11, borderRadius: 14, backgroundColor: "#F7FCFB", borderWidth: 1, borderColor: "#B9D8D2" }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 6 }}>
+              {[
+                { label: l("Be heard", { hindi: "सुना जाना", telugu: "వినబడటం", tamil: "கேட்கப்படுதல்", urdu: "سنا جانا" }), icon: "ear-outline" as const },
+                { label: l("Understand", { hindi: "समझना", telugu: "అర్థం చేసుకోవడం", tamil: "புரிந்துகொள்ளுதல்", urdu: "سمجھنا" }), icon: "sparkles-outline" as const },
+                { label: l("Next step", { hindi: "अगला कदम", telugu: "తదుపరి అడుగు", tamil: "அடுத்த படி", urdu: "اگلا قدم" }), icon: "arrow-forward-circle-outline" as const }
+              ].map((phase, index) => {
+                const isActive = index === counsellingPhaseIndex;
+                const isComplete = index < counsellingPhaseIndex;
+                return (
+                  <View key={phase.label} style={{ flex: 1, alignItems: "center", gap: 3 }}>
+                    <Ionicons name={phase.icon} size={isVeryCompactPhone ? 16 : 18} color={isActive ? "#0E6F69" : isComplete ? "#5C9A83" : "#8AA0AE"} />
+                    <Text style={{ color: isActive ? "#0E6F69" : isComplete ? "#477968" : "#6C818A", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 16, fontWeight: isActive ? "900" : "700", textAlign: "center" }} numberOfLines={1}>{phase.label}</Text>
+                  </View>
+                );
+              })}
+            </View>
+            <View style={{ height: 4, borderRadius: 3, backgroundColor: "#DDEBE8", marginTop: 8, overflow: "hidden" }}>
+              <View style={{ width: counsellingPhaseIndex === 0 ? "18%" : counsellingPhaseIndex === 1 ? "56%" : "100%", height: 4, borderRadius: 3, backgroundColor: "#0E9488" }} />
+            </View>
+            <Text style={{ color: "#34515B", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 18, marginTop: 7, textAlign: "center" }}>{counsellingPhaseCopy}</Text>
+          </View>
+        )}
 
         {/* Chat messages */}
         <ScrollView
@@ -46625,6 +46886,32 @@ function CounselingChatModal({
                   <Text style={{ color: "#1F2937", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 17, fontWeight: "700" }}>{l("Leave for now", { hindi: "अभी छोड़ें", telugu: "ప్రస్తుతం బయటకు వెళ్లండి", tamil: "இப்போது வெளியேறவும்", urdu: "ابھی باہر نکلیں" })}</Text>
                 </Pressable>
               </View>
+              {onScheduleFollowUp && (
+                <View style={{ backgroundColor: "#FFF9EC", borderRadius: 14, padding: isVeryCompactPhone ? 11 : 13, borderWidth: 1, borderColor: "#E8D49A", gap: 8 }}>
+                  <Text style={{ color: "#6D4B00", fontSize: isVeryCompactPhone ? 12 : 13, lineHeight: 18, fontWeight: "800" }}>
+                    {l("Keep this next step within reach", { hindi: "इस अगले कदम को याद रखना आसान बनाएं", telugu: "ఈ తదుపరి అడుగు మీకు అందుబాటులో ఉంచండి", tamil: "இந்த அடுத்த படியை எளிதில் தொடருங்கள்", urdu: "اس اگلے قدم کو اپنے قریب رکھیں" })}
+                  </Text>
+                  <Text style={{ color: "#695B3B", fontSize: 12, lineHeight: 17 }}>
+                    {l("Choose one reminder. NAYIQ will not send anything unless you choose a time.", { hindi: "एक अनुस्मारक चुनें। आप समय चुनने तक NAYIQ कुछ भी नहीं भेजेगा।", telugu: "ఒక గుర్తును ఎంచుకోండి. మీరు సమయాన్ని ఎంచుకునే వరకు NAYIQ ఏదీ పంపదు.", tamil: "ஒரு நினைவூட்டலைத் தேர்வு செய்யுங்கள். நீங்கள் நேரத்தைத் தேர்ந்தெடுக்காவிட்டால் NAYIQ எதையும் அனுப்பாது.", urdu: "ایک یاد دہانی منتخب کریں۔ آپ وقت منتخب کیے بغیر NAYIQ کچھ بھی نہیں بھیجے گا۔" })}
+                  </Text>
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    {([
+                      { mode: "tomorrow" as const, label: l("Tomorrow", { hindi: "कल", telugu: "రేపు", tamil: "நாளை", urdu: "کل" }) },
+                      { mode: "week" as const, label: l("Next week", { hindi: "अगले सप्ताह", telugu: "తదుపరి వారం", tamil: "அடுத்த வாரம்", urdu: "اگلے ہفتے" }) }
+                    ]).map((option) => (
+                      <Pressable
+                        key={option.mode}
+                        onPress={() => { void Haptics.selectionAsync(); void onScheduleFollowUp(option.mode); }}
+                        accessibilityRole="button"
+                        accessibilityLabel={l(`Set a counselling follow-up for ${option.label}`, { hindi: `${option.label} के लिए काउंसलिंग फ़ॉलो-अप तय करें`, telugu: `${option.label} కోసం కౌన్సెలింగ్ ఫాలో-అప్ సెట్ చేయండి`, tamil: `${option.label}க்கான ஆலோசனை தொடர்ச்சியை அமைக்கவும்`, urdu: `${option.label} کے لیے مشاورتی فالو اَپ سیٹ کریں` })}
+                        style={({ pressed }) => ({ flex: 1, minHeight: 44, alignItems: "center", justifyContent: "center", borderRadius: 11, borderWidth: 1, borderColor: "#B58A2A", backgroundColor: pressed ? "#F5E7B9" : "#FFFFFF", opacity: pressed ? 0.76 : 1 })}
+                      >
+                        <Text style={{ color: "#6D4B00", fontSize: 13, lineHeight: 17, fontWeight: "800" }}>{option.label}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
+              )}
               <Text style={{ color: "#3A617D", fontSize: 14, fontWeight: "800", marginTop: 12, marginBottom: 2 }}>
                 {l("What would help most right now?", { hindi: "अभी सबसे ज़्यादा किससे मदद मिलेगी?", telugu: "ఇప్పుడే ఏది ఎక్కువగా సహాయపడుతుంది?", tamil: "இப்போது எது மிகவும் உதவும்?", urdu: "ابھی سب سے زیادہ کس چیز سے مدد ملے گی؟" })}
               </Text>
@@ -46697,6 +46984,35 @@ function CounselingChatModal({
                 <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, fontWeight: "800", marginBottom: 6 }} numberOfLines={1} ellipsizeMode="tail">
                   {counsellingDepthCopy}
                 </Text>
+              )}
+              {!isKeyboardVisible && (
+                <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "700", marginBottom: 6 }} numberOfLines={2}>
+                  {l("You are in control · pause, edit, or leave whenever you need.", { hindi: "नियंत्रण आपके हाथ में है · जब चाहें रुकें, बदलें या बाहर निकलें।", telugu: "నియంత్రణ మీ చేతుల్లో ఉంది · అవసరమైనప్పుడు ఆపండి, మార్చండి లేదా బయటకు వెళ్లండి.", tamil: "கட்டுப்பாடு உங்களிடமே · தேவைப்பட்டால் நிறுத்தவும், மாற்றவும் அல்லது வெளியேறவும்.", urdu: "اختیار آپ کے ہاتھ میں ہے · جب چاہیں رکیں، بدلیں یا باہر نکلیں۔" })}
+                </Text>
+              )}
+              {!isKeyboardVisible && !draft.trim() && !isListening && (
+                <View style={{ marginBottom: 7 }}>
+                  <Text style={{ color: "#34515B", fontSize: 12, lineHeight: 16, fontWeight: "800", marginBottom: 5 }}>
+                    {l("Not sure how to begin?", { hindi: "शुरुआत समझ नहीं आ रही?", telugu: "ఎలా ప్రారంభించాలో తెలియదా?", tamil: "எப்படித் தொடங்குவது என்று தெரியவில்லையா?", urdu: "سمجھ نہیں آ رہا کہاں سے شروع کریں؟" })}
+                  </Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                    {[
+                      { text: l("I need a pause", { hindi: "मुझे थोड़ा रुकना है", telugu: "నాకు విరామం కావాలి", tamil: "எனக்கு இடைவேளை வேண்டும்", urdu: "مجھے وقفہ چاہیے" }) },
+                      { text: l("Make it practical", { hindi: "इसे व्यावहारिक बनाएं", telugu: "దీన్ని ప్రాక్టికల్‌గా చేయండి", tamil: "இதை நடைமுறையாக்குங்கள்", urdu: "اسے عملی بنائیں" }) },
+                      { text: l("Let me explain more", { hindi: "मैं और बताना चाहता हूँ", telugu: "నేను మరింత వివరించాలి", tamil: "நான் மேலும் விளக்க விரும்புகிறேன்", urdu: "میں مزید بتانا چاہتا ہوں" }) }
+                    ].map((starter) => (
+                      <Pressable
+                        key={starter.text}
+                        onPress={() => { setDraft(starter.text); void Haptics.selectionAsync(); }}
+                        accessibilityRole="button"
+                        accessibilityLabel={starter.text}
+                        style={({ pressed }) => ({ minHeight: 44, justifyContent: "center", paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: "#A9D8CF", backgroundColor: pressed ? "#DDF1ED" : "#F4FAF8", opacity: pressed ? 0.72 : 1 })}
+                      >
+                        <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "800" }}>{starter.text}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
               )}
               <TextInput
                 value={draft}
@@ -51595,6 +51911,70 @@ const styles = StyleSheet.create({
   aiHelpEntryLeadCompact: {
     fontSize: 15,
     lineHeight: 22
+  },
+  aiHelpIntentBlock: {
+    gap: 8,
+    marginTop: 2
+  },
+  aiHelpIntentHeading: {
+    color: "#0D1F22",
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "800"
+  },
+  aiHelpIntentRow: {
+    flexDirection: "row",
+    gap: 8
+  },
+  aiHelpIntentRowCompact: {
+    flexDirection: "column",
+    gap: 7
+  },
+  aiHelpIntentCard: {
+    flex: 1,
+    minHeight: 62,
+    borderRadius: 13,
+    borderWidth: 1.5,
+    paddingHorizontal: 11,
+    paddingVertical: 10,
+    justifyContent: "center",
+    gap: 3
+  },
+  aiHelpIntentCardCompact: {
+    minHeight: 50,
+    paddingVertical: 8
+  },
+  aiHelpIntentLabel: {
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "800"
+  },
+  aiHelpIntentHint: {
+    color: "#46616A",
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "600"
+  },
+  aiHelpProgressRow: {
+    gap: 6,
+    marginTop: 2
+  },
+  aiHelpProgressTrack: {
+    height: 6,
+    borderRadius: 99,
+    overflow: "hidden",
+    backgroundColor: "#DCEAE7"
+  },
+  aiHelpProgressFill: {
+    height: 6,
+    borderRadius: 99,
+    backgroundColor: "#0E6F69"
+  },
+  aiHelpProgressText: {
+    color: "#46616A",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700"
   },
   aiHelpEntryInput: {
     minHeight: 112,
