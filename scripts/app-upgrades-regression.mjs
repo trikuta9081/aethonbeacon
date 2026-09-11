@@ -478,6 +478,11 @@ assert(counsellingModalSource.includes('onPress={shareCounsellingSummary}'), 'Co
 assert(counsellingModalSource.includes('const leaveCounsellingSession = () =>'), 'Counselling exit must use an explicit leave-session action');
 assert(counsellingModalSource.includes('This private conversation will close now and is not resumed automatically.'), 'Counselling exit must not promise unavailable resume behavior');
 assert(counsellingModalSource.includes('style: "destructive", onPress: onClose'), 'Counselling exit must require an explicit destructive confirmation');
+assert(source.includes('COUNSELLING_DRAFT_STORAGE_KEY = "nayiq:counselling:unfinished:v1"'), 'Counselling must have a dedicated local unfinished-session key');
+assert(counsellingModalSource.includes('Resume private counselling?'), 'Counselling must offer a matching unfinished-session resume prompt');
+assert(counsellingModalSource.includes('An unfinished conversation is saved only on this device.'), 'Counselling resume must state its local-only privacy boundary');
+assert(counsellingModalSource.includes('saved.issueId !== issueId') && counsellingModalSource.includes('saved.languageId !== languageId'), 'Counselling drafts must not cross issue or language contexts');
+assert(counsellingModalSource.includes('clearCounsellingDraft();'), 'Completed counselling handoffs must clear the unfinished local draft');
 
 // Counselling depth: the guide must not force-close after six replies. It
 // should offer a user-controlled next-step checkpoint every six replies, while

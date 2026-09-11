@@ -41840,6 +41840,8 @@ interface CounselingSession {
   journeySteps: JourneyStep[];
 }
 
+const COUNSELLING_DRAFT_STORAGE_KEY = "nayiq:counselling:unfinished:v1";
+
 function detectThemes(text: string): SupportDimensionId[] {
   const t = text.toLowerCase();
   const themes: SupportDimensionId[] = [];
@@ -45191,6 +45193,70 @@ function CounselingChatModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, initialIssue, isCompactPhone]);
 
+  // Keep an unfinished room resumable on this device only. This is deliberately
+  // separate from the app's synced state: counselling text never enters the
+  // connected account payload, and completed sessions remove the local draft.
+  const counsellingUserTurnCount = session.turns.filter((turn) => turn.role === "user").length;
+  React.useEffect(() => {
+    if (!visible || counsellingUserTurnCount === 0 || session.stage === "done") return;
+    AsyncStorage.setItem(COUNSELLING_DRAFT_STORAGE_KEY, JSON.stringify({
+      issueId,
+      languageId,
+      originalIssue: session.originalIssue,
+      session,
+      savedAt: new Date().toISOString()
+    })).catch(() => undefined);
+  }, [visible, counsellingUserTurnCount, issueId, languageId, session]);
+
+  React.useEffect(() => {
+    if (!visible) return;
+    let cancelled = false;
+    AsyncStorage.getItem(COUNSELLING_DRAFT_STORAGE_KEY).then((raw) => {
+      if (cancelled || !raw) return;
+      try {
+        const saved = JSON.parse(raw) as {
+          issueId?: IssueId;
+          languageId?: LanguageId;
+          originalIssue?: string;
+          session?: CounselingSession;
+        };
+        const savedSession = saved.session;
+        if (
+          saved.issueId !== issueId ||
+          saved.languageId !== languageId ||
+          saved.originalIssue !== initialIssue ||
+          !savedSession ||
+          savedSession.stage === "done" ||
+          !Array.isArray(savedSession.turns) ||
+          !savedSession.turns.some((turn) => turn.role === "user")
+        ) return;
+        Alert.alert(
+          l("Resume private counselling?", { hindi: "निजी काउंसलिंग फिर शुरू करें?", telugu: "ప్రైవేట్ కౌన్సెలింగ్‌ను తిరిగి ప్రారంభించాలా?", tamil: "தனிப்பட்ட ஆலோசனையைத் தொடரவா?", urdu: "نجی مشاورت دوبارہ شروع کریں؟" }),
+          l("An unfinished conversation is saved only on this device. You can resume it or start with a clean room.", { hindi: "एक अधूरी बातचीत केवल इसी डिवाइस पर सहेजी गई है। आप इसे फिर शुरू कर सकते हैं या नया कक्ष शुरू कर सकते हैं।", telugu: "పూర్తికాని సంభాషణ ఈ పరికరంలో మాత్రమే సేవ్ చేయబడింది. మీరు దాన్ని కొనసాగించవచ్చు లేదా కొత్త గదిని ప్రారంభించవచ్చు.", tamil: "முடிக்கப்படாத உரையாடல் இந்த சாதனத்தில் மட்டும் சேமிக்கப்பட்டுள்ளது. அதைத் தொடரலாம் அல்லது புதிய அறையைத் தொடங்கலாம்.", urdu: "ایک نامکمل گفتگو صرف اسی ڈیوائس پر محفوظ ہے۔ آپ اسے دوبارہ جاری کر سکتے ہیں یا نیا کمرہ شروع کر سکتے ہیں۔" }),
+          [
+            { text: l("Start fresh", { hindi: "नए सिरे से शुरू करें", telugu: "కొత్తగా ప్రారంభించండి", tamil: "புதிதாகத் தொடங்கவும்", urdu: "نئے سرے سے شروع کریں" }), style: "cancel", onPress: () => { void AsyncStorage.removeItem(COUNSELLING_DRAFT_STORAGE_KEY); } },
+            {
+              text: l("Resume", { hindi: "फिर शुरू करें", telugu: "కొనసాగించండి", tamil: "தொடரவும்", urdu: "دوبارہ شروع کریں" }),
+              onPress: () => {
+                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+                setIsGuideTyping(false);
+                setSession(savedSession);
+                setJourneySteps(savedSession.journeySteps ?? []);
+                setSynthText(savedSession.stage === "synthesizing" ? savedSession.turns.filter((turn) => turn.role === "friend").at(-1)?.message ?? "" : "");
+              }
+            }
+          ]
+        );
+      } catch {
+        void AsyncStorage.removeItem(COUNSELLING_DRAFT_STORAGE_KEY);
+      }
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  // Only offer a matching draft when this room opens; session changes are not
+  // part of the lookup and must never re-open the prompt mid-conversation.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, initialIssue, issueId, languageId]);
+
   React.useEffect(() => {
     if (visible) return;
     setIsListening(false);
@@ -45433,12 +45499,18 @@ function CounselingChatModal({
     setSpeechInputNotice("");
   }
 
+  function clearCounsellingDraft() {
+    void AsyncStorage.removeItem(COUNSELLING_DRAFT_STORAGE_KEY);
+  }
+
   function handleStartJourney() {
+    clearCounsellingDraft();
     const finalSession: CounselingSession = { ...session, stage: "done", journeySteps };
     onJourneyReady(finalSession);
   }
 
   function skipToRoute() {
+    clearCounsellingDraft();
     const route = detectGuidedSupportRouteFromText(session.originalIssue);
     const currentIssueLabel = issueGuides.find((guide) => guide.id === issueId)?.label ?? null;
     const recurrenceCount = currentIssueLabel
@@ -45458,6 +45530,7 @@ function CounselingChatModal({
       onClose();
       return;
     }
+    clearCounsellingDraft();
     const tabId: TabId = choice === "calmness" ? "focus" : choice === "redress" ? "redress" : "meditation";
     const label =
       choice === "meditation" ? l("Meditation", { hindi: "ध्यान", telugu: "ధ్యానం", tamil: "தியானம்", urdu: "مراقبہ" }) :
