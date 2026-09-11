@@ -30335,6 +30335,10 @@ function CommunitySection({
     };
     return copy[persona];
   };
+  const localizedMemberCount = (count: number) =>
+    `${count} ${count === 1
+      ? l("member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" })
+      : l("members", { hindi: "सदस्य", telugu: "సభ్యులు", tamil: "உறுப்பினர்கள்", urdu: "ارکان" })}`;
 
   useEffect(() => {
     setShowFullCommunity(false);
@@ -30498,8 +30502,10 @@ function CommunitySection({
             <Pressable
               key={emoji}
               accessibilityRole="button"
-              accessibilityLabel={`React with ${emoji}${count > 0 ? `, ${count} so far` : ""}`}
-              accessibilityHint={reactedByMe ? "Removes your reaction" : "Adds your reaction to this message"}
+              accessibilityLabel={`${l("Reaction", { hindi: "प्रतिक्रिया", telugu: "ప్రతిస్పందన", tamil: "எதிர்வினை", urdu: "ردعمل" })} ${emoji}${count > 0 ? `, ${localizedMemberCount(count)}` : ""}`}
+              accessibilityHint={reactedByMe
+                ? l("Removes your reaction", { hindi: "आपकी प्रतिक्रिया हटाता है", telugu: "మీ ప్రతిస్పందనను తొలగిస్తుంది", tamil: "உங்கள் எதிர்வினையை நீக்குகிறது", urdu: "آپ کا ردعمل ہٹا دیتا ہے" })
+                : l("Adds your reaction to this message", { hindi: "इस संदेश पर आपकी प्रतिक्रिया जोड़ता है", telugu: "ఈ సందేశానికి మీ ప్రతిస్పందనను జోడిస్తుంది", tamil: "இந்த செய்தியில் உங்கள் எதிர்வினையைச் சேர்க்கிறது", urdu: "اس پیغام پر آپ کا ردعمل شامل کرتا ہے" })}
               accessibilityState={{ selected: reactedByMe }}
               onPress={() => onToggleCommunityReaction(messageId, emoji)}
               style={({ pressed }) => [
@@ -31512,7 +31518,12 @@ function CommunitySection({
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={postingLocked ? l("Posting paused", { hindi: "पोस्टिंग रुकी हुई है", telugu: "పోస్టింగ్ నిలిపివేయబడింది", tamil: "பதிவிடுதல் இடைநிறுத்தப்பட்டது", urdu: "پوسٹنگ روک دی گئی ہے" }) : interactionLocked ? l("Room creation locked while intake is open", { hindi: "इंटेक खुला होने पर कमरा बनाना बंद है", telugu: "ఇన్‌టేక్ తెరిచి ఉన్నప్పుడు గది సృష్టి లాక్ చేయబడింది", tamil: "இணைப்பு திறந்திருக்கும் போது அறை உருவாக்கம் பூட்டப்பட்டுள்ளது", urdu: "انٹیک کھلا ہونے پر کمرہ بنانا بند ہے" }) : l("Create private room", { hindi: "निजी कमरा बनाएं", telugu: "ప్రైవేట్ గది సృష్టించండి", tamil: "தனிப்பட்ட அறை உருவாக்கவும்", urdu: "نجی کمرہ بنائیں" })}
-              accessibilityHint="Creates a new private room with the title and members you entered"
+              accessibilityHint={l("Creates a new private room with the title and members you entered", {
+                hindi: "आपके दिए शीर्षक और सदस्यों के साथ नया निजी कमरा बनाता है",
+                telugu: "మీరు ఇచ్చిన పేరు మరియు సభ్యులతో కొత్త ప్రైవేట్ గదిని సృష్టిస్తుంది",
+                tamil: "நீங்கள் உள்ளிட்ட தலைப்பு மற்றும் உறுப்பினர்களுடன் புதிய தனிப்பட்ட அறையை உருவாக்குகிறது",
+                urdu: "آپ کے درج کردہ عنوان اور ارکان کے ساتھ نیا نجی کمرہ بناتا ہے"
+              })}
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={() => {
                 const created = onCreatePrivateSpaceRoom({
@@ -31580,7 +31591,12 @@ function CommunitySection({
                 tamil: "தனிப்பட்ட அறை வரைவினை அழிக்கவும்",
                 urdu: "نجی کمرے کا مسودہ صاف کریں"
               })}
-              accessibilityHint="Erases the message you were about to send, without sending it"
+              accessibilityHint={l("Erases the message you were about to send, without sending it", {
+                hindi: "आपके भेजने वाले संदेश को भेजे बिना मिटाता है",
+                telugu: "మీరు పంపబోయే సందేశాన్ని పంపకుండా తొలగిస్తుంది",
+                tamil: "நீங்கள் அனுப்பவிருந்த செய்தியை அனுப்பாமல் அழிக்கிறது",
+                urdu: "آپ کے بھیجنے والے پیغام کو بھیجے بغیر مٹا دیتا ہے"
+              })}
               accessibilityState={{ disabled: postingLocked || interactionLocked }}
               onPress={() => setPrivateSpaceDraft("")}
               disabled={postingLocked || interactionLocked}
@@ -31611,7 +31627,7 @@ function CommunitySection({
                     tamil: "அறையைத் திறக்கவும்",
                     urdu: "کمرہ کھولیں"
                   })} ${thread.title}`}
-                  accessibilityHint={`${thread.kind === "group" ? l("Group room", { hindi: "समूह कमरा", telugu: "గ్రూప్ గది", tamil: "குழு அறை", urdu: "گروپ کمرہ" }) : l("Direct chat", { hindi: "सीधी चैट", telugu: "ప్రత్యక్ష చాట్", tamil: "நேரடி அரட்டை", urdu: "براہِ راست چیٹ" })} with ${thread.members.length} ${l("member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" })}${thread.members.length === 1 ? "" : "s"}`}
+                  accessibilityHint={`${thread.kind === "group" ? l("Group room", { hindi: "समूह कमरा", telugu: "గ్రూప్ గది", tamil: "குழு அறை", urdu: "گروپ کمرہ" }) : l("Direct chat", { hindi: "सीधी चैट", telugu: "ప్రత్యక్ష చాట్", tamil: "நேரடி அரட்டை", urdu: "براہِ راست چیٹ" })} · ${localizedMemberCount(thread.members.length)}`}
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => setPrivateSpaceSelectedThreadId(thread.id)}
                   style={[
@@ -31626,8 +31642,7 @@ function CommunitySection({
                         {thread.title}
                       </Text>
                       <Text style={styles.privateRoomMeta}>
-                        {thread.kind === "group" ? l("Group room", { hindi: "समूह कमरा", telugu: "గ్రూప్ గది", tamil: "குழு அறை", urdu: "گروپ کمرہ" }) : l("Direct chat", { hindi: "सीधी चैट", telugu: "ప్రత్యక్ష చాట్", tamil: "நேரடி அரட்டை", urdu: "براہِ راست چیٹ" })} / {thread.members.length} {l("member", { hindi: "सदस्य", telugu: "సభ్యుడు", tamil: "உறுப்பினர்", urdu: "رکن" })}
-                        {thread.members.length === 1 ? "" : "s"}
+                        {thread.kind === "group" ? l("Group room", { hindi: "समूह कमरा", telugu: "గ్రూప్ గది", tamil: "குழு அறை", urdu: "گروپ کمرہ" }) : l("Direct chat", { hindi: "सीधी चैट", telugu: "ప్రత్యক্ষ చాట్", tamil: "நேரடி அரட்டை", urdu: "براہِ راست چیٹ" })} / {localizedMemberCount(thread.members.length)}
                       </Text>
                     </View>
                     <Text style={styles.privateRoomUpdated}>{formatDate(thread.updatedAt)}</Text>

@@ -41,6 +41,9 @@ assert(source.includes('const localizedPersonaCopy = (persona: CommunityChatPers
 assert((source.match(/\{ id: "identity", label:/g) ?? []).length === 1, "Community topic filters must contain one Identity option.");
 assert(source.includes('l("NAYIQ guide: thank you for sharing that.'), "Community feed guidance must use localized copy.");
 assert(source.includes('l("Support voice: thank you for sharing that.'), "Community chat guidance must use localized copy.");
+assert(!source.includes('accessibilityHint="Creates a new private room'), "Private-room creation hint must not fall back to English.");
+assert(!source.includes('accessibilityHint="Erases the message you were about to send'), "Private-room draft hint must not fall back to English.");
+assert(!source.includes('accessibilityLabel={`React with ${emoji}'), "Community reaction labels must use localized copy.");
 assert(source.includes('getRedressReviewState()'), "Redress review expiry is not enforced in the UI.");
 assert(source.includes('function exportComplaintLetterPdf') && source.includes('Print.printAsync'), "Complaint-letter PDF export is missing.");
 assert(source.includes('Save PDF'), "Save-as-PDF button is not rendered on the complaint letter.");
