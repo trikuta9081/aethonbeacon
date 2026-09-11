@@ -133,6 +133,8 @@ assert(source.includes('Unsaved changes ready. Tap Save & Analyse to refresh the
 assert(source.includes('The chart below still uses your last saved details.'), 'Birth-chart form must disclose when the visible chart is based on older saved details');
 assert(source.includes('Calculation basis'), 'Vedic chart must expose a compact calculation-basis summary');
 assert(source.includes('transits refreshed today'), 'Vedic chart must disclose transit freshness');
+assert(source.includes('const dateLocale = languageId === "hindi" ? "hi-IN"'), 'Daily Vedic card must format dates using the active language locale');
+assert(source.includes('const varaName = languageId === "english" ? vara.en : languageId === "hindi" ? vara.hi : vara.name'), 'Daily Vedic card must localize its weekday display');
 assert(/sadeSatiPhase/.test(source), 'Sade Sati detection is missing from the gochar layer');
 assert(source.includes('getNavagrahaLongitudes(new Date(date.getTime() + MS_PER_DAY))'), 'Gochar retrograde detection (next-day motion) is missing');
 

@@ -38249,7 +38249,10 @@ function VedicDailyCard({
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const today = new Date();
-  const dateLabel = today.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+  const dateLocale = languageId === "hindi" ? "hi-IN" : languageId === "telugu" ? "te-IN" : languageId === "tamil" ? "ta-IN" : languageId === "urdu" ? "ur-IN" : "en-IN";
+  const dateLabel = today.toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
+  const varaName = languageId === "english" ? vara.en : languageId === "hindi" ? vara.hi : vara.name;
+  const rashiDisplayName = languageId === "english" ? rashi.en : rashi.name;
   // Memoized: recomputing all lunar dimensions on every render (e.g. window
   // resize, unrelated state) is wasteful. Keyed on the birth-derived inputs so
   // it only recomputes when the chart actually changes.
@@ -38283,7 +38286,7 @@ function VedicDailyCard({
         </View>
         <View style={styles.vedicRashiBadge}>
           <Text style={styles.vedicRashiSymbol}>{rashi.symbol}</Text>
-          <Text style={styles.vedicRashiName}>{rashi.name}</Text>
+          <Text style={styles.vedicRashiName}>{rashiDisplayName}</Text>
         </View>
       </View>
 
@@ -38335,7 +38338,7 @@ function VedicDailyCard({
       <View style={styles.vedicVaraRow}>
         <Text style={[styles.vedicVaraEmoji]}>{vara.emoji}</Text>
         <View style={styles.vedicVaraText}>
-          <Text style={styles.vedicVaraName}>{vara.name} · {vara.planet}</Text>
+          <Text style={styles.vedicVaraName}>{varaName} · {vara.planet}</Text>
           <Text style={styles.vedicVaraMantra}>{vara.mantra}</Text>
         </View>
       </View>
@@ -38378,7 +38381,7 @@ function VedicDailyCard({
 
       {/* Main prediction */}
       <View style={styles.vedicPredSection}>
-        <Text style={styles.vedicPredTitle}>{l("Today's Reading for", { hindi: "आज का पठन", telugu: "ఈరోజు పఠనం", tamil: "இன்றைய வாசிப்பு", urdu: "آج کی ریڈنگ" })} {rashi.name} ({rashi.en})</Text>
+        <Text style={styles.vedicPredTitle}>{l("Today's Reading for", { hindi: "आज का पठन", telugu: "ఈరోజు పఠనం", tamil: "இன்றைய வாசிப்பு", urdu: "آج کی ریڈنگ" })} {rashiDisplayName} ({rashi.en})</Text>
         {predictionLines.map((line, i) => {
           const icons = ["💼","❤️","🌿","🕉️"];
           return (
