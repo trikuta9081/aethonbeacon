@@ -34788,21 +34788,26 @@ function StateOfficerDirectoryCard({
           { label: l("National Cyber Crime Reporting Portal", { hindi: "राष्ट्रीय साइबर अपराध रिपोर्टिंग पोर्टल" }), note: l("Report cybercrime online; call 1930 promptly for financial cyber fraud.", { hindi: "साइबर अपराध ऑनलाइन दर्ज करें; वित्तीय साइबर धोखाधड़ी में तुरंत 1930 पर कॉल करें।" }), url: "https://www.cybercrime.gov.in/", color: "#3730A3" },
           { label: l("State/UT cyber nodal and grievance contacts", { hindi: "राज्य/केंद्रशासित प्रदेश साइबर संपर्क" }), note: l("Official escalation contacts when a cyber complaint needs follow-up.", { hindi: "साइबर शिकायत पर आगे कार्रवाई के लिए आधिकारिक संपर्क।" }), url: "https://www.cybercrime.gov.in/Webform/Crime_NodalGrivanceList.aspx", color: "#3730A3" },
         ].map((item) => (
-          <Pressable
-            key={item.url}
-            accessibilityRole="button"
-            accessibilityLabel={`${item.label}. ${item.note}`}
-            onPress={() => void openWebsite(item.url, item.label)}
-            style={({ pressed }) => ({ flexDirection: "row", alignItems: "flex-start", gap: 9, padding: 9, borderRadius: 9, backgroundColor: pressed ? item.color + "18" : "#FFFFFF", borderWidth: 1, borderColor: item.color + "45" })}
-          >
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: item.color, fontSize: 12, lineHeight: 17, fontWeight: "800" }}>{item.label}</Text>
-              <Text style={{ color: "#111827", fontSize: 11, lineHeight: 16, marginTop: 2, fontWeight: "600" }}>{item.note}</Text>
-            </View>
-            <Text style={{ color: item.color, fontSize: 15, fontWeight: "900" }}>↗</Text>
-          </Pressable>
+          (() => {
+            const accent = highContrastAccent(item.color);
+            return (
+              <Pressable
+                key={item.url}
+                accessibilityRole="button"
+                accessibilityLabel={`${item.label}. ${item.note}`}
+                onPress={() => void openWebsite(item.url, item.label)}
+                style={({ pressed }) => ({ flexDirection: "row", alignItems: "flex-start", gap: 9, padding: 9, borderRadius: 9, backgroundColor: pressed ? accent + "18" : "#FFFFFF", borderWidth: 1, borderColor: accent + "45" })}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: accent, fontSize: 12, lineHeight: 17, fontWeight: "800" }}>{item.label}</Text>
+                  <Text style={{ color: "#111827", fontSize: 12, lineHeight: 16, marginTop: 2, fontWeight: "600" }}>{item.note}</Text>
+                </View>
+                <Text style={{ color: accent, fontSize: 15, fontWeight: "900" }}>↗</Text>
+              </Pressable>
+            );
+          })()
         ))}
-        <Text style={{ color: "#374151", fontSize: 11, lineHeight: 16, fontStyle: "italic" }}>
+        <Text style={{ color: "#374151", fontSize: 12, lineHeight: 16, fontStyle: "italic" }}>
           {l("Station, SSP/DCP/DC and SHO details change. This app intentionally links to official live sources instead of storing numbers that can become unsafe or wrong.", { hindi: "थाना, SSP/DCP/DC और SHO की जानकारी बदलती रहती है। गलत या असुरक्षित नंबर रखने के बजाय यह ऐप आधिकारिक लाइव स्रोतों से जोड़ता है।" })}
         </Text>
       </View>
@@ -49060,8 +49065,8 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   topTabLabelNarrow: {
-    fontSize: 11,
-    lineHeight: 14,
+    fontSize: 12,
+    lineHeight: 16,
     letterSpacing: -0.1
   },
 
@@ -49097,7 +49102,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7
   },
   topStatusChipNarrow: {
-    minHeight: 42,
+    minHeight: 44,
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 14,
@@ -51426,7 +51431,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7
   },
   topLanguageChipNarrow: {
-    minHeight: 42,
+    minHeight: 44,
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 14
