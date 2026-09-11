@@ -11651,7 +11651,9 @@ function getTabIssueHint(issueId: IssueId, tab: TabIssueHintTab): string {
   return issueHints[tab] ?? issueHints["journal"];
 }
 
-function buildGuidedSupportQuickStarters(route: GuidedSupportRoute, issueLabel: string, identityLabel: string) {
+function buildGuidedSupportQuickStarters(route: GuidedSupportRoute, issueLabel: string, identityLabel: string, languageId: LanguageId = "english") {
+  const label = (english: string, translations: Partial<Record<LanguageId, string>>) =>
+    pickLocalizedText(languageId, { english, ...translations });
   const safeIssueLabel = issueLabel.trim().length > 0 ? issueLabel.trim().toLowerCase() : "this issue";
   const safeIdentityLabel = identityLabel.trim().length > 0 ? identityLabel.trim() : "my role";
 
@@ -11659,17 +11661,17 @@ function buildGuidedSupportQuickStarters(route: GuidedSupportRoute, issueLabel: 
     return [
       {
         id: "urgent-sos",
-        label: "Use SOS",
+        label: label("Use SOS", { hindi: "SOS का उपयोग करें", telugu: "SOS ఉపయోగించండి", tamil: "SOS பயன்படுத்தவும்", urdu: "SOS استعمال کریں" }),
         prompt: "I may be unsafe right now. Tell me the fastest safe step."
       },
       {
         id: "urgent-stay",
-        label: "Stay with me",
+        label: label("Stay with me", { hindi: "मेरे साथ रहें", telugu: "నాతో ఉండండి", tamil: "என்னுடன் இருங்கள்", urdu: "میرے ساتھ رہیں" }),
         prompt: "Help me stay calm and safe while I wait for support."
       },
       {
         id: "urgent-call",
-        label: "Call now",
+        label: label("Call now", { hindi: "अभी कॉल करें", telugu: "ఇప్పుడే కాల్ చేయండి", tamil: "இப்போது அழைக்கவும்", urdu: "ابھی کال کریں" }),
         prompt: "Tell me exactly who to call first and what to say."
       }
     ];
@@ -11679,17 +11681,17 @@ function buildGuidedSupportQuickStarters(route: GuidedSupportRoute, issueLabel: 
     return [
       {
         id: "redress-facts",
-        label: "Write facts",
+        label: label("Write facts", { hindi: "तथ्य लिखें", telugu: "వాస్తవాలు రాయండి", tamil: "உண்மைகளை எழுதவும்", urdu: "حقائق لکھیں" }),
         prompt: `I need to write the facts for a complaint about ${safeIssueLabel}.`
       },
       {
         id: "redress-office",
-        label: "First office",
+        label: label("First office", { hindi: "पहला कार्यालय", telugu: "మొదటి కార్యాలయం", tamil: "முதல் அலுவலகம்", urdu: "پہلا دفتر" }),
         prompt: "Tell me the first office or authority I should approach."
       },
       {
         id: "redress-escalate",
-        label: "Escalate later",
+        label: label("Escalate later", { hindi: "बाद में ऊपर बढ़ाएं", telugu: "తర్వాత పైస్థాయికి తీసుకెళ్లండి", tamil: "பின்னர் மேல்முறையீடு செய்யவும்", urdu: "بعد میں اوپر لے جائیں" }),
         prompt: "What should I do if the first office ignores or delays me?"
       }
     ];
@@ -11699,17 +11701,17 @@ function buildGuidedSupportQuickStarters(route: GuidedSupportRoute, issueLabel: 
     return [
       {
         id: "professional-symptoms",
-        label: "Symptoms",
+        label: label("Symptoms", { hindi: "लक्षण", telugu: "లక్షణాలు", tamil: "அறிகுறிகள்", urdu: "علامات" }),
         prompt: `My ${safeIssueLabel} symptoms are affecting sleep, body, or daily function.`
       },
       {
         id: "professional-help",
-        label: "Nearby help",
+        label: label("Nearby help", { hindi: "नज़दीकी सहायता", telugu: "సమీప సహాయం", tamil: "அருகிலுள்ள உதவி", urdu: "قریبی مدد" }),
         prompt: `Show the best nearby psychologist, counselor, or doctor support for ${safeIdentityLabel}.`
       },
       {
         id: "professional-next",
-        label: "Next step",
+        label: label("Next step", { hindi: "अगला कदम", telugu: "తదుపరి అడుగు", tamil: "அடுத்த படி", urdu: "اگلا قدم" }),
         prompt: "Tell me the safest next step before I decide whether to seek professional help."
       }
     ];
@@ -11719,17 +11721,17 @@ function buildGuidedSupportQuickStarters(route: GuidedSupportRoute, issueLabel: 
     return [
       {
         id: "guide-feeling",
-        label: "Feeling",
+        label: label("Feeling", { hindi: "भावना", telugu: "భావన", tamil: "உணர்வு", urdu: "احساس" }),
         prompt: `I am dealing with ${safeIssueLabel}. Help me name what I feel first.`
       },
       {
         id: "guide-trigger",
-        label: "Trigger",
+        label: label("Trigger", { hindi: "कारण", telugu: "ట్రిగర్", tamil: "தூண்டுதல்", urdu: "محرک" }),
         prompt: `What usually triggers this ${safeIssueLabel} feeling for a ${safeIdentityLabel}?`
       },
       {
         id: "guide-body",
-        label: "Body",
+        label: label("Body", { hindi: "शरीर", telugu: "శరీరం", tamil: "உடல்", urdu: "جسم" }),
         prompt: `How can I calm my body before I act on ${safeIssueLabel}?`
       }
     ];
@@ -11738,17 +11740,17 @@ function buildGuidedSupportQuickStarters(route: GuidedSupportRoute, issueLabel: 
   return [
     {
       id: "general-feeling",
-      label: "Feeling",
+      label: label("Feeling", { hindi: "भावना", telugu: "భావన", tamil: "உணர்வு", urdu: "احساس" }),
       prompt: "Help me name what I am feeling right now."
     },
     {
       id: "general-trigger",
-      label: "Trigger",
+      label: label("Trigger", { hindi: "कारण", telugu: "ట్రిగర్", tamil: "தூண்டுதல்", urdu: "محرک" }),
       prompt: "Help me understand what triggered this feeling."
     },
     {
       id: "general-next",
-      label: "Next step",
+      label: label("Next step", { hindi: "अगला कदम", telugu: "తదుపరి అడుగు", tamil: "அடுத்த படி", urdu: "اگلا قدم" }),
       prompt: "I need the smallest useful next step after I say how I feel."
     }
   ];
@@ -25722,7 +25724,12 @@ function isTrustedExternalUrl(url: string) {
                     })}
                   </Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>
-                    {7 - weekEntries.length} more check-in{7 - weekEntries.length === 1 ? "" : "s"} this week and your weekly pattern read gets a lot sharper.
+                    {l(`${7 - weekEntries.length} more check-in${7 - weekEntries.length === 1 ? "" : "s"} this week and your weekly pattern read gets a lot sharper.`, {
+                      hindi: `इस सप्ताह ${7 - weekEntries.length} और चेक-इन करें, तब आपका साप्ताहिक पैटर्न अधिक स्पष्ट होगा।`,
+                      telugu: `ఈ వారం ఇంకా ${7 - weekEntries.length} చెక్-ఇన్‌లు చేయండి; అప్పుడు మీ వారపు నమూనా మరింత స్పష్టమవుతుంది.`,
+                      tamil: `இந்த வாரம் இன்னும் ${7 - weekEntries.length} செக்-இன்களைச் செய்யுங்கள்; உங்கள் வாராந்திர போக்கு மேலும் தெளிவாகும்.`,
+                      urdu: `اس ہفتے مزید ${7 - weekEntries.length} چیک اِن کریں، پھر آپ کا ہفتہ وار پیٹرن زیادہ واضح ہوگا۔`
+                    })}
                   </Text>
                 </View>
               ) : monthEntries.length < 30 ? (
@@ -25737,7 +25744,12 @@ function isTrustedExternalUrl(url: string) {
                     })}
                   </Text>
                   <Text style={{ color: "#263244", fontSize: 12, flex: 1 }}>
-                    {30 - monthEntries.length} more check-ins toward a full month — that's where the monthly rhythm becomes reliable.
+                    {l(`${30 - monthEntries.length} more check-ins toward a full month — that's where the monthly rhythm becomes reliable.`, {
+                      hindi: `पूरे महीने के लिए ${30 - monthEntries.length} और चेक-इन चाहिए — तभी मासिक लय अधिक भरोसेमंद होगी।`,
+                      telugu: `పూర్తి నెలకు ఇంకా ${30 - monthEntries.length} చెక్-ఇన్‌లు కావాలి — అప్పుడు నెలవారీ లయ మరింత నమ్మదగినదవుతుంది.`,
+                      tamil: `முழு மாதத்திற்கு இன்னும் ${30 - monthEntries.length} செக்-இன்கள் தேவை — அப்போதுதான் மாதாந்திர போக்கு நம்பகமாகும்.`,
+                      urdu: `پورے مہینے کے لیے مزید ${30 - monthEntries.length} چیک اِن درکار ہیں، تب ماہانہ معمول زیادہ قابلِ اعتماد ہوگا۔`
+                    })}
                   </Text>
                 </View>
               ) : null}
@@ -29760,7 +29772,8 @@ function GuidedSupportSection({
   const visibleStarters = buildGuidedSupportQuickStarters(
     latestGuidedSupportMessage.route,
     selectedIssueGuideLabel,
-    selectedIdentityLabel
+    selectedIdentityLabel,
+    languageId
   );
   const starterButtons = compact ? visibleStarters.slice(0, 2) : visibleStarters;
   const birthChartContextPrefix =
@@ -33291,6 +33304,75 @@ function getIssuePathDepth(issueId: IssueId): IssuePathDepth {
   return issuePathDepthByIssue[issueId] ?? issuePathDepthByIssue.general;
 }
 
+function localizeIssuePathDepth(issueId: IssueId, languageId: LanguageId): IssuePathDepth {
+  const depth = getIssuePathDepth(issueId);
+  if (languageId === "english") return depth;
+  const localized = {
+    hindi: {
+      principle: "जो हुआ, जो महसूस हो रहा है, और अगला ज़रूरी कदम अलग-अलग देखें।",
+      discernmentQuestion: "इस स्थिति में प्रमाणित तथ्य क्या है, और कौन-सी बात केवल आशंका या व्याख्या है?",
+      practice: "चार छोटी पंक्तियाँ लिखें: तथ्य, भावना, ज़रूरत, अगला कदम। पूरी ज़िंदगी हल नहीं करनी है; बस अगला ईमानदार कदम चुनें।",
+      boundary: "उपलब्ध प्रमाण से स्थिति को बड़ा न बनाएं। सुरक्षा या कानूनी जोखिम हो तो पहले मदद और शिकायत खोलें।",
+      completion: "एक ठोस अगला कदम चुना गया है और समस्या के लिए स्पष्ट रास्ता मौजूद है।"
+    },
+    telugu: {
+      principle: "ఏం జరిగింది, ఏమి అనిపిస్తోంది, మరియు అవసరమైన తదుపరి చర్యను వేరుగా చూడండి.",
+      discernmentQuestion: "ఈ పరిస్థితిలో నిర్ధారిత వాస్తవం ఏమిటి, కేవలం ఊహ లేదా భయం ఏమిటి?",
+      practice: "నాలుగు చిన్న పంక్తులు రాయండి: వాస్తవం, భావన, అవసరం, తదుపరి అడుగు.",
+      boundary: "అందుబాటులో ఉన్న ఆధారాల కంటే పరిస్థితిని పెద్దదిగా చేయవద్దు. భద్రత లేదా చట్టపరమైన ప్రమాదం ఉంటే ముందుగా సహాయం తెరవండి.",
+      completion: "ఒక స్పష్టమైన తదుపరి అడుగు ఎంచుకోబడింది మరియు సమస్యకు సరైన మార్గం ఉంది."
+    },
+    tamil: {
+      principle: "என்ன நடந்தது, என்ன உணர்கிறீர்கள், அடுத்து தேவையான செயல் ஆகியவற்றைத் தனித்தனியாகப் பாருங்கள்.",
+      discernmentQuestion: "இந்த நிலைமையில் உறுதிப்படுத்தப்பட்ட உண்மை எது, வெறும் ஊகம் அல்லது பயம் எது?",
+      practice: "நான்கு குறுகிய வரிகளை எழுதுங்கள்: உண்மை, உணர்வு, தேவை, அடுத்த படி.",
+      boundary: "கிடைக்கும் ஆதாரங்களை விட நிலைமையைப் பெரிதாக்க வேண்டாம். பாதுகாப்பு அல்லது சட்ட ஆபத்து இருந்தால் முதலில் உதவியைத் திறக்கவும்.",
+      completion: "ஒரு தெளிவான அடுத்த படி தேர்ந்தெடுக்கப்பட்டு, சிக்கலுக்கு ஒரு பாதை உள்ளது."
+    },
+    urdu: {
+      principle: "جو ہوا، جو محسوس ہو رہا ہے، اور اگلا ضروری قدم الگ الگ دیکھیں۔",
+      discernmentQuestion: "اس صورتحال میں تصدیق شدہ حقیقت کیا ہے، اور کون سی بات صرف اندیشہ یا تشریح ہے؟",
+      practice: "چار مختصر سطریں لکھیں: حقیقت، احساس، ضرورت، اگلا قدم۔ پوری زندگی حل نہیں کرنی؛ صرف اگلا ایماندار قدم چنیں۔",
+      boundary: "دستیاب ثبوت سے صورتحال کو بڑا نہ بنائیں۔ حفاظت یا قانونی خطرہ ہو تو پہلے مدد اور ازالہ کھولیں۔",
+      completion: "ایک واضح اگلا قدم چنا گیا ہے اور مسئلے کا مناسب راستہ موجود ہے۔"
+    }
+  }[languageId as "hindi" | "telugu" | "tamil" | "urdu"];
+  return localized ?? depth;
+}
+
+function localizeIssueGuideSummary(guide: IssueGuide, languageId: LanguageId): string {
+  if (languageId === "english") return guide.summary;
+  return pickLocalizedText(languageId, {
+    english: guide.summary,
+    hindi: "इस चिंता को शांत और व्यावहारिक तरीके से समझें, फिर वही अगला कदम चुनें जो इस स्थिति के लिए सचमुच उपयोगी हो।",
+    telugu: "ఈ సమస్యను ప్రశాంతంగా, ఆచరణాత్మకంగా అర్థం చేసుకుని, ఈ పరిస్థితికి నిజంగా ఉపయోగపడే తదుపరి అడుగును ఎంచుకోండి.",
+    tamil: "இந்த கவலையை அமைதியாகவும் நடைமுறையாகவும் புரிந்துகொண்டு, இந்த நிலைக்கு உண்மையில் உதவும் அடுத்த படியைத் தேர்ந்தெடுக்கவும்.",
+    urdu: "اس تشویش کو پُرسکون اور عملی انداز میں سمجھیں، پھر وہ اگلا قدم چنیں جو واقعی اس صورتحال کے لیے مفید ہو۔"
+  });
+}
+
+function localizeIssueGuideSubtitle(guide: IssueGuide, languageId: LanguageId): string {
+  if (languageId === "english") return guide.subtitle;
+  return pickLocalizedText(languageId, {
+    english: guide.subtitle,
+    hindi: "जब इस चिंता को पहले समझना हो",
+    telugu: "ఈ సమస్యను ముందుగా అర్థం చేసుకోవాల్సినప్పుడు",
+    tamil: "இந்த கவலையை முதலில் புரிந்துகொள்ள வேண்டியபோது",
+    urdu: "جب اس تشویش کو پہلے سمجھنا ہو"
+  });
+}
+
+function localizeIssueGuideSteps(guide: IssueGuide, languageId: LanguageId): string[] {
+  if (languageId === "english") return guide.steps;
+  return pickLocalizedText(languageId, {
+    english: guide.steps.join("||"),
+    hindi: "तथ्य और तात्कालिकता अलग करें।||इस स्थिति के लिए सही रास्ता चुनें।||एक सुरक्षित और मापने योग्य अगला कदम लें।",
+    telugu: "వాస్తవాలు మరియు అత్యవసరతను వేరు చేయండి.||ఈ పరిస్థితికి సరైన మార్గాన్ని ఎంచుకోండి.||ఒక సురక్షితమైన, కొలవగల తదుపరి అడుగు వేయండి.",
+    tamil: "உண்மை மற்றும் அவசரத்தைப் பிரிக்கவும்.||இந்த நிலைக்கு ஏற்ற பாதையைத் தேர்ந்தெடுக்கவும்.||ஒரு பாதுகாப்பான, அளவிடக்கூடிய அடுத்த படியை எடுக்கவும்.",
+    urdu: "حقائق اور فوری ضرورت کو الگ کریں۔||اس صورتحال کے لیے درست راستہ چنیں۔||ایک محفوظ اور قابلِ پیمائش اگلا قدم لیں۔"
+  }).split("||");
+}
+
 function IssueGuideSection({
   issueGuides,
   selectedIssueGuide,
@@ -33351,8 +33433,15 @@ function IssueGuideSection({
   const issueDisplayLabel = selectedIssueGuide.id === "general"
     ? l("A clear starting point", { hindi: "एक साफ़ शुरुआत", telugu: "స్పష్టమైన ప్రారంభ స్థలం", tamil: "தெளிவான தொடக்கம்", urdu: "واضح آغاز" })
     : localizedIssueGuideLabel(selectedIssueGuide.id, languageId);
-  const pathDepth = getIssuePathDepth(selectedIssueGuide.id);
+  const pathDepth = localizeIssuePathDepth(selectedIssueGuide.id, languageId);
+  const issueSteps = localizeIssueGuideSteps(selectedIssueGuide, languageId);
   const pathCalmProgram = (ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS.general)[0];
+  const pathCalmProgramName = l(pathCalmProgram.name, {
+    hindi: pathCalmProgram.name === "Morning Set" ? "सुबह की तैयारी" : pathCalmProgram.name,
+    telugu: pathCalmProgram.name === "Morning Set" ? "ఉదయ సిద్ధత" : pathCalmProgram.name,
+    tamil: pathCalmProgram.name === "Morning Set" ? "காலை தயாரிப்பு" : pathCalmProgram.name,
+    urdu: pathCalmProgram.name === "Morning Set" ? "صبح کی تیاری" : pathCalmProgram.name
+  });
   const moonChartComplement = useMemo(
     () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChartInsightReadings ?? []),
     [selectedIssueGuide.id, moonChartInsightReadings]
@@ -33380,16 +33469,16 @@ function IssueGuideSection({
       number: "1",
       eyebrow: l("Stabilise now", { hindi: "अभी स्थिर करें", telugu: "ఇప్పుడే స్థిరపరచండి", tamil: "இப்போது நிலைநிறுத்தவும்", urdu: "ابھی متوازن کریں" }),
       title: l(`Use ${pathCalmProgram.name} for ${pathCalmProgram.duration} minutes`, {
-        hindi: `${pathCalmProgram.duration} मिनट के लिए ${pathCalmProgram.name} का उपयोग करें`,
-        telugu: `${pathCalmProgram.duration} నిమిషాల పాటు ${pathCalmProgram.name} ఉపయోగించండి`,
-        tamil: `${pathCalmProgram.duration} நிமிடங்களுக்கு ${pathCalmProgram.name}-ஐப் பயன்படுத்தவும்`,
-        urdu: `${pathCalmProgram.duration} منٹ کے لیے ${pathCalmProgram.name} استعمال کریں`
+        hindi: `${pathCalmProgram.duration} मिनट के लिए ${pathCalmProgramName} का उपयोग करें`,
+        telugu: `${pathCalmProgram.duration} నిమిషాల పాటు ${pathCalmProgramName} ఉపయోగించండి`,
+        tamil: `${pathCalmProgram.duration} நிமிடங்களுக்கு ${pathCalmProgramName}-ஐப் பயன்படுத்தவும்`,
+        urdu: `${pathCalmProgram.duration} منٹ کے لیے ${pathCalmProgramName} استعمال کریں`
       }),
       text: l(`${pathCalmProgram.purpose} Return here afterwards for the practical action.`, {
-        hindi: `${pathCalmProgram.purpose} बाद में व्यावहारिक कदम के लिए यहाँ लौटें.`,
-        telugu: `${pathCalmProgram.purpose} తర్వాత ఆచరణాత్మక చర్య కోసం ఇక్కడికి తిరిగి రండి.`,
-        tamil: `${pathCalmProgram.purpose} பின்னர் நடைமுறை நடவடிக்கைக்காக இங்கே திரும்பவும்.`,
-        urdu: `${pathCalmProgram.purpose} کے بعد عملی اقدام کے لیے یہاں واپس آئیں۔`
+        hindi: "मन को स्थिर करने के बाद व्यावहारिक कदम के लिए यहाँ लौटें।",
+        telugu: "మనసును స్థిరపరిచిన తర్వాత ఆచరణాత్మక చర్య కోసం ఇక్కడికి తిరిగి రండి.",
+        tamil: "மனதை நிலைநிறுத்திய பிறகு நடைமுறை நடவடிக்கைக்காக இங்கே திரும்பவும்.",
+        urdu: "ذہن کو متوازن کرنے کے بعد عملی اقدام کے لیے یہاں واپس آئیں۔"
       }),
       action: l("Open Calm", { hindi: "शांति खोलें", telugu: "ప్రశాంతత తెరవండి", tamil: "அமைதியைத் திறக்கவும்", urdu: "سکون کھولیں" }),
       onPress: onOpenCalm,
@@ -33421,7 +33510,7 @@ function IssueGuideSection({
         urdu: "حد کو محفوظ رکھیں اور ایک نپا تلا قدم اٹھائیں"
       }),
       text: pathDepth.boundary,
-      action: l("Open Help if needed", { hindi: "ज़रूरत हो तो Help खोलें", telugu: "అవసరమైతే Help తెరవండి", tamil: "தேவைப்பட்டால் Help திறக்கவும்", urdu: "اگر ضرورت ہو تو Help کھولیں" }),
+      action: l("Open Help if needed", { hindi: "ज़रूरत हो तो मदद खोलें", telugu: "అవసరమైతే సహాయం తెరవండి", tamil: "தேவைப்பட்டால் உதவியைத் திறக்கவும்", urdu: "ضرورت ہو تو مدد کھولیں" }),
       onPress: onOpenRedress,
       accent: "#9A3412"
     }
@@ -33492,10 +33581,10 @@ function IssueGuideSection({
       icon: "🛡️",
       title: l("Help and Redress", { hindi: "मदद और शिकायत", telugu: "సహాయం మరియు పరిష్కారం", tamil: "உதவி மற்றும் தீர்வு", urdu: "مدد اور ازالہ" }),
       benefit: l("Use official support, evidence, complaint, and escalation routes.", {
-        hindi: "आधिकारिक सहायता, साक्ष्य, शिकायत, और ऊपर बढ़ाने वाले रास्तों का उपयोग करें.",
-        telugu: "అధికారిక మద్దతు, సాక్ష్యం, ఫిర్యాదు, మరియు escalation మార్గాలను ఉపయోగించండి.",
-        tamil: "அதிகாரப்பூர்வ ஆதரவு, சான்று, புகார், மற்றும் escalation வழிகளைப் பயன்படுத்துங்கள்.",
-        urdu: "سرکاری مدد، ثبوت، شکایت، اور escalation راستوں کا استعمال کریں۔"
+        hindi: "आधिकारिक सहायता, साक्ष्य, शिकायत और आगे बढ़ाने के रास्तों का उपयोग करें।",
+        telugu: "అధికారిక మద్దతు, సాక్ష్యం, ఫిర్యాదు మరియు తదుపరి స్థాయి మార్గాలను ఉపయోగించండి.",
+        tamil: "அதிகாரப்பூர்வ ஆதரவு, சான்று, புகார் மற்றும் மேல்நிலை வழிகளைப் பயன்படுத்துங்கள்.",
+        urdu: "سرکاری مدد، ثبوت، شکایت اور اگلے مرحلے کے راستے استعمال کریں۔"
       }),
       action: l("Open action hub", { hindi: "एक्शन हब खोलें", telugu: "యాక్షన్ హబ్ తెరవండి", tamil: "செயல் மையத்தைத் திறக்கவும்", urdu: "ایکشن ہب کھولیں" }),
       onPress: onOpenRedress
@@ -33505,10 +33594,10 @@ function IssueGuideSection({
       icon: "💬",
       title: l("Community", { hindi: "समुदाय", telugu: "సమాజం", tamil: "சமூகம்", urdu: "برادری" }),
       benefit: l("Seek moderated peer perspective without replacing professional care.", {
-        hindi: "पेशेवर देखभाल की जगह लिए बिना moderated peer perspective लें.",
+        hindi: "पेशेवर देखभाल की जगह लिए बिना संयमित सहकर्मी दृष्टि लें।",
         telugu: "వృత్తిపరమైన సంరక్షణను భర్తీ చేయకుండా నియంత్రిత సహచర దృష్టిని పొందండి.",
-        tamil: "தொழில்முறை பராமரிப்பை மாற்றாமல், moderated peer perspective-ஐப் பெறுங்கள்.",
-        urdu: "پیشہ ورانہ دیکھ بھال کی جگہ لیے بغیر moderated peer perspective حاصل کریں۔"
+        tamil: "தொழில்முறை பராமரிப்பை மாற்றாமல், கட்டுப்படுத்தப்பட்ட சக ஆதரவைப் பெறுங்கள்.",
+        urdu: "پیشہ ورانہ دیکھ بھال کی جگہ لیے بغیر معتدل ساتھی رائے حاصل کریں۔"
       }),
       action: l("Open messages", { hindi: "संदेश खोलें", telugu: "సందేశాలు తెరవండి", tamil: "செய்திகளைத் திறக்கவும்", urdu: "پیغامات کھولیں" }),
       onPress: () => onOpenTab("community")
@@ -33530,7 +33619,7 @@ function IssueGuideSection({
           <View style={styles.issuePlanHeroCopy}>
             <Text style={styles.eyebrow}>{l("Your coordinated plan", { hindi: "आपकी समन्वित योजना", telugu: "మీ సమన్విత ప్రణాళిక", tamil: "உங்கள் ஒருங்கிணைந்த திட்டம்", urdu: "آپ کا مربوط منصوبہ" })}</Text>
             <Text style={styles.issuePlanHeroTitle}>{issueDisplayLabel}</Text>
-            <Text style={styles.issuePlanHeroLead}>{selectedIssueGuide.summary}</Text>
+            <Text style={styles.issuePlanHeroLead}>{localizeIssueGuideSummary(selectedIssueGuide, languageId)}</Text>
           </View>
           <View style={styles.issuePlanStatusPill}>
             <Text style={styles.issuePlanStatusValue}>{issueCompletionCount}/3</Text>
@@ -33557,7 +33646,7 @@ function IssueGuideSection({
             <Text style={styles.eyebrow}>{l("Focus", { hindi: "फोकस", telugu: "ఫోకస్", tamil: "கவனம்", urdu: "فوکس" })}</Text>
             <Text style={styles.sectionTitleSmall}>{l("Is this the right concern?", { hindi: "क्या यह सही चिंता है?", telugu: "ఇదే సరైన అంశమా?", tamil: "இது சரியான கவலையா?", urdu: "کیا یہی درست مسئلہ ہے؟" })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
+          <Text style={styles.smallMeta}>{l(selectedIdentity.label, { hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label })}</Text>
         </View>
         <Text style={styles.promptText}>
           {l("Keep this focus or choose another. Counselling can refine an unclear concern without forcing a label.", {
@@ -33579,7 +33668,7 @@ function IssueGuideSection({
                 style={[styles.issueChip, isSelected && styles.issueChipActive]}
               >
                 <Text style={[styles.issueChipLabel, isSelected && styles.issueChipLabelActive]}>{localizedIssueGuideLabel(guide.id, languageId)}</Text>
-                <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>{guide.subtitle}</Text>
+                <Text style={[styles.issueChipMeta, isSelected && styles.issueChipMetaActive]}>{localizeIssueGuideSubtitle(guide, languageId)}</Text>
               </Pressable>
             );
           })}
@@ -33592,7 +33681,9 @@ function IssueGuideSection({
             style={({ pressed }) => [styles.issueSubtleButton, pressed && styles.pressed]}
           >
             <Text style={styles.issueSubtleButtonLabel}>
-              {showAllIssues ? "Show fewer concerns" : `Show all ${issueGuides.length} concerns`}
+              {showAllIssues
+                ? l("Show fewer concerns", { hindi: "कम चिंताएँ दिखाएँ", telugu: "తక్కువ సమస్యలను చూపండి", tamil: "குறைந்த கவலைகளைக் காட்டு", urdu: "کم مسائل دکھائیں" })
+                : l(`Show all ${issueGuides.length} concerns`, { hindi: `सभी ${issueGuides.length} चिंताएँ दिखाएँ`, telugu: `అన్ని ${issueGuides.length} సమస్యలను చూపండి`, tamil: `அனைத்து ${issueGuides.length} கவலைகளைக் காட்டு`, urdu: `تمام ${issueGuides.length} مسائل دکھائیں` })}
             </Text>
           </Pressable>
           <Pressable
@@ -33600,7 +33691,7 @@ function IssueGuideSection({
             onPress={() => onOpenTab("aihelp")}
             style={({ pressed }) => [styles.issuePrimaryInlineButton, pressed && styles.pressed]}
           >
-            <Text style={styles.issuePrimaryInlineButtonLabel}>Refine this in counselling</Text>
+            <Text style={styles.issuePrimaryInlineButtonLabel}>{l("Refine this in counselling", { hindi: "परामर्श में इसे स्पष्ट करें", telugu: "కౌన్సెలింగ్‌లో దీన్ని స్పష్టం చేయండి", tamil: "ஆலோசனையில் இதைத் தெளிவாக்கவும்", urdu: "مشاورت میں اسے واضح کریں" })}</Text>
           </Pressable>
         </View>
       </View>
@@ -33633,9 +33724,9 @@ function IssueGuideSection({
           ))}
         </View>
         <View style={styles.issuePracticeBand}>
-          <Text style={styles.issuePracticeLabel}>Practice now</Text>
+          <Text style={styles.issuePracticeLabel}>{l("Practice now", { hindi: "अभी अभ्यास करें", telugu: "ఇప్పుడే సాధన చేయండి", tamil: "இப்போது பயிற்சி செய்யவும்", urdu: "ابھی مشق کریں" })}</Text>
           <Text style={styles.issuePracticeText}>{pathDepth.practice}</Text>
-          <Text style={styles.issuePracticeCompletion}>You will know this step is complete when: {pathDepth.completion}</Text>
+          <Text style={styles.issuePracticeCompletion}>{l("You will know this step is complete when:", { hindi: "यह कदम पूरा माना जाएगा जब:", telugu: "ఈ దశ పూర్తయిందని తెలుసుకునేది:", tamil: "இந்த படி முடிந்ததாக அறியப்படும் போது:", urdu: "یہ مرحلہ مکمل سمجھا جائے گا جب:" })} {pathDepth.completion}</Text>
         </View>
       </View>
 
@@ -33655,13 +33746,13 @@ function IssueGuideSection({
             urdu: "آج صرف وہی مکمل کریں جو مفید لگے۔ آپ کی پیش رفت اس device پر محفوظ رہتی ہے۔"
           })}</Text>
           <View style={styles.issueStepList}>
-            {selectedIssueGuide.steps.map((step, index) => {
+            {issueSteps.map((step, index) => {
               const done = selectedIssueProgress[index];
               const reason = index === 0
-                ? "Reduce immediate pressure and create enough room to think."
+                ? l("Reduce immediate pressure and create enough room to think.", { hindi: "तुरंत दबाव कम करें और सोचने की जगह बनाएं।", telugu: "తక్షణ ఒత్తిడిని తగ్గించి ఆలోచించడానికి స్థలం కల్పించండి.", tamil: "உடனடி அழுத்தத்தைக் குறைத்து சிந்திக்க இடம் உருவாக்கவும்.", urdu: "فوری دباؤ کم کریں اور سوچنے کی گنجائش بنائیں۔" })
                 : index === 1
-                  ? "Clarify the need, pattern, or boundary beneath the situation."
-                  : "Turn understanding into one safe and measurable action.";
+                  ? l("Clarify the need, pattern, or boundary beneath the situation.", { hindi: "स्थिति के नीचे की ज़रूरत, पैटर्न या सीमा स्पष्ट करें।", telugu: "పరిస్థితి వెనుక ఉన్న అవసరం, నమూనా లేదా హద్దును స్పష్టం చేయండి.", tamil: "நிலையின் அடியில் உள்ள தேவை, போக்கு அல்லது எல்லையைத் தெளிவாக்கவும்.", urdu: "صورتحال کے پیچھے موجود ضرورت، نمونے یا حد کو واضح کریں۔" })
+                  : l("Turn understanding into one safe and measurable action.", { hindi: "समझ को एक सुरक्षित और मापने योग्य कदम में बदलें।", telugu: "అర్థాన్ని ఒక సురక్షితమైన, కొలవగల చర్యగా మార్చండి.", tamil: "புரிதலை ஒரு பாதுகாப்பான, அளவிடக்கூடிய செயலாக மாற்றவும்.", urdu: "سمجھ کو ایک محفوظ اور قابلِ پیمائش عمل میں بدلیں۔" });
               return (
                 <Pressable
                   key={step}
@@ -33689,7 +33780,7 @@ function IssueGuideSection({
               onPress={() => resetIssueProgress(selectedIssueGuide.id)}
               style={({ pressed }) => [styles.textButton, pressed && styles.pressed]}
             >
-              <Text style={styles.textButtonLabel}>{l("Reset progress")}</Text>
+              <Text style={styles.textButtonLabel}>{l("Reset progress", { hindi: "प्रगति रीसेट करें", telugu: "పురోగతిని రీసెట్ చేయండి", tamil: "முன்னேற்றத்தை மீட்டமைக்கவும்", urdu: "پیش رفت ری سیٹ کریں" })}</Text>
             </Pressable>
           </View>
         </View>
@@ -36694,7 +36785,7 @@ function InsightsSection({
             </Text>
             <Text style={{ color: "#263244", fontSize: 14, textAlign: "center", lineHeight: 22, marginBottom: 28 }}>
               {l("Save your first check-in on the Journal tab and Patterns will start tracking your emotional trends, weekly averages, and next best moves.", {
-                hindi: "Journal टैब पर अपना पहला check-in सहेजें और Patterns आपकी भावनात्मक प्रवृत्तियों, साप्ताहिक औसत, और अगले सर्वोत्तम कदमों को ट्रैक करना शुरू कर देगा।",
+                hindi: "जर्नल टैब पर अपना पहला चेक-इन सहेजें और पैटर्न आपकी भावनात्मक प्रवृत्तियों, साप्ताहिक औसत और अगले अच्छे कदमों को ट्रैक करना शुरू कर देगा।",
                 telugu: "Journal ట్యాబ్‌లో మీ మొదటి check-in ను సేవ్ చేయండి, అప్పుడు Patterns మీ భావోద్వేగ ధోరణులు, వారపు సగటులు, మరియు తదుపరి ఉత్తమ చర్యలను ట్రాక్ చేయడం ప్రారంభిస్తుంది.",
                 tamil: "Journal தாவலில் உங்கள் முதல் check-in-ஐ சேமிக்கவும்; பின்னர் Patterns உங்கள் உணர்ச்சி போக்குகள், வார சராசரி, மற்றும் அடுத்த சிறந்த படிகளை கண்காணிக்கத் தொடங்கும்.",
                 urdu: "Journal ٹیب پر اپنی پہلی check-in محفوظ کریں، اور Patterns آپ کے جذباتی رجحانات، ہفتہ وار اوسط، اور اگلے بہترین اقدامات کو ٹریک کرنا شروع کرے گا."
@@ -36711,7 +36802,7 @@ function InsightsSection({
               })}
             >
               <Text style={{ color: "#0A6F66", fontSize: 15, fontWeight: "700" }}>
-                {l("Go to Journal →", { hindi: "Journal पर जाएँ →", telugu: "Journal కు వెళ్లండి →", tamil: "Journal-க்கு செல்லவும் →", urdu: "Journal پر جائیں →" })}
+                {l("Go to Journal →", { hindi: "जर्नल पर जाएँ →", telugu: "జర్నల్‌కు వెళ్లండి →", tamil: "ஜர்னலுக்குச் செல்லவும் →", urdu: "جرنل پر جائیں →" })}
               </Text>
             </Pressable>
           </View>
