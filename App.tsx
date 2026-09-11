@@ -38544,6 +38544,10 @@ function BirthChartSection({
     Number(timeDraftMatch[2]) <= 59;
   const isValidPlace = placeDraft.trim().length >= 3;
   const canSaveBirthDetails = isValidDOB && isValidTime && isValidPlace;
+  const hasUnsavedBirthDetails =
+    dobDraft !== profileDOB ||
+    timeDraft !== profileBirthTime ||
+    placeDraft.trim() !== profileBirthPlace.trim();
 
   // Lagna: real Ascendant (Local Sidereal Time + true obliquity + latitude)
   // once the birth place has been geocoded; otherwise a Sun-anchored estimate.
@@ -39042,15 +39046,32 @@ function BirthChartSection({
           backgroundColor: hasExactBirthDetails ? "#DDF4EF" : canSaveBirthDetails ? "#E3F3F7" : "#EEF3F4",
           borderRadius: 8, padding: 10
         }}>
-          <Text style={{ fontSize: 14 }}>{hasExactBirthDetails ? "✅" : canSaveBirthDetails ? "📝" : "⏳"}</Text>
-          <Text style={{ color: hasExactBirthDetails ? "#0E6F69" : canSaveBirthDetails ? "#0057B8" : "#475569", fontSize: 13, fontWeight: "700", flex: 1 }}>
-            {hasExactBirthDetails
-              ? l("Exact birth details saved - reading generated below", { hindi: "सटीक जन्म विवरण सहेजा गया - पठन नीचे तैयार किया जा रहा है", telugu: "ఖచ్చితమైన జనన వివరాలు సేవ్ చేయబడ్డాయి - చదువు క్రింద రూపొందించబడుతోంది", tamil: "சரியான பிறப்பு விவரங்கள் சேமிக்கப்பட்டன - வாசிப்பு கீழே உருவாக்கப்படுகிறது", urdu: "درست پیدائش کی تفصیلات محفوظ ہیں - مطالعہ نیچے تیار ہو رہا ہے" })
+          <Text style={{ fontSize: 14 }}>{hasUnsavedBirthDetails ? "📝" : hasExactBirthDetails ? "✅" : canSaveBirthDetails ? "📝" : "⏳"}</Text>
+          <Text style={{ color: hasUnsavedBirthDetails ? "#A14A08" : hasExactBirthDetails ? "#0E6F69" : canSaveBirthDetails ? "#0057B8" : "#475569", fontSize: 13, fontWeight: "700", flex: 1 }}>
+            {hasUnsavedBirthDetails
+              ? canSaveBirthDetails
+                ? l("Unsaved changes ready. Tap Save & Analyse to refresh the chart.", { hindi: "सहेजे न गए बदलाव तैयार हैं। चार्ट अपडेट करने के लिए Save & Analyse पर टैप करें।", telugu: "సేవ్ చేయని మార్పులు సిద్ధంగా ఉన్నాయి. చార్ట్‌ను రిఫ్రెష్ చేయడానికి Save & Analyse ను నొక్కండి.", tamil: "சேமிக்காத மாற்றங்கள் தயாராக உள்ளன. சார்ட்டைப் புதுப்பிக்க Save & Analyse என்பதைத் தட்டவும்.", urdu: "غیر محفوظ تبدیلیاں تیار ہیں۔ چارٹ تازہ کرنے کے لیے Save & Analyse پر ٹیپ کریں۔" })
+                : l("The chart below still uses your last saved details.", { hindi: "नीचे का चार्ट अभी भी आपके आख़िरी सहेजे गए विवरण का उपयोग कर रहा है।", telugu: "క్రింద ఉన్న చార్ట్ మీ చివరిగా సేవ్ చేసిన వివరాలనే ఉపయోగిస్తోంది.", tamil: "கீழே உள்ள சார்ட் நீங்கள் கடைசியாக சேமித்த விவரங்களையே பயன்படுத்துகிறது.", urdu: "نیچے کا چارٹ ابھی بھی آپ کی آخری محفوظ شدہ تفصیلات استعمال کر رہا ہے۔" })
+              : hasExactBirthDetails
+                ? l("Exact birth details saved - reading generated below", { hindi: "सटीक जन्म विवरण सहेजा गया - पठन नीचे तैयार किया जा रहा है", telugu: "ఖచ్చితమైన జనన వివరాలు సేవ్ చేయబడ్డాయి - చదువు క్రింద రూపొందించబడుతోంది", tamil: "சரியான பிறப்பு விவரங்கள் சேமிக்கப்பட்டன - வாசிப்பு கீழே உருவாக்கப்படுகிறது", urdu: "درست پیدائش کی تفصیلات محفوظ ہیں - مطالعہ نیچے تیار ہو رہا ہے" })
               : canSaveBirthDetails
                 ? l("Exact details are ready. Tap Save & Analyse.", { hindi: "सटीक विवरण तैयार हैं। Save & Analyse पर टैप करें।", telugu: "ఖచ్చితమైన వివరాలు సిద్ధంగా ఉన్నాయి. Save & Analyse ను నొక్కండి.", tamil: "சரியான விவரங்கள் தயாராக உள்ளன. Save & Analyse என்பதைத் தட்டவும்.", urdu: "درست تفصیلات تیار ہیں۔ Save & Analyse پر ٹیپ کریں۔" })
                 : l("Enter all three fields above for your full reading", { hindi: "अपनी पूर्ण रीडिंग के लिए ऊपर के तीनों फ़ील्ड भरें", telugu: "మీ పూర్తి రీడింగ్ కోసం పై మూడు ఫీల్డ్‌లను నమోదు చేయండి", tamil: "உங்கள் முழு வாசிப்புக்காக மேலே உள்ள மூன்று புலங்களையும் நிரப்பவும்", urdu: "اپنی مکمل ریڈنگ کے لیے اوپر کے تینوں خانے بھریں" })}
           </Text>
         </View>
+        {hasExactBirthDetails && !hasUnsavedBirthDetails && (
+          <View style={{ backgroundColor: "#F8FAFC", borderRadius: 10, padding: 11, borderWidth: 1, borderColor: "#C9D9DD", gap: 5 }}>
+            <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase" }}>
+              {l("Calculation basis", { hindi: "गणना का आधार", telugu: "లెక్కింపు ఆధారం", tamil: "கணக்கீட்டு அடிப்படை", urdu: "حساب کی بنیاد" })}
+            </Text>
+            <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>
+              {l("Sidereal Lahiri Moon chart ·", { hindi: "साइडेरियल लाहिरी चंद्र चार्ट ·", telugu: "సిడీరియల్ లాహిరి చంద్ర చార్ట్ ·", tamil: "சைடீரியல் லாஹிரி சந்திர சார்ட் ·", urdu: "سائیڈیریل لٰہیری قمری چارٹ ·" })} {lagnaInfo?.precise ? l("coordinate-based Ascendant", { hindi: "निर्देशांक-आधारित लग्न", telugu: "కోఆర్డినేట్ ఆధారిత లగ్నం", tamil: "இணைப்பு அடிப்படையிலான லக்னம்", urdu: "محلِ وقوع پر مبنی لگن" }) : l("estimated Ascendant until coordinates resolve", { hindi: "निर्देशांक मिलने तक अनुमानित लग्न", telugu: "కోఆర్డినేట్లు పరిష్కరించేవరకు అంచనా లగ్నం", tamil: "இணைப்புகள் கிடைக்கும் வரை மதிப்பிடப்பட்ட லக்னம்", urdu: "محلِ وقوع حل ہونے تک اندازاً لگن" })} {l("·", { hindi: "·", telugu: "·", tamil: "·", urdu: "·" })} {l("transits refreshed today", { hindi: "गोचर आज अपडेट हुए", telugu: "గోచారాలు ఈరోజు రిఫ్రెష్ అయ్యాయి", tamil: "கோசாரங்கள் இன்று புதுப்பிக்கப்பட்டன", urdu: "گُوچر آج تازہ کیے گئے" })}.
+            </Text>
+            <Text style={{ color: "#5B6575", fontSize: 12, lineHeight: 17, fontStyle: "italic" }}>
+              {l("Interpretive guidance only — use it for reflection, not as a guaranteed prediction or a substitute for professional advice.", { hindi: "यह केवल चिंतनशील मार्गदर्शन है — इसे गारंटीड भविष्यवाणी या पेशेवर सलाह के विकल्प के रूप में न लें।", telugu: "ఇది ఆత్మపరిశీలన కోసం మాత్రమే — హామీ ఉన్న అంచనా లేదా వృత్తిపరమైన సలహాకు ప్రత్యామ్నాయం కాదు.", tamil: "இது சிந்தனைக்கான வழிகாட்டல் மட்டுமே — உறுதியான கணிப்பு அல்லது தொழில்முறை ஆலோசனைக்கு மாற்றாக பயன்படுத்த வேண்டாம்.", urdu: "یہ صرف غور و فکر کی رہنمائی ہے — اسے یقینی پیش گوئی یا پیشہ ورانہ مشورے کا متبادل نہ سمجھیں۔" })}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Plain-language, layman-facing chart reading -- moved to the very

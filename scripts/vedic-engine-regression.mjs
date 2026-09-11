@@ -128,6 +128,11 @@ assert(source.includes('function getGocharGuidance'), 'Gochar guidance builder i
 assert(source.includes('function houseFromMoonSign'), 'Gochar house-from-Moon calculation is missing');
 assert(source.includes('getGocharChart(rashiInfo.rashiId, new Date())'), 'Transit panel must compute gochar from the natal Moon for the current moment');
 assert(source.includes('Current transits (Gochar)'), 'Gochar transit panel is not rendered in the Vedic section');
+assert(source.includes('const hasUnsavedBirthDetails ='), 'Birth-chart form must distinguish unsaved edits from the last calculated chart');
+assert(source.includes('Unsaved changes ready. Tap Save & Analyse to refresh the chart.'), 'Birth-chart form must explain how to refresh after editing saved details');
+assert(source.includes('The chart below still uses your last saved details.'), 'Birth-chart form must disclose when the visible chart is based on older saved details');
+assert(source.includes('Calculation basis'), 'Vedic chart must expose a compact calculation-basis summary');
+assert(source.includes('transits refreshed today'), 'Vedic chart must disclose transit freshness');
 assert(/sadeSatiPhase/.test(source), 'Sade Sati detection is missing from the gochar layer');
 assert(source.includes('getNavagrahaLongitudes(new Date(date.getTime() + MS_PER_DAY))'), 'Gochar retrograde detection (next-day motion) is missing');
 
