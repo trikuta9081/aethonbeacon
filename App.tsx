@@ -34571,6 +34571,8 @@ function RedressSection({
   const [showFullRedress, setShowFullRedress] = useState(false);
   const [showEmergencyDirectory, setShowEmergencyDirectory] = useState(false);
   const [showDraftTemplate, setShowDraftTemplate] = useState(false);
+  const [editableDraft, setEditableDraft] = useState("");
+  const [draftEdited, setDraftEdited] = useState(false);
   const [showScript, setShowScript] = useState(false);
   const [showCompanionPlan, setShowCompanionPlan] = useState(false);
   // The situation picker is a grid of eleven chips. Once someone has told us
@@ -34731,10 +34733,30 @@ function RedressSection({
     return tpl.replace(/\[Your Name\]/g, senderName);
   };
   const draftTemplate = autoFillName(DRAFT_TEMPLATES[selectedRedressRoute.id]);
+  useEffect(() => {
+    setEditableDraft(draftTemplate ?? "");
+    setDraftEdited(false);
+  }, [draftTemplate]);
+  const currentDraft = draftEdited ? editableDraft : draftTemplate ?? "";
   const firstScript = autoFillName(FIRST_SCRIPTS[selectedRedressRoute.id]);
   const isEmergencyRoute = selectedRedressRoute.id === "crime" || selectedRedressRoute.id === "domestic";
   const isCrimeRoute = selectedRedressRoute.id === "crime";
   const isDomesticRoute = selectedRedressRoute.id === "domestic";
+
+  const markSubmitted = () => {
+    if (!activeCase) return;
+    const now = new Date();
+    updateActiveCase({ filedDateIso: now.toISOString(), status: "awaiting" });
+    Alert.alert(
+      l("Saved locally", { hindi: "डिवाइस पर सहेजा गया", telugu: "స్థానికంగా సేవ్ చేయబడింది", tamil: "உள்ளூரில் சேமிக்கப்பட்டது", urdu: "مقامی طور پر محفوظ" }),
+      l("Your case record now shows that you submitted it today. NAYIQ did not send the complaint.", {
+        hindi: "आपके केस रिकॉर्ड में आज जमा करना दर्ज हो गया है। NAYIQ ने शिकायत नहीं भेजी।",
+        telugu: "మీ కేసు రికార్డులో ఈరోజు సమర్పించినట్లు నమోదు అయింది. NAYIQ ఫిర్యాదును పంపలేదు.",
+        tamil: "உங்கள் வழக்குப் பதிவில் இன்று சமர்ப்பித்ததாகச் சேமிக்கப்பட்டது. NAYIQ புகாரை அனுப்பவில்லை.",
+        urdu: "آپ کے کیس ریکارڈ میں آج جمع کرنا درج ہو گیا ہے۔ NAYIQ نے شکایت نہیں بھیجی۔"
+      })
+    );
+  };
   // Keep the detail surface localized independently of the parent selection.
   // This prevents a localized chooser from opening an English-only modal when
   // a language change and a selection happen in the same render cycle.
@@ -34825,6 +34847,24 @@ function RedressSection({
             urdu: "آپ کی صورتحال ہی راستہ طے کرتی ہے۔ نیچے کی ہر چیز — پہلا دفتر، تجویز کردہ ابتدائی قدم، اور رسمی escalation path — اسی کے مطابق بدلتی ہے، اور صرف وہی راستہ دکھایا جاتا ہے۔ مختلف راستہ منتخب کرنے کے لیے صورتحال کارڈ پر “Change” ٹیپ کریں۔"
           })}
         </Text>
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FFF4F0", borderWidth: 1, borderColor: "#E9A99A", padding: 12 }}>
+          <Text style={{ color: "#9D2B1D", fontSize: 12, fontWeight: "800", letterSpacing: 0.8, textTransform: "uppercase" }}>
+            {l("Safety check", { hindi: "सुरक्षा जाँच", telugu: "భద్రతా తనిఖీ", tamil: "பாதுகாப்புச் சோதனை", urdu: "حفاظتی جانچ" })}
+          </Text>
+          <Text style={{ color: "#4F2A25", fontSize: 13, lineHeight: 19, marginTop: 4 }}>
+            {isEmergencyRoute
+              ? l("If danger is happening now, move to a safer place and call 112. If you are safe, continue below to prepare and lodge your complaint.", { hindi: "यदि अभी खतरा है, तो सुरक्षित जगह जाएँ और 112 पर कॉल करें। यदि आप सुरक्षित हैं, तो शिकायत तैयार करने और जमा करने के लिए नीचे बढ़ें।", telugu: "ఇప్పుడే ప్రమాదం ఉంటే సురక్షిత ప్రదేశానికి వెళ్లి 112కు కాల్ చేయండి. మీరు సురక్షితంగా ఉంటే ఫిర్యాదు సిద్ధం చేసి సమర్పించడానికి దిగువకు కొనసాగండి.", tamil: "இப்போது ஆபத்து இருந்தால் பாதுகாப்பான இடத்திற்குச் சென்று 112-ஐ அழைக்கவும். நீங்கள் பாதுகாப்பாக இருந்தால் புகாரைத் தயாரித்து சமர்ப்பிக்க கீழே தொடரவும்.", urdu: "اگر ابھی خطرہ ہے تو محفوظ جگہ جائیں اور 112 پر کال کریں۔ اگر آپ محفوظ ہیں تو شکایت تیار کرنے اور جمع کرانے کے لیے نیچے جاری رکھیں." })
+              : l("If you are in immediate danger, call 112 first. Otherwise, continue below: choose the right route, prepare the facts, and keep proof of submission.", { hindi: "यदि तत्काल खतरा है, तो पहले 112 पर कॉल करें। अन्यथा नीचे सही मार्ग चुनें, तथ्य तैयार करें और जमा करने का प्रमाण रखें।", telugu: "తక్షణ ప్రమాదంలో ఉంటే ముందుగా 112కు కాల్ చేయండి. లేకపోతే సరైన మార్గాన్ని ఎంచుకుని, వాస్తవాలను సిద్ధం చేసి, సమర్పణకు ఆధారం ఉంచండి.", tamil: "உடனடி ஆபத்து இருந்தால் முதலில் 112-ஐ அழைக்கவும். இல்லையெனில் சரியான வழியைத் தேர்ந்தெடுத்து, உண்மைகளைத் தயாரித்து, சமர்ப்பித்ததற்கான சான்றை வைத்திருங்கள்.", urdu: "اگر فوری خطرہ ہو تو پہلے 112 پر کال کریں۔ ورنہ درست راستہ منتخب کریں، حقائق تیار کریں اور جمع کرانے کا ثبوت رکھیں۔" })}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={l("Call emergency number 112", { hindi: "आपातकालीन नंबर 112 पर कॉल करें", telugu: "అత్యవసర నంబర్ 112కు కాల్ చేయండి", tamil: "அவசர எண் 112-க்கு அழைக்கவும்", urdu: "ہنگامی نمبر 112 پر کال کریں" })}
+            onPress={() => void onEmergencyCall()}
+            style={({ pressed }) => ({ marginTop: 9, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#D62E00" : "#B53333", alignItems: "center", justifyContent: "center" })}
+          >
+            <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>🚨 {l("Call 112 now", { hindi: "अभी 112 पर कॉल करें", telugu: "ఇప్పుడే 112కు కాల్ చేయండి", tamil: "இப்போது 112-க்கு அழைக்கவும்", urdu: "ابھی 112 پر کال کریں" })}</Text>
+          </Pressable>
+        </View>
         <View style={{ marginBottom: 14, borderRadius: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
           <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "700" }}>
             {l("Verified guidance standard", {
@@ -34915,9 +34955,19 @@ function RedressSection({
                 accessibilityLabel={l("Talk through this preparation plan privately", { hindi: "इस तैयारी योजना पर निजी बातचीत करें", telugu: "ఈ తయారీ ప్రణాళిక గురించి ప్రైవేట్‌గా మాట్లాడండి", tamil: "இந்த தயாரிப்பு திட்டத்தைப் பற்றி தனிப்பட்ட முறையில் பேசுங்கள்", urdu: "اس تیاری منصوبے پر نجی گفتگو کریں" })}
                 onPress={() => { void Haptics.selectionAsync(); onOpenGuide(); }}
                 style={({ pressed }) => ({ margin: 12, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#DCEBE9" : "#E1EEEC", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center" })}
+                >
+                  <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "800" }}>
+                    {l("Talk through this plan", { hindi: "इस योजना पर बात करें", telugu: "ఈ ప్రణాళిక గురించి మాట్లాడండి", tamil: "இந்த திட்டத்தைப் பற்றி பேசுங்கள்", urdu: "اس منصوبے پر بات کریں" })}
+                  </Text>
+                </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={l(isCrimeRoute ? "Prepare FIR application from this plan" : "Draft my complaint from this plan", { hindi: isCrimeRoute ? "इस योजना से FIR आवेदन तैयार करें" : "इस योजना से मेरी शिकायत का ड्राफ्ट बनाएँ", telugu: isCrimeRoute ? "ఈ ప్రణాళికతో FIR దరఖాస్తును సిద్ధం చేయండి" : "ఈ ప్రణాళికతో నా ఫిర్యాదును డ్రాఫ్ట్ చేయండి", tamil: isCrimeRoute ? "இந்த திட்டத்திலிருந்து FIR விண்ணப்பத்தைத் தயாரிக்கவும்" : "இந்த திட்டத்திலிருந்து என் புகாரைத் தயாரிக்கவும்", urdu: isCrimeRoute ? "اس منصوبے سے FIR درخواست تیار کریں" : "اس منصوبے سے میری شکایت کا ڈرافٹ بنائیں" })}
+                onPress={() => { void Haptics.selectionAsync(); setShowDraftTemplate(true); }}
+                style={({ pressed }) => ({ marginHorizontal: 12, marginBottom: 12, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#E8EEF9" : "#FFFFFF", borderWidth: 1, borderColor: "#A5B4FC", alignItems: "center", justifyContent: "center" })}
               >
-                <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "800" }}>
-                  {l("Talk through this plan", { hindi: "इस योजना पर बात करें", telugu: "ఈ ప్రణాళిక గురించి మాట్లాడండి", tamil: "இந்த திட்டத்தைப் பற்றி பேசுங்கள்", urdu: "اس منصوبے پر بات کریں" })}
+                <Text style={{ color: "#3730A3", fontSize: 13, fontWeight: "800" }}>
+                  {isCrimeRoute ? l("Prepare FIR application", { hindi: "FIR आवेदन तैयार करें", telugu: "FIR దరఖాస్తును సిద్ధం చేయండి", tamil: "FIR விண்ணப்பத்தைத் தயாரிக்கவும்", urdu: "FIR درخواست تیار کریں" }) : l("Draft my complaint", { hindi: "मेरी शिकायत का ड्राफ्ट बनाएँ", telugu: "నా ఫిర్యాదును డ్రాఫ్ట్ చేయండి", tamil: "என் புகாரைத் தயாரிக்கவும்", urdu: "میری شکایت کا ڈرافٹ بنائیں" })}
                 </Text>
               </Pressable>
             </View>
@@ -35656,9 +35706,29 @@ function RedressSection({
             </Pressable>
             {showDraftTemplate && (
               <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 1, borderTopColor: "rgba(36,56,74,0.10)" }}>
-                <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19, marginTop: 8, marginBottom: 6 }}>{l("Fill in [brackets] with your real details before sending. Keep a signed copy for your records.", { hindi: "भेजने से पहले [brackets] को अपने वास्तविक विवरण से भरें। अपने रिकॉर्ड के लिए हस्ताक्षरित प्रति रखें।", telugu: "పంపే ముందు [brackets] ను మీ నిజమైన వివరాలతో నింపండి. మీ రికార్డుల కోసం సంతకం చేసిన ప్రతిని ఉంచండి.", tamil: "[brackets]-ஐ அனுப்புவதற்கு முன் உங்கள் உண்மை விவரங்களால் நிரப்புங்கள். உங்கள் பதிவுகளுக்கு கையொப்பமிட்ட நகலை வைத்திருங்கள்.", urdu: "بھیجنے سے پہلے [brackets] کو اپنی اصل تفصیلات سے پُر کریں۔ اپنے ریکارڈ کے لیے دستخط شدہ کاپی رکھیں۔" })}</Text>
-                <View style={{ backgroundColor: "#FFFFFF", borderRadius: 10, padding: 14, borderWidth: 1, borderColor: "#A5B4FC" }}>
-                  <Text style={{ color: "#111827", fontSize: 15, lineHeight: 22 }}>{draftTemplate}</Text>
+                <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19, marginTop: 8, marginBottom: 6 }}>{l("Edit the draft in place. Replace every [bracket] with facts you know, then keep a signed copy for your records.", { hindi: "ड्राफ्ट को यहीं संपादित करें। हर [bracket] को ज्ञात वास्तविक तथ्यों से बदलें और अपने रिकॉर्ड के लिए हस्ताक्षरित प्रति रखें।", telugu: "డ్రాఫ్ట్‌ను ఇక్కడే సవరించండి. ప్రతి [bracket] ను మీకు తెలిసిన నిజమైన వివరాలతో మార్చి, మీ రికార్డుల కోసం సంతకం చేసిన ప్రతిని ఉంచండి.", tamil: "வரைவை இங்கேயே திருத்துங்கள். ஒவ்வொரு [bracket]-ஐயும் உங்களுக்குத் தெரிந்த உண்மைகளால் மாற்றி, உங்கள் பதிவுகளுக்காக கையொப்பமிட்ட நகலை வைத்திருங்கள்.", urdu: "ڈرافٹ کو یہیں ترمیم کریں۔ ہر [bracket] کو معلوم اصل حقائق سے بدلیں اور اپنے ریکارڈ کے لیے دستخط شدہ کاپی رکھیں۔" })}</Text>
+                <TextInput
+                  value={currentDraft}
+                  onChangeText={(value) => { setDraftEdited(true); setEditableDraft(value); }}
+                  multiline
+                  textAlignVertical="top"
+                  accessibilityLabel={l("Editable complaint or FIR application draft", { hindi: "قابل ترمیم शिकायत या FIR आवेदन ड्राफ्ट", telugu: "ఎడిట్ చేయగల ఫిర్యాదు లేదా FIR దరఖాస్తు డ్రాఫ్ట్", tamil: "திருத்தக்கூடிய புகார் அல்லது FIR விண்ணப்ப வரைவு", urdu: "قابل ترمیم شکایت یا FIR درخواست ڈرافٹ" })}
+                  style={{ backgroundColor: "#FFFFFF", borderRadius: 10, padding: 14, minHeight: 360, color: "#111827", fontSize: 15, lineHeight: 22, borderWidth: 1, borderColor: "#A5B4FC" }}
+                />
+                <View style={{ marginTop: 10, borderRadius: 10, backgroundColor: isCrimeRoute ? "#FFF4F0" : "#F7FAFC", borderWidth: 1, borderColor: isCrimeRoute ? "#E9A99A" : "#C7D7E0", padding: 11 }}>
+                  <Text style={{ color: isCrimeRoute ? "#9D2B1D" : "#0B6E67", fontSize: 12, fontWeight: "800", letterSpacing: 0.8, textTransform: "uppercase" }}>
+                    {isCrimeRoute ? l("FIR lodging path", { hindi: "FIR दर्ज कराने का मार्ग", telugu: "FIR నమోదు మార్గం", tamil: "FIR பதிவு நடைமுறை", urdu: "FIR درج کرانے کا طریقہ" }) : l("Lodge and pursue", { hindi: "जमा करें और आगे बढ़ाएँ", telugu: "సమర్పించి ముందుకు తీసుకెళ్లండి", tamil: "சமர்ப்பித்து தொடருங்கள்", urdu: "جمع کرائیں اور پیروی کریں" })}
+                  </Text>
+                  <View style={{ marginTop: 6, gap: 5 }}>
+                    {[
+                      isCrimeRoute ? l("Take the signed application and evidence to the police station or the applicable official portal.", { hindi: "हस्ताक्षरित आवेदन और साक्ष्य पुलिस स्टेशन या लागू आधिकारिक पोर्टल पर दें।", telugu: "సంతకం చేసిన దరఖాస్తు మరియు ఆధారాలను పోలీస్ స్టేషన్ లేదా వర్తించే అధికారిక పోర్టల్‌కు ఇవ్వండి.", tamil: "கையொப்பமிட்ட விண்ணப்பத்தையும் ஆதாரங்களையும் காவல் நிலையம் அல்லது பொருந்தும் அதிகாரப்பூர்வ போர்ட்டலில் சமர்ப்பிக்கவும்.", urdu: "دستخط شدہ درخواست اور ثبوت پولیس اسٹیشن یا متعلقہ سرکاری پورٹل پر دیں۔" }) : l("Submit through the correct office or official portal shown below.", { hindi: "नीचे दिखाए गए सही कार्यालय या आधिकारिक पोर्टल के माध्यम से जमा करें।", telugu: "క్రింద చూపిన సరైన కార్యాలయం లేదా అధికారిక పోర్టల్ ద్వారా సమర్పించండి.", tamil: "கீழே காட்டப்பட்டுள்ள சரியான அலுவலகம் அல்லது அதிகாரப்பூர்வ போர்ட்டல் வழியாகச் சமர்ப்பிக்கவும்.", urdu: "نیچے دکھائے گئے درست دفتر یا سرکاری پورٹل کے ذریعے جمع کرائیں۔" }),
+                      l("Ask for a dated acknowledgement, FIR or ticket number, and the receiving officer's name. Keep the original and proof of delivery.", { hindi: "तारीख़ वाला acknowledgement, FIR या टिकट संख्या और प्राप्त करने वाले अधिकारी का नाम माँगें। मूल प्रति और जमा करने का प्रमाण रखें।", telugu: "తేదీతో కూడిన రసీదు, FIR లేదా టికెట్ నంబర్, మరియు స్వీకరించిన అధికారి పేరు అడగండి. అసలు పత్రం మరియు సమర్పణ ఆధారాన్ని ఉంచండి.", tamil: "தேதியிட்ட ஒப்புதல், FIR அல்லது டிக்கெட் எண்ணையும் பெற்ற அதிகாரியின் பெயரையும் கேளுங்கள். அசல் மற்றும் சமர்ப்பித்த சான்றை வைத்திருங்கள்.", urdu: "تاریخ والا acknowledgement، FIR یا ٹکٹ نمبر اور وصول کرنے والے افسر کا نام مانگیں۔ اصل اور جمع کرانے کا ثبوت رکھیں۔" }),
+                      l("Create or update My case with that number, office, date, and next follow-up. Escalate using the prior reference, not a new story.", { hindi: "उस संख्या, कार्यालय, तारीख़ और अगले फॉलो-अप के साथ My case बनाएँ या अपडेट करें। नया विवरण गढ़ने के बजाय पिछले संदर्भ से escalation करें।", telugu: "ఆ నంబర్, కార్యాలయం, తేదీ మరియు తదుపరి ఫాలో-అప్‌తో My case‌ను సృష్టించండి లేదా నవీకరించండి. కొత్త కథ కాకుండా మునుపటి రిఫరెన్స్‌తో ఎస్కలేట్ చేయండి.", tamil: "அந்த எண்ணுடன், அலுவலகம், தேதி, அடுத்த தொடர்ச்சியை My case-இல் உருவாக்கவும் அல்லது புதுப்பிக்கவும். புதிய கதையல்ல, முந்தைய குறிப்புடன் மேல்முறையீடு செய்யவும்.", urdu: "اس نمبر، دفتر، تاریخ اور اگلے فالو اَپ کے ساتھ My case بنائیں یا اپ ڈیٹ کریں۔ نئی کہانی کے بجائے پچھلے حوالہ سے escalation کریں۔" })
+                    ].map((step, index) => <Text key={String(index)} style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>{index + 1}. {step}</Text>)}
+                  </View>
+                  <Text style={{ color: "#7A3B2E", fontSize: 12, lineHeight: 17, marginTop: 7, fontWeight: "700" }}>
+                    {l("NAYIQ prepares text and tracking only. It does not lodge the complaint, guarantee an FIR, or decide which legal sections apply. Do not invent facts, sections, names, dates, or evidence.", { hindi: "NAYIQ केवल पाठ और ट्रैकिंग तैयार करता है। यह शिकायत दर्ज नहीं करता, FIR की गारंटी नहीं देता और लागू कानूनी धाराएँ तय नहीं करता। तथ्य, धाराएँ, नाम, तारीख़ या साक्ष्य न गढ़ें।", telugu: "NAYIQ కేవలం పాఠ్యం మరియు ట్రాకింగ్‌ను సిద్ధం చేస్తుంది. ఇది ఫిర్యాదును నమోదు చేయదు, FIRకు హామీ ఇవ్వదు లేదా ఏ చట్టపరమైన సెక్షన్లు వర్తిస్తాయో నిర్ణయించదు. వాస్తవాలు, సెక్షన్లు, పేర్లు, తేదీలు లేదా ఆధారాలను కల్పించవద్దు.", tamil: "NAYIQ உரையையும் கண்காணிப்பையும் மட்டுமே தயாரிக்கிறது. இது புகாரை பதிவு செய்யாது, FIR-க்கு உத்தரவாதம் அளிக்காது, அல்லது எந்த சட்டப் பிரிவுகள் பொருந்தும் என்று தீர்மானிக்காது. உண்மைகள், பிரிவுகள், பெயர்கள், தேதிகள் அல்லது ஆதாரங்களை உருவாக்க வேண்டாம்.", urdu: "NAYIQ صرف متن اور ٹریکنگ تیار کرتا ہے۔ یہ شکایت درج نہیں کرتا، FIR کی ضمانت نہیں دیتا اور قابل اطلاق قانونی دفعات طے نہیں کرتا۔ حقائق، دفعات، نام، تاریخیں یا ثبوت نہ گھڑیں۔" })}
+                  </Text>
                 </View>
                 {/* Upgraded action row — Copy · Email · Share */}
                 <View style={{ marginTop: 10, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -35674,7 +35744,7 @@ function RedressSection({
                       // Web: use the browser clipboard API. Native: fall back to Share.
                       if (Platform.OS === "web" && typeof navigator !== "undefined" && (navigator as any).clipboard) {
                         try {
-                          await (navigator as any).clipboard.writeText(draftTemplate ?? "");
+                          await (navigator as any).clipboard.writeText(currentDraft);
                           Alert.alert(
                             l("Copied", {
                               hindi: "कॉपी किया गया",
@@ -35692,7 +35762,7 @@ function RedressSection({
                           return;
                         } catch { /* fall through */ }
                       }
-                      void Share.share({ message: draftTemplate ?? "", title: `${selectedRedressRoute.label} — template` });
+                      void Share.share({ message: currentDraft, title: `${selectedRedressRoute.label} — template` });
                     }}
                     style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(129,140,248,0.18)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(129,140,248,0.35)" }]}
                   >
@@ -35708,7 +35778,7 @@ function RedressSection({
                     })}
                     onPress={() => {
                       const subject = encodeURIComponent(`Formal complaint — ${selectedRedressRoute.label}`);
-                      const body = encodeURIComponent(draftTemplate ?? "");
+                      const body = encodeURIComponent(currentDraft);
                       const mailto = `mailto:?subject=${subject}&body=${body}`;
                       void Linking.openURL(mailto).catch(() =>
                         Alert.alert(
@@ -35733,7 +35803,7 @@ function RedressSection({
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
-                    onPress={() => void Share.share({ message: draftTemplate ?? "", title: `${selectedRedressRoute.label} — complaint letter template` })}
+                    onPress={() => void Share.share({ message: currentDraft, title: `${selectedRedressRoute.label} — complaint letter template` })}
                     style={({ pressed }) => [{ flex: 1, minWidth: 100, backgroundColor: "rgba(129,140,248,0.12)", borderRadius: 8, paddingVertical: 10, alignItems: "center", opacity: pressed ? 0.8 : 1, borderWidth: 1, borderColor: "rgba(129,140,248,0.25)" }]}
                   >
                     <Text style={{ color: "#3730A3", fontSize: 12, fontWeight: "800" }}>{l("↗ Share", { hindi: "↗ साझा करें", telugu: "↗ పంచుకోండి", tamil: "↗ பகிரவும்", urdu: "↗ شیئر کریں" })}</Text>
@@ -35747,7 +35817,7 @@ function RedressSection({
                       urdu: "شکایت خط کو PDF کے طور پر محفوظ کریں"
                     })}
                     onPress={() => {
-                      void exportComplaintLetterPdf(draftTemplate ?? "", selectedRedressRoute.label).catch(() =>
+                      void exportComplaintLetterPdf(currentDraft, selectedRedressRoute.label).catch(() =>
                         Alert.alert(
                           l("Save as PDF", {
                             hindi: "PDF के रूप में सहेजें",
@@ -35908,6 +35978,19 @@ function RedressSection({
                   );
                 })}
               </View>
+
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={l("Mark complaint as submitted today", { hindi: "शिकायत को आज जमा किया हुआ दर्ज करें", telugu: "ఫిర్యాదును ఈరోజు సమర్పించినట్లు నమోదు చేయండి", tamil: "புகார் இன்று சமர்ப்பிக்கப்பட்டதாகக் குறிக்கவும்", urdu: "شکایت کو آج جمع شدہ کے طور پر نشان زد کریں" })}
+                onPress={markSubmitted}
+                style={({ pressed }) => ({ marginTop: 10, minHeight: 44, borderRadius: 10, backgroundColor: pressed ? "#D7ECE8" : "#EAF3F1", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center" })}
+              >
+                <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "800" }}>{activeCase.filedDateIso ? l("Submitted today / update submission date", { hindi: "आज जमा किया / जमा तारीख़ अपडेट करें", telugu: "ఈరోజు సమర్పించారు / సమర్పణ తేదీని నవీకరించండి", tamil: "இன்று சமர்ப்பிக்கப்பட்டது / சமர்ப்பித்த தேதியைப் புதுப்பிக்கவும்", urdu: "آج جمع کیا / جمع کرنے کی تاریخ اپ ڈیٹ کریں" }) : l("Mark as submitted today", { hindi: "आज जमा किया हुआ दर्ज करें", telugu: "ఈరోజు సమర్పించినట్లు నమోదు చేయండి", tamil: "இன்று சமர்ப்பித்ததாகக் குறிக்கவும்", urdu: "آج جمع شدہ کے طور پر نشان زد کریں" })}</Text>
+              </Pressable>
+              <Text style={{ color: "#506673", fontSize: 12, lineHeight: 17, marginTop: 5 }}>
+                {activeCase.filedDateIso ? `${l("Submitted", { hindi: "जमा किया", telugu: "సమర్పించారు", tamil: "சமர்ப்பிக்கப்பட்டது", urdu: "جمع کیا" })}: ${new Date(activeCase.filedDateIso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })}. ` : ""}
+                {l("This button updates your private device record only; it never sends anything.", { hindi: "यह बटन केवल आपके निजी डिवाइस रिकॉर्ड को अपडेट करता है; यह कुछ भी नहीं भेजता।", telugu: "ఈ బటన్ మీ ప్రైవేట్ పరికర రికార్డును మాత్రమే నవీకరిస్తుంది; ఇది ఏదీ పంపదు.", tamil: "இந்த பொத்தான் உங்கள் தனிப்பட்ட சாதனப் பதிவை மட்டுமே புதுப்பிக்கும்; எதையும் அனுப்பாது.", urdu: "یہ بٹن صرف آپ کے نجی ڈیوائس ریکارڈ کو اپ ڈیٹ کرتا ہے؛ یہ کچھ نہیں بھیجتا۔" })}
+              </Text>
 
               {activeCase.status !== "resolved" && (
                 <>
