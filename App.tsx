@@ -25664,6 +25664,32 @@ function isTrustedExternalUrl(url: string) {
                   </Text>
                 </View>
               </View>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={pickLocalizedText(languageId, {
+                  english: "Back to previous page",
+                  hindi: "पिछले पेज पर वापस जाएँ",
+                  telugu: "మునుపటి పేజీకి తిరిగి వెళ్లండి",
+                  tamil: "முந்தைய பக்கத்திற்குத் திரும்பவும்",
+                  urdu: "پچھلے صفحے پر واپس جائیں"
+                })}
+                onPress={goBackOneTab}
+                style={({ pressed }) => [
+                  styles.flowRailButton,
+                  styles.flowRailButtonBack,
+                  pressed && styles.pressed
+                ]}
+              >
+                <Text style={[styles.flowRailButtonLabel, styles.flowRailButtonLabelBack]}>
+                  ‹ {pickLocalizedText(languageId, {
+                    english: "Back",
+                    hindi: "वापस",
+                    telugu: "వెనుకకు",
+                    tamil: "பின்செல்",
+                    urdu: "واپس"
+                  })}
+                </Text>
+              </Pressable>
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
