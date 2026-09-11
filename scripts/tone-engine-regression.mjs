@@ -24,7 +24,7 @@ assert(app.includes("exponentialRampToValueAtTime(targetGain"), "engine must fad
 assert(!app.includes("linearRampToValueAtTime(0.82"), "old unsafe 0.82 continuous gain must be removed");
 assert(app.includes("aethon-pristine-tone.wav"), "native/audio cue must use the upgraded packaged WAV");
 assert(asset.size > 500_000, "upgraded WAV asset should be a real stereo tone, not a tiny placeholder");
-assert(app.includes("Playback quality &amp; safety"), "tone UI must show the upgraded playback quality and safety controls");
+assert(app.includes('l("Playback quality & safety", {'), "tone UI must localize the upgraded playback quality and safety controls");
 assert(app.includes("Session preset"), "tone UI must expose session presets");
 assert(app.includes("Safe gain"), "tone UI must expose safe gain control");
 assert(app.includes("getToneContraindication"), "tone safety copy must be generated per tone family");
@@ -46,6 +46,11 @@ assert(
   app.includes('l("Continue with the practical Path", {'),
   "Calm must provide a localized, clear hand-off into the practical Path"
 );
+assert(app.includes("const issueLabel = localizedIssueGuideLabel(selectedIssueGuide.id, languageId)"), "Tone issue copy must use the active localized issue label");
+assert(app.includes("localizedToneCategoryDescription"), "Tone category descriptions must be localized");
+assert(app.includes("localizedPresetCopy"), "Tone session presets must be localized");
+assert(app.includes("A calm step is complete"), "Completed tone sessions must offer a calm next-step bridge");
+assert(app.includes('{ tab: "aihelp" as TabId') && app.includes('{ tab: "redress" as TabId'), "Tone completion bridge must connect counselling and Help/Redress");
 assert(app.includes('const calmProgram = (ISSUE_TONE_PROGRAMS[selectedIssueGuide.id] ?? ISSUE_TONE_PROGRAMS.general)[0]'), "Calm Reset and Path must resolve the same issue-specific programme");
 assert(app.includes('Recommended now · {calmProgram.name}'), "Calm Reset must surface the synchronized programme before deeper guidance");
 assert(app.includes('activeTab === "focus" ? <FocusSection'), "Calm Reset must not be buried beneath the Meditation library");

@@ -28223,6 +28223,24 @@ function ToneLibrarySection({
     deep: l("🪷 Deep calm", { hindi: "🪷 गहरी शांति", telugu: "🪷 లోతైన ప్రశాంతత", tamil: "🪷 ஆழ்ந்த அமைதி", urdu: "🪷 گہرا سکون" }),
     breath: l("⏱ Breath timing", { hindi: "⏱ श्वास लय", telugu: "⏱ శ్వాస లయ", tamil: "⏱ மூச்சுத் தாளம்", urdu: "⏱ سانس کی لے" })
   } as Record<string, string>)[categoryId] ?? fallback;
+  const localizedToneCategoryDescription = (categoryId: string, fallback: string) => ({
+    sleep: l("Low-intensity sound beds for night rest, decompression, and closing mental loops.", { hindi: "रात के आराम, तनाव कम करने और मन के चक्र को शांत करने वाली धीमी ध्वनियाँ।", telugu: "రాత్రి విశ్రాంతి, ఒత్తిడి తగ్గింపు, మనసును నెమ్మదిగా స్థిరపరచడానికి తక్కువ తీవ్రత ధ్వనులు.", tamil: "இரவு ஓய்வு, மன அழுத்தம் குறைதல், மனச் சுழற்சிகளை அமைதிப்படுத்தும் மென்மையான ஒலிகள்.", urdu: "رات کے آرام، دباؤ کم کرنے اور ذہنی چکر کو بند کرنے والی ہلکی آوازیں." }),
+    anxiety: l("Grounding cues with slow breath pacing for overwhelm, panic, and urgent tension.", { hindi: "भारीपन, घबराहट और तत्काल तनाव के लिए धीमी श्वास के साथ स्थिर करने वाले संकेत।", telugu: "అధిక ఒత్తిడి, భయం, తక్షణ ఉద్రిక్తతకు నెమ్మదైన శ్వాసతో స్థిరపరిచే సూచనలు.", tamil: "அதிக அழுத்தம், பதற்றம், அவசரமான இறுக்கத்திற்கு மெதுவான மூச்சுடன் நிலைநிறுத்தும் குறிகள்.", urdu: "بے حد دباؤ، گھبراہٹ اور فوری تناؤ کے لیے آہستہ سانس کے ساتھ زمین سے جوڑنے والے اشارے." }),
+    focus: l("Steady background tones for study, planning, numbers, and clear next-step work.", { hindi: "पढ़ाई, योजना, संख्याओं और अगले स्पष्ट कदम के लिए स्थिर पृष्ठभूमि ध्वनियाँ।", telugu: "చదువు, ప్రణాళిక, లెక్కలు మరియు స్పష్టమైన తదుపరి అడుగు కోసం స్థిరమైన నేపథ్య ధ్వనులు.", tamil: "படிப்பு, திட்டமிடல், கணக்குகள், அடுத்த தெளிவான படிக்கான நிலையான பின்னணி ஒலிகள்.", urdu: "مطالعہ، منصوبہ بندی، اعداد اور اگلے واضح قدم کے لیے مستحکم پس منظر کی آوازیں." }),
+    grounding: l("Warm, regulating tracks for grief, loneliness, relationship stress, and self-respect.", { hindi: "शोक, अकेलेपन, रिश्तों के तनाव और आत्म-सम्मान के लिए गर्म, संतुलित ध्वनियाँ।", telugu: "దుఃఖం, ఒంటరితనం, సంబంధాల ఒత్తిడి మరియు ఆత్మగౌరవం కోసం వెచ్చని, సమతుల్య ధ్వనులు.", tamil: "துக்கம், தனிமை, உறவு அழுத்தம், சுயமரியாதைக்கான வெப்பமான, சமநிலைப்படுத்தும் ஒலிகள்.", urdu: "غم، تنہائی، رشتوں کے دباؤ اور خود احترام کے لیے گرم اور متوازن آوازیں." }),
+    deep: l("Quiet reflection sessions for stillness, recovery, and slower inner pacing.", { hindi: "स्थिरता, संभलने और भीतर की गति धीमी करने के लिए शांत चिंतन सत्र।", telugu: "నిశ్చలత, కోలుకోవడం మరియు అంతర్గత వేగాన్ని తగ్గించడానికి నిశ్శబ్ద ఆలోచనా సెషన్లు.", tamil: "அமைதி, மீட்பு, உள்ளார்ந்த வேகத்தை குறைக்க அமைதியான சிந்தனை அமர்வுகள்.", urdu: "ٹھہراؤ، بحالی اور اندرونی رفتار کو سست کرنے کے لیے خاموش غور کے سیشن." }),
+    breath: l("Rhythmic pulses and ambient cues that make inhale/exhale patterns easier to follow.", { hindi: "लयबद्ध संकेत जो सांस लेने और छोड़ने के पैटर्न को आसान बनाते हैं।", telugu: "లోపలికి మరియు బయటికి శ్వాస నమూనాలను అనుసరించడాన్ని సులభం చేసే లయబద్ధ సూచనలు.", tamil: "உள்ளிழுத்தல் மற்றும் வெளியேற்றல் முறைகளைப் பின்பற்ற உதவும் தாளக் குறிகள்.", urdu: "اندر اور باہر سانس کے نمونوں پر عمل آسان بنانے والی ردھمک آوازیں." })
+  } as Record<string, string>)[categoryId] ?? fallback;
+  const localizedPresetCopy = (preset: ToneSessionPreset) => {
+    const copy: Record<ToneSessionPreset["id"], { label: string; intent: string }> = {
+      "quick-reset": { label: l("3m Quick Reset", { hindi: "3 मिनट त्वरित रीसेट", telugu: "3 నిమిషాల త్వరిత రీసెట్", tamil: "3 நிமிட விரைவு மீட்டமைப்பு", urdu: "3 منٹ فوری ری سیٹ" }), intent: l("Fast downshift when the mind is overloaded.", { hindi: "जब मन पर बहुत भार हो तब जल्दी गति धीमी करने के लिए।", telugu: "మనసుపై అధిక భారం ఉన్నప్పుడు వేగంగా ప్రశాంతం కావడానికి.", tamil: "மனம் அதிகமாக சுமையடைந்தபோது விரைவாக அமைதியாக.", urdu: "جب ذہن پر بوجھ ہو تو تیزی سے رفتار کم کرنے کے لیے." }) },
+      "moon-balance": { label: l("11m Moon Balance", { hindi: "11 मिनट चंद्र संतुलन", telugu: "11 నిమిషాల చంద్ర సమతుల్యం", tamil: "11 நிமிட சந்திர சமநிலை", urdu: "11 منٹ چاند کا توازن" }), intent: l("Reflective support before counselling or a reading.", { hindi: "काउंसलिंग या रीडिंग से पहले चिंतनशील सहारा।", telugu: "కౌన్సెలింగ్ లేదా రీడింగ్‌కు ముందు ఆలోచనాత్మక మద్దతు.", tamil: "ஆலோசனை அல்லது வாசிப்புக்கு முன் சிந்தனை ஆதரவு.", urdu: "کاؤنسلنگ یا ریڈنگ سے پہلے غور و فکر کی مدد." }) },
+      "deep-calm": { label: l("12m Deep Calm", { hindi: "12 मिनट गहरी शांति", telugu: "12 నిమిషాల లోతైన ప్రశాంతత", tamil: "12 நிமிட ஆழ்ந்த அமைதி", urdu: "12 منٹ گہرا سکون" }), intent: l("A longer settling period after stress, grief, or conflict.", { hindi: "तनाव, शोक या विवाद के बाद थोड़ा लंबा स्थिर होने का समय।", telugu: "ఒత్తిడి, దుఃఖం లేదా వివాదం తర్వాత ఎక్కువసేపు స్థిరపడటానికి.", tamil: "மன அழுத்தம், துக்கம் அல்லது மோதலுக்குப் பின் நீண்ட அமைதி நேரம்.", urdu: "دباؤ، غم یا تنازع کے بعد زیادہ دیر سنبھلنے کے لیے." }) },
+      "focus-flow": { label: l("25m Focus Flow", { hindi: "25 मिनट एकाग्रता प्रवाह", telugu: "25 నిమిషాల ఏకాగ్రత ప్రవాహం", tamil: "25 நிமிட கவன ஓட்டம்", urdu: "25 منٹ توجہ کا بہاؤ" }), intent: l("Calm-alert background for writing, planning, or review.", { hindi: "लिखने, योजना बनाने या समीक्षा के लिए शांत लेकिन सजग पृष्ठभूमि।", telugu: "రాయడం, ప్రణాళిక లేదా సమీక్ష కోసం ప్రశాంతమైన అప్రమత్త నేపథ్యం.", tamil: "எழுதுதல், திட்டமிடல் அல்லது மதிப்பாய்வுக்கான அமைதியான விழிப்பு பின்னணி.", urdu: "لکھنے، منصوبہ بندی یا جائزے کے لیے پرسکون مگر چوکس پس منظر." }) },
+      "sleep-soft": { label: l("20m Sleep Soft", { hindi: "20 मिनट नींद की शांति", telugu: "20 నిమిషాల నిద్ర ప్రశాంతత", tamil: "20 நிமிட மென்மையான தூக்கம்", urdu: "20 منٹ نرم نیند" }), intent: l("Soft landing for night-time decompression and body release.", { hindi: "रात में तनाव छोड़ने और शरीर को ढीला करने के लिए नरम उतराव।", telugu: "రాత్రి ఒత్తిడిని తగ్గించి శరీరాన్ని సడలించడానికి మృదువైన ముగింపు.", tamil: "இரவு மன அழுத்தத்தை குறைத்து உடலை தளர்த்தும் மென்மையான இறக்கம்.", urdu: "رات کے دباؤ کو اتارنے اور جسم کو ڈھیلا کرنے کے لیے نرم اختتام." }) }
+    };
+    return copy[preset.id];
+  };
   const recommendedTone = useMemo(
     () => getMeditationTone(getMeditationStartChakra(selectedIssueGuide.id)),
     [selectedIssueGuide.id]
@@ -28237,6 +28255,7 @@ function ToneLibrarySection({
   const [activeProgram, setActiveProgram] = useState<typeof ISSUE_TONE_PROGRAMS[string][0] | null>(null);
   const [breathStep, setBreathStep] = useState(0);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [lastCompletedSession, setLastCompletedSession] = useState<{ minutes: number; completed: boolean } | null>(null);
 
   // Guarded against resetting an actively-playing session: this section now
   // stays mounted in the background when the user leaves the Tones tab (see
@@ -28300,6 +28319,7 @@ function ToneLibrarySection({
   }, [loopEnabled, tonePaused, selectedTone.label, selectedTone.mark, presetMinutes]);
 
   useEffect(() => {
+    if (loopEnabled) setLastCompletedSession(null);
     if (!loopEnabled) {
       void stopContinuousTone();
       setSessionSeconds(0);
@@ -28366,6 +28386,7 @@ function ToneLibrarySection({
     const completed = sessionCompletedNaturallyRef.current;
     sessionCompletedNaturallyRef.current = false;
     if (seconds < 60) return;
+    setLastCompletedSession({ minutes: Math.max(1, Math.round(seconds / 60)), completed });
     onSessionCompleteRef.current?.({
       toneId: sessionToneRef.current.id,
       toneLabel: sessionToneRef.current.label,
@@ -28397,16 +28418,17 @@ function ToneLibrarySection({
     () => buildPathMoonChartComplement(selectedIssueGuide.id, moonChartInsightReadings ?? []),
     [selectedIssueGuide.id, moonChartInsightReadings]
   );
+  const issueLabel = localizedIssueGuideLabel(selectedIssueGuide.id, languageId);
 
   return (
     <View style={{ paddingBottom: 20 }}>
       <View style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 20, borderWidth: 1, borderColor: "rgba(14,148,136,0.24)", backgroundColor: "#F4FAF8", padding: 16, gap: 6 }}>
         <Text style={{ color: "#0E6F69", fontSize: 12, lineHeight: 16, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>
-          {l(`Calm for ${selectedIssueGuide.label}`, {
-            hindi: `${selectedIssueGuide.label} के लिए शांति`,
-            telugu: `${selectedIssueGuide.label} కోసం ప్రశాంతత`,
-            tamil: `${selectedIssueGuide.label}க்கான அமைதி`,
-            urdu: `${selectedIssueGuide.label} کے لیے سکون`
+          {l(`Calm for ${issueLabel}`, {
+            hindi: `${issueLabel} के लिए शांति`,
+            telugu: `${issueLabel} కోసం ప్రశాంతత`,
+            tamil: `${issueLabel}க்கான அமைதி`,
+            urdu: `${issueLabel} کے لیے سکون`
           })}
         </Text>
         <Text style={{ color: "#0D1F22", fontSize: 20, lineHeight: 24, fontWeight: "900" }}>
@@ -28426,7 +28448,12 @@ function ToneLibrarySection({
           })}
         </Text>
         <Text style={{ color: "#475569", fontSize: 12, lineHeight: 18, fontWeight: "700" }}>
-          Connected plan: this session keeps {selectedIssueGuide.label} active in Path, counselling, and your follow-up plan.
+          {l(`Connected plan: this session keeps ${issueLabel} active in Path, counselling, and your follow-up plan.`, {
+            hindi: `जुड़ी योजना: यह सत्र ${issueLabel} को मार्ग, काउंसलिंग और आपकी अगली योजना में सक्रिय रखता है।`,
+            telugu: `కనెక్ట్ చేసిన ప్రణాళిక: ఈ సెషన్ ${issueLabel}ను మార్గం, కౌన్సెలింగ్ మరియు మీ తదుపరి ప్రణాళికలో కొనసాగిస్తుంది।`,
+            tamil: `இணைக்கப்பட்ட திட்டம்: இந்த அமர்வு ${issueLabel}-ஐ பாதை, ஆலோசனை மற்றும் உங்கள் அடுத்த திட்டத்தில் தொடர்ந்து வைத்திருக்கும்.`,
+            urdu: `منسلک منصوبہ: یہ سیشن ${issueLabel} کو راستے، کاؤنسلنگ اور آپ کے اگلے منصوبے میں فعال رکھتا ہے۔`
+          })}
           {calmMoonComplement?.careful[0]
             ? ` Optional Moon-chart context currently marks ${calmMoonComplement.careful[0].label.toLowerCase()} as a care point.`
             : ""}
@@ -28520,6 +28547,33 @@ function ToneLibrarySection({
             )}
           </View>
         )}
+        {lastCompletedSession && !loopEnabled && (
+          <View style={{ marginHorizontal: 14, marginBottom: 10, borderRadius: 14, backgroundColor: "#F3F7F3", borderWidth: 1, borderColor: "rgba(14,111,105,0.2)", padding: 12 }}>
+            <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1 }}>
+              {l("A calm step is complete", { hindi: "शांत कदम पूरा हुआ", telugu: "ప్రశాంతమైన అడుగు పూర్తయింది", tamil: "அமைதியான படி முடிந்தது", urdu: "پرسکون قدم مکمل ہوا" })}
+            </Text>
+            <Text style={{ color: "#263244", fontSize: 13, lineHeight: 18, marginTop: 4, fontWeight: "700" }}>
+              {l(`${lastCompletedSession.minutes} minutes recorded. Choose what would help next, or simply leave it here.`, { hindi: `${lastCompletedSession.minutes} मिनट दर्ज हुए। अब जो मददगार लगे चुनें, या यहीं रुकें।`, telugu: `${lastCompletedSession.minutes} నిమిషాలు నమోదు అయ్యాయి. ఇప్పుడు ఉపయోగకరమైన తదుపరి అడుగును ఎంచుకోండి లేదా ఇక్కడే ఆగండి.`, tamil: `${lastCompletedSession.minutes} நிமிடங்கள் பதிவு செய்யப்பட்டன. அடுத்து உதவும் ஒன்றைத் தேர்ந்தெடுக்கவும் அல்லது இங்கேயே நிறுத்தவும்.`, urdu: `${lastCompletedSession.minutes} منٹ محفوظ ہوئے۔ اب جو مددگار ہو اسے منتخب کریں، یا یہیں رک جائیں۔` })}
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7, marginTop: 10 }}>
+              {[
+                { tab: "guide" as TabId, label: l("Open Path", { hindi: "मार्ग खोलें", telugu: "మార్గం తెరవండి", tamil: "பாதையைத் திறக்கவும்", urdu: "راستہ کھولیں" }) },
+                { tab: "aihelp" as TabId, label: l("Talk it through", { hindi: "बात करके समझें", telugu: "మాట్లాడి అర్థం చేసుకోండి", tamil: "பேசி புரிந்துகொள்ளவும்", urdu: "بات کر کے سمجھیں" }) },
+                { tab: "redress" as TabId, label: l("Get practical help", { hindi: "व्यावहारिक मदद लें", telugu: "ఆచరణాత్మక సహాయం పొందండి", tamil: "நடைமுறை உதவி பெறவும்", urdu: "عملی مدد لیں" }) }
+              ].map((item) => (
+                <Pressable
+                  key={item.tab}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.label}
+                  onPress={() => { void Haptics.selectionAsync(); onOpenTab(item.tab); }}
+                  style={({ pressed }) => ({ flexGrow: 1, minWidth: compact ? "30%" as unknown as number : 116, borderRadius: 10, borderWidth: 1, borderColor: "rgba(14,111,105,0.25)", backgroundColor: pressed ? "#D7ECE8" : "#FFFFFF", paddingHorizontal: 9, paddingVertical: 8, alignItems: "center" })}
+                >
+                  <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{item.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
         {loopEnabled && activeProgram && breathSteps.length > 0 && (
           <View style={{ backgroundColor: "#DEE7F2", paddingHorizontal: 18, paddingVertical: 12, borderTopWidth: 1, borderTopColor: "rgba(8,145,178,0.15)" }}>
             <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>
@@ -28584,10 +28638,10 @@ function ToneLibrarySection({
         <View style={{ marginHorizontal: 14, marginBottom: 12, borderRadius: 16, backgroundColor: "#DEE9F2", borderWidth: 1, borderColor: "rgba(34,211,238,0.18)", padding: 12 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "#006876", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
-                Playback quality &amp; safety
+          <Text style={{ color: "#006876", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2 }}>
+                {l("Playback quality & safety", { hindi: "प्लेबैक गुणवत्ता और सुरक्षा", telugu: "ప్లేబ్యాక్ నాణ్యత మరియు భద్రత", tamil: "ஒலி இயக்கத் தரம் மற்றும் பாதுகாப்பு", urdu: "پلے بیک معیار اور حفاظت" })}
               </Text>
-              <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>Comfort limiter · smooth start and stop · safe listening level</Text>
+              <Text style={{ color: "#263244", fontSize: 12, marginTop: 2 }}>{l("Comfort limiter · smooth start and stop · safe listening level", { hindi: "आराम सीमक · सहज शुरुआत और विराम · सुरक्षित सुनने का स्तर", telugu: "సౌకర్య పరిమితి · సున్నితమైన ప్రారంభం మరియు ఆపివేత · సురక్షిత వినికిడి స్థాయి", tamil: "வசதி வரம்பு · மென்மையான தொடக்கம் மற்றும் நிறுத்தம் · பாதுகாப்பான கேட்கும் அளவு", urdu: "آرام کی حد · ہموار آغاز اور اختتام · محفوظ سننے کی سطح" })}</Text>
             </View>
             <View style={{ backgroundColor: selectedToneHeadphones ? "rgba(251,191,36,0.13)" : "rgba(52,211,153,0.12)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: selectedToneHeadphones ? "rgba(251,191,36,0.4)" : "rgba(52,211,153,0.35)" }}>
               <Text style={{ color: selectedToneHeadphones ? "#A14A08" : "#04714F", fontSize: 12, fontWeight: "700" }}>
@@ -28637,8 +28691,8 @@ function ToneLibrarySection({
                     borderColor: selected ? "rgba(34,211,238,0.46)" : "rgba(255,255,255,0.07)"
                   })}
                 >
-                  <Text style={{ color: selected ? "#006876" : "#3A577D", fontSize: 12, fontWeight: "700" }}>{preset.label}</Text>
-                  <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, marginTop: 3 }}>{preset.intent}</Text>
+                  <Text style={{ color: selected ? "#006876" : "#3A577D", fontSize: 12, fontWeight: "700" }}>{localizedPresetCopy(preset).label}</Text>
+                  <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, marginTop: 3 }}>{localizedPresetCopy(preset).intent}</Text>
                 </Pressable>
               );
             })}
@@ -28651,7 +28705,7 @@ function ToneLibrarySection({
             <Pressable
               onPress={() => { void Haptics.selectionAsync(); setToneVolume((v) => clampToneVolume(v - 0.02)); }}
               accessibilityRole="button"
-              accessibilityLabel="Decrease volume"
+              accessibilityLabel={l("Decrease volume", { hindi: "वॉल्यूम घटाएँ", telugu: "వాల్యూమ్ తగ్గించండి", tamil: "ஒலி அளவை குறைக்கவும்", urdu: "آواز کم کریں" })}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(15,23,42,0.08)" }}
             >
@@ -28659,7 +28713,7 @@ function ToneLibrarySection({
             </Pressable>
             <View
               accessibilityRole="adjustable"
-              accessibilityLabel="Tone volume"
+              accessibilityLabel={l("Tone volume", { hindi: "ध्वनि वॉल्यूम", telugu: "ధ్వని వాల్యూమ్", tamil: "ஒலி அளவு", urdu: "آواز کا حجم" })}
               accessibilityValue={{ min: 0, max: 100, now: toneVolumePercent }}
               style={{ flex: 1, height: 8, borderRadius: 999, backgroundColor: "rgba(15,23,42,0.12)", overflow: "hidden" }}
             >
@@ -28668,7 +28722,7 @@ function ToneLibrarySection({
             <Pressable
               onPress={() => { void Haptics.selectionAsync(); setToneVolume((v) => clampToneVolume(v + 0.02)); }}
               accessibilityRole="button"
-              accessibilityLabel="Increase volume"
+              accessibilityLabel={l("Increase volume", { hindi: "वॉल्यूम बढ़ाएँ", telugu: "వాల్యూమ్ పెంచండి", tamil: "ஒலி அளவை அதிகரிக்கவும்", urdu: "آواز بڑھائیں" })}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: "#E1EEEC", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(15,23,42,0.08)" }}
             >
@@ -28694,7 +28748,7 @@ function ToneLibrarySection({
       {/* ── HEALING SESSION PROGRAMS — issue-specific ── */}
       <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
         <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 }}>
-          {l("Recommended for you today", { hindi: "आज आपके लिए सुझाव", telugu: "ఈ రోజు మీ కోసం సిఫార్సు", tamil: "இன்று உங்களுக்கான பரிந்துரை", urdu: "آج آپ کے لیے تجویز" })} — {selectedIssueGuide.label}
+          {l("Recommended for you today", { hindi: "आज आपके लिए सुझाव", telugu: "ఈ రోజు మీ కోసం సిఫార్సు", tamil: "இன்று உங்களுக்கான பரிந்துரை", urdu: "آج آپ کے لیے تجویز" })} — {issueLabel}
         </Text>
         <View style={{ gap: 8 }}>
           {programs.map((prog) => {
@@ -28752,7 +28806,7 @@ function ToneLibrarySection({
         </View>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`Continue ${selectedIssueGuide.label} in Path`}
+          accessibilityLabel={l(`Continue ${issueLabel} in Path`, { hindi: `${issueLabel} के मार्ग पर जाएँ`, telugu: `${issueLabel} కోసం మార్గంలో కొనసాగండి`, tamil: `${issueLabel}-க்கான பாதையில் தொடரவும்`, urdu: `${issueLabel} کے راستے پر جاری رکھیں` })}
           onPress={() => { void Haptics.selectionAsync(); onOpenTab("guide"); }}
           style={({ pressed }) => ({
             marginTop: 10,
@@ -28795,7 +28849,7 @@ function ToneLibrarySection({
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: cat.color, fontSize: 13, fontWeight: "700" }}>{localizedToneCategoryLabel(cat.id, cat.label)}</Text>
-                    <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 16, marginTop: 2, fontWeight: "700" }}>{cat.desc}</Text>
+                    <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 16, marginTop: 2, fontWeight: "700" }}>{localizedToneCategoryDescription(cat.id, cat.desc)}</Text>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     {hasActive && <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#0891B2" }} />}
