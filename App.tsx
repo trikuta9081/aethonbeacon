@@ -18645,7 +18645,7 @@ export default function App() {
       `${l("Official site", { hindi: "आधिकारिक वेबसाइट", telugu: "అధికారిక సైట్", tamil: "அதிகாரப்பூர்வ தளம்", urdu: "سرکاری ویب سائٹ" })}: ${selectedRedressRoute.website}`,
       `${l("Track status", { hindi: "स्थिति देखें", telugu: "స్థితిని ట్రాక్ చేయండి", tamil: "நிலையைக் கண்காணிக்கவும்", urdu: "حالت دیکھیں" })}: ${selectedRedressRoute.trackWebsite || selectedRedressRoute.website}`,
       `${l("Phone", { hindi: "फोन", telugu: "ఫోన్", tamil: "தொலைபேசி", urdu: "فون" })}: ${phone || l("not listed", { hindi: "उपलब्ध नहीं", telugu: "జాబితాలో లేదు", tamil: "பட்டியலிடப்படவில்லை", urdu: "درج نہیں" })}`,
-      `${l("Identity", { hindi: "पहचान", telugu: "గుర్తింపు", tamil: "அடையாளம்", urdu: "شناخت" })}: ${selectedIdentity.label}`,
+      `${l("Identity", { hindi: "पहचान", telugu: "గుర్తింపు", tamil: "அடையாளம்", urdu: "شناخت" })}: ${localizedIdentityLabel(selectedIdentity, languageId)}`,
       `${l("User", { hindi: "उपयोगकर्ता", telugu: "వినియోగదారు", tamil: "பயனர்", urdu: "صارف" })}: ${profileDisplayName}`,
       `${l("Locality", { hindi: "क्षेत्र", telugu: "ప్రాంతం", tamil: "பகுதி", urdu: "علاقہ" })}: ${supportLocality.trim() || l("not set", { hindi: "निर्धारित नहीं", telugu: "సెట్ చేయలేదు", tamil: "அமைக்கப்படவில்லை", urdu: "مقرر نہیں" })}`,
       `${l("Exported", { hindi: "निर्यात समय", telugu: "ఎగుమతి చేసిన సమయం", tamil: "ஏற்றுமதி நேரம்", urdu: "برآمد کا وقت" })}: ${new Date().toLocaleString()}`
@@ -21943,8 +21943,8 @@ async function fetchGuidanceHelp(
     const userMessage = createCommunityMessage(
       text,
       "user",
-      communityRealtimeConfigured ? `${selectedIdentity.label} member` : "You",
-      selectedIdentity.label
+      communityRealtimeConfigured ? `${localizedIdentityLabel(selectedIdentity, languageId)} member` : "You",
+      localizedIdentityLabel(selectedIdentity, languageId)
     );
     userMessage.clientId = presenceSessionId;
     userMessage.deliveryStatus = communityRealtimeConfigured ? "sending" : "sent";
@@ -33009,7 +33009,7 @@ function PlaySection({
           {pickLocalizedText(languageId, { english: "Current issue:", hindi: "वर्तमान मुद्दा:", telugu: "ప్రస్తుత విషయం:", tamil: "தற்போதைய விஷயம்:", urdu: "موجودہ مسئلہ:" })} {localizedIssueGuideLabel(selectedIssueGuide.id, languageId)}
         </Text>
         <Text style={styles.smallMeta}>
-          {pickLocalizedText(languageId, { english: "Profile lens:", hindi: "प्रोफ़ाइल दृष्टि:", telugu: "ప్రొఫైల్ దృష్టి:", tamil: "சுயவிவரப் பார்வை:", urdu: "پروفائل زاویہ:" })} {selectedIdentity.label} / {practiceCritique.priorityIds.length} practical loops
+          {pickLocalizedText(languageId, { english: "Profile lens:", hindi: "प्रोफ़ाइल दृष्टि:", telugu: "ప్రొఫైల్ దృష్టి:", tamil: "சுயவிவரப் பார்வை:", urdu: "پروفائل زاویہ:" })} {localizedIdentityLabel(selectedIdentity, languageId)} / {practiceCritique.priorityIds.length} practical loops
         </Text>
         <View style={styles.insightBand}>
           <Text style={styles.insightTitle}>{practiceCritique.title}</Text>
