@@ -71,6 +71,13 @@ jobs:
       # Gate the web deploy on the app's own checks so a broken commit can never
       # reach the live site.
       - name: Verify (typecheck + regression tests)
+        env:
+          # The verification service is a separate backend from the static
+          # web bundle. Keep this preflight fail-closed while Render is
+          # suspended; the export step below still embeds the configured
+          # remote endpoint for when that service is healthy.
+          EXPO_PUBLIC_VERIFICATION_MODE: "unavailable"
+          EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://verification-disabled.invalid"
         run: |
           pnpm run release:check
           pnpm run verification:env-check
