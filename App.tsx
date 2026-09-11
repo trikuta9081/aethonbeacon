@@ -6729,6 +6729,17 @@ const identityProfiles: Array<{
   }
 ];
 
+function localizedIdentityLabel(identity: { id: string; label: string }, languageId: LanguageId): string {
+  if (identity.id !== "other") return identity.label;
+  return ({
+    english: "Other / general",
+    hindi: "अन्य / सामान्य",
+    telugu: "ఇతర / సాధారణ",
+    tamil: "மற்றவை / பொது",
+    urdu: "دیگر / عام"
+  } as Partial<Record<LanguageId, string>>)[languageId] ?? identity.label;
+}
+
 const genderOptions: Array<{ id: ProfileGenderId; label: string }> = [
   { id: "female", label: "Female" },
   { id: "male", label: "Male" },
@@ -31874,7 +31885,7 @@ function CommunitySection({
               urdu: "مشترکہ فیڈ"
             })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
+          <Text style={styles.smallMeta}>{localizedIdentityLabel(selectedIdentity, languageId)}</Text>
         </View>
         {communityTypingLabel ? (
           <Text style={styles.communityTypingHint} accessibilityLiveRegion="polite">
@@ -32603,7 +32614,7 @@ function SearchSection({
             <Text style={styles.eyebrow}>{t("Explore", "खोजें")}</Text>
             <Text style={styles.sectionTitle}>{t("Find the right support faster", "सही सहायता जल्दी खोजें")}</Text>
           </View>
-          <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
+          <Text style={styles.smallMeta}>{localizedIdentityLabel(selectedIdentity, languageId)}</Text>
         </View>
         <Text style={styles.promptText}>
           {t(
@@ -33068,7 +33079,7 @@ function PlaySection({
               </Text>
               <Text style={styles.sectionTitle}>{featuredPlayChallengeView.label}</Text>
             </View>
-            <Text style={styles.smallMeta}>{selectedIdentity.label}</Text>
+            <Text style={styles.smallMeta}>{localizedIdentityLabel(selectedIdentity, languageId)}</Text>
           </View>
           <Text style={styles.promptText}>{featuredPlayChallengeView.subtitle}</Text>
           <Text style={styles.playSummary}>{featuredPlayChallengeView.summary}</Text>
@@ -35079,7 +35090,7 @@ function RedressSection({
               urdu: "مدد اور ازالہ"
             })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{l(selectedIdentity.label, { hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label })}</Text>
+          <Text style={styles.smallMeta}>{localizedIdentityLabel(selectedIdentity, languageId)}</Text>
         </View>
         <Text style={styles.promptText}>
           {l("Your situation sets the route. Everything below — first office, recommended initial action, and formal escalation path — changes to match it, and only that route is shown. Tap “Change” on the situation card to pick a different one.", {
