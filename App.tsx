@@ -35668,7 +35668,7 @@ function RedressSection({
             urdu: "منظم escalation path اور استعمال کے لیے درست portal حاصل کرنے کے لیے اپنے ادارے کی قسم منتخب کریں۔"
           })}
         </Text>
-        <View style={styles.issueChipGrid}>
+        <View style={[styles.issueChipGrid, !isWide && styles.institutionChipGridCompact]}>
           {institutionSectors.map((sourceSector) => {
             const sector = localizeInstitution(sourceSector, languageId);
             const isSelected = sector.id === selectedInstitutionSector.id;
@@ -35694,7 +35694,13 @@ function RedressSection({
         <Modal visible={institutionPageOpen} animationType={_aethonReduceMotion ? "none" : "slide"} presentationStyle="fullScreen" onRequestClose={() => setInstitutionPageOpen(false)}>
           <SafeAreaView style={{ flex: 1, backgroundColor: "#F3F7F8" }}>
             <View style={{ paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "#B9CDD2", backgroundColor: "#FFFFFF" }}>
-              <Pressable accessibilityRole="button" onPress={() => setInstitutionPageOpen(false)} style={{ minHeight: 48, justifyContent: "center" }}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={l("Back to institutions", { hindi: "संस्थानों की सूची पर वापस जाएँ", telugu: "సంస్థల జాబితాకు తిరిగి వెళ్లండి", tamil: "நிறுவனப் பட்டியலுக்குத் திரும்பவும்", urdu: "اداروں کی فہرست پر واپس جائیں" })}
+                onPress={() => setInstitutionPageOpen(false)}
+                style={({ pressed }) => [{ minHeight: 48, borderRadius: 12, paddingHorizontal: 12, flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "flex-start" }, pressed && styles.pressed]}
+              >
+                <Text style={{ color: "#0E6F69", fontSize: 22, lineHeight: 24, fontWeight: "800" }}>‹</Text>
                 <Text style={{ color: "#0E6F69", fontSize: 16, fontWeight: "700" }}>{l("Back to institutions", { hindi: "संस्थानों की सूची पर वापस जाएँ", telugu: "సంస్థల జాబితాకు తిరిగి వెళ్లండి", tamil: "நிறுவனப் பட்டியலுக்குத் திரும்பவும்", urdu: "اداروں کی فہرست پر واپس جائیں" })}</Text>
               </Pressable>
             </View>
@@ -49934,6 +49940,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
+  },
+  institutionChipGridCompact: {
+    flexDirection: "column",
+    flexWrap: "nowrap"
   },
   issueChip: {
     flexGrow: 1,
