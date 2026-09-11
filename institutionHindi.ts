@@ -202,10 +202,36 @@ const institutionLocalizedHeadings: Record<string, Record<string, { label: strin
   }
 };
 
+// Keep official office and portal names intact, but avoid dropping users into
+// an otherwise translated detail page with large English instruction blocks.
+// These are deliberately route-neutral guardrails; the catalogue still owns
+// the exact sector-specific office and regulator names.
+const institutionLocalizedNarrative: Record<string, Pick<InstitutionHindiCopy, "immediateAction" | "timeline" | "complaintLine" | "caution">> = {
+  telugu: {
+    immediateAction: "ముందుగా జాబితాలో ఉన్న మొదటి కార్యాలయాన్ని ఎంచుకుని, ఏమి జరిగింది, ఎప్పుడు జరిగింది, మీకు కావలసిన పరిష్కారం ఏమిటో రాతపూర్వకంగా ఇవ్వండి. సమర్పించిన ఆధారాన్ని భద్రపరచండి.",
+    timeline: "భద్రతా సమస్య అయితే వెంటనే చర్య కోరండి. రసీదు కోసం 3–7 రోజులు వేచి ఉండండి; సంస్థ నిర్ణయం కోసం 15–30 రోజుల్లో రాతపూర్వకంగా ఫాలో-అప్ చేయండి. స్పందన లేకపోతే తదుపరి దశకు వెళ్లండి.",
+    complaintLine: "ఈ ఫిర్యాదుకు రాతపూర్వక రసీదు, బాధ్యత వహించే అధికారి పేరు, మరియు కోరిన పరిష్కారంపై కారణాలతో కూడిన నిర్ణయాన్ని నిర్ణీత సమయంలో ఇవ్వండి.",
+    caution: "మౌఖిక హామీలపై మాత్రమే ఆధారపడవద్దు. అసలు పత్రాలు, సమర్పణ రుజువు, ప్రత్యుత్తరాలు మరియు ప్రతి ఫాలో-అప్‌ను క్రమంలో భద్రపరచండి."
+  },
+  tamil: {
+    immediateAction: "முதலில் பட்டியலில் உள்ள முதல் அலுவலகத்தைத் தேர்ந்தெடுத்து, என்ன நடந்தது, எப்போது நடந்தது, நீங்கள் எதிர்பார்க்கும் தீர்வு என்ன என்பதை எழுத்தில் அளிக்கவும். சமர்ப்பித்ததற்கான சான்றை பாதுகாப்பாக வைத்திருக்கவும்.",
+    timeline: "பாதுகாப்புப் பிரச்சினை என்றால் உடனடி நடவடிக்கை கேட்கவும். ஒப்புதலுக்காக 3–7 நாட்கள் காத்திருந்து, நிறுவனத் தீர்வுக்காக 15–30 நாட்களுக்குள் எழுத்துப்பூர்வமாகப் பின்தொடரவும். பதில் இல்லையெனில் அடுத்த நிலைக்கு செல்லவும்.",
+    complaintLine: "இந்தப் புகாருக்கான எழுத்துப்பூர்வ ஒப்புதல், பொறுப்பான அலுவலரின் பெயர், மற்றும் கோரிய தீர்வு குறித்து காரணமுள்ள முடிவை நிர்ணயிக்கப்பட்ட காலத்திற்குள் வழங்கவும்.",
+    caution: "வாய்மொழி உறுதிமொழிகளை மட்டும் நம்ப வேண்டாம். அசல் ஆவணங்கள், சமர்ப்பிப்பு சான்று, பதில்கள் மற்றும் ஒவ்வொரு பின்தொடர்பையும் வரிசையாகப் பாதுகாக்கவும்."
+  },
+  urdu: {
+    immediateAction: "سب سے پہلے فہرست میں دیے گئے پہلے دفتر سے رابطہ کریں اور تحریری طور پر بتائیں کہ کیا ہوا، کب ہوا، اور آپ کون سا حل چاہتے ہیں۔ جمع کرانے کا ثبوت محفوظ رکھیں۔",
+    timeline: "اگر حفاظت کا مسئلہ ہو تو فوراً کارروائی مانگیں۔ رسید کے لیے 3–7 دن انتظار کریں اور ادارے کے فیصلے کے لیے 15–30 دن کے اندر تحریری فالو اَپ کریں۔ جواب نہ ملے تو اگلے مرحلے پر جائیں۔",
+    complaintLine: "اس شکایت کی تحریری رسید، ذمہ دار افسر کا نام، اور مانگے گئے حل پر وجوہات کے ساتھ فیصلہ مقررہ مدت میں فراہم کیا جائے۔",
+    caution: "صرف زبانی یقین دہانی پر انحصار نہ کریں۔ اصل دستاویزات، جمع کرانے کا ثبوت، جوابات، اور ہر فالو اَپ کو ترتیب سے محفوظ رکھیں۔"
+  }
+};
+
 export function localizeInstitution<T extends InstitutionHindiCopy & { id: string; portals: { label: string; use: string; url: string }[] }>(sector: T, language: string): T {
   if (language !== "hindi") {
     const heading = institutionLocalizedHeadings[sector.id]?.[language];
-    return heading ? { ...sector, ...heading } : sector;
+    const narrative = institutionLocalizedNarrative[language];
+    return heading || narrative ? { ...sector, ...(heading ?? {}), ...(narrative ?? {}) } : sector;
   }
   const copy = institutionHindi[sector.id as keyof typeof institutionHindi];
   if (!copy) return sector;
