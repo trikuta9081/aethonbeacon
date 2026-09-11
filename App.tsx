@@ -35479,6 +35479,33 @@ function RedressSection({
             <Text style={styles.institutionMiniTitle}>{l("Suggested wording", { hindi: "सुझाया गया शब्दांकन", telugu: "సూచించిన పదజాలం", tamil: "பரிந்துரைக்கப்பட்ட உரை", urdu: "تجویز کردہ الفاظ" })}</Text>
             <Text style={styles.institutionComplaintText}>{institutionDetail.complaintLine}</Text>
           </View>
+
+          <View style={{ marginTop: 12, borderRadius: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#A8C5C1", padding: 13 }}>
+            <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "800", letterSpacing: 0.8, textTransform: "uppercase" }}>
+              {l("General institutional complaint", { hindi: "सामान्य संस्थागत शिकायत", telugu: "సాధారణ సంస్థ ఫిర్యాదు", tamil: "பொதுவான நிறுவனப் புகார்", urdu: "عام ادارہ جاتی شکایت" })}
+            </Text>
+            <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19, marginTop: 5 }}>
+              {l("For delays, incorrect records, fees, service quality, communication, or another issue that is not an emergency or a specialised route. Ask for a fair remedy, a dated acknowledgement, and the written resolution timeline.", { hindi: "देरी, गलत रिकॉर्ड, फीस, सेवा की गुणवत्ता, संचार या किसी अन्य ऐसे मुद्दे के लिए जो आपातकाल या विशेष मार्ग का विषय नहीं है। उचित समाधान, तारीख़ वाला acknowledgement और लिखित समाधान समयसीमा माँगें।", telugu: "ఆలస్యం, తప్పు రికార్డులు, ఫీజులు, సేవా నాణ్యత, కమ్యూనికేషన్ లేదా అత్యవసరం/ప్రత్యేక మార్గానికి చెందని ఇతర సమస్యల కోసం. సరైన పరిష్కారం, తేదీతో కూడిన రసీదు మరియు రాతపూర్వక పరిష్కార సమయరేఖను అడగండి.", tamil: "தாமதம், தவறான பதிவுகள், கட்டணம், சேவைத் தரம், தொடர்பு அல்லது அவசரமோ சிறப்பு வழியோ அல்லாத வேறு பிரச்சினைகளுக்கு. நியாயமான தீர்வு, தேதியிட்ட ஒப்புதல் மற்றும் எழுத்துப்பூர்வ தீர்வு காலவரிசையைக் கேளுங்கள்.", urdu: "تاخیر، غلط ریکارڈ، فیس، سروس کے معیار، رابطے یا کسی ایسے مسئلے کے لیے جو ایمرجنسی یا خصوصی راستہ نہیں ہے۔ مناسب حل، تاریخ والا acknowledgement اور تحریری حل کی مدت مانگیں۔" })}
+            </Text>
+            <Text style={{ color: "#506673", fontSize: 12, lineHeight: 17, marginTop: 6 }}>
+              {l("Start with the office listed above, then move to the institution grievance cell or head of office. Keep the original complaint, replies, and proof of every handoff. Use the specialised route instead if the matter involves danger, harassment, fraud, or a possible offence.", { hindi: "ऊपर दिए कार्यालय से शुरू करें, फिर संस्थान के grievance cell या कार्यालय प्रमुख तक जाएँ। मूल शिकायत, जवाब और हर handoff का प्रमाण रखें। यदि मामला खतरे, उत्पीड़न, धोखाधड़ी या संभावित अपराध से जुड़ा है, तो विशेष मार्ग चुनें।", telugu: "పై పేర్కొన్న కార్యాలయంతో ప్రారంభించి, తరువాత సంస్థ grievance cell లేదా కార్యాలయ అధిపతికి వెళ్లండి. అసలు ఫిర్యాదు, ప్రత్యుత్తరాలు మరియు ప్రతి handoff‌కు ఆధారం ఉంచండి. విషయం ప్రమాదం, వేధింపు, మోసం లేదా సంభావ్య నేరానికి సంబంధించినదైతే ప్రత్యేక మార్గాన్ని ఎంచుకోండి.", tamil: "மேலே உள்ள அலுவலகத்தில் தொடங்கி, நிறுவனக் குறைதீர் பிரிவு அல்லது அலுவலகத் தலைவரிடம் செல்லவும். அசல் புகார், பதில்கள், ஒவ்வொரு மாற்றுச் சமர்ப்பிப்பிற்கான சான்றை வைத்திருங்கள். ஆபத்து, தொல்லை, மோசடி அல்லது சாத்தியமான குற்றம் இருந்தால் சிறப்பு வழியைத் தேர்ந்தெடுக்கவும்.", urdu: "اوپر درج دفتر سے شروع کریں، پھر ادارے کے grievance cell یا دفتر کے سربراہ تک جائیں۔ اصل شکایت، جوابات اور ہر handoff کا ثبوت رکھیں۔ اگر معاملہ خطرے، ہراسانی، دھوکے یا ممکنہ جرم سے متعلق ہو تو خصوصی راستہ اختیار کریں۔" })}
+            </Text>
+            <View style={{ marginTop: 9, borderRadius: 9, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#D9E6E4", padding: 10 }}>
+              <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "800" }}>{l("Concerned offices for this institution", { hindi: "इस संस्थान के संबंधित कार्यालय", telugu: "ఈ సంస్థకు సంబంధించిన కార్యాలయాలు", tamil: "இந்த நிறுவனத்திற்கான தொடர்புடைய அலுவலகங்கள்", urdu: "اس ادارے کے متعلقہ دفاتر" })}</Text>
+              {institutionDetail.offices.slice(0, 4).map((office, index) => (
+                <Text key={`${institutionDetail.id}-general-office-${index}`} style={{ color: "#25364D", fontSize: 12, lineHeight: 17, marginTop: 4 }}>{index + 1}. {office}</Text>
+              ))}
+              <Text style={{ color: "#506673", fontSize: 12, lineHeight: 17, marginTop: 6 }}>{l("Use the first applicable office. If it does not acknowledge the complaint, send the same record to the next office and quote the earlier reference.", { hindi: "पहले लागू कार्यालय का उपयोग करें। यदि वह शिकायत स्वीकार नहीं करता, तो उसी रिकॉर्ड को अगले कार्यालय में भेजें और पहले संदर्भ का उल्लेख करें।", telugu: "ముందుగా వర్తించే కార్యాలయాన్ని ఉపయోగించండి. అది ఫిర్యాదును స్వీకరించకపోతే, అదే రికార్డును తదుపరి కార్యాలయానికి పంపి మునుపటి రిఫరెన్స్‌ను పేర్కొనండి.", tamil: "முதலில் பொருந்தும் அலுவலகத்தைப் பயன்படுத்துங்கள். அது புகாரை ஏற்கவில்லை என்றால், அதே பதிவை அடுத்த அலுவலகத்திற்கு அனுப்பி முந்தைய குறிப்பைச் சொல்லுங்கள்.", urdu: "پہلے قابل اطلاق دفتر سے رابطہ کریں۔ اگر وہ شکایت وصول نہ کرے تو یہی ریکارڈ اگلے دفتر کو بھیجیں اور پچھلے حوالہ کا ذکر کریں۔" })}</Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={l("Use the general institutional complaint draft", { hindi: "सामान्य संस्थागत शिकायत ड्राफ्ट का उपयोग करें", telugu: "సాధారణ సంస్థ ఫిర్యాదు డ్రాఫ్ట్‌ను ఉపయోగించండి", tamil: "பொதுவான நிறுவனப் புகார் வரைவைப் பயன்படுத்தவும்", urdu: "عام ادارہ جاتی شکایت ڈرافٹ استعمال کریں" })}
+              onPress={() => { void Haptics.selectionAsync(); setRedressRouteId("private"); setFocusedRouteId("private"); setInstitutionPageOpen(false); }}
+              style={({ pressed }) => ({ marginTop: 10, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#D7ECE8" : "#EAF3F1", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center" })}
+            >
+              <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "800" }}>{l("Use general complaint draft", { hindi: "सामान्य शिकायत ड्राफ्ट उपयोग करें", telugu: "సాధారణ ఫిర్యాదు డ్రాఫ్ట్‌ను ఉపయోగించండి", tamil: "பொதுவான புகார் வரைவைப் பயன்படுத்தவும்", urdu: "عام شکایت ڈرافٹ استعمال کریں" })}</Text>
+            </Pressable>
+          </View>
         </View>
             </ScrollView>
           </SafeAreaView>

@@ -155,6 +155,8 @@ assert(source.includes('FIR lodging path'), 'The crime route must explain the FI
 assert(source.includes('NAYIQ prepares text and tracking only.'), 'Lodging guidance must clearly state that NAYIQ does not file complaints');
 assert(source.includes('Start my private case record'), 'Users must be able to hand a prepared draft into the local case tracker');
 assert(source.includes('Mark complaint as submitted today'), 'The case tracker must record real-world submission separately from drafting');
+assert(source.includes('General institutional complaint'), 'Institution pages must expose a neutral path for routine complaints');
+assert(source.includes('Use general complaint draft'), 'Routine institutional complaints must hand off to a neutral draft');
 assert(source.includes('localizeRedressRoute(redressRoutes.find('), 'The selected Help and Redress path must use the active language');
 assert(source.includes('const route = localizeRedressRoute(sourceRoute, languageId);'), 'Help and Redress chooser cards must use localized route copy');
 assert(source.includes('const sector = localizeInstitution(sourceSector, languageId);'), 'Institution chooser cards must use localized institution copy');
