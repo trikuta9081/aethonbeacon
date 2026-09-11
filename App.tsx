@@ -35839,6 +35839,16 @@ function RedressSection({
                     <Text style={{ color: "#B91C1C", fontSize: 12, fontWeight: "800" }}>{l("📄 Save PDF", { hindi: "📄 PDF सहेजें", telugu: "📄 PDF గా సేవ్ చేయండి", tamil: "📄 PDF ஆக சேமிக்கவும்", urdu: "📄 PDF محفوظ کریں" })}</Text>
                   </Pressable>
                 </View>
+                {!activeCase && (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={l("Start a private case record for this complaint", { hindi: "इस शिकायत के लिए निजी केस रिकॉर्ड शुरू करें", telugu: "ఈ ఫిర్యాదు కోసం ప్రైవేట్ కేసు రికార్డును ప్రారంభించండి", tamil: "இந்த புகாருக்கான தனிப்பட்ட வழக்குப் பதிவைத் தொடங்குங்கள்", urdu: "اس شکایت کے لیے نجی کیس ریکارڈ شروع کریں" })}
+                    onPress={() => { void Haptics.selectionAsync(); startCase(); }}
+                    style={({ pressed }) => ({ marginTop: 10, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#D7ECE8" : "#EAF3F1", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center" })}
+                  >
+                    <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "800" }}>{l("Start my private case record", { hindi: "मेरा निजी केस रिकॉर्ड शुरू करें", telugu: "నా ప్రైవేట్ కేసు రికార్డును ప్రారంభించండి", tamil: "எனது தனிப்பட்ட வழக்குப் பதிவைத் தொடங்குங்கள்", urdu: "میرا نجی کیس ریکارڈ شروع کریں" })}</Text>
+                  </Pressable>
+                )}
                 <View style={{ marginTop: 10, backgroundColor: "rgba(252,211,77,0.08)", borderRadius: 8, padding: 10, borderLeftWidth: 3, borderLeftColor: "#B45309" }}>
                   <Text style={{ color: "#8A6A00", fontSize: 12, lineHeight: 17, fontWeight: "700" }}>{l("💡 Tip", { hindi: "💡 सुझाव", telugu: "💡 సూచన", tamil: "💡 குறிப்பு", urdu: "💡 ٹپ" })}</Text>
                   <Text style={{ color: "#5A4A1A", fontSize: 12, lineHeight: 17, marginTop: 2 }}>
