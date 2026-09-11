@@ -8880,6 +8880,51 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     tamil: "இணைக்கப்பட்ட சேவை வழங்குநர் உறுதிப்படுத்தும் குறியீடுகளை அனுப்புகிறார்.",
     urdu: "جڑا ہوا فراہم کنندہ تصدیقی کوڈ بھیجتا ہے۔"
   },
+  "Verification stays out of the way unless chat or private rooms need it.": {
+    telugu: "చాట్ లేదా ప్రైవేట్ గదులకు అవసరం ఉంటే తప్ప ధృవీకరణ మీకు ఇబ్బంది కలిగించదు.",
+    tamil: "அரட்டை அல்லது தனிப்பட்ட அறைகளுக்கு தேவைப்படும் வரை சரிபார்ப்பு உங்களுக்கு இடையூறாக இருக்காது.",
+    urdu: "جب تک چیٹ یا نجی کمروں کو ضرورت نہ ہو، تصدیق راستے میں نہیں آئے گی۔"
+  },
+  "Secure verification is temporarily unavailable; no local OTP is generated.": {
+    telugu: "సురక్షిత ధృవీకరణ తాత్కాలికంగా అందుబాటులో లేదు; స్థానిక OTP సృష్టించబడదు.",
+    tamil: "பாதுகாப்பான சரிபார்ப்பு தற்காலிகமாக கிடைக்கவில்லை; உள்ளூர் OTP உருவாக்கப்படாது.",
+    urdu: "محفوظ تصدیق عارضی طور پر دستیاب نہیں؛ کوئی مقامی OTP تیار نہیں کیا جائے گا۔"
+  },
+  "Local fallback generates the code inside the app for beta testing.": {
+    telugu: "బీటా పరీక్ష కోసం స్థానిక fallback యాప్‌లోనే కోడ్‌ను సృష్టిస్తుంది.",
+    tamil: "பீட்டா சோதனைக்காக உள்ளூர் fallback செயலிக்குள்ளேயே குறியீட்டை உருவாக்குகிறது.",
+    urdu: "بیٹا ٹیسٹنگ کے لیے مقامی متبادل کوڈ ایپ کے اندر تیار کرتا ہے۔"
+  },
+  "Phone OTP": {
+    telugu: "ఫోన్ OTP",
+    tamil: "தொலைபேசி OTP",
+    urdu: "فون OTP"
+  },
+  "Email OTP": {
+    telugu: "ఇమెయిల్ OTP",
+    tamil: "மின்னஞ்சல் OTP",
+    urdu: "ای میل OTP"
+  },
+  "Phone": {
+    telugu: "ఫోన్",
+    tamil: "தொலைபேசி",
+    urdu: "فون"
+  },
+  "Email": {
+    telugu: "ఇమెయిల్",
+    tamil: "மின்னஞ்சல்",
+    urdu: "ای میل"
+  },
+  "Send the code to the phone number you entered, then paste it here.": {
+    telugu: "మీరు నమోదు చేసిన ఫోన్ నంబర్‌కు కోడ్ పంపి, తర్వాత ఇక్కడ అతికించండి.",
+    tamil: "நீங்கள் உள்ளிட்ட தொலைபேசி எண்ணுக்கு குறியீட்டை அனுப்பி, பின்னர் அதை இங்கே ஒட்டவும்.",
+    urdu: "آپ کے درج کردہ فون نمبر پر کوڈ بھیجیں، پھر اسے یہاں پیسٹ کریں۔"
+  },
+  "Send the code to the email address you entered, then paste it here.": {
+    telugu: "మీరు నమోదు చేసిన ఇమెయిల్ చిరునామాకు కోడ్ పంపి, తర్వాత ఇక్కడ అతికించండి.",
+    tamil: "நீங்கள் உள்ளிட்ட மின்னஞ்சல் முகவரிக்கு குறியீட்டை அனுப்பி, பின்னர் அதை இங்கே ஒட்டவும்.",
+    urdu: "آپ کے درج کردہ ای میل پتے پر کوڈ بھیجیں، پھر اسے یہاں پیسٹ کریں۔"
+  },
   "Contact": {
     telugu: "సంప్రదింపు",
     tamil: "தொடர்பு",
@@ -8954,11 +8999,6 @@ const profileOnboardingTextCatalog: LocalizedTextCatalog = {
     telugu: "ధృవీకరణ విభాగానికి వెళ్లండి",
     tamil: "சரிபார்ப்பு பகுதியிற்கு செல்லவும்",
     urdu: "تصدیقی حصے پر جائیں"
-  },
-  "Local fallback generates the code inside the app for beta testing.": {
-    telugu: "బీటా పరీక్ష కోసం స్థానిక fallback యాప్ లోపలే code సృష్టిస్తుంది.",
-    tamil: "பீட்டா சோதனைக்காக local fallback code-ஐ app-க்குள் உருவாக்குகிறது.",
-    urdu: "بیٹا ٹیسٹنگ کے لیے local fallback code ایپ کے اندر تیار کرتا ہے۔"
   },
   "Male": {
     telugu: "పురుషుడు",
