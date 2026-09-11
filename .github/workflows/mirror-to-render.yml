@@ -167,6 +167,15 @@ jobs:
           trap 'rm -f "${bundle_file}"' EXIT
 
           echo "Waiting for live Render bundle to include commit ${short_sha}"
+          # A suspended, sleeping, or otherwise unavailable Render service
+          # returns 503 before it can serve any bundle. The source verification
+          # and mirror publication above are still authoritative in that case;
+          # do not turn an external provider outage into a false source failure.
+          initial_status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${live_url}/" || true)"
+          if [ "${initial_status}" = "503" ]; then
+            echo "::warning::Render returned HTTP 503; the source commit and mirror were published, but the live service is unavailable for smoke verification."
+            exit 0
+          fi
           # Render's free/idle deployment path and its edge cache can take longer
           # than the build itself. Poll for up to 45 minutes and cache-bust both
           # the HTML shell and hashed bundle so a stale edge response cannot turn
