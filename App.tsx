@@ -31097,7 +31097,12 @@ function CommunitySection({
               urdu: "تصدیق شدہ چیٹ"
             })}</Text>
           </View>
-          <Text style={styles.smallMeta}>{l(selectedIdentity.label, { hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label })}</Text>
+          <Text style={styles.smallMeta}>{l(selectedIdentity.label, {
+            hindi: selectedIdentity.id === "other" ? "अन्य / सामान्य" : selectedIdentity.label,
+            tamil: selectedIdentity.id === "other" ? "மற்றவை / பொது" : selectedIdentity.label,
+            telugu: selectedIdentity.id === "other" ? "ఇతర / సాధారణ" : selectedIdentity.label,
+            urdu: selectedIdentity.id === "other" ? "دیگر / عام" : selectedIdentity.label
+          })}</Text>
         </View>
         <View style={styles.communityPreviewBand}>
           <Text style={styles.visionGuidanceTitle}>{l("Private chats", {
@@ -33797,9 +33802,9 @@ function IssueGuideSection({
         <Text style={styles.promptText}>
           {l("Choose the support that fits this moment. Your active focus remains within the same plan across the app.", {
             hindi: "इस पल के लिए सही सहारा चुनें। आपका सक्रिय फोकस ऐप में उसी योजना के भीतर बना रहता है।",
-            telugu: "ఈ క్షణానికి సరిపోయే మద్దతును ఎంచుకోండి. మీ active focus app అంతటా అదే ప్రణాళికలో ఉంటుంది.",
-            tamil: "இந்த தருணத்திற்கு ஏற்ற ஆதரவைத் தேர்ந்தெடுக்கவும். உங்கள் active focus app முழுவதும் அதே திட்டத்துக்குள் இருக்கும்.",
-            urdu: "اس لمحے کے لیے مناسب مدد منتخب کریں۔ آپ کی active focus app بھر میں اسی منصوبے کے اندر رہتی ہے۔"
+            telugu: "ఈ క్షణానికి సరిపోయే మద్దతును ఎంచుకోండి. మీ క్రియాశీల దృష్టి యాప్ అంతటా అదే ప్రణాళికలో ఉంటుంది.",
+            tamil: "இந்த தருணத்திற்கு ஏற்ற ஆதரவைத் தேர்ந்தெடுக்கவும். உங்கள் செயலில் உள்ள கவனம் செயலி முழுவதும் அதே திட்டத்துக்குள் இருக்கும்.",
+            urdu: "اس لمحے کے لیے مناسب مدد منتخب کریں۔ آپ کی فعال توجہ ایپ بھر میں اسی منصوبے کے اندر رہتی ہے۔"
           })}
         </Text>
         <View style={[styles.issueConnectedGrid, isWide && styles.issueConnectedGridWide]}>
@@ -33825,10 +33830,10 @@ function IssueGuideSection({
         <View style={styles.issueSafetyCopy}>
           <Text style={styles.issueSafetyTitle}>{l("Safety remains available at every step", { hindi: "हर कदम पर सुरक्षा उपलब्ध है", telugu: "ప్రతి దశలో భద్రత అందుబాటులో ఉంటుంది", tamil: "ஒவ்வொரு படியிலும் பாதுகாப்பு கிடைக்கும்", urdu: "ہر قدم پر حفاظت دستیاب ہے" })}</Text>
           <Text style={styles.issueSafetyText}>{l("If there is immediate danger, call 112. For a complaint, evidence, or formal escalation route, open Help and Redress.", {
-            hindi: "अगर तुरंत खतरा है, तो 112 पर कॉल करें। शिकायत, साक्ष्य, या औपचारिक ऊपर-बढ़ाने के लिए Help and Redress खोलें।",
-            telugu: "తక్షణ ప్రమాదం ఉంటే 112 కి కాల్ చేయండి. ఫిర్యాదు, సాక్ష్యం, లేదా అధికారిక escalation కోసం Help and Redress తెరవండి.",
-            tamil: "உடனடி ஆபத்து இருந்தால் 112-ஐ அழைக்கவும். புகார், சான்று, அல்லது formal escalation route-க்கு Help and Redress-ஐத் திறக்கவும்.",
-            urdu: "اگر فوری خطرہ ہو تو 112 پر کال کریں۔ شکایت، ثبوت، یا رسمی escalation کے لیے Help and Redress کھولیں۔"
+            hindi: "अगर तुरंत खतरा है, तो 112 पर कॉल करें। शिकायत, साक्ष्य या औपचारिक कार्रवाई के लिए मदद और शिकायत खोलें।",
+            telugu: "తక్షణ ప్రమాదం ఉంటే 112 కి కాల్ చేయండి. ఫిర్యాదు, సాక్ష్యం లేదా అధికారిక చర్య కోసం సహాయం మరియు పరిష్కారం తెరవండి.",
+            tamil: "உடனடி ஆபத்து இருந்தால் 112-ஐ அழைக்கவும். புகார், சான்று அல்லது முறையான நடவடிக்கைக்காக உதவி மற்றும் தீர்வைத் திறக்கவும்.",
+            urdu: "اگر فوری خطرہ ہو تو 112 پر کال کریں۔ شکایت، ثبوت یا رسمی کارروائی کے لیے مدد اور ازالہ کھولیں۔"
           })}</Text>
         </View>
         <View style={styles.issueSafetyActions}>
@@ -33845,7 +33850,7 @@ function IssueGuideSection({
         <View style={styles.issueDetailToggleRow}>
           <View style={styles.issuePlanHeaderCopy}>
             <Text style={styles.eyebrow}>{l("Further context", { hindi: "अतिरिक्त संदर्भ", telugu: "మరిన్ని సందర్భాలు", tamil: "மேலும் சூழல்", urdu: "مزید سیاق" })}</Text>
-            <Text style={styles.sectionTitleSmall}>{l("Reasoning, nearby support, insight, and follow-up", { hindi: "तर्क, नज़दीकी सहारा, दृष्टि, और follow-up", telugu: "తర్కం, సమీప మద్దతు, insight, మరియు follow-up", tamil: "காரணம், அருகிலுள்ள ஆதரவு, insight, மற்றும் follow-up", urdu: "منطق، قریبی مدد، بصیرت، اور follow-up" })}</Text>
+            <Text style={styles.sectionTitleSmall}>{l("Reasoning, nearby support, insight, and follow-up", { hindi: "तर्क, नज़दीकी सहारा, दृष्टि और आगे की कार्रवाई", telugu: "తర్కం, సమీప మద్దతు, దృష్టి మరియు తదుపరి చర్య", tamil: "காரணம், அருகிலுள்ள ஆதரவு, பார்வை மற்றும் அடுத்த நடவடிக்கை", urdu: "منطق، قریبی مدد، بصیرت اور اگلی کارروائی" })}</Text>
           </View>
           <Pressable
             accessibilityRole="button"
