@@ -12044,6 +12044,16 @@ const VARA_INFO = [
   { day: 6, name: "Shanivara", en: "Saturday", hi: "शनिवार",   planet: "Shani (Saturn)", color: "#263244", emoji: "⬛", mantra: "Om Shanaye Namah",       guidance: "Day of discipline and karma. Good for service, hard work, and clearing debts." },
 ];
 
+const VARA_GUIDANCE_TRANSLATIONS: Record<number, Partial<Record<LanguageId, string>>> = {
+  0: { hindi: "आत्मविश्वास, नेतृत्व और प्रभावशाली लोगों से जुड़ने के लिए अच्छा दिन।", telugu: "ఆత్మవిశ్వాసం, నాయకత్వం మరియు అధికార వ్యక్తులతో సంబంధాలకు అనుకూలమైన రోజు.", tamil: "தன்னம்பிக்கை, தலைமைத்துவம் மற்றும் அதிகாரத்தில் உள்ளவர்களுடன் தொடர்புக்கு ஏற்ற நாள்.", urdu: "خود اعتمادی، قیادت اور بااثر لوگوں سے رابطے کے لیے اچھا دن۔" },
+  1: { hindi: "अंतर्ज्ञान, परिवार, मन की शांति और भावनात्मक स्पष्टता के लिए अनुकूल।", telugu: "అంతర్దృష్టి, కుటుంబం, మనశ్శాంతి మరియు భావోద్వేగ స్పష్టతకు అనుకూలం.", tamil: "உள்ளுணர்வு, குடும்பம், மன அமைதி மற்றும் உணர்ச்சி தெளிவுக்கு ஏற்றது.", urdu: "وجدان، خاندان، ذہنی سکون اور جذباتی وضاحت کے لیے موزوں۔" },
+  2: { hindi: "साहस और कार्रवाई का दिन। शारीरिक काम, संपत्ति और साहसिक शुरुआत के लिए अच्छा।", telugu: "ధైర్యం మరియు చర్యకు రోజు. శారీరక పని, ఆస్తి విషయాలు మరియు ధైర్యమైన ప్రారంభాలకు అనుకూలం.", tamil: "தைரியம் மற்றும் செயலுக்கான நாள். உடல் உழைப்பு, சொத்து விஷயங்கள் மற்றும் துணிச்சலான தொடக்கங்களுக்கு ஏற்றது.", urdu: "ہمت اور عمل کا دن۔ جسمانی کام، جائیداد اور بہادرانہ آغاز کے لیے اچھا۔" },
+  3: { hindi: "संवाद, व्यापार, सीखने, लेखन और अनुबंधों के लिए बहुत अच्छा।", telugu: "సంభాషణ, వ్యాపారం, అభ్యాసం, రచన మరియు ఒప్పందాలకు అద్భుతమైన రోజు.", tamil: "தொடர்பு, வர்த்தகம், கற்றல், எழுத்து மற்றும் ஒப்பந்தங்களுக்கு சிறந்த நாள்.", urdu: "رابطے، تجارت، سیکھنے، تحریر اور معاہدوں کے لیے بہترین۔" },
+  4: { hindi: "आध्यात्मिक विकास, शिक्षा, उच्च ज्ञान और कानूनी मामलों के लिए शुभ।", telugu: "ఆధ్యాత్మిక అభివృద్ధి, బోధన, ఉన్నత జ్ఞానం మరియు చట్టపరమైన విషయాలకు శుభం.", tamil: "ஆன்மிக வளர்ச்சி, கற்பித்தல், உயர்ந்த அறிவு மற்றும் சட்ட விஷயங்களுக்கு சுபமானது.", urdu: "روحانی ترقی، تعلیم، اعلیٰ حکمت اور قانونی معاملات کے لیے مبارک۔" },
+  5: { hindi: "सुंदरता और प्रेम का दिन। रिश्तों, कला, विलासिता और उत्सव के लिए अच्छा।", telugu: "అందం మరియు ప్రేమకు రోజు. సంబంధాలు, కళ, సౌకర్యాలు మరియు వేడుకలకు అనుకూలం.", tamil: "அழகு மற்றும் அன்புக்கான நாள். உறவுகள், கலை, செழிப்பு மற்றும் கொண்டாட்டத்திற்கு ஏற்றது.", urdu: "خوبصورتی اور محبت کا دن۔ رشتوں، فن، آسائش اور جشن کے لیے اچھا۔" },
+  6: { hindi: "अनुशासन और कर्म का दिन। सेवा, मेहनत और ऋण चुकाने के लिए अच्छा।", telugu: "క్రమశిక్షణ మరియు కర్మకు రోజు. సేవ, కష్టపడి పని మరియు అప్పులు తీర్చడానికి అనుకూలం.", tamil: "ஒழுக்கம் மற்றும் கர்மத்திற்கான நாள். சேவை, கடின உழைப்பு மற்றும் கடன்களைத் தீர்க்க ஏற்றது.", urdu: "نظم و ضبط اور کرم کا دن۔ خدمت، محنت اور قرض صاف کرنے کے لیے اچھا۔" }
+};
+
 // Generic sign-of-the-day paragraphs were removed. Daily guidance below is
 // calculated from the user's Moon chart and current lunar timing instead.
 
@@ -38933,6 +38943,7 @@ function VedicDailyCard({
   const dateLocale = languageId === "hindi" ? "hi-IN" : languageId === "telugu" ? "te-IN" : languageId === "tamil" ? "ta-IN" : languageId === "urdu" ? "ur-IN" : "en-IN";
   const dateLabel = today.toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
   const varaName = languageId === "english" ? vara.en : languageId === "hindi" ? vara.hi : vara.name;
+  const varaGuidance = pickLocalizedText(languageId, { english: vara.guidance, ...(VARA_GUIDANCE_TRANSLATIONS[vara.day] ?? {}) });
   const rashiDisplayName = languageId === "english" ? rashi.en : rashi.name;
   // Memoized: recomputing all lunar dimensions on every render (e.g. window
   // resize, unrelated state) is wasteful. Keyed on the birth-derived inputs so
@@ -39038,7 +39049,7 @@ function VedicDailyCard({
           <Text style={styles.vedicVaraMantra}>{vara.mantra}</Text>
         </View>
       </View>
-      <Text style={styles.vedicVaraGuidance}>{vara.guidance}</Text>
+      <Text style={styles.vedicVaraGuidance}>{varaGuidance}</Text>
 
       {/* Cosmic snapshot chips */}
       <View style={styles.vedicChipsRow}>
