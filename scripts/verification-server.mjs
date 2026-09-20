@@ -48,7 +48,7 @@ const legacyProviderPrefix = `${"ge"}mini`;
 const legacyProviderKeyName = `${legacyProviderPrefix.toUpperCase()}_API_KEY`;
 const legacyProviderModelName = `${legacyProviderPrefix.toUpperCase()}_MODEL`;
 const guidanceApiKey = (process.env.GUIDANCE_SERVICE_KEY ?? process.env[legacyProviderKeyName] ?? "").trim();
-const defaultGuidanceModel = `${legacyProviderPrefix}-2.5-flash`;
+const defaultGuidanceModel = `${legacyProviderPrefix}-3.6-flash`;
 const guidanceModel = (process.env.GUIDANCE_MODEL ?? process.env[legacyProviderModelName] ?? defaultGuidanceModel).trim() || defaultGuidanceModel;
 const adminLoginIdentity = (process.env.ADMIN_LOGIN_ID ?? "").trim().toLowerCase();
 const adminLoginCode = (process.env.ADMIN_LOGIN_CODE ?? "").trim();
@@ -62,9 +62,7 @@ const verificationSigningSecret =
   adminLoginCode ||
   (debugPreview ? "aethon-local-verification" : "");
 const guidanceFallbackModels = [
-  `${legacyProviderPrefix}-2.5-flash`,
-  `${legacyProviderPrefix}-2.5-flash-lite`,
-  `${legacyProviderPrefix}-2.0-flash`
+  `${legacyProviderPrefix}-3.5-flash-lite`
 ];
 const guidanceModelCandidates = [
   guidanceModel,
