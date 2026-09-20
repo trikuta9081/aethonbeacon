@@ -69,6 +69,7 @@ jobs:
       - name: Verify (typecheck + regression tests)
         run: |
           pnpm run release:check
+          pnpm audit --prod --audit-level high
           pnpm run verification:env-check
           pnpm run typecheck
           pnpm run test:tone
@@ -78,6 +79,7 @@ jobs:
           pnpm run test:upgrades
           pnpm run test:meditation
           pnpm run test:sync
+          pnpm run test:launch-scenarios
 
       - name: Make Gradle executable
         run: chmod +x android/gradlew

@@ -37,10 +37,12 @@ jobs:
       - name: Verify source and release artifacts
         run: |
           pnpm run release:check
+          pnpm audit --prod --audit-level high
           pnpm run typecheck
           pnpm run test:visibility
           pnpm run test:product-quality
           pnpm run test:upgrades
+          pnpm run test:launch-scenarios
 
       - name: Configure GitHub Pages
         id: pages

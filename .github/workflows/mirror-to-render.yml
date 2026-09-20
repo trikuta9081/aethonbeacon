@@ -80,6 +80,7 @@ jobs:
           EXPO_PUBLIC_VERIFICATION_API_BASE_URL: "https://verification-disabled.invalid"
         run: |
           pnpm run release:check
+          pnpm audit --prod --audit-level high
           pnpm run verification:env-check
           pnpm run typecheck
           pnpm run test:tone
@@ -89,6 +90,7 @@ jobs:
           pnpm run test:upgrades
           pnpm run test:meditation
           pnpm run test:sync
+          pnpm run test:launch-scenarios
 
       - name: Build web bundle
         run: pnpm run export:web
