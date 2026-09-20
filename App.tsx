@@ -30649,6 +30649,8 @@ function CommunitySection({
     null;
   const communityReduceMotion = useReducedMotion();
   const [showFullCommunity, setShowFullCommunity] = useState(false);
+  const [showCommunityHowTo, setShowCommunityHowTo] = useState(false);
+  const [showAllCommunityTopics, setShowAllCommunityTopics] = useState(false);
   // Chat draft moved down out of App(). App() is a ~6,600-line component with
   // ~180 pieces of state; holding the draft there meant every keystroke in
   // this box re-rendered the whole active tab. It only ever needed to be
@@ -30691,6 +30693,8 @@ function CommunitySection({
 
   useEffect(() => {
     setShowFullCommunity(false);
+    setShowCommunityHowTo(false);
+    setShowAllCommunityTopics(false);
   }, [selectedIdentity.id, canUseCommunityFeatures, isPrivateIntakeOpen]);
 
   // ── Unread indicator: "N new" pills for the feed and chat ──────────────────
@@ -31136,7 +31140,40 @@ function CommunitySection({
           )}
         </View>
         {/* ── How to use this section ── */}
-        <View style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
+        <View style={[styles.communityPreviewBand, { marginBottom: 12 }]}>
+          <Text style={styles.visionGuidanceTitle}>{l("Start here", {
+            hindi: "यहाँ से शुरू करें",
+            telugu: "ఇక్కడి నుంచి ప్రారంభించండి",
+            tamil: "இங்கே தொடங்குங்கள்",
+            urdu: "یہاں سے شروع کریں"
+          })}</Text>
+          <Text style={styles.visionGuidanceText}>
+            {l("Read a helpful voice, join the verified chat, or share one useful thought. You can explore private rooms later.", {
+              hindi: "किसी उपयोगी आवाज़ को पढ़ें, सत्यापित चैट में जुड़ें, या एक उपयोगी विचार साझा करें। निजी कमरे बाद में देख सकते हैं।",
+              telugu: "ఉపయోగకరమైన స్వరాన్ని చదవండి, ధృవీకరించిన చాట్‌లో చేరండి లేదా ఒక ఉపయోగకరమైన ఆలోచనను పంచుకోండి. ప్రైవేట్ గదులను తర్వాత చూడవచ్చు.",
+              tamil: "பயனுள்ள குரலைப் படிக்கவும், உறுதிப்படுத்தப்பட்ட அரட்டையில் சேரவும் அல்லது ஒரு பயனுள்ள எண்ணத்தைப் பகிரவும். தனிப்பட்ட அறைகளை பின்னர் பார்க்கலாம்.",
+              urdu: "کسی مفید آواز کو پڑھیں، تصدیق شدہ چیٹ میں شامل ہوں، یا ایک مفید خیال شیئر کریں۔ نجی کمرے بعد میں دیکھ سکتے ہیں۔"
+            })}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={l("How to use community", {
+              hindi: "समुदाय का उपयोग कैसे करें",
+              telugu: "సమాజాన్ని ఎలా ఉపయోగించాలి",
+              tamil: "சமூகத்தை எப்படி பயன்படுத்துவது",
+              urdu: "برادری کا استعمال کیسے کریں"
+            })}
+            accessibilityHint={showCommunityHowTo
+              ? l("Hides the detailed community guide", { hindi: "समुदाय की विस्तृत मार्गदर्शिका छुपाता है", telugu: "వివరణాత్మక సమాజ మార్గదర్శకాన్ని దాచుతుంది", tamil: "விரிவான சமூக வழிகாட்டியை மறைக்கிறது", urdu: "برادری کی تفصیلی رہنمائی چھپاتا ہے" })
+              : l("Shows a simple guide for reading, chatting, and opening a private room", { hindi: "पढ़ने, चैट करने और निजी कमरा खोलने की सरल मार्गदर्शिका दिखाता है", telugu: "చదవడం, చాట్ చేయడం మరియు ప్రైవేట్ గది తెరవడానికి సరళ మార్గదర్శకాన్ని చూపుతుంది", tamil: "படிக்க, அரட்டையடிக்க மற்றும் தனிப்பட்ட அறை திறக்க எளிய வழிகாட்டியைக் காட்டுகிறது", urdu: "پڑھنے، چیٹ کرنے اور نجی کمرہ کھولنے کی آسان رہنمائی دکھاتا ہے" })}
+            accessibilityState={{ expanded: showCommunityHowTo }}
+            onPress={() => setShowCommunityHowTo((value) => !value)}
+            style={({ pressed }) => [styles.homeOverviewButton, { alignSelf: "flex-start", marginTop: 10 }, pressed && styles.pressed]}
+          >
+            <Text style={styles.homeOverviewButtonLabel}>{showCommunityHowTo ? l("Hide guide", { hindi: "मार्गदर्शिका छुपाएँ", telugu: "మార్గదర్శకాన్ని దాచండి", tamil: "வழிகாட்டியை மறைக்கவும்", urdu: "رہنمائی چھپائیں" }) : l("How it works", { hindi: "कैसे काम करता है", telugu: "ఎలా పనిచేస్తుంది", tamil: "எப்படி செயல்படுகிறது", urdu: "یہ کیسے کام کرتا ہے" })}</Text>
+          </Pressable>
+        </View>
+        {showCommunityHowTo ? <View style={{ backgroundColor: "#E1EEEC", borderRadius: 12, padding: 14, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: "#0E9488" }}>
           <Text style={{ color: "#0A6F66", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, marginBottom: 6 }}>{l("How to use community", {
             hindi: "समुदाय का उपयोग कैसे करें",
             telugu: "సమాజాన్ని ఎలా ఉపయోగించాలి",
@@ -31175,7 +31212,7 @@ function CommunitySection({
               urdu: "تمام مواد معتدل کیا جاتا ہے۔ صرف وہی شیئر کریں جو آپ تصدیق شدہ اراکین کو دکھانے میں آرام محسوس کریں۔"
             })}
           </Text>
-        </View>
+        </View> : null}
         {/* ── Crisis safety notice ── */}
         <View style={styles.communityCrisisNotice}>
           <Text style={styles.communityCrisisNoticeText}>
@@ -31377,7 +31414,7 @@ function CommunitySection({
             { id: "loneliness", label: l("Loneliness", { hindi: "अकेलापन", telugu: "ఒంటరితనం", tamil: "தனிமை", urdu: "تنہائی" }) },
             { id: "health", label: l("Health", { hindi: "स्वास्थ्य", telugu: "ఆరోగ్యం", tamil: "ஆரோக்கியம்", urdu: "صحت" }) },
             { id: "academic", label: l("Academic", { hindi: "शैक्षणिक", telugu: "విద్యా", tamil: "கல்வி", urdu: "تعلیمی" }) }
-          ].map((item) => {
+          ].filter((_, index) => showAllCommunityTopics || index < 6).map((item) => {
             const isSelected = communityTopicFilter === item.id;
             return (
               <Pressable
@@ -31406,6 +31443,15 @@ function CommunitySection({
             );
           })}
         </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={showAllCommunityTopics ? l("Show fewer topics", { hindi: "कम विषय दिखाएँ", telugu: "తక్కువ అంశాలను చూపించండి", tamil: "குறைவான தலைப்புகளைக் காட்டு", urdu: "کم موضوعات دکھائیں" }) : l("Show all community topics", { hindi: "सभी समुदाय विषय दिखाएँ", telugu: "అన్ని కమ్యూనిటీ అంశాలను చూపించండి", tamil: "அனைத்து சமூக தலைப்புகளையும் காட்டு", urdu: "برادری کے تمام موضوعات دکھائیں" })}
+          accessibilityState={{ expanded: showAllCommunityTopics }}
+          onPress={() => setShowAllCommunityTopics((value) => !value)}
+          style={({ pressed }) => [styles.textButton, { alignSelf: "flex-start", marginTop: 4 }, pressed && styles.pressed]}
+        >
+          <Text style={styles.textButtonLabel}>{showAllCommunityTopics ? l("Show fewer topics", { hindi: "कम विषय दिखाएँ", telugu: "తక్కువ అంశాలను చూపించండి", tamil: "குறைவான தலைப்புகளைக் காட்டு", urdu: "کم موضوعات دکھائیں" }) : l("Show all topics", { hindi: "सभी विषय दिखाएँ", telugu: "అన్ని అంశాలను చూపించండి", tamil: "அனைத்து தலைப்புகளையும் காட்டு", urdu: "تمام موضوعات دکھائیں" })}</Text>
+        </Pressable>
       </View>
 
       <View style={styles.panel}>
