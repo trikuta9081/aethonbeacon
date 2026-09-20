@@ -25017,6 +25017,8 @@ function isTrustedExternalUrl(url: string) {
                 chartBriefLang={chartBriefLang}
                 setChartBriefLang={setChartBriefLang}
                 languageId={languageId}
+                notifVedicEnabled={notifVedicEnabled}
+                setNotifVedicEnabled={setNotifVedicEnabled}
                 // "Ask the chart" is passed in as a prop (rather than
                 // rendered as a sibling below) so BirthChartSection can
                 // place it immediately next to the visual chart map instead
@@ -35177,6 +35179,7 @@ function RedressSection({
   const routePhone = normalizePhoneNumber(selectedRedressRoute.phone);
   const [showFullRedress, setShowFullRedress] = useState(false);
   const [showEmergencyDirectory, setShowEmergencyDirectory] = useState(false);
+  const [showMoreRedressTools, setShowMoreRedressTools] = useState(false);
   const [showDraftTemplate, setShowDraftTemplate] = useState(false);
   const [editableDraft, setEditableDraft] = useState("");
   const [draftEdited, setDraftEdited] = useState(false);
@@ -35197,6 +35200,7 @@ function RedressSection({
   useEffect(() => {
     setShowFullRedress(false);
     setShowEmergencyDirectory(false);
+    setShowMoreRedressTools(false);
     setShowDraftTemplate(false);
     setShowScript(false);
     setShowCompanionPlan(false);
@@ -35494,6 +35498,38 @@ function RedressSection({
             <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "800" }}>🚨 {l("Call 112 now", { hindi: "अभी 112 पर कॉल करें", telugu: "ఇప్పుడే 112కు కాల్ చేయండి", tamil: "இப்போது 112-க்கு அழைக்கவும்", urdu: "ابھی 112 پر کال کریں" })}</Text>
           </Pressable>
         </View>
+        <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
+          <Text style={{ color: "#0D3D3A", fontSize: 12, fontWeight: "800", letterSpacing: 0.8, textTransform: "uppercase" }}>
+            {l("Choose your next action", { hindi: "अपना अगला कदम चुनें", telugu: "మీ తదుపరి చర్యను ఎంచుకోండి", tamil: "உங்கள் அடுத்த செயலைத் தேர்ந்தெடுக்கவும்", urdu: "اپنا اگلا قدم چنیں" })}
+          </Text>
+          <Text style={{ color: "#506673", fontSize: 12, lineHeight: 17, marginTop: 3 }}>
+            {l("You do not need to read everything. Start with the one outcome you need now.", { hindi: "आपको सब कुछ पढ़ने की ज़रूरत नहीं है। अभी जिस नतीजे की ज़रूरत है, उसी से शुरू करें।", telugu: "మీరు ప్రతిదీ చదవాల్సిన అవసరం లేదు. ఇప్పుడు అవసరమైన ఒక ఫలితంతో ప్రారంభించండి.", tamil: "எல்லாவற்றையும் படிக்க வேண்டியதில்லை. இப்போது தேவையான ஒரு முடிவிலிருந்து தொடங்குங்கள்.", urdu: "آپ کو سب کچھ پڑھنے کی ضرورت نہیں۔ ابھی جس نتیجے کی ضرورت ہے، اسی سے شروع کریں۔" })}
+          </Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 9 }}>
+            <Pressable accessibilityRole="button" onPress={() => { setShowMoreRedressTools(true); setShowCompanionPlan(true); }} style={({ pressed }) => ({ flexGrow: 1, minWidth: 145, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#F0D98B" : "#D4A63A", alignItems: "center", justifyContent: "center", paddingHorizontal: 10 })}>
+              <Text style={{ color: "#102B3F", fontSize: 12, fontWeight: "700", textAlign: "center" }}>{l("Prepare my case", { hindi: "अपना केस तैयार करें", telugu: "నా కేసును సిద్ధం చేయండి", tamil: "என் வழக்கைத் தயாரிக்கவும்", urdu: "اپنا کیس تیار کریں" })}</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" onPress={() => { setShowMoreRedressTools(true); setShowDraftTemplate(true); }} style={({ pressed }) => ({ flexGrow: 1, minWidth: 145, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#E8EEF9" : "#EEF2FF", borderWidth: 1, borderColor: "#A5B4FC", alignItems: "center", justifyContent: "center", paddingHorizontal: 10 })}>
+              <Text style={{ color: "#3730A3", fontSize: 12, fontWeight: "700", textAlign: "center" }}>{l(isCrimeRoute ? "Prepare FIR application" : "Draft complaint", { hindi: isCrimeRoute ? "FIR आवेदन तैयार करें" : "शिकायत का ड्राफ्ट", telugu: isCrimeRoute ? "FIR దరఖాస్తును సిద్ధం చేయండి" : "ఫిర్యాదు డ్రాఫ్ట్", tamil: isCrimeRoute ? "FIR விண்ணப்பத்தைத் தயாரிக்கவும்" : "புகார் வரைவு", urdu: isCrimeRoute ? "FIR درخواست تیار کریں" : "شکایت کا مسودہ" })}</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" onPress={() => setShowEmergencyDirectory(true)} style={({ pressed }) => ({ flexGrow: 1, minWidth: 145, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#DCEBE9" : "#E1EEEC", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center", paddingHorizontal: 10 })}>
+              <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700", textAlign: "center" }}>{l("Find official office", { hindi: "सही सरकारी कार्यालय खोजें", telugu: "అధికారిక కార్యాలయాన్ని కనుగొనండి", tamil: "அதிகாரப்பூர்வ அலுவலகத்தைக் கண்டறியவும்", urdu: "سرکاری دفتر تلاش کریں" })}</Text>
+            </Pressable>
+          </View>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: showMoreRedressTools }}
+          onPress={() => setShowMoreRedressTools((value) => !value)}
+          style={({ pressed }) => ({ marginBottom: showMoreRedressTools ? 10 : 14, minHeight: 48, borderRadius: 12, backgroundColor: pressed ? "#DCEBE9" : "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", paddingHorizontal: 14, paddingVertical: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 })}
+        >
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "700" }}>{l("More preparation tools", { hindi: "अधिक तैयारी उपकरण", telugu: "మరిన్ని తయారీ సాధనాలు", tamil: "மேலும் தயாரிப்பு கருவிகள்", urdu: "مزید تیاری کے اوزار" })}</Text>
+            <Text style={{ color: "#506673", fontSize: 12, lineHeight: 17, marginTop: 2 }}>{l("Guidance, case planning, and read-aloud support", { hindi: "मार्गदर्शन, केस योजना और सुनकर सहायता", telugu: "మార్గదర్శకం, కేస్ ప్లానింగ్ మరియు వినిపించే సహాయం", tamil: "வழிகாட்டல், வழக்கு திட்டமிடல் மற்றும் கேட்டு உதவி", urdu: "رہنمائی، کیس پلاننگ اور سن کر مدد" })}</Text>
+          </View>
+          <Text style={{ color: "#0E6F69", fontSize: 20, fontWeight: "900" }}>{showMoreRedressTools ? "−" : "+"}</Text>
+        </Pressable>
+        {showMoreRedressTools && <>
         <View style={{ marginBottom: 14, borderRadius: 12, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", padding: 12 }}>
           <Text style={{ color: "#0D1F22", fontSize: 12, fontWeight: "700" }}>
             {l("Verified guidance standard", {
@@ -35670,6 +35706,7 @@ function RedressSection({
             )}
           </View>
         </View>
+        </>}
 
         <Pressable
           accessibilityRole="button"
@@ -38919,6 +38956,7 @@ function VedicDailyCard({
     const anchor = items.sort((a, b) => b.score - a.score)[0];
     return { house, avg, anchor };
   });
+  const [showMoreDailyInsights, setShowMoreDailyInsights] = React.useState(false);
 
   return (
     <View style={styles.vedicCard}>
@@ -38933,6 +38971,20 @@ function VedicDailyCard({
           <Text style={styles.vedicRashiName}>{rashiDisplayName}</Text>
         </View>
       </View>
+
+      {moonChart48Summary.top[0] && (
+        <View style={{ marginBottom: 12, borderRadius: 16, backgroundColor: "#FFF4D6", borderWidth: 1, borderColor: "rgba(180,132,0,0.28)", padding: 13, gap: 5 }}>
+          <Text style={{ color: "#8A5A00", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase" }}>
+            {l("Your next best step", { hindi: "आपका अगला अच्छा कदम", telugu: "మీ తదుపరి ఉత్తమ అడుగు", tamil: "உங்கள் அடுத்த சிறந்த படி", urdu: "آپ کا اگلا بہترین قدم" })}
+          </Text>
+          <Text style={{ color: "#3A2A1A", fontSize: 15, lineHeight: 21, fontWeight: "800" }}>
+            {moonChart48Summary.top[0].remedySteps[0]}
+          </Text>
+          <Text style={{ color: "#6B5A35", fontSize: 12, lineHeight: 17 }}>
+            {l("Start small. Use this as reflective guidance for today, then return to the detailed reading only if you want more context.", { hindi: "छोटे कदम से शुरू करें। इसे आज के चिंतनशील मार्गदर्शन की तरह लें, और अधिक संदर्भ चाहिए तभी विस्तृत पठन खोलें।", telugu: "చిన్న అడుగుతో ప్రారంభించండి. దీన్ని ఈరోజు ఆత్మపరిశీలన మార్గదర్శకంగా ఉపయోగించండి; మరింత సందర్భం కావాలంటే మాత్రమే వివరమైన పఠనానికి వెళ్లండి.", tamil: "சிறிய படியிலிருந்து தொடங்குங்கள். இதை இன்றைய சிந்தனைக்கான வழிகாட்டலாகப் பயன்படுத்துங்கள்; கூடுதல் சூழல் தேவைப்பட்டால் மட்டும் விரிவான வாசிப்புக்குச் செல்லுங்கள்.", urdu: "چھوٹے قدم سے شروع کریں۔ اسے آج کی غور و فکر والی رہنمائی سمجھیں، اور مزید پس منظر چاہیے تو ہی تفصیلی ریڈنگ دیکھیں۔" })}
+          </Text>
+        </View>
+      )}
 
       {/* Pristine 2D/3D lunar map */}
       <View style={{ borderRadius: 22, backgroundColor: "#DEE3F2", borderWidth: 1, borderColor: "rgba(103,232,249,0.28)", padding: 14, overflow: "hidden", shadowColor: "#0891B2", shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.28, shadowRadius: 26, elevation: 14 }}>
@@ -39041,7 +39093,7 @@ function VedicDailyCard({
       <View style={styles.vedicPredSection}>
         <Text style={styles.vedicPredTitle}>{l("Multi-dimensional Vedic Insight", { hindi: "बहु-आयामी वैदिक अंतर्दृष्टि", telugu: "బహు-పరిమాణ వైదిక అవగాహన", tamil: "பன்முக வேத பார்வை", urdu: "کثیر جہتی ویدک بصیرت" })} · {l("Explainable score", { hindi: "व्याख्यात्मक स्कोर", telugu: "వివరణాత్మక స్కోరు", tamil: "விளக்கத்தக்க மதிப்பெண்", urdu: "قابلِ توضیح اسکور" })} {moonChart48Summary.average}/100</Text>
         <Text style={[styles.vedicDisclaimer, { marginTop: 0, marginBottom: 8 }]}>{l("Calculated from Janma Rashi, Janma Nakshatra, Dasha, Tithi and Vara only — lunar-chart prediction only.", { hindi: "केवल जन्म राशि, जन्म नक्षत्र, दशा, तिथि और वार पर आधारित — सिर्फ़ चंद्र-चार्ट पठन।", telugu: "కేవలం జన్మ రాశి, జన్మ నక్షత్రం, దశ, తిథి మరియు వారాలపై ఆధారపడిన — చంద్ర చార్ట్ పఠనం మాత్రమే.", tamil: "ஜன்ம ராசி, ஜன்ம நட்சத்திரம், தசை, திதி, வாரம் ஆகியவற்றின் அடிப்படையில் மட்டும் — சந்திர சார்ட் வாசிப்பு மட்டும்.", urdu: "صرف جنم راشی، جنم نکشتر، دشا، تِتھی اور وار پر مبنی — صرف قمری چارٹ پیش گوئی۔" })}</Text>
-        {moonChart48Summary.top.slice(0, 4).map((item) => (
+        {moonChart48Summary.top.slice(0, showMoreDailyInsights ? 4 : 2).map((item) => (
           <View key={item.id} style={{ borderRadius: 14, backgroundColor: "#E4EDF7", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}44`, padding: 11, gap: 6 }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <Text style={{ fontSize: 17 }}>{item.score >= 82 ? "🌟" : "🌙"}</Text>
@@ -39055,6 +39107,19 @@ function VedicDailyCard({
             <Text style={{ color: "#475569", fontSize: 12, lineHeight: 16 }}><Text style={{ fontWeight: "900" }}>{l("Interpretation note:", { hindi: "व्याख्या नोट", telugu: "వ్యాఖ్యాన గమనిక", tamil: "விளக்கம் குறிப்பு", urdu: "تشریحی نوٹ" })} </Text>{l("Use this as reflective guidance, not a deterministic promise.", { hindi: "इसे चिंतनशील मार्गदर्शन के रूप में उपयोग करें, निश्चित वादा नहीं।", telugu: "దీనిని ప్రతిబింబాత్మక మార్గదర్శకంగా ఉపయోగించండి, ఖచ్చితమైన హామీగా కాదు.", tamil: "இதனை சிந்தனையூட்டும் வழிகாட்டுதலாகப் பயன்படுத்துங்கள்; இது உறுதியான வாக்குறுதி அல்ல.", urdu: "اسے غور و فکر والی رہنمائی سمجھیں، حتمی وعدہ نہیں۔" })}</Text>
           </View>
         ))}
+        {moonChart48Summary.top.length > 2 && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showMoreDailyInsights }}
+            accessibilityLabel={l(showMoreDailyInsights ? "Show fewer daily insights" : "Show more daily insights", { hindi: showMoreDailyInsights ? "दैनिक अंतर्दृष्टि कम दिखाएँ" : "अधिक दैनिक अंतर्दृष्टि दिखाएँ", telugu: showMoreDailyInsights ? "తక్కువ రోజువారీ అంతర్దృష్టులను చూపండి" : "మరిన్ని రోజువారీ అంతర్దృష్టులను చూపండి", tamil: showMoreDailyInsights ? "குறைந்த தினசரி பார்வைகளைக் காட்டு" : "மேலும் தினசரி பார்வைகளைக் காட்டு", urdu: showMoreDailyInsights ? "کم روزانہ بصیرت دکھائیں" : "مزید روزانہ بصیرت دکھائیں" })}
+            onPress={() => { void Haptics.selectionAsync(); setShowMoreDailyInsights((value) => !value); }}
+            style={({ pressed }) => ({ minHeight: 44, borderRadius: 10, backgroundColor: pressed ? "#DCEBE9" : "#EEF5F4", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center", paddingHorizontal: 12 })}
+          >
+            <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700" }}>
+              {showMoreDailyInsights ? l("Show fewer insights", { hindi: "कम अंतर्दृष्टि दिखाएँ", telugu: "తక్కువ అంతర్దృష్టులను చూపండి", tamil: "குறைந்த பார்வைகளைக் காட்டு", urdu: "کم بصیرت دکھائیں" }) : l("See two more insights", { hindi: "दो और अंतर्दृष्टि देखें", telugu: "మరో రెండు అంతర్దృష్టులను చూడండి", tamil: "மேலும் இரண்டு பார்வைகளைக் காண்க", urdu: "مزید دو بصیرت دیکھیں" })}
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       {/* Rashi meta */}
@@ -39097,6 +39162,8 @@ function BirthChartSection({
   chartBriefLang,
   setChartBriefLang,
   languageId,
+  notifVedicEnabled,
+  setNotifVedicEnabled,
 }: {
   rashiInfo: ReturnType<typeof getMoonRashiFromDOB> | null;
   predictionLines: string[] | null;
@@ -39129,6 +39196,8 @@ function BirthChartSection({
   chartBriefLang: "en" | "hi";
   setChartBriefLang: (v: "en" | "hi") => void;
   languageId: LanguageId;
+  notifVedicEnabled: boolean;
+  setNotifVedicEnabled: (v: boolean) => void;
 }) {
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
@@ -39195,6 +39264,7 @@ function BirthChartSection({
     dobDraft !== profileDOB ||
     timeDraft !== profileBirthTime ||
     placeDraft.trim() !== profileBirthPlace.trim();
+  const birthDetailProgress = [isValidDOB, isValidTime, isValidPlace].filter(Boolean).length;
 
   // Lagna: real Ascendant (Local Sidereal Time + true obliquity + latitude)
   // once the birth place has been geocoded; otherwise a Sun-anchored estimate.
@@ -39238,9 +39308,10 @@ function BirthChartSection({
   // panels collapsed and five did not, so the same tap did different things
   // depending on where you were in the tab. Every panel now carries the same
   // pressable header + chevron; only the DEFAULT differs, and on one rule:
-  // panels answering "what is happening to me now" open by default, the
-  // longer background/reference panels start closed.
-  const VEDIC_PANELS_OPEN_BY_DEFAULT = ["mahadasha", "gochar"];
+  // Keep the first reading answer-first. Plain-language guidance and the
+  // daily card are visible immediately; technical timing/reference panels
+  // start closed and open only when the user asks for that depth.
+  const VEDIC_PANELS_OPEN_BY_DEFAULT: string[] = [];
   const [openVedicPanels, setOpenVedicPanels] = React.useState<Set<string>>(
     () => new Set(VEDIC_PANELS_OPEN_BY_DEFAULT)
   );
@@ -39458,6 +39529,47 @@ function BirthChartSection({
           <Text style={styles.tabBannerTitle}>{l("Moon Birth Chart", { hindi: "चंद्र जन्म कुंडली", telugu: "చంద్ర జనన చార్ట్", tamil: "சந்திரப் பிறப்பு அட்டவணை", urdu: "چاندی پیدائشی چارٹ" })}</Text>
           <Text style={styles.tabBannerSub}>{l("Predictions use Janma Rashi and lunar factors only", { hindi: "पूर्वानुमान केवल जन्म राशि और चंद्र कारकों पर आधारित हैं", telugu: "అంచనాలు జన్మ రాశి మరియు చంద్ర కారకాలపై మాత్రమే ఆధారపడతాయి", tamil: "கணிப்புகள் ஜன்ம ராசி மற்றும் சந்திர காரணிகளை மட்டும் பயன்படுத்துகின்றன", urdu: "پیشگوئیاں صرف جنم راشی اور قمری عوامل پر مبنی ہیں" })}</Text>
         </View>
+        <View style={{ alignItems: "center", gap: 3, marginLeft: 6 }}>
+          <Text style={{ color: "#5C00B8", fontSize: 12, fontWeight: "700", textAlign: "center" }}>{l("Daily reminder", { hindi: "दैनिक रिमाइंडर", telugu: "రోజువారీ రిమైండర్", tamil: "தினசரி நினைவூட்டல்", urdu: "روزانہ یاد دہانی" })}</Text>
+          <Switch
+            value={notifVedicEnabled}
+            onValueChange={setNotifVedicEnabled}
+            accessibilityLabel={l("Daily Vedic reminder", { hindi: "दैनिक वैदिक रिमाइंडर", telugu: "రోజువారీ వైదిక రిమైండర్", tamil: "தினசரி வேத நினைவூட்டல்", urdu: "روزانہ ویدک یاد دہانی" })}
+            trackColor={{ false: "#C9CDD8", true: "#C4A2F0" }}
+            thumbColor={notifVedicEnabled ? "#5C00B8" : "#F8FAFC"}
+          />
+        </View>
+      </View>
+
+      <View style={{ backgroundColor: "#102B3F", borderRadius: 18, padding: 15, gap: 10, borderWidth: 1, borderColor: "rgba(99,222,208,0.34)" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 9 }}>
+          <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: "#D4A63A", alignItems: "center", justifyContent: "center" }}>
+            <Text style={{ fontSize: 18 }}>✦</Text>
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={{ color: "#F7E7B4", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase" }}>
+              {l("A calm way to begin", { hindi: "शांत तरीके से शुरुआत", telugu: "ప్రశాంతంగా ప్రారంభించండి", tamil: "அமைதியாகத் தொடங்குங்கள்", urdu: "پرسکون آغاز" })}
+            </Text>
+            <Text style={{ color: "#FFFFFF", fontSize: 16, lineHeight: 21, fontWeight: "900", marginTop: 2 }}>
+              {l("Your chart should answer a question, not create more questions.", { hindi: "आपकी कुंडली को सवालों का जवाब देना चाहिए, नए सवाल नहीं बनाने चाहिए।", telugu: "మీ చార్ట్ మరిన్ని ప్రశ్నలు సృష్టించకుండా ఒక ప్రశ్నకు సమాధానం ఇవ్వాలి.", tamil: "உங்கள் சார்ட் மேலும் கேள்விகளை உருவாக்காமல் ஒரு கேள்விக்கு பதிலளிக்க வேண்டும்.", urdu: "آپ کا چارٹ مزید سوال پیدا کرنے کے بجائے ایک سوال کا جواب دینا چاہیے۔" })}
+            </Text>
+          </View>
+        </View>
+        <Text style={{ color: "#C9DCE1", fontSize: 12, lineHeight: 18 }}>
+          {l("Start with your birth details, read the short plain-language summary, then open deeper panels only when they help. No astrology knowledge is required.", { hindi: "अपने जन्म विवरण से शुरू करें, सरल भाषा में छोटा सार पढ़ें, और गहरे पैनल तभी खोलें जब वे मदद करें। ज्योतिष का ज्ञान आवश्यक नहीं है।", telugu: "మీ జనన వివరాలతో ప్రారంభించి, సరళమైన భాషలోని చిన్న సారాంశాన్ని చదవండి; సహాయపడినప్పుడు మాత్రమే లోతైన ప్యానెల్‌లను తెరవండి. జ్యోతిష్య జ్ఞానం అవసరం లేదు.", tamil: "உங்கள் பிறப்பு விவரங்களுடன் தொடங்கி, எளிய மொழி சுருக்கத்தைப் படித்து, உதவியாக இருக்கும் போது மட்டும் ஆழமான பகுதிகளைத் திறக்கவும். ஜோதிட அறிவு தேவையில்லை.", urdu: "اپنی پیدائش کی تفصیلات سے شروع کریں، سادہ زبان میں مختصر خلاصہ پڑھیں، اور مدد ملنے پر ہی گہرے پینل کھولیں۔ نجوم کا علم ضروری نہیں۔" })}
+        </Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7 }}>
+          {[
+            ["1", l("Add details", { hindi: "विवरण जोड़ें", telugu: "వివరాలు జోడించండి", tamil: "விவரங்களைச் சேர்க்கவும்", urdu: "تفصیلات شامل کریں" })],
+            ["2", l("Read today", { hindi: "आज का पठन", telugu: "ఈరోజు చదవండి", tamil: "இன்றைய வாசிப்பு", urdu: "آج پڑھیں" })],
+            ["3", l("Ask your chart", { hindi: "चार्ट से पूछें", telugu: "చార్ట్‌ను అడగండి", tamil: "சார்ட்டைக் கேளுங்கள்", urdu: "چارٹ سے پوچھیں" })]
+          ].map(([step, label]) => (
+            <View key={step} style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(255,255,255,0.10)", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 7 }}>
+              <Text style={{ color: "#F7E7B4", fontSize: 12, fontWeight: "700" }}>{step}</Text>
+              <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>{label}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       {issueContext && (
@@ -39484,6 +39596,19 @@ function BirthChartSection({
         <Text style={{ color: "#0D1F22", fontSize: 17, fontWeight: "900", marginBottom: 2 }}>
           {l("Enter exact birth details", { hindi: "सटीक जन्म विवरण दर्ज करें", telugu: "ఖచ్చితమైన జనన వివరాలను నమోదు చేయండి", tamil: "சரியான பிறப்பு விவரங்களை உள்ளிடவும்", urdu: "درست پیدائش کی تفصیلات درج کریں" })}
         </Text>
+        <Text style={{ color: "#3A577D", fontSize: 12, lineHeight: 18 }}>
+          {l("Three details unlock a more personal reading. Use the closest accurate time and place you know; you can update them later.", { hindi: "तीन विवरण अधिक व्यक्तिगत पठन खोलते हैं। आपको जितना सही समय और स्थान पता हो, वही दें; आप बाद में इन्हें अपडेट कर सकते हैं।", telugu: "మూడు వివరాలు మరింత వ్యక్తిగత పఠనాన్ని తెరుస్తాయి. మీకు తెలిసినంతవరకు ఖచ్చితమైన సమయం మరియు స్థలాన్ని ఇవ్వండి; తర్వాత మార్చవచ్చు.", tamil: "மூன்று விவரங்கள் மேலும் தனிப்பட்ட வாசிப்பைத் திறக்கும். உங்களுக்குத் தெரிந்த அளவு சரியான நேரத்தையும் இடத்தையும் பயன்படுத்துங்கள்; பின்னர் மாற்றலாம்.", urdu: "تین تفصیلات زیادہ ذاتی ریڈنگ کھولتی ہیں۔ جتنا درست وقت اور جگہ معلوم ہو وہ دیں؛ بعد میں اپ ڈیٹ کر سکتے ہیں۔" })}
+        </Text>
+        <View accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 3, now: birthDetailProgress }} style={{ gap: 7 }}>
+          <View style={{ height: 7, borderRadius: 999, backgroundColor: "#C9D9DD", overflow: "hidden" }}>
+            <View style={{ width: `${(birthDetailProgress / 3) * 100}%`, height: "100%", borderRadius: 999, backgroundColor: birthDetailProgress === 3 ? "#0E6F69" : "#D4A63A" }} />
+          </View>
+          <Text style={{ color: birthDetailProgress === 3 ? "#0E6F69" : "#52656B", fontSize: 12, fontWeight: "700" }}>
+            {birthDetailProgress === 3
+              ? l("All set — save to generate your reading", { hindi: "सब तैयार — अपना पठन बनाने के लिए सहेजें", telugu: "అన్నీ సిద్ధం — మీ పఠనాన్ని రూపొందించడానికి సేవ్ చేయండి", tamil: "அனைத்தும் தயார் — உங்கள் வாசிப்பை உருவாக்க சேமிக்கவும்", urdu: "سب تیار — ریڈنگ بنانے کے لیے محفوظ کریں" })
+              : l(`${birthDetailProgress} of 3 details added`, { hindi: `${birthDetailProgress} / 3 विवरण जोड़े गए`, telugu: `${birthDetailProgress} / 3 వివరాలు జోడించబడ్డాయి`, tamil: `${birthDetailProgress} / 3 விவரங்கள் சேர்க்கப்பட்டன`, urdu: `${birthDetailProgress} / 3 تفصیلات شامل` })}
+          </Text>
+        </View>
 
         {/* Date of birth — segmented DD / MM / YYYY */}
         <View style={{ gap: 8 }}>
