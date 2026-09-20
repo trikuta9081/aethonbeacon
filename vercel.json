@@ -1,4 +1,6 @@
 {
+  "buildCommand": "pnpm export:web",
+  "outputDirectory": "dist",
   "functions": {
     "api/[...path].mjs": {
       "maxDuration": 30
