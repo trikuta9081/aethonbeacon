@@ -25022,6 +25022,7 @@ function isTrustedExternalUrl(url: string) {
                 setProfileBirthTime={setProfileBirthTime}
                 setProfileBirthPlace={setProfileBirthPlace}
                 onOpenHome={() => handleTabPress("today")}
+                onOpenTab={handleTabPress}
                 selectedIssueGuide={selectedIssueGuide}
                 issueContext={vedicEngineIssueContext}
                 chartBriefLang={chartBriefLang}
@@ -25444,6 +25445,7 @@ function isTrustedExternalUrl(url: string) {
                 onClearGuidedSupport={clearGuidedSupportChat}
                 onOpenGuide={() => handleTabPress("guide")}
                 onOpenRedress={() => handleTabPress("redress")}
+                onOpenTab={handleTabPress}
                 onOpenPrivateIntake={() => setShowPrivateIntakePanel(true)}
                 onEmergencyCall={handleEmergencyCall}
                 selectedIdentityLabel={profileDisplayName}
@@ -28514,6 +28516,7 @@ function ToneLibrarySection({
   const [activeProgram, setActiveProgram] = useState<typeof ISSUE_TONE_PROGRAMS[string][0] | null>(null);
   const [breathStep, setBreathStep] = useState(0);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [showToneGuide, setShowToneGuide] = useState(false);
   const [lastCompletedSession, setLastCompletedSession] = useState<{ minutes: number; completed: boolean } | null>(null);
 
   // Guarded against resetting an actively-playing session: this section now
@@ -28717,6 +28720,21 @@ function ToneLibrarySection({
             ? ` Optional Moon-chart context currently marks ${calmMoonComplement.careful[0].label.toLowerCase()} as a care point.`
             : ""}
         </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={showToneGuide ? l("Hide tone choosing guide", { hindi: "ध्वनि चुनने की मार्गदर्शिका छुपाएँ", telugu: "ధ్వని ఎంపిక మార్గదర్శకాన్ని దాచండి", tamil: "ஒலி தேர்வு வழிகாட்டியை மறைக்கவும்", urdu: "آواز منتخب کرنے کی رہنمائی چھپائیں" }) : l("How to choose a tone", { hindi: "ध्वनि कैसे चुनें", telugu: "ధ్వనిని ఎలా ఎంచుకోవాలి", tamil: "ஒலியை எப்படி தேர்வு செய்வது", urdu: "آواز کیسے منتخب کریں" })}
+          accessibilityState={{ expanded: showToneGuide }}
+          onPress={() => { void Haptics.selectionAsync(); setShowToneGuide((value) => !value); }}
+          style={({ pressed }) => [styles.homeOverviewButton, { alignSelf: "flex-start", marginTop: 4 }, pressed && styles.pressed]}
+        >
+          <Text style={styles.homeOverviewButtonLabel}>{showToneGuide ? l("Hide choosing guide", { hindi: "चुनने की मार्गदर्शिका छुपाएँ", telugu: "ఎంపిక మార్గదర్శకాన్ని దాచండి", tamil: "தேர்வு வழிகாட்டியை மறைக்கவும்", urdu: "انتخاب کی رہنمائی چھپائیں" }) : l("How to choose", { hindi: "कैसे चुनें", telugu: "ఎలా ఎంచుకోవాలి", tamil: "எப்படி தேர்வு செய்வது", urdu: "کیسے منتخب کریں" })}</Text>
+        </Pressable>
+        {showToneGuide && (
+          <View style={{ marginTop: 8, padding: 12, borderRadius: 14, backgroundColor: "#E8F3F1", borderWidth: 1, borderColor: "rgba(14,111,105,0.18)", gap: 4 }}>
+            <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase" }}>{l("Choose by need", { hindi: "ज़रूरत के अनुसार चुनें", telugu: "అవసరానికి అనుగుణంగా ఎంచుకోండి", tamil: "தேவைக்கேற்ப தேர்வு செய்யவும்", urdu: "ضرورت کے مطابق منتخب کریں" })}</Text>
+            <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18 }}>{l("Start with one recommended program. Use Sleep for winding down, Focus for steady work, Anxiety reset for grounding, or Deep calm for quiet reflection. You can stop at any time.", { hindi: "एक सुझाए गए प्रोग्राम से शुरू करें। धीमा होने के लिए नींद, स्थिर काम के लिए एकाग्रता, स्थिर होने के लिए चिंता रीसेट, या शांत चिंतन के लिए गहरी शांति चुनें। आप कभी भी रोक सकते हैं।", telugu: "ఒక సిఫార్సు చేసిన ప్రోగ్రామ్‌తో ప్రారంభించండి. నెమ్మదించడానికి నిద్ర, స్థిరమైన పనికి ఏకాగ్రత, స్థిరపడటానికి ఆందోళన రీసెట్, లేదా నిశ్శబ్ద ఆలోచనకు లోతైన ప్రశాంతతను ఎంచుకోండి. ఎప్పుడైనా ఆపవచ్చు.", tamil: "ஒரு பரிந்துரைக்கப்பட்ட நிரலுடன் தொடங்குங்கள். மெதுவாக இறங்க Sleep, நிலையான வேலைக்கு Focus, நிலைநிறுத்த Anxiety reset, அல்லது அமைதியான சிந்தனைக்கு Deep calm தேர்வு செய்யவும். எப்போது வேண்டுமானாலும் நிறுத்தலாம்.", urdu: "ایک تجویز کردہ پروگرام سے شروع کریں۔ آہستہ ہونے کے لیے نیند، مستحکم کام کے لیے توجہ، سنبھلنے کے لیے بے چینی ری سیٹ، یا خاموش غور کے لیے گہرا سکون چنیں۔ آپ کسی بھی وقت روک سکتے ہیں۔" })}</Text>
+          </View>
+        )}
       </View>
       {/* ── NOW PLAYING / IDLE PLAYER ── */}
       {/* Visibility fix: this card previously opened with a near-black header
@@ -29946,6 +29964,7 @@ function GuidedSupportSection({
   onClearGuidedSupport,
   onOpenGuide,
   onOpenRedress,
+  onOpenTab,
   onOpenPrivateIntake,
   onEmergencyCall,
   selectedIdentityLabel,
@@ -29970,6 +29989,7 @@ function GuidedSupportSection({
   onClearGuidedSupport: () => void;
   onOpenGuide: () => void;
   onOpenRedress: () => void;
+  onOpenTab: (tabId: TabId) => void;
   onOpenPrivateIntake: () => void;
   onEmergencyCall: () => Promise<void>;
   selectedIdentityLabel: string;
@@ -30140,6 +30160,45 @@ function GuidedSupportSection({
                 </Pressable>
               );
             })}
+          </View>
+        </View>
+
+        <View style={{ marginTop: compact ? 14 : 18, padding: compact ? 12 : 14, borderRadius: 16, backgroundColor: "#F1F8F6", borderWidth: 1, borderColor: "#D4E9E4" }}>
+          <Text style={{ color: "#0E6F69", fontSize: compact ? 12 : 13, fontWeight: "800", letterSpacing: 0.3 }}>
+            {l("Choose the kind of support you need first", {
+              hindi: "पहले अपनी ज़रूरत के अनुसार सहायता चुनें",
+              telugu: "ముందుగా మీకు కావాల్సిన సహాయ రకాన్ని ఎంచుకోండి",
+              tamil: "முதலில் உங்களுக்கு தேவையான உதவி வகையைத் தேர்ந்தெடுக்கவும்",
+              urdu: "پہلے اپنی ضرورت کے مطابق مدد کی قسم منتخب کریں"
+            })}
+          </Text>
+          <Text style={{ color: "#45636B", fontSize: compact ? 11 : 12, lineHeight: compact ? 16 : 18, marginTop: 4, marginBottom: 10 }}>
+            {l("You can move between these at any time. Start with the smallest step that feels manageable.", {
+              hindi: "आप कभी भी इनके बीच जा सकते हैं। उस सबसे छोटे कदम से शुरू करें जो आपको सम्भव लगे।",
+              telugu: "మీరు ఎప్పుడైనా వీటి మధ్య మారవచ్చు. మీకు సాధ్యంగా అనిపించే చిన్న అడుగుతో ప్రారంభించండి.",
+              tamil: "நீங்கள் எப்போது வேண்டுமானாலும் இவற்றுக்குள் மாறலாம். உங்களுக்கு சாத்தியமாகத் தோன்றும் சிறிய படியில் தொடங்குங்கள்.",
+              urdu: "آپ کسی بھی وقت ان کے درمیان جا سکتے ہیں۔ اس چھوٹے قدم سے شروع کریں جو آپ کے لیے ممکن محسوس ہو۔"
+            })}
+          </Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+            {[
+              { tabId: "focus" as TabId, emoji: "🌿", title: l("Calm first", { hindi: "पहले शांत हों", telugu: "ముందుగా ప్రశాంతంగా ఉండండి", tamil: "முதலில் அமைதியாகுங்கள்", urdu: "پہلے سکون پائیں" }), detail: l("Settle an overwhelmed body", { hindi: "बेचैन शरीर को स्थिर करें", telugu: "అశాంతమైన శరీరాన్ని స్థిరపరచండి", tamil: "அமைதியற்ற உடலை நிலைப்படுத்துங்கள்", urdu: "بے چین جسم کو سنبھالیں" }) },
+              { tabId: "journal" as TabId, emoji: "✍️", title: l("Write one line", { hindi: "एक पंक्ति लिखें", telugu: "ఒక పంక్తి రాయండి", tamil: "ஒரு வரி எழுதுங்கள்", urdu: "ایک سطر لکھیں" }), detail: l("Make the feeling clearer", { hindi: "भावना को स्पष्ट करें", telugu: "భావాన్ని స్పష్టంగా చేసుకోండి", tamil: "உணர்வை தெளிவாக்குங்கள்", urdu: "احساس کو واضح کریں" }) },
+              { tabId: "meditation" as TabId, emoji: "🧘", title: l("Meditate", { hindi: "ध्यान करें", telugu: "ధ్యానం చేయండి", tamil: "தியானியுங்கள்", urdu: "مراقبہ کریں" }), detail: l("Regain a little space", { hindi: "थोड़ी मानसिक जगह पाएँ", telugu: "కొంత మానసిక స్థలం పొందండి", tamil: "சிறிது மன இடைவெளி பெறுங்கள்", urdu: "ذہنی گنجائش واپس پائیں" }) },
+              { tabId: "guide" as TabId, emoji: "🧭", title: l("Take a step", { hindi: "एक कदम लें", telugu: "ఒక అడుగు వేయండి", tamil: "ஒரு படி எடுங்கள்", urdu: "ایک قدم اٹھائیں" }), detail: l("Turn clarity into action", { hindi: "स्पष्टता को कार्रवाई में बदलें", telugu: "స్పష్టతను చర్యగా మార్చండి", tamil: "தெளிவை செயலாக மாற்றுங்கள்", urdu: "وضاحت کو عمل میں بدلیں" }) }
+            ].map((option) => (
+              <Pressable
+                key={option.tabId}
+                accessibilityRole="button"
+                accessibilityLabel={`${option.title}: ${option.detail}`}
+                onPress={() => { void Haptics.selectionAsync(); onOpenTab(option.tabId); }}
+                style={({ pressed }) => ({ flexGrow: 1, flexBasis: compact ? "46%" : "22%", minWidth: compact ? "46%" : 132, minHeight: compact ? 58 : 64, justifyContent: "center", paddingHorizontal: 10, paddingVertical: 8, borderRadius: 12, backgroundColor: pressed ? "#DDEFEA" : "#FFFFFF", borderWidth: 1, borderColor: "#C9E1DC", opacity: pressed ? 0.78 : 1 })}
+              >
+                <Text style={{ fontSize: compact ? 17 : 19 }}>{option.emoji}</Text>
+                <Text style={{ color: "#183C42", fontSize: compact ? 12 : 13, lineHeight: 16, fontWeight: "800", marginTop: 3 }}>{option.title}</Text>
+                <Text style={{ color: "#567178", fontSize: compact ? 10 : 11, lineHeight: 16, marginTop: 1 }}>{option.detail}</Text>
+              </Pressable>
+            ))}
           </View>
         </View>
 
@@ -36141,6 +36200,39 @@ function RedressSection({
             )}
           </View>
         )}
+        {!showRouteChooser && (
+          <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#9FC8C1", padding: 13 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700", letterSpacing: 0.8, textTransform: "uppercase" }}>
+                  {l("Start here", { hindi: "यहाँ से शुरू करें", telugu: "ఇక్కడి నుంచి ప్రారంభించండి", tamil: "இங்கிருந்து தொடங்குங்கள்", urdu: "یہاں سے شروع کریں" })}
+                </Text>
+                <Text style={{ color: "#173B43", fontSize: 15, lineHeight: 20, fontWeight: "900", marginTop: 2 }}>
+                  {l("Your first useful move", { hindi: "आपका पहला उपयोगी कदम", telugu: "మీ మొదటి ఉపయోగకరమైన అడుగు", tamil: "உங்கள் முதல் பயனுள்ள படி", urdu: "آپ کا پہلا مفید قدم" })}
+                </Text>
+              </View>
+              <Text style={{ color: "#0E6F69", fontSize: 22 }}>→</Text>
+            </View>
+            <View style={{ marginTop: 10, gap: 7 }}>
+              <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
+                <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700", width: 78 }}>{l("First office", { hindi: "पहला कार्यालय", telugu: "మొదటి కార్యాలయం", tamil: "முதல் அலுவலகம்", urdu: "پہلا دفتر" })}</Text>
+                <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, flex: 1 }}>{selectedRedressRoute.firstOffice}</Text>
+              </View>
+              <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
+                <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700", width: 78 }}>{l("Do this now", { hindi: "अभी यह करें", telugu: "ఇప్పుడు ఇది చేయండి", tamil: "இப்போது இதைச் செய்யுங்கள்", urdu: "ابھی یہ کریں" })}</Text>
+                <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17, flex: 1 }}>{selectedRedressRoute.firstAction}</Text>
+              </View>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={l("Open step by step guidance for this route", { hindi: "इस मार्ग के लिए चरण-दर-चरण मार्गदर्शन खोलें", telugu: "ఈ మార్గానికి దశలవారీ మార్గదర్శకాన్ని తెరవండి", tamil: "இந்த பாதைக்கான படிப்படியான வழிகாட்டலைத் திறக்கவும்", urdu: "اس راستے کے لیے مرحلہ وار رہنمائی کھولیں" })}
+              onPress={() => { void Haptics.selectionAsync(); setFocusedRouteId(selectedRedressRoute.id); }}
+              style={({ pressed }) => ({ marginTop: 11, minHeight: 46, borderRadius: 11, backgroundColor: pressed ? "#D7ECE8" : "#EAF5F2", borderWidth: 1, borderColor: "#75B6AB", alignItems: "center", justifyContent: "center", paddingHorizontal: 12 })}
+            >
+              <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "700" }}>{l("Open step-by-step guidance", { hindi: "चरण-दर-चरण मार्गदर्शन खोलें", telugu: "దశలవారీ మార్గదర్శకాన్ని తెరవండి", tamil: "படிப்படியான வழிகாட்டலைத் திறக்கவும்", urdu: "مرحلہ وار رہنمائی کھولیں" })}</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
 
       {/* ── PANEL 2: INSTITUTION TYPE ── */}
@@ -39256,6 +39348,7 @@ function BirthChartSection({
   setProfileBirthTime,
   setProfileBirthPlace,
   onOpenHome,
+  onOpenTab,
   selectedIssueGuide,
   issueContext,
   askTheChartPanel,
@@ -39284,6 +39377,7 @@ function BirthChartSection({
   setProfileBirthTime: (v: string) => void;
   setProfileBirthPlace: (v: string) => void;
   onOpenHome: () => void;
+  onOpenTab: (tabId: TabId) => void;
   selectedIssueGuide: IssueGuide;
   issueContext: VedicEngineIssueContext | null;
   // Rendered by the caller (App()) right next to the visual chart map below
@@ -40393,6 +40487,33 @@ function BirthChartSection({
           right next to the chart itself, and it stays visible even before
           hasReading is true (same as before this reposition). */}
       {askTheChartPanel}
+      {hasReading && (
+        <View style={{ backgroundColor: "#E8F3F1", borderRadius: 16, padding: 13, borderWidth: 1, borderColor: "rgba(14,111,105,0.2)", gap: 8 }}>
+          <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "800", letterSpacing: 1.1, textTransform: "uppercase" }}>
+            {l("Turn the reading into one grounded step", { hindi: "पठन को एक व्यावहारिक कदम में बदलें", telugu: "పఠనాన్ని ఒక స్థిరమైన అడుగుగా మార్చండి", tamil: "வாசிப்பை ஒரு நிலையான படியாக மாற்றுங்கள்", urdu: "ریڈنگ کو ایک عملی قدم میں بدلیں" })}
+          </Text>
+          <Text style={{ color: "#263244", fontSize: 12, lineHeight: 18 }}>
+            {l("Choose only one next action. You can return to the deeper chart panels whenever you want.", { hindi: "सिर्फ एक अगला कदम चुनें। जब चाहें गहरे चार्ट पैनलों पर लौट सकते हैं।", telugu: "ఒక్క తదుపరి చర్యను మాత్రమే ఎంచుకోండి. మీకు కావాలనుకున్నప్పుడు లోతైన చార్ట్ ప్యానెల్‌లకు తిరిగి రావచ్చు.", tamil: "ஒரே ஒரு அடுத்த செயலை மட்டும் தேர்வு செய்யுங்கள். விரும்பும் போது ஆழமான சார்ட் பகுதிகளுக்குத் திரும்பலாம்.", urdu: "صرف ایک اگلا قدم چنیں۔ جب چاہیں گہرے چارٹ پینلز پر واپس آ سکتے ہیں۔" })}
+          </Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7 }}>
+            {[
+              { tab: "guide" as TabId, label: l("Open Path", { hindi: "मार्ग खोलें", telugu: "మార్గం తెరవండి", tamil: "பாதையைத் திறக்கவும்", urdu: "راستہ کھولیں" }) },
+              { tab: "journal" as TabId, label: l("Write one line", { hindi: "एक पंक्ति लिखें", telugu: "ఒక వాక్యం రాయండి", tamil: "ஒரு வரி எழுதுங்கள்", urdu: "ایک سطر لکھیں" }) },
+              { tab: "tones" as TabId, label: l("Settle with sound", { hindi: "ध्वनि से स्थिर हों", telugu: "ధ్వనితో స్థిరపడండి", tamil: "ஒலியுடன் நிலைநிறுத்துங்கள்", urdu: "آواز کے ساتھ سنبھلیں" }) }
+            ].map((item) => (
+              <Pressable
+                key={item.tab}
+                accessibilityRole="button"
+                accessibilityLabel={item.label}
+                onPress={() => { void Haptics.selectionAsync(); onOpenTab(item.tab); }}
+                style={({ pressed }) => ({ flexGrow: 1, minWidth: 105, minHeight: 42, borderRadius: 10, borderWidth: 1, borderColor: "rgba(14,111,105,0.25)", backgroundColor: pressed ? "#D5EBE7" : "#FFFFFF", alignItems: "center", justifyContent: "center", paddingHorizontal: 8 })}
+              >
+                <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{item.label}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      )}
 
           {hasReading && moonChartInsightReadings.length === 48 && (
         <View style={{ backgroundColor: "#DEE6F2", borderRadius: 22, padding: 14, borderWidth: 1, borderColor: "rgba(99,222,208,0.34)", gap: 12, overflow: "hidden", shadowColor: "#0891B2", shadowOffset: { width: 0, height: 14 }, shadowOpacity: 0.24, shadowRadius: 28, elevation: 16 }}>
