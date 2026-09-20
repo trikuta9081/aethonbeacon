@@ -39130,7 +39130,7 @@ function VedicDailyCard({
       </View>
 
       <Text style={styles.vedicDisclaimer}>
-        This reading is calculated from Moon-chart Vedic Jyotish approximations only. Only lunar-chart prediction is used. For precise readings consult a certified Jyotishi.
+        {l("This reading is calculated from Moon-chart Vedic Jyotish approximations only. Only lunar-chart prediction is used. For precise readings consult a certified Jyotishi.", { hindi: "यह पठन केवल चंद्र-चार्ट आधारित वैदिक ज्योतिष के अनुमान से तैयार किया गया है। इसमें केवल चंद्र-चार्ट पूर्वानुमान का उपयोग हुआ है। सटीक पठन के लिए प्रमाणित ज्योतिषी से सलाह लें।", telugu: "ఈ పఠనం చంద్ర చార్ట్ ఆధారిత వైదిక జ్యోతిష్య అంచనాలపై మాత్రమే రూపొందించబడింది. చంద్ర చార్ట్ అంచనా మాత్రమే ఉపయోగించబడింది. ఖచ్చితమైన పఠనం కోసం ధృవీకరించిన జ్యోతిషిని సంప్రదించండి.", tamil: "இந்த வாசிப்பு சந்திர சார்ட் அடிப்படையிலான வேத ஜோதிட மதிப்பீடுகளை மட்டுமே பயன்படுத்தி கணிக்கப்பட்டது. சந்திர சார்ட் கணிப்பு மட்டுமே பயன்படுத்தப்படுகிறது. துல்லியமான வாசிப்புக்கு சான்றளிக்கப்பட்ட ஜ்யோதிஷரை அணுகவும்.", urdu: "یہ ریڈنگ صرف قمری چارٹ پر مبنی ویدک جیوتش کے اندازوں سے تیار کی گئی ہے۔ صرف قمری چارٹ کی پیش گوئی استعمال کی گئی ہے۔ درست ریڈنگ کے لیے کسی مستند جوتشی سے مشورہ کریں۔" })}
       </Text>
     </View>
   );
