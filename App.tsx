@@ -25081,6 +25081,30 @@ function isTrustedExternalUrl(url: string) {
                   </View>
                 </View>
 
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: "#7C4A08", fontSize: 12, fontWeight: "700" }}>
+                    {l("Not sure what to ask? Start here", { hindi: "क्या पूछें समझ नहीं आ रहा? यहाँ से शुरू करें", telugu: "ఏమి అడగాలో తెలియదా? ఇక్కడి నుంచి ప్రారంభించండి", tamil: "என்ன கேட்பது தெரியவில்லையா? இங்கிருந்து தொடங்குங்கள்", urdu: "کیا پوچھیں سمجھ نہیں آ رہا؟ یہاں سے شروع کریں" })}
+                  </Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7 }}>
+                    {[
+                      l("What should I focus on today?", { hindi: "आज मुझे किस पर ध्यान देना चाहिए?", telugu: "ఈరోజు నేను దేనిపై దృష్టి పెట్టాలి?", tamil: "இன்று நான் எதில் கவனம் செலுத்த வேண்டும்?", urdu: "آج مجھے کس پر توجہ دینی چاہیے؟" }),
+                      l("What is this phase teaching me?", { hindi: "यह समय मुझे क्या सिखा रहा है?", telugu: "ఈ దశ నాకు ఏమి నేర్పుతోంది?", tamil: "இந்த காலம் எனக்கு என்ன கற்றுக்கொடுக்கிறது?", urdu: "یہ مرحلہ مجھے کیا سکھا رہا ہے؟" }),
+                      l("How can I take one calm next step?", { hindi: "मैं शांत होकर अगला एक कदम कैसे लूँ?", telugu: "నేను ప్రశాంతంగా ఒక తదుపరి అడుగు ఎలా వేయాలి?", tamil: "நான் அமைதியாக அடுத்த ஒரு படியை எப்படி எடுக்கலாம்?", urdu: "میں سکون سے اگلا ایک قدم کیسے اٹھاؤں؟" })
+                    ].map((prompt) => (
+                      <Pressable
+                        key={prompt}
+                        accessibilityRole="button"
+                        accessibilityState={{ disabled: !hasExactBirthDetails }}
+                        disabled={!hasExactBirthDetails || astroChatLoading}
+                        onPress={() => void submitAstroQuestion(prompt)}
+                        style={({ pressed }) => ({ minHeight: 42, flexGrow: 1, flexBasis: 150, borderRadius: 10, borderWidth: 1, borderColor: hasExactBirthDetails ? "#C58A39" : "#C9CDD8", backgroundColor: pressed ? "#FEF3C7" : "#FFFBEB", paddingHorizontal: 10, paddingVertical: 8, justifyContent: "center", opacity: hasExactBirthDetails ? (pressed ? 0.8 : 1) : 0.55 })}
+                      >
+                        <Text style={{ color: hasExactBirthDetails ? "#7C4A08" : "#52656B", fontSize: 12, fontWeight: "700", textAlign: "center" }}>{prompt}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
+
                 {/* Composer -- draft lives inside ChatComposer, so typing a
                     chart question no longer re-renders all of App(). */}
                 <ChatComposer
@@ -35200,6 +35224,7 @@ function RedressSection({
   // answer they came for below the fold -- so the picker folds down to a
   // single line showing the choice, with an obvious way back.
   const [showRouteChooser, setShowRouteChooser] = useState(false);
+  const [showAllRouteOptions, setShowAllRouteOptions] = useState(false);
   const [institutionPageOpen, setInstitutionPageOpen] = useState(false);
   const [checkedEvidence, setCheckedEvidence] = useState<Record<string, boolean>>({});
   // A selected route expands below the chooser in the same scroll. Keeping
@@ -35211,6 +35236,7 @@ function RedressSection({
     setShowFullRedress(false);
     setShowEmergencyDirectory(false);
     setShowMoreRedressTools(false);
+    setShowAllRouteOptions(false);
     setShowDraftTemplate(false);
     setShowScript(false);
     setShowCompanionPlan(false);
@@ -36024,7 +36050,7 @@ function RedressSection({
         </View>
         {showRouteChooser && (
           <View style={styles.issueChipGrid}>
-            {redressRoutes.map((sourceRoute) => {
+            {redressRoutes.slice(0, showAllRouteOptions ? redressRoutes.length : 6).map((sourceRoute) => {
               const route = localizeRedressRoute(sourceRoute, languageId);
               const isSelected = route.id === selectedRedressRoute.id;
               const ROUTE_ICONS: Partial<Record<string, string>> = { academic: "🎓", harassment: "⚠️", ragging: "🏫", public: "🏛️", private: "🏢", crime: "🚨", financial: "💰", domestic: "🏠", workplace: "👔", cybercrime: "💻", consumer: "🛒" };
@@ -36041,6 +36067,7 @@ function RedressSection({
                     // Keep the selector mounted and expand the route guidance
                     // below it in the same scroll rather than replacing the page.
                     setShowRouteChooser(false);
+                    setShowAllRouteOptions(false);
                     setFocusedRouteId(route.id);
                   }}
                   style={[styles.issueChip, isSelected && styles.issueChipActive]}
@@ -36054,6 +36081,18 @@ function RedressSection({
                 </Pressable>
               );
             })}
+            {redressRoutes.length > 6 && (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ expanded: showAllRouteOptions }}
+                onPress={() => { void Haptics.selectionAsync(); setShowAllRouteOptions((value) => !value); }}
+                style={({ pressed }) => ({ minHeight: 44, borderRadius: 10, borderWidth: 1, borderColor: "#8FBDB7", backgroundColor: pressed ? "#DCEBE9" : "#F7FAFC", alignItems: "center", justifyContent: "center", paddingHorizontal: 12 })}
+              >
+                <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "700" }}>
+                  {showAllRouteOptions ? l("Show fewer situations", { hindi: "कम स्थितियाँ दिखाएँ", telugu: "తక్కువ పరిస్థితులను చూపండి", tamil: "குறைந்த நிலைகளைக் காட்டு", urdu: "کم صورتحال دکھائیں" }) : l("More situations", { hindi: "और स्थितियाँ", telugu: "మరిన్ని పరిస్థితులు", tamil: "மேலும் நிலைகள்", urdu: "مزید صورتحال" })}
+                </Text>
+              </Pressable>
+            )}
           </View>
         )}
       </View>
@@ -38942,7 +38981,11 @@ function VedicDailyCard({
   const today = new Date();
   const dateLocale = languageId === "hindi" ? "hi-IN" : languageId === "telugu" ? "te-IN" : languageId === "tamil" ? "ta-IN" : languageId === "urdu" ? "ur-IN" : "en-IN";
   const dateLabel = today.toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
-  const varaName = languageId === "english" ? vara.en : languageId === "hindi" ? vara.hi : vara.name;
+  const varaName = languageId === "english"
+    ? vara.en
+    : languageId === "hindi"
+      ? vara.hi
+      : today.toLocaleDateString(dateLocale, { weekday: "long" });
   const varaGuidance = pickLocalizedText(languageId, { english: vara.guidance, ...(VARA_GUIDANCE_TRANSLATIONS[vara.day] ?? {}) });
   const rashiDisplayName = languageId === "english" ? rashi.en : rashi.name;
   // Memoized: recomputing all lunar dimensions on every render (e.g. window
