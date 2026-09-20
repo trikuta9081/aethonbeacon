@@ -1805,11 +1805,15 @@ async function handleRequest(req, res) {
   json(res, 404, { message: "Not found." });
 }
 
-const server = createServer((req, res) => {
-  void requestContext.run({ corsOrigin: resolveCorsOrigin(req) }, () => handleRequest(req, res));
-});
+export { handleRequest, requestContext, resolveCorsOrigin };
 
-server.listen(port, host, () => {
-  console.log(`NAYIQ verification server listening on http://${host}:${port}`);
-  console.log(`Debug preview ${debugPreview ? "enabled" : "disabled"}.`);
-});
+if (process.env.VERCEL !== "1") {
+  const server = createServer((req, res) => {
+    void requestContext.run({ corsOrigin: resolveCorsOrigin(req) }, () => handleRequest(req, res));
+  });
+
+  server.listen(port, host, () => {
+    console.log(`NAYIQ verification server listening on http://${host}:${port}`);
+    console.log(`Debug preview ${debugPreview ? "enabled" : "disabled"}.`);
+  });
+}

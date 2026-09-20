@@ -89,6 +89,13 @@ before running `pnpm run run:android`.
   `EXPO_PUBLIC_VERIFICATION_MODE=unavailable` so the app fails closed and does
   not generate preview OTPs or call a dead endpoint. Use `remote` only after a
   healthy delivery service has been verified.
+- **Free-host alternative:** the same verification server can run as a Vercel
+  Node function through `api/[...path].mjs`. Deploy the repository to Vercel,
+  configure the server-only provider secrets from `.env.example`, and set the
+  app's `EXPO_PUBLIC_VERIFICATION_API_BASE_URL` to the deployment URL plus
+  `/api`. Do not enable `remote` until `/api/health` reports healthy providers
+  and a real SMS or email verification has been tested. This adapter does not
+  bypass Render billing or embed secrets in the app.
 - **Release preflight:** `pnpm run release:check` validates version/runtime
   alignment, the configured privacy URL, and the bundled privacy artifacts.
   `pnpm run verification:env-check` must also pass in the production

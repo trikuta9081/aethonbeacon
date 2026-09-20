@@ -18,6 +18,7 @@
     "verification:env-check": "node scripts/verification-env-check.mjs",
     "release:check": "node scripts/release-readiness-check.mjs",
     "verification:qa": "node scripts/verification-qa.mjs",
+    "test:verification-deploy": "node scripts/verification-deploy-regression.mjs",
     "dev:launch": "node scripts/dev-launch.mjs",
     "run:android": "node scripts/with-build-id.mjs expo run:android",
     "run:ios": "node scripts/with-build-id.mjs expo run:ios",
