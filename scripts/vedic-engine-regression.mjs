@@ -137,7 +137,7 @@ assert(source.includes('const birthPlaceGeocodedForRef = React.useRef("")'), 'Bi
 assert(source.includes('Coordinates belong to a specific place string'), 'Birthplace changes must invalidate stale coordinates before recalculation');
 assert(source.includes('birthPlaceGeocodedForRef.current = place'), 'Successful birthplace geocoding must record which place produced the coordinates');
 assert(source.includes('const dateLocale = languageId === "hindi" ? "hi-IN"'), 'Daily Vedic card must format dates using the active language locale');
-assert(source.includes('const varaName = languageId === "english" ? vara.en : languageId === "hindi" ? vara.hi : vara.name'), 'Daily Vedic card must localize its weekday display');
+assert(source.includes('const varaName = languageId === "english"') && source.includes('languageId === "hindi"') && source.includes('today.toLocaleDateString(dateLocale, { weekday: "long" })'), 'Daily Vedic card must localize its weekday display for every supported language');
 assert(/sadeSatiPhase/.test(source), 'Sade Sati detection is missing from the gochar layer');
 assert(source.includes('getNavagrahaLongitudes(new Date(date.getTime() + MS_PER_DAY))'), 'Gochar retrograde detection (next-day motion) is missing');
 
