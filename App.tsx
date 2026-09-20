@@ -16021,6 +16021,7 @@ export default function App() {
   // instead of two disagreeing ones.
   const isWide = width >= 620;
   const isCompact = width < 620;
+  const isPhone = width < 430;
   const isNarrow = width < 380;
   const isTablet = width >= 620 && width < 1120;
   const isDesktop = width >= 1120;
@@ -25028,6 +25029,7 @@ function isTrustedExternalUrl(url: string) {
                 chartBriefLang={chartBriefLang}
                 setChartBriefLang={setChartBriefLang}
                 languageId={languageId}
+                setLanguageId={setLanguageId}
                 notifVedicEnabled={notifVedicEnabled}
                 setNotifVedicEnabled={setNotifVedicEnabled}
                 // "Ask the chart" is passed in as a prop (rather than
@@ -25043,9 +25045,9 @@ function isTrustedExternalUrl(url: string) {
                     borderWidth: 1, borderColor: "rgba(252,211,77,0.35)",
                     padding: 16, gap: 12
                   }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                  <View style={{ flexDirection: isPhone ? "column" : "row", alignItems: isPhone ? "stretch" : "center", gap: isPhone ? 8 : 10 }}>
                   <Text style={{ fontSize: 22 }}>🔮</Text>
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, minWidth: 0, width: isPhone ? "100%" : undefined }}>
                     <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "800", letterSpacing: 1.2, textTransform: "uppercase" }}>
                       {l("Ask the chart", { hindi: "चार्ट से पूछें", telugu: "చార్ట్‌ను అడగండి", tamil: "சார்ட்டைக் கேளுங்கள்", urdu: "چارٹ سے پوچھیں" })}
                     </Text>
@@ -25065,11 +25067,15 @@ function isTrustedExternalUrl(url: string) {
                       state that drives the Plain-Language chart card, so
                       switching here also switches the chart brief, and vice
                       versa (one source of truth, lifted to App()). */}
-                  <View style={{ flexDirection: "row", backgroundColor: "rgba(13,31,34,0.06)", borderRadius: 999, padding: 2 }}>
+                  <View style={{ alignSelf: isPhone ? "flex-start" : "auto", flexDirection: "row", backgroundColor: "rgba(13,31,34,0.06)", borderRadius: 999, padding: 2 }}>
                     {(["en", "hi"] as const).map((lng) => (
                       <Pressable
                         key={lng}
-                        onPress={() => { void Haptics.selectionAsync(); setChartBriefLang(lng); }}
+                        onPress={() => {
+                          void Haptics.selectionAsync();
+                          setChartBriefLang(lng);
+                          setLanguageId(lng === "hi" ? "hindi" : "english");
+                        }}
                         accessibilityRole="button"
                         accessibilityLabel={lng === "en" ? l("Reply in English", { hindi: "अंग्रेज़ी में उत्तर दें", telugu: "ఆంగ్లంలో సమాధానం ఇవ్వండి", tamil: "ஆங்கிலத்தில் பதிலளிக்கவும்", urdu: "انگریزی میں جواب دیں" }) : l("Reply in Hindi", { hindi: "हिंदी में उत्तर दें", telugu: "హిందీలో సమాధానం ఇవ్వండి", tamil: "இந்தியில் பதிலளிக்கவும்", urdu: "ہندی میں جواب دیں" })}
                         accessibilityState={{ selected: chartBriefLang === lng }}
@@ -33860,6 +33866,8 @@ function IssueGuideSection({
 }) {
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
+  const { width } = useWindowDimensions();
+  const isPhone = width < 430;
   const [showFullPathDetails, setShowFullPathDetails] = useState(false);
   const [showAllIssues, setShowAllIssues] = useState(false);
   const issueDisplayLabel = selectedIssueGuide.id === "general"
@@ -34047,13 +34055,13 @@ function IssueGuideSection({
         style={[styles.issuePlanHero, isWide && styles.issuePlanHeroWide]}
         onLayout={onFocusSelectedIssueLayout ? onFocusSelectedIssueLayout(selectedIssueGuide.id) : undefined}
       >
-        <View style={styles.issuePlanHeroHeader}>
-          <View style={styles.issuePlanHeroCopy}>
+        <View style={[styles.issuePlanHeroHeader, isPhone && styles.issuePlanHeroHeaderPhone]}>
+          <View style={[styles.issuePlanHeroCopy, isPhone && styles.issuePlanHeroCopyPhone]}>
             <Text style={styles.eyebrow}>{l("Your coordinated plan", { hindi: "आपकी समन्वित योजना", telugu: "మీ సమన్విత ప్రణాళిక", tamil: "உங்கள் ஒருங்கிணைந்த திட்டம்", urdu: "آپ کا مربوط منصوبہ" })}</Text>
             <Text style={styles.issuePlanHeroTitle}>{issueDisplayLabel}</Text>
             <Text style={styles.issuePlanHeroLead}>{localizeIssueGuideSummary(selectedIssueGuide, languageId)}</Text>
           </View>
-          <View style={styles.issuePlanStatusPill}>
+          <View style={[styles.issuePlanStatusPill, isPhone && styles.issuePlanStatusPillPhone]}>
             <Text style={styles.issuePlanStatusValue}>{issueCompletionCount}/3</Text>
             <Text style={styles.issuePlanStatusLabel}>{l("steps complete", { hindi: "कदम पूरे", telugu: "దశలు పూర్తయ్యాయి", tamil: "படிகள் முடிந்தது", urdu: "اقدامات مکمل" })}</Text>
           </View>
@@ -34282,8 +34290,8 @@ function IssueGuideSection({
         </View>
       </View>
 
-      <View style={styles.issueSafetyBar}>
-        <View style={styles.issueSafetyCopy}>
+      <View style={[styles.issueSafetyBar, isPhone && styles.issueSafetyBarPhone]}>
+        <View style={[styles.issueSafetyCopy, isPhone && styles.issueSafetyCopyPhone]}>
           <Text style={styles.issueSafetyTitle}>{l("Safety remains available at every step", { hindi: "हर कदम पर सुरक्षा उपलब्ध है", telugu: "ప్రతి దశలో భద్రత అందుబాటులో ఉంటుంది", tamil: "ஒவ்வொரு படியிலும் பாதுகாப்பு கிடைக்கும்", urdu: "ہر قدم پر حفاظت دستیاب ہے" })}</Text>
           <Text style={styles.issueSafetyText}>{l("If there is immediate danger, call 112. For a complaint, evidence, or formal escalation route, open Help and Redress.", {
             hindi: "अगर तुरंत खतरा है, तो 112 पर कॉल करें। शिकायत, साक्ष्य या औपचारिक कार्रवाई के लिए मदद और शिकायत खोलें।",
@@ -34292,7 +34300,7 @@ function IssueGuideSection({
             urdu: "اگر فوری خطرہ ہو تو 112 پر کال کریں۔ شکایت، ثبوت یا رسمی کارروائی کے لیے مدد اور ازالہ کھولیں۔"
           })}</Text>
         </View>
-        <View style={styles.issueSafetyActions}>
+        <View style={[styles.issueSafetyActions, isPhone && styles.issueSafetyActionsPhone]}>
           <Pressable accessibilityRole="button" onPress={onEmergencyCall} style={styles.issueSafetyPrimaryButton}>
             <Text style={styles.issueSafetyPrimaryLabel}>{l("Call 112", { hindi: "112 पर कॉल करें", telugu: "112 కి కాల్ చేయండి", tamil: "112-ஐ அழைக்கவும்", urdu: "112 پر کال کریں" })}</Text>
           </Pressable>
@@ -37167,10 +37175,12 @@ function SectionFlowBand({
   compact?: boolean;
   languageId: LanguageId;
 }) {
+  const { width } = useWindowDimensions();
+  const isPhone = width < 430;
   return (
     <View style={[styles.issueRouteSnapshotBand, compact && styles.issueRouteSnapshotBandCompact]}>
-      <View style={styles.sectionHeader}>
-        <View>
+      <View style={[styles.sectionHeader, isPhone && styles.sectionHeaderPhone]}>
+        <View style={isPhone && styles.phoneSafeCopy}>
           <Text style={styles.eyebrow}>{eyebrow}</Text>
           <Text style={[styles.sectionTitleSmall, compact && styles.sectionTitleSmallCompact]}>{title}</Text>
         </View>
@@ -37187,9 +37197,9 @@ function SectionFlowBand({
       <Text style={[styles.promptText, compact && styles.sectionFlowSummaryCompact]} numberOfLines={compact ? 2 : undefined}>
         {summary}
       </Text>
-      <View style={[styles.profileSummaryGrid, compact && styles.profileSummaryGridCompact]}>
+      <View style={[styles.profileSummaryGrid, compact && styles.profileSummaryGridCompact, isPhone && styles.profileSummaryGridPhone]}>
         {cards.map((card) => (
-          <View key={card.label} style={[styles.profileSummaryCard, compact && styles.profileSummaryCardCompact]}>
+          <View key={card.label} style={[styles.profileSummaryCard, compact && styles.profileSummaryCardCompact, isPhone && styles.profileSummaryCardPhone]}>
             <Text style={[styles.profileSummaryLabel, compact && styles.profileSummaryLabelCompact]}>{card.label}</Text>
             <Text
               style={[styles.profileSummaryValue, compact && styles.profileSummaryValueCompact]}
@@ -37201,7 +37211,7 @@ function SectionFlowBand({
         ))}
       </View>
       {actions.length > 0 ? (
-        <View style={[styles.issueCalloutActions, compact && styles.issueCalloutActionsCompact]}>
+        <View style={[styles.issueCalloutActions, compact && styles.issueCalloutActionsCompact, isPhone && styles.issueCalloutActionsPhone]}>
           {actions.map((action) => (
             <Pressable
               key={action.label}
@@ -39153,7 +39163,7 @@ function VedicDailyCard({
   return (
     <View style={styles.vedicCard}>
       {/* Header */}
-      <View style={styles.vedicCardHeader}>
+      <View style={[styles.vedicCardHeader, compact && styles.vedicCardHeaderCompact]}>
         <View style={styles.vedicCardHeaderLeft}>
           <Text style={styles.vedicCardEyebrow}>{l("🌙 DAILY MOON CHART ANALYSIS", { hindi: "🌙 दैनिक चंद्र-चार्ट विश्लेषण", telugu: "🌙 దైనందిన చంద్ర చార్ట్ విశ్లేషణ", tamil: "🌙 தினசரி சந்திர சார்ட் பகுப்பாய்வு", urdu: "🌙 روزانہ قمری چارٹ تجزیہ" })}</Text>
           <Text style={styles.vedicCardDate}>{dateLabel}</Text>
@@ -39207,7 +39217,7 @@ function VedicDailyCard({
             </View>
           </View>
 
-          <View style={{ flex: 1, gap: 8 }}>
+          <View style={{ flex: 1, minWidth: 0, gap: 8 }}>
             <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "700", letterSpacing: 1.1, textTransform: "uppercase" }}>{l("Top lunar supports", { hindi: "शीर्ष चंद्र सहारे", telugu: "అగ్ర చంద్ర మద్దతులు", tamil: "முக்கிய சந்திர ஆதரவுகள்", urdu: "اہم قمری معاونتیں" })}</Text>
             {moonChart48Summary.top.slice(0, 3).map((item, index) => (
               <View key={`daily-3d-${item.id}`} style={{ borderRadius: 16, padding: 12, backgroundColor: index === 0 ? "rgba(103,232,249,0.14)" : "rgba(255,255,255,0.045)", borderWidth: 1, borderColor: `${moonChartVisualColor(item)}66`, shadowColor: moonChartVisualColor(item), shadowOffset: { width: 0, height: 6 + index * 2 }, shadowOpacity: 0.22, shadowRadius: 14, elevation: 8, transform: [{ perspective: 800 }, { rotateY: compact ? "0deg" : "-2deg" }] }}>
@@ -39355,6 +39365,7 @@ function BirthChartSection({
   chartBriefLang,
   setChartBriefLang,
   languageId,
+  setLanguageId,
   notifVedicEnabled,
   setNotifVedicEnabled,
 }: {
@@ -39390,6 +39401,7 @@ function BirthChartSection({
   chartBriefLang: "en" | "hi";
   setChartBriefLang: (v: "en" | "hi") => void;
   languageId: LanguageId;
+  setLanguageId: (value: LanguageId) => void;
   notifVedicEnabled: boolean;
   setNotifVedicEnabled: (v: boolean) => void;
 }) {
@@ -39397,6 +39409,7 @@ function BirthChartSection({
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const { width } = useWindowDimensions();
   const isWide = width >= 760;
+  const isNarrowPhone = width < 430;
   // Split DOB into day / month / year segments for easy keypad entry
   const [dobDD, setDobDD] = useState(() => profileDOB.slice(8, 10) || "");
   const [dobMM, setDobMM] = useState(() => profileDOB.slice(5, 7) || "");
@@ -40062,7 +40075,10 @@ function BirthChartSection({
               <Pressable
                 accessibilityRole="button"
                 accessibilityState={{ selected: chartBriefLang === "en" }}
-                onPress={() => setChartBriefLang("en")}
+                onPress={() => {
+                  setChartBriefLang("en");
+                  setLanguageId("english");
+                }}
                 hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
                 style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: chartBriefLang ==="en" ? "#9A3412" : "transparent" }}
               >
@@ -40071,7 +40087,10 @@ function BirthChartSection({
               <Pressable
                 accessibilityRole="button"
                 accessibilityState={{ selected: chartBriefLang === "hi" }}
-                onPress={() => setChartBriefLang("hi")}
+                onPress={() => {
+                  setChartBriefLang("hi");
+                  setLanguageId("hindi");
+                }}
                 hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
                 style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: chartBriefLang ==="hi" ? "#9A3412" : "transparent" }}
               >
@@ -40138,7 +40157,7 @@ function BirthChartSection({
       {hasExactBirthDetails && (
         <View style={{ backgroundColor: "#E1EEEC", borderRadius: 14, padding: 16, gap: 12, borderWidth: 1, borderColor: "rgba(99,222,208,0.25)" }}>
           <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" }}>{l("Your Vedic Birth Profile", { hindi: "आपकी वैदिक जन्म-प्रोफ़ाइल", telugu: "మీ వైదిక జనన ప్రొఫైల్", tamil: "உங்கள் வேத பிறப்பு சுயவிவரம்", urdu: "آپ کا ویدک پیدائشی پروفائل" })}</Text>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+          <View style={{ flexDirection: isNarrowPhone ? "column" : "row", flexWrap: isNarrowPhone ? "nowrap" : "wrap", gap: isNarrowPhone ? 8 : 8 }}>
             {[
               { label: l("Date of Birth", { hindi: "जन्म तिथि", telugu: "జనన తేది", tamil: "பிறந்த தேதி", urdu: "تاریخِ پیدائش" }), value: profileDOB },
               { label: l("Birth Time", { hindi: "जन्म समय", telugu: "జనన సమయం", tamil: "பிறப்பு நேரம்", urdu: "وقتِ پیدائش" }), value: profileBirthTime },
@@ -40149,9 +40168,9 @@ function BirthChartSection({
               { label: l("Vimshottari Phase", { hindi: "विंशोत्तरी चरण", telugu: "వింశోత్తరీ దశ", tamil: "விம்சோத்தரி கட்டம்", urdu: "ويمشوترى مرحلہ" }), value: dashaState ? `${dashaState.currentMahadasha} / ${dashaState.currentAntardasha}` : l("Enter birth date", { hindi: "जन्म तिथि दर्ज करें", telugu: "జనన తేది నమోదు చేయండి", tamil: "பிறந்த தேதியை உள்ளிடவும்", urdu: "تاریخِ پیدائش درج کریں" }) },
               { label: l("Samvatsara (60-yr cycle)", { hindi: "संवत्सर (60-वर्षीय चक्र)", telugu: "సంవత్సర (60-ఏళ్ల చక్రం)", tamil: "சம்வத்ஸரம் (60 ஆண்டு சுழல்)", urdu: "سموتسر (60 سالہ چکر)" }), value: samvatsaraInfo ? `${samvatsaraInfo.name} (#${samvatsaraInfo.index + 1})` : l("Enter date of birth", { hindi: "जन्म तिथि दर्ज करें", telugu: "జనన తేది నమోదు చేయండి", tamil: "பிறந்த தேதியை உள்ளிடவும்", urdu: "تاریخِ پیدائش درج کریں" }) },
             ].map((item) => (
-              <View key={item.label} style={{ backgroundColor: "#E1EEEC", borderRadius: 8, padding: 10, minWidth: 90, flex: 1 }}>
+              <View key={item.label} style={{ backgroundColor: "#E1EEEC", borderRadius: 8, padding: isNarrowPhone ? 12 : 10, minWidth: 0, width: isNarrowPhone ? "100%" : undefined, flex: isNarrowPhone ? 0 : 1 }}>
                 <Text style={{ color: "#111827", fontSize: 12, fontWeight: "800", textTransform: "uppercase" }}>{item.label}</Text>
-                <Text style={{ color: "#0D1F22", fontSize: 13, fontWeight: "800", marginTop: 2 }} numberOfLines={2}>{item.value}</Text>
+                <Text style={{ color: "#0D1F22", fontSize: 14, lineHeight: 19, fontWeight: "800", marginTop: 3 }} numberOfLines={isNarrowPhone ? 3 : 2}>{item.value}</Text>
               </View>
             ))}
           </View>
@@ -40297,7 +40316,10 @@ function BirthChartSection({
                     <Pressable
                       accessibilityRole="button"
                       accessibilityState={{ selected: chartBriefLang === "en" }}
-                      onPress={() => setChartBriefLang("en")}
+                      onPress={() => {
+                        setChartBriefLang("en");
+                        setLanguageId("english");
+                      }}
                       hitSlop={{ top: 11, bottom: 11, left: 4, right: 4 }}
                       style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: chartBriefLang ==="en" ? "#5C00B8" : "transparent" }}
                     >
@@ -40306,7 +40328,10 @@ function BirthChartSection({
                     <Pressable
                       accessibilityRole="button"
                       accessibilityState={{ selected: chartBriefLang === "hi" }}
-                      onPress={() => setChartBriefLang("hi")}
+                      onPress={() => {
+                        setChartBriefLang("hi");
+                        setLanguageId("hindi");
+                      }}
                       hitSlop={{ top: 11, bottom: 11, left: 4, right: 4 }}
                       style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: chartBriefLang ==="hi" ? "#5C00B8" : "transparent" }}
                     >
@@ -50383,12 +50408,23 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 14
   },
+  issuePlanHeroHeaderPhone: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: 10
+  },
   issuePlanHeroCopy: {
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 260,
     minWidth: 0,
     gap: 6
+  },
+  issuePlanHeroCopyPhone: {
+    width: "100%",
+    flexBasis: "auto",
+    flexGrow: 0,
+    flexShrink: 1
   },
   issuePlanHeroTitle: {
     color: "#0D1F22",
@@ -50414,6 +50450,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: "center",
     gap: 1
+  },
+  issuePlanStatusPillPhone: {
+    alignSelf: "flex-start",
+    minWidth: 112,
+    paddingHorizontal: 14,
+    paddingVertical: 8
   },
   issuePlanStatusValue: {
     color: "#0E6F69",
@@ -50709,12 +50751,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between"
   },
+  issueSafetyBarPhone: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: 10
+  },
   issueSafetyCopy: {
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 260,
     minWidth: 0,
     gap: 4
+  },
+  issueSafetyCopyPhone: {
+    width: "100%",
+    flexBasis: "auto",
+    flexGrow: 0,
+    flexShrink: 1
   },
   issueSafetyTitle: {
     color: "#881337",
@@ -50782,6 +50835,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8
+  },
+  issueSafetyActionsPhone: {
+    width: "100%",
+    flexDirection: "column",
+    alignItems: "stretch"
   },
   institutionChipGridCompact: {
     flexDirection: "column",
@@ -51145,6 +51203,16 @@ const styles = StyleSheet.create({
     padding: 5,
     gap: 3
   },
+  sectionHeaderPhone: {
+    alignItems: "flex-start",
+    flexDirection: "column",
+    gap: 5
+  },
+  phoneSafeCopy: {
+    width: "100%",
+    minWidth: 0,
+    flexShrink: 1
+  },
   sectionFlowSummaryCompact: {
     fontSize: 12,
     lineHeight: 16
@@ -51156,6 +51224,10 @@ const styles = StyleSheet.create({
   },
   issueCalloutActionsCompact: {
     gap: 4
+  },
+  issueCalloutActionsPhone: {
+    flexDirection: "column",
+    alignItems: "stretch"
   },
   issueSupportBand: {
     borderRadius: 8,
@@ -52796,18 +52868,20 @@ const styles = StyleSheet.create({
     paddingBottom: 22
   },
   profileSheet: {
-    width: "86%",
-    maxWidth: 390,
+    width: "92%",
+    maxWidth: 520,
     alignSelf: "center",
-    maxHeight: "76%",
-    borderRadius: 8,
+    maxHeight: "88%",
+    borderRadius: 20,
     backgroundColor: "#E7EFED",
     borderWidth: 1,
     borderColor: "rgba(14,111,105,0.3)",
     ...shadow
   },
   profileSheetCompact: {
-    maxHeight: "66%"
+    width: "96%",
+    maxHeight: "90%",
+    borderRadius: 20
   },
   onboardingSheetContent: {
     paddingHorizontal: 10,
@@ -52826,9 +52900,10 @@ const styles = StyleSheet.create({
     gap: 8
   },
   profileSheetContentCompact: {
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    gap: 6
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    gap: 10,
+    paddingBottom: 22
   },
   profileSheetTopRow: {
     position: "relative",
@@ -54891,6 +54966,11 @@ const styles = StyleSheet.create({
   profileSummaryGridCompact: {
     gap: 3
   },
+  profileSummaryGridPhone: {
+    flexDirection: "column",
+    flexWrap: "nowrap",
+    gap: 8
+  },
   profileBanner: {
     borderRadius: 12,
     borderCurve: "continuous",
@@ -54979,6 +55059,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingVertical: 6,
     gap: 2
+  },
+  profileSummaryCardPhone: {
+    width: "100%",
+    minWidth: 0,
+    flexBasis: "auto",
+    flexGrow: 0,
+    paddingHorizontal: 11,
+    paddingVertical: 9
   },
   profileSummaryLabel: {
     color: "#0E6F69",
@@ -56125,10 +56213,17 @@ const styles = StyleSheet.create({
   vedicCardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    gap: 10,
+    minWidth: 0
+  },
+  vedicCardHeaderCompact: {
+    alignItems: "flex-start",
+    flexWrap: "wrap"
   },
   vedicCardHeaderLeft: {
     flex: 1,
+    minWidth: 0,
     gap: 2
   },
   vedicCardEyebrow: {
