@@ -1365,7 +1365,7 @@ async function handleRequest(req, res) {
   if ((req.method === "GET" || req.method === "HEAD") && url.pathname === "/health") {
     const healthPayload = {
       ok: true,
-      mode: debugPreview ? "local-debug" : "provider",
+      mode: debugPreview ? "local-debug" : (guidanceRuntime.live ? "provider" : "local-independent"),
       port,
       host,
       webhooks: {
@@ -1385,7 +1385,7 @@ async function handleRequest(req, res) {
       },
       adminAuth: getAdminAuthSummary(),
       guidance: {
-        defaultModel: guidanceConfigured ? "primary" : "fallback",
+        defaultModel: guidanceRuntime.live ? "primary" : "independent",
         modelCandidates: guidanceModelCandidates.map((_, index) => (index === 0 ? "primary" : `fallback-${index}`)),
         runtime: "checked-by-guidance-endpoint-source",
         independentEngine: true,
