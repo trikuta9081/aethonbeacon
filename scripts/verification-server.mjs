@@ -91,6 +91,13 @@ const smsDeliveryConfigured =
 const emailDeliveryConfigured =
   emailWebhookUrl.length > 0 || (sendgridApiKey.length > 0 && sendgridFromEmail.length > 0);
 const guidanceConfigured = guidanceApiKey.length > 0;
+// Provider configuration is not proof that the provider will generate. Keep
+// this state separate so the app can honestly expose its local engine as the
+// guaranteed path when Google denies a project, model, or credential.
+const guidanceRuntime = {
+  live: false,
+  lastFailure: ""
+};
 const adminAuthConfigured = adminLoginIdentity.length > 0 && adminLoginCode.length > 0;
 const adminSessionTtlMs = parsePositiveInt(process.env.ADMIN_SESSION_TTL_MS, 8 * 60 * 60 * 1000);
 const adminLockoutTtlMs = parsePositiveInt(process.env.ADMIN_LOCKOUT_TTL_MS, 5 * 60 * 1000);
@@ -809,11 +816,15 @@ async function callGuidanceModel(model, body) {
     throw new Error(`Guidance service model ${model} returned an empty response.`);
   }
 
+  guidanceRuntime.live = true;
+  guidanceRuntime.lastFailure = "";
   return { source: "connected", model, text };
 }
 
 async function generateGuidanceHelp(body) {
   if (!guidanceConfigured) {
+    guidanceRuntime.live = false;
+    guidanceRuntime.lastFailure = "not configured";
     return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body) };
   }
 
@@ -823,6 +834,8 @@ async function generateGuidanceHelp(body) {
       const result = await callGuidanceModel(model, body);
       return { ...result, text: normalizeGuidanceHelpReply(result.text, body) };
     } catch (error) {
+      guidanceRuntime.live = false;
+      guidanceRuntime.lastFailure = error instanceof Error ? error.message : "provider request failed";
       errors.push(error instanceof Error ? error.message : `Guidance service model ${model} failed.`);
     }
   }
@@ -1098,6 +1111,8 @@ async function callGuidanceModelWithPrompt(model, prompt, minChars = 40) {
     ? data.candidates.flatMap((c) => c?.content?.parts ?? []).map((p) => p?.text ?? "").join("\n").trim()
     : "";
   if (text.length < minChars) throw new Error(`Guidance service ${model} returned a too-short response`);
+  guidanceRuntime.live = true;
+  guidanceRuntime.lastFailure = "";
   return { source: "connected", model, text };
 }
 
@@ -1364,13 +1379,17 @@ async function handleRequest(req, res) {
         // quota/model/key restrictions can change after startup.
         guidanceService: guidanceConfigured,
         guidanceServiceConfigured: guidanceConfigured,
+        guidanceServiceLive: guidanceConfigured && guidanceRuntime.live,
+        guidanceServiceMode: guidanceConfigured && guidanceRuntime.live ? "connected" : "local-independent",
         revenueCatWebhook: revenueCatWebhookConfigured
       },
       adminAuth: getAdminAuthSummary(),
       guidance: {
         defaultModel: guidanceConfigured ? "primary" : "fallback",
         modelCandidates: guidanceModelCandidates.map((_, index) => (index === 0 ? "primary" : `fallback-${index}`)),
-        runtime: "checked-by-guidance-endpoint-source"
+        runtime: "checked-by-guidance-endpoint-source",
+        independentEngine: true,
+        providerFailure: guidanceRuntime.lastFailure ? "provider-unavailable" : null
       },
       limits: {
         codeTtlMs,

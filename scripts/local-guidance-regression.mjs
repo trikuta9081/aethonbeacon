@@ -53,6 +53,11 @@ async function waitForServer() {
 
 try {
   await waitForServer();
+  const healthResponse = await fetch(`http://127.0.0.1:${port}/health`);
+  const health = await healthResponse.json();
+  if (!healthResponse.ok || health.providers?.guidanceServiceLive !== false || health.providers?.guidanceServiceMode !== "local-independent") {
+    throw new Error("health did not identify the independent local guidance engine");
+  }
   for (const [name, text, route, expected] of scenarios) {
     const response = await fetch(`http://127.0.0.1:${port}/guidance/help`, {
       method: "POST",
