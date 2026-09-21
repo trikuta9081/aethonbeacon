@@ -265,6 +265,7 @@ assert(!source.includes(hiddenNumericReading), 'Public numeric Vedic reading ter
   'Disable speaker',
   'Enable speaker',
   'onFetchGuideEnrichment',
+  'onGuideReplyProviderChange',
   // Counselling chat "typing…" beat -- replies are computed instantly from
   // local logic, so without this every guide message (opening line, each
   // follow-up question, and the final synthesis) used to land in the same
@@ -632,6 +633,14 @@ assert(
 assert(
   source.includes("{showWeeklyVedicBanner && ("),
   "the weekly reading banner must be rendered -- its effect marks the week as seen either way"
+);
+assert(
+  source.includes('onGuideReplyProviderChange(result?.source === "connected" ? "connected" : "local")'),
+  "counselling must synchronize the provider badge with the actual enrichment response"
+);
+assert(
+  source.includes('if (localOnly) setGuideReplyProvider("local");'),
+  "local-only mode must clear any stale connected guidance badge"
 );
 
 console.log('App upgrades regression passed: section order, consolidated Help and Redress, premium support cards, professional home previews, templates/scripts/timelines, admin gate, voice mute, connected counselling enrichment, a real typing beat on every counselling chat reply, confirm-gated destructive actions with haptic feedback across Community/Redress/Tones, a persistent Tones mini-player that survives tab navigation, counselling personalization wired to real visit-recurrence and mood-trend history, and a persistent Redress "My case" tracker with a follow-up reminder are present.');

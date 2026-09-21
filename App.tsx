@@ -16168,6 +16168,9 @@ export default function App() {
     return () => loop.stop();
   }, [astroChatLoading, astroChatPulseAnim, astroChatReduceMotion]);
   const [aiHelpProvider, setGuideReplyProvider] = useState<GuideReplyProvider>("local");
+  React.useEffect(() => {
+    if (localOnly) setGuideReplyProvider("local");
+  }, [localOnly]);
   // ── Personal guidance state ────────────────────────────────────────────────
   const [guidanceDailyBrief, setGuidanceDailyBrief] = useState<string | null>(null);
   const [guidanceInsightText, setGuidanceInsightText] = useState<string | null>(null);
@@ -26490,6 +26493,7 @@ function isTrustedExternalUrl(url: string) {
           // Local-only is a hard privacy boundary: counselling enrichment must
           // not receive any text while the setting is enabled.
           onFetchGuideEnrichment={localOnly ? undefined : fetchGuidanceHelp}
+          onGuideReplyProviderChange={setGuideReplyProvider}
           streak={checkInStreak}
           moodTagLeaning={crossSectionSignal.recentMoodTagLeaning}
           visitReports={visitReports}
@@ -45951,6 +45955,7 @@ function CounselingChatModal({
   voiceAssistEnabled,
   onToggleVoiceAssist,
   onFetchGuideEnrichment,
+  onGuideReplyProviderChange,
   streak = 0,
   moodTagLeaning = null,
   visitReports = [],
@@ -45991,6 +45996,7 @@ function CounselingChatModal({
     profileAddressLabel: string,
     issueGuide: IssueGuide
   ) => Promise<{ text: string; source: string } | null>;
+  onGuideReplyProviderChange: (provider: GuideReplyProvider) => void;
   // Passed down from App() (checkInStreak / crossSectionSignal.recentMoodTagLeaning)
   // so buildJourneySteps below can vary its copy with real history -- see the
   // comment on buildJourneySteps itself for why this only ever changes reason
@@ -46410,9 +46416,12 @@ function CounselingChatModal({
       const enrichmentIssueGuide = issueGuides.find((guide) => guide.id === issueId) ?? issueGuides[0];
       onFetchGuideEnrichment(session.originalIssue + " " + allUserTextForSynthesis, route, identityLabel, enrichmentIssueGuide)
         .then((result) => {
+          onGuideReplyProviderChange(result?.source === "connected" ? "connected" : "local");
           if (result && result.text.trim().length > 0) setGuidanceEnrichment(result.text.trim());
         })
-        .catch(() => undefined)
+        .catch(() => {
+          onGuideReplyProviderChange("local");
+        })
         .finally(() => setGuidanceEnrichmentLoading(false));
     }
   }
