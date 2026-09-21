@@ -608,50 +608,108 @@ function getGuidanceHelpTabLabel(route) {
   return "Path";
 }
 
+function getLocalGuidanceProfile(route, text) {
+  const normalized = String(text ?? "").toLowerCase();
+  if (route === "urgent" || /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe)/.test(normalized)) {
+    return {
+      meaning: "This has an immediate safety signal, so protection comes before documentation or longer guidance.",
+      step: "Use SOS or call 112 now, move toward a safer nearby person or public place, and keep your location ready.",
+      escalate: "Act immediately if there is current violence, a weapon, self-harm risk, stalking, or you cannot stay safe.",
+      tab: "Help"
+    };
+  }
+  if (/(cyber|upi|otp|online fraud|morphed|stalk|blackmail|hack)/.test(normalized)) {
+    return {
+      meaning: "This looks like a cyber or digital-fraud issue where speed and preserved evidence matter.",
+      step: "Do not delete chats or payment records; call 1930 for financial fraud and open Help for the cybercrime.gov.in route.",
+      escalate: "Escalate to the police or cybercrime portal if the loss, threat, impersonation, or harassment continues.",
+      tab: "Help"
+    };
+  }
+  if (/(bank|upi|payment|loan|insurance|refund|salary|wage|money|financial|scam|fraud)/.test(normalized)) {
+    return {
+      meaning: "This is a financial or service dispute that needs a dated record, a reference number, and the correct first office.",
+      step: "Save the transaction or contract proof, write the outcome you want, and open Help for the bank, consumer, or workplace route.",
+      escalate: "Escalate when the provider misses its response time, refuses a written acknowledgement, or the loss is continuing.",
+      tab: "Help"
+    };
+  }
+  if (/(police|fir|crime|complaint|harass|ragging|abuse|institution|school|college|university|hospital|government|authority|office)/.test(normalized)) {
+    return {
+      meaning: "This is a formal complaint or institutional issue that needs facts, evidence, and the right first office.",
+      step: "Write what happened, when, where, who was involved, the evidence available, and the exact remedy you want; then open Help.",
+      escalate: "Escalate to the designated senior office, grievance portal, police, or emergency support if the first office delays or the risk increases.",
+      tab: "Help"
+    };
+  }
+  if (/(workplace|employer|hr|office|job|work|salary|labor|factory)/.test(normalized)) {
+    return {
+      meaning: "This is a workplace concern where a calm written record and the internal grievance path should come first when safe.",
+      step: "Keep the timeline, contract or payslips, messages, witnesses, and requested remedy together before contacting HR or the designated officer.",
+      escalate: "Escalate to the labour or statutory authority if the employer retaliates, ignores the complaint, or there is immediate danger.",
+      tab: "Help"
+    };
+  }
+  if (/(doctor|hospital|medicine|symptom|pain|panic|depression|sleep|health|medical|psychologist|counsel)/.test(normalized)) {
+    return {
+      meaning: "This may need verified professional support rather than self-guidance alone.",
+      step: "Note the main symptom, duration, severity, medicines, and effect on daily function, then use Path to prepare for a qualified professional.",
+      escalate: "Seek urgent medical help for severe or sudden symptoms, loss of safety, breathing trouble, or self-harm thoughts.",
+      tab: "Path"
+    };
+  }
+  if (/(exam|study|student|academic|assignment|hostel|career)/.test(normalized)) {
+    return {
+      meaning: "This is an academic or direction problem that becomes clearer when separated into one immediate task and one support request.",
+      step: "Choose one 25-minute task and write one specific question for a teacher, mentor, or institution before opening Path.",
+      escalate: "Use Help for harassment, discrimination, unfair assessment, safety, or an unresolved institutional grievance.",
+      tab: "Path"
+    };
+  }
+  if (/(relationship|partner|family|domestic|lonely|loneliness|grief|breakup)/.test(normalized)) {
+    return {
+      meaning: "This is a relationship or emotional-support issue that needs a clear boundary, one trusted connection, or a slower conversation.",
+      step: "Name what happened, what you feel, and what you need; choose Calm first if flooded, then return to Path or Help.",
+      escalate: "Use Help or SOS for coercion, stalking, domestic violence, threats, or any situation where you are not safe.",
+      tab: "Path"
+    };
+  }
+  if (route === "redress") {
+    return {
+      meaning: "This is a formal help or complaint issue that needs one clear office route and a traceable paper trail.",
+      step: "Write the facts, dates, evidence, and exact remedy you want, then open Help and choose the closest institution or authority.",
+      escalate: "Escalate to the senior office, formal portal, police, or SOS if the first route delays, retaliates, or cannot keep you safe.",
+      tab: "Help"
+    };
+  }
+  if (route === "professional") {
+    return {
+      meaning: "This may need qualified professional support, while NAYIQ helps you organise what to ask and what to do next.",
+      step: "Write the main concern, duration, severity, and effect on daily life, then open Path to prepare a focused support request.",
+      escalate: "Seek urgent professional or emergency help if symptoms become severe, sudden, or unsafe.",
+      tab: "Path"
+    };
+  }
+  return {
+    meaning: "This is a general guidance moment that needs one clear route instead of a vague spiral.",
+    step: "Write one fact, one feeling, and one outcome you want, then open Path and choose the smallest useful next action.",
+    escalate: "Move to Help, SOS, or professional support if the issue becomes unsafe, official, persistent, or too heavy for one step.",
+    tab: "Path"
+  };
+}
+
 function buildFallbackGuidanceReply(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
   const text = typeof body?.text === "string" ? body.text.toLowerCase() : "";
-  const emergencyNumber = typeof body?.emergencyNumber === "string" && body.emergencyNumber.trim().length > 0
-    ? body.emergencyNumber.trim()
-    : "112";
-  const openTab = getGuidanceHelpTabLabel(route);
-  if (route === "urgent" || /(danger|suicide|self[-\s]?harm|assault|violence|threat)/.test(text)) {
-    return [
-      "What this means: This may be an urgent safety issue and protection should come before any longer guidance.",
-      `Safest next step: Use SOS or call ${emergencyNumber} now, then alert a nearby trusted person and keep your location ready.`,
-      `Open tab: ${openTab}`,
-      `Escalate when: Call ${emergencyNumber} or use SOS immediately if there is assault, violence, self-harm risk, or you do not feel safe.`
-    ].join("\n");
-  }
-  if (route === "redress" || /(complaint|redress|ragging|harass|police|authority|work|office|school|college)/.test(text)) {
-    return [
-      "What this means: This is a complaint or authority issue that should move through Help with a clear paper trail.",
-      "Safest next step: Write the facts, dates, names, evidence, and the exact result you want before approaching the first office.",
-      `Open tab: ${openTab}`,
-      "Escalate when: Move to a higher office or formal complaint route if the first office ignores you, delays without reason, or the situation worsens."
-    ].join("\n");
-  }
-  if (route === "professional" || /(doctor|psychologist|counsel|sleep|panic|depression)/.test(text)) {
-    return [
-      "What this means: This looks like a stress or health issue that may need verified professional support.",
-      "Safest next step: Note the main symptom, how long it has been happening, and one body sign before opening Path for the next referral step.",
-      `Open tab: ${openTab}`,
-      "Escalate when: Seek professional or urgent help if panic, sleep loss, hopelessness, or body symptoms are becoming severe or unsafe."
-    ].join("\n");
-  }
-  if (route === "guide" || /(anger|anxiety|fear|stigma|burnout|lonely|stress|coward)/.test(text)) {
-    return [
-      "What this means: This is a guidance issue that should be slowed down and turned into one practical next step.",
-      "Safest next step: Name the feeling plainly, slow the body once, and then open Path for the most useful next action.",
-      `Open tab: ${openTab}`,
-      "Escalate when: Move to Help or professional support if the feeling stays intense, keeps repeating, or starts affecting safety, sleep, or function."
-    ].join("\n");
-  }
+  const emergencyNumber = typeof body?.emergencyNumber === "string" && body.emergencyNumber.trim().length > 0 ? body.emergencyNumber.trim() : "112";
+  const profile = getLocalGuidanceProfile(route, text);
+  const step = profile.step.replace(/\b112\b/g, emergencyNumber);
+  const escalate = profile.escalate.replace(/\b112\b/g, emergencyNumber);
   return [
-    "What this means: This is a general guidance moment that needs one clear route instead of a vague spiral.",
-    "Safest next step: Write one fact, one feeling, and one next action, then open Path and keep the next move small.",
-    `Open tab: ${openTab}`,
-    "Escalate when: Move to Help, SOS, or professional support if the issue becomes unsafe, official, or too heavy for one step."
+    `What this means: ${profile.meaning}`,
+    `Safest next step: ${step}`,
+    `Open tab: ${profile.tab}`,
+    `Escalate when: ${escalate}`
   ].join("\n");
 }
 
