@@ -51,7 +51,7 @@ const guidanceApiKey = (process.env.GUIDANCE_SERVICE_KEY ?? process.env[legacyPr
 // Keep the provider on the earlier AI Studio-friendly route. It is the
 // lowest-friction path for this app and does not require activating Cloud
 // billing on the project.
-const defaultGuidanceModel = `${legacyProviderPrefix}-3.6-flash`;
+const defaultGuidanceModel = `${legacyProviderPrefix}-2.5-flash`;
 const guidanceModel = (process.env.GUIDANCE_MODEL ?? process.env[legacyProviderModelName] ?? defaultGuidanceModel).trim() || defaultGuidanceModel;
 const adminLoginIdentity = (process.env.ADMIN_LOGIN_ID ?? "").trim().toLowerCase();
 const adminLoginCode = (process.env.ADMIN_LOGIN_CODE ?? "").trim();
@@ -65,7 +65,7 @@ const verificationSigningSecret =
   adminLoginCode ||
   (debugPreview ? "aethon-local-verification" : "");
 const guidanceFallbackModels = [
-  `${legacyProviderPrefix}-3.5-flash-lite`
+  `${legacyProviderPrefix}-2.5-flash-lite`
 ];
 const guidanceModelCandidates = [
   guidanceModel,
