@@ -24,7 +24,7 @@ function parseGuidanceProviderOrder(value) {
     .split(",")
     .map((provider) => provider.trim().toLowerCase())
     .filter((provider) => provider === "gemini" || provider === "openai" || provider === "anthropic");
-  return [...new Set(requested.length > 0 ? requested : ["gemini", "openai", "anthropic"])];
+  return [...new Set(requested.length > 0 ? requested : ["openai", "anthropic"])];
 }
 
 function timeoutSignal(ms) {

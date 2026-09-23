@@ -96,14 +96,15 @@ before running `pnpm run run:android`.
   `/api`. Do not enable `remote` until `/api/health` reports healthy providers
   and a real SMS or email verification has been tested. This adapter does not
   bypass Render billing or embed secrets in the app.
-- **Guidance provider chain:** connected guidance is optional and server-only.
-  Set `GUIDANCE_PROVIDER_ORDER` plus one or more of `GEMINI_API_KEY`,
-  `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY` in the hosting environment. The
-  server tries configured providers in order and automatically falls back to
-  the independent local engine when a key, model, quota, or network request
-  fails. Consumer ChatGPT or Claude account logins cannot be embedded as API
-  credentials; use an official provider key if available. Never put these
-  values in `EXPO_PUBLIC_*` variables or send them through the app.
+- **Guidance provider chain:** the preferred connected route is now official
+  OpenAI followed by Anthropic, configured with `GUIDANCE_PROVIDER_ORDER` and
+  one or both of `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in the hosting
+  environment. Gemini remains an opt-in compatibility adapter only when
+  explicitly listed in that order. The server automatically falls back to the
+  independent local engine when a key, model, quota, or network request fails.
+  Consumer ChatGPT Free or Claude Free logins cannot be embedded as API
+  credentials; an official provider key is required. Never put these values in
+  `EXPO_PUBLIC_*` variables or send them through the app.
 - **Release preflight:** `pnpm run release:check` validates version/runtime
   alignment, the configured privacy URL, and the bundled privacy artifacts.
   `pnpm run verification:env-check` must also pass in the production
