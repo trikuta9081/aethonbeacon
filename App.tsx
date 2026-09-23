@@ -249,7 +249,14 @@ const ChatComposer = React.memo(function ChatComposer({
 });
 
 function Text({ style, ...props }: TextProps) {
-  return <RNText {...props} style={[APP_TEXT_WRAP_GUARD, style]} />;
+  return <RNText
+    {...props}
+    style={[
+      APP_TEXT_WRAP_GUARD,
+      { fontFamily: Platform.select({ ios: "Avenir Next", android: "sans-serif", web: "system-ui", default: undefined }) },
+      style
+    ]}
+  />;
 }
 
 const TextWithDefaults = RNText as unknown as { defaultProps?: Record<string, unknown> };
@@ -3059,19 +3066,19 @@ const DARK_COLORS = {
 // text (`textPrimary`/`textOnDark`) so every word is easy to read at a
 // glance, on every tab and section.
 const LIGHT_COLORS = {
-  bgDeep: "#F6F8FA",
-  bgDarker: "#E9EEF3",
+  bgDeep: "#F4F8F8",
+  bgDarker: "#E7F2F1",
   bgDeepest: "#FFFFFF",
-  surfaceAlt: "#F1F5F9",
-  textPrimary: "#0F172A",
-  textOnDark: "#0F172A",
-  textMuted: "rgba(15,23,42,0.72)",
-  textFaint: "#475569",
-  accentCyan: "#066C84",
-  accentTeal: "#0B6F66",
-  accentTealDeep: "#0E6F69",
+  surfaceAlt: "#F8FBFB",
+  textPrimary: "#102A30",
+  textOnDark: "#102A30",
+  textMuted: "rgba(16,42,48,0.72)",
+  textFaint: "#52666B",
+  accentCyan: "#087E8B",
+  accentTeal: "#0F766E",
+  accentTealDeep: "#0B625C",
   accentGold: "#A14A08",
-  success: "#04714F",
+  success: "#087F5B",
   warning: "#A14A08",
   danger: "#DC2626",
 } as const;
@@ -53944,7 +53951,7 @@ const styles = StyleSheet.create({
   // Apple large-title feel: bold (not black) with slightly tight optical
   // tracking, which is what makes SF titles read as premium rather than heavy.
   sectionTitle: {
-    color: "#0D1F22",
+    color: "#123B43",
     fontSize: 22,
     lineHeight: 29,
     fontWeight: "800",
@@ -53954,7 +53961,7 @@ const styles = StyleSheet.create({
   },
 
   sectionTitleSmall: {
-    color: "#0D1F22",
+    color: "#123B43",
     fontSize: 18,
     lineHeight: 24,
     fontWeight: "800",
@@ -55812,13 +55819,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    backgroundColor: "rgba(255,255,255,0.92)",
+    backgroundColor: "rgba(248,251,251,0.97)",
     borderTopWidth: 1,
-    borderTopColor: "rgba(15,61,94,0.08)",
+    borderTopColor: "rgba(15,118,110,0.14)",
     paddingTop: 10,
     paddingBottom: 14,
     paddingHorizontal: 4,
-    shadowColor: "#0F3D5E",
+    shadowColor: "#0B625C",
     shadowOffset: { width: 0, height: -6 },
     shadowOpacity: 0.12,
     shadowRadius: 20,
@@ -55843,13 +55850,13 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent"
   },
   bottomNavPillActive: {
-    backgroundColor: "rgba(196,163,90,0.10)",
-    shadowColor: "#0F3D5E",
+    backgroundColor: "rgba(15,118,110,0.11)",
+    shadowColor: "#0F766E",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.18,
     shadowRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(196,163,90,0.45)"
+    borderColor: "rgba(15,118,110,0.30)"
   },
   bottomNavIcon: {
     fontSize: 24,
@@ -55869,7 +55876,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3
   },
   bottomNavLabelActive: {
-    color: "#8A5A00",
+    color: "#0B625C",
     fontWeight: "900",
     letterSpacing: 0.4
   },
@@ -55919,15 +55926,15 @@ const styles = StyleSheet.create({
     letterSpacing: -0.4,
   },
   heroRouteInput: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FCFEFD",
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
     color: "#0F172A",
     borderWidth: 1,
-    borderColor: "rgba(15,61,94,0.12)",
-    shadowColor: "#0F3D5E",
+    borderColor: "rgba(15,118,110,0.18)",
+    shadowColor: "#0B625C",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -55936,13 +55943,13 @@ const styles = StyleSheet.create({
 
 
   heroRoutePreview: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F7FCFB",
     borderRadius: 14,
     padding: 10,
     gap: 4,
     borderWidth: 1,
-    borderColor: "rgba(15,61,94,0.08)",
-    shadowColor: "#0F3D5E",
+    borderColor: "rgba(15,118,110,0.14)",
+    shadowColor: "#0B625C",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -55951,7 +55958,7 @@ const styles = StyleSheet.create({
   heroRoutePreviewLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#0A6F66",
+    color: "#0B625C",
     letterSpacing: 0.3,
   },
   heroRoutePreviewDetail: {
@@ -55963,19 +55970,19 @@ const styles = StyleSheet.create({
   dynamicHeroCard: {
     borderRadius: 28,
     borderCurve: "continuous",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFFEFB",
     padding: 24,
     marginBottom: 14,
     overflow: "hidden",
     // Deep layered shadow + a crisper gold frame so the hero reads as a
     // premium, lit card rather than a flat pale panel.
-    shadowColor: "#0F3D5E",
+    shadowColor: "#0B625C",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.08,
     shadowRadius: 24,
     elevation: 8,
     borderWidth: 1,
-    borderColor: "rgba(15,61,94,0.08)",
+    borderColor: "rgba(15,118,110,0.16)",
   },
   dynamicHeroTopStrip: {
     flexDirection: "row",
@@ -55984,7 +55991,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(15,61,94,0.08)",
+    borderBottomColor: "rgba(15,118,110,0.12)",
   },
   dynamicHeroDate: {
     fontSize: 12,
@@ -56015,19 +56022,19 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   dynamicHeroCTA: {
-    backgroundColor: "#0D2334",
+    backgroundColor: "#0B625C",
     borderRadius: 16,
     borderCurve: "continuous",
     paddingVertical: 16,
     alignItems: "center",
     marginTop: 4,
-    shadowColor: "#0D2334",
+    shadowColor: "#0B625C",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.24,
     shadowRadius: 12,
     elevation: 5,
     borderWidth: 1,
-    borderColor: "rgba(196,163,90,0.38)",
+    borderColor: "rgba(246,212,107,0.72)",
   },
   dynamicHeroCTALabel: {
     color: "#FFFFFF",
@@ -56041,7 +56048,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 3,
-    backgroundColor: "#C4A35A",
+    backgroundColor: "#F0A202",
     opacity: 0.55,
     borderBottomLeftRadius: 22,
     borderBottomRightRadius: 22,
@@ -56095,9 +56102,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     gap: 14,
     borderWidth: 1,
-    borderColor: "rgba(15,61,94,0.08)",
+    borderColor: "rgba(15,118,110,0.14)",
     backgroundColor: "#FFFFFF",
-    shadowColor: "#0F3D5E",
+    shadowColor: "#0B625C",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 20,
