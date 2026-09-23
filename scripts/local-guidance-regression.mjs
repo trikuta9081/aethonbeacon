@@ -10,6 +10,7 @@ const server = spawn(process.execPath, ["scripts/verification-server.mjs"], {
     GEMINI_API_KEY: "",
     OPENAI_API_KEY: "",
     ANTHROPIC_API_KEY: "",
+    GUIDANCE_MAX_REQUESTS_PER_WINDOW: "100",
     VERIFICATION_CORS_ORIGIN: "*"
   },
   stdio: ["ignore", "pipe", "pipe"]
@@ -37,6 +38,8 @@ const scenarios = [
   ["career", "I do not know what career step to take", "guide", ["question", "Path"]],
   ["relationship", "My partner ignores my boundary and I feel afraid", "guide", ["boundary", "Help"]],
   ["grief", "I feel lonely after a loss", "general", ["connection", "Path"]],
+  ["housing", "My landlord raised rent unlawfully and the water is cut", "redress", ["address", "Help"]],
+  ["recovery", "I am worried about alcohol withdrawal and relapse", "professional", ["professional", "Path"]],
   ["anger", "I am angry and might react badly", "guide", ["step", "Path"]],
   ["general", "I do not know how to start solving this issue", "general", ["fact", "Path"]],
   ["mixed", "My workplace problem is also affecting my health", "professional", ["payslips", "HR"]]
@@ -75,6 +78,24 @@ try {
       if (!body.toLowerCase().includes(term.toLowerCase())) {
         throw new Error(`${name}: missing actionable term ${term}; response was ${body.replace(/\n/g, " | ")}`);
       }
+    }
+  }
+  const endpointScenarios = [
+    ["brief", "/guidance/brief", { name: "Test", issueLabel: "stress", hour: 9 }, "stress"],
+    ["birth chart", "/guidance/birth-chart", { dob: "1977-08-10", birthTime: "10:45", birthPlace: "Jammu", moonRashiName: "Mithuna", nakshatraName: "Mrigashira" }, "Moon chart"],
+    ["journal", "/guidance/journal", { note: "I feel anxious and exhausted", score: 50 }, "anxiety"],
+    ["insights", "/guidance/insights", { weekAvg: 50, monthAvg: 65, streakDays: 2, topTone: "anxious" }, "50.0/100"]
+  ];
+  for (const [name, path, body, expected] of endpointScenarios) {
+    const response = await fetch(`http://127.0.0.1:${port}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const payload = await response.json();
+    const text = String(payload.text ?? "");
+    if (!response.ok || payload.source !== "fallback" || text.length < 40 || !text.toLowerCase().includes(expected.toLowerCase())) {
+      throw new Error(`${name}: expected an actionable local response; response was ${text.replace(/\n/g, " | ")}`);
     }
   }
   console.log(`Local guidance regression passed: ${scenarios.length}/${scenarios.length} offline scenarios.`);

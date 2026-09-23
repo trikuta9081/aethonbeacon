@@ -643,11 +643,43 @@ function getLocalGuidanceProfile(route, text) {
       tab: "Help"
     };
   }
-  if (/(cyber|upi|otp|online fraud|morphed|stalk|blackmail|hack)/.test(normalized)) {
+  const cyberIssue = /(cyber|upi|otp|online fraud|morphed|stalk|blackmail|hack|phishing|account takeover)/.test(normalized);
+  if (cyberIssue) {
+    const financialCyber = /(upi|otp|payment|bank|fraud|scam|money|transaction)/.test(normalized);
     return {
-      meaning: "This looks like a cyber or digital-fraud issue where speed and preserved evidence matter.",
-      step: "Do not delete chats or payment records; call 1930 for financial fraud and open Help for the cybercrime.gov.in route.",
-      escalate: "Escalate to the police or cybercrime portal if the loss, threat, impersonation, or harassment continues.",
+      meaning: financialCyber
+        ? "This looks like a cyber-financial incident where speed, account containment, and preserved evidence matter."
+        : "This looks like online harassment, impersonation, or account abuse where preserved evidence and a formal report matter.",
+      step: financialCyber
+        ? "Contact your bank immediately, call 1930, preserve transaction records and chats, and open Help for the cybercrime.gov.in route."
+        : "Do not negotiate with or delete messages from the person; save screenshots, profile links, dates, and witnesses, then open Help for cybercrime.gov.in.",
+      escalate: financialCyber
+        ? "Escalate to the bank, police, or cybercrime portal if the loss, account access, or response delay continues."
+        : "Escalate to police or the cybercrime portal if threats, impersonation, blackmail, stalking, or image misuse continues.",
+      tab: "Help"
+    };
+  }
+  if (/(\bpolice\b|\bfir\b|theft|stolen|criminal|assault complaint)/.test(normalized)) {
+    return {
+      meaning: "This is a police-facing complaint where a clear incident record and the correct station or online route matter.",
+      step: "Write the facts in date-and-time order, preserve the original evidence, note the place and witnesses, and open Help to prepare the complaint or FIR request.",
+      escalate: "Escalate to the station senior officer or the online police route if the complaint is not acknowledged, the incident is urgent, or safety is at risk.",
+      tab: "Help"
+    };
+  }
+  if (/(refund|defective|consumer|seller|delivery|product|service provider)/.test(normalized)) {
+    return {
+      meaning: "This is a consumer or service dispute where the purchase record, promised remedy, and written complaint trail are central.",
+      step: "Keep the invoice, order or contract, payment proof, photos, and prior messages together; state the exact refund or repair you want and open Help.",
+      escalate: "Escalate to the provider's grievance officer or consumer route if the written complaint is ignored, refused, or closed without a reason.",
+      tab: "Help"
+    };
+  }
+  if (/(rent|landlord|tenant|eviction|housing|property|neighbour|neighborhood|water supply|electricity|municipal|civic)/.test(normalized)) {
+    return {
+      meaning: "This is a housing, property, or civic-service issue where the location, written request, and responsible office determine the route.",
+      step: "Record the address or service reference, dates, photos, notices, payments, and the remedy you want; send one dated written request and open Help for the local office route.",
+      escalate: "Escalate to the senior municipal, utility, housing, or legal-aid route if there is retaliation, an unsafe condition, an unlawful notice, or no written response.",
       tab: "Help"
     };
   }
@@ -680,6 +712,14 @@ function getLocalGuidanceProfile(route, text) {
       meaning: "This may need verified professional support rather than self-guidance alone.",
       step: "Note the main symptom, duration, severity, medicines, and effect on daily function, then use Path to prepare for a qualified professional.",
       escalate: "Seek urgent medical help for severe or sudden symptoms, loss of safety, breathing trouble, or self-harm thoughts.",
+      tab: "Path"
+    };
+  }
+  if (/(addiction|withdrawal|substance|alcohol|drug|overdose|relapse|gambling)/.test(normalized)) {
+    return {
+      meaning: "This is a recovery or dependence concern where safety, medical support, and a trusted person matter more than willpower alone.",
+      step: "Do not stop a dependence-forming substance abruptly if withdrawal could be dangerous; contact a qualified professional or local support service and open Path to prepare what to say.",
+      escalate: "Seek emergency help immediately for overdose, confusion, seizures, severe withdrawal, or danger to yourself or someone else.",
       tab: "Path"
     };
   }
@@ -910,11 +950,13 @@ function buildBriefFallback(body) {
   const hour = typeof body?.hour === "number" ? body.hour : new Date().getHours();
   const lastScore = typeof body?.lastScore === "number" ? body.lastScore : null;
   const streakDays = typeof body?.streakDays === "number" ? body.streakDays : 0;
+  const issueLabel = typeof body?.issueLabel === "string" ? body.issueLabel.trim() : "";
+  const focusHint = issueLabel.length > 0 ? ` on ${issueLabel.toLowerCase()}` : "";
   if (lastScore !== null && lastScore <= 3) return "You've been running low — that's worth paying attention to. A few minutes of calm or a quick check-in can reset the baseline today.";
   if (streakDays >= 7) return `${streakDays} days in a row — that consistency is doing real work. Use it to push one step further on your focus today.`;
-  if (hour < 10) return "Starting the day with a quick check-in gives the app the signal it needs to route you well. Takes 30 seconds.";
+  if (hour < 10) return `Start${focusHint} with one honest check-in so the app can route you well. It takes 30 seconds.`;
   if (hour >= 18) return "End-of-day check-ins capture the full picture of how you moved through stress today. Worth two minutes before you switch off.";
-  return "Your wellness picture builds from each honest check-in. Log one line now and let the app find your best next step.";
+  return `Your wellness picture builds from each honest check-in${focusHint}. Log one line now and let the app find your best next step.`;
 }
 
 async function generateGuidanceBrief(body) {
@@ -1020,9 +1062,19 @@ function buildJournalPrompt(body) {
 
 function buildJournalFallback(body) {
   const score = typeof body?.score === "number" ? body.score : null;
+  const note = typeof body?.note === "string" ? body.note.toLowerCase() : "";
+  const emotion = /(angry|anger|rage|furious|irritat)/.test(note)
+    ? "anger"
+    : /(anxious|anxiety|panic|worried|worry|afraid)/.test(note)
+      ? "anxiety"
+      : /(sad|grief|grieving|lonely|alone|loss|miss them)/.test(note)
+        ? "sadness or loss"
+        : /(exhaust|burnout|tired|drained|overwhelmed)/.test(note)
+          ? "exhaustion"
+          : "a feeling that needs room";
   if (score !== null && score <= 30) return "This sounds like a heavy moment — and that's real. Give yourself permission to step back for 5 minutes before deciding anything. Open the Calm tab for a grounding practice.";
   if (score !== null && score >= 70) return "You're in a clear headspace right now. Use that clarity to act on one thing you've been putting off. Open Path to find the right next step.";
-  return "Writing this out is already the first step. Name the feeling, accept it, then choose one small action. Open Guide for a structured path forward.";
+  return `This entry points to ${emotion}. Name it without judging yourself, then choose one small action that protects your next hour. Open Path for a structured step forward.`;
 }
 
 async function generateGuidanceJournalInsight(body) {
@@ -1067,10 +1119,14 @@ function buildInsightsPrompt(body) {
 
 function buildInsightsFallback(body) {
   const weekAvg = typeof body?.weekAvg === "number" ? body.weekAvg : null;
+  const monthAvg = typeof body?.monthAvg === "number" ? body.monthAvg : null;
   const streakDays = typeof body?.streakDays === "number" ? body.streakDays : 0;
+  const topTone = typeof body?.topTone === "string" ? body.topTone.trim() : "";
   if (weekAvg !== null && weekAvg >= 65) return "Your clarity scores this week are solid — you're managing your emotional baseline well. The consistency of your check-ins is building a real picture over time. Keep the streak alive and push one guide step further this week.";
   if (weekAvg !== null && weekAvg < 40) return "Your scores this week point to a sustained heavy load — that pattern matters. The good news: you're tracking it, which means you're not ignoring it. Focus on reducing one stressor and opening the Calm tab daily this week.";
   if (streakDays >= 7) return `${streakDays} days of consistent check-ins is giving the app real signal to work with. Your emotional patterns are starting to emerge clearly. Use the Patterns tab this week to spot the peak and low days and plan around them.`;
+  if (weekAvg !== null && monthAvg !== null && weekAvg < monthAvg - 10) return `This week's ${weekAvg.toFixed(1)}/100 average is more than 10 points below your monthly ${monthAvg.toFixed(1)}/100 baseline. Treat that change as a signal to reduce one load and use Calm or professional support before it compounds.`;
+  if (topTone.length > 0) return `Your recent check-ins most often carry a ${topTone.toLowerCase()} tone. Use Journal to name what triggers it, then choose one repeatable action in Path instead of trying to solve the whole pattern at once.`;
   return "Your data is starting to build a picture of your emotional rhythms. A few more check-ins will reveal your peak performance windows and low-energy patterns. Focus on consistency over perfection this week.";
 }
 
