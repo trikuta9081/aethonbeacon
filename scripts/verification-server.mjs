@@ -19,6 +19,14 @@ function parseWebhookUrl(value) {
   }
 }
 
+function parseGuidanceProviderOrder(value) {
+  const requested = String(value ?? "")
+    .split(",")
+    .map((provider) => provider.trim().toLowerCase())
+    .filter((provider) => provider === "gemini" || provider === "openai" || provider === "anthropic");
+  return [...new Set(requested.length > 0 ? requested : ["gemini", "openai", "anthropic"])];
+}
+
 function timeoutSignal(ms) {
   return typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function"
     ? AbortSignal.timeout(ms)
@@ -53,6 +61,11 @@ const guidanceApiKey = (process.env.GUIDANCE_SERVICE_KEY ?? process.env[legacyPr
 // billing on the project.
 const defaultGuidanceModel = `${legacyProviderPrefix}-2.5-flash`;
 const guidanceModel = (process.env.GUIDANCE_MODEL ?? process.env[legacyProviderModelName] ?? defaultGuidanceModel).trim() || defaultGuidanceModel;
+const openAiApiKey = (process.env.OPENAI_API_KEY ?? "").trim();
+const openAiModel = (process.env.OPENAI_MODEL ?? "gpt-4.1-mini").trim() || "gpt-4.1-mini";
+const anthropicApiKey = (process.env.ANTHROPIC_API_KEY ?? "").trim();
+const anthropicModel = (process.env.ANTHROPIC_MODEL ?? "claude-3-5-haiku-latest").trim() || "claude-3-5-haiku-latest";
+const guidanceProviderOrder = parseGuidanceProviderOrder(process.env.GUIDANCE_PROVIDER_ORDER);
 const adminLoginIdentity = (process.env.ADMIN_LOGIN_ID ?? "").trim().toLowerCase();
 const adminLoginCode = (process.env.ADMIN_LOGIN_CODE ?? "").trim();
 // Signed verification challenges remove the old single-process dependency:
@@ -90,7 +103,12 @@ const smsDeliveryConfigured =
     (twilioFromNumber.length > 0 || twilioMessagingServiceSid.length > 0));
 const emailDeliveryConfigured =
   emailWebhookUrl.length > 0 || (sendgridApiKey.length > 0 && sendgridFromEmail.length > 0);
-const guidanceConfigured = guidanceApiKey.length > 0;
+const guidanceProviderConfigs = {
+  gemini: { apiKey: guidanceApiKey, models: guidanceModelCandidates },
+  openai: { apiKey: openAiApiKey, models: [openAiModel] },
+  anthropic: { apiKey: anthropicApiKey, models: [anthropicModel] }
+};
+const guidanceConfigured = guidanceProviderOrder.some((provider) => guidanceProviderConfigs[provider]?.apiKey.length > 0);
 // Provider configuration is not proof that the provider will generate. Keep
 // this state separate so the app can honestly expose its local engine as the
 // guaranteed path when Google denies a project, model, or credential.
@@ -770,55 +788,80 @@ function normalizeGuidanceHelpReply(text, body) {
   ].join("\n");
 }
 
-async function callGuidanceModel(model, body) {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": guidanceApiKey
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: buildGuidancePrompt(body)
-              }
-            ]
-          }
-        ],
-        generationConfig: {
-          maxOutputTokens: 700,
-          temperature: 0.3
-        }
-      }),
-      signal: timeoutSignal(guidanceTimeoutMs)
-    }
-  );
+function extractGuidanceText(provider, data) {
+  if (provider === "gemini") {
+    return Array.isArray(data?.candidates)
+      ? data.candidates.flatMap((candidate) => candidate?.content?.parts ?? [])
+          .map((part) => (typeof part?.text === "string" ? part.text : ""))
+          .join("\n").trim()
+      : "";
+  }
+  if (provider === "openai") {
+    if (typeof data?.output_text === "string") return data.output_text.trim();
+    return Array.isArray(data?.output)
+      ? data.output.flatMap((item) => item?.content ?? [])
+          .map((part) => (typeof part?.text === "string" ? part.text : ""))
+          .join("\n").trim()
+      : "";
+  }
+  return Array.isArray(data?.content)
+    ? data.content.map((part) => (typeof part?.text === "string" ? part.text : ""))
+        .join("\n").trim()
+    : "";
+}
 
+async function callConfiguredGuidance(provider, model, prompt, maxTokens, minChars = 1) {
+  const config = guidanceProviderConfigs[provider];
+  if (!config?.apiKey) throw new Error(`Guidance provider ${provider} is not configured`);
+
+  let url;
+  let headers = { "Content-Type": "application/json" };
+  let payload;
+  if (provider === "gemini") {
+    url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+    headers["x-goog-api-key"] = config.apiKey;
+    payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: maxTokens, temperature: 0.4 } };
+  } else if (provider === "openai") {
+    url = "https://api.openai.com/v1/responses";
+    headers.Authorization = `Bearer ${config.apiKey}`;
+    payload = { model, input: prompt, max_output_tokens: maxTokens, store: false };
+  } else {
+    url = "https://api.anthropic.com/v1/messages";
+    headers["x-api-key"] = config.apiKey;
+    headers["anthropic-version"] = "2023-06-01";
+    payload = { model, max_tokens: maxTokens, temperature: 0.4, messages: [{ role: "user", content: prompt }] };
+  }
+
+  const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(payload), signal: timeoutSignal(guidanceTimeoutMs) });
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "");
-    throw new Error(`Guidance service model ${model} failed with ${response.status}${errorBody ? `: ${errorBody}` : ""}`);
+    throw new Error(`Guidance provider ${provider} model ${model} failed with ${response.status}${errorBody ? `: ${errorBody}` : ""}`);
   }
-
-  const data = await response.json();
-  const text = Array.isArray(data?.candidates)
-    ? data.candidates
-        .flatMap((candidate) => candidate?.content?.parts ?? [])
-        .map((part) => (typeof part?.text === "string" ? part.text : ""))
-        .join("\n")
-        .trim()
-    : "";
-
-  if (text.length === 0) {
-    throw new Error(`Guidance service model ${model} returned an empty response.`);
-  }
-
+  const text = extractGuidanceText(provider, await response.json());
+  if (text.length < minChars) throw new Error(`Guidance provider ${provider} returned a too-short response`);
   guidanceRuntime.live = true;
   guidanceRuntime.lastFailure = "";
-  return { source: "connected", model, text };
+  return { source: "connected", model: "primary", text };
+}
+
+async function runConfiguredGuidance(prompt, maxTokens, minChars = 40) {
+  if (!guidanceConfigured) return null;
+  const errors = [];
+  for (const provider of guidanceProviderOrder) {
+    const config = guidanceProviderConfigs[provider];
+    if (!config?.apiKey) continue;
+    for (const model of config.models) {
+      try {
+        return await callConfiguredGuidance(provider, model, prompt, maxTokens, minChars);
+      } catch (error) {
+        guidanceRuntime.live = false;
+        guidanceRuntime.lastFailure = error instanceof Error ? error.message : "provider request failed";
+        errors.push(error instanceof Error ? error.message : `${provider} request failed`);
+      }
+    }
+  }
+  if (errors.length > 0) console.warn(errors.join(" | "));
+  return null;
 }
 
 async function generateGuidanceHelp(body) {
@@ -828,19 +871,8 @@ async function generateGuidanceHelp(body) {
     return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body) };
   }
 
-  const errors = [];
-  for (const model of guidanceModelCandidates) {
-    try {
-      const result = await callGuidanceModel(model, body);
-      return { ...result, text: normalizeGuidanceHelpReply(result.text, body) };
-    } catch (error) {
-      guidanceRuntime.live = false;
-      guidanceRuntime.lastFailure = error instanceof Error ? error.message : "provider request failed";
-      errors.push(error instanceof Error ? error.message : `Guidance service model ${model} failed.`);
-    }
-  }
-
-  console.warn(errors.join(" | "));
+  const result = await runConfiguredGuidance(buildGuidancePrompt(body), 700, 1);
+  if (result) return { ...result, text: normalizeGuidanceHelpReply(result.text, body) };
   return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body) };
 }
 
@@ -889,17 +921,8 @@ async function generateGuidanceBrief(body) {
   if (!guidanceConfigured) {
     return { source: "fallback", text: buildBriefFallback(body) };
   }
-  const errors = [];
-  for (const model of guidanceModelCandidates) {
-    try {
-      const promptBody = { ...body, _promptOverride: buildBriefPrompt(body) };
-      const result = await callGuidanceModelWithPrompt(model, buildBriefPrompt(body), 60);
-      return { source: "connected", model: result.model, text: result.text };
-    } catch (error) {
-      errors.push(error instanceof Error ? error.message : `model ${model} failed`);
-    }
-  }
-  console.warn("[brief]", errors.join(" | "));
+  const result = await runConfiguredGuidance(buildBriefPrompt(body), 500, 60);
+  if (result) return result;
   return { source: "fallback", text: buildBriefFallback(body) };
 }
 
@@ -965,16 +988,8 @@ async function generateGuidanceBirthChart(body) {
   if (!guidanceConfigured) {
     return { source: "fallback", text: buildBirthChartFallback(body) };
   }
-  const errors = [];
-  for (const model of guidanceModelCandidates) {
-    try {
-      const result = await callGuidanceModelWithPrompt(model, buildBirthChartPrompt(body), 120);
-      return { source: "connected", model: result.model, text: result.text };
-    } catch (error) {
-      errors.push(error instanceof Error ? error.message : `model ${model} failed`);
-    }
-  }
-  console.warn("[birth-chart]", errors.join(" | "));
+  const result = await runConfiguredGuidance(buildBirthChartPrompt(body), 500, 120);
+  if (result) return result;
   return { source: "fallback", text: buildBirthChartFallback(body) };
 }
 
@@ -1014,16 +1029,8 @@ async function generateGuidanceJournalInsight(body) {
   if (!guidanceConfigured) {
     return { source: "fallback", text: buildJournalFallback(body) };
   }
-  const errors = [];
-  for (const model of guidanceModelCandidates) {
-    try {
-      const result = await callGuidanceModelWithPrompt(model, buildJournalPrompt(body), 100);
-      return { source: "connected", model: result.model, text: result.text };
-    } catch (error) {
-      errors.push(error instanceof Error ? error.message : `model ${model} failed`);
-    }
-  }
-  console.warn("[journal]", errors.join(" | "));
+  const result = await runConfiguredGuidance(buildJournalPrompt(body), 500, 100);
+  if (result) return result;
   return { source: "fallback", text: buildJournalFallback(body) };
 }
 
@@ -1071,49 +1078,9 @@ async function generateGuidanceInsights(body) {
   if (!guidanceConfigured) {
     return { source: "fallback", text: buildInsightsFallback(body) };
   }
-  const errors = [];
-  for (const model of guidanceModelCandidates) {
-    try {
-      const result = await callGuidanceModelWithPrompt(model, buildInsightsPrompt(body), 150);
-      return { source: "connected", model: result.model, text: result.text };
-    } catch (error) {
-      errors.push(error instanceof Error ? error.message : `model ${model} failed`);
-    }
-  }
-  console.warn("[insights]", errors.join(" | "));
+  const result = await runConfiguredGuidance(buildInsightsPrompt(body), 500, 150);
+  if (result) return result;
   return { source: "fallback", text: buildInsightsFallback(body) };
-}
-
-// ── Shared low-level guidance caller with explicit prompt ─────────────────
-
-async function callGuidanceModelWithPrompt(model, prompt, minChars = 40) {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": guidanceApiKey
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 500, temperature: 0.4 }
-      }),
-      signal: timeoutSignal(guidanceTimeoutMs)
-    }
-  );
-  if (!response.ok) {
-    const errBody = await response.text().catch(() => "");
-    throw new Error(`Guidance service ${model} returned ${response.status}${errBody ? `: ${errBody}` : ""}`);
-  }
-  const data = await response.json();
-  const text = Array.isArray(data?.candidates)
-    ? data.candidates.flatMap((c) => c?.content?.parts ?? []).map((p) => p?.text ?? "").join("\n").trim()
-    : "";
-  if (text.length < minChars) throw new Error(`Guidance service ${model} returned a too-short response`);
-  guidanceRuntime.live = true;
-  guidanceRuntime.lastFailure = "";
-  return { source: "connected", model, text };
 }
 
 // ── RevenueCat webhook helpers ──────────────────────────────────────────────
@@ -1386,7 +1353,9 @@ async function handleRequest(req, res) {
       adminAuth: getAdminAuthSummary(),
       guidance: {
         defaultModel: guidanceRuntime.live ? "primary" : "independent",
-        modelCandidates: guidanceModelCandidates.map((_, index) => (index === 0 ? "primary" : `fallback-${index}`)),
+        modelCandidates: guidanceProviderOrder
+          .filter((provider) => guidanceProviderConfigs[provider]?.apiKey.length > 0)
+          .map((_, index) => (index === 0 ? "primary" : `fallback-${index}`)),
         runtime: "checked-by-guidance-endpoint-source",
         independentEngine: true,
         providerFailure: guidanceRuntime.lastFailure ? "provider-unavailable" : null

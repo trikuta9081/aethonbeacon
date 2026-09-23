@@ -8,6 +8,8 @@ const server = spawn(process.execPath, ["scripts/verification-server.mjs"], {
     PORT: String(port),
     GUIDANCE_SERVICE_KEY: "",
     GEMINI_API_KEY: "",
+    OPENAI_API_KEY: "",
+    ANTHROPIC_API_KEY: "",
     VERIFICATION_CORS_ORIGIN: "*"
   },
   stdio: ["ignore", "pipe", "pipe"]

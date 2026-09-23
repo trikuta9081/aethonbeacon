@@ -16,5 +16,11 @@ if (vercel.functions?.["api/[...path].mjs"]?.maxDuration !== 30) {
 if (adapter.includes("TWILIO_AUTH_TOKEN") || adapter.includes("SENDGRID_API_KEY")) {
   throw new Error("The serverless adapter must not embed provider secrets.");
 }
+for (const marker of ["api.openai.com/v1/responses", "api.anthropic.com/v1/messages", "x-goog-api-key"]) {
+  if (!server.includes(marker)) throw new Error(`Guidance provider adapter is missing ${marker}.`);
+}
+if (!server.includes("runConfiguredGuidance") || !server.includes("independentEngine: true")) {
+  throw new Error("Guidance must retain a provider chain and an independent local fallback.");
+}
 
 console.log("Verification serverless deployment checks: passed");

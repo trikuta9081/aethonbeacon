@@ -31,7 +31,11 @@ const twilioConfigured =
 const sendgridConfigured = hasValue("SENDGRID_API_KEY") && hasValue("SENDGRID_FROM_EMAIL");
 const legacyProviderPrefix = `${"ge"}mini`;
 const legacyProviderKeyName = `${legacyProviderPrefix.toUpperCase()}_API_KEY`;
-const guidanceConfigured = hasValue("GUIDANCE_SERVICE_KEY") || hasValue(legacyProviderKeyName);
+const guidanceConfigured =
+  hasValue("GUIDANCE_SERVICE_KEY") ||
+  hasValue(legacyProviderKeyName) ||
+  hasValue("OPENAI_API_KEY") ||
+  hasValue("ANTHROPIC_API_KEY");
 const phoneDeliveryConfigured = smsWebhookConfigured || twilioConfigured;
 const emailDeliveryConfigured = emailWebhookConfigured || sendgridConfigured;
 const verificationApiBaseUrl = verificationUnavailable
@@ -131,7 +135,7 @@ if (!verificationUnavailable && !hasValue("EXPO_PUBLIC_VERIFICATION_API_BASE_URL
 }
 
 if (!guidanceReady) {
-  warnings.push("GUIDANCE_SERVICE_KEY is not set, so connected guidance will use the local fallback.");
+  warnings.push("No connected guidance provider key is set, so the independent local guidance engine will be used.");
 }
 
 const result = {
