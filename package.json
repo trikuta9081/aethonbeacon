@@ -30,7 +30,8 @@
     "test:meditation": "node scripts/meditation-dharma-regression.mjs",
     "test:sync": "node --experimental-strip-types scripts/sync-merge-regression.mjs",
     "test:launch-scenarios": "node --experimental-strip-types scripts/public-launch-scenarios.mjs",
-    "test:local-guidance": "node scripts/local-guidance-regression.mjs"
+    "test:local-guidance": "node scripts/local-guidance-regression.mjs",
+    "test:counselling-opening": "node scripts/counselling-opening-regression.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/playfair-display": "^0.4.2",

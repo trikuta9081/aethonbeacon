@@ -5284,6 +5284,29 @@ function buildCounselingAcknowledgment(text: string, issueId: IssueId, route: Gu
   };
 }
 
+function buildCounsellingIssueAnchor(initialIssue: string, languageId: LanguageId): string {
+  const normalizedIssue = initialIssue.trim().replace(/\s+/g, " ");
+  if (!normalizedIssue) {
+    return pickLocalizedText(languageId, {
+      english: "We can start with whatever feels most important right now.",
+      hindi: "हम अभी उस बात से शुरू कर सकते हैं जो आपको सबसे महत्वपूर्ण लग रही है।",
+      telugu: "ఇప్పుడు మీకు అత్యంత ముఖ్యంగా అనిపిస్తున్న విషయంతో ప్రారంభిద్దాం.",
+      tamil: "இப்போது உங்களுக்கு மிகவும் முக்கியமாகத் தோன்றும் விஷயத்திலிருந்து தொடங்கலாம்.",
+      urdu: "ہم ابھی اس بات سے شروع کر سکتے ہیں جو اس وقت آپ کے لیے سب سے اہم ہے۔"
+    });
+  }
+  const excerpt = normalizedIssue.length > 220
+    ? `${normalizedIssue.slice(0, 217).trim()}...`
+    : normalizedIssue;
+  return pickLocalizedText(languageId, {
+    english: `I hear that your immediate concern is: \"${excerpt}\". We will keep this concern at the centre of our conversation.`,
+    hindi: `मैं समझ रहा हूँ कि आपकी तत्काल चिंता है: \"${excerpt}\"। हम इसी चिंता को इस बातचीत के केंद्र में रखेंगे।`,
+    telugu: `మీ తక్షణ ఆందోళన: \"${excerpt}\" అని నేను విన్నాను. ఈ ఆందోళననే మన సంభాషణకు కేంద్రంగా ఉంచుతాము.`,
+    tamil: `உங்கள் உடனடி கவலை: \"${excerpt}\" என்பதை நான் கேட்கிறேன். இந்தக் கவலையையே நமது உரையாடலின் மையமாக வைத்துக்கொள்வோம்.`,
+    urdu: `میں سن رہا ہوں کہ آپ کی فوری تشویش یہ ہے: \"${excerpt}\"۔ ہم اسی تشویش کو اپنی گفتگو کے مرکز میں رکھیں گے۔`
+  });
+}
+
 function findGuidedSupportRedressRouteFromText(text: string): RedressRouteId {
   const normalized = text.toLowerCase();
   if (/(ragging|hostel|senior|junior|batch|fresher)/.test(normalized)) return "ragging";
@@ -26351,6 +26374,12 @@ function isTrustedExternalUrl(url: string) {
         onExit={() => {
           setShowExitReviewPrompt(false);
           setHasSeenExitReviewPrompt(true);
+          // Profile details are optional. Closing this sheet must be a real
+          // skip action, not a transient hide that the first-launch effect
+          // immediately reverses while the optional profile is incomplete.
+          setOnboardingCompleted(true);
+          setOnboardingCompletedAt(new Date().toISOString());
+          setHasSeenWelcomeCard(true);
           setShowOnboardingPanel(false);
         }}
         showExitReviewPrompt={showExitReviewPrompt}
@@ -46229,13 +46258,14 @@ function CounselingChatModal({
           tamil: "நீங்கள் பகிர்ந்ததை நான் கேட்டுள்ளேன். அது உண்மையானது, முக்கியமானது; இங்கு அதைச் சரியான வார்த்தைகளில் சொல்ல வேண்டிய அவசியமில்லை.",
           urdu: "آپ نے جو بتایا ہے، میں نے اسے سنا ہے۔ وہ حقیقی اور اہم ہے، اور یہاں آپ کو اسے بالکل درست الفاظ میں بیان کرنے کی ضرورت نہیں۔"
         });
+    const issueAnchor = buildCounsellingIssueAnchor(initialIssue, languageId);
     const openingBridge = l("I would like to understand a little more before we choose the best path for you.", {
       hindi: "आपके लिए सही रास्ता चुनने से पहले मैं थोड़ा और समझना चाहता हूँ।",
       telugu: "మీకు సరైన మార్గాన్ని ఎంచుకునే ముందు నేను కొంచెం మరింత అర్థం చేసుకోవాలనుకుంటున్నాను.",
       tamil: "உங்களுக்கு பொருத்தமான பாதையைத் தேர்வதற்கு முன் இன்னும் கொஞ்சம் புரிந்துகொள்ள விரும்புகிறேன்.",
       urdu: "آپ کے لیے مناسب راستہ چننے سے پہلے میں کچھ اور سمجھنا چاہتا ہوں۔"
     });
-    const openingMsg = `${welcome}\n\n${openingHeard}\n\n${openingBridge} ${firstQuestion}`;
+    const openingMsg = `${welcome}\n\n${issueAnchor}\n\n${openingHeard}\n\n${openingBridge} ${firstQuestion}`;
 
     setSession({
       stage: "questioning",
