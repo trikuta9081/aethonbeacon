@@ -46237,7 +46237,8 @@ function CounselingChatModal({
     // into the clinical acknowledgment with no greeting, which read as cold
     // and abrupt. Address the person by name when we have one.
     const greetName = (identityLabel ?? "").trim();
-    const welcome = greetName.length > 0
+    const hasUsableGreetName = greetName.length > 0 && !/^(your profile|आपकी प्रोफ़ाइल)$/i.test(greetName);
+    const welcome = hasUsableGreetName
       ? l(`Hi ${greetName} — I'm really glad you reached out. We will take this one step at a time.`, {
           hindi: `नमस्ते ${greetName} — मुझे खुशी है कि आपने बात की। हम इसे एक-एक कदम करके समझेंगे।`,
           telugu: `నమస్తే ${greetName} — మీరు మాట్లాడటానికి ముందుకు రావడం సంతోషంగా ఉంది. మనం దీన్ని ఒక్కో అడుగుగా అర్థం చేసుకుందాం.`,

@@ -19,8 +19,12 @@ assert(
   "Submitted issue must appear before generic or persisted profile context"
 );
 assert(
+  source.includes("!/^(your profile|आपकी प्रोफ़ाइल)$/i.test(greetName)"),
+  "Placeholder profile labels must not be used as a personal greeting"
+);
+assert(
   source.includes("setOnboardingCompleted(true);\n          setOnboardingCompletedAt(new Date().toISOString());\n          setHasSeenWelcomeCard(true);"),
   "Closing the optional profile prompt must persist a skip state"
 );
 
-console.log("Counselling opening regression checks passed (4/4)");
+console.log("Counselling opening regression checks passed (5/5)");
