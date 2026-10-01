@@ -686,11 +686,27 @@ function getLocalGuidanceProfile(route, text) {
       tab: "Help"
     };
   }
-  if (/(rent|landlord|tenant|eviction|housing|property|neighbour|neighborhood|water supply|electricity|municipal|civic)/.test(normalized)) {
+  if (/(\brent\b|\blandlord\b|\btenant\b|eviction|housing|property|neighbour|neighborhood|water supply|electricity|municipal|civic)/.test(normalized)) {
     return {
       meaning: "This is a housing, property, or civic-service issue where the location, written request, and responsible office determine the route.",
       step: "Record the address or service reference, dates, photos, notices, payments, and the remedy you want; send one dated written request and open Help for the local office route.",
       escalate: "Escalate to the senior municipal, utility, housing, or legal-aid route if there is retaliation, an unsafe condition, an unlawful notice, or no written response.",
+      tab: "Help"
+    };
+  }
+  if (route === "guide" && /(budget|planning|money stress|financial planning)/.test(normalized)) {
+    return {
+      meaning: "This is a planning concern that becomes clearer when separated from the financial facts and turned into one manageable next step.",
+      step: "List the essential amount, the next due date, and one choice you control; take one 25-minute planning step and open Path.",
+      escalate: "Use Help for fraud, coercion, a formal dispute, or an unresolved institutional or provider complaint.",
+      tab: "Path"
+    };
+  }
+  if (/(workplace|employer|hr|job|salary|wage|labor|factory)/.test(normalized)) {
+    return {
+      meaning: "This is a workplace concern where a calm written record and the internal grievance path should come first when safe.",
+      step: "Keep the timeline, contract or payslips, messages, witnesses, and requested remedy together before contacting HR or the designated officer.",
+      escalate: "Escalate to the labour or statutory authority if the employer retaliates, ignores the complaint, or there is immediate danger.",
       tab: "Help"
     };
   }
@@ -710,7 +726,7 @@ function getLocalGuidanceProfile(route, text) {
       tab: "Help"
     };
   }
-  if (/(workplace|employer|hr|office|job|work|salary|labor|factory)/.test(normalized)) {
+  if (/(workplace|employer|hr|office|job|salary|labor|factory)/.test(normalized)) {
     return {
       meaning: "This is a workplace concern where a calm written record and the internal grievance path should come first when safe.",
       step: "Keep the timeline, contract or payslips, messages, witnesses, and requested remedy together before contacting HR or the designated officer.",
@@ -783,14 +799,15 @@ function normalizeGuidanceSignals(text) {
     [/डॉक्टर|अस्पताल|दवा|लक्षण|घबराहट|नशा|డాక్టర్|ఆసుపత్రి|మందు|లక్షణాలు|భయాందోళన|వ్యసనం|மருத்துவர்|மருத்துவமனை|மருந்து|அறிகுறி|பதட்டம்|போதை|ڈاکٹر|ہسپتال|دوا|علامات|گھبراہٹ|نشہ/, "doctor hospital medicine symptom panic addiction professional"],
     [/उदास|चिंता|तनाव|अकेला|शोक|रिश्ता|ఆందోళన|ఒత్తిడి|ఒంటరి|దుఃఖం|సంబంధం|கவலை|மன அழுத்தம்|தனிமை|துக்கம்|உறவு|اداس|پریشانی|تناؤ|اکیلا|سوگ|رشتہ/, "sad anxiety stress lonely grief relationship"],
     [/पैसा|డబ్బు|பணம்|پیسہ/, "money financial"],
-    [/पढ़ाई|चिंता|तणाव|तक्रार|रुग्णालय|पैसे|చదువు|ఆందోళన|ఒత్తిడి|ఫిర్యాదు|ఆసుపత్రి|డబ్బు|படிப்பு|கவலை|மன அழுத்தம்|புகார்|மருத்துவமனை|பணம்|پڑھائی|پریشانی|تناؤ|شکایت|ہسپتال|پیسہ/, "study academic anxiety stress complaint hospital money"],
-    [/আমি|ভয়|আতঙ্ক|অভিযোগ|পুলিশ|হাসপাতাল|টাকা|পড়াশোনা/, "fear anxiety complaint police hospital money study"],
+    [/पढ़ाई|चिंता|तणाव|तक्रार|रुग्णालय|पैसे|చదువు|ఆందోళన|ఒత్తిడి|ఫిర్యాదు|ఆసుపత్రి|డబ్బు|படிப்பு|கவலை|மன அழுத்தம்|புகார்|மருத்துவமனை|பணம்|پڑھائی|پریشانی|تناؤ|شکایت|ہسپتال|پیسہ/, "study academic anxiety stress complaint hospital"],
+    [/ভয়|আতঙ্ক|অভিযোগ|পুলিশ|হাসপাতাল|টাকা|পড়াশোনা/, "fear anxiety complaint police hospital money study"],
     [/ભય|ચિંતા|ફરિયાદ|પોલીસ|હોસ્પિટલ|પૈસા|અભ્યાસ/, "fear anxiety complaint police hospital money study"],
     [/ಭಯ|ಚಿಂತೆ|ದೂರು|ಪೊಲೀಸ್|ಆಸ್ಪತ್ರೆ|ಹಣ|ಓದು/, "fear anxiety complaint police hospital money study"],
     [/ഭയം|ഉത്കണ്ഠ|പരാതി|പോലീസ്|ആശുപത്രി|പണം|പഠനം/, "fear anxiety complaint police hospital money study"],
     [/ਮਨ|ਡਰ|ਚਿੰਤਾ|ਸ਼ਿਕਾਇਤ|ਪੁਲਿਸ|ਹਸਪਤਾਲ|ਪੈਸਾ|ਪੜ੍ਹਾਈ/, "fear anxiety complaint police hospital money study"]
   ];
   const semanticAliases = [
+    [/শোক|একা|একাকী|সম্পর্ক/, "grief lonely relationship"],
     [/ভয়|ভয়|আতঙ্ক|হুমকি|নিরাপদ নই/, "fear anxiety threat unsafe"],
     [/ડર|ભય|ધમકી|અસુરક્ષિત/, "fear threat unsafe"],
     [/ಭಯ|ಬೆದರಿಕೆ|ಅಸುರಕ್ಷಿತ/, "fear threat unsafe"],
