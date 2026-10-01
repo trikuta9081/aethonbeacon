@@ -441,6 +441,7 @@ type PersistedAppState = {
   playClaimed: Partial<Record<PlayChallengeId, boolean>>;
   communityMessages: CommunityMessage[];
   communityChatMessages: CommunityChatMessage[];
+  communityChatOutbox: CommunityChatMessage[];
   communityChatPersona: CommunityChatPersonaId;
   privateSpaceThreads: PrivateSpaceThread[];
   privateSpaceSelectedThreadId: string | null;
@@ -16224,6 +16225,7 @@ export default function App() {
   const [communityMessages, setCommunityMessages] = useState<CommunityMessage[]>(communityMessagesSeed);
   const [communityFilter, setCommunityFilter] = useState<CommunityFilterId>("all");
   const [communityChatMessages, setCommunityChatMessages] = useState<CommunityChatMessage[]>(communityChatSeed);
+  const [communityChatOutbox, setCommunityChatOutbox] = useState<CommunityChatMessage[]>([]);
   const [communityChatPersona, setCommunityChatPersona] = useState<CommunityChatPersonaId>("mentor");
   const [communityRealtimeStatus, setCommunityRealtimeStatus] = useState(
     communityRealtimeConfigured ? "Connecting…" : "Offline mode — posts stay on this device"
@@ -19216,6 +19218,9 @@ export default function App() {
       if (Array.isArray(parsed.communityChatMessages)) {
         setCommunityChatMessages(normalizeCommunityChatMessages(parsed.communityChatMessages).slice(0, 50));
       }
+      if (Array.isArray(parsed.communityChatOutbox)) {
+        setCommunityChatOutbox(normalizeCommunityChatMessages(parsed.communityChatOutbox).slice(0, 20));
+      }
       if (Array.isArray(parsed.privateSpaceThreads)) {
         const nextThreads = normalizePrivateSpaceThreads(parsed.privateSpaceThreads).slice(0, 8);
         setPrivateSpaceThreads(nextThreads);
@@ -19726,6 +19731,7 @@ export default function App() {
       playClaimed,
       communityMessages: communityMessages.slice(0, 50),
       communityChatMessages: communityChatMessages.slice(0, 50),
+      communityChatOutbox: communityChatOutbox.slice(0, 20),
       communityChatPersona,
       privateSpaceThreads: privateSpaceThreads.slice(0, 8),
       privateSpaceSelectedThreadId,
@@ -19818,6 +19824,7 @@ export default function App() {
     playClaimed,
     communityMessages,
     communityChatMessages,
+    communityChatOutbox,
     communityChatPersona,
     privateSpaceThreads,
     privateSpaceSelectedThreadId,
@@ -22379,6 +22386,9 @@ async function fetchGuidanceHelp(
       const result = await sendRealtimeCommunityChatMessage(userMessage);
       if (!result.ok) {
         communityLocallySentMessageIdsRef.current.delete(userMessage.id);
+        setCommunityChatOutbox((current) =>
+          current.some((message) => message.id === userMessage.id) ? current : [userMessage, ...current].slice(0, 20)
+        );
         if (__DEV__) console.warn(`[community realtime] send failed: ${result.error ?? "unknown error"}`);
         setCommunityRealtimeStatus("Couldn't send to the live feed — saved on this device; retry when connected.");
         // A failed send was silent apart from a status line the user may never
@@ -22403,6 +22413,34 @@ async function fetchGuidanceHelp(
     }, 260);
     return true;
   }
+
+  // A failed realtime send is durable rather than terminal. The local reply
+  // remains immediately useful, while this queue retries when the app returns
+  // to the foreground and keeps cross-device delivery from depending on one
+  // transient network request.
+  useEffect(() => {
+    if (!communityRealtimeConfigured || communityChatOutbox.length === 0) return;
+    let cancelled = false;
+    const retry = async () => {
+      const pending = communityChatOutbox[communityChatOutbox.length - 1];
+      if (!pending) return;
+      const result = await sendRealtimeCommunityChatMessage(pending);
+      if (cancelled) return;
+      if (result.ok) {
+        setCommunityChatOutbox((current) => current.filter((message) => message.id !== pending.id));
+        setCommunityChatMessages((current) => current.map((message) => message.id === pending.id ? { ...message, deliveryStatus: "delivered" } : message));
+        setCommunityRealtimeStatus("Live — queued message delivered");
+      }
+    };
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") void retry();
+    });
+    if (AppState.currentState === "active") void retry();
+    return () => {
+      cancelled = true;
+      subscription.remove();
+    };
+  }, [communityChatOutbox]);
 
   // Takes the composed room rather than reading four pieces of App() state.
   // Returns true only when the room was actually created, so the form keeps

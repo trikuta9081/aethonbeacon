@@ -11,10 +11,13 @@ const {
 
 const serverSource = fs.readFileSync(new URL("./verification-server.mjs", import.meta.url), "utf8");
 const appSource = fs.readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
-assert.match(serverSource, /requested\.length > 0 \? requested : \["gemini", "openai", "anthropic"\]/, "Gemini must be the default connected-provider path");
+assert.match(serverSource, /return \["gemini", \.\.\.new Set\(/, "Gemini must remain first in the connected-provider path");
+assert.match(serverSource, /preferredGuidanceProvider: "gemini"/, "Health must expose Gemini as the preferred provider");
 assert.match(serverSource, /contentVerified = response\.ok && source\.contentMarkers\.some/, "Freshness checks must validate source content markers");
 assert.match(appSource, /journal text remains on this device and is not shared/, "Guidance history must not send raw journal text");
 assert.match(appSource, /local persona reply keeps Community useful/, "Community chat must retain an independent local reply path");
+assert.match(appSource, /communityChatOutbox/, "Community chat must retain failed realtime sends for retry");
+assert.match(appSource, /queued message delivered/, "Community chat must report queued delivery recovery");
 
 const cases = [
   {

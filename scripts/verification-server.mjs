@@ -24,7 +24,10 @@ function parseGuidanceProviderOrder(value) {
     .split(",")
     .map((provider) => provider.trim().toLowerCase())
     .filter((provider) => provider === "gemini" || provider === "openai" || provider === "anthropic");
-  return [...new Set(requested.length > 0 ? requested : ["gemini", "openai", "anthropic"])];
+  // Gemini remains the preferred no-billing route even when an old deployment
+  // still carries a provider-order environment variable. Other providers stay
+  // available as fallbacks instead of silently replacing the preferred route.
+  return ["gemini", ...new Set(requested.length > 0 ? requested : ["openai", "anthropic"] )];
 }
 
 function timeoutSignal(ms) {
@@ -124,7 +127,9 @@ const guidanceConfigured = guidanceProviderOrder.some((provider) => guidanceProv
 const guidanceRuntime = {
   live: false,
   lastFailure: "",
-  provider: ""
+  provider: "",
+  model: "",
+  lastAttemptedProvider: ""
 };
 const adminAuthConfigured = adminLoginIdentity.length > 0 && adminLoginCode.length > 0;
 const adminSessionTtlMs = parsePositiveInt(process.env.ADMIN_SESSION_TTL_MS, 8 * 60 * 60 * 1000);
@@ -1152,6 +1157,7 @@ function extractGuidanceText(provider, data) {
 async function callConfiguredGuidance(provider, model, prompt, maxTokens, minChars = 1) {
   const config = guidanceProviderConfigs[provider];
   if (!config?.apiKey) throw new Error(`Guidance provider ${provider} is not configured`);
+  guidanceRuntime.lastAttemptedProvider = provider;
 
   let url;
   let headers = { "Content-Type": "application/json" };
@@ -1180,6 +1186,7 @@ async function callConfiguredGuidance(provider, model, prompt, maxTokens, minCha
   if (text.length < minChars) throw new Error(`Guidance provider ${provider} returned a too-short response`);
   guidanceRuntime.live = true;
   guidanceRuntime.provider = provider;
+  guidanceRuntime.model = model;
   guidanceRuntime.lastFailure = "";
   return { source: "connected", provider, model, text };
 }
@@ -1196,6 +1203,7 @@ async function runConfiguredGuidance(prompt, maxTokens, minChars = 40) {
       } catch (error) {
         guidanceRuntime.live = false;
         guidanceRuntime.provider = "";
+        guidanceRuntime.model = "";
         guidanceRuntime.lastFailure = error instanceof Error ? error.message : "provider request failed";
         errors.push(error instanceof Error ? error.message : `${provider} request failed`);
       }
@@ -1210,6 +1218,7 @@ async function generateGuidanceHelp(body) {
   if (!guidanceConfigured) {
     guidanceRuntime.live = false;
     guidanceRuntime.provider = "";
+    guidanceRuntime.model = "";
     guidanceRuntime.lastFailure = "not configured";
     return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body), decisionMeta };
   }
@@ -1708,6 +1717,9 @@ async function handleRequest(req, res) {
         guidanceServiceLive: guidanceConfigured && guidanceRuntime.live,
         guidanceServiceMode: guidanceConfigured && guidanceRuntime.live ? "connected" : "local-independent",
         activeGuidanceProvider: guidanceRuntime.live ? guidanceRuntime.provider : null,
+        activeGuidanceModel: guidanceRuntime.live ? guidanceRuntime.model : null,
+        preferredGuidanceProvider: "gemini",
+        configuredGuidanceProviders: guidanceProviderOrder.filter((provider) => guidanceProviderConfigs[provider]?.apiKey.length > 0),
         revenueCatWebhook: revenueCatWebhookConfigured
       },
       adminAuth: getAdminAuthSummary(),
@@ -1718,6 +1730,9 @@ async function handleRequest(req, res) {
           .map((_, index) => (index === 0 ? "primary" : `fallback-${index}`)),
         runtime: "checked-by-guidance-endpoint-source",
         independentEngine: true,
+        independentEngineGuaranteed: true,
+        preferredProvider: "gemini",
+        lastAttemptedProvider: guidanceRuntime.lastAttemptedProvider || null,
         providerFailure: guidanceRuntime.lastFailure ? "provider-unavailable" : null
       },
       limits: {
