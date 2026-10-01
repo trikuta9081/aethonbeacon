@@ -947,6 +947,57 @@ type GuidanceDecisionMeta = {
   historyMemory?: { consulted: boolean; recurring: boolean; overlap: string[]; note: string };
   reviewActions?: string[];
 };
+
+function GuidanceStandardsNotice({
+  languageId,
+  surface,
+  recurrenceCount = 0,
+  officialRoutes = false
+}: {
+  languageId: LanguageId;
+  surface: "journal" | "path" | "help";
+  recurrenceCount?: number;
+  officialRoutes?: boolean;
+}) {
+  const copy = surface === "help"
+    ? {
+        title: "Route carefully",
+        body: "Help routes use the issue signals and evidence you provide. Official portals, phone numbers, legal guidance, and deadlines must be checked live before you act.",
+        hindi: "मार्ग सावधानी से चुनें",
+        hindiBody: "सहायता मार्ग आपके दिए हुए संकेतों और प्रमाण पर आधारित हैं। आधिकारिक पोर्टल, फोन नंबर, कानूनी जानकारी और समय-सीमा पर कार्रवाई से पहले लाइव जाँच करें।"
+      }
+    : surface === "path"
+      ? {
+          title: "A working path, not a verdict",
+          body: "Path separates what happened, how it feels, and one next action. If the signals are uncertain or high-risk, review the route with a trusted person or qualified professional.",
+          hindi: "यह कार्यशील मार्ग है, अंतिम निर्णय नहीं",
+          hindiBody: "Path में घटना, भावना और अगले एक कदम को अलग किया जाता है। संकेत अनिश्चित या जोखिमपूर्ण हों तो किसी भरोसेमंद व्यक्ति या योग्य पेशेवर के साथ मार्ग की समीक्षा करें।"
+        }
+      : {
+          title: "Private notes, careful interpretation",
+          body: "Journal patterns can inform a next step, but they are not proof or a diagnosis. Use your notes as context and seek human review when a concern repeats or becomes serious.",
+          hindi: "निजी नोट्स, सावधान समझ",
+          hindiBody: "जर्नल के पैटर्न अगले कदम में मदद कर सकते हैं, लेकिन वे प्रमाण या निदान नहीं हैं। नोट्स को संदर्भ की तरह इस्तेमाल करें और समस्या दोहरने या गंभीर होने पर मानवीय समीक्षा लें।"
+        };
+  return (
+    <View testID={`guidance-standards-notice-${surface}`} style={{ marginHorizontal: 16, marginBottom: 8, borderRadius: 12, borderWidth: 1, borderColor: officialRoutes ? "rgba(124,45,18,0.18)" : "rgba(31,111,105,0.18)", backgroundColor: officialRoutes ? "#FFF7ED" : "#F1F8F6", paddingHorizontal: 12, paddingVertical: 10 }}>
+      <Text style={{ color: officialRoutes ? "#7C2D12" : "#176B67", fontSize: 12, fontWeight: "800" }}>
+        {pickLocalizedText(languageId, { english: copy.title, hindi: copy.hindi })}
+      </Text>
+      <Text style={{ color: "#40515E", fontSize: 12, lineHeight: 17, marginTop: 3 }}>
+        {pickLocalizedText(languageId, { english: copy.body, hindi: copy.hindiBody })}
+      </Text>
+      {recurrenceCount >= 2 ? (
+        <Text style={{ color: "#92400E", fontSize: 12, lineHeight: 17, marginTop: 4, fontWeight: "700" }}>
+          {pickLocalizedText(languageId, {
+            english: `This concern has appeared ${recurrenceCount} times in recent app history; review the pattern instead of treating this as an isolated event.`,
+            hindi: `यह चिंता ऐप के हाल के इतिहास में ${recurrenceCount} बार दिखाई दी है; इसे अलग घटना मानने के बजाय पैटर्न की समीक्षा करें।`
+          })}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
 type UserReview = {
   id: string;
   createdAt: string;
@@ -24730,6 +24781,11 @@ function isTrustedExternalUrl(url: string) {
                 </View>
                 <Text style={styles.tabBannerDate}>{getLiveDateLabel(languageId)}</Text>
               </View>
+              <GuidanceStandardsNotice
+                languageId={languageId}
+                surface="journal"
+                recurrenceCount={selectedIssueRecurrenceCount}
+              />
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
@@ -25749,6 +25805,11 @@ function isTrustedExternalUrl(url: string) {
                   </Text>
                 </View>
               </View>
+              <GuidanceStandardsNotice
+                languageId={languageId}
+                surface="path"
+                recurrenceCount={selectedIssueRecurrenceCount}
+              />
               {selectedIssueGuide.id !== "general" && (
                 <View style={styles.activeFocusStrip}>
                   <Text style={{ fontSize: 12 }}>🎯</Text>
@@ -25857,6 +25918,12 @@ function isTrustedExternalUrl(url: string) {
                   </Text>
                 </View>
               </View>
+              <GuidanceStandardsNotice
+                languageId={languageId}
+                surface="help"
+                recurrenceCount={selectedIssueRecurrenceCount}
+                officialRoutes
+              />
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={pickLocalizedText(languageId, {
