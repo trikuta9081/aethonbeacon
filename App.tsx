@@ -942,6 +942,10 @@ type GuidanceDecisionMeta = {
   referenceSet?: string;
   policyFlags?: string[];
   sourceIds?: string[];
+  sourceVersions?: Array<{ id: string; reviewedAt: string; scope: string }>;
+  routeEvidence?: string[];
+  historyMemory?: { consulted: boolean; recurring: boolean; overlap: string[]; note: string };
+  reviewActions?: string[];
 };
 type UserReview = {
   id: string;
@@ -47444,6 +47448,8 @@ function CounselingChatModal({
                         : l("This is a working route, not a final decision. Review it or seek human support.", { hindi: "यह प्रारंभिक मार्ग है, अंतिम निर्णय नहीं। इसे जाँचें या मानवीय सहायता लें।", telugu: "ఇది ప్రారంభ మార్గం మాత్రమే, తుది నిర్ణయం కాదు. పరిశీలించండి లేదా మానవ సహాయం పొందండి.", tamil: "இது ஒரு ஆரம்ப பாதை; இறுதி முடிவு அல்ல. சரிபார்க்கவும் அல்லது மனித உதவியைப் பெறவும்.", urdu: "یہ ابتدائی راستہ ہے، حتمی فیصلہ نہیں۔ اسے جانچیں یا انسانی مدد لیں۔" })}
                       </Text>
                       {guidanceEnrichmentMeta.explanation ? <Text style={{ color: "#4D6470", fontSize: 12, lineHeight: 17, marginTop: 2 }}>{guidanceEnrichmentMeta.explanation}</Text> : null}
+                      {guidanceEnrichmentMeta.historyMemory?.recurring ? <Text style={{ color: "#365D77", fontSize: 12, lineHeight: 17, marginTop: 2 }}>{l("Recent app history shows a related pattern; this route uses that context, not as proof but as a prompt to review.", { hindi: "ऐप के हाल के इतिहास में मिलता-जुलता पैटर्न दिखता है; इसे प्रमाण नहीं, बल्कि समीक्षा के संकेत के रूप में इस्तेमाल किया गया है।", telugu: "యాప్ చరిత్రలో ఇలాంటి నమూనా కనిపిస్తోంది; ఇది రుజువు కాదు, సమీక్షకు సూచన మాత్రమే.", tamil: "சமீபத்திய பயன்பாட்டு வரலாற்றில் தொடர்புடைய முறை தெரிகிறது; இது ஆதாரம் அல்ல, மதிப்பாய்வுக்கான குறிப்பு மட்டுமே.", urdu: "ایپ کی حالیہ تاریخ میں ملتا جلتا نمونہ ہے؛ اسے ثبوت نہیں بلکہ جائزے کے اشارے کے طور پر استعمال کیا گیا ہے۔" })}</Text> : null}
+                      {guidanceEnrichmentMeta.reviewActions?.length ? <Text style={{ color: "#7C2D12", fontSize: 12, lineHeight: 17, marginTop: 2 }}>{guidanceEnrichmentMeta.reviewActions.join(" ")}</Text> : null}
                       {guidanceEnrichmentMeta.reviewRequired && guidanceEnrichmentMeta.reviewReason ? <Text style={{ color: "#7C2D12", fontSize: 12, lineHeight: 17, fontWeight: "700", marginTop: 2 }}>{guidanceEnrichmentMeta.reviewReason}</Text> : null}
                     </View>
                   ) : null}

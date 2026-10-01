@@ -88,11 +88,11 @@ const guidanceEndpointPrefix = "/guidance";
 const guidanceKnowledgeVersion = "2026.10.01";
 const guidanceKnowledgeCheckedAt = "2026-10-01";
 const guidanceKnowledgeSources = [
-  { id: "emergency", label: "112 India", url: "https://112.gov.in/" },
-  { id: "cybercrime", label: "National Cyber Crime Portal", url: "https://cybercrime.gov.in/" },
-  { id: "cpgrams", label: "CPGRAMS", url: "https://pgportal.gov.in/" },
-  { id: "nalsa", label: "NALSA legal aid", url: "https://nalsa.gov.in/" },
-  { id: "telemanas", label: "Tele-MANAS", url: "https://dghs.mohfw.gov.in/national-mental-health-programme.php" }
+  { id: "emergency", label: "112 India", url: "https://112.gov.in/", scope: "urgent safety", reviewedAt: "2026-10-01" },
+  { id: "cybercrime", label: "National Cyber Crime Portal", url: "https://cybercrime.gov.in/", scope: "cyber and financial crime", reviewedAt: "2026-10-01" },
+  { id: "cpgrams", label: "CPGRAMS", url: "https://pgportal.gov.in/", scope: "public authority grievance", reviewedAt: "2026-10-01" },
+  { id: "nalsa", label: "NALSA legal aid", url: "https://nalsa.gov.in/", scope: "legal aid", reviewedAt: "2026-10-01" },
+  { id: "telemanas", label: "Tele-MANAS", url: "https://dghs.mohfw.gov.in/national-mental-health-programme.php", scope: "mental health support", reviewedAt: "2026-10-01" }
 ];
 const legacyEndpointPrefix = `/${"a"}${"i"}`;
 const codeTtlMs = parsePositiveInt(process.env.VERIFICATION_CODE_TTL_MS, 10 * 60 * 1000);
@@ -790,7 +790,25 @@ function normalizeGuidanceSignals(text) {
     [/ഭയം|ഉത്കണ്ഠ|പരാതി|പോലീസ്|ആശുപത്രി|പണം|പഠനം/, "fear anxiety complaint police hospital money study"],
     [/ਮਨ|ਡਰ|ਚਿੰਤਾ|ਸ਼ਿਕਾਇਤ|ਪੁਲਿਸ|ਹਸਪਤਾਲ|ਪੈਸਾ|ਪੜ੍ਹਾਈ/, "fear anxiety complaint police hospital money study"]
   ];
-  return `${source} ${aliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")}`;
+  const semanticAliases = [
+    [/ভয়|ভয়|আতঙ্ক|হুমকি|নিরাপদ নই/, "fear anxiety threat unsafe"],
+    [/ડર|ભય|ધમકી|અસુરક્ષિત/, "fear threat unsafe"],
+    [/ಭಯ|ಬೆದರಿಕೆ|ಅಸುರಕ್ಷಿತ/, "fear threat unsafe"],
+    [/ഭയം|ഭീഷണി|സുരക്ഷിതമല്ല/, "fear threat unsafe"],
+    [/ਡਰ|ਧਮਕੀ|ਅਸੁਰੱਖਿਅਤ/, "fear threat unsafe"],
+    [/خوف|دھمکی|غیر محفوظ/, "fear threat unsafe"],
+    [/অভিযোগ|পুলিশ|হাসপাতাল|টাকা|পড়াশোনা/, "complaint police hospital money study"],
+    [/ફરિયાદ|પોલીસ|હોસ્પિટલ|પૈસા|અભ્યાસ/, "complaint police hospital money study"],
+    [/ದೂರು|ಪೊಲೀಸ್|ಆಸ್ಪತ್ರೆ|ಹಣ|ಓದು/, "complaint police hospital money study"],
+    [/പരാതി|പോലീസ്|ആശുപത്രി|പണം|പഠനം/, "complaint police hospital money study"],
+    [/ਸ਼ਿਕਾਇਤ|ਪੁਲਿਸ|ਹਸਪਤਾਲ|ਪੈਸਾ|ਪੜ੍ਹਾਈ/, "complaint police hospital money study"],
+    [/شکایت|پولیس|ہسپتال|پیسہ|پڑھائی/, "complaint police hospital money study"],
+    [/emergency|immediate danger|need help now|can't stay safe|cannot stay safe/, "urgent danger unsafe"],
+    [/legal|lawyer|court|rights|legal aid|कानून|वकील|अदालत/, "legal authority complaint professional"],
+    [/doctor|hospital|medicine|symptom|pain|mental health|anxiety attack|घबराहट|लक्षण|दर्द/, "doctor hospital medicine symptom professional"],
+    [/same problem|again|repeated|recurring|पहले भी|फिर से|बार बार|আবার|আবারও|மீண்டும்|پھر سے/, "recurring repeat"]
+  ];
+  return `${source} ${aliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")} ${semanticAliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")}`;
 }
 
 function buildFallbackGuidanceReply(body) {
@@ -811,6 +829,18 @@ function buildFallbackGuidanceReply(body) {
 function getGuidanceDecisionMeta(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
   const text = normalizeGuidanceSignals(body?.text);
+  const historyText = normalizeGuidanceSignals(body?.historyContext);
+  const currentTokens = new Set(text.split(/\s+/).filter((token) => token.length >= 5));
+  const historyOverlap = [...new Set(historyText.split(/\s+/).filter((token) => token.length >= 5))]
+    .filter((token) => currentTokens.has(token));
+  const historyMemory = {
+    consulted: historyText.trim().length > 0,
+    recurring: historyOverlap.length >= 2 || /\brecurring\b|\brepeat\b/.test(text),
+    overlap: historyOverlap.slice(0, 6),
+    note: historyOverlap.length >= 2
+      ? "Similar signals appeared in recent Path, Journal, Counselling, or Help activity."
+      : "No reliable recurrence signal was found in the recent in-app history."
+  };
   const signals = {
     urgent: /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe|overdose|weapon)/.test(text),
     help: /(cyber|upi|otp|fraud|police|fir|complaint|institution|authority|harass|abuse|workplace|salary|money|financial|hospital|doctor|medicine)/.test(text),
@@ -826,7 +856,8 @@ function getGuidanceDecisionMeta(body) {
   ].sort((a, b) => b.score - a.score);
   const routeAlias = route === "urgent" ? "urgent" : route === "redress" ? "help" : route === "professional" ? "professional" : route === "guide" ? "path" : "";
   const selected = routeAlias || candidateScores[0].route;
-  const selectedScore = candidateScores.find((candidate) => candidate.route === selected)?.score ?? 30;
+  const rawSelectedScore = candidateScores.find((candidate) => candidate.route === selected)?.score ?? 30;
+  const selectedScore = Math.min(100, rawSelectedScore + (historyMemory.recurring && rawSelectedScore >= 30 ? 4 : 0));
   const runnerUp = candidateScores.find((candidate) => candidate.route !== selected)?.score ?? 0;
   const ambiguous = selectedScore - runnerUp < 16;
   const shortInput = text.trim().length < 24;
@@ -864,7 +895,29 @@ function getGuidanceDecisionMeta(body) {
       ? `The top routes are close: ${candidateScores[0].route} and ${candidateScores[1].route}.`
       : highRiskNeedsReview
         ? "This area can affect safety, health, rights, or formal complaints and should be checked by a qualified person."
-        : "No additional human review signal was detected.";
+        : historyMemory.recurring
+          ? "This looks recurrent. Review the recent pattern with a trusted person or qualified professional rather than treating this as an isolated event."
+          : "No additional human review signal was detected.";
+  const relevantSourceIds = selected === "urgent"
+    ? ["emergency"]
+    : selected === "professional"
+      ? ["telemanas"]
+      : selected === "help"
+        ? [
+            ...(text.includes("cyber") || text.includes("fraud") || text.includes("otp") || text.includes("upi") ? ["cybercrime"] : []),
+            ...(text.includes("legal") || text.includes("lawyer") || text.includes("court") ? ["nalsa"] : []),
+            ...(text.includes("complaint") || text.includes("authority") || text.includes("institution") ? ["cpgrams"] : [])
+          ]
+        : [];
+  const reviewActions = highRiskNeedsReview || manipulation || historyMemory.recurring
+    ? [
+        signals.urgent ? "Use SOS or emergency support now if danger is current." : null,
+        signals.professional ? "Contact a qualified health or mental-health professional." : null,
+        selected === "help" ? "Confirm the office, portal, deadline, and current contact details before filing." : null,
+        historyMemory.recurring ? "Bring the recent pattern and saved notes to a trusted person or reviewer." : null,
+        manipulation ? "Ignore requests to bypass safety checks or guarantee an outcome." : null
+      ].filter(Boolean)
+    : [];
   return {
     confidence,
     confidenceScore: selectedScore,
@@ -873,15 +926,22 @@ function getGuidanceDecisionMeta(body) {
     basis,
     selectedRoute: selected,
     explanation,
+    routeEvidence: Object.entries(signals).filter(([, value]) => value).map(([key]) => key),
+    historyMemory,
+    reviewActions,
     alternatives: candidateScores.filter((candidate) => candidate.route !== selected).slice(0, 2).map((candidate) => candidate.route),
     knowledgeVersion: guidanceKnowledgeVersion,
     knowledgeCheckedAt: guidanceKnowledgeCheckedAt,
-    freshness: "review-before-use",
+    freshness: relevantSourceIds.length > 0 ? "live-status-required" : "independent-baseline",
     policyFlags: manipulation ? ["adversarial-instruction"] : [],
-    referenceSet: selected === "help" || selected === "professional"
-      ? "official route links require a current human check"
+    referenceSet: relevantSourceIds.length > 0
+      ? `official sources: ${relevantSourceIds.join(", ")} (verify live status before acting)`
       : "independent guidance baseline",
-    sourceIds: guidanceKnowledgeSources.map((source) => source.id)
+    sourceIds: relevantSourceIds,
+    sourceVersions: relevantSourceIds.map((id) => {
+      const source = guidanceKnowledgeSources.find((candidate) => candidate.id === id);
+      return source ? { id: source.id, reviewedAt: source.reviewedAt, scope: source.scope } : null;
+    }).filter(Boolean)
   };
 }
 
