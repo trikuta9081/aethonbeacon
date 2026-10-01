@@ -16193,6 +16193,7 @@ export default function App() {
   const profileDisplayNameRef = useRef<string>("You");
   const issueGuideIdRef = useRef<string>("general");
   const communityLocallySentMessageIdsRef = useRef<Set<string>>(new Set());
+  const communityChatRetryInFlightRef = useRef(false);
 
   function logSessionEvent(event: SessionEvent) {
     sessionEventsRef.current = [...sessionEventsRef.current, { ...event, ts: Date.now() }];
@@ -22422,9 +22423,12 @@ async function fetchGuidanceHelp(
     if (!communityRealtimeConfigured || communityChatOutbox.length === 0) return;
     let cancelled = false;
     const retry = async () => {
+      if (communityChatRetryInFlightRef.current) return;
       const pending = communityChatOutbox[communityChatOutbox.length - 1];
       if (!pending) return;
+      communityChatRetryInFlightRef.current = true;
       const result = await sendRealtimeCommunityChatMessage(pending);
+      communityChatRetryInFlightRef.current = false;
       if (cancelled) return;
       if (result.ok) {
         setCommunityChatOutbox((current) => current.filter((message) => message.id !== pending.id));
@@ -22435,10 +22439,15 @@ async function fetchGuidanceHelp(
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active") void retry();
     });
+    // Keep retrying while the app remains open. This covers Wi-Fi/cellular
+    // recovery without requiring a native network-state dependency, while the
+    // in-flight guard prevents duplicate delivery attempts.
+    const retryInterval = setInterval(() => void retry(), 15_000);
     if (AppState.currentState === "active") void retry();
     return () => {
       cancelled = true;
       subscription.remove();
+      clearInterval(retryInterval);
     };
   }, [communityChatOutbox]);
 

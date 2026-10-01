@@ -13,7 +13,8 @@ const serverSource = fs.readFileSync(new URL("./verification-server.mjs", import
 const appSource = fs.readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
 assert.match(serverSource, /return \["gemini", \.\.\.new Set\(/, "Gemini must remain first in the connected-provider path");
 assert.match(serverSource, /preferredGuidanceProvider: "gemini"/, "Health must expose Gemini as the preferred provider");
-assert.match(serverSource, /contentVerified = response\.ok && source\.contentMarkers\.some/, "Freshness checks must validate source content markers");
+assert.match(serverSource, /markerMatches\.length === source\.contentMarkers\.length/, "Freshness checks must validate every declared source marker");
+assert.match(serverSource, /contentDigest:/, "Freshness checks must expose an auditable content digest");
 assert.match(appSource, /journal text remains on this device and is not shared/, "Guidance history must not send raw journal text");
 assert.match(appSource, /local persona reply keeps Community useful/, "Community chat must retain an independent local reply path");
 assert.match(appSource, /communityChatOutbox/, "Community chat must retain failed realtime sends for retry");
@@ -69,6 +70,11 @@ const cases = [
     name: "multilingual semantic concept evidence",
     body: { route: "general", text: "मुझे बार बार वही समस्या हो रही है, डॉक्टर चाहिए" },
     expect: (meta) => meta.semanticConcepts.includes("recurrence") && meta.semanticConcepts.includes("professional-care") && meta.candidateScores.length === 4
+  },
+  {
+    name: "romanized multilingual safety",
+    body: { route: "general", text: "mujhe dhamki mil rahi hai, main surakshit nahi hoon" },
+    expect: (meta) => meta.selectedRoute === "urgent" && meta.semanticConcepts.includes("urgent-safety") && meta.reviewRequired
   }
 ];
 

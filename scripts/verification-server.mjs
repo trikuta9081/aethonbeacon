@@ -91,11 +91,11 @@ const guidanceEndpointPrefix = "/guidance";
 const guidanceKnowledgeVersion = "2026.10.01";
 const guidanceKnowledgeCheckedAt = "2026-10-01";
 const guidanceKnowledgeSources = [
-  { id: "emergency", label: "112 India", url: "https://112.gov.in/", scope: "urgent safety", reviewedAt: "2026-10-01", contentMarkers: ["112", "emergency"] },
-  { id: "cybercrime", label: "National Cyber Crime Portal", url: "https://cybercrime.gov.in/", scope: "cyber and financial crime", reviewedAt: "2026-10-01", contentMarkers: ["cyber", "crime"] },
-  { id: "cpgrams", label: "CPGRAMS", url: "https://pgportal.gov.in/", scope: "public authority grievance", reviewedAt: "2026-10-01", contentMarkers: ["cpgrams", "grievance"] },
-  { id: "nalsa", label: "NALSA legal aid", url: "https://nalsa.gov.in/", scope: "legal aid", reviewedAt: "2026-10-01", contentMarkers: ["nalsa", "legal aid"] },
-  { id: "telemanas", label: "Tele-MANAS", url: "https://dghs.mohfw.gov.in/national-mental-health-programme.php", scope: "mental health support", reviewedAt: "2026-10-01", contentMarkers: ["tele-manas", "mental health"] }
+  { id: "emergency", label: "112 India", url: "https://112.gov.in/", scope: "urgent safety", reviewedAt: "2026-10-01", contentMarkers: ["112", "emergency"], minimumContentChars: 200 },
+  { id: "cybercrime", label: "National Cyber Crime Portal", url: "https://cybercrime.gov.in/", scope: "cyber and financial crime", reviewedAt: "2026-10-01", contentMarkers: ["cyber", "crime"], minimumContentChars: 200 },
+  { id: "cpgrams", label: "CPGRAMS", url: "https://pgportal.gov.in/", scope: "public authority grievance", reviewedAt: "2026-10-01", contentMarkers: ["cpgrams", "grievance"], minimumContentChars: 200 },
+  { id: "nalsa", label: "NALSA legal aid", url: "https://nalsa.gov.in/", scope: "legal aid", reviewedAt: "2026-10-01", contentMarkers: ["nalsa", "legal aid"], minimumContentChars: 200 },
+  { id: "telemanas", label: "Tele-MANAS", url: "https://dghs.mohfw.gov.in/national-mental-health-programme.php", scope: "mental health support", reviewedAt: "2026-10-01", contentMarkers: ["tele-manas", "mental health"], minimumContentChars: 200 }
 ];
 const legacyEndpointPrefix = `/${"a"}${"i"}`;
 const codeTtlMs = parsePositiveInt(process.env.VERIFICATION_CODE_TTL_MS, 10 * 60 * 1000);
@@ -802,6 +802,7 @@ const GUIDANCE_SEMANTIC_CONCEPTS = [
     canonical: "urgent danger unsafe violence threat self-harm",
     patterns: [
       "suicide", "self-harm", "self harm", "can't stay safe", "cannot stay safe", "immediate danger",
+      "mujhe dhamki", "main surakshit nahi", "jaan ko khatra", "enakku aabathu", "nenu surakshitamga ledu",
       "आत्महत्या", "खुदकुशी", "खतरा", "असुरक्षित", "ತಾತ್ಮಹತ್ಯೆ", "ಅಪಾಯ", "അസുരക്ഷിതം",
       "தற்கொலை", "ஆபத்து", "பாதுகாப்பில்லை", "خودکشی", "خطرہ", "غیر محفوظ",
       "ધમકી", "ಅಸುರಕ್ಷಿತ", "భయంగా ఉంది", "मी सुरक्षित नाही"
@@ -812,6 +813,7 @@ const GUIDANCE_SEMANTIC_CONCEPTS = [
     canonical: "complaint authority police institution redress",
     patterns: [
       "file a complaint", "report to police", "formal complaint", "institution problem", "office grievance",
+      "shikayat darj", "police mein report", "report karna hai", "queixa policial",
       "शिकायत", "एफआईआर", "पुलिस", "उत्पीड़न", "ఫిర్యాదు", "ఎఫ్ఐఆర్", "పోలీస్", "వేధింపు",
       "புகார்", "முதல் தகவல் அறிக்கை", "காவல்துறை", "துன்புறுத்தல்", "شکایت", "ایف آئی آر", "پولیس",
       "অভিযোগ", "પોલીસ", "ದೂರು", "പരാതി", "ਸ਼ਿਕਾਇਤ"
@@ -822,6 +824,7 @@ const GUIDANCE_SEMANTIC_CONCEPTS = [
     canonical: "doctor hospital medicine symptom mental health professional",
     patterns: [
       "chest pain", "panic attack", "mental health", "need a doctor", "medical advice", "withdrawal",
+      "doctor chahiye", "hospital jana", "mann ki sehat", "marz ka ilaj",
       "डॉक्टर", "अस्पताल", "दवा", "लक्षण", "घबराहट", "నాకు డాక్టర్ కావాలి", "ఆసుపత్రి", "లక్షణాలు",
       "மருத்துவர்", "மருத்துவமனை", "அறிகுறி", "பதட்டம்", "ڈاکٹر", "ہسپتال", "علامات", "घबराट"
     ]
@@ -831,6 +834,7 @@ const GUIDANCE_SEMANTIC_CONCEPTS = [
     canonical: "planning study academic career relationship anxiety stress grief",
     patterns: [
       "what should i do", "help me decide", "study plan", "career choice", "relationship problem",
+      "kya karun", "padhai ka plan", "rishton ki pareshani", "mujhe faisla karna hai",
       "anxiety", "stress", "grief", "पढ़ाई", "करियर", "रिश्ता", "चिंता", "तनाव", "शोक",
       "చదువు", "ఉద్యోగం", "సంబంధం", "ఆందోళన", "ఒత్తిడి", "దుఃఖం", "படிப்பு", "உறவு", "கவலை",
       "மன அழுத்தம்", "துக்கம்", "پڑھائی", "رشتہ", "پریشانی", "تناؤ", "سوگ"
@@ -858,8 +862,21 @@ const GUIDANCE_SEMANTIC_CONCEPTS = [
 function getGuidanceSemanticConcepts(text) {
   const source = String(text ?? "").toLowerCase().normalize("NFKC");
   return GUIDANCE_SEMANTIC_CONCEPTS
-    .filter((concept) => concept.patterns.some((pattern) => source.includes(pattern)))
+    .filter((concept) => concept.patterns.some((pattern) => guidancePatternMatches(source, pattern)))
     .map((concept) => concept.id);
+}
+
+function guidancePatternMatches(source, pattern) {
+  if (source.includes(pattern)) return true;
+  const sourceTokens = source.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  const patternTokens = pattern.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  if (patternTokens.length === 0 || sourceTokens.length === 0) return false;
+  const matched = patternTokens.filter((patternToken) =>
+    sourceTokens.some((sourceToken) => sourceToken === patternToken ||
+      (patternToken.length >= 5 && sourceToken.length >= 5 &&
+        (sourceToken.startsWith(patternToken.slice(0, 5)) || patternToken.startsWith(sourceToken.slice(0, 5)))))
+  ).length;
+  return matched === patternTokens.length;
 }
 
 function normalizeGuidanceSignals(text) {
@@ -902,7 +919,7 @@ function normalizeGuidanceSignals(text) {
   // the older deterministic fallback classifier for unrelated languages.
   const semanticConceptText = GUIDANCE_SEMANTIC_CONCEPTS
     .map((concept, index) => ({ concept, index }))
-    .filter(({ concept }) => concept.patterns.some((pattern) => source.includes(pattern)))
+    .filter(({ concept }) => concept.patterns.some((pattern) => guidancePatternMatches(source, pattern)))
     .map(({ index }) => `semantic_concept_${index + 1}`)
     .join(" ");
   return `${source} ${aliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")} ${semanticAliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")} ${semanticConceptText}`;
@@ -1059,17 +1076,24 @@ async function getGuidanceKnowledgeStatus() {
     try {
       const response = await fetch(source.url, { method: "GET", redirect: "follow", signal: timeoutSignal(3_000) });
       const pageText = (await response.text().catch(() => "")).toLowerCase();
-      const contentVerified = response.ok && source.contentMarkers.some((marker) => pageText.includes(marker));
+      const markerMatches = source.contentMarkers.filter((marker) => pageText.includes(marker));
+      const contentVerified = response.ok && pageText.length >= source.minimumContentChars && markerMatches.length === source.contentMarkers.length;
       return {
         ...source,
         reachable: response.ok,
         status: response.status,
         contentVerified,
+        verificationMethod: "required-markers-and-minimum-content",
+        markerMatches,
+        contentLength: pageText.length,
+        contentDigest: createHmac("sha256", "nayiq-public-source-audit").update(pageText).digest("hex").slice(0, 16),
+        responseUrl: response.url,
+        checkedAt: new Date().toISOString(),
         ageDays,
         stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs
       };
     } catch {
-      return { ...source, reachable: false, status: null, contentVerified: false, ageDays, stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs };
+      return { ...source, reachable: false, status: null, contentVerified: false, verificationMethod: "required-markers-and-minimum-content", markerMatches: [], contentLength: 0, contentDigest: null, responseUrl: null, checkedAt: new Date().toISOString(), ageDays, stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs };
     }
   }));
   return {
