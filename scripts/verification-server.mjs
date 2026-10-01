@@ -24,7 +24,7 @@ function parseGuidanceProviderOrder(value) {
     .split(",")
     .map((provider) => provider.trim().toLowerCase())
     .filter((provider) => provider === "gemini" || provider === "openai" || provider === "anthropic");
-  return [...new Set(requested.length > 0 ? requested : ["openai", "anthropic"])];
+  return [...new Set(requested.length > 0 ? requested : ["gemini", "openai", "anthropic"])];
 }
 
 function timeoutSignal(ms) {
@@ -88,11 +88,11 @@ const guidanceEndpointPrefix = "/guidance";
 const guidanceKnowledgeVersion = "2026.10.01";
 const guidanceKnowledgeCheckedAt = "2026-10-01";
 const guidanceKnowledgeSources = [
-  { id: "emergency", label: "112 India", url: "https://112.gov.in/", scope: "urgent safety", reviewedAt: "2026-10-01" },
-  { id: "cybercrime", label: "National Cyber Crime Portal", url: "https://cybercrime.gov.in/", scope: "cyber and financial crime", reviewedAt: "2026-10-01" },
-  { id: "cpgrams", label: "CPGRAMS", url: "https://pgportal.gov.in/", scope: "public authority grievance", reviewedAt: "2026-10-01" },
-  { id: "nalsa", label: "NALSA legal aid", url: "https://nalsa.gov.in/", scope: "legal aid", reviewedAt: "2026-10-01" },
-  { id: "telemanas", label: "Tele-MANAS", url: "https://dghs.mohfw.gov.in/national-mental-health-programme.php", scope: "mental health support", reviewedAt: "2026-10-01" }
+  { id: "emergency", label: "112 India", url: "https://112.gov.in/", scope: "urgent safety", reviewedAt: "2026-10-01", contentMarkers: ["112", "emergency"] },
+  { id: "cybercrime", label: "National Cyber Crime Portal", url: "https://cybercrime.gov.in/", scope: "cyber and financial crime", reviewedAt: "2026-10-01", contentMarkers: ["cyber", "crime"] },
+  { id: "cpgrams", label: "CPGRAMS", url: "https://pgportal.gov.in/", scope: "public authority grievance", reviewedAt: "2026-10-01", contentMarkers: ["cpgrams", "grievance"] },
+  { id: "nalsa", label: "NALSA legal aid", url: "https://nalsa.gov.in/", scope: "legal aid", reviewedAt: "2026-10-01", contentMarkers: ["nalsa", "legal aid"] },
+  { id: "telemanas", label: "Tele-MANAS", url: "https://dghs.mohfw.gov.in/national-mental-health-programme.php", scope: "mental health support", reviewedAt: "2026-10-01", contentMarkers: ["tele-manas", "mental health"] }
 ];
 const legacyEndpointPrefix = `/${"a"}${"i"}`;
 const codeTtlMs = parsePositiveInt(process.env.VERIFICATION_CODE_TTL_MS, 10 * 60 * 1000);
@@ -123,7 +123,8 @@ const guidanceConfigured = guidanceProviderOrder.some((provider) => guidanceProv
 // guaranteed path when Google denies a project, model, or credential.
 const guidanceRuntime = {
   live: false,
-  lastFailure: ""
+  lastFailure: "",
+  provider: ""
 };
 const adminAuthConfigured = adminLoginIdentity.length > 0 && adminLoginCode.length > 0;
 const adminSessionTtlMs = parsePositiveInt(process.env.ADMIN_SESSION_TTL_MS, 8 * 60 * 60 * 1000);
@@ -1051,17 +1052,26 @@ async function getGuidanceKnowledgeStatus() {
     const reviewedAtMs = Date.parse(`${source.reviewedAt}T00:00:00Z`);
     const ageDays = Number.isFinite(reviewedAtMs) ? Math.max(0, Math.floor((now - reviewedAtMs) / (24 * 60 * 60 * 1000))) : null;
     try {
-      const response = await fetch(source.url, { method: "HEAD", redirect: "follow", signal: timeoutSignal(3_000) });
-      return { ...source, reachable: response.ok, status: response.status, ageDays, stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs };
+      const response = await fetch(source.url, { method: "GET", redirect: "follow", signal: timeoutSignal(3_000) });
+      const pageText = (await response.text().catch(() => "")).toLowerCase();
+      const contentVerified = response.ok && source.contentMarkers.some((marker) => pageText.includes(marker));
+      return {
+        ...source,
+        reachable: response.ok,
+        status: response.status,
+        contentVerified,
+        ageDays,
+        stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs
+      };
     } catch {
-      return { ...source, reachable: false, status: null, ageDays, stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs };
+      return { ...source, reachable: false, status: null, contentVerified: false, ageDays, stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs };
     }
   }));
   return {
     version: guidanceKnowledgeVersion,
     checkedAt: new Date().toISOString(),
     reviewBaseline: guidanceKnowledgeCheckedAt,
-    freshness: sources.every((source) => source.reachable && !source.stale) ? "reachable" : "review-needed",
+    freshness: sources.every((source) => source.reachable && source.contentVerified && !source.stale) ? "content-verified" : "review-needed",
     freshnessWindowDays: 30,
     sources
   };
@@ -1169,8 +1179,9 @@ async function callConfiguredGuidance(provider, model, prompt, maxTokens, minCha
   const text = extractGuidanceText(provider, await response.json());
   if (text.length < minChars) throw new Error(`Guidance provider ${provider} returned a too-short response`);
   guidanceRuntime.live = true;
+  guidanceRuntime.provider = provider;
   guidanceRuntime.lastFailure = "";
-  return { source: "connected", model: "primary", text };
+  return { source: "connected", provider, model, text };
 }
 
 async function runConfiguredGuidance(prompt, maxTokens, minChars = 40) {
@@ -1184,6 +1195,7 @@ async function runConfiguredGuidance(prompt, maxTokens, minChars = 40) {
         return await callConfiguredGuidance(provider, model, prompt, maxTokens, minChars);
       } catch (error) {
         guidanceRuntime.live = false;
+        guidanceRuntime.provider = "";
         guidanceRuntime.lastFailure = error instanceof Error ? error.message : "provider request failed";
         errors.push(error instanceof Error ? error.message : `${provider} request failed`);
       }
@@ -1197,6 +1209,7 @@ async function generateGuidanceHelp(body) {
   const decisionMeta = getGuidanceDecisionMeta(body);
   if (!guidanceConfigured) {
     guidanceRuntime.live = false;
+    guidanceRuntime.provider = "";
     guidanceRuntime.lastFailure = "not configured";
     return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body), decisionMeta };
   }
@@ -1694,6 +1707,7 @@ async function handleRequest(req, res) {
         guidanceServiceConfigured: guidanceConfigured,
         guidanceServiceLive: guidanceConfigured && guidanceRuntime.live,
         guidanceServiceMode: guidanceConfigured && guidanceRuntime.live ? "connected" : "local-independent",
+        activeGuidanceProvider: guidanceRuntime.live ? guidanceRuntime.provider : null,
         revenueCatWebhook: revenueCatWebhookConfigured
       },
       adminAuth: getAdminAuthSummary(),

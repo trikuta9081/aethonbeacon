@@ -21958,7 +21958,9 @@ async function fetchGuidanceHelp(
             emergencyNumber: emergencyNumber.trim() || "112",
             historyContext: [
               ...visitReports.slice(0, 4).map((report) => `Counselling/Path: ${report.issueLabel} / ${report.routeLabel} / ${report.nextStep}`),
-              recentJournalNotesText.trim() ? `Journal: ${recentJournalNotesText.trim().slice(0, 600)}` : "",
+              entries.length > 0
+                ? `Journal: ${entries.length} local check-in${entries.length === 1 ? "" : "s"} exist; journal text remains on this device and is not shared.`
+                : "",
               ...redressCases.slice(0, 4).map((redressCase) => `Help: ${redressCase.routeId} / ${redressCase.status} / ${redressCase.nextFollowUpIso ?? "no follow-up date"}`)
             ].filter(Boolean).join(" | ")
           })
@@ -22363,9 +22365,12 @@ async function fetchGuidanceHelp(
     };
 
     void playMessageFeedbackCue("sent");
+    // The local persona reply keeps Community useful when Supabase is absent,
+    // slow, or temporarily unavailable. A realtime send can still fan the
+    // user's message out to other members without making local guidance wait.
     setCommunityChatMessages((current) =>
       communityRealtimeConfigured
-        ? mergeCommunityChatMessages(current, userMessage)
+        ? [replyMessage, ...mergeCommunityChatMessages(current, userMessage)].slice(0, 80)
         : [replyMessage, userMessage, ...current].slice(0, 80)
     );
 
