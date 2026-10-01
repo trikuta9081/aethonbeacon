@@ -26765,9 +26765,161 @@ function TodaySection({
       featured: false
     }
   ];
+  const [homeOrientationDismissed, setHomeOrientationDismissed] = useState(false);
+  const homeOrientationCopy = ({
+    english: {
+      eyebrow: "NEW HERE?",
+      title: "Three simple ways to use NAYIQ",
+      body: "You do not need to explore everything. Start with the step that matches what you need right now.",
+      dismiss: "Got it",
+      steps: [
+        { title: "Ask", body: "Tell NAYIQ what is happening.", action: "Open Ask", tab: "aihelp" as TabId },
+        { title: "Calm", body: "Steady yourself before deciding.", action: "Open Calm", tab: "tones" as TabId },
+        { title: "Help", body: "Prepare the right formal route.", action: "Open Help", tab: "redress" as TabId }
+      ]
+    },
+    hindi: {
+      eyebrow: "पहली बार यहाँ?",
+      title: "NAYIQ इस्तेमाल करने के तीन आसान तरीके",
+      body: "आपको सब कुछ देखने की ज़रूरत नहीं है। अभी जिस मदद की ज़रूरत है, उसी कदम से शुरू करें।",
+      dismiss: "समझ गया",
+      steps: [
+        { title: "पूछें", body: "बताएँ कि अभी क्या हो रहा है।", action: "पूछें", tab: "aihelp" as TabId },
+        { title: "शांत हों", body: "फैसला लेने से पहले खुद को संभालें।", action: "शांत हों", tab: "tones" as TabId },
+        { title: "मदद", body: "सही औपचारिक रास्ता तैयार करें।", action: "मदद खोलें", tab: "redress" as TabId }
+      ]
+    },
+    telugu: {
+      eyebrow: "మొదటిసారి ఇక్కడా?",
+      title: "NAYIQ ఉపయోగించడానికి మూడు సులభమైన మార్గాలు",
+      body: "అన్నింటినీ చూడాల్సిన అవసరం లేదు. ఇప్పుడే కావాల్సిన సహాయంతో ప్రారంభించండి.",
+      dismiss: "అర్థమైంది",
+      steps: [
+        { title: "అడగండి", body: "ఏం జరుగుతుందో NAYIQకి చెప్పండి.", action: "అడగండి", tab: "aihelp" as TabId },
+        { title: "శాంతించండి", body: "నిర్ణయం ముందు మీను స్థిరపరచుకోండి.", action: "శాంతించండి", tab: "tones" as TabId },
+        { title: "సహాయం", body: "సరైన అధికారిక మార్గాన్ని సిద్ధం చేసుకోండి.", action: "సహాయం", tab: "redress" as TabId }
+      ]
+    },
+    tamil: {
+      eyebrow: "முதல் முறை இங்கே?",
+      title: "NAYIQ பயன்படுத்த மூன்று எளிய வழிகள்",
+      body: "எல்லாவற்றையும் பார்க்க வேண்டியதில்லை. இப்போது தேவையான உதவியுடன் தொடங்குங்கள்.",
+      dismiss: "புரிந்தது",
+      steps: [
+        { title: "கேளுங்கள்", body: "என்ன நடக்கிறது என்று NAYIQ-க்கு சொல்லுங்கள்.", action: "கேளுங்கள்", tab: "aihelp" as TabId },
+        { title: "அமைதியாகுங்கள்", body: "முடிவு செய்வதற்கு முன் உங்களை நிலைநிறுத்துங்கள்.", action: "அமைதியாகுங்கள்", tab: "tones" as TabId },
+        { title: "உதவி", body: "சரியான அதிகாரப்பூர்வ வழியைத் தயார் செய்யுங்கள்.", action: "உதவியைத் திறக்க", tab: "redress" as TabId }
+      ]
+    },
+    urdu: {
+      eyebrow: "پہلی بار یہاں؟",
+      title: "NAYIQ استعمال کرنے کے تین آسان طریقے",
+      body: "آپ کو سب کچھ دیکھنے کی ضرورت نہیں۔ ابھی جس مدد کی ضرورت ہے، وہیں سے شروع کریں۔",
+      dismiss: "سمجھ گیا",
+      steps: [
+        { title: "پوچھیں", body: "NAYIQ کو بتائیں کہ کیا ہو رہا ہے۔", action: "پوچھیں", tab: "aihelp" as TabId },
+        { title: "پرسکون ہوں", body: "فیصلہ کرنے سے پہلے خود کو سنبھالیں۔", action: "پرسکون ہوں", tab: "tones" as TabId },
+        { title: "مدد", body: "صحیح رسمی راستہ تیار کریں۔", action: "مدد کھولیں", tab: "redress" as TabId }
+      ]
+    }
+  } as Record<string, {
+    eyebrow: string;
+    title: string;
+    body: string;
+    dismiss: string;
+    steps: Array<{ title: string; body: string; action: string; tab: TabId }>;
+  }>)[languageId] ?? ({
+    eyebrow: "NEW HERE?",
+    title: "Three simple ways to use NAYIQ",
+    body: "You do not need to explore everything. Start with the step that matches what you need right now.",
+    dismiss: "Got it",
+    steps: [
+      { title: "Ask", body: "Tell NAYIQ what is happening.", action: "Open Ask", tab: "aihelp" },
+      { title: "Calm", body: "Steady yourself before deciding.", action: "Open Calm", tab: "tones" },
+      { title: "Help", body: "Prepare the right formal route.", action: "Open Help", tab: "redress" }
+    ]
+  });
   return (
     <View style={styles.grid}>
       <View style={styles.panel}>
+        {!homeOrientationDismissed ? (
+          <View
+            accessibilityRole="summary"
+            style={{
+              marginBottom: 14,
+              borderRadius: 24,
+              borderWidth: 1,
+              borderColor: "rgba(11,111,102,0.18)",
+              backgroundColor: "#F2FAF8",
+              padding: compact ? (isTinyPhone ? 12 : 14) : 16,
+              shadowColor: "#0F3D5E",
+              shadowOpacity: 0.05,
+              shadowRadius: 14,
+              shadowOffset: { width: 0, height: 6 },
+              elevation: 3
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text style={{ color: "#0A6F66", fontSize: isTinyPhone ? 12 : 13, lineHeight: 16, fontWeight: "800", letterSpacing: 1.1 }}>
+                  {homeOrientationCopy.eyebrow}
+                </Text>
+                <Text style={{ color: "#0D1F22", fontSize: compact ? (isTinyPhone ? 17 : 19) : 21, lineHeight: compact ? (isTinyPhone ? 22 : 24) : 27, fontWeight: "900", marginTop: 3 }}>
+                  {homeOrientationCopy.title}
+                </Text>
+                <Text style={{ color: "#3D5960", fontSize: isTinyPhone ? 12 : 13, lineHeight: isTinyPhone ? 17 : 19, fontWeight: "700", marginTop: 5 }}>
+                  {homeOrientationCopy.body}
+                </Text>
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={homeOrientationCopy.dismiss}
+                onPress={() => setHomeOrientationDismissed(true)}
+                style={({ pressed }) => [
+                  { borderRadius: 999, borderWidth: 1, borderColor: "rgba(11,111,102,0.2)", backgroundColor: "#FFFFFF", paddingHorizontal: 10, paddingVertical: 7 },
+                  pressed && styles.pressed
+                ]}
+              >
+                <Text style={{ color: "#0A6F66", fontSize: 12, lineHeight: 16, fontWeight: "800" }}>{homeOrientationCopy.dismiss}</Text>
+              </Pressable>
+            </View>
+            <View style={{ flexDirection: compact ? "column" : "row", gap: isTinyPhone ? 7 : 9 }}>
+              {homeOrientationCopy.steps.map((step, index) => (
+                <Pressable
+                  key={step.title}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${step.action}: ${step.body}`}
+                  onPress={() => onOpenTab(step.tab)}
+                  style={({ pressed }) => [
+                    {
+                      flex: 1,
+                      minHeight: compact ? (isTinyPhone ? 66 : 72) : 88,
+                      borderRadius: 17,
+                      borderWidth: 1,
+                      borderColor: "rgba(11,111,102,0.15)",
+                      backgroundColor: "#FFFFFF",
+                      paddingHorizontal: isTinyPhone ? 10 : 12,
+                      paddingVertical: isTinyPhone ? 9 : 11,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 9
+                    },
+                    pressed && styles.pressed
+                  ]}
+                >
+                  <View style={{ width: 26, height: 26, borderRadius: 13, alignItems: "center", justifyContent: "center", backgroundColor: ["#D8F3EA", "#E3ECFF", "#FDE8C8"][index] }}>
+                    <Text style={{ color: "#0A6F66", fontSize: 12, lineHeight: 16, fontWeight: "800" }}>{index + 1}</Text>
+                  </View>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={{ color: "#0F172A", fontSize: isTinyPhone ? 13 : 14, lineHeight: 18, fontWeight: "900" }}>{step.title}</Text>
+                    <Text style={{ color: "#4B6268", fontSize: isTinyPhone ? 12 : 13, lineHeight: isTinyPhone ? 16 : 18, fontWeight: "700", marginTop: 2 }} numberOfLines={2}>{step.body}</Text>
+                    <Text style={{ color: "#0A6F66", fontSize: isTinyPhone ? 12 : 13, lineHeight: 16, fontWeight: "800", marginTop: 4 }}>{step.action} →</Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        ) : null}
         {/* Trimmed to a compact safety strip on purpose. The full version
             (all 4 numbers, complaint templates, evidence checklists) already
             has its own always-visible bottom-nav tab -- "Help" is one of the
