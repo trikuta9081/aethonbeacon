@@ -36246,7 +36246,7 @@ function RedressSection({
                   <Text style={{ flex: 1, color: localizedSelfGuideResult?.urgency === "urgent" ? "#B53333" : "#0E6F69", fontSize: 14, fontWeight: "900" }}>
                     {localizedSelfGuideResult?.urgency === "urgent" ? "🚨 " : "✦ "}{localizedSelfGuideResult?.urgency === "urgent" ? l("Safety-first guidance", { hindi: "सुरक्षा-प्रथम मार्गदर्शन" }) : l("Your next-step guide", { hindi: "आपका अगला कदम मार्गदर्शक" })}
                   </Text>
-                  <Text style={{ color: "#506673", fontSize: 11, fontWeight: "800" }}>{l(`${localizedSelfGuideResult?.confidence ?? "low"} confidence`, { hindi: `${localizedSelfGuideResult?.confidence === "high" ? "उच्च" : localizedSelfGuideResult?.confidence === "medium" ? "मध्यम" : "कम"} भरोसा`, telugu: `${localizedSelfGuideResult?.confidence === "high" ? "అధిక" : localizedSelfGuideResult?.confidence === "medium" ? "మధ్యస్థ" : "తక్కువ"} నమ్మకం`, tamil: `${localizedSelfGuideResult?.confidence === "high" ? "அதிக" : localizedSelfGuideResult?.confidence === "medium" ? "நடுத்தரம்" : "குறைவு"} நம்பிக்கை`, urdu: `${localizedSelfGuideResult?.confidence === "high" ? "زیادہ" : localizedSelfGuideResult?.confidence === "medium" ? "درمیانہ" : "کم"} اعتماد` })}</Text>
+                  <Text style={{ color: "#506673", fontSize: 12, fontWeight: "800" }}>{l(`${localizedSelfGuideResult?.confidence ?? "low"} confidence`, { hindi: `${localizedSelfGuideResult?.confidence === "high" ? "उच्च" : localizedSelfGuideResult?.confidence === "medium" ? "मध्यम" : "कम"} भरोसा`, telugu: `${localizedSelfGuideResult?.confidence === "high" ? "అధిక" : localizedSelfGuideResult?.confidence === "medium" ? "మధ్యస్థ" : "తక్కువ"} నమ్మకం`, tamil: `${localizedSelfGuideResult?.confidence === "high" ? "அதிக" : localizedSelfGuideResult?.confidence === "medium" ? "நடுத்தரம்" : "குறைவு"} நம்பிக்கை`, urdu: `${localizedSelfGuideResult?.confidence === "high" ? "زیادہ" : localizedSelfGuideResult?.confidence === "medium" ? "درمیانہ" : "کم"} اعتماد` })}</Text>
                 </View>
                 <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19, marginTop: 7 }}>{localizedSelfGuideResult?.heard}</Text>
                 <Text style={{ color: "#0D3D3A", fontSize: 12, lineHeight: 18, marginTop: 7, fontWeight: "700" }}>{localizedSelfGuideResult?.why}</Text>
@@ -36255,7 +36255,7 @@ function RedressSection({
                 <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.7 }}>{l("Do this next", { hindi: "अब यह करें" })}</Text>
                 {localizedSelfGuideResult?.nextSteps.map((step, index) => (
                   <View key={step} style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
-                    <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "900" }}>{index + 1}.</Text>
+                    <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "700" }}>{index + 1}.</Text>
                     <Text style={{ flex: 1, color: "#25364D", fontSize: 13, lineHeight: 18 }}>{step}</Text>
                   </View>
                 ))}
@@ -37277,10 +37277,10 @@ function RedressSection({
                   style={{ marginTop: 10, borderRadius: 10, backgroundColor: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#ECFDF5" : "#FFF8E7", borderWidth: 1, borderColor: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#86EFAC" : "#E7C878", padding: 11 }}
                 >
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                    <Text style={{ color: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#04714F" : "#8A4B08", fontSize: 12, fontWeight: "900", letterSpacing: 0.8, textTransform: "uppercase" }}>
+                    <Text style={{ color: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#04714F" : "#8A4B08", fontSize: 12, fontWeight: "700", letterSpacing: 0.8, textTransform: "uppercase" }}>
                       {l("Draft readiness", { hindi: "ड्राफ्ट तैयार", telugu: "డ్రాఫ్ట్ సిద్ధత", tamil: "வரைவு தயார்நிலை", urdu: "مسودے کی تیاری" })}
                     </Text>
-                    <Text style={{ color: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#04714F" : "#8A4B08", fontSize: 12, fontWeight: "900" }}>{draftReadiness.score}/100</Text>
+                    <Text style={{ color: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#04714F" : "#8A4B08", fontSize: 12, fontWeight: "700" }}>{draftReadiness.score}/100</Text>
                   </View>
                   <Text style={{ color: "#405563", fontSize: 12, lineHeight: 17, marginTop: 4 }}>
                     {draftReadiness.unresolvedFields.length > 0
@@ -37292,12 +37292,12 @@ function RedressSection({
                       const complete = draftReadiness.checks[item.key];
                       return (
                         <View key={item.key} style={{ borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: complete ? "#D1FAE5" : "#FEF3C7", borderWidth: 1, borderColor: complete ? "#86EFAC" : "#E7C878" }}>
-                          <Text style={{ color: complete ? "#04714F" : "#8A4B08", fontSize: 11, fontWeight: "800" }}>{complete ? "✓" : "•"} {item.label}</Text>
+                          <Text style={{ color: complete ? "#04714F" : "#8A4B08", fontSize: 12, fontWeight: "800" }}>{complete ? "✓" : "•"} {item.label}</Text>
                         </View>
                       );
                     })}
                   </View>
-                  <Text style={{ color: "#6B4A1E", fontSize: 11, lineHeight: 16, marginTop: 7 }}>
+                  <Text style={{ color: "#6B4A1E", fontSize: 12, lineHeight: 16, marginTop: 7 }}>
                     {l("This review is a safety check, not legal approval. Use only facts you can support and ask a qualified person when the matter is high-risk or unclear.", { hindi: "यह समीक्षा सुरक्षा-जाँच है, कानूनी स्वीकृति नहीं। केवल वही तथ्य लिखें जिन्हें आप प्रमाणित कर सकते हैं और high-risk या अस्पष्ट मामले में योग्य व्यक्ति से पूछें।" })}
                   </Text>
                 </View>
