@@ -48,6 +48,16 @@ const cases = [
     name: "regional semantic safety",
     body: { route: "general", text: "મને ધમકી મળી છે અને હું અસુરક્ષિત છું" },
     expect: (meta) => meta.selectedRoute === "urgent" && meta.routeEvidence.includes("urgent") && meta.reviewActions.length > 0
+  },
+  {
+    name: "safety signal overrides explicit planning route",
+    body: { route: "guide", text: "I am planning my next step but I cannot stay safe tonight" },
+    expect: (meta) => meta.selectedRoute === "urgent" && meta.semanticConcepts.includes("urgent-safety") && meta.reviewRequired
+  },
+  {
+    name: "multilingual semantic concept evidence",
+    body: { route: "general", text: "मुझे बार बार वही समस्या हो रही है, डॉक्टर चाहिए" },
+    expect: (meta) => meta.semanticConcepts.includes("recurrence") && meta.semanticConcepts.includes("professional-care") && meta.candidateScores.length === 4
   }
 ];
 
@@ -57,6 +67,9 @@ for (const testCase of cases) {
   assert.equal(typeof meta.explanation, "string", `${testCase.name}: missing explanation`);
   assert.equal(typeof meta.knowledgeCheckedAt, "string", `${testCase.name}: missing knowledge timestamp`);
   assert.ok(Array.isArray(meta.alternatives), `${testCase.name}: missing alternatives`);
+  assert.ok(Array.isArray(meta.semanticConcepts), `${testCase.name}: missing semantic concepts`);
+  assert.ok(Array.isArray(meta.candidateScores), `${testCase.name}: missing candidate scores`);
+  assert.equal(typeof meta.confidenceReason, "string", `${testCase.name}: missing confidence explanation`);
 }
 
 const normalized = normalizeGuidanceSignals("भय અને ફરિયાદ");

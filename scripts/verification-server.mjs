@@ -790,8 +790,74 @@ function getLocalGuidanceProfile(route, text) {
   };
 }
 
+const GUIDANCE_SEMANTIC_CONCEPTS = [
+  {
+    id: "urgent-safety",
+    canonical: "urgent danger unsafe violence threat self-harm",
+    patterns: [
+      "suicide", "self-harm", "self harm", "can't stay safe", "cannot stay safe", "immediate danger",
+      "आत्महत्या", "खुदकुशी", "खतरा", "असुरक्षित", "ತಾತ್ಮಹತ್ಯೆ", "ಅಪಾಯ", "അസുരക്ഷിതം",
+      "தற்கொலை", "ஆபத்து", "பாதுகாப்பில்லை", "خودکشی", "خطرہ", "غیر محفوظ",
+      "ધમકી", "ಅಸುರಕ್ಷಿತ", "భయంగా ఉంది", "मी सुरक्षित नाही"
+    ]
+  },
+  {
+    id: "formal-help",
+    canonical: "complaint authority police institution redress",
+    patterns: [
+      "file a complaint", "report to police", "formal complaint", "institution problem", "office grievance",
+      "शिकायत", "एफआईआर", "पुलिस", "उत्पीड़न", "ఫిర్యాదు", "ఎఫ్ఐఆర్", "పోలీస్", "వేధింపు",
+      "புகார்", "முதல் தகவல் அறிக்கை", "காவல்துறை", "துன்புறுத்தல்", "شکایت", "ایف آئی آر", "پولیس",
+      "অভিযোগ", "પોલીસ", "ದೂರು", "പരാതി", "ਸ਼ਿਕਾਇਤ"
+    ]
+  },
+  {
+    id: "professional-care",
+    canonical: "doctor hospital medicine symptom mental health professional",
+    patterns: [
+      "chest pain", "panic attack", "mental health", "need a doctor", "medical advice", "withdrawal",
+      "डॉक्टर", "अस्पताल", "दवा", "लक्षण", "घबराहट", "నాకు డాక్టర్ కావాలి", "ఆసుపత్రి", "లక్షణాలు",
+      "மருத்துவர்", "மருத்துவமனை", "அறிகுறி", "பதட்டம்", "ڈاکٹر", "ہسپتال", "علامات", "घबराट"
+    ]
+  },
+  {
+    id: "planning-support",
+    canonical: "planning study academic career relationship anxiety stress grief",
+    patterns: [
+      "what should i do", "help me decide", "study plan", "career choice", "relationship problem",
+      "anxiety", "stress", "grief", "पढ़ाई", "करियर", "रिश्ता", "चिंता", "तनाव", "शोक",
+      "చదువు", "ఉద్యోగం", "సంబంధం", "ఆందోళన", "ఒత్తిడి", "దుఃఖం", "படிப்பு", "உறவு", "கவலை",
+      "மன அழுத்தம்", "துக்கம்", "پڑھائی", "رشتہ", "پریشانی", "تناؤ", "سوگ"
+    ]
+  },
+  {
+    id: "cyber-financial",
+    canonical: "cyber fraud otp upi bank financial crime",
+    patterns: [
+      "otp fraud", "upi fraud", "bank scam", "online fraud", "account takeover", "morphed image",
+      "साइबर", "धोखाधड़ी", "ओटीपी", "यूपीआई", "ब्लैकमेल", "సైబర్", "మోసం", "ఓటీపీ", "యూపీఐ",
+      "சைபர்", "மோசடி", "ஓடிபி", "யுபிஐ", "سائبر", "فراڈ", "او ٹی پی", "یو پی آئی"
+    ]
+  },
+  {
+    id: "recurrence",
+    canonical: "recurring repeated pattern history",
+    patterns: [
+      "same problem again", "happening again", "keeps happening", "repeated issue", "recurring",
+      "फिर से", "बार बार", "पुनः", "మళ్లీ", "మళ్ళీ", "மீண்டும்", "بار بار", "আবারও", "ફરીથી", "ಮತ್ತೆ"
+    ]
+  }
+];
+
+function getGuidanceSemanticConcepts(text) {
+  const source = String(text ?? "").toLowerCase().normalize("NFKC");
+  return GUIDANCE_SEMANTIC_CONCEPTS
+    .filter((concept) => concept.patterns.some((pattern) => source.includes(pattern)))
+    .map((concept) => concept.id);
+}
+
 function normalizeGuidanceSignals(text) {
-  const source = String(text ?? "").toLowerCase();
+  const source = String(text ?? "").toLowerCase().normalize("NFKC");
   const aliases = [
     [/आत्महत्या|खुदकुशी|खतरा|हिंसा|धमकी|असुरक्षित|बलात्कार|తాత్మహత్య|ప్రమాదం|హింస|బెదిరింపు|అసురక్షితం|தற்கொலை|ஆபத்து|வன்முறை|அச்சுறுத்தல்|பாதுகாப்பில்லை|خودکشی|خطرہ|تشدد|دھمکی|غیر محفوظ/, "suicide danger violence threat unsafe assault"],
     [/शिकायत|एफआईआर|पुलिस|उत्पीड़न|रैगिंग|अधिकारी|ఫిర్యాదు|ఎఫ్ఐఆర్|పోలీస్|వేధింపు|ర్యాగింగ్|అధికారి|புகார்|முதல் தகவல் அறிக்கை|காவல்துறை|துன்புறுத்தல்|ரேக்கிங்|அதிகாரி|شکایت|ایف آئی آر|پولیس|ہراسانی|ریگنگ|افسر/, "complaint fir police harassment ragging authority redress"],
@@ -825,7 +891,15 @@ function normalizeGuidanceSignals(text) {
     [/doctor|hospital|medicine|symptom|pain|mental health|anxiety attack|घबराहट|लक्षण|दर्द/, "doctor hospital medicine symptom professional"],
     [/same problem|again|repeated|recurring|पहले भी|फिर से|बार बार|আবার|আবারও|மீண்டும்|پھر سے/, "recurring repeat"]
   ];
-  return `${source} ${aliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")} ${semanticAliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")}`;
+  // Keep semantic evidence namespaced. Appending broad words such as
+  // "study" or "academic" to this shared string would change the ordering of
+  // the older deterministic fallback classifier for unrelated languages.
+  const semanticConceptText = GUIDANCE_SEMANTIC_CONCEPTS
+    .map((concept, index) => ({ concept, index }))
+    .filter(({ concept }) => concept.patterns.some((pattern) => source.includes(pattern)))
+    .map(({ index }) => `semantic_concept_${index + 1}`)
+    .join(" ");
+  return `${source} ${aliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")} ${semanticAliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")} ${semanticConceptText}`;
 }
 
 function buildFallbackGuidanceReply(body) {
@@ -846,6 +920,7 @@ function buildFallbackGuidanceReply(body) {
 function getGuidanceDecisionMeta(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
   const text = normalizeGuidanceSignals(body?.text);
+  const semanticConcepts = getGuidanceSemanticConcepts(body?.text);
   const historyText = normalizeGuidanceSignals(body?.historyContext);
   const currentTokens = new Set(text.split(/\s+/).filter((token) => token.length >= 5));
   const historyOverlap = [...new Set(historyText.split(/\s+/).filter((token) => token.length >= 5))]
@@ -859,10 +934,10 @@ function getGuidanceDecisionMeta(body) {
       : "No reliable recurrence signal was found in the recent in-app history."
   };
   const signals = {
-    urgent: /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe|overdose|weapon)/.test(text),
-    help: /(cyber|upi|otp|fraud|police|fir|complaint|institution|authority|harass|abuse|workplace|salary|money|financial|hospital|doctor|medicine)/.test(text),
-    path: /(study|academic|career|relationship|family|grief|anxiety|stress|sad|burnout|planning|focus)/.test(text),
-    professional: /(hospital|doctor|medicine|symptom|panic|depression|addiction|withdrawal|overdose|psychologist)/.test(text)
+    urgent: semanticConcepts.includes("urgent-safety") || /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe|overdose|weapon)/.test(text),
+    help: semanticConcepts.includes("formal-help") || semanticConcepts.includes("cyber-financial") || /(cyber|upi|otp|fraud|police|fir|complaint|institution|authority|harass|abuse|workplace|salary|money|financial|hospital|doctor|medicine)/.test(text),
+    path: semanticConcepts.includes("planning-support") || /(study|academic|career|relationship|family|grief|anxiety|stress|sad|burnout|planning|focus)/.test(text),
+    professional: semanticConcepts.includes("professional-care") || /(hospital|doctor|medicine|symptom|panic|depression|addiction|withdrawal|overdose|psychologist)/.test(text)
   };
   const manipulation = /(ignore (all|any|the) (previous|earlier|safety)|bypass (the )?safety|pretend there is no risk|guarantee (this|the)|do not mention (help|safety|escalation))/.test(text);
   const candidateScores = [
@@ -872,7 +947,9 @@ function getGuidanceDecisionMeta(body) {
     { route: "professional", score: signals.professional ? 78 : 10 }
   ].sort((a, b) => b.score - a.score);
   const routeAlias = route === "urgent" ? "urgent" : route === "redress" ? "help" : route === "professional" ? "professional" : route === "guide" ? "path" : "";
-  const selected = routeAlias || candidateScores[0].route;
+  // Explicit UI context may refine a route, but it must never override an
+  // independently detected urgent safety signal.
+  const selected = signals.urgent ? "urgent" : routeAlias || candidateScores[0].route;
   const rawSelectedScore = candidateScores.find((candidate) => candidate.route === selected)?.score ?? 30;
   const selectedScore = Math.min(100, rawSelectedScore + (historyMemory.recurring && rawSelectedScore >= 30 ? 4 : 0));
   const runnerUp = candidateScores.find((candidate) => candidate.route !== selected)?.score ?? 0;
@@ -944,6 +1021,11 @@ function getGuidanceDecisionMeta(body) {
     selectedRoute: selected,
     explanation,
     routeEvidence: Object.entries(signals).filter(([, value]) => value).map(([key]) => key),
+    semanticConcepts,
+    candidateScores,
+    confidenceReason: ambiguous
+      ? "The leading route is close to another route, so the app shows alternatives and requests review."
+      : `The selected route leads by ${Math.max(0, selectedScore - runnerUp)} points using the detected safety and support signals.`,
     historyMemory,
     reviewActions,
     alternatives: candidateScores.filter((candidate) => candidate.route !== selected).slice(0, 2).map((candidate) => candidate.route),
@@ -963,19 +1045,24 @@ function getGuidanceDecisionMeta(body) {
 }
 
 async function getGuidanceKnowledgeStatus() {
+  const now = Date.now();
+  const freshnessWindowMs = 30 * 24 * 60 * 60 * 1000;
   const sources = await Promise.all(guidanceKnowledgeSources.map(async (source) => {
+    const reviewedAtMs = Date.parse(`${source.reviewedAt}T00:00:00Z`);
+    const ageDays = Number.isFinite(reviewedAtMs) ? Math.max(0, Math.floor((now - reviewedAtMs) / (24 * 60 * 60 * 1000))) : null;
     try {
       const response = await fetch(source.url, { method: "HEAD", redirect: "follow", signal: timeoutSignal(3_000) });
-      return { ...source, reachable: response.ok, status: response.status };
+      return { ...source, reachable: response.ok, status: response.status, ageDays, stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs };
     } catch {
-      return { ...source, reachable: false, status: null };
+      return { ...source, reachable: false, status: null, ageDays, stale: ageDays === null || now - reviewedAtMs > freshnessWindowMs };
     }
   }));
   return {
     version: guidanceKnowledgeVersion,
     checkedAt: new Date().toISOString(),
     reviewBaseline: guidanceKnowledgeCheckedAt,
-    freshness: sources.every((source) => source.reachable) ? "reachable" : "review-needed",
+    freshness: sources.every((source) => source.reachable && !source.stale) ? "reachable" : "review-needed",
+    freshnessWindowDays: 30,
     sources
   };
 }
