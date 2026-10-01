@@ -158,6 +158,13 @@ assert(source.includes('No bracketed placeholders remain'), 'Draft readiness mus
 assert(source.includes('GENERIC_REDRESS_DRAFT'), 'Every future redress scenario must have a neutral drafting fallback');
 assert(source.includes('followUpDraftTemplate'), 'Tracked cases must provide a follow-up draft, not only an initial complaint');
 assert(source.includes('Share follow-up draft'), 'Follow-up drafts must be shareable from the case tracker');
+assert(source.includes('type HelpSelfGuidance'), 'Help must expose a structured self-guidance result');
+assert(source.includes('function buildHelpSelfGuidance'), 'Help must have a deterministic offline self-guidance engine');
+assert(source.includes('const [selfGuideInput, setSelfGuideInput]'), 'Help must provide a private guidance input');
+assert(source.includes('testID="help-self-guidance"'), 'Help self-guidance surface must remain discoverable for QA');
+assert(source.includes('This runs on the device first'), 'Help must disclose its local-first privacy boundary');
+assert(source.includes('Safety-first guidance'), 'Help self-guidance must prioritise urgent safety');
+assert(source.includes('Open this Help route'), 'Help self-guidance must provide a route handoff');
 assert(source.includes('FIR lodging path'), 'The crime route must explain the FIR lodging path explicitly');
 assert(source.includes('Police complaint + FIR guide'), 'Help and Redress must expose a dedicated police complaint and FIR guide');
 assert(source.includes('digitalpolice.gov.in/'), 'Help and Redress must link to the official national Digital Police hub');

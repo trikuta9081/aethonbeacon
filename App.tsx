@@ -5446,6 +5446,155 @@ function findGuidedSupportRedressRouteFromText(text: string): RedressRouteId {
   return "academic";
 }
 
+type HelpSelfGuidance = {
+  routeId: RedressRouteId;
+  route: GuidedSupportRoute;
+  confidence: "high" | "medium" | "low";
+  urgency: "urgent" | "standard";
+  heard: string;
+  why: string;
+  nextSteps: string[];
+};
+
+// Help needs to remain useful when the connected service, and the
+// network are unavailable. This is deliberately deterministic and conservative:
+// safety wins, formal routes are preferred for authority signals, and uncertain
+// text gets a neutral preparation path rather than an invented legal conclusion.
+function buildHelpSelfGuidance(text: string): HelpSelfGuidance {
+  const normalized = appendLocalizedSupportSignals(text);
+  const route = detectGuidedSupportRouteFromText(normalized);
+  const issueId = findGuidedSupportIssueIdFromText(normalized);
+  const routeId = route === "urgent" || route === "redress"
+    ? findGuidedSupportRedressRouteFromText(normalized)
+    : "private";
+  const explicitAuthority = /(complaint|grievance|redress|report|police|fir|authority|department|office|legal|harass|ragging|fraud|cyber|consumer|cpgrams|शिकायत|एफआईआर|पुलिस|ఫిర్యాదు|புகார்|شکایت)/i.test(normalized);
+  const matchedConcepts = [issueId, explicitAuthority ? "authority" : null].filter(Boolean);
+  const confidence: HelpSelfGuidance["confidence"] = route === "urgent"
+    ? "high"
+    : matchedConcepts.length >= 2
+      ? "high"
+      : matchedConcepts.length === 1
+        ? "medium"
+        : "low";
+
+  if (route === "urgent") {
+    return {
+      routeId,
+      route,
+      confidence,
+      urgency: "urgent",
+      heard: "Your words include a possible immediate safety signal. Help should not delay protection or emergency care.",
+      why: "Safety language takes priority over complaint preparation. If danger is happening now, call 112 and move to a safer place before using any portal.",
+      nextSteps: [
+        "Move away from the danger and contact a trusted person if you can do so safely.",
+        "Call 112 for immediate danger, assault, serious injury, or threat to life.",
+        "When safe, preserve evidence and return here to prepare a factual complaint or follow-up."
+      ]
+    };
+  }
+
+  if (route === "redress") {
+    return {
+      routeId,
+      route,
+      confidence,
+      urgency: "standard",
+      heard: "This sounds like an issue that needs a traceable response from an office, institution, provider, or authority.",
+      why: "The wording contains a formal action signal, so Help is prioritising a dated record, the correct first office, and a specific remedy.",
+      nextSteps: [
+        "Write what happened in date-and-time order without guessing motives or adding unsupported claims.",
+        "Collect the strongest proof and note every earlier reference number or reply.",
+        "Ask for one specific remedy, a written acknowledgement, and the next-step timeline."
+      ]
+    };
+  }
+
+  if (route === "professional") {
+    return {
+      routeId,
+      route,
+      confidence: confidence === "low" ? "medium" : confidence,
+      urgency: "standard",
+      heard: "The message may need qualified professional support in addition to any complaint or practical step.",
+      why: "Clinical or high-impact terms are present, so Help will keep practical preparation available without treating this as a diagnosis or legal conclusion.",
+      nextSteps: [
+        "If there is immediate medical or safety danger, use emergency help first.",
+        "Choose the closest route below and write only observable facts, dates, and impact.",
+        "Ask a qualified professional or trusted human reviewer to check high-stakes decisions."
+      ]
+    };
+  }
+
+  return {
+    routeId,
+    route,
+    confidence,
+    urgency: "standard",
+    heard: "I can help turn this into a clearer record and a proportionate next step.",
+    why: "The message does not yet contain a strong formal or immediate-danger signal, so Help is keeping the response neutral rather than over-routing it.",
+    nextSteps: [
+      "Separate what happened, what impact it had, and what outcome you want.",
+      "Choose whether this needs counselling, a practical conversation, or formal redress.",
+      "If you are unsure, start with the neutral complaint draft and ask a trusted person to review it."
+    ]
+  };
+}
+
+function localizeHelpSelfGuidance(result: HelpSelfGuidance, languageId: LanguageId): HelpSelfGuidance {
+  const pick = (english: string, hindi: string, telugu: string, tamil: string, urdu: string) =>
+    pickLocalizedText(languageId, { english, hindi, telugu, tamil, urdu });
+  if (result.urgency === "urgent") {
+    return {
+      ...result,
+      heard: pick(
+        "Your words include a possible immediate safety signal. Help should not delay protection or emergency care.",
+        "आपके शब्दों में तत्काल सुरक्षा का संकेत हो सकता है। सहायता को सुरक्षा या आपातकालीन देखभाल में देरी नहीं करनी चाहिए।",
+        "మీ మాటల్లో తక్షణ భద్రతా సంకేతం ఉండవచ్చు. సహాయం రక్షణ లేదా అత్యవసర వైద్య సంరక్షణను ఆలస్యం చేయకూడదు.",
+        "உங்கள் வார்த்தைகளில் உடனடி பாதுகாப்பு சிக்னல் இருக்கலாம். பாதுகாப்பு அல்லது அவசர சிகிச்சையை உதவி தாமதிக்கக் கூடாது.",
+        "آپ کے الفاظ میں فوری حفاظتی اشارہ ہو سکتا ہے۔ مدد کو حفاظت یا ہنگامی علاج میں تاخیر نہیں کرنی چاہیے۔"
+      ),
+      why: pick(
+        "Safety language takes priority over complaint preparation. If danger is happening now, call 112 and move to a safer place before using any portal.",
+        "सुरक्षा से जुड़ी भाषा शिकायत की तैयारी से पहले आती है। यदि अभी खतरा है, तो किसी पोर्टल से पहले 112 पर कॉल करें और सुरक्षित जगह जाएँ।",
+        "భద్రతకు సంబంధించిన మాటలు ఫిర్యాదు సిద్ధం చేయడం కంటే ముందుంటాయి. ఇప్పుడే ప్రమాదం ఉంటే ఏ పోర్టల్ కంటే ముందు 112కు కాల్ చేసి సురక్షిత ప్రదేశానికి వెళ్లండి.",
+        "பாதுகாப்பு தொடர்பான சொற்கள் புகார் தயாரிப்புக்கு முன்னுரிமை பெறும். இப்போது ஆபத்து இருந்தால் எந்த portal-ஐப் பயன்படுத்தும் முன் 112-ஐ அழைத்து பாதுகாப்பான இடத்திற்குச் செல்லுங்கள்.",
+        "حفاظت سے متعلق زبان شکایت کی تیاری پر مقدم ہے۔ اگر خطرہ ابھی موجود ہے تو کسی portal سے پہلے 112 پر کال کریں اور محفوظ جگہ جائیں۔"
+      ),
+      nextSteps: [
+        pick("Move away from the danger and contact a trusted person if you can do so safely.", "खतरे से दूर जाएँ और सुरक्षित हो तो किसी भरोसेमंद व्यक्ति से संपर्क करें।", "ప్రమాదం నుండి దూరంగా వెళ్లి, సురక్షితంగా ఉంటే నమ్మకమైన వ్యక్తిని సంప్రదించండి.", "ஆபத்திலிருந்து விலகி, பாதுகாப்பாக இருந்தால் நம்பகமான ஒருவரைத் தொடர்புகொள்ளுங்கள்.", "خطرے سے دور جائیں اور اگر محفوظ ہو تو کسی بھروسہ مند شخص سے رابطہ کریں۔"),
+        pick("Call 112 for immediate danger, assault, serious injury, or threat to life.", "तत्काल खतरे, हमले, गंभीर चोट या जान के खतरे में 112 पर कॉल करें।", "తక్షణ ప్రమాదం, దాడి, తీవ్రమైన గాయం లేదా ప్రాణహాని ఉంటే 112కు కాల్ చేయండి.", "உடனடி ஆபத்து, தாக்குதல், கடுமையான காயம் அல்லது உயிருக்கு அச்சுறுத்தல் இருந்தால் 112-ஐ அழைக்கவும்.", "فوری خطرے، حملے، شدید چوٹ یا جان کو خطرہ ہو تو 112 پر کال کریں۔"),
+        pick("When safe, preserve evidence and return here to prepare a factual complaint or follow-up.", "सुरक्षित होने पर प्रमाण सुरक्षित रखें और तथ्यात्मक शिकायत या फॉलो-अप तैयार करने के लिए लौटें।", "సురక్షితంగా ఉన్నప్పుడు ఆధారాలను భద్రపరచి, వాస్తవాల ఆధారిత ఫిర్యాదు లేదా ఫాలో-అప్ సిద్ధం చేయడానికి తిరిగి రండి.", "பாதுகாப்பாக இருக்கும் போது சான்றுகளைப் பாதுகாத்து, உண்மை அடிப்படையிலான புகார் அல்லது பின்தொடர்பைத் தயாரிக்க இங்கே திரும்புங்கள்.", "محفوظ ہونے پر ثبوت محفوظ کریں اور حقائق پر مبنی شکایت یا follow-up تیار کرنے کے لیے واپس آئیں۔")
+      ]
+    };
+  }
+  const redress = result.route === "redress";
+  const professional = result.route === "professional";
+  return {
+    ...result,
+    heard: redress
+      ? pick("This sounds like an issue that needs a traceable response from an office, institution, provider, or authority.", "यह ऐसा मुद्दा लगता है जिसे कार्यालय, संस्था, सेवा प्रदाता या प्राधिकरण से दर्ज जवाब चाहिए।", "ఇది కార్యాలయం, సంస్థ, సేవా ప్రదాత లేదా అధికార సంస్థ నుండి నమోదు చేయబడిన స్పందన అవసరమైన సమస్యలా ఉంది.", "இது அலுவலகம், நிறுவனம், சேவை வழங்குநர் அல்லது அதிகாரியிடமிருந்து பதிவுசெய்யப்பட்ட பதில் தேவைப்படும் பிரச்சினையாகத் தெரிகிறது.", "یہ ایسا مسئلہ لگتا ہے جس کے لیے دفتر، ادارے، سروس فراہم کنندہ یا اتھارٹی سے قابلِ ریکارڈ جواب درکار ہے.")
+      : professional
+        ? pick("The message may need qualified professional support in addition to any complaint or practical step.", "इस संदेश को शिकायत या व्यावहारिक कदम के साथ योग्य पेशेवर सहायता की भी ज़रूरत हो सकती है।", "ఈ సందేశానికి ఫిర్యాదు లేదా ప్రాయోగిక చర్యతో పాటు అర్హత కలిగిన నిపుణుల సహాయం అవసరం కావచ్చు.", "இந்தச் செய்திக்கு புகார் அல்லது நடைமுறை நடவடிக்கையுடன் தகுதியான தொழில்முறை ஆதரவும் தேவைப்படலாம்.", "اس پیغام کو شکایت یا عملی قدم کے ساتھ اہل پیشہ ورانہ مدد کی بھی ضرورت ہو سکتی ہے.")
+        : pick("I can help turn this into a clearer record and a proportionate next step.", "मैं इसे स्पष्ट रिकॉर्ड और उचित अगले कदम में बदलने में मदद कर सकता हूँ।", "దీన్ని స్పష్టమైన రికార్డు మరియు తగిన తదుపరి అడుగుగా మార్చడంలో నేను సహాయపడగలను.", "இதைத் தெளிவான பதிவாகவும் பொருத்தமான அடுத்த படியாகவும் மாற்ற உதவுகிறேன்.", "میں اسے واضح ریکارڈ اور مناسب اگلے قدم میں بدلنے میں مدد کر سکتا ہوں۔"),
+    why: redress
+      ? pick("The wording contains a formal action signal, so Help is prioritising a dated record, the correct first office, and a specific remedy.", "शब्दों में औपचारिक कार्रवाई का संकेत है, इसलिए सहायता मार्ग तारीख़ वाला रिकॉर्ड, सही पहला कार्यालय और स्पष्ट समाधान को प्राथमिकता देता है।", "ఈ మాటల్లో అధికారిక చర్యకు సంకేతం ఉంది; అందుకే సహాయం తేదీతో కూడిన రికార్డు, సరైన మొదటి కార్యాలయం మరియు నిర్దిష్ట పరిష్కారాన్ని ప్రాధాన్యంగా చూపుతోంది.", "இந்த வார்த்தைகளில் முறையான நடவடிக்கை சிக்னல் உள்ளது; அதனால் உதவி தேதி கொண்ட பதிவு, சரியான முதல் அலுவலகம் மற்றும் குறிப்பிட்ட தீர்வை முன்னிலைப்படுத்துகிறது.", "الفاظ میں رسمی کارروائی کا اشارہ ہے، اس لیے مدد تاریخ والے ریکارڈ، درست پہلے دفتر اور مخصوص حل کو ترجیح دے رہی ہے۔")
+      : professional
+        ? pick("Clinical or high-impact terms are present, so Help will keep practical preparation available without treating this as a diagnosis or legal conclusion.", "चिकित्सीय या गंभीर प्रभाव वाले संकेत हैं, इसलिए सहायता व्यावहारिक तैयारी देगी लेकिन इसे निदान या कानूनी निष्कर्ष नहीं मानेगी।", "వైద్య లేదా అధిక ప్రభావం ఉన్న పదాలు ఉన్నాయి; అందుకే సహాయం దీన్ని నిర్ధారణ లేదా చట్టపరమైన నిర్ణయంగా కాకుండా ప్రాయోగిక సిద్ధతగా ఉంచుతుంది.", "மருத்துவ அல்லது அதிக தாக்கம் கொண்ட சொற்கள் உள்ளன; எனவே உதவி இதை நோயறிதல் அல்லது சட்ட முடிவாகக் கருதாமல் நடைமுறை தயாரிப்பை வழங்கும்.", "طبی یا زیادہ اثر والے الفاظ موجود ہیں، اس لیے مدد اسے تشخیص یا قانونی نتیجہ سمجھے بغیر عملی تیاری دے گی۔")
+        : pick("The message does not yet contain a strong formal or immediate-danger signal, so Help is keeping the response neutral rather than over-routing it.", "संदेश में अभी स्पष्ट औपचारिक या तत्काल खतरे का संकेत नहीं है, इसलिए सहायता बिना ज़रूरत किसी मार्ग पर नहीं भेज रही।", "ఈ సందేశంలో ఇంకా స్పష్టమైన అధికారిక లేదా తక్షణ ప్రమాద సంకేతం లేదు; అందుకే సహాయం అవసరం లేకుండా ఒక మార్గానికి బలవంతంగా పంపడం లేదు.", "இந்தச் செய்தியில் இன்னும் தெளிவான முறையான அல்லது உடனடி ஆபத்து சிக்னல் இல்லை; எனவே உதவி தேவையில்லாமல் ஒரு பாதைக்கு அனுப்பவில்லை.", "پیغام میں ابھی واضح رسمی یا فوری خطرے کا اشارہ نہیں، اس لیے مدد بلا ضرورت کسی راستے پر نہیں بھیج رہی۔"),
+    nextSteps: redress
+      ? [
+          pick("Write what happened in date-and-time order without guessing motives or adding unsupported claims.", "क्या हुआ उसे तारीख़ और समय के क्रम में लिखें; मंशा का अनुमान या बिना प्रमाण दावा न जोड़ें।", "ఏం జరిగిందో తేదీ, సమయ క్రమంలో రాయండి; ఉద్దేశాలను ఊహించకండి లేదా ఆధారం లేని వాదనలు చేర్చకండి.", "என்ன நடந்தது என்பதை தேதி மற்றும் நேர வரிசையில் எழுதுங்கள்; நோக்கங்களை ஊகிக்காமல் ஆதாரம் இல்லாத கூற்றுகளைச் சேர்க்காதீர்கள்.", "جو ہوا اسے تاریخ اور وقت کی ترتیب میں لکھیں؛ نیت کا اندازہ یا بے ثبوت دعویٰ شامل نہ کریں۔"),
+          pick("Collect the strongest proof and note every earlier reference number or reply.", "सबसे मजबूत प्रमाण जुटाएँ और हर पुराने संदर्भ नंबर या जवाब को नोट करें।", "బలమైన ఆధారాలను సేకరించి, ప్రతి మునుపటి రిఫరెన్స్ నంబర్ లేదా సమాధానాన్ని నమోదు చేయండి.", "வலுவான சான்றுகளைச் சேகரித்து, முந்தைய ஒவ்வொரு குறிப்பு எண் அல்லது பதிலையும் பதிவு செய்யுங்கள்.", "مضبوط ترین ثبوت جمع کریں اور ہر پچھلے حوالہ نمبر یا جواب کو نوٹ کریں۔"),
+          pick("Ask for one specific remedy, a written acknowledgement, and the next-step timeline.", "एक स्पष्ट समाधान, लिखित acknowledgement और अगले कदम की समयसीमा माँगें।", "ఒక నిర్దిష్ట పరిష్కారం, రాతపూర్వక స్వీకరణ మరియు తదుపరి చర్య సమయరేఖను అడగండి.", "ஒரு குறிப்பிட்ட தீர்வு, எழுத்துப்பூர்வ ஒப்புதல் மற்றும் அடுத்த படி காலவரிசையைக் கேளுங்கள்.", "ایک مخصوص حل، تحریری acknowledgement اور اگلے قدم کی مدت مانگیں۔")
+        ]
+      : [
+          pick("Separate what happened, what impact it had, and what outcome you want.", "क्या हुआ, उसका प्रभाव क्या था और आप क्या परिणाम चाहते हैं, इन्हें अलग लिखें।", "ఏం జరిగిందో, దాని ప్రభావం ఏమిటో, మీకు ఏ ఫలితం కావాలో వేరు చేయండి.", "என்ன நடந்தது, அதன் தாக்கம் என்ன, நீங்கள் விரும்பும் முடிவு என்ன என்பதைப் பிரித்து எழுதுங்கள்.", "جو ہوا، اس کا اثر، اور آپ کون سا نتیجہ چاہتے ہیں، الگ الگ لکھیں۔"),
+          pick("Choose whether this needs counselling, a practical conversation, or formal redress.", "तय करें कि इसके लिए counselling, व्यावहारिक बातचीत या औपचारिक शिकायत चाहिए।", "దీనికి కౌన్సెలింగ్, ప్రాయోగిక సంభాషణ లేదా అధికారిక ఫిర్యాదు అవసరమో ఎంచుకోండి.", "இதற்கு ஆலோசனை, நடைமுறை உரையாடல் அல்லது முறையான புகார் தேவையா என்பதைத் தேர்ந்தெடுக்கவும்.", "طے کریں کہ اس کے لیے counselling، عملی گفتگو یا رسمی شکایت درکار ہے۔"),
+          pick("If you are unsure, start with the neutral complaint draft and ask a trusted person to review it.", "यदि आप अनिश्चित हैं, तो neutral complaint draft से शुरू करें और किसी भरोसेमंद व्यक्ति से समीक्षा कराएँ।", "మీకు సందేహంగా ఉంటే, తటస్థ ఫిర్యాదు డ్రాఫ్ట్‌తో ప్రారంభించి నమ్మకమైన వ్యక్తితో సమీక్షించండి.", "உறுதியாக தெரியாவிட்டால், நடுநிலை புகார் வரைவில் தொடங்கி நம்பகமான ஒருவரிடம் மதிப்பாய்வு செய்யுங்கள்.", "اگر یقین نہ ہو تو غیر جانب دار شکایت draft سے شروع کر کے کسی بھروسہ مند شخص سے جائزہ لیں۔")
+        ]
+  };
+}
+
 function inferIdentityIdFromText(text: string, fallback: IdentityId = "other"): IdentityId {
   const normalized = text.toLowerCase();
   if (/(student|school|college|university|exam|class|assignment|homework|study)/.test(normalized)) return "student";
@@ -35718,6 +35867,8 @@ function RedressSection({
   const [editableFollowUpDraft, setEditableFollowUpDraft] = useState("");
   const [showScript, setShowScript] = useState(false);
   const [showCompanionPlan, setShowCompanionPlan] = useState(false);
+  const [selfGuideInput, setSelfGuideInput] = useState("");
+  const [selfGuideResult, setSelfGuideResult] = useState<HelpSelfGuidance | null>(null);
   // The situation picker is a grid of eleven chips. Once someone has told us
   // which situation they are in, keeping all eleven on screen pushes the
   // answer they came for below the fold -- so the picker folds down to a
@@ -35740,6 +35891,7 @@ function RedressSection({
     setShowFollowUpDraft(false);
     setShowScript(false);
     setShowCompanionPlan(false);
+    setSelfGuideResult(null);
     setCheckedEvidence({});
   }, [selectedRedressRoute.id, selectedInstitutionSector.id, selectedIdentity.id, languageId]);
 
@@ -35747,6 +35899,16 @@ function RedressSection({
   const evidenceItems = selectedRedressRoute.keepReady.split(",").map((item) => item.trim()).filter(Boolean);
   const checkedCount = evidenceItems.filter((_, i) => checkedEvidence[String(i)]).length;
   const redressReviewState = getRedressReviewState();
+  const localizedSelfGuideResult = selfGuideResult ? localizeHelpSelfGuidance(selfGuideResult, languageId) : null;
+  const runSelfGuide = () => {
+    void Haptics.selectionAsync();
+    const trimmed = selfGuideInput.trim();
+    if (!trimmed) {
+      setSelfGuideResult(null);
+      return;
+    }
+    setSelfGuideResult(buildHelpSelfGuidance(trimmed));
+  };
 
   // ── Persistent "My case" tracker for the currently selected route ──
   const activeCase = redressCases.find((c) => c.routeId === selectedRedressRoute.id) ?? null;
@@ -36035,6 +36197,90 @@ function RedressSection({
             urdu: "آپ کی صورتحال ہی راستہ طے کرتی ہے۔ نیچے کی ہر چیز — پہلا دفتر، تجویز کردہ ابتدائی قدم اور رسمی اگلا راستہ — اسی کے مطابق بدلتی ہے، اور صرف وہی راستہ دکھایا جاتا ہے۔ مختلف راستہ منتخب کرنے کے لیے صورتحال کارڈ پر “تبدیل کریں” ٹیپ کریں۔"
           })}
         </Text>
+        <View testID="help-self-guidance" style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#102B3F", borderWidth: 1, borderColor: "#2B6170", padding: 14 }}>
+          <Text style={{ color: "#F7E7B4", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase" }}>
+            {l("NAYIQ Help guide", { hindi: "NAYIQ सहायता मार्गदर्शक", telugu: "NAYIQ సహాయ మార్గదర్శి", tamil: "NAYIQ உதவி வழிகாட்டி", urdu: "NAYIQ مدد رہنما" })}
+          </Text>
+          <Text style={{ color: "#F2F7F8", fontSize: 16, lineHeight: 22, fontWeight: "800", marginTop: 5 }}>
+            {l("Tell me what happened. I will help you decide what to do next.", { hindi: "क्या हुआ बताइए। मैं अगला कदम तय करने में मदद करूँगा।", telugu: "ఏం జరిగిందో చెప్పండి. తర్వాత ఏమి చేయాలో నిర్ణయించడంలో నేను సహాయపడతాను.", tamil: "என்ன நடந்தது என்று சொல்லுங்கள். அடுத்து என்ன செய்வது என்று தீர்மானிக்க உதவுகிறேன்.", urdu: "بتائیں کیا ہوا۔ میں اگلا قدم طے کرنے میں مدد کروں گا۔" })}
+          </Text>
+          <TextInput
+            value={selfGuideInput}
+            onChangeText={setSelfGuideInput}
+            placeholder={l("For example: my bank has not resolved a wrong debit", { hindi: "उदाहरण: बैंक ने गलत debit का समाधान नहीं किया", telugu: "ఉదాహరణ: బ్యాంక్ తప్పు డెబిట్‌ను పరిష్కరించలేదు", tamil: "உதாரணம்: வங்கி தவறான டெபிட்டை சரிசெய்யவில்லை", urdu: "مثال: بینک نے غلط debit حل نہیں کیا" })}
+            placeholderTextColor="#91A9B3"
+            multiline
+            maxLength={1000}
+            accessibilityLabel={l("Describe what happened for private local guidance", { hindi: "निजी स्थानीय मार्गदर्शन के लिए क्या हुआ बताएं" })}
+            style={{ marginTop: 11, minHeight: 84, borderRadius: 10, backgroundColor: "#F7FAFC", color: "#102B3F", paddingHorizontal: 12, paddingVertical: 11, fontSize: 15, lineHeight: 20, textAlignVertical: "top" }}
+          />
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 9 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={l("Get private local guidance", { hindi: "निजी स्थानीय मार्गदर्शन लें" })}
+              onPress={runSelfGuide}
+              style={({ pressed }) => ({ flex: 1, minHeight: 46, borderRadius: 10, backgroundColor: pressed ? "#F0D98B" : "#D4A63A", alignItems: "center", justifyContent: "center", paddingHorizontal: 12 })}
+            >
+              <Text style={{ color: "#102B3F", fontSize: 13, fontWeight: "800", textAlign: "center" }}>
+                {l("Guide me privately", { hindi: "निजी मार्गदर्शन दें", telugu: "ప్రైవేట్‌గా మార్గనిర్దేశం చేయండి", tamil: "தனிப்பட்ட வழிகாட்டலைப் பெறுங்கள்", urdu: "نجی رہنمائی دیں" })}
+              </Text>
+            </Pressable>
+            {selfGuideResult ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={l("Clear local guidance", { hindi: "स्थानीय मार्गदर्शन हटाएँ" })}
+                onPress={() => setSelfGuideResult(null)}
+                style={({ pressed }) => ({ minHeight: 46, borderRadius: 10, borderWidth: 1, borderColor: "#6C919C", backgroundColor: pressed ? "#24475A" : "transparent", alignItems: "center", justifyContent: "center", paddingHorizontal: 12 })}
+              >
+                <Text style={{ color: "#F2F7F8", fontSize: 13, fontWeight: "700" }}>{l("Clear", { hindi: "हटाएँ" })}</Text>
+              </Pressable>
+            ) : null}
+          </View>
+          <Text style={{ color: "#C9DCE1", fontSize: 12, lineHeight: 17, marginTop: 8 }}>
+            {l("This runs on the device first. It does not send your text outside the app, and it is not a legal, medical, or emergency decision.", { hindi: "यह पहले device पर चलता है। आपका text ऐप से बाहर नहीं भेजता और यह कानूनी, चिकित्सीय या आपातकालीन निर्णय नहीं है।", telugu: "ఇది ముందుగా పరికరంపైనే పనిచేస్తుంది. మీ టెక్స్ట్ యాప్ వెలుపలికి పంపబడదు; ఇది చట్టపరమైన, వైద్య లేదా అత్యవసర నిర్ణయం కాదు.", tamil: "இது முதலில் சாதனத்திலேயே இயங்கும். உங்கள் உரை பயன்பாட்டிற்கு வெளியே அனுப்பப்படாது; இது சட்ட, மருத்துவ அல்லது அவசர முடிவு அல்ல.", urdu: "یہ پہلے ڈیوائس پر چلتا ہے۔ آپ کا متن ایپ سے باہر نہیں بھیجا جاتا، اور یہ قانونی، طبی یا ہنگامی فیصلہ نہیں ہے۔" })}
+          </Text>
+          {selfGuideResult ? (
+            <View style={{ marginTop: 11, borderRadius: 11, backgroundColor: "#F7FAFC", overflow: "hidden" }}>
+              <View style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: "#D9E6E4" }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, alignItems: "center" }}>
+                  <Text style={{ flex: 1, color: localizedSelfGuideResult?.urgency === "urgent" ? "#B53333" : "#0E6F69", fontSize: 14, fontWeight: "900" }}>
+                    {localizedSelfGuideResult?.urgency === "urgent" ? "🚨 " : "✦ "}{localizedSelfGuideResult?.urgency === "urgent" ? l("Safety-first guidance", { hindi: "सुरक्षा-प्रथम मार्गदर्शन" }) : l("Your next-step guide", { hindi: "आपका अगला कदम मार्गदर्शक" })}
+                  </Text>
+                  <Text style={{ color: "#506673", fontSize: 11, fontWeight: "800" }}>{l(`${localizedSelfGuideResult?.confidence ?? "low"} confidence`, { hindi: `${localizedSelfGuideResult?.confidence === "high" ? "उच्च" : localizedSelfGuideResult?.confidence === "medium" ? "मध्यम" : "कम"} भरोसा`, telugu: `${localizedSelfGuideResult?.confidence === "high" ? "అధిక" : localizedSelfGuideResult?.confidence === "medium" ? "మధ్యస్థ" : "తక్కువ"} నమ్మకం`, tamil: `${localizedSelfGuideResult?.confidence === "high" ? "அதிக" : localizedSelfGuideResult?.confidence === "medium" ? "நடுத்தரம்" : "குறைவு"} நம்பிக்கை`, urdu: `${localizedSelfGuideResult?.confidence === "high" ? "زیادہ" : localizedSelfGuideResult?.confidence === "medium" ? "درمیانہ" : "کم"} اعتماد` })}</Text>
+                </View>
+                <Text style={{ color: "#25364D", fontSize: 13, lineHeight: 19, marginTop: 7 }}>{localizedSelfGuideResult?.heard}</Text>
+                <Text style={{ color: "#0D3D3A", fontSize: 12, lineHeight: 18, marginTop: 7, fontWeight: "700" }}>{localizedSelfGuideResult?.why}</Text>
+              </View>
+              <View style={{ padding: 12 }}>
+                <Text style={{ color: "#0B6E67", fontSize: 12, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.7 }}>{l("Do this next", { hindi: "अब यह करें" })}</Text>
+                {localizedSelfGuideResult?.nextSteps.map((step, index) => (
+                  <View key={step} style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+                    <Text style={{ color: "#0E6F69", fontSize: 13, fontWeight: "900" }}>{index + 1}.</Text>
+                    <Text style={{ flex: 1, color: "#25364D", fontSize: 13, lineHeight: 18 }}>{step}</Text>
+                  </View>
+                ))}
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 11 }}>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => { if (!localizedSelfGuideResult) return; setRedressRouteId(localizedSelfGuideResult.routeId); setFocusedRouteId(localizedSelfGuideResult.routeId); setShowRouteChooser(false); }}
+                    style={({ pressed }) => ({ flexGrow: 1, minWidth: 150, minHeight: 44, borderRadius: 9, backgroundColor: pressed ? "#D7ECE8" : "#EAF3F1", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center", paddingHorizontal: 10 })}
+                  >
+                    <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "800", textAlign: "center" }}>{l("Open this Help route", { hindi: "यह सहायता मार्ग खोलें" })}</Text>
+                  </Pressable>
+                  {localizedSelfGuideResult?.urgency === "urgent" ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => void onEmergencyCall()}
+                      style={({ pressed }) => ({ flexGrow: 1, minWidth: 130, minHeight: 44, borderRadius: 9, backgroundColor: pressed ? "#D62E00" : "#B53333", alignItems: "center", justifyContent: "center", paddingHorizontal: 10 })}
+                    >
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800", textAlign: "center" }}>🚨 {l("Call 112", { hindi: "112 पर कॉल" })}</Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              </View>
+            </View>
+          ) : null}
+        </View>
         <View style={{ marginBottom: 14, borderRadius: 14, backgroundColor: "#FFF4F0", borderWidth: 1, borderColor: "#E9A99A", padding: 12 }}>
           <Text style={{ color: "#9D2B1D", fontSize: 12, fontWeight: "800", letterSpacing: 0.8, textTransform: "uppercase" }}>
             {l("Safety check", { hindi: "सुरक्षा जाँच", telugu: "భద్రతా తనిఖీ", tamil: "பாதுகாப்புச் சோதனை", urdu: "حفاظتی جانچ" })}
