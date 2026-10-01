@@ -32,7 +32,8 @@
     "test:launch-scenarios": "node --experimental-strip-types scripts/public-launch-scenarios.mjs",
     "test:local-guidance": "node scripts/local-guidance-regression.mjs",
     "test:guidance-standards": "node scripts/guidance-standards-regression.mjs",
-    "test:counselling-opening": "node scripts/counselling-opening-regression.mjs"
+    "test:counselling-opening": "node scripts/counselling-opening-regression.mjs",
+    "test:ios-keyboard-layout": "node scripts/ios-keyboard-layout-audit.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/playfair-display": "^0.4.2",

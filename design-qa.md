@@ -41,6 +41,7 @@ Blocked for the same reason. The required focus regions are the compact header, 
 - `pnpm run test:product-quality` — passed.
 - `pnpm run test:upgrades` — passed, including new keyboard-focus regression assertions.
 - `pnpm run test:visibility` — passed.
+- `pnpm run test:ios-keyboard-layout` — deterministic 369 × 800 logical viewport audit passed.
 - `pnpm run test:vedic` — passed.
 - `pnpm run test:tone` — passed.
 - `pnpm run export:web` — passed.
@@ -56,4 +57,4 @@ Blocked for the same reason. The required focus regions are the compact header, 
 
 Capture the new TestFlight build at 369 × 800 logical points in the same first-reply state, first with the keyboard closed and then focused with the keyboard open. Confirm that the latest bubble, 44-point composer controls, keyboard-dismiss action, and transcript scrolling are visible and usable.
 
-final result: blocked
+final result: automated contract protected; native same-state visual capture still pending
