@@ -43051,13 +43051,12 @@ function PrivateIntakeOverlay({
 }
 
 // ── Persistent Bottom Navigation Bar ──────────────────────────────────────────
-// 5 primary tabs always visible.
-// Primary nav: Today / Journal / Calm Reset / Help / Profile
+// Native primary nav: Today / Journal / Calm Reset / Help / Profile.
 // Help and Redress is intentionally surfaced here (not buried in Pages) because
 // safety, SOS, complaint route, and immediate support must be one tap away and visibly
-// above the lower-priority "other/general" surfaces. Patterns, Community,
-// Explore, Practice, and Tones remain accessible via Pages; Birth Chart is
-// intentionally pinned in the top rail instead.
+// above the lower-priority "other/general" surfaces. On compact web, Community
+// is promoted into the bottom bar because the web viewport does not reliably
+// expose the full top rail; native keeps its existing five-item layout.
 const PRIMARY_NAV_TABS: Array<{ id: TabId | "more"; label: string; icon: string }> = [
   { id: "today",      label: "Today",      icon: "🏠" },
   { id: "journal",    label: "Journal",    icon: "✍️" },
@@ -48043,9 +48042,16 @@ function BottomNavBar({
   languageId?: LanguageId;
 }) {
   const navActiveTab: TabId = activeTab;
+  const primaryNavTabs = Platform.OS === "web"
+    ? [
+        ...PRIMARY_NAV_TABS.slice(0, 3),
+        { id: "community" as TabId, label: "Community", icon: "💬" },
+        ...PRIMARY_NAV_TABS.slice(3)
+      ]
+    : PRIMARY_NAV_TABS;
   return (
     <View style={[styles.bottomNav, Platform.OS === "ios" && { paddingBottom: 28 }]}>
-      {PRIMARY_NAV_TABS.map((item) => {
+      {primaryNavTabs.map((item) => {
         const label = translateNavLabel(languageId, item.label);
         const isActive = navActiveTab === item.id;
         const hasBadge =
