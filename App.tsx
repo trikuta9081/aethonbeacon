@@ -16072,7 +16072,7 @@ export default function App() {
   // instead of two disagreeing ones.
   const isWide = width >= 620;
   const isCompact = width < 620;
-  const isPhone = width < 430;
+  const isPhone = width < 560;
   const isNarrow = width < 380;
   const isTablet = width >= 620 && width < 1120;
   const isDesktop = width >= 1120;
@@ -34081,7 +34081,7 @@ function IssueGuideSection({
   const l = (english: string, translations?: Partial<Record<LanguageId, string>>) =>
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const { width } = useWindowDimensions();
-  const isPhone = width < 430;
+  const isPhone = width < 560;
   const [showFullPathDetails, setShowFullPathDetails] = useState(false);
   const [showAllIssues, setShowAllIssues] = useState(false);
   const issueDisplayLabel = selectedIssueGuide.id === "general"
@@ -37390,7 +37390,7 @@ function SectionFlowBand({
   languageId: LanguageId;
 }) {
   const { width } = useWindowDimensions();
-  const isPhone = width < 430;
+  const isPhone = width < 560;
   return (
     <View style={[styles.issueRouteSnapshotBand, compact && styles.issueRouteSnapshotBandCompact]}>
       <View style={[styles.sectionHeader, isPhone && styles.sectionHeaderPhone]}>
@@ -39623,7 +39623,7 @@ function BirthChartSection({
     pickLocalizedText(languageId, { english, ...(translations ?? {}) });
   const { width } = useWindowDimensions();
   const isWide = width >= 760;
-  const isNarrowPhone = width < 430;
+  const isNarrowPhone = width < 560;
   // Split DOB into day / month / year segments for easy keypad entry
   const [dobDD, setDobDD] = useState(() => profileDOB.slice(8, 10) || "");
   const [dobMM, setDobMM] = useState(() => profileDOB.slice(5, 7) || "");
@@ -42771,8 +42771,8 @@ function OnboardingOverlay({
           <>
             <View style={styles.onboardingHeader}>
               <Text style={styles.eyebrow}>{t("Welcome to NAYIQ", "NAYIQ में आपका स्वागत है")}</Text>
-              <Text style={styles.onboardingTitle}>{t("Choose what you need today.", "आज आपको जो चाहिए, उसे चुनें।")}</Text>
-              <Text style={styles.onboardingText}>
+              <Text style={[styles.onboardingTitle, compactOnboarding && styles.onboardingTitleCompact]}>{t("Choose what you need today.", "आज आपको जो चाहिए, उसे चुनें।")}</Text>
+              <Text style={[styles.onboardingText, compactOnboarding && styles.onboardingTextCompact]}>
                 {t("Start with the automatic counselling engine or community. Optional details can be added later, and notes remain on this device unless you choose to export or share them.", "स्वचालित परामर्श इंजन या समुदाय से शुरू करें। वैकल्पिक विवरण बाद में जोड़े जा सकते हैं, और जब तक आप निर्यात या साझा न करें, नोट्स इसी डिवाइस पर रहेंगी।")}
               </Text>
             </View>
@@ -53326,8 +53326,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0
   },
   onboardingTitleCompact: {
-    fontSize: 12,
-    lineHeight: 16
+    fontSize: 22,
+    lineHeight: 27
   },
   onboardingText: {
     color: "#111827",
@@ -53335,8 +53335,8 @@ const styles = StyleSheet.create({
     lineHeight: 22
   },
   onboardingTextCompact: {
-    fontSize: 12,
-    lineHeight: 16
+    fontSize: 14,
+    lineHeight: 20
   },
   onboardingBlock: {
     gap: 6,
