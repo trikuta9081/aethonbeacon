@@ -74,6 +74,9 @@ try {
     if (!response.ok || payload.source !== "fallback" || !/^What this means:/m.test(body)) {
       throw new Error(`${name}: expected a structured local fallback response`);
     }
+    if (!payload.decisionMeta || !["high", "medium", "low"].includes(payload.decisionMeta.confidence) || typeof payload.decisionMeta.reviewRequired !== "boolean" || typeof payload.decisionMeta.basis !== "string") {
+      throw new Error(`${name}: missing explainable decision metadata`);
+    }
     for (const term of expected) {
       if (!body.toLowerCase().includes(term.toLowerCase())) {
         throw new Error(`${name}: missing actionable term ${term}; response was ${body.replace(/\n/g, " | ")}`);

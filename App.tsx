@@ -927,6 +927,11 @@ type GuidedSupportMessage = {
   route: GuidedSupportRoute;
 };
 type GuideReplyProvider = "connected" | "local";
+type GuidanceDecisionMeta = {
+  confidence: "high" | "medium" | "low";
+  reviewRequired: boolean;
+  basis: string;
+};
 type UserReview = {
   id: string;
   createdAt: string;
@@ -21874,7 +21879,7 @@ async function fetchGuidanceHelp(
       }
 
       const payload = (await response.json().catch(() => null)) as
-        | { text?: string; source?: string; model?: string }
+        | { text?: string; source?: string; model?: string; decisionMeta?: GuidanceDecisionMeta }
         | null;
 
       const reply = typeof payload?.text === "string" ? payload.text.trim() : "";
@@ -21884,7 +21889,8 @@ async function fetchGuidanceHelp(
 
       return {
         text: reply,
-        source: payload?.source ?? "connected"
+        source: payload?.source ?? "connected",
+        decisionMeta: payload?.decisionMeta
       };
     } catch {
       return null;
@@ -46183,7 +46189,7 @@ function CounselingChatModal({
     route: GuidedSupportRoute,
     profileAddressLabel: string,
     issueGuide: IssueGuide
-  ) => Promise<{ text: string; source: string } | null>;
+  ) => Promise<{ text: string; source: string; decisionMeta?: GuidanceDecisionMeta } | null>;
   onGuideReplyProviderChange: (provider: GuideReplyProvider) => void;
   // Passed down from App() (checkInStreak / crossSectionSignal.recentMoodTagLeaning)
   // so buildJourneySteps below can vary its copy with real history -- see the
@@ -46234,6 +46240,7 @@ function CounselingChatModal({
   }));
   const [draft, setDraft] = React.useState("");
   const [guidanceEnrichment, setGuidanceEnrichment] = React.useState<string | null>(null);
+  const [guidanceEnrichmentMeta, setGuidanceEnrichmentMeta] = React.useState<GuidanceDecisionMeta | null>(null);
   const [guidanceEnrichmentLoading, setGuidanceEnrichmentLoading] = React.useState(false);
   // Subtle pulse for the "looking a little deeper" line below -- guidanceEnrichmentLoading
   // was already being tracked but never rendered anywhere, so during an actual
@@ -46602,12 +46609,16 @@ function CounselingChatModal({
     // elsewhere in the app -- the card this powers just never appears.
     if (onFetchGuideEnrichment) {
       setGuidanceEnrichment(null);
+      setGuidanceEnrichmentMeta(null);
       setGuidanceEnrichmentLoading(true);
       const enrichmentIssueGuide = issueGuides.find((guide) => guide.id === issueId) ?? issueGuides[0];
       onFetchGuideEnrichment(session.originalIssue + " " + allUserTextForSynthesis, route, identityLabel, enrichmentIssueGuide)
         .then((result) => {
           onGuideReplyProviderChange(result?.source === "connected" ? "connected" : "local");
-          if (result && result.text.trim().length > 0) setGuidanceEnrichment(result.text.trim());
+          if (result && result.text.trim().length > 0) {
+            setGuidanceEnrichment(result.text.trim());
+            setGuidanceEnrichmentMeta(result.decisionMeta ?? null);
+          }
         })
         .catch(() => {
           onGuideReplyProviderChange("local");
@@ -47397,6 +47408,13 @@ function CounselingChatModal({
               {guidanceEnrichment && guidanceEnrichment.trim().length > 0 && (
                 <View style={{ backgroundColor: "#F2F1E8", borderRadius: 12, padding: 14, borderLeftWidth: 3, borderLeftColor: "#B45309", marginBottom: 4 }}>
                   <Text style={{ color: "#A14A08", fontSize: 12, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{l("A closer look", { hindi: "थोड़ा और करीब से देखें", telugu: "కొంచెం దగ్గరగా చూడండి", tamil: "இன்னும் நெருக்கமாகப் பார்ப்போம்", urdu: "مزید قریب سے دیکھیں" })}</Text>
+                  {guidanceEnrichmentMeta ? (
+                    <Text style={{ color: guidanceEnrichmentMeta.confidence === "high" ? "#0D6B36" : "#8A4B08", fontSize: 12, lineHeight: 17, fontWeight: "800", marginBottom: 6 }}>
+                      {guidanceEnrichmentMeta.confidence === "high"
+                        ? l("Strong route signal. Review the details before acting.", { hindi: "मार्ग का संकेत स्पष्ट है। कार्रवाई से पहले विवरण जाँचें।", telugu: "మార్గ సూచన బలంగా ఉంది. చర్యకు ముందు వివరాలను పరిశీలించండి.", tamil: "பாதை குறிப்பு வலுவாக உள்ளது. செயல்படும் முன் விவரங்களைச் சரிபார்க்கவும்.", urdu: "راستے کا اشارہ مضبوط ہے۔ عمل سے پہلے تفصیلات دیکھیں۔" })
+                        : l("This is a working route, not a final decision. Review it or seek human support.", { hindi: "यह प्रारंभिक मार्ग है, अंतिम निर्णय नहीं। इसे जाँचें या मानवीय सहायता लें।", telugu: "ఇది ప్రారంభ మార్గం మాత్రమే, తుది నిర్ణయం కాదు. పరిశీలించండి లేదా మానవ సహాయం పొందండి.", tamil: "இது ஒரு ஆரம்ப பாதை; இறுதி முடிவு அல்ல. சரிபார்க்கவும் அல்லது மனித உதவியைப் பெறவும்.", urdu: "یہ ابتدائی راستہ ہے، حتمی فیصلہ نہیں۔ اسے جانچیں یا انسانی مدد لیں۔" })}
+                    </Text>
+                  ) : null}
                   <Text style={{ color: "#3A617D", fontSize: 13, lineHeight: 20 }}>{guidanceEnrichment}</Text>
                 </View>
               )}

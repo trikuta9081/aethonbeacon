@@ -778,6 +778,27 @@ function buildFallbackGuidanceReply(body) {
   ].join("\n");
 }
 
+function getGuidanceDecisionMeta(body) {
+  const route = typeof body?.route === "string" ? body.route : "general";
+  const text = typeof body?.text === "string" ? body.text.trim().toLowerCase() : "";
+  const hasSpecificSignal = /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe|cyber|upi|otp|fraud|police|fir|complaint|institution|hospital|doctor|medicine|workplace|salary|relationship|domestic)/.test(text);
+  const basis = route === "urgent"
+    ? "urgent safety signal"
+    : route === "redress"
+      ? "formal complaint or authority route"
+      : route === "professional"
+        ? "professional-support signal"
+        : route === "guide"
+          ? "planning or clarity signal"
+          : "general guidance signal";
+  const confidence = route === "urgent" || (hasSpecificSignal && route !== "general")
+    ? "high"
+    : route === "general" && text.length < 24
+      ? "low"
+      : "medium";
+  return { confidence, reviewRequired: confidence !== "high", basis };
+}
+
 function trimGuidanceHelpLabel(text) {
   return String(text ?? "")
     .replace(/^\s*(?:\d+\.\s*)?(what this means|safest next step|open tab|escalate when)\s*:\s*/i, "")
@@ -905,15 +926,16 @@ async function runConfiguredGuidance(prompt, maxTokens, minChars = 40) {
 }
 
 async function generateGuidanceHelp(body) {
+  const decisionMeta = getGuidanceDecisionMeta(body);
   if (!guidanceConfigured) {
     guidanceRuntime.live = false;
     guidanceRuntime.lastFailure = "not configured";
-    return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body) };
+    return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body), decisionMeta };
   }
 
   const result = await runConfiguredGuidance(buildGuidancePrompt(body), 700, 1);
-  if (result) return { ...result, text: normalizeGuidanceHelpReply(result.text, body) };
-  return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body) };
+  if (result) return { ...result, text: normalizeGuidanceHelpReply(result.text, body), decisionMeta };
+  return { source: "fallback", model: "fallback", text: buildFallbackGuidanceReply(body), decisionMeta };
 }
 
 // ── guidance/brief — personalised Smart Daily Brief ───────────────────────
@@ -1595,13 +1617,15 @@ async function handleRequest(req, res) {
       json(res, 200, {
         source: result.source,
         model: result.model,
-        text: result.text
+        text: result.text,
+        decisionMeta: result.decisionMeta
       });
     } catch (error) {
       json(res, 503, {
         source: "fallback",
         model: "fallback",
         text: buildFallbackGuidanceReply({ text: "", route: "general" }),
+        decisionMeta: getGuidanceDecisionMeta({ text: "", route: "general" }),
         message: error instanceof Error ? error.message : "Could not generate guidance."
       });
     }
