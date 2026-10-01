@@ -634,7 +634,7 @@ function getGuidanceHelpTabLabel(route) {
 }
 
 function getLocalGuidanceProfile(route, text) {
-  const normalized = String(text ?? "").toLowerCase();
+  const normalized = normalizeGuidanceSignals(text);
   if (route === "urgent" || /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe)/.test(normalized)) {
     return {
       meaning: "This has an immediate safety signal, so protection comes before documentation or longer guidance.",
@@ -691,7 +691,7 @@ function getLocalGuidanceProfile(route, text) {
       tab: "Help"
     };
   }
-  if (/(police|fir|crime|complaint|harass|ragging|abuse|institution|school|college|university|hospital|government|authority|office)/.test(normalized)) {
+  if (/(police|fir|crime|complaint|harass|ragging|abuse|institution|school|college|university|government|authority|office)/.test(normalized)) {
     return {
       meaning: "This is a formal complaint or institutional issue that needs facts, evidence, and the right first office.",
       step: "Write what happened, when, where, who was involved, the evidence available, and the exact remedy you want; then open Help.",
@@ -763,9 +763,23 @@ function getLocalGuidanceProfile(route, text) {
   };
 }
 
+function normalizeGuidanceSignals(text) {
+  const source = String(text ?? "").toLowerCase();
+  const aliases = [
+    [/आत्महत्या|खुदकुशी|खतरा|हिंसा|धमकी|असुरक्षित|बलात्कार|తాత్మహత్య|ప్రమాదం|హింస|బెదిరింపు|అసురక్షితం|தற்கொலை|ஆபத்து|வன்முறை|அச்சுறுத்தல்|பாதுகாப்பில்லை|خودکشی|خطرہ|تشدد|دھمکی|غیر محفوظ/, "suicide danger violence threat unsafe assault"],
+    [/शिकायत|एफआईआर|पुलिस|उत्पीड़न|रैगिंग|अधिकारी|ఫిర్యాదు|ఎఫ్ఐఆర్|పోలీస్|వేధింపు|ర్యాగింగ్|అధికారి|புகார்|முதல் தகவல் அறிக்கை|காவல்துறை|துன்புறுத்தல்|ரேக்கிங்|அதிகாரி|شکایت|ایف آئی آر|پولیس|ہراسانی|ریگنگ|افسر/, "complaint fir police harassment ragging authority redress"],
+    [/साइबर|धोखाधड़ी|ओटीपी|यूपीआई|ब्लैकमेल|ऑनलाइन|సైబర్|మోసం|ఓటీపీ|యూపీఐ|బ్లాక్‌మెయిల్|ఆన్‌లైన్|சைபர்|மோசடி|ஓடிபி|யுபிஐ|மிரட்டல்|ஆன்லைன்|سائبر|فراڈ|او ٹی پی|یو پی آئی|بلیک میل|آن لائن/, "cyber fraud otp upi blackmail online"],
+    [/डॉक्टर|अस्पताल|दवा|लक्षण|घबराहट|नशा|డాక్టర్|ఆసుపత్రి|మందు|లక్షణాలు|భయాందోళన|వ్యసనం|மருத்துவர்|மருத்துவமனை|மருந்து|அறிகுறி|பதட்டம்|போதை|ڈاکٹر|ہسپتال|دوا|علامات|گھبراہٹ|نشہ/, "doctor hospital medicine symptom panic addiction professional"],
+    [/उदास|चिंता|तनाव|अकेला|शोक|रिश्ता|ఆందోళన|ఒత్తిడి|ఒంటరి|దుఃఖం|సంబంధం|கவலை|மன அழுத்தம்|தனிமை|துக்கம்|உறவு|اداس|پریشانی|تناؤ|اکیلا|سوگ|رشتہ/, "sad anxiety stress lonely grief relationship"],
+    [/पैसा|డబ్బు|பணம்|پیسہ/, "money financial"],
+    [/पढ़ाई|చదువు|படிப்பு|پڑھائی/, "study academic"]
+  ];
+  return `${source} ${aliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")}`;
+}
+
 function buildFallbackGuidanceReply(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
-  const text = typeof body?.text === "string" ? body.text.toLowerCase() : "";
+  const text = normalizeGuidanceSignals(body?.text);
   const emergencyNumber = typeof body?.emergencyNumber === "string" && body.emergencyNumber.trim().length > 0 ? body.emergencyNumber.trim() : "112";
   const profile = getLocalGuidanceProfile(route, text);
   const step = profile.step.replace(/\b112\b/g, emergencyNumber);
@@ -780,7 +794,7 @@ function buildFallbackGuidanceReply(body) {
 
 function getGuidanceDecisionMeta(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
-  const text = typeof body?.text === "string" ? body.text.trim().toLowerCase() : "";
+  const text = normalizeGuidanceSignals(body?.text);
   const hasSpecificSignal = /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe|cyber|upi|otp|fraud|police|fir|complaint|institution|hospital|doctor|medicine|workplace|salary|relationship|domestic)/.test(text);
   const basis = route === "urgent"
     ? "urgent safety signal"

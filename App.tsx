@@ -4913,11 +4913,27 @@ const calmIssueIds = new Set<IssueId>([
 // Callers should lowercase their input before testing (matching prior
 // behavior at both call sites); the /i flag is added defensively in case a
 // future caller forgets.
+function appendLocalizedSupportSignals(text: string): string {
+  const source = String(text ?? "").toLowerCase();
+  const aliases: Array<[RegExp, string]> = [
+    [/आत्महत्या|खुदकुशी|खतरा|हिंसा|धमकी|असुरक्षित|बलात्कार|తాత్మహత్య|ప్రమాదం|హింస|బెదిరింపు|అసురక్షితం|தற்கொலை|ஆபத்து|வன்முறை|அச்சுறுத்தல்|பாதுகாப்பில்லை|خودکشی|خطرہ|تشدد|دھمکی|غیر محفوظ/, "suicide danger violence threat unsafe assault"],
+    [/शिकायत|एफआईआर|पुलिस|उत्पीड़न|रैगिंग|अधिकारी|ఫిర్యాదు|ఎఫ్ఐఆర్|పోలీస్|వేధింపు|ర్యాగింగ్|అధికారి|புகார்|முதல் தகவல் அறிக்கை|காவல்துறை|துன்புறுத்தல்|ரேக்கிங்|அதிகாரி|شکایت|ایف آئی آر|پولیس|ہراسانی|ریگنگ|افسر/, "complaint fir police harassment ragging authority redress"],
+    [/साइबर|धोखाधड़ी|ओटीपी|यूपीआई|ब्लैकमेल|ऑनलाइन|సైబర్|మోసం|ఓటీపీ|యూపీఐ|బ్లాక్‌మెయిల్|ఆన్‌లైన్|சைபர்|மோசடி|ஓடிபி|யுபிஐ|மிரட்டல்|ஆன்லைன்|سائبر|فراڈ|او ٹی پی|یو پی آئی|بلیک میل|آن لائن/, "cyber fraud otp upi blackmail online"],
+    [/डॉक्टर|अस्पताल|दवा|लक्षण|घबराहट|नशा|withdrawal|డాక్టర్|ఆసుపత్రి|మందు|లక్షణాలు|భయాందోళన|వ్యసనం|மருத்துவர்|மருத்துவமனை|மருந்து|அறிகுறி|பதட்டம்|போதை|ڈاکٹر|ہسپتال|دوا|علامات|گھبراہٹ|نشہ/, "doctor hospital medicine symptom panic addiction professional"],
+    [/उदास|चिंता|तनाव|अकेला|शोक|रिश्ता|ఆందోళన|ఒత్తిడి|ఒంటరి|దుఃఖం|సంబంధం|கவலை|மன அழுத்தம்|தனிமை|துக்கம்|உறவு|اداس|پریشانی|تناؤ|اکیلا|سوگ|رشتہ/, "sad anxiety stress lonely grief relationship"],
+    [/पैसा|డబ్బు|பணம்|پیسہ/, "money financial"],
+    [/पढ़ाई|చదువు|படிப்பு|پڑھائی/, "study academic"]
+  ];
+  const matched = aliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical);
+  return `${source} ${matched.join(" ")}`;
+}
+
 const URGENT_SAFETY_SIGNAL_PATTERN =
   /(emergency|unsafe|danger|dangerous|suicid|self[-\s]?harm|kill myself|hurt myself|end my life|end it all|don't want to live|don't want to be here|assault|assaulted|rape|sexual assault|being abused|abuse|abused|physical violence|violence|threat|threat to my life|being threatened|threatened|crisis|panic|112|911|999)/i;
 
 function isUrgentSafetySignal(text: string): boolean {
-  return classifyCounsellingSafety(text) === "immediate" || URGENT_SAFETY_SIGNAL_PATTERN.test(text);
+  const normalized = appendLocalizedSupportSignals(text);
+  return classifyCounsellingSafety(normalized) === "immediate" || URGENT_SAFETY_SIGNAL_PATTERN.test(normalized);
 }
 
 // ── Verified crisis lifelines (India) ───────────────────────────────────────
@@ -5041,7 +5057,7 @@ function buildPositiveCheckInReply(text: string): { heard: string; nextStep: str
 }
 
 function detectGuidedSupportRouteFromText(text: string): GuidedSupportRoute {
-  const n = text.toLowerCase();
+  const n = appendLocalizedSupportSignals(text);
 
   // ── 1. URGENT — immediate safety risk ──────────────────────────────────────
   if (isUrgentSafetySignal(n)) {
@@ -43112,7 +43128,7 @@ async function clearCounsellingDraftStorage(): Promise<void> {
 }
 
 function detectThemes(text: string): SupportDimensionId[] {
-  const t = text.toLowerCase();
+  const t = appendLocalizedSupportSignals(text);
   const themes: SupportDimensionId[] = [];
 
   // Self-image / body / appearance / self-worth

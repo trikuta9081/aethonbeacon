@@ -42,7 +42,12 @@ const scenarios = [
   ["recovery", "I am worried about alcohol withdrawal and relapse", "professional", ["professional", "Path"]],
   ["anger", "I am angry and might react badly", "guide", ["step", "Path"]],
   ["general", "I do not know how to start solving this issue", "general", ["fact", "Path"]],
-  ["mixed", "My workplace problem is also affecting my health", "professional", ["payslips", "HR"]]
+  ["mixed", "My workplace problem is also affecting my health", "professional", ["payslips", "HR"]],
+  ["hindi urgent", "मैं असुरक्षित हूं और मुझे धमकी मिल रही है", "urgent", ["112", "Help"]],
+  ["hindi complaint", "मुझे पुलिस में एफआईआर की शिकायत दर्ज करनी है", "redress", ["facts", "Help"]],
+  ["telugu cyber", "నా UPI మోసం జరిగింది", "redress", ["1930", "cybercrime.gov.in"]],
+  ["tamil health", "எனக்கு தொடர்ந்து அறிகுறிகள் உள்ளன, மருத்துவர் தேவை", "professional", ["symptom", "Path"]],
+  ["urdu relationship", "میں بہت پریشان اور اکیلا ہوں", "general", ["connection", "Path"]]
 ];
 
 async function waitForServer() {
