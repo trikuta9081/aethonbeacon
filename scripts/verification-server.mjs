@@ -85,6 +85,15 @@ const guidanceModelCandidates = [
   ...guidanceFallbackModels.filter((model) => model !== guidanceModel)
 ];
 const guidanceEndpointPrefix = "/guidance";
+const guidanceKnowledgeVersion = "2026.10.01";
+const guidanceKnowledgeCheckedAt = "2026-10-01";
+const guidanceKnowledgeSources = [
+  { id: "emergency", label: "112 India", url: "https://112.gov.in/" },
+  { id: "cybercrime", label: "National Cyber Crime Portal", url: "https://cybercrime.gov.in/" },
+  { id: "cpgrams", label: "CPGRAMS", url: "https://pgportal.gov.in/" },
+  { id: "nalsa", label: "NALSA legal aid", url: "https://nalsa.gov.in/" },
+  { id: "telemanas", label: "Tele-MANAS", url: "https://dghs.mohfw.gov.in/national-mental-health-programme.php" }
+];
 const legacyEndpointPrefix = `/${"a"}${"i"}`;
 const codeTtlMs = parsePositiveInt(process.env.VERIFICATION_CODE_TTL_MS, 10 * 60 * 1000);
 const requestWindowMs = parsePositiveInt(process.env.VERIFICATION_REQUEST_WINDOW_MS, 15 * 60 * 1000);
@@ -606,6 +615,7 @@ function buildGuidancePrompt(body) {
   const issueGuideLabel = typeof body?.issueGuideLabel === "string" ? body.issueGuideLabel : "Current issue";
   const emergencyNumber = typeof body?.emergencyNumber === "string" ? body.emergencyNumber : "112";
   const text = typeof body?.text === "string" ? body.text.trim().slice(0, 2_000) : "";
+  const historyContext = typeof body?.historyContext === "string" ? body.historyContext.trim().slice(0, 1_200) : "";
 
   return [
     "You are NAYIQ Guide.",
@@ -619,13 +629,14 @@ function buildGuidancePrompt(body) {
     `Detected route: ${route}.`,
     `Current issue guide: ${issueGuideLabel}.`,
     `Emergency number: ${emergencyNumber}.`,
+    historyContext ? `Recent in-app route memory (use only to notice recurrence, never as proof): ${historyContext}` : "",
     `User message: ${text}`,
     "Return plain text only. Use exactly 4 labelled lines:",
     "1. What this means:",
     "2. Safest next step:",
     "3. Open tab:",
     `4. Escalate when:`
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 }
 
 function getGuidanceHelpTabLabel(route) {
@@ -772,7 +783,12 @@ function normalizeGuidanceSignals(text) {
     [/डॉक्टर|अस्पताल|दवा|लक्षण|घबराहट|नशा|డాక్టర్|ఆసుపత్రి|మందు|లక్షణాలు|భయాందోళన|వ్యసనం|மருத்துவர்|மருத்துவமனை|மருந்து|அறிகுறி|பதட்டம்|போதை|ڈاکٹر|ہسپتال|دوا|علامات|گھبراہٹ|نشہ/, "doctor hospital medicine symptom panic addiction professional"],
     [/उदास|चिंता|तनाव|अकेला|शोक|रिश्ता|ఆందోళన|ఒత్తిడి|ఒంటరి|దుఃఖం|సంబంధం|கவலை|மன அழுத்தம்|தனிமை|துக்கம்|உறவு|اداس|پریشانی|تناؤ|اکیلا|سوگ|رشتہ/, "sad anxiety stress lonely grief relationship"],
     [/पैसा|డబ్బు|பணம்|پیسہ/, "money financial"],
-    [/पढ़ाई|చదువు|படிப்பு|پڑھائی/, "study academic"]
+    [/पढ़ाई|चिंता|तणाव|तक्रार|रुग्णालय|पैसे|చదువు|ఆందోళన|ఒత్తిడి|ఫిర్యాదు|ఆసుపత్రి|డబ్బు|படிப்பு|கவலை|மன அழுத்தம்|புகார்|மருத்துவமனை|பணம்|پڑھائی|پریشانی|تناؤ|شکایت|ہسپتال|پیسہ/, "study academic anxiety stress complaint hospital money"],
+    [/আমি|ভয়|আতঙ্ক|অভিযোগ|পুলিশ|হাসপাতাল|টাকা|পড়াশোনা/, "fear anxiety complaint police hospital money study"],
+    [/ભય|ચિંતા|ફરિયાદ|પોલીસ|હોસ્પિટલ|પૈસા|અભ્યાસ/, "fear anxiety complaint police hospital money study"],
+    [/ಭಯ|ಚಿಂತೆ|ದೂರು|ಪೊಲೀಸ್|ಆಸ್ಪತ್ರೆ|ಹಣ|ಓದು/, "fear anxiety complaint police hospital money study"],
+    [/ഭയം|ഉത്കണ്ഠ|പരാതി|പോലീസ്|ആശുപത്രി|പണം|പഠനം/, "fear anxiety complaint police hospital money study"],
+    [/ਮਨ|ਡਰ|ਚਿੰਤਾ|ਸ਼ਿਕਾਇਤ|ਪੁਲਿਸ|ਹਸਪਤਾਲ|ਪੈਸਾ|ਪੜ੍ਹਾਈ/, "fear anxiety complaint police hospital money study"]
   ];
   return `${source} ${aliases.filter(([pattern]) => pattern.test(source)).map(([, canonical]) => canonical).join(" ")}`;
 }
@@ -795,7 +811,26 @@ function buildFallbackGuidanceReply(body) {
 function getGuidanceDecisionMeta(body) {
   const route = typeof body?.route === "string" ? body.route : "general";
   const text = normalizeGuidanceSignals(body?.text);
-  const hasSpecificSignal = /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe|cyber|upi|otp|fraud|police|fir|complaint|institution|hospital|doctor|medicine|workplace|salary|relationship|domestic)/.test(text);
+  const signals = {
+    urgent: /(suicide|self[-\s]?harm|assault|violence|threat|danger|unsafe|overdose|weapon)/.test(text),
+    help: /(cyber|upi|otp|fraud|police|fir|complaint|institution|authority|harass|abuse|workplace|salary|money|financial|hospital|doctor|medicine)/.test(text),
+    path: /(study|academic|career|relationship|family|grief|anxiety|stress|sad|burnout|planning|focus)/.test(text),
+    professional: /(hospital|doctor|medicine|symptom|panic|depression|addiction|withdrawal|overdose|psychologist)/.test(text)
+  };
+  const manipulation = /(ignore (all|any|the) (previous|earlier|safety)|bypass (the )?safety|pretend there is no risk|guarantee (this|the)|do not mention (help|safety|escalation))/.test(text);
+  const candidateScores = [
+    { route: "urgent", score: signals.urgent ? 96 : 8 },
+    { route: "help", score: signals.help ? 82 : 12 },
+    { route: "path", score: signals.path ? 70 : 18 },
+    { route: "professional", score: signals.professional ? 78 : 10 }
+  ].sort((a, b) => b.score - a.score);
+  const routeAlias = route === "urgent" ? "urgent" : route === "redress" ? "help" : route === "professional" ? "professional" : route === "guide" ? "path" : "";
+  const selected = routeAlias || candidateScores[0].route;
+  const selectedScore = candidateScores.find((candidate) => candidate.route === selected)?.score ?? 30;
+  const runnerUp = candidateScores.find((candidate) => candidate.route !== selected)?.score ?? 0;
+  const ambiguous = selectedScore - runnerUp < 16;
+  const shortInput = text.trim().length < 24;
+  const highRiskNeedsReview = signals.urgent || signals.professional || selected === "help";
   const basis = route === "urgent"
     ? "urgent safety signal"
     : route === "redress"
@@ -805,12 +840,67 @@ function getGuidanceDecisionMeta(body) {
         : route === "guide"
           ? "planning or clarity signal"
           : "general guidance signal";
-  const confidence = route === "urgent" || (hasSpecificSignal && route !== "general")
+  const confidence = signals.urgent && !ambiguous
     ? "high"
-    : route === "general" && text.length < 24
+    : shortInput || ambiguous
       ? "low"
-      : "medium";
-  return { confidence, reviewRequired: confidence !== "high", basis };
+      : selectedScore >= 70
+        ? "medium"
+        : "low";
+  const explanation = signals.urgent
+    ? "Urgent safety language took priority over slower guidance routes."
+    : selected === "help"
+      ? "Complaint, authority, financial, cyber, or institutional signals point to a traceable Help route."
+      : selected === "professional"
+        ? "Health or dependence signals point to qualified human support before self-guidance."
+        : selected === "path"
+          ? "The message contains a planning, emotional, study, or relationship signal suited to a practical Path step."
+          : "The message does not contain enough specific signal for a reliable route yet.";
+  const reviewReason = manipulation
+    ? "The wording tries to bypass safety or certainty limits, so the route must be checked instead of followed blindly."
+    : shortInput
+    ? "The message is too short to distinguish safely between routes."
+    : ambiguous
+      ? `The top routes are close: ${candidateScores[0].route} and ${candidateScores[1].route}.`
+      : highRiskNeedsReview
+        ? "This area can affect safety, health, rights, or formal complaints and should be checked by a qualified person."
+        : "No additional human review signal was detected.";
+  return {
+    confidence,
+    confidenceScore: selectedScore,
+    reviewRequired: confidence !== "high" || highRiskNeedsReview || manipulation,
+    reviewReason,
+    basis,
+    selectedRoute: selected,
+    explanation,
+    alternatives: candidateScores.filter((candidate) => candidate.route !== selected).slice(0, 2).map((candidate) => candidate.route),
+    knowledgeVersion: guidanceKnowledgeVersion,
+    knowledgeCheckedAt: guidanceKnowledgeCheckedAt,
+    freshness: "review-before-use",
+    policyFlags: manipulation ? ["adversarial-instruction"] : [],
+    referenceSet: selected === "help" || selected === "professional"
+      ? "official route links require a current human check"
+      : "independent guidance baseline",
+    sourceIds: guidanceKnowledgeSources.map((source) => source.id)
+  };
+}
+
+async function getGuidanceKnowledgeStatus() {
+  const sources = await Promise.all(guidanceKnowledgeSources.map(async (source) => {
+    try {
+      const response = await fetch(source.url, { method: "HEAD", redirect: "follow", signal: timeoutSignal(3_000) });
+      return { ...source, reachable: response.ok, status: response.status };
+    } catch {
+      return { ...source, reachable: false, status: null };
+    }
+  }));
+  return {
+    version: guidanceKnowledgeVersion,
+    checkedAt: new Date().toISOString(),
+    reviewBaseline: guidanceKnowledgeCheckedAt,
+    freshness: sources.every((source) => source.reachable) ? "reachable" : "review-needed",
+    sources
+  };
 }
 
 function trimGuidanceHelpLabel(text) {
@@ -1646,6 +1736,11 @@ async function handleRequest(req, res) {
     return;
   }
 
+  if (req.method === "GET" && url.pathname === "/guidance/knowledge-status") {
+    json(res, 200, await getGuidanceKnowledgeStatus());
+    return;
+  }
+
   if (req.method === "POST" && matchesGuidanceEndpoint(url, "brief")) {
     if (!allowGuidanceRequest(req)) {
       json(res, 429, { message: "Too many guidance requests. Please try again later." });
@@ -1946,7 +2041,14 @@ async function handleRequest(req, res) {
   json(res, 404, { message: "Not found." });
 }
 
-export { handleRequest, requestContext, resolveCorsOrigin };
+export {
+  handleRequest,
+  requestContext,
+  resolveCorsOrigin,
+  normalizeGuidanceSignals,
+  getGuidanceDecisionMeta,
+  buildFallbackGuidanceReply
+};
 
 if (process.env.VERCEL !== "1") {
   const server = createServer((req, res) => {
