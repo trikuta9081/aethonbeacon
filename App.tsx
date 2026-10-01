@@ -713,6 +713,34 @@ type RedressCase = {
   updatedIso: string;
 };
 
+type RedressDraftReadiness = {
+  score: number;
+  unresolvedFields: string[];
+  checks: {
+    subject: boolean;
+    incident: boolean;
+    remedy: boolean;
+    evidence: boolean;
+    contact: boolean;
+  };
+};
+
+function assessRedressDraft(draft: string): RedressDraftReadiness {
+  const text = draft.trim();
+  const unresolvedFields = Array.from(text.matchAll(/\[([^\]]+)\]/g), (match) => match[1].trim()).filter(Boolean);
+  const checks = {
+    subject: /^subject\s*:/im.test(text),
+    incident: /(date|time|occurred|incident|transaction|purchase)/i.test(text),
+    remedy: /(request|relief sought|remedy sought|resolution|protection)/i.test(text),
+    evidence: /(evidence|documents attached|supporting documents|attachments?)/i.test(text),
+    contact: /(contact|phone|email|address)/i.test(text)
+  };
+  const completedChecks = Object.values(checks).filter(Boolean).length;
+  const placeholderPenalty = Math.min(unresolvedFields.length, 5);
+  const score = Math.max(0, Math.min(100, completedChecks * 20 - placeholderPenalty * 8));
+  return { score, unresolvedFields, checks };
+}
+
 type InstitutionPortal = {
   label: string;
   url: string;
@@ -35686,6 +35714,8 @@ function RedressSection({
   const [showDraftTemplate, setShowDraftTemplate] = useState(false);
   const [editableDraft, setEditableDraft] = useState("");
   const [draftEdited, setDraftEdited] = useState(false);
+  const [showFollowUpDraft, setShowFollowUpDraft] = useState(false);
+  const [editableFollowUpDraft, setEditableFollowUpDraft] = useState("");
   const [showScript, setShowScript] = useState(false);
   const [showCompanionPlan, setShowCompanionPlan] = useState(false);
   // The situation picker is a grid of eleven chips. Once someone has told us
@@ -35707,6 +35737,7 @@ function RedressSection({
     setShowMoreRedressTools(false);
     setShowAllRouteOptions(false);
     setShowDraftTemplate(false);
+    setShowFollowUpDraft(false);
     setShowScript(false);
     setShowCompanionPlan(false);
     setCheckedEvidence({});
@@ -35801,6 +35832,11 @@ function RedressSection({
     private: `To,\nThe Grievance / Compliance Officer,\n[Institution / Organisation Name]\n\nSubject: Formal Complaint — [describe issue in one line]\n\nDear Sir/Madam,\n\nI, [Your Name], [admission/membership/customer ID], wish to formally complain about the following.\n\nNature of complaint: [describe clearly, with dates and names of people/departments involved]\n\nImpact on me: [financial loss, distress, denial of service, etc.]\n\nRelief sought: [state the specific outcome you want — refund, correction, apology, disciplinary action]\n\nPer your organisation's own grievance redressal policy, I request a written acknowledgement with a reference number and the expected resolution timeline.\n\nIf this is not resolved satisfactorily, I am aware I can escalate to the relevant sector regulator or consumer forum.\n\nEvidence attached: [list]\n\nYours sincerely,\n[Your Name]\n[Contact]\n[Date]`,
   };
 
+  // Future-proof the drafting surface: if a new route or institution-specific
+  // scenario is added before its specialist wording is reviewed, the user
+  // still gets a neutral, fact-first draft rather than an empty action.
+  const GENERIC_REDRESS_DRAFT = `To,\nThe Grievance Officer / Responsible Authority,\n[Office or Institution Name]\n\nSubject: Formal complaint — [describe the issue in one line]\n\nDear Sir/Madam,\n\nI, [Your Name], am writing to report the following issue involving [office, service, or person].\n\nWhat happened: [describe the facts in date order, including dates, places, names, and reference numbers if known]\n\nImpact: [briefly state the practical, financial, safety, or service impact]\n\nAction already taken: [state who was contacted, when, and any response received]\n\nRemedy requested: [state the specific outcome you want]\n\nEvidence available: [list documents, screenshots, receipts, messages, witnesses, or other records]\n\nPlease acknowledge receipt with a reference number, identify the officer handling this, and provide the written next-step timeline. I will retain a copy of this complaint and proof of submission.\n\nYours sincerely,\n[Your Name]\n[Contact details]\n[Date]`;
+
   // First call/visit script
   const FIRST_SCRIPTS: Partial<Record<RedressRouteId, string>> = {
     academic: `"I am [Your Name], student of [Course], [Roll No]. I am here to submit a written complaint against [Name/Issue] that occurred on [Date]. I request a written acknowledgement with a complaint number and the name of the officer who will handle this. I also request the expected resolution timeline."`,
@@ -35848,12 +35884,26 @@ function RedressSection({
     if (!tpl || !senderName) return tpl;
     return tpl.replace(/\[Your Name\]/g, senderName);
   };
-  const draftTemplate = autoFillName(DRAFT_TEMPLATES[selectedRedressRoute.id]);
+  const draftTemplate = autoFillName(DRAFT_TEMPLATES[selectedRedressRoute.id] ?? GENERIC_REDRESS_DRAFT);
   useEffect(() => {
     setEditableDraft(draftTemplate ?? "");
     setDraftEdited(false);
   }, [draftTemplate]);
   const currentDraft = draftEdited ? editableDraft : draftTemplate ?? "";
+  const followUpDraftTemplate = activeCase
+    ? autoFillName(`To,\n[Office / Authority],\n\nSubject: Follow-up on complaint [reference number]\n\nDear Sir/Madam,\n\nI am following up on my complaint submitted on [submission date] regarding [brief issue].\n\nReference / acknowledgement number: [reference number]\nPrevious communication: [date and short summary]\n\nPlease provide the current status, the name of the officer handling the matter, and the expected next action or resolution date. I request that this follow-up be added to the existing record rather than opened as a duplicate complaint.\n\nYours sincerely,\n[Your Name]\n[Contact details]\n[Date]`)
+    : "";
+  useEffect(() => {
+    setEditableFollowUpDraft(followUpDraftTemplate ?? "");
+  }, [followUpDraftTemplate]);
+  const draftReadiness = assessRedressDraft(currentDraft);
+  const draftReadinessChecks = [
+    { key: "subject", label: l("Subject", { hindi: "विषय", telugu: "విషయం", tamil: "தலைப்பு", urdu: "موضوع" }) },
+    { key: "incident", label: l("Incident facts", { hindi: "घटना के तथ्य", telugu: "సంఘటన వాస్తవాలు", tamil: "நிகழ்வு உண்மைகள்", urdu: "واقعے کے حقائق" }) },
+    { key: "remedy", label: l("Remedy requested", { hindi: "माँगा गया समाधान", telugu: "కోరిన పరిష్కారం", tamil: "கோரிய தீர்வு", urdu: "مانگا گیا حل" }) },
+    { key: "evidence", label: l("Evidence list", { hindi: "साक्ष्य सूची", telugu: "ఆధారాల జాబితా", tamil: "ஆதாரப் பட்டியல்", urdu: "ثبوت کی فہرست" }) },
+    { key: "contact", label: l("Contact details", { hindi: "संपर्क विवरण", telugu: "సంప్రదింపు వివరాలు", tamil: "தொடர்பு விவரங்கள்", urdu: "رابطے کی تفصیل" }) }
+  ] as const;
   const firstScript = autoFillName(FIRST_SCRIPTS[selectedRedressRoute.id]);
   const isEmergencyRoute = selectedRedressRoute.id === "crime" || selectedRedressRoute.id === "domestic";
   const isCrimeRoute = selectedRedressRoute.id === "crime";
@@ -36975,6 +37025,36 @@ function RedressSection({
                   accessibilityLabel={l("Editable complaint or FIR application draft", { hindi: "قابل ترمیم शिकायत या FIR आवेदन ड्राफ्ट", telugu: "ఎడిట్ చేయగల ఫిర్యాదు లేదా FIR దరఖాస్తు డ్రాఫ్ట్", tamil: "திருத்தக்கூடிய புகார் அல்லது FIR விண்ணப்ப வரைவு", urdu: "قابل ترمیم شکایت یا FIR درخواست ڈرافٹ" })}
                   style={{ backgroundColor: "#FFFFFF", borderRadius: 10, padding: 14, minHeight: 360, color: "#111827", fontSize: 15, lineHeight: 22, borderWidth: 1, borderColor: "#A5B4FC" }}
                 />
+                <View
+                  accessibilityRole="summary"
+                  accessibilityLabel={l("Draft readiness review", { hindi: "ड्राफ्ट तैयार होने की समीक्षा", telugu: "డ్రాఫ్ట్ సిద్ధత సమీక్ష", tamil: "வரைவு தயார்நிலை மதிப்பாய்வு", urdu: "مسودے کی تیاری کا جائزہ" })}
+                  style={{ marginTop: 10, borderRadius: 10, backgroundColor: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#ECFDF5" : "#FFF8E7", borderWidth: 1, borderColor: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#86EFAC" : "#E7C878", padding: 11 }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                    <Text style={{ color: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#04714F" : "#8A4B08", fontSize: 12, fontWeight: "900", letterSpacing: 0.8, textTransform: "uppercase" }}>
+                      {l("Draft readiness", { hindi: "ड्राफ्ट तैयार", telugu: "డ్రాఫ్ట్ సిద్ధత", tamil: "வரைவு தயார்நிலை", urdu: "مسودے کی تیاری" })}
+                    </Text>
+                    <Text style={{ color: draftReadiness.score >= 80 && draftReadiness.unresolvedFields.length === 0 ? "#04714F" : "#8A4B08", fontSize: 12, fontWeight: "900" }}>{draftReadiness.score}/100</Text>
+                  </View>
+                  <Text style={{ color: "#405563", fontSize: 12, lineHeight: 17, marginTop: 4 }}>
+                    {draftReadiness.unresolvedFields.length > 0
+                      ? l(`${draftReadiness.unresolvedFields.length} placeholder${draftReadiness.unresolvedFields.length === 1 ? "" : "s"} still need your real facts. Review before sending.`, { hindi: `${draftReadiness.unresolvedFields.length} स्थान अभी आपके वास्तविक तथ्यों की प्रतीक्षा कर रहे हैं। भेजने से पहले जाँचें।` })
+                      : l("No bracketed placeholders remain. Do one final fact check before sending.", { hindi: "कोई bracket वाला placeholder नहीं बचा। भेजने से पहले अंतिम तथ्य-जाँच करें।" })}
+                  </Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                    {draftReadinessChecks.map((item) => {
+                      const complete = draftReadiness.checks[item.key];
+                      return (
+                        <View key={item.key} style={{ borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: complete ? "#D1FAE5" : "#FEF3C7", borderWidth: 1, borderColor: complete ? "#86EFAC" : "#E7C878" }}>
+                          <Text style={{ color: complete ? "#04714F" : "#8A4B08", fontSize: 11, fontWeight: "800" }}>{complete ? "✓" : "•"} {item.label}</Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                  <Text style={{ color: "#6B4A1E", fontSize: 11, lineHeight: 16, marginTop: 7 }}>
+                    {l("This review is a safety check, not legal approval. Use only facts you can support and ask a qualified person when the matter is high-risk or unclear.", { hindi: "यह समीक्षा सुरक्षा-जाँच है, कानूनी स्वीकृति नहीं। केवल वही तथ्य लिखें जिन्हें आप प्रमाणित कर सकते हैं और high-risk या अस्पष्ट मामले में योग्य व्यक्ति से पूछें।" })}
+                  </Text>
+                </View>
                 <View style={{ marginTop: 10, borderRadius: 10, backgroundColor: isCrimeRoute ? "#FFF4F0" : "#F7FAFC", borderWidth: 1, borderColor: isCrimeRoute ? "#E9A99A" : "#C7D7E0", padding: 11 }}>
                   <Text style={{ color: isCrimeRoute ? "#9D2B1D" : "#0B6E67", fontSize: 12, fontWeight: "800", letterSpacing: 0.8, textTransform: "uppercase" }}>
                     {isCrimeRoute ? l("FIR lodging path", { hindi: "FIR दर्ज कराने का मार्ग", telugu: "FIR నమోదు మార్గం", tamil: "FIR பதிவு நடைமுறை", urdu: "FIR درج کرانے کا طریقہ" }) : l("Lodge and pursue", { hindi: "जमा करें और आगे बढ़ाएँ", telugu: "సమర్పించి ముందుకు తీసుకెళ్లండి", tamil: "சமர்ப்பித்து தொடருங்கள்", urdu: "جمع کرائیں اور پیروی کریں" })}
@@ -37296,6 +37376,42 @@ function RedressSection({
                   </Text>
                 </>
               )}
+
+              <View style={{ marginTop: 12, borderRadius: 10, backgroundColor: "#F7FAFC", borderWidth: 1, borderColor: "#B9CDD2", padding: 11 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={caseFieldLabel}>{l("Follow-up draft", { hindi: "फॉलो-अप ड्राफ्ट", telugu: "ఫాలో-అప్ డ్రాఫ్ట్", tamil: "தொடர்ச்சி வரைவு", urdu: "فالو اَپ مسودہ" })}</Text>
+                    <Text style={{ color: "#506673", fontSize: 12, lineHeight: 17, marginTop: 3 }}>{l("Use the existing reference number and ask for status without opening a duplicate complaint.", { hindi: "मौजूदा reference number के साथ स्थिति पूछें और duplicate complaint न खोलें।", telugu: "ఇప్పటికే ఉన్న reference number తో status అడిగి duplicate complaint తెరవకండి.", tamil: "ஏற்கனவே உள்ள reference number-ஐப் பயன்படுத்தி நிலையை கேளுங்கள்; duplicate complaint தொடங்க வேண்டாம்.", urdu: "موجودہ reference number کے ساتھ status پوچھیں اور duplicate complaint نہ کھولیں۔" })}</Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: showFollowUpDraft }}
+                    onPress={() => setShowFollowUpDraft((value) => !value)}
+                    style={({ pressed }) => ({ minHeight: 44, paddingHorizontal: 11, borderRadius: 9, backgroundColor: pressed ? "#DCEBE9" : "#EAF3F1", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center" })}
+                  >
+                    <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "800" }}>{showFollowUpDraft ? l("Hide", { hindi: "छिपाएँ", telugu: "దాచు", tamil: "மறை", urdu: "چھپائیں" }) : l("Draft", { hindi: "ड्राफ्ट", telugu: "డ్రాఫ్ట్", tamil: "வரைவு", urdu: "مسودہ" })}</Text>
+                  </Pressable>
+                </View>
+                {showFollowUpDraft && (
+                  <>
+                    <TextInput
+                      value={editableFollowUpDraft}
+                      onChangeText={setEditableFollowUpDraft}
+                      multiline
+                      textAlignVertical="top"
+                      accessibilityLabel={l("Editable follow-up draft", { hindi: "एडिट किया जा सकने वाला फॉलो-अप ड्राफ्ट", telugu: "ఎడిట్ చేయగల ఫాలో-అప్ డ్రాఫ్ట్", tamil: "திருத்தக்கூடிய தொடர்ச்சி வரைவு", urdu: "قابل ترمیم فالو اَپ مسودہ" })}
+                      style={{ ...caseInputStyle, minHeight: 220, marginTop: 9, fontSize: 14, lineHeight: 20, textAlignVertical: "top" }}
+                    />
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => void Share.share({ message: editableFollowUpDraft, title: `${selectedRedressRoute.label} — follow-up draft` })}
+                      style={({ pressed }) => ({ marginTop: 8, minHeight: 44, borderRadius: 9, backgroundColor: pressed ? "#DCEBE9" : "#EAF3F1", borderWidth: 1, borderColor: "#8FBDB7", alignItems: "center", justifyContent: "center" })}
+                    >
+                      <Text style={{ color: "#0E6F69", fontSize: 12, fontWeight: "800" }}>{l("Share follow-up draft", { hindi: "फॉलो-अप ड्राफ्ट साझा करें", telugu: "ఫాలో-అప్ డ్రాఫ్ట్ పంచుకోండి", tamil: "தொடர்ச்சி வரைவைப் பகிரவும்", urdu: "فالو اَپ مسودہ شیئر کریں" })}</Text>
+                    </Pressable>
+                  </>
+                )}
+              </View>
 
               <Text style={caseFieldLabel}>{l("Notes", { hindi: "नोट्स", telugu: "గమనికలు", tamil: "குறிப்புகள்", urdu: "نوٹس" })}</Text>
               <TextInput

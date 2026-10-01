@@ -151,6 +151,13 @@ assert(source.includes('accessibilityLabel={l("Open email app with complaint pre
 assert(source.includes('accessibilityLabel={l("Save complaint letter as PDF"'), 'Complaint PDF accessibility copy must follow the selected language');
 assert(source.includes('const [editableDraft, setEditableDraft] = useState("")'), 'Complaint and FIR drafts must be editable in place');
 assert(source.includes('const currentDraft = draftEdited ? editableDraft : draftTemplate ?? ""'), 'Draft exports must use the user-edited complaint text');
+assert(source.includes('function assessRedressDraft'), 'Complaint drafts need a deterministic readiness review before export');
+assert(source.includes('const draftReadiness = assessRedressDraft(currentDraft)'), 'Draft readiness must evaluate the actual edited draft');
+assert(source.includes('Draft readiness'), 'Draft readiness status must be visible in Help and Redress');
+assert(source.includes('No bracketed placeholders remain'), 'Draft readiness must confirm when placeholders are cleared');
+assert(source.includes('GENERIC_REDRESS_DRAFT'), 'Every future redress scenario must have a neutral drafting fallback');
+assert(source.includes('followUpDraftTemplate'), 'Tracked cases must provide a follow-up draft, not only an initial complaint');
+assert(source.includes('Share follow-up draft'), 'Follow-up drafts must be shareable from the case tracker');
 assert(source.includes('FIR lodging path'), 'The crime route must explain the FIR lodging path explicitly');
 assert(source.includes('Police complaint + FIR guide'), 'Help and Redress must expose a dedicated police complaint and FIR guide');
 assert(source.includes('digitalpolice.gov.in/'), 'Help and Redress must link to the official national Digital Police hub');
