@@ -28,6 +28,10 @@ assert(app.includes('l("Playback quality & safety", {'), "tone UI must localize 
 assert(app.includes("Session preset"), "tone UI must expose session presets");
 assert(app.includes("Safe gain"), "tone UI must expose safe gain control");
 assert(app.includes("getToneContraindication"), "tone safety copy must be generated per tone family");
+assert(app.includes("toneNeedsExtraCaution"), "pulsed and channel-separated tones must expose an extra-caution safety gate");
+assert(app.includes("MAX_TONE_SESSION_MINUTES = 30"), "tone sessions must have a finite safety ceiling");
+assert(!app.includes("([0, 5, 10, 15, 20, 30] as const)"), "tone timer must not offer an unlimited loop option");
+assert(app.includes("not a medical treatment"), "tone delivery copy must keep medical claims out of the audio engine");
 assert(pkg.scripts["test:tone"] === "node scripts/tone-engine-regression.mjs", "package.json must expose test:tone");
 for (const toneId of studioToneIds) {
   assert(app.includes(`id: "${toneId}"`), `${toneId} must be present in the curated tone library`);

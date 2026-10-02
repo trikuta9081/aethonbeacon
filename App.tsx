@@ -13205,6 +13205,22 @@ type BirthChartCore = {
   navagraha: NavagrahaLongitudes;
 };
 
+const VEDIC_CALCULATION_VERSION = "NAYIQ sidereal engine v2 · Lahiri approximation · Astronomy Engine ephemeris · mean nodes";
+
+function getVedicBoundaryCaution(core: BirthChartCore): string | null {
+  const longitudes = [core.navagraha.moon];
+  if (core.ascendantSidereal !== null) longitudes.push(core.ascendantSidereal);
+  const nearBoundary = longitudes.some((longitude) => {
+    const signRemainder = normalizeDegrees(longitude) % 30;
+    const nakshatraRemainder = normalizeDegrees(longitude) % (360 / 27);
+    return Math.min(signRemainder, 30 - signRemainder) < 0.25 ||
+      Math.min(nakshatraRemainder, (360 / 27) - nakshatraRemainder) < 0.25;
+  });
+  return nearBoundary
+    ? "Moon or Ascendant is close to a sign/Nakshatra boundary; a small birth-time or ephemeris difference may change the displayed label."
+    : null;
+}
+
 function computeBirthChartCore(
   dob: string,
   birthTime: string | null,
@@ -28784,12 +28800,19 @@ function clampToneVolume(value: number): number {
 }
 
 function getToneBrainState(tone: RelaxingToneMode): string {
-  if (tone.brainState) return tone.brainState;
-  if (tone.id.includes("delta")) return "Delta · sleep-depth settling";
-  if (tone.id.includes("theta")) return "Theta · reflective processing";
-  if (tone.id.includes("alpha") || tone.id.startsWith("iso-8") || tone.id.startsWith("iso-10")) return "Alpha · calm focus";
-  if (tone.id === "reset-gamma") return "Gamma · brief alert reset";
-  if (tone.id.startsWith("bilateral")) return "Bilateral · left-right regulation";
+  if (tone.brainState) {
+    return tone.brainState
+      .replace(/Parasympathetic/gi, "Calm support")
+      .replace(/Alpha[–-]?Theta/gi, "Mixed slow pulse")
+      .replace(/Theta/gi, "Slow pulse")
+      .replace(/Alpha/gi, "Steady pulse")
+      .replace(/Gamma/gi, "Fast pulse");
+  }
+  if (tone.id.includes("delta")) return "Low frequency · quiet settling";
+  if (tone.id.includes("theta")) return "Slow pulse · reflective listening";
+  if (tone.id.includes("alpha") || tone.id.startsWith("iso-8") || tone.id.startsWith("iso-10")) return "Steady pulse · calm focus";
+  if (tone.id === "reset-gamma") return "Fast pulse · brief alert cue";
+  if (tone.id.startsWith("bilateral")) return "Alternating left/right audio";
   if (tone.id.startsWith("noise-") || tone.id.startsWith("ambient")) return "Ambient · settling texture";
   if (tone.id.startsWith("studio-")) return "Studio · slow harmonic movement";
   if (tone.id.startsWith("sol-") || tone.id === "aum-136") return "Resonance · sustained harmonic layer";
@@ -28800,7 +28823,7 @@ function getToneDeliveryProfile(tone: RelaxingToneMode): string {
   if (tone.externalUrl) return "External stream link";
   if (tone.id.startsWith("binaural")) return "True stereo L/R binaural synthesis";
   if (tone.id.startsWith("bilateral")) return "Alternating left/right pulse engine";
-  if (tone.id.startsWith("iso-") || tone.id === "reset-gamma") return "Precision isochronic pulse engine";
+  if (tone.id.startsWith("iso-") || tone.id === "reset-gamma") return "Pulsed audio engine (not a medical treatment)";
   if (tone.id.startsWith("noise-")) return "Procedural stereo noise bed";
   if (tone.id.startsWith("studio-")) return "Original slow-moving harmonic soundscape";
   if (tone.id.startsWith("sol-") || tone.id === "aum-136") return "Harmonic sine + warm overtone stack";
@@ -28814,9 +28837,9 @@ function toneRequiresHeadphones(tone: RelaxingToneMode): boolean {
 function getToneContraindication(tone: RelaxingToneMode): string {
   if (tone.contraindication) return tone.contraindication;
   if (tone.id === "reset-gamma" || tone.id.startsWith("iso-") || tone.id.startsWith("binaural-gamma")) {
-    return "Avoid if pulsing audio causes discomfort; never use while driving.";
+    return "Pulsed audio may feel uncomfortable for some people; stop if it causes headache, dizziness, anxiety, or visual discomfort. Never use while driving.";
   }
-  if (tone.id.startsWith("binaural")) return "Headphones required; keep volume low and stop if dizzy or uncomfortable.";
+  if (tone.id.startsWith("binaural")) return "Headphones required; use low volume and stop if you notice headache, dizziness, tinnitus, or discomfort.";
   if (tone.id.startsWith("bilateral")) return "Use gently; pause if left-right stimulation feels activating.";
   return "Use at a comfortable low volume; stop if the sound feels unpleasant.";
 }
@@ -29144,6 +29167,12 @@ function ToneLibrarySection({
       void stopContinuousTone();
     };
   }, [loopEnabled, selectedTone.id, tonePaused, toneVolume, presetMinutes, selectedSessionPreset.id]);
+
+  useEffect(() => {
+    if (presetMinutes < 1 || presetMinutes > MAX_TONE_SESSION_MINUTES) {
+      setPresetMinutes(11);
+    }
+  }, [presetMinutes]);
 
   // Session accounting. These refs let the "session ended" effect below read
   // the values the session actually ran with, without re-subscribing every
@@ -29479,6 +29508,11 @@ function ToneLibrarySection({
           <Text style={{ color: "#1F2937", fontSize: 12, lineHeight: 16, marginBottom: 10 }}>
             {l("Safety", { hindi: "सुरक्षा", telugu: "భద్రత", tamil: "பாதுகாப்பு", urdu: "حفاظت" })}: {selectedToneContraindication}
           </Text>
+          {toneNeedsExtraCaution(selectedTone) && (
+            <Text style={{ color: "#92400E", fontSize: 12, lineHeight: 17, fontWeight: "700", marginBottom: 10 }}>
+              {l("Extra caution: this profile uses pulsing or channel-separated audio. Do not use it if you have a history of sound-triggered symptoms; choose soft ambient audio instead.", { hindi: "अतिरिक्त सावधानी: इस प्रोफ़ाइल में स्पंदित या अलग-अलग चैनल वाली ध्वनि है। यदि ध्वनि से लक्षण बढ़ते हैं तो इसका उपयोग न करें; नरम एम्बिएंट ध्वनि चुनें।", telugu: "అదనపు జాగ్రత్త: ఈ ప్రొఫైల్‌లో పల్సింగ్ లేదా విడిపోయిన ఛానల్ ఆడియో ఉంది. శబ్దంతో లక్షణాలు పెరిగితే వాడకండి; మృదువైన అంబియెంట్ ఆడియో ఎంచుకోండి.", tamil: "கூடுதல் எச்சரிக்கை: இந்த சுயவிவரத்தில் துடிப்பு அல்லது பிரிக்கப்பட்ட சேனல் ஒலி உள்ளது. ஒலியால் அறிகுறிகள் அதிகரித்தால் பயன்படுத்த வேண்டாம்; மென்மையான ஆம்பியன்ட் ஒலியைத் தேர்ந்தெடுக்கவும்.", urdu: "اضافی احتیاط: اس پروفائل میں دھڑکتی یا الگ چینل والی آواز ہے۔ اگر آواز سے علامات بڑھتی ہوں تو استعمال نہ کریں؛ نرم محیطی آواز منتخب کریں۔" })}
+            </Text>
+          )}
 
           <Text style={{ color: "#066C84", fontSize: 12, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
             {l("Session preset", { hindi: "सत्र पूर्वनिर्धारण", telugu: "సెషన్ ప్రీసెట్", tamil: "அமர்வு முன்தேர்வு", urdu: "سیشن پری سیٹ" })}
@@ -29553,9 +29587,9 @@ function ToneLibrarySection({
           <Text style={{ color: "#1F2937", fontSize: 12, fontWeight: "700" }}>
             {l("Timer", { hindi: "टाइमर", telugu: "టైమర్", tamil: "நேரக்காட்டி", urdu: "ٹائمر" })}:
           </Text>
-          {([0, 5, 10, 15, 20, 30] as const).map((min) => (
+          {([5, 10, 15, 20, 30] as const).map((min) => (
             <Pressable key={min} onPress={() => { setPresetMinutes(min); setActiveProgram(null); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 7, backgroundColor: presetMinutes === min ? "#0E6F69" : "#F8FBFA", borderWidth: 1, borderColor: presetMinutes === min ? "#066C84" : "rgba(15,23,42,0.12)" }}>
-              <Text style={{ color: presetMinutes === min ? "#FFFFFF" : "#1F2937", fontSize: 12, fontWeight: "800" }}>{min === 0 ? "∞" : `${min}m`}</Text>
+              <Text style={{ color: presetMinutes === min ? "#FFFFFF" : "#1F2937", fontSize: 12, fontWeight: "800" }}>{`${min}m`}</Text>
             </Pressable>
           ))}
         </View>
@@ -34274,6 +34308,12 @@ const issuePathDepthByIssue: Record<IssueId, IssuePathDepth> = {
 function getIssuePathDepth(issueId: IssueId): IssuePathDepth {
   return issuePathDepthByIssue[issueId] ?? issuePathDepthByIssue.general;
 }
+
+function toneNeedsExtraCaution(tone: RelaxingToneMode): boolean {
+  return tone.id.startsWith("binaural") || tone.id.startsWith("bilateral") || tone.id.startsWith("iso-") || tone.id === "reset-gamma";
+}
+
+const MAX_TONE_SESSION_MINUTES = 30;
 
 function localizeIssuePathDepth(issueId: IssueId, languageId: LanguageId): IssuePathDepth {
   const depth = getIssuePathDepth(issueId);
@@ -40308,6 +40348,10 @@ function BirthChartSection({
     () => computeBirthChartCore(profileDOB, profileBirthTime, profileBirthLat, profileBirthLon),
     [profileDOB, profileBirthTime, profileBirthLat, profileBirthLon]
   );
+  const vedicBoundaryCaution = useMemo(
+    () => (birthChartCore ? getVedicBoundaryCaution(birthChartCore) : null),
+    [birthChartCore]
+  );
   const navamsaEntries = useMemo(() => (birthChartCore ? buildNavamsaEntries(birthChartCore) : []), [birthChartCore]);
   const detectedYogas = useMemo(() => (birthChartCore ? detectClassicalYogas(birthChartCore) : []), [birthChartCore]);
   const ashtakavargaResult = useMemo(() => (birthChartCore ? buildAshtakavarga(birthChartCore) : null), [birthChartCore]);
@@ -40764,6 +40808,14 @@ function BirthChartSection({
             <Text style={{ color: "#25364D", fontSize: 12, lineHeight: 17 }}>
               {l("Sidereal Lahiri Moon chart ·", { hindi: "साइडेरियल लाहिरी चंद्र चार्ट ·", telugu: "సిడీరియల్ లాహిరి చంద్ర చార్ట్ ·", tamil: "சைடீரியல் லாஹிரி சந்திர சார்ட் ·", urdu: "سائیڈیریل لٰہیری قمری چارٹ ·" })} {lagnaInfo?.precise ? l("coordinate-based Ascendant", { hindi: "निर्देशांक-आधारित लग्न", telugu: "కోఆర్డినేట్ ఆధారిత లగ్నం", tamil: "இணைப்பு அடிப்படையிலான லக்னம்", urdu: "محلِ وقوع پر مبنی لگن" }) : l("estimated Ascendant until coordinates resolve", { hindi: "निर्देशांक मिलने तक अनुमानित लग्न", telugu: "కోఆర్డినేట్లు పరిష్కరించేవరకు అంచనా లగ్నం", tamil: "இணைப்புகள் கிடைக்கும் வரை மதிப்பிடப்பட்ட லக்னம்", urdu: "محلِ وقوع حل ہونے تک اندازاً لگن" })} {l("·", { hindi: "·", telugu: "·", tamil: "·", urdu: "·" })} {l("transits refreshed today", { hindi: "गोचर आज अपडेट हुए", telugu: "గోచారాలు ఈరోజు రిఫ్రెష్ అయ్యాయి", tamil: "கோசாரங்கள் இன்று புதுப்பிக்கப்பட்டன", urdu: "گُوچر آج تازہ کیے گئے" })}.
             </Text>
+            <Text style={{ color: "#5B6575", fontSize: 12, lineHeight: 17 }}>
+              {l("Engine: ", { hindi: "इंजन: ", telugu: "ఇంజిన్: ", tamil: "இயந்திரம்: ", urdu: "انجن: " })}{VEDIC_CALCULATION_VERSION}. {l("Birth clock is interpreted as IST because a historical birthplace timezone is not stored.", { hindi: "जन्म-समय को IST माना गया है क्योंकि ऐतिहासिक जन्मस्थान टाइमज़ोन संग्रहीत नहीं है।", telugu: "చారిత్రక జన్మస్థల టైమ్‌జోన్ నిల్వ చేయబడనందున జనన సమయాన్ని ISTగా పరిగణిస్తున్నాం.", tamil: "வரலாற்று பிறப்பிட நேர மண்டலம் சேமிக்கப்படாததால் பிறப்பு நேரம் IST ஆகக் கருதப்படுகிறது.", urdu: "تاریخی جائے پیدائش کا ٹائم زون محفوظ نہ ہونے کی وجہ سے پیدائش کا وقت IST سمجھا گیا ہے۔" })}
+            </Text>
+            {vedicBoundaryCaution && (
+              <Text style={{ color: "#92400E", fontSize: 12, lineHeight: 17, fontWeight: "700" }}>
+                {l(`Boundary caution: ${vedicBoundaryCaution}`, { hindi: `सीमा सावधानी: ${vedicBoundaryCaution}`, telugu: `సరిహద్దు జాగ్రత్త: ${vedicBoundaryCaution}`, tamil: `எல்லை எச்சரிக்கை: ${vedicBoundaryCaution}`, urdu: `حد کی احتیاط: ${vedicBoundaryCaution}` })}
+              </Text>
+            )}
             <Text style={{ color: "#5B6575", fontSize: 12, lineHeight: 17, fontStyle: "italic" }}>
               {l("Interpretive guidance only — use it for reflection, not as a guaranteed prediction or a substitute for professional advice.", { hindi: "यह केवल चिंतनशील मार्गदर्शन है — इसे गारंटीड भविष्यवाणी या पेशेवर सलाह के विकल्प के रूप में न लें।", telugu: "ఇది ఆత్మపరిశీలన కోసం మాత్రమే — హామీ ఉన్న అంచనా లేదా వృత్తిపరమైన సలహాకు ప్రత్యామ్నాయం కాదు.", tamil: "இது சிந்தனைக்கான வழிகாட்டல் மட்டுமே — உறுதியான கணிப்பு அல்லது தொழில்முறை ஆலோசனைக்கு மாற்றாக பயன்படுத்த வேண்டாம்.", urdu: "یہ صرف غور و فکر کی رہنمائی ہے — اسے یقینی پیش گوئی یا پیشہ ورانہ مشورے کا متبادل نہ سمجھیں۔" })}
             </Text>

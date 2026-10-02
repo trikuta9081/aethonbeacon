@@ -56,6 +56,9 @@ assert(source.includes('buildNavamsaEntries'), 'D9 Navamsa calculation layer is 
 assert(source.includes('detectClassicalYogas'), 'Classical Yoga detection layer is missing');
 assert(source.includes('buildAshtakavarga'), 'Ashtakavarga calculation layer is missing');
 assert(source.includes('computeShadbala'), 'Shadbala calculation layer is missing');
+assert(source.includes('VEDIC_CALCULATION_VERSION'), 'Vedic calculation provenance/version must be exposed');
+assert(source.includes('getVedicBoundaryCaution'), 'Vedic sign/Nakshatra boundary sensitivity warning is missing');
+assert(source.includes('historical birthplace timezone'), 'Vedic UI must disclose the IST timezone limitation');
 assert(source.includes('Detailed Calculation Panel — D9 Navamsa · Yogas · Ashtakavarga · Shadbala'), 'Detailed Vedic calculation panel is missing');
 assert(source.includes('D1 Rashi Chart — Lagna and all 9 grahas'), 'D1 Rashi chart wheel panel is missing');
 assert(source.includes('D9 Navamsa Chart'), 'D9 Navamsa chart wheel panel is missing');
