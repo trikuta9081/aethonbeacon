@@ -34,6 +34,8 @@ assert(source.includes('Phone and email are used only for verification'), "Priva
 assert(source.includes('Voice and microphone access are optional') || source.includes('voice and microphone access are optional'), "Privacy copy must explain voice/microphone purpose.");
 assert(source.includes('deliveryStatus: "failed"'), "Community failure delivery state is not implemented.");
 assert(source.includes('deliveryStatus: "delivered"'), "Community delivered state is not implemented.");
+assert(source.includes('contentContainerStyle={styles.communityFilterRow}'), "Community filters need a stable horizontal layout on compact screens.");
+assert(source.includes('styles.communityFilterButton') && source.includes('numberOfLines={1}>\n                  {item.label}'), "Community filter labels must stay on one line instead of splitting mid-word.");
 assert(source.includes('COMMUNITY_POST_COOLDOWN_MS') && source.includes('communityPostCooldownRemainingMs'), "Community post anti-flood cooldown is missing.");
 assert(source.includes('function buildVerifiedReply(text: string)'), "Community feed guidance reply engine is missing.");
 assert(source.includes('function buildCommunityChatReply(text: string, persona: CommunityChatPersonaId)'), "Community chat reply engine is missing.");

@@ -32001,7 +32001,12 @@ function CommunitySection({
             </Text>
           </View>
         ) : null}
-        <View style={styles.segmentRow}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.communityFilterRow}
+          style={styles.communityFilterScroll}
+        >
           {[
             { id: "all", label: l("All", { hindi: "सभी", telugu: "అన్నీ", tamil: "அனைத்தும்", urdu: "سب" }) },
             { id: "verified", label: l("Verified", { hindi: "सत्यापित", telugu: "ధృవీకరించిన", tamil: "உறுதிப்படுத்தப்பட்ட", urdu: "تصدیق شدہ" }) },
@@ -32015,15 +32020,15 @@ function CommunitySection({
                 accessibilityLabel={`Filter feed by ${item.label}`}
                 accessibilityState={{ selected: isSelected }}
                 onPress={() => setCommunityFilter(item.id as CommunityFilterId)}
-                style={[styles.segmentButton, isSelected && styles.segmentButtonActive]}
+                style={[styles.segmentButton, styles.communityFilterButton, isSelected && styles.segmentButtonActive]}
               >
-                <Text style={[styles.segmentLabel, isSelected && styles.segmentLabelActive]}>
+                <Text style={[styles.segmentLabel, isSelected && styles.segmentLabelActive]} numberOfLines={1}>
                   {item.label}
                 </Text>
               </Pressable>
             );
           })}
-        </View>
+        </ScrollView>
         <View style={[styles.segmentRow, compact && styles.communityTopicRowCompact]}>
           {[
             { id: "all", label: l("All topics", { hindi: "सभी विषय", telugu: "అన్ని అంశాలు", tamil: "அனைத்து தலைப்புகள்", urdu: "تمام موضوعات" }) },
@@ -56402,6 +56407,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8
   },
+  communityFilterScroll: {
+    width: "100%"
+  },
+  communityFilterRow: {
+    flexDirection: "row",
+    gap: 8,
+    paddingRight: 4
+  },
   profileGenderGrid: {
     flexWrap: "wrap"
   },
@@ -56466,6 +56479,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 2
+  },
+  communityFilterButton: {
+    flex: 0,
+    minWidth: 104
   },
   communityTopicButtonCompact: {
     flexBasis: "48%",
